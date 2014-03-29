@@ -26,6 +26,10 @@ repositories {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
 dependencies {
     // TODO: Add dependencies here ...
     // You can read more about how to add dependency here:
