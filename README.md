@@ -1,7 +1,7 @@
 JavaFXScad
 ==========
 
-JavaFX 3D CSG IDE
+JavaFX 3D Printing IDE
 
 ![](/resources/img/screenshot-01.png)
 
