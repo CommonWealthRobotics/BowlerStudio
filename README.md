@@ -5,6 +5,8 @@ JavaFX 3D Printing IDE based on [JavaCSG](https://github.com/miho/JavaCSG).
 
 ![](/resources/img/screenshot-03.png)
 
+![](http://thingiverse-production.s3.amazonaws.com/renders/0c/a0/c0/dc/53/IMG_20140329_201814_preview_featured.jpg)
+
 ## How to Build JavaFXScad
 
 ### Requirements
