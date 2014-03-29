@@ -44,7 +44,7 @@ dependencies {
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'sources';
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'javadoc';
     
-    compile fileTree (dir: '/Users/miho/EigeneApps/JavaCSG/build/libs/', includes: ['*.jar'])
+    compile fileTree (dir: 'libs/', includes: ['*.jar'])
 }
 
 // create a fat-jar (class files plus dependencies
