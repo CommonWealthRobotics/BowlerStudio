@@ -200,7 +200,7 @@ public class MainController implements Initializable {
         
         double scale = minContDim/(maxDim*2);
         
-        System.out.println("scale: " + scale + ", maxDim: " + maxDim + ", " + meshContainer);
+        //System.out.println("scale: " + scale + ", maxDim: " + maxDim + ", " + meshContainer);
         
         meshView.setScaleX(scale);
         meshView.setScaleY(scale);
