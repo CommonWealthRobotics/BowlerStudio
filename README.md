@@ -1,9 +1,9 @@
-JavaFXScad
+JFXScad
 ==========
 
 [![Build Status](https://travis-ci.org/miho/JavaFXScad.svg?branch=master)](https://travis-ci.org/miho/JavaFXScad)
 
-JavaFX 3D Printing IDE based on [JavaCSG](https://github.com/miho/JavaCSG).
+JavaFX 3D Printing IDE based on [JavaCSG](https://github.com/miho/JCSG).
 
 ![](/resources/img/screenshot-03.png)
 
@@ -19,12 +19,12 @@ JavaFX 3D Printing IDE based on [JavaCSG](https://github.com/miho/JavaCSG).
 
 ### IDE
 
-Open the `JavaFXScad` [Gradle](http://www.gradle.org/) project in your favourite IDE (tested with NetBeans 7.4) and build it
+Open the `JFXScad` [Gradle](http://www.gradle.org/) project in your favourite IDE (tested with NetBeans 7.4) and build it
 by calling the `assemble` task.
 
 ### Command Line
 
-Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/JavaFXScad`) and enter the following command
+Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/JFXScad`) and enter the following command
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
 
