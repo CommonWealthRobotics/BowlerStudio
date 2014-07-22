@@ -1,7 +1,7 @@
 JFXScad
 ==========
 
-[![Build Status](https://travis-ci.org/miho/JavaFXScad.svg?branch=master)](https://travis-ci.org/miho/JFXScad)
+[![Build Status](https://travis-ci.org/miho/JFXScad.svg?branch=master)](https://travis-ci.org/miho/JFXScad)
 
 JavaFX 3D Printing IDE based on [JCSG](https://github.com/miho/JCSG).
 
