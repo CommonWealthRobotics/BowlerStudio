@@ -100,7 +100,7 @@ public class MainController implements Initializable {
         EventStream<Change<String>> textEvents
                 = EventStreams.changesOf(codeArea.textProperty());
 
-        textEvents.reduceCloseSuccessions((a, b) -> b, Duration.ofMillis(500)).
+        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
                 subscribe(code -> compile(code.getNewValue()));
         
         codeArea.replaceText(0, 0, "\n"
