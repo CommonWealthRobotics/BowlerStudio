@@ -52,9 +52,16 @@
  */
 package eu.mihosoft.vrl.fxscad;
 
-
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 /**
@@ -62,37 +69,53 @@ import javafx.scene.control.TextArea;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class RedirectableStream extends PrintStream {
-    
+
     public static PrintStream ORIGINAL_SOUT = System.out;
     public static PrintStream ORIGINAL_SERR = System.err;
 
-    TextArea view;
+    private final List<TextArea> views = new ArrayList<TextArea>();
     private boolean redirectToUi;
     private boolean redirectToStdOut;
+    private final List<OutputFilter> filters = new ArrayList<>();
 
-    public RedirectableStream(OutputStream out, TextArea textPane) {
+    public RedirectableStream(OutputStream out, TextArea... views) {
         super(out);
-        this.view = textPane;
+        this.views.clear();
+
+        for (TextArea textArea : views) {
+            addView(textArea);
+        }
+
         setRedirectToStdOut(true);
     }
 
-
     @Override
-    public void write(byte[] buf, int off, int len) {
+    public synchronized void write(byte[] buf, int off, int len) {
         if (isRedirectToUi()) {
-            try {
-                int startOffSet = view.getText().length();
-                view.insertText(startOffSet,
-                        new String(buf, off, len));
-                
+
+            invokeAndWait(() -> {
+
+                int i = 0;
+                for (TextArea view : views) {
+
+                    String s = new String(buf, off, len);
+
+                    if (filters.get(i).onMatch(s)) {
+                        try {
+                            int startOffSet = view.getText().length();
+                            view.insertText(startOffSet, s);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    i++;
+                }
+            });
+
 //                view.setCaretPosition(startOffSet + len);
 //            } 
 //            catch (BadLocationException e) {
-                // e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                // e.printStackTrace();
-            }
-
+            // e.printStackTrace();
 //            Platform.invokeLater(new Runnable() {
 //
 //                @Override
@@ -103,12 +126,23 @@ public class RedirectableStream extends PrintStream {
 //
 //                }
 //            });
-
         }
 
         if (isRedirectToStdOut()) {
             super.write(buf, off, len);
         }
+    }
+
+    public final void addView(TextArea view) {
+        views.add(view);
+        filters.add((OutputFilter) (String s) -> {
+            return true;
+        });
+    }
+
+    public void setFilter(TextArea view, OutputFilter filter) {
+        int i = views.indexOf(view);
+        filters.set(i, filter);
     }
 
     /**
@@ -135,7 +169,23 @@ public class RedirectableStream extends PrintStream {
     /**
      * @param redirectToStdOut the redirectToStdOut to set
      */
-    public void setRedirectToStdOut(boolean redirectToStdOut) {
+    public final void setRedirectToStdOut(boolean redirectToStdOut) {
         this.redirectToStdOut = redirectToStdOut;
+    }
+
+    private static void invokeAndWait(Runnable r) {
+        if (Platform.isFxApplicationThread()) {
+            r.run();
+        } else {
+            FutureTask<Boolean> task = new FutureTask<>(r, true);
+
+            Platform.runLater(task);
+
+            try {
+                task.get(); // like join()
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(RedirectableStream.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

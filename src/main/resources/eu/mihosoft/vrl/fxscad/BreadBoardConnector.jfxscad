@@ -1,0 +1,54 @@
+public class BreadBoardConnector {
+
+    private double boardMountingThickness = 2.0;
+
+    private double breadBoardThickness = 9;
+
+    private double connectorDepth = 20;
+
+    private double pegHeight = 1;
+    private double pegToothHeight = 0.3;
+    private double pegOverlap = 0.6;
+
+    private double boardMountingWidth = 8.1;
+
+    private double breadBoardToPiMountDistance = 21;
+
+    public CSG toCSG() {
+
+        double th = 2;
+        double smh = boardMountingWidth;
+        double bmth = boardMountingThickness;
+        double bbpbd = breadBoardToPiMountDistance ;
+        double bbth = breadBoardThickness - th;
+
+        double pth = pegToothHeight;
+        double ph = pegHeight;
+        double po = pegOverlap;
+
+        return Extrude.points(new Vector3d(0, 0, connectorDepth),
+                new Vector3d(-th, -th),
+                new Vector3d(smh + pth + ph, -th),
+                new Vector3d(smh + pth + Math.max(ph / 3, 0.4), 0 + po),
+                new Vector3d(smh + pth, 0 + po),
+                new Vector3d(smh, 0),
+                new Vector3d(0, 0),
+                new Vector3d(0, bmth),
+                new Vector3d(smh, bmth),
+                new Vector3d(smh, bmth + th),
+                new Vector3d(0, bmth + th),
+                new Vector3d(0, bmth +bbpbd-th),
+                new Vector3d(smh, bmth +bbpbd-th),
+                new Vector3d(smh, bmth + th + bbpbd - th),
+                new Vector3d(0, bmth + th + bbpbd - th),
+                new Vector3d(0, bmth + th + bbpbd + bbth),
+                new Vector3d(smh, bmth + th +bbpbd + bbth),
+                new Vector3d(smh, bmth + th +bbpbd + bbth + th),
+                new Vector3d(0, bmth + th +bbpbd + bbth + th),
+                new Vector3d(-th, bmth + th +bbpbd + bbth + th)
+        );
+
+    }
+}
+
+result = new BreadBoardConnector().toCSG()

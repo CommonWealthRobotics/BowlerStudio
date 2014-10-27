@@ -11,31 +11,46 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
+import javafx.scene.transform.Scale;
+import javafx.stage.FileChooser;
+import javax.imageio.ImageIO;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialogs;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.StyleSpansBuilder;
 import org.reactfx.Change;
@@ -50,7 +65,7 @@ import org.reactfx.EventStreams;
 public class MainController implements Initializable {
 
     private static final String[] KEYWORDS = new String[]{
-        "abstract", "assert", "boolean", "break", "byte",
+        "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
         "case", "catch", "char", "class", "const",
         "continue", "default", "do", "double", "else",
         "enum", "extends", "final", "finally", "float",
@@ -67,6 +82,23 @@ public class MainController implements Initializable {
 
     private final Group viewGroup = new Group();
 
+    private final CodeArea codeArea = new CodeArea();
+
+    private boolean autoCompile = true;
+
+    private CSG csgObject;
+
+    @FXML
+    private TextArea logView;
+
+    @FXML
+    private ScrollPane editorContainer;
+
+    @FXML
+    private Pane viewContainer;
+
+    private SubScene subScene;
+
     /**
      * Initializes the controller class.
      *
@@ -75,12 +107,10 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //
 
-        final CodeArea codeArea = new CodeArea();
+        //
         codeArea.textProperty().addListener(
-                (ObservableValue<? extends String> observable,
-                        String oldText, String newText) -> {
+                (ov, oldText, newText) -> {
                     Matcher matcher = KEYWORD_PATTERN.matcher(newText);
                     int lastKwEnd = 0;
                     StyleSpansBuilder<Collection<String>> spansBuilder
@@ -101,33 +131,23 @@ public class MainController implements Initializable {
                 = EventStreams.changesOf(codeArea.textProperty());
 
         textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
-                subscribe(code -> compile(code.getNewValue()));
-        
-        codeArea.replaceText(0, 0, "\n"
-                + "CSG cube = new Cube(2).toCSG()\n"
+                subscribe(code -> {
+                    if (autoCompile) {
+                        compile(code.getNewValue());
+                    }
+                });
+
+        codeArea.replaceText(
+                "CSG cube = new Cube(2).toCSG()\n"
                 + "CSG sphere = new Sphere(1.25).toCSG()\n"
                 + "\n"
                 + "cube.difference(sphere)");
 
         editorContainer.setContent(codeArea);
 
-        TextArea logView = new TextArea();
+        subScene = new SubScene(viewGroup, 100, 100, true,
+                SceneAntialiasing.BALANCED);
 
-        logContainer.setContent(logView);
-
-        // redirect sout
-        RedirectableStream sout = new RedirectableStream(RedirectableStream.ORIGINAL_SOUT, logView);
-        sout.setRedirectToUi(true);
-        System.setOut(sout);
-
-        // redirect sout
-        RedirectableStream serr = new RedirectableStream(RedirectableStream.ORIGINAL_SERR, logView);
-        serr.setRedirectToUi(true);
-        System.setErr(serr);
-
-        SubScene subScene = new SubScene(viewGroup, 100, 100, true, SceneAntialiasing.BALANCED);
-//        subScene.setFill(Color.BLACK);
-        
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());
 
@@ -137,53 +157,79 @@ public class MainController implements Initializable {
         viewContainer.getChildren().add(subScene);
     }
 
+    private void setCode(String code) {
+        codeArea.replaceText(code);
+    }
+
+    private String getCode() {
+        return codeArea.getText();
+    }
+
+    private void clearLog() {
+        logView.setText("");
+    }
+
     private void compile(String code) {
+
+        csgObject = null;
+
+        clearLog();
+
+        viewGroup.getChildren().clear();
+
         try {
 
             CompilerConfiguration cc = new CompilerConfiguration();
 
-            cc.addCompilationCustomizers(new ImportCustomizer().addStarImports("eu.mihosoft.vrl.v3d"));
+            cc.addCompilationCustomizers(
+                    new ImportCustomizer().
+                    addStarImports("eu.mihosoft.vrl.v3d",
+                            "eu.mihosoft.vrl.v3d.samples").
+                    addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
 
-            GroovyShell shell = new GroovyShell(getClass().getClassLoader(), new Binding(), cc);
+            GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
+                    new Binding(), cc);
 
-//            shell.getContext().setVariable("cube", csg);
             Script script = shell.parse(code);
 
             Object obj = script.run();
-//
-//            System.out.println("obj: " + obj);
 
             if (obj instanceof CSG) {
 
-                System.out.println("setting mesh");
-
                 CSG csg = (CSG) obj;
-                viewGroup.getChildren().clear();
-                
+
+                csgObject = csg;
+
                 MeshContainer meshContainer = csg.toJavaFXMesh();
 
-                final MeshView meshView = new MeshView(meshContainer.getMesh());
-                
-                setMeshScale(meshContainer, viewContainer.getBoundsInLocal(), meshView);
+                final MeshView meshView = meshContainer.getAsMeshViews().get(0);
+
+                setMeshScale(meshContainer,
+                        viewContainer.getBoundsInLocal(), meshView);
 
                 PhongMaterial m = new PhongMaterial(Color.RED);
 
                 meshView.setCullFace(CullFace.NONE);
 
                 meshView.setMaterial(m);
-                
-                viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-                viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
-                
-                viewContainer.boundsInLocalProperty().addListener(
-                        (ObservableValue<? extends Bounds> ov, Bounds t, Bounds t1) -> {
-                    setMeshScale(meshContainer, t1, meshView);
-                });
 
-                VFX3DUtil.addMouseBehavior(meshView, viewContainer, MouseButton.PRIMARY);
+                viewGroup.layoutXProperty().bind(
+                        viewContainer.widthProperty().divide(2));
+                viewGroup.layoutYProperty().bind(
+                        viewContainer.heightProperty().divide(2));
+
+                viewContainer.boundsInLocalProperty().addListener(
+                        (ov, oldV, newV) -> {
+                            setMeshScale(meshContainer, newV, meshView);
+                        });
+
+                VFX3DUtil.addMouseBehavior(meshView,
+                        viewContainer, MouseButton.PRIMARY);
 
                 viewGroup.getChildren().add(meshView);
 
+            } else {
+                System.out.println(">> no CSG object returned :(");
             }
 
         } catch (Throwable ex) {
@@ -191,30 +237,21 @@ public class MainController implements Initializable {
         }
     }
 
-    private void setMeshScale(MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
-        double maxDim =
-                Math.max(meshContainer.getWidth(),
-                        Math.max(meshContainer.getHeight(), meshContainer.getDepth()));
-        
+    private void setMeshScale(
+            MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
+        double maxDim
+                = Math.max(meshContainer.getWidth(),
+                        Math.max(meshContainer.getHeight(),
+                                meshContainer.getDepth()));
+
         double minContDim = Math.min(t1.getWidth(), t1.getHeight());
-        
-        double scale = minContDim/(maxDim*2);
-        
-        //System.out.println("scale: " + scale + ", maxDim: " + maxDim + ", " + meshContainer);
-        
+
+        double scale = minContDim / (maxDim * 2);
+
         meshView.setScaleX(scale);
         meshView.setScaleY(scale);
         meshView.setScaleZ(scale);
     }
-
-    @FXML
-    private ScrollPane editorContainer;
-
-    @FXML
-    private Pane viewContainer;
-
-    @FXML
-    private ScrollPane logContainer;
 
     /**
      * Returns the location of the Jar archive or .class file the specified
@@ -253,33 +290,264 @@ public class MainController implements Initializable {
         return new File(urlString);
     }
 
-    public static synchronized void loadLibrary(java.io.File jar) {
-        try {
-            /*We are using reflection here to circumvent encapsulation; addURL is not public*/
-            java.net.URLClassLoader loader = (java.net.URLClassLoader) ClassLoader.getSystemClassLoader();
-            java.net.URL url = jar.toURI().toURL();
-            /*Disallow if already loaded*/
-            for (java.net.URL it : java.util.Arrays.asList(loader.getURLs())) {
-                if (it.equals(url)) {
-                    //throw new myException("library " + jar.toString() + " is already loaded");
-                }
-            }
-            java.lang.reflect.Method method = java.net.URLClassLoader.class.getDeclaredMethod(
-                    "addURL",
-                    new Class[]{java.net.URL.class}
-            );
-            method.setAccessible(true); /*promote the method to public access*/
+    @FXML
+    private void onLoadFile(ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open JFXScad File");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "JFXScad files (*.jfxscad, *.groovy)",
+                        "*.jfxscad", "*.groovy"));
 
-            method.invoke(loader, new Object[]{url});
+        File f = fileChooser.showOpenDialog(null);
 
-        } catch (final NoSuchMethodException |
-                java.lang.IllegalAccessException |
-                java.net.MalformedURLException |
-                java.lang.reflect.InvocationTargetException e) {
-            //throw new myException(e.getMessage());
-
-            e.printStackTrace(System.err);
+        if (f == null) {
+            return;
         }
+
+        String fName = f.getAbsolutePath();
+
+        if (!fName.toLowerCase().endsWith(".groovy")
+                && !fName.toLowerCase().endsWith(".jfxscad")) {
+            fName += ".jfxscad";
+        }
+
+        try {
+            setCode(new String(Files.readAllBytes(Paths.get(fName)), "UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void onSaveFile(ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save JFXScad File");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "JFXScad files (*.jfxscad, *.groovy)",
+                        "*.jfxscad", "*.groovy"));
+
+        File f = fileChooser.showSaveDialog(null);
+
+        if (f == null) {
+            return;
+        }
+
+        String fName = f.getAbsolutePath();
+
+        if (!fName.toLowerCase().endsWith(".groovy")
+                && !fName.toLowerCase().endsWith(".jfxscad")) {
+            fName += ".jfxscad";
+        }
+
+        try {
+            Files.write(Paths.get(fName), getCode().getBytes("UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void onExportAsSTLFile(ActionEvent e) {
+
+        if (csgObject == null) {
+            Action response = Dialogs.create()
+                    .title("Error")
+                    .message("Cannot export STL. There is no geometry :(")
+                    .lightweight()
+                    .showError();
+
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export STL File");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "STL files (*.stl)",
+                        "*.stl"));
+
+        File f = fileChooser.showSaveDialog(null);
+
+        if (f == null) {
+            return;
+        }
+
+        String fName = f.getAbsolutePath();
+
+        if (!fName.toLowerCase().endsWith(".stl")) {
+            fName += ".stl";
+        }
+
+        try {
+            eu.mihosoft.vrl.v3d.FileUtil.write(
+                    Paths.get(fName), csgObject.toStlString());
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void onExportAsPngFile(ActionEvent e) {
+
+        if (csgObject == null) {
+            Action response = Dialogs.create()
+                    .title("Error")
+                    .message("Cannot export PNG. There is no geometry :(")
+                    .lightweight()
+                    .showError();
+
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export PNG File");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "Image files (*.png)",
+                        "*.png"));
+
+        File f = fileChooser.showSaveDialog(null);
+
+        if (f == null) {
+            return;
+        }
+
+        String fName = f.getAbsolutePath();
+
+        if (!fName.toLowerCase().endsWith(".png")) {
+            fName += ".png";
+        }
+
+        int snWidth = 1024;
+        int snHeight = 1024;
+
+        double realWidth = viewGroup.getBoundsInLocal().getWidth();
+        double realHeight = viewGroup.getBoundsInLocal().getHeight();
+
+        double scaleX = snWidth / realWidth;
+        double scaleY = snHeight / realHeight;
+
+        double scale = Math.min(scaleX, scaleY);
+
+        PerspectiveCamera snCam = new PerspectiveCamera(false);
+        snCam.setTranslateZ(-200);
+
+        SnapshotParameters snapshotParameters = new SnapshotParameters();
+        snapshotParameters.setTransform(new Scale(scale, scale));
+        snapshotParameters.setCamera(snCam);
+        snapshotParameters.setDepthBuffer(true);
+        snapshotParameters.setFill(Color.TRANSPARENT);
+
+        WritableImage snapshot = new WritableImage(snWidth, (int) (realHeight * scale));
+
+        viewGroup.snapshot(snapshotParameters, snapshot);
+
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null),
+                    "png", new File(fName));
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void onCompileAndRun(ActionEvent e) {
+        compile(getCode());
+    }
+
+    @FXML
+    private void onServoMountSample(ActionEvent e) {
+
+        try {
+            String code = IOUtils.toString(this.getClass().
+                    getResourceAsStream("ServoMount.jfxscad"),
+                    "UTF-8");
+            setCode(code);
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void onBatteryHolderSample(ActionEvent e) {
+
+        try {
+            String code = IOUtils.toString(this.getClass().
+                    getResourceAsStream("BatteryHolder.jfxscad"),
+                    "UTF-8");
+            setCode(code);
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void onWheelSample(ActionEvent e) {
+
+        try {
+            String code = IOUtils.toString(this.getClass().
+                    getResourceAsStream("Wheel.jfxscad"),
+                    "UTF-8");
+            setCode(code);
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void onBreadBoardConnectorSample(ActionEvent e) {
+
+        try {
+            String code = IOUtils.toString(this.getClass().
+                    getResourceAsStream("BreadBoardConnector.jfxscad"),
+                    "UTF-8");
+            setCode(code);
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void onBoardMountSample(ActionEvent e) {
+
+        try {
+            String code = IOUtils.toString(this.getClass().
+                    getResourceAsStream("BoardMount.jfxscad"),
+                    "UTF-8");
+            setCode(code);
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void onClose(ActionEvent e) {
+        System.exit(0);
+    }
+
+    @FXML
+    private void onAutoCompile(ActionEvent e) {
+        autoCompile = !autoCompile;
+    }
+
+    public TextArea getLogView() {
+        return logView;
     }
 
 }

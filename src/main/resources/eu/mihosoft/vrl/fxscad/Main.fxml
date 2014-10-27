@@ -4,9 +4,36 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="eu.mihosoft.vrl.fxscad.MainController">
-  <children>
-    <SplitPane dividerPositions="0.774247491638796" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.fxscad.MainController">
+   <children>
+      <MenuBar minHeight="-Infinity">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onLoadFile" text="Load File" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSaveFile" text="Save File" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportAsSTLFile" text="Export as STL" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportAsPngFile" text="Export as PNG" />
+              <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Compile">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onCompileAndRun" text="Compile &amp; Run" /><CheckMenuItem mnemonicParsing="false" onAction="#onAutoCompile" selected="true" text="Auto-Compile" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Samples">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onBoardMountSample" text="Board Mount" />
+                  <MenuItem mnemonicParsing="false" onAction="#onServoMountSample" text="Servo Mount" />
+                  <MenuItem mnemonicParsing="false" onAction="#onBatteryHolderSample" text="Battery Holder" />
+                  <MenuItem mnemonicParsing="false" onAction="#onWheelSample" text="Wheel" />
+                  <MenuItem mnemonicParsing="false" onAction="#onBreadBoardConnectorSample" text="BreadBoard Connector" />
+              </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+    <SplitPane dividerPositions="0.774247491638796" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="1024.0" VBox.vgrow="ALWAYS">
       <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
           <children>
@@ -27,13 +54,10 @@
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-<children><ScrollPane fx:id="logContainer" fitToHeight="true" fitToWidth="true" layoutX="411.0" layoutY="-34.5" prefHeight="131.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-  </content>
-</ScrollPane>
-</children></AnchorPane>
+<children><TextArea fx:id="logView" layoutX="230.0" layoutY="-29.0" prefHeight="131.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+</children>
+            </AnchorPane>
       </items>
     </SplitPane>
-  </children>
-</AnchorPane>
+   </children>
+</VBox>

@@ -11,42 +11,40 @@ sourceCompatibility = '1.8'
 // prefer. In this case NetBeans will not add these tasks but you may rely on
 // your own implementation.
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'eu.mihosoft.vrl.fxscad.Main'
+    ext.mainClass = 'eu.mihosoft.vrl.fxscad.JFXScad'
 }
 
 repositories {
     mavenCentral()
 
-//    maven {
-//        url 'https://oss.sonatype.org/content/repositories/snapshots/' 
-//    }
-    
-    maven {
-        url 'http://snapshots.repository.codehaus.org/'
-    }
+    //    maven {
+    //        url 'https://oss.sonatype.org/content/repositories/snapshots/' 
+    //    }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+    gradleVersion = '2.1'
 }
 
 dependencies {
-    // TODO: Add dependencies here ...
-    // You can read more about how to add dependency here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     testCompile group: 'junit', name: 'junit', version: '4.10'
     
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.4.1'
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.4.1', classifier: 'sources'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.5.1'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.5.1', classifier: 'sources'
     
     
-//    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT';
-//    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT', classifier: 'sources';
-//    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT', classifier: 'javadoc';
+    //    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT';
+    //    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT', classifier: 'sources';
+    //    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.0-SNAPSHOT', classifier: 'javadoc';
 
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'sources';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'javadoc';
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
+    
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
+    
+    compile 'commons-io:commons-io:2.4'
     
     compile fileTree (dir: 'libs/', includes: ['*.jar'])
 }
@@ -69,6 +67,6 @@ jar {
 task run(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = mainClass;
-//    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
+    //    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
     jvmArgs = ['-Dprism.forceGPU=true']
 }
