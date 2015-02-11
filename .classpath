@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="lib" path="gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="lib" path="libs/JCSG.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JCSG"/>
+	<classpathentry kind="lib" path="/usr/share/java/openjfx/jre/lib/ext/jfxrt.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/openjfx/jre/lib/jfxswt.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="/home/hephaestus/.gradle/caches/modules-2/files-2.1/org.controlsfx/controlsfx/8.0.6/99ce7332cb7645c8caaeb116efe4b35437368e48/controlsfx-8.0.6.jar"/>
+	<classpathentry kind="lib" path="/home/hephaestus/.gradle/caches/modules-2/files-2.1/org.reactfx/reactfx/2.0-M2u1/4fba1a31a30601dba7d1510f523cf3de8d48f9cc/reactfx-2.0-M2u1.jar"/>
+	<classpathentry kind="lib" path="/home/hephaestus/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/b1b6ea3b7e4aa4f492509a4952029cd8e48019ad/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/hephaestus/.gradle/caches/modules-2/files-2.1/org.fxmisc.richtext/richtextfx/0.5.1/99bed37c9e514ee0614fbe12fff1d6f5614224f8/richtextfx-0.5.1.jar"/>
+	<classpathentry kind="lib" path="/home/hephaestus/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy/2.3.7/7f861930f522cdceb7dbe0e2ff554b2483d96c91/groovy-2.3.7.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
