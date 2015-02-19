@@ -1,3 +1,6 @@
 /build/
 /.nb-gradle/private/
 /bin/
+/JFXScad.jar
+/servoTest.jfxscad
+/wheel.stl

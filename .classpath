@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="lib" path="libs/JCSG.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="libs/richtextfx-0.6.jar"/>
 	<classpathentry kind="lib" path="/NRSDK/lib_addons/vecmath.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="libs/flowless-0.4.jar"/>
 	<classpathentry kind="lib" path="libs/undofx-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/wellbehavedfx-0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JCSG"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -82,7 +82,7 @@ public class MainController implements Initializable {
 
     private final Group viewGroup = new Group();
 
-    private final CodeArea codeArea = new CodeArea("");
+    private final CodeArea codeArea = new CodeArea();
 
     private boolean autoCompile = true;
 
