@@ -72,6 +72,7 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
+import com.neuronrobotics.interaction.CadInteractionEvent;
 import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.sg.prism.NGPath;
 
@@ -175,6 +176,14 @@ public class MainController implements Initializable, IFileChangeListener {
 
         PerspectiveCamera subSceneCamera = new PerspectiveCamera(false);
         subScene.setCamera(subSceneCamera);
+        
+        subSceneCamera.layoutXProperty().bind(
+                viewContainer.widthProperty().divide(-1));
+        subSceneCamera.layoutYProperty().bind(
+                viewContainer.heightProperty().divide(-1));
+        
+        VFX3DUtil.addMouseBehavior(subSceneCamera,
+                viewContainer, MouseButton.PRIMARY);
 
         viewContainer.getChildren().add(subScene);
     }
@@ -221,8 +230,9 @@ public class MainController implements Initializable, IFileChangeListener {
                 CSG csg = (CSG) obj;
 
                 csgObject = csg;
-
-                MeshContainer meshContainer = csg.toJavaFXMesh();
+                CadInteractionEvent interact =new CadInteractionEvent();
+                
+                MeshContainer meshContainer = csg.toJavaFXMesh(interact);
 
                 final MeshView meshView = meshContainer.getAsMeshViews().get(0);
 
@@ -236,17 +246,16 @@ public class MainController implements Initializable, IFileChangeListener {
                 meshView.setMaterial(m);
 
                 viewGroup.layoutXProperty().bind(
-                        viewContainer.widthProperty().divide(2));
+                        viewContainer.widthProperty().divide(-1));
                 viewGroup.layoutYProperty().bind(
-                        viewContainer.heightProperty().divide(2));
+                        viewContainer.heightProperty().divide(-1));
 
                 viewContainer.boundsInLocalProperty().addListener(
                         (ov, oldV, newV) -> {
                             setMeshScale(meshContainer, newV, meshView);
                         });
 
-                VFX3DUtil.addMouseBehavior(meshView,
-                        viewContainer, MouseButton.PRIMARY);
+                
 
                 viewGroup.getChildren().add(meshView);
 
@@ -341,7 +350,8 @@ public class MainController implements Initializable, IFileChangeListener {
             if(watcher!=null){
             	watcher.close();
             }
-            watcher = new FileChangeWatcher(openFile, this);
+            watcher = new FileChangeWatcher(openFile);
+            watcher.addIFileChangeListener(this);
             watcher.start();
             
         } catch (IOException ex) {
@@ -605,7 +615,7 @@ public class MainController implements Initializable, IFileChangeListener {
 	       });
 
 		}else{
-			System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+			//System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
 		}
 	}
 

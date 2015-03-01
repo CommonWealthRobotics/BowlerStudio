@@ -51,7 +51,7 @@ public class FileChangeWatcher extends Thread {
 	private final boolean recursive;
 	private ArrayList<IFileChangeListener> listeners = new ArrayList<IFileChangeListener>();
 	
-	public FileChangeWatcher(File fileToWatch,IFileChangeListener listener) throws IOException {
+	public FileChangeWatcher(File fileToWatch) throws IOException {
 		this.setFileToWatch(fileToWatch);
 		setName("File Watcher Thread for " + fileToWatch.getAbsolutePath());
 		this.watcher = FileSystems.getDefault().newWatchService();
@@ -65,13 +65,19 @@ public class FileChangeWatcher extends Thread {
 		} else {
 			register(dir);
 		}
-
-		if(listener!=null){
-			listeners.add(listener);
+	}
+	
+	public void addIFileChangeListener(IFileChangeListener l){
+		if(!listeners.contains(l)){
+			listeners.add(l);
 		}
 	}
 	
-	
+	public void removeIFileChangeListener(IFileChangeListener l){
+		if(listeners.contains(l)){
+			listeners.remove(l);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -86,10 +92,10 @@ public class FileChangeWatcher extends Thread {
 
 		Path prev = keys.get(key);
 		if (prev == null) {
-			System.out.format("register: %s\n", dir);
+			//System.out.format("register: %s\n", dir);
 		} else {
 			if (!dir.equals(prev)) {
-				System.out.format("update: %s -> %s\n", prev, dir);
+				//System.out.format("update: %s -> %s\n", prev, dir);
 			}
 		}
 		
@@ -149,7 +155,7 @@ public class FileChangeWatcher extends Thread {
 				Path child = dir.resolve(name);
 
 				// print out event
-				System.out.format("%s: %s\n", event.kind().name(), child);
+				//System.out.format("%s: %s\n", event.kind().name(), child);
 				for(IFileChangeListener l: listeners){
 					l.onFileChange(child.toFile(), event);
 				}
