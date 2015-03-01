@@ -10,11 +10,20 @@ import eu.mihosoft.vrl.v3d.MeshContainer;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+
+import static java.nio.file.StandardWatchEventKinds.*;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +32,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,9 +54,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
+
 import javax.imageio.ImageIO;
+
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -57,12 +72,15 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
+import com.sun.javafx.geom.Path2D;
+import com.sun.javafx.sg.prism.NGPath;
+
 /**
  * FXML Controller class
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class MainController implements Initializable {
+public class MainController implements Initializable, IFileChangeListener {
 
     private static final String[] KEYWORDS = new String[]{
         "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
@@ -98,6 +116,10 @@ public class MainController implements Initializable {
     private Pane viewContainer;
 
     private SubScene subScene;
+
+	private File openFile;
+
+	private FileChangeWatcher watcher;
 
     /**
      * Initializes the controller class.
@@ -289,7 +311,7 @@ public class MainController implements Initializable {
 
         return new File(urlString);
     }
-
+    
     @FXML
     private void onLoadFile(ActionEvent e) {
         FileChooser fileChooser = new FileChooser();
@@ -298,14 +320,15 @@ public class MainController implements Initializable {
                 new FileChooser.ExtensionFilter(
                         "JFXScad files (*.jfxscad, *.groovy)",
                         "*.jfxscad", "*.groovy"));
+        
 
-        File f = fileChooser.showOpenDialog(null);
+        openFile = fileChooser.showOpenDialog(null);
 
-        if (f == null) {
+        if (openFile == null) {
             return;
         }
 
-        String fName = f.getAbsolutePath();
+        String fName = openFile.getAbsolutePath();
 
         if (!fName.toLowerCase().endsWith(".groovy")
                 && !fName.toLowerCase().endsWith(".jfxscad")) {
@@ -314,10 +337,20 @@ public class MainController implements Initializable {
 
         try {
             setCode(new String(Files.readAllBytes(Paths.get(fName)), "UTF-8"));
+            
+            if(watcher!=null){
+            	watcher.close();
+            }
+            watcher = new FileChangeWatcher(openFile, this);
+            watcher.start();
+            
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
+        
+        
+        
     }
 
     @FXML
@@ -328,9 +361,10 @@ public class MainController implements Initializable {
                 new FileChooser.ExtensionFilter(
                         "JFXScad files (*.jfxscad, *.groovy)",
                         "*.jfxscad", "*.groovy"));
-
+        fileChooser.setInitialDirectory(openFile);
+        
         File f = fileChooser.showSaveDialog(null);
-
+        
         if (f == null) {
             return;
         }
@@ -549,5 +583,30 @@ public class MainController implements Initializable {
     public TextArea getLogView() {
         return logView;
     }
+
+	@Override
+	public void onFileChange(File fileThatChanged, WatchEvent event) {
+		// TODO Auto-generated method stub
+		if(fileThatChanged.getAbsolutePath().contains(openFile.getAbsolutePath())){
+			System.out.println("Code in "+fileThatChanged.getAbsolutePath()+" changed");
+			Platform.runLater(new Runnable() {
+	            @Override
+	            public void run() {
+	            	try {
+						setCode(new String(Files.readAllBytes(Paths.get(fileThatChanged.getAbsolutePath())), "UTF-8"));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            }
+	       });
+
+		}else{
+			System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+		}
+	}
 
 }

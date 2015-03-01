@@ -23,7 +23,6 @@ Open the `JFXScad` [Gradle](http://www.gradle.org/) project in your favourite ID
 by calling the `assemble` task.
 
 ### Command Line
-
 Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/JFXScad`) and enter the following command
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)

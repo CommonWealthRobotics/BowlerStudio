@@ -1,5 +1,4 @@
 public class ServoWheel {
-
     private double toothLength = 0.7;
     private double toothWidth = 0.1;
     private double toothHeight = 0.3;
