@@ -186,6 +186,8 @@ public class MainController implements Initializable, IFileChangeListener {
                 viewContainer, MouseButton.PRIMARY);
 
         viewContainer.getChildren().add(subScene);
+        
+        
     }
 
     private void setCode(String code) {

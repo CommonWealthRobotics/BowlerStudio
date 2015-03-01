@@ -27,7 +27,6 @@ package eu.mihosoft.vrl.fxscad;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Node;
-
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.TriangleMesh;
@@ -37,90 +36,133 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.CullFace;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
 /**
- * Utility class that allows to visualize meshes created with null {@link MathUtil#evaluateFunction(
- *   eu.mihosoft.vrl.javaone2013.math.Function2D,
- *   int, int, float, float, float, double, double, double, double)
- * }.
+ * Utility class that allows to visualize meshes created with null
+ * {@link MathUtil#evaluateFunction(eu.mihosoft.vrl.javaone2013.math.Function2D, int, int, float, float, float, double, double, double, double)
+ * }
+ * .
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class VFX3DUtil {
 
-    private VFX3DUtil() {
-        throw new AssertionError("don't instanciate me!");
-    }
+	private VFX3DUtil() {
+		throw new AssertionError("don't instanciate me!");
+	}
 
-  
+	/**
+	 * Adds rotation behavior to the specified node.
+	 *
+	 * @param n
+	 *            node
+	 * @param eventReceiver
+	 *            receiver of the event
+	 * @param btn
+	 *            mouse button that shall be used for this behavior
+	 */
+	public static void addMouseBehavior(Node n, Scene eventReceiver,
+			MouseButton btn) {
+		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n,
+				btn));
+		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
+	}
 
-    /**
-     * Adds rotation behavior to the specified node.
-     *
-     * @param n node
-     * @param eventReceiver receiver of the event
-     * @param btn mouse button that shall be used for this behavior
-     */
-    public static void addMouseBehavior(
-            Node n, Scene eventReceiver, MouseButton btn) {
-        eventReceiver.addEventHandler(MouseEvent.ANY,
-                new MouseBehaviorImpl1(n, btn));
-    }
+	/**
+	 * Adds rotation behavior to the specified node.
+	 *
+	 * @param n
+	 *            node
+	 * @param eventReceiver
+	 *            receiver of the event
+	 * @param btn
+	 *            mouse button that shall be used for this behavior
+	 */
+	public static void addMouseBehavior(Node n, Node eventReceiver,
+			MouseButton btn) {
+		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n,
+				btn));
+		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
+	}
+}
 
-    /**
-     * Adds rotation behavior to the specified node.
-     *
-     * @param n node
-     * @param eventReceiver receiver of the event
-     * @param btn mouse button that shall be used for this behavior
-     */
-    public static void addMouseBehavior(
-            Node n, Node eventReceiver, MouseButton btn) {
-        eventReceiver.addEventHandler(MouseEvent.ANY,
-                new MouseBehaviorImpl1(n, btn));
-    }
+// rotation behavior implementation
+class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
+
+	private Node n;
+	double xscale;
+
+	public MouseBehaviorImpl2(Node n) {
+		this.n = n;
+		xscale = n.getScaleX();
+	}
+
+	@Override
+	public void handle(ScrollEvent t) {
+		if (ScrollEvent.SCROLL==(t).getEventType()) {
+
+			double zoomFactor = (t.getDeltaY())/300.0;
+			xscale+=zoomFactor;
+			if(xscale<.1){
+				xscale=.1;
+			}
+			//System.out.println("Zoom "+xscale);
+			n.setScaleX( xscale);
+            n.setScaleY( xscale);
+            n.setScaleZ( xscale);
+            
+		}else{
+			System.out.println("No event "+t);
+		}
+		
+		t.consume();
+
+	}
 }
 
 // rotation behavior implementation
 class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 
-    private double anchorAngleX;
-    private double anchorAngleY;
-    private double anchorX;
-    private double anchorY;
-    private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
-    private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
-    private MouseButton btn;
+	private double anchorAngleX;
+	private double anchorAngleY;
+	private double anchorX;
+	private double anchorY;
+	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
+	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
+	private final Translate moveZ = new Translate();
+	private MouseButton btn;
 
-    public MouseBehaviorImpl1(Node n, MouseButton btn) {
-        n.getTransforms().addAll(rotateX, rotateZ);
-        this.btn = btn;
+	public MouseBehaviorImpl1(Node n, MouseButton btn) {
+		n.getTransforms().addAll(rotateX, rotateZ, moveZ);
+		this.btn = btn;
 
-        if (btn == null) {
-            this.btn = MouseButton.MIDDLE;
-        }
-    }
+		if (btn == null) {
+			this.btn = MouseButton.MIDDLE;
+		}
+	}
 
-    @Override
-    public void handle(MouseEvent t) {
-        if (!btn.equals(t.getButton())) {
-            return;
-        }
+	@Override
+	public void handle(MouseEvent t) {
+		if (!btn.equals(t.getButton())) {
+			return;
+		}
 
-        t.consume();
+		t.consume();
 
-        if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
-            anchorX = t.getSceneX();
-            anchorY = t.getSceneY();
-            anchorAngleX = rotateX.getAngle();
-            anchorAngleY = rotateZ.getAngle();
-            t.consume();
-        } else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
-            rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
-            rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
+		if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
+			anchorX = t.getSceneX();
+			anchorY = t.getSceneY();
+			anchorAngleX = rotateX.getAngle();
+			anchorAngleY = rotateZ.getAngle();
+			t.consume();
+		} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
+			rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
+			rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
 
-        }
+		}
 
-    }
+	}
 }
