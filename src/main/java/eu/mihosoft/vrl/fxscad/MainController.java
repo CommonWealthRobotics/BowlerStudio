@@ -252,6 +252,10 @@ public class MainController implements Initializable, IFileChangeListener {
                 meshView.setCullFace(CullFace.NONE);
 
                 meshView.setMaterial(m);
+
+
+                viewGroup.setTranslateX( viewContainer.widthProperty().divide(2).doubleValue());
+                viewGroup.setTranslateY( viewContainer.heightProperty().divide(2).doubleValue());
                 
                 viewContainer.boundsInLocalProperty().addListener(
                         (ov, oldV, newV) -> {
