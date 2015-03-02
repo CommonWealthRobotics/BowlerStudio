@@ -13,6 +13,9 @@ import groovy.lang.Script;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -121,7 +124,15 @@ public class MainController implements Initializable, IFileChangeListener {
 	private File openFile;
 
 	private FileChangeWatcher watcher;
-
+	private OutputStream logWriter = new OutputStream() {
+		
+		@Override
+		public void write(int b) throws IOException {
+			String log=new String(new byte[]{(byte) b});
+			System.out.println(log);
+			logView.setText(logView.getText()+log);
+		}
+	};
     /**
      * Initializes the controller class.
      *
@@ -212,10 +223,11 @@ public class MainController implements Initializable, IFileChangeListener {
 
         csgObject = null;
 
-        clearLog();
+        //clearLog();
 
         viewGroup.getChildren().clear();
-
+        StringWriter sw = new StringWriter();
+    	PrintWriter pw = new PrintWriter(sw);
         try {
 
             CompilerConfiguration cc = new CompilerConfiguration();
@@ -226,15 +238,18 @@ public class MainController implements Initializable, IFileChangeListener {
                             "eu.mihosoft.vrl.v3d.samples").
                     addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
 
+        	
+            Binding binding = new Binding();
+            binding.setProperty("out", pw);
             GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
-                    new Binding(), cc);
+            		binding, cc);
 
             Script script = shell.parse(code);
-
+ 
             Object obj = script.run();
-
+            
             if (obj instanceof CSG) {
-
+            	
                 CSG csg = (CSG) obj;
 
                 csgObject = csg;
@@ -265,14 +280,17 @@ public class MainController implements Initializable, IFileChangeListener {
                 
 
                 viewGroup.getChildren().add(meshView);
+                logView.setText("Compile OK\n"+logView.getText());
 
             } else {
                 System.out.println(">> no CSG object returned :(");
             }
 
         } catch (Throwable ex) {
-            ex.printStackTrace(System.err);
+        	ex.printStackTrace(pw);
+        
         }
+      	logView.setText(sw.toString()+logView.getText());
     }
 
     private void setMeshScale(
