@@ -25,15 +25,8 @@
 package eu.mihosoft.vrl.fxscad;
 
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.TriangleMesh;
-import javafx.scene.shape.MeshView;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.CullFace;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -49,7 +42,7 @@ import javafx.scene.transform.Translate;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class VFX3DUtil {
-
+	//final DragContext dragContext = new DragContext();
 	private VFX3DUtil() {
 		throw new AssertionError("don't instanciate me!");
 	}
@@ -64,10 +57,8 @@ public class VFX3DUtil {
 	 * @param btn
 	 *            mouse button that shall be used for this behavior
 	 */
-	public static void addMouseBehavior(Node n, Scene eventReceiver,
-			MouseButton btn) {
-		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n,
-				btn));
+	public static void addMouseBehavior(Node n, Scene eventReceiver) {
+		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n));
 		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
 	}
 
@@ -81,11 +72,10 @@ public class VFX3DUtil {
 	 * @param btn
 	 *            mouse button that shall be used for this behavior
 	 */
-	public static void addMouseBehavior(Node n, Node eventReceiver,
-			MouseButton btn) {
-		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n,
-				btn));
+	public static void addMouseBehavior(Node n, Node eventReceiver) {
+		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n));
 		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
+	
 	}
 }
 
@@ -133,35 +123,53 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
 	private final Translate moveZ = new Translate();
-	private MouseButton btn;
+	private Node n;
+	private double mouseAnchorX;
+	//private MouseButton btn;
+	private double mouseAnchorY;
+	private double initialTranslateX;
+	private double initialTranslateY;
 
-	public MouseBehaviorImpl1(Node n, MouseButton btn) {
+	public MouseBehaviorImpl1(Node n) {
+		this.n = n;
 		n.getTransforms().addAll(rotateX, rotateZ, moveZ);
-		this.btn = btn;
-
-		if (btn == null) {
-			this.btn = MouseButton.MIDDLE;
-		}
 	}
 
 	@Override
 	public void handle(MouseEvent t) {
-		if (!btn.equals(t.getButton())) {
-			return;
-		}
 
 		t.consume();
-
-		if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
-			anchorX = t.getSceneX();
-			anchorY = t.getSceneY();
-			anchorAngleX = rotateX.getAngle();
-			anchorAngleY = rotateZ.getAngle();
-			t.consume();
-		} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
-			rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
-			rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
-
+		if(t.getButton() ==  MouseButton.PRIMARY){
+			if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
+				anchorX = t.getSceneX();
+				anchorY = t.getSceneY();
+				anchorAngleX = rotateX.getAngle();
+				anchorAngleY = rotateZ.getAngle();
+				t.consume();
+			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
+				rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
+				rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
+	
+			}
+		}else if(t.getButton() ==  MouseButton.SECONDARY){
+			if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
+		           // and node position
+                mouseAnchorX = t.getX();
+                mouseAnchorY = t.getY();
+                initialTranslateX =n.getTranslateX();
+                initialTranslateY =n.getTranslateY();
+			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
+				// shift node from its initial position by delta
+                // calculated from mouse cursor movement
+                n.setTranslateX(
+                    initialTranslateX
+                        +( t.getX()
+                        - mouseAnchorX));
+                n.setTranslateY(
+                    initialTranslateY
+                        +( t.getY()
+                        - mouseAnchorY));
+			}
 		}
 
 	}

@@ -182,11 +182,17 @@ public class MainController implements Initializable, IFileChangeListener {
         subSceneCamera.layoutYProperty().bind(
                 viewContainer.heightProperty().divide(-1));
         
-        VFX3DUtil.addMouseBehavior(subSceneCamera,
-                viewContainer, MouseButton.PRIMARY);
+        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(-1));
+        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(-1));
+        
+
+        
+        VFX3DUtil.addMouseBehavior(viewGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
+
+
         
     }
 
@@ -246,12 +252,7 @@ public class MainController implements Initializable, IFileChangeListener {
                 meshView.setCullFace(CullFace.NONE);
 
                 meshView.setMaterial(m);
-
-                viewGroup.layoutXProperty().bind(
-                        viewContainer.widthProperty().divide(-1));
-                viewGroup.layoutYProperty().bind(
-                        viewContainer.heightProperty().divide(-1));
-
+                
                 viewContainer.boundsInLocalProperty().addListener(
                         (ov, oldV, newV) -> {
                             setMeshScale(meshContainer, newV, meshView);
