@@ -240,18 +240,18 @@ public class MainController implements Initializable, IFileChangeListener {
 				Platform.runLater(() -> {
 					try{
 						System.out.println(pose);
-						double zoom = -((pose.getY()+150)/100);
-						manipulator.setScaleX( zoom);
-						manipulator.setScaleY( zoom);
-						manipulator.setScaleZ( zoom);
-						
+//						double zoom = -((pose.getY()+150)/100);
+//						manipulator.setScaleX( zoom);
+//						manipulator.setScaleY( zoom);
+//						manipulator.setScaleZ( zoom);
+//						
 						rotateX.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionX()));
 						rotateY.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionY()));
 						rotateZ.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionZ()));
 						
 						manipulator.setTranslateX(pose.getX());
 						manipulator.setTranslateY(-pose.getZ());
-						//manipulator.setTranslateZ(pose.getY());
+						manipulator.setTranslateZ(pose.getY());
 						
 					}catch (Exception e){
 						e.printStackTrace();
