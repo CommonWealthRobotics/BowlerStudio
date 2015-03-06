@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/wellbehavedfx-0.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JCSG"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NRSDK"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

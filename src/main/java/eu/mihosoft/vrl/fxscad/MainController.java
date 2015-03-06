@@ -55,10 +55,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
@@ -76,6 +78,13 @@ import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
 import com.neuronrobotics.interaction.CadInteractionEvent;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.sg.prism.NGPath;
 
@@ -103,6 +112,8 @@ public class MainController implements Initializable, IFileChangeListener {
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
 
     private final Group viewGroup = new Group();
+    private final Group manipulator = new Group();
+    private final Group baseGroup = new Group();
 
     private final CodeArea codeArea = new CodeArea();
 
@@ -124,6 +135,14 @@ public class MainController implements Initializable, IFileChangeListener {
 	private File openFile;
 
 	private FileChangeWatcher watcher;
+	
+	private Box myBox = new Box(50, 50, 50);
+	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
+	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
+	private final Rotate rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+	
+	private DHParameterKinematics model;
+	
 	private OutputStream logWriter = new OutputStream() {
 		
 		@Override
@@ -179,7 +198,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         editorContainer.setContent(codeArea);
 
-        subScene = new SubScene(viewGroup, 100, 100, true,
+        subScene = new SubScene(baseGroup, 100, 100, true,
                 SceneAntialiasing.BALANCED);
 
         subScene.widthProperty().bind(viewContainer.widthProperty());
@@ -196,15 +215,57 @@ public class MainController implements Initializable, IFileChangeListener {
         viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(-1));
         viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(-1));
         
-
+        manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(-2));
+        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(-2));
+        
+        manipulator.getChildren().add(myBox);
+        manipulator.getTransforms().addAll(rotateX,rotateY, rotateZ);
+        
+        baseGroup.getChildren().add(viewGroup);
+        baseGroup.getChildren().add(manipulator);
         
         VFX3DUtil.addMouseBehavior(viewGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
+        DyIO master = new DyIO(ConnectionDialog.promptConnection());
 
+		master.connect();
+		model = new DHParameterKinematics(master,"TrobotMaster.xml");
+        Log.enableWarningPrint();
+		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
 
+			@Override
+			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
+				Platform.runLater(() -> {
+					try{
+						System.out.println(pose);
+						double zoom = -((pose.getY()+150)/100);
+						manipulator.setScaleX( zoom);
+						manipulator.setScaleY( zoom);
+						manipulator.setScaleZ( zoom);
+						
+						rotateX.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionX()));
+						rotateY.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionY()));
+						rotateZ.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionZ()));
+						
+						manipulator.setTranslateX(pose.getX());
+						manipulator.setTranslateY(-pose.getZ());
+						//manipulator.setTranslateZ(pose.getY());
+						
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+	            });
+
+				
+			}
+			
+			@Override
+			public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,TransformNR pose) {}
+		});
         
+        System.out.println("Starting Application");
     }
 
     private void setCode(String code) {

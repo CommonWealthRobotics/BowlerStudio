@@ -122,7 +122,6 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	private double anchorY;
 	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
-	private final Translate moveZ = new Translate();
 	private Node n;
 	private double mouseAnchorX;
 	//private MouseButton btn;
@@ -132,7 +131,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 
 	public MouseBehaviorImpl1(Node n) {
 		this.n = n;
-		n.getTransforms().addAll(rotateX, rotateZ, moveZ);
+		n.getTransforms().addAll(rotateX, rotateZ);
 	}
 
 	@Override
@@ -147,6 +146,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 				anchorAngleY = rotateZ.getAngle();
 				t.consume();
 			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
+				//System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
 				rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
 				rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
 	
