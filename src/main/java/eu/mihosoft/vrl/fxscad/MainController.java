@@ -18,15 +18,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-
-import static java.nio.file.StandardWatchEventKinds.*;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,17 +43,13 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -85,9 +75,6 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
-import com.sun.javafx.geom.Path2D;
-import com.sun.javafx.sg.prism.NGPath;
-
 /**
  * FXML Controller class
  *
@@ -135,8 +122,8 @@ public class MainController implements Initializable, IFileChangeListener {
 	private File openFile;
 
 	private FileChangeWatcher watcher;
-	
-	private Box myBox = new Box(50, 50, 50);
+	private int boxSize=50;
+	private Box myBox = new Box(boxSize/10, boxSize/10, boxSize);
 	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
 	private final Rotate rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
@@ -217,7 +204,9 @@ public class MainController implements Initializable, IFileChangeListener {
         
         manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(-2));
         manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(-2));
-        
+        myBox.setTranslateX(boxSize/5);
+        myBox.setTranslateY(boxSize/5);
+        myBox.setTranslateZ(boxSize/2);
         manipulator.getChildren().add(myBox);
         manipulator.getTransforms().addAll(rotateX,rotateY, rotateZ);
         
@@ -234,31 +223,30 @@ public class MainController implements Initializable, IFileChangeListener {
 		model = new DHParameterKinematics(master,"TrobotMaster.xml");
         Log.enableWarningPrint();
 		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
-
+			int packetIndex=0;
+			int numSkip = 1;
 			@Override
 			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-				Platform.runLater(() -> {
-					try{
-						System.out.println(pose);
-//						double zoom = -((pose.getY()+150)/100);
-//						manipulator.setScaleX( zoom);
-//						manipulator.setScaleY( zoom);
-//						manipulator.setScaleZ( zoom);
-//						
-						rotateX.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionX()));
-						rotateY.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionY()));
-						rotateZ.setAngle(Math.toDegrees(pose.getRotation().getRotationMatrix2QuaturnionZ()));
-						
-						manipulator.setTranslateX(pose.getX());
-						manipulator.setTranslateY(-pose.getZ());
-						manipulator.setTranslateZ(pose.getY());
-						
-					}catch (Exception e){
-						e.printStackTrace();
-					}
-	            });
+				if(packetIndex++==numSkip){
+					packetIndex=0;
+					Platform.runLater(() -> {
+						try{
+							rotateX.setAngle(pose.getRotation().getRotationX()*180);
+							rotateY.setAngle(pose.getRotation().getRotationZ()*180);
+							rotateZ.setAngle(pose.getRotation().getRotationY()*180);
+							
+							manipulator.setTranslateX(pose.getX());
+							manipulator.setTranslateY(-pose.getZ());
+							manipulator.setTranslateZ(pose.getY());
+							System.out.println("\n\nX "+rotateX);
+							System.out.println("Y "+rotateY);
+							System.out.println("Z "+rotateZ);
+						}catch (Exception e){
+							e.printStackTrace();
+						}
+		            });
 
-				
+				}
 			}
 			
 			@Override
