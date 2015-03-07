@@ -269,10 +269,11 @@ public class MainController implements Initializable, IFileChangeListener {
 							rotations.setMzx(poseRot[2][0]);
 							rotations.setMzy(poseRot[2][1]);
 							rotations.setMzz(poseRot[2][2]);
-							
+
 							rotations.setTx(pose.getX()*3);
 							rotations.setTy(pose.getY()*3);
 							rotations.setTz(pose.getZ()*3);
+
 						}catch (Exception e){
 							e.printStackTrace();
 						}
