@@ -249,8 +249,8 @@ public class MainController implements Initializable, IFileChangeListener {
 				        }
 						try{
 							rotateX.setAngle(pose.getRotation().getRotationX()*180);
-							rotateY.setAngle(-pose.getRotation().getRotationY()*180);
-							rotateZ.setAngle(-pose.getRotation().getRotationZ()*180);
+							rotateY.setAngle(pose.getRotation().getRotationY()*180);
+							rotateZ.setAngle(pose.getRotation().getRotationZ()*180);
 							
 							myBox.setTranslateX(pose.getX());
 							myBox.setTranslateY(pose.getY());
