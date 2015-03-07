@@ -202,26 +202,32 @@ public class MainController implements Initializable, IFileChangeListener {
         subSceneCamera.layoutYProperty().bind(
                 viewContainer.heightProperty().divide(-1));
         
-        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(1));
-        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(1));
+        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
+        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
         
         manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
+        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(1.2));
+
         myBox.getTransforms().addAll(rotateX,rotateY, rotateZ);
         
         manipulator.getChildren().add(myBox);
 
 
-        baseGroup.getChildren().add(new Box(200,  200,2));
+        baseGroup.getChildren().add(new Box(1500,  1200,2));
         baseGroup.getChildren().add(viewGroup);
         baseGroup.getChildren().add(manipulator);
         
         
         baseGroup.getTransforms().addAll(
-        		new Rotate(90, Rotate.X_AXIS),
-        		new Rotate(0, Rotate.Y_AXIS),
-        		new Rotate(90, Rotate.Z_AXIS));
-        
+        		//new Rotate(90, Rotate.X_AXIS),
+        		new Rotate(180, Rotate.Y_AXIS),
+        		new Rotate(180, Rotate.Z_AXIS));
+        Platform.runLater(() -> {
+        	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(1).doubleValue());
+        	viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
+        	manipulator.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
+        	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
+        });
         VFX3DUtil.addMouseBehavior(viewGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
@@ -255,9 +261,9 @@ public class MainController implements Initializable, IFileChangeListener {
 							myBox.setTranslateX(pose.getX());
 							myBox.setTranslateY(pose.getY());
 							myBox.setTranslateZ(pose.getZ());
-							System.out.println("\n\nX "+rotateX);
-							System.out.println("Y "+rotateY);
-							System.out.println("Z "+rotateZ);
+//							System.out.println("\n\nX "+rotateX);
+//							System.out.println("Y "+rotateY);
+//							System.out.println("Z "+rotateZ);
 						}catch (Exception e){
 							e.printStackTrace();
 						}
