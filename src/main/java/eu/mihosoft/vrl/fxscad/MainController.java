@@ -52,6 +52,7 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -76,6 +77,7 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 /**
  * FXML Controller class
@@ -127,9 +129,11 @@ public class MainController implements Initializable, IFileChangeListener {
 	private int boxSize=50;
 	private Box myBox = new Box(boxSize/10,  boxSize,boxSize/10);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
-	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
-	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
-	private final Rotate rotateY = new Rotate(0,  Rotate.Y_AXIS);
+//	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
+//	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
+//	private final Rotate rotateY = new Rotate(0,  Rotate.Y_AXIS);
+	
+	private final  Affine rotations =  new Affine();
 	
 	private DHParameterKinematics model;
 	
@@ -208,7 +212,8 @@ public class MainController implements Initializable, IFileChangeListener {
         manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
         manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(1.2));
 
-        myBox.getTransforms().addAll(rotateX,rotateY, rotateZ);
+        //myBox.getTransforms().addAll(rotateX,rotateY, rotateZ);
+        myBox.getTransforms().addAll(rotations);
         
         manipulator.getChildren().add(myBox);
 
@@ -232,7 +237,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         viewContainer.getChildren().add(subScene);
         
-        DyIO master = new DyIO(ConnectionDialog.promptConnection());
+        DyIO master = new DyIO(new SerialConnection("/dev/DyIO0"));
 
 		master.connect();
 		model = new DHParameterKinematics(master,"TrobotMaster.xml");
@@ -248,22 +253,26 @@ public class MainController implements Initializable, IFileChangeListener {
 					packetIndex=0;
 					Platform.runLater(() -> {
 				        for(int i=0;i<joints.size();i++){
-				        	joints.get(i).setTranslateX(jointLocations.get(i).getX());
-				        	joints.get(i).setTranslateY(jointLocations.get(i).getY());
-				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ());
+				        	joints.get(i).setTranslateX(jointLocations.get(i).getX()*3);
+				        	joints.get(i).setTranslateY(jointLocations.get(i).getY()*3);
+				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ()*3);
 				        	
 				        }
 						try{
-							rotateX.setAngle(45);
-							rotateZ.setAngle(0);
-							rotateY.setAngle(pose.getRotation().getRotationMatrix2QuaturnionZ()*180);
+							double [][] poseRot = pose.getRotationMatrixArray();
+							rotations.setMxx(poseRot[0][0]);
+							rotations.setMxy(poseRot[0][1]);
+							rotations.setMxz(poseRot[0][2]);
+							rotations.setMyx(poseRot[1][0]);
+							rotations.setMyy(poseRot[1][1]);
+							rotations.setMyz(poseRot[1][2]);
+							rotations.setMzx(poseRot[2][0]);
+							rotations.setMzy(poseRot[2][1]);
+							rotations.setMzz(poseRot[2][2]);
 							
-							myBox.setTranslateX(pose.getX());
-							myBox.setTranslateY(pose.getY());
-							myBox.setTranslateZ(pose.getZ());
-//							System.out.println("\n\nX "+rotateX);
-//							System.out.println("Y "+rotateY);
-//							System.out.println("Z "+rotateZ);
+							rotations.setTx(pose.getX()*3);
+							rotations.setTy(pose.getY()*3);
+							rotations.setTz(pose.getZ()*3);
 						}catch (Exception e){
 							e.printStackTrace();
 						}
