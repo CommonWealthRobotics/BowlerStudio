@@ -127,9 +127,9 @@ public class MainController implements Initializable, IFileChangeListener {
 	private int boxSize=50;
 	private Box myBox = new Box(boxSize/10,  boxSize,boxSize/10);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
-	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
-	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
-	private final Rotate rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
+	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
+	private final Rotate rotateY = new Rotate(0,  Rotate.Y_AXIS);
 	
 	private DHParameterKinematics model;
 	
@@ -228,7 +228,7 @@ public class MainController implements Initializable, IFileChangeListener {
         	manipulator.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
         	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
         });
-        VFX3DUtil.addMouseBehavior(viewGroup,viewContainer);
+        VFX3DUtil.addMouseBehavior(baseGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
@@ -254,9 +254,9 @@ public class MainController implements Initializable, IFileChangeListener {
 				        	
 				        }
 						try{
-							rotateX.setAngle(pose.getRotation().getRotationX()*180);
-							rotateY.setAngle(pose.getRotation().getRotationY()*180);
-							rotateZ.setAngle(pose.getRotation().getRotationZ()*180);
+							rotateX.setAngle(45);
+							rotateZ.setAngle(0);
+							rotateY.setAngle(pose.getRotation().getRotationMatrix2QuaturnionZ()*180);
 							
 							myBox.setTranslateX(pose.getX());
 							myBox.setTranslateY(pose.getY());

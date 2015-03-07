@@ -24,6 +24,7 @@
  */
 package eu.mihosoft.vrl.fxscad;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -60,6 +61,7 @@ public class VFX3DUtil {
 	public static void addMouseBehavior(Node n, Scene eventReceiver) {
 		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n));
 		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
+		
 	}
 
 	/**
@@ -86,6 +88,9 @@ class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
 	double xscale;
 
 	public MouseBehaviorImpl2(Node n) {
+		n.setScaleX(.33);
+		n.setScaleY(.33);
+		n.setScaleZ(.33);
 		this.n = n;
 		xscale = n.getScaleX();
 	}
@@ -99,7 +104,7 @@ class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
 			if(xscale<.1){
 				xscale=.1;
 			}
-			//System.out.println("Zoom "+xscale);
+			System.out.println("Zoom "+xscale);
 			n.setScaleX( xscale);
             n.setScaleY( xscale);
             n.setScaleZ( xscale);
@@ -132,6 +137,12 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	public MouseBehaviorImpl1(Node n) {
 		this.n = n;
 		n.getTransforms().addAll(rotateX, rotateZ);
+		rotateZ.setAngle(-18.9);
+		rotateX.setAngle(-46.2);
+		Platform.runLater(() -> {
+            n.setTranslateX(-317);
+            n.setTranslateY(-313);
+        });
 	}
 
 	@Override
@@ -147,9 +158,11 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 				t.consume();
 			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
 				//System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
-				rotateZ.setAngle(anchorAngleY + (anchorX - t.getSceneX()) * 0.7);
-				rotateX.setAngle(anchorAngleX - (anchorY - t.getSceneY()) * 0.7);
-	
+				double rotZ= anchorAngleY + (anchorX - t.getSceneX()) * 0.7;
+				double rotX= anchorAngleX - (anchorY - t.getSceneY()) * 0.7;
+				rotateZ.setAngle(rotZ);
+				rotateX.setAngle(rotX);
+				System.out.println("Rotation set to X="+rotX+" Z="+rotZ);
 			}
 		}else if(t.getButton() ==  MouseButton.SECONDARY){
 			if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
@@ -161,14 +174,15 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
 				// shift node from its initial position by delta
                 // calculated from mouse cursor movement
-                n.setTranslateX(
-                    initialTranslateX
+				double tranX =initialTranslateX
                         +( t.getX()
-                        - mouseAnchorX));
-                n.setTranslateY(
-                    initialTranslateY
+                        - mouseAnchorX);
+				double tranY =initialTranslateY
                         +( t.getY()
-                        - mouseAnchorY));
+                        - mouseAnchorY);
+                n.setTranslateX(tranX);
+                n.setTranslateY(tranY);
+                System.out.println("Translate set to X="+tranX+" Y="+tranY);
 			}
 		}
 
