@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ResourceBundle;
@@ -50,6 +51,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -123,7 +125,8 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private FileChangeWatcher watcher;
 	private int boxSize=50;
-	private Box myBox = new Box(boxSize/10, boxSize/10, boxSize);
+	private Box myBox = new Box(boxSize/10,  boxSize,boxSize/10);
+	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
 	private final Rotate rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
 	private final Rotate rotateZ = new Rotate(0, 0, 0, 0, Rotate.Z_AXIS);
 	private final Rotate rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
@@ -199,19 +202,25 @@ public class MainController implements Initializable, IFileChangeListener {
         subSceneCamera.layoutYProperty().bind(
                 viewContainer.heightProperty().divide(-1));
         
-        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(-1));
-        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(-1));
+        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(1));
+        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(1));
         
-        manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(-2));
-        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(-2));
-        myBox.setTranslateX(boxSize/5);
-        myBox.setTranslateY(boxSize/5);
-        myBox.setTranslateZ(boxSize/2);
+        manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
+        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
+        myBox.getTransforms().addAll(rotateX,rotateY, rotateZ);
+        
         manipulator.getChildren().add(myBox);
-        manipulator.getTransforms().addAll(rotateX,rotateY, rotateZ);
-        
+
+
+        baseGroup.getChildren().add(new Box(200,  200,2));
         baseGroup.getChildren().add(viewGroup);
         baseGroup.getChildren().add(manipulator);
+        
+        
+        baseGroup.getTransforms().addAll(
+        		new Rotate(90, Rotate.X_AXIS),
+        		new Rotate(0, Rotate.Y_AXIS),
+        		new Rotate(90, Rotate.Z_AXIS));
         
         VFX3DUtil.addMouseBehavior(viewGroup,viewContainer);
 
@@ -227,17 +236,25 @@ public class MainController implements Initializable, IFileChangeListener {
 			int numSkip = 1;
 			@Override
 			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
+				ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
+
 				if(packetIndex++==numSkip){
 					packetIndex=0;
 					Platform.runLater(() -> {
+				        for(int i=0;i<joints.size();i++){
+				        	joints.get(i).setTranslateX(jointLocations.get(i).getX());
+				        	joints.get(i).setTranslateY(jointLocations.get(i).getY());
+				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ());
+				        	
+				        }
 						try{
 							rotateX.setAngle(pose.getRotation().getRotationX()*180);
-							rotateY.setAngle(pose.getRotation().getRotationZ()*180);
-							rotateZ.setAngle(pose.getRotation().getRotationY()*180);
+							rotateY.setAngle(-pose.getRotation().getRotationY()*180);
+							rotateZ.setAngle(-pose.getRotation().getRotationZ()*180);
 							
-							manipulator.setTranslateX(pose.getX());
-							manipulator.setTranslateY(-pose.getZ());
-							manipulator.setTranslateZ(pose.getY());
+							myBox.setTranslateX(pose.getX());
+							myBox.setTranslateY(pose.getY());
+							myBox.setTranslateZ(pose.getZ());
 							System.out.println("\n\nX "+rotateX);
 							System.out.println("Y "+rotateY);
 							System.out.println("Z "+rotateZ);
@@ -252,6 +269,14 @@ public class MainController implements Initializable, IFileChangeListener {
 			@Override
 			public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,TransformNR pose) {}
 		});
+		
+        ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
+        for(int i=0;i<jointLocations.size();i++){
+        	Sphere s = new Sphere(10);
+        	s.setMaterial(new PhongMaterial(Color.rgb(0, i*(128/6), 255-i*(128/6))));
+        	joints.add(s);
+        	manipulator.getChildren().add(s);
+        }
         
         System.out.println("Starting Application");
     }
@@ -318,8 +343,8 @@ public class MainController implements Initializable, IFileChangeListener {
                 meshView.setMaterial(m);
 
 
-                viewGroup.setTranslateX( viewContainer.widthProperty().divide(2).doubleValue());
-                viewGroup.setTranslateY( viewContainer.heightProperty().divide(2).doubleValue());
+//                viewGroup.setTranslateX( viewContainer.widthProperty().divide(2).doubleValue());
+//                viewGroup.setTranslateY( viewContainer.heightProperty().divide(2).doubleValue());
                 
                 viewContainer.boundsInLocalProperty().addListener(
                         (ov, oldV, newV) -> {
