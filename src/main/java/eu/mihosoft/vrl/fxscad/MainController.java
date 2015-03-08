@@ -77,6 +77,8 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
+import com.neuronrobotics.sdk.pid.PIDConfiguration;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 /**
@@ -209,8 +211,7 @@ public class MainController implements Initializable, IFileChangeListener {
 //        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
 //        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
 //        
-        manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(1.2));
+        
 
         myBox.getTransforms().addAll(rotations);
         
@@ -218,7 +219,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 
         baseGroup.getChildren().add(new Box((300/2)*20,  (300/2)*20,2));
-        baseGroup.getChildren().add(viewGroup);
+        manipulator.getChildren().add(viewGroup);
         baseGroup.getChildren().add(manipulator);
         
         
@@ -228,7 +229,8 @@ public class MainController implements Initializable, IFileChangeListener {
         		new Rotate(180, Rotate.Z_AXIS));
         Platform.runLater(() -> {
         	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(1).doubleValue());
-        	viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
+        	manipulator.setTranslateX(viewContainer.widthProperty().divide(2).doubleValue());
+            manipulator.setTranslateY(viewContainer.heightProperty().divide(1.2).doubleValue());
         	manipulator.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
         	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
         });
@@ -239,6 +241,11 @@ public class MainController implements Initializable, IFileChangeListener {
         DyIO master = new DyIO(new SerialConnection("/dev/DyIO0"));
 
 		master.connect();
+		for (int i=0;i<master.getPIDChannelCount();i++){
+			// disable PID controller, default PID  and dypid configurations are disabled.
+			master.ConfigureDynamicPIDChannels(new DyPIDConfiguration(i));
+			master.ConfigurePIDController(new PIDConfiguration());
+		}
 		model = new DHParameterKinematics(master,"TrobotMaster.xml");
         Log.enableWarningPrint();
 		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
