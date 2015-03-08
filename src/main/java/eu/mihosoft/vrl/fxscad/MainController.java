@@ -127,7 +127,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private FileChangeWatcher watcher;
 	private int boxSize=50;
-	private Box myBox = new Box(boxSize/10,  boxSize,boxSize/10);
+	private Box myBox = new Box(boxSize/10,  boxSize/10,boxSize);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
 //	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
 //	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
@@ -206,19 +206,18 @@ public class MainController implements Initializable, IFileChangeListener {
         subSceneCamera.layoutYProperty().bind(
                 viewContainer.heightProperty().divide(-1));
         
-        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
-        
+//        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
+//        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
+//        
         manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
         manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(1.2));
 
-        //myBox.getTransforms().addAll(rotateX,rotateY, rotateZ);
         myBox.getTransforms().addAll(rotations);
         
         manipulator.getChildren().add(myBox);
 
 
-        baseGroup.getChildren().add(new Box(1500,  1200,2));
+        baseGroup.getChildren().add(new Box((300/2)*20,  (300/2)*20,2));
         baseGroup.getChildren().add(viewGroup);
         baseGroup.getChildren().add(manipulator);
         
@@ -245,6 +244,7 @@ public class MainController implements Initializable, IFileChangeListener {
 		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
 			int packetIndex=0;
 			int numSkip = 1;
+			int armScale=8;
 			@Override
 			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 				ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
@@ -253,9 +253,9 @@ public class MainController implements Initializable, IFileChangeListener {
 					packetIndex=0;
 					Platform.runLater(() -> {
 				        for(int i=0;i<joints.size();i++){
-				        	joints.get(i).setTranslateX(jointLocations.get(i).getX()*3);
-				        	joints.get(i).setTranslateY(jointLocations.get(i).getY()*3);
-				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ()*3);
+				        	joints.get(i).setTranslateX(jointLocations.get(i).getX()*armScale);
+				        	joints.get(i).setTranslateY(jointLocations.get(i).getY()*armScale);
+				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ()*armScale);
 				        	
 				        }
 						try{
@@ -269,10 +269,9 @@ public class MainController implements Initializable, IFileChangeListener {
 							rotations.setMzx(poseRot[2][0]);
 							rotations.setMzy(poseRot[2][1]);
 							rotations.setMzz(poseRot[2][2]);
-
-							rotations.setTx(pose.getX()*3);
-							rotations.setTy(pose.getY()*3);
-							rotations.setTz(pose.getZ()*3);
+							rotations.setTx(pose.getX()*armScale);
+							rotations.setTy(pose.getY()*armScale);
+							rotations.setTz(pose.getZ()*armScale);
 
 						}catch (Exception e){
 							e.printStackTrace();
@@ -293,7 +292,7 @@ public class MainController implements Initializable, IFileChangeListener {
         	joints.add(s);
         	manipulator.getChildren().add(s);
         }
-        
+        viewGroup.getTransforms().add(rotations);
         System.out.println("Starting Application");
     }
 
@@ -368,7 +367,7 @@ public class MainController implements Initializable, IFileChangeListener {
                         });
 
                 
-
+                
                 viewGroup.getChildren().add(meshView);
                 logView.setText("Compile OK\n"+logView.getText());
 
