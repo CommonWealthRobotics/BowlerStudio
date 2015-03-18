@@ -3,7 +3,12 @@ package eu.mihosoft.vrl.fxscad;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
@@ -41,6 +46,12 @@ public class JFXScad extends Application {
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(768);
         primaryStage.show();
+        primaryStage.setOnCloseRequest(arg0 -> {
+        	
+        	controller.disconnect();
+        	ThreadUtil.wait(500);
+        	System.exit(0);
+		});
     }
 
     public static Parent loadFromFXML() {

@@ -17,5 +17,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/JCSG"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NRSDK"/>
+	<classpathentry kind="lib" path="/NRSDK/lib_addons/usb-api-1.0.2.jar"/>
+	<classpathentry kind="lib" path="/NRSDK/lib_addons/usb4java-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/NRSDK/lib_addons/usb4java-javax-1.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

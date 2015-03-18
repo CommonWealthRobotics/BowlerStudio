@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,9 +56,11 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
+import javax.usb.UsbDevice;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -77,6 +80,8 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.dyio.peripherals.DigitalInputChannel;
+import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 /**
@@ -102,7 +107,7 @@ public class MainController implements Initializable, IFileChangeListener {
     private static final Pattern KEYWORD_PATTERN
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
 
-    private final Group viewGroup = new Group();
+    //private final Group viewGroup = new Group();
     private final Group manipulator = new Group();
     private final Group baseGroup = new Group();
 
@@ -146,6 +151,16 @@ public class MainController implements Initializable, IFileChangeListener {
 			logView.setText(logView.getText()+log);
 		}
 	};
+
+	private PerspectiveCamera subSceneCamera;
+
+	private DyIO master;
+
+	private boolean buttonPressed = false;
+
+	private MeshContainer meshContainer;
+
+	private MeshView meshView;
     /**
      * Initializes the controller class.
      *
@@ -195,48 +210,59 @@ public class MainController implements Initializable, IFileChangeListener {
         subScene = new SubScene(baseGroup, 100, 100, true,
                 SceneAntialiasing.BALANCED);
 
-        subScene.widthProperty().bind(viewContainer.widthProperty());
-        subScene.heightProperty().bind(viewContainer.heightProperty());
-
-        PerspectiveCamera subSceneCamera = new PerspectiveCamera(false);
+        subSceneCamera = new PerspectiveCamera(false);
+        
         subScene.setCamera(subSceneCamera);
         
-        subSceneCamera.layoutXProperty().bind(
-                viewContainer.widthProperty().divide(-1));
-        subSceneCamera.layoutYProperty().bind(
-                viewContainer.heightProperty().divide(-1));
-        
-//        viewGroup.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-//        viewGroup.layoutYProperty().bind(viewContainer.heightProperty().divide(2));
-//        
-        manipulator.layoutXProperty().bind(viewContainer.widthProperty().divide(2));
-        manipulator.layoutYProperty().bind(viewContainer.heightProperty().divide(1.2));
 
-        myBox.getTransforms().addAll(rotations);
+        myBox.getTransforms().add(rotations);
+        //viewGroup.getTransforms().add(rotations);
         
         manipulator.getChildren().add(myBox);
 
-
-        baseGroup.getChildren().add(new Box((300/2)*20,  (300/2)*20,2));
-        baseGroup.getChildren().add(viewGroup);
-        baseGroup.getChildren().add(manipulator);
-        
-        
+        baseGroup.getChildren().add(new Box(200, 200,2));
+        baseGroup.getChildren().add(manipulator); 
         baseGroup.getTransforms().addAll(
         		//new Rotate(90, Rotate.X_AXIS),
         		new Rotate(180, Rotate.Y_AXIS),
         		new Rotate(180, Rotate.Z_AXIS));
         Platform.runLater(() -> {
+            subScene.setWidth(viewContainer.widthProperty().doubleValue());
+            subScene.setHeight(viewContainer.heightProperty().doubleValue());
+
+        	subSceneCamera.setTranslateX(viewContainer.widthProperty().divide(-1).doubleValue());
+            subSceneCamera.setTranslateY(viewContainer.heightProperty().divide(-1).doubleValue());
+             
         	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(1).doubleValue());
-        	viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
-        	manipulator.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
+        	//viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
+        	manipulator.setTranslateX(0);
+        	manipulator.setTranslateY(150);
+        	manipulator.setTranslateZ(120);
         	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
         });
         VFX3DUtil.addMouseBehavior(baseGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
-        DyIO master = new DyIO(new SerialConnection("/dev/DyIO0"));
+		List<UsbDevice> prts;
+		try {
+			prts = UsbCDCSerialConnection.getAllUsbBowlerDevices();
+			for(int i=0;i<prts.size();i++) {
+				String s = UsbCDCSerialConnection.getUniqueID(prts.get(i));
+				if(s.contains("DyIO v1.0 74F7260B005C")){
+					attachArm(s);
+				}
+			}
+		} catch (Exception e) {}
+        
+		
+
+        System.out.println("Starting Application");
+    }
+
+    private void attachArm(String usbDev) {
+    	System.out.println("Using arm: "+usbDev);
+        master = new DyIO(new UsbCDCSerialConnection(usbDev));
 
 		master.connect();
 		model = new DHParameterKinematics(master,"TrobotMaster.xml");
@@ -244,7 +270,7 @@ public class MainController implements Initializable, IFileChangeListener {
 		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
 			int packetIndex=0;
 			int numSkip = 1;
-			int armScale=8;
+			int armScale=1;
 			@Override
 			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 				ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
@@ -259,20 +285,29 @@ public class MainController implements Initializable, IFileChangeListener {
 				        	
 				        }
 						try{
-							double [][] poseRot = pose.getRotationMatrixArray();
-							rotations.setMxx(poseRot[0][0]);
-							rotations.setMxy(poseRot[0][1]);
-							rotations.setMxz(poseRot[0][2]);
-							rotations.setMyx(poseRot[1][0]);
-							rotations.setMyy(poseRot[1][1]);
-							rotations.setMyz(poseRot[1][2]);
-							rotations.setMzx(poseRot[2][0]);
-							rotations.setMzy(poseRot[2][1]);
-							rotations.setMzz(poseRot[2][2]);
-							rotations.setTx(pose.getX()*armScale);
-							rotations.setTy(pose.getY()*armScale);
-							rotations.setTz(pose.getZ()*armScale);
+							if(buttonPressed){
+								double [][] poseRot = pose.getRotationMatrixArray();
+								rotations.setMxx(poseRot[0][0]);
+								rotations.setMxy(poseRot[0][1]);
+								rotations.setMxz(poseRot[0][2]);
+								rotations.setMyx(poseRot[1][0]);
+								rotations.setMyy(poseRot[1][1]);
+								rotations.setMyz(poseRot[1][2]);
+								rotations.setMzx(poseRot[2][0]);
+								rotations.setMzy(poseRot[2][1]);
+								rotations.setMzz(poseRot[2][2]);
+								rotations.setTx(pose.getX()*armScale);
+								rotations.setTy(pose.getY()*armScale);
+								rotations.setTz(pose.getZ()*armScale);
+								System.out.println("Camera Transform z="+subSceneCamera.getTranslateZ()+
+										" y="+subSceneCamera.getTranslateY()+
+										" x="+subSceneCamera.getTranslateX()+
+										" o="+subSceneCamera.getNodeOrientation());
 
+								for( Transform t:subSceneCamera.getTransforms()){
+									System.out.println(t);
+								}
+							}
 						}catch (Exception e){
 							e.printStackTrace();
 						}
@@ -284,6 +319,9 @@ public class MainController implements Initializable, IFileChangeListener {
 			@Override
 			public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,TransformNR pose) {}
 		});
+		new DigitalInputChannel(master, 23).addDigitalInputListener((source, isHigh) -> {
+			buttonPressed  = !isHigh;
+		});
 		
         ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
         for(int i=0;i<jointLocations.size();i++){
@@ -292,11 +330,10 @@ public class MainController implements Initializable, IFileChangeListener {
         	joints.add(s);
         	manipulator.getChildren().add(s);
         }
-        viewGroup.getTransforms().add(rotations);
-        System.out.println("Starting Application");
-    }
+        
+	}
 
-    private void setCode(String code) {
+	private void setCode(String code) {
         codeArea.replaceText(code);
     }
 
@@ -314,7 +351,10 @@ public class MainController implements Initializable, IFileChangeListener {
 
         //clearLog();
 
-        viewGroup.getChildren().clear();
+        if(meshView!=null){
+        	manipulator.getChildren().remove(meshView);
+        }
+        
         StringWriter sw = new StringWriter();
     	PrintWriter pw = new PrintWriter(sw);
         try {
@@ -344,12 +384,12 @@ public class MainController implements Initializable, IFileChangeListener {
                 csgObject = csg;
                 CadInteractionEvent interact =new CadInteractionEvent();
                 
-                MeshContainer meshContainer = csg.toJavaFXMesh(interact);
+                meshContainer = csg.toJavaFXMesh(interact);
 
-                final MeshView meshView = meshContainer.getAsMeshViews().get(0);
+                meshView = meshContainer.getAsMeshViews().get(0);
 
-                setMeshScale(meshContainer,
-                        viewContainer.getBoundsInLocal(), meshView);
+//                setMeshScale(meshContainer,
+//                        viewContainer.getBoundsInLocal(), meshView);
 
                 PhongMaterial m = new PhongMaterial(Color.RED);
 
@@ -361,18 +401,18 @@ public class MainController implements Initializable, IFileChangeListener {
 //                viewGroup.setTranslateX( viewContainer.widthProperty().divide(2).doubleValue());
 //                viewGroup.setTranslateY( viewContainer.heightProperty().divide(2).doubleValue());
                 
-                viewContainer.boundsInLocalProperty().addListener(
-                        (ov, oldV, newV) -> {
-                            setMeshScale(meshContainer, newV, meshView);
-                        });
+//                viewContainer.boundsInLocalProperty().addListener(
+//                        (ov, oldV, newV) -> {
+//                            setMeshScale(meshContainer, newV, meshView);
+//                        });
 
                 
-                
-                viewGroup.getChildren().add(meshView);
+                meshView.getTransforms().add(rotations);
+                manipulator.getChildren().add(meshView);
                 logView.setText("Compile OK\n"+logView.getText());
 
             } else {
-                System.out.println(">> no CSG object returned :(");
+            	logView.setText(">> no CSG object returned :(");
             }
 
         } catch (Throwable ex) {
@@ -382,21 +422,21 @@ public class MainController implements Initializable, IFileChangeListener {
       	logView.setText(sw.toString()+logView.getText());
     }
 
-    private void setMeshScale(
-            MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
-        double maxDim
-                = Math.max(meshContainer.getWidth(),
-                        Math.max(meshContainer.getHeight(),
-                                meshContainer.getDepth()));
-
-        double minContDim = Math.min(t1.getWidth(), t1.getHeight());
-
-        double scale = minContDim / (maxDim * 2);
-
-        meshView.setScaleX(scale);
-        meshView.setScaleY(scale);
-        meshView.setScaleZ(scale);
-    }
+//    private void setMeshScale(
+//            MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
+//        double maxDim
+//                = Math.max(meshContainer.getWidth(),
+//                        Math.max(meshContainer.getHeight(),
+//                                meshContainer.getDepth()));
+//
+//        double minContDim = Math.min(t1.getWidth(), t1.getHeight());
+//
+//        double scale = minContDim / (maxDim * 2);
+//
+//        meshView.setScaleX(scale);
+//        meshView.setScaleY(scale);
+//        meshView.setScaleZ(scale);
+//    }
 
     /**
      * Returns the location of the Jar archive or .class file the specified
@@ -584,8 +624,8 @@ public class MainController implements Initializable, IFileChangeListener {
         int snWidth = 1024;
         int snHeight = 1024;
 
-        double realWidth = viewGroup.getBoundsInLocal().getWidth();
-        double realHeight = viewGroup.getBoundsInLocal().getHeight();
+        double realWidth = baseGroup.getBoundsInLocal().getWidth();
+        double realHeight = baseGroup.getBoundsInLocal().getHeight();
 
         double scaleX = snWidth / realWidth;
         double scaleY = snHeight / realHeight;
@@ -603,7 +643,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         WritableImage snapshot = new WritableImage(snWidth, (int) (realHeight * scale));
 
-        viewGroup.snapshot(snapshotParameters, snapshot);
+        baseGroup.snapshot(snapshotParameters, snapshot);
 
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null),
@@ -730,6 +770,12 @@ public class MainController implements Initializable, IFileChangeListener {
 
 		}else{
 			//System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+		}
+	}
+
+	public void disconnect() {
+		if(master!=null){
+			master.disconnect();
 		}
 	}
 
