@@ -80,8 +80,10 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
 import com.neuronrobotics.sdk.dyio.peripherals.DigitalInputChannel;
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
+import com.neuronrobotics.sdk.pid.PIDConfiguration;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 /**
@@ -222,6 +224,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         baseGroup.getChildren().add(new Box(200, 200,2));
         baseGroup.getChildren().add(manipulator); 
+
         baseGroup.getTransforms().addAll(
         		//new Rotate(90, Rotate.X_AXIS),
         		new Rotate(180, Rotate.Y_AXIS),
@@ -238,6 +241,7 @@ public class MainController implements Initializable, IFileChangeListener {
         	manipulator.setTranslateX(0);
         	manipulator.setTranslateY(150);
         	manipulator.setTranslateZ(120);
+
         	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
         });
         VFX3DUtil.addMouseBehavior(baseGroup,viewContainer);
@@ -265,6 +269,11 @@ public class MainController implements Initializable, IFileChangeListener {
         master = new DyIO(new UsbCDCSerialConnection(usbDev));
 
 		master.connect();
+		for (int i=0;i<master.getPIDChannelCount();i++){
+			// disable PID controller, default PID  and dypid configurations are disabled.
+			master.ConfigureDynamicPIDChannels(new DyPIDConfiguration(i));
+			master.ConfigurePIDController(new PIDConfiguration());
+		}
 		model = new DHParameterKinematics(master,"TrobotMaster.xml");
         Log.enableWarningPrint();
 		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
