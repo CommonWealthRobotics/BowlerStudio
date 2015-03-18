@@ -134,7 +134,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private FileChangeWatcher watcher;
 	private int boxSize=50;
-	private Box myBox = new Box(boxSize/10,  boxSize/10,boxSize);
+	private Box myBox = new Box(1,  1,boxSize);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
 //	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
 //	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
@@ -375,10 +375,16 @@ public class MainController implements Initializable, IFileChangeListener {
                     addStarImports("eu.mihosoft.vrl.v3d",
                             "eu.mihosoft.vrl.v3d.samples").
                     addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
-
+            
+            cc.addCompilationCustomizers(
+                    new ImportCustomizer().
+                    addStarImports("com.neuronrobotics.sdk.dyio",
+                            "com.neuronrobotics.sdk.common"));
         	
             Binding binding = new Binding();
-            binding.setProperty("out", pw);
+            binding.setProperty("System.out", pw);
+            binding.setProperty("System.err", pw);
+            binding.setVariable("dyio", master);
             GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
             		binding, cc);
 
@@ -414,7 +420,7 @@ public class MainController implements Initializable, IFileChangeListener {
 //                        (ov, oldV, newV) -> {
 //                            setMeshScale(meshContainer, newV, meshView);
 //                        });
-
+                
                 
                 meshView.getTransforms().add(rotations);
                 manipulator.getChildren().add(meshView);
