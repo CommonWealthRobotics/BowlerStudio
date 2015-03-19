@@ -88,9 +88,9 @@ class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
 	double xscale;
 
 	public MouseBehaviorImpl2(Node n) {
-		n.setScaleX(.33);
-		n.setScaleY(.33);
-		n.setScaleZ(.33);
+		n.setScaleX(1);
+		n.setScaleY(1);
+		n.setScaleZ(1);
 		this.n = n;
 		xscale = n.getScaleX();
 	}
@@ -137,11 +137,11 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	public MouseBehaviorImpl1(Node n) {
 		this.n = n;
 		n.getTransforms().addAll(rotateX, rotateZ);
-		rotateZ.setAngle(-18.9);
-		rotateX.setAngle(-46.2);
+		rotateZ.setAngle(-15);
+		rotateX.setAngle(-50);
 		Platform.runLater(() -> {
-            n.setTranslateX(-317);
-            n.setTranslateY(-313);
+            n.setTranslateX(-302.99);
+            n.setTranslateY(-156.00);
         });
 	}
 
@@ -157,12 +157,12 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 				anchorAngleY = rotateZ.getAngle();
 				t.consume();
 			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
-				//System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
+				System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
 				double rotZ= anchorAngleY + (anchorX - t.getSceneX()) * 0.7;
 				double rotX= anchorAngleX - (anchorY - t.getSceneY()) * 0.7;
 				rotateZ.setAngle(rotZ);
 				rotateX.setAngle(rotX);
-				System.out.println("Rotation set to X="+rotX+" Z="+rotZ);
+//				System.out.println("Rotation set to X="+rotX+" Z="+rotZ);
 			}
 		}else if(t.getButton() ==  MouseButton.SECONDARY){
 			if (MouseEvent.MOUSE_PRESSED.equals(t.getEventType())) {
@@ -182,7 +182,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
                         - mouseAnchorY);
                 n.setTranslateX(tranX);
                 n.setTranslateY(tranY);
-                System.out.println("Translate set to X="+tranX+" Y="+tranY);
+//                System.out.println("Translate set to X="+tranX+" Y="+tranY);
 			}
 		}
 

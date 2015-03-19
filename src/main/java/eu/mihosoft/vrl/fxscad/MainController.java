@@ -202,8 +202,9 @@ public class MainController implements Initializable, IFileChangeListener {
                 });
 
         codeArea.replaceText(
-                "CSG cube = new Cube(2).toCSG()\n"
-                + "CSG sphere = new Sphere(1.25).toCSG()\n"
+                "println(dyio)\n"
+                + "CSG cube = new Cube(20).toCSG()\n"
+                + "CSG sphere = new Sphere(12.5).toCSG()\n"
                 + "\n"
                 + "cube.difference(sphere)");
 
@@ -308,13 +309,13 @@ public class MainController implements Initializable, IFileChangeListener {
 								rotations.setTx(pose.getX()*armScale);
 								rotations.setTy(pose.getY()*armScale);
 								rotations.setTz(pose.getZ()*armScale);
-								System.out.println("Camera Transform z="+subSceneCamera.getTranslateZ()+
-										" y="+subSceneCamera.getTranslateY()+
-										" x="+subSceneCamera.getTranslateX()+
-										" o="+subSceneCamera.getNodeOrientation());
+//								System.out.println("Camera Transform z="+subSceneCamera.getTranslateZ()+
+//										" y="+subSceneCamera.getTranslateY()+
+//										" x="+subSceneCamera.getTranslateX()+
+//										" o="+subSceneCamera.getNodeOrientation());
 
 								for( Transform t:subSceneCamera.getTransforms()){
-									System.out.println(t);
+//									System.out.println(t);
 								}
 							}
 						}catch (Exception e){
