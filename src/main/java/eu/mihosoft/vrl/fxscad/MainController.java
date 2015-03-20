@@ -254,7 +254,7 @@ public class MainController implements Initializable, IFileChangeListener {
 			prts = UsbCDCSerialConnection.getAllUsbBowlerDevices();
 			for(int i=0;i<prts.size();i++) {
 				String s = UsbCDCSerialConnection.getUniqueID(prts.get(i));
-				if(s.contains("DyIO v1.0 74F7260B005C")){
+				if(s.contains("DyIO v1.0")){
 					attachArm(s);
 				}
 			}
