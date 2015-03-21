@@ -11,9 +11,12 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -163,6 +166,8 @@ public class MainController implements Initializable, IFileChangeListener {
 	private MeshContainer meshContainer;
 
 	private MeshView meshView;
+
+	private PrintStream orig= System.out;;
     /**
      * Initializes the controller class.
      *
@@ -367,6 +372,8 @@ public class MainController implements Initializable, IFileChangeListener {
         
         StringWriter sw = new StringWriter();
     	PrintWriter pw = new PrintWriter(sw);
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+    	
         try {
 
             CompilerConfiguration cc = new CompilerConfiguration();
@@ -383,8 +390,8 @@ public class MainController implements Initializable, IFileChangeListener {
                             "com.neuronrobotics.sdk.common"));
         	
             Binding binding = new Binding();
-            binding.setProperty("System.out", pw);
-            binding.setProperty("System.err", pw);
+            System.setOut(new PrintStream(out));
+
             binding.setVariable("dyio", master);
             GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
             		binding, cc);
@@ -392,6 +399,7 @@ public class MainController implements Initializable, IFileChangeListener {
             Script script = shell.parse(code);
  
             Object obj = script.run();
+            
             
             if (obj instanceof CSG) {
             	
@@ -436,6 +444,8 @@ public class MainController implements Initializable, IFileChangeListener {
         
         }
       	logView.setText(sw.toString()+logView.getText());
+      	logView.setText(out.toString()+logView.getText());
+      	System.setOut(orig);
     }
 
 //    private void setMeshScale(
