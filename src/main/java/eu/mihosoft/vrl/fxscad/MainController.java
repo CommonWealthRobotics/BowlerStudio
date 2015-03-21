@@ -89,6 +89,8 @@ import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.pid.PIDConfiguration;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
+import com.neuronrobotics.sdk.util.FileChangeWatcher;
+import com.neuronrobotics.sdk.util.IFileChangeListener;
 /**
  * FXML Controller class
  *
