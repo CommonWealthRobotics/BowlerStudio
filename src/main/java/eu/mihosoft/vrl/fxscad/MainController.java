@@ -149,15 +149,15 @@ public class MainController implements Initializable, IFileChangeListener {
 	
 	private DHParameterKinematics model;
 	
-	private OutputStream logWriter = new OutputStream() {
-		
-		@Override
-		public void write(int b) throws IOException {
-			String log=new String(new byte[]{(byte) b});
-			System.out.println(log);
-			logView.setText(logView.getText()+log);
-		}
-	};
+//	private OutputStream logWriter = new OutputStream() {
+//		
+//		@Override
+//		public void write(int b) throws IOException {
+//			String log=new String(new byte[]{(byte) b});
+//			System.out.println(log);
+//			logView.setText(logView.getText()+log);
+//		}
+//	};
 
 	private PerspectiveCamera subSceneCamera;
 
