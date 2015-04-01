@@ -114,7 +114,6 @@ public class MainController implements Initializable, IFileChangeListener {
     private static final Pattern KEYWORD_PATTERN
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
 
-    //private final Group viewGroup = new Group();
     private final Group manipulator = new Group();
     private final Group baseGroup = new Group();
 
@@ -141,23 +140,11 @@ public class MainController implements Initializable, IFileChangeListener {
 	private int boxSize=50;
 	private Box myBox = new Box(1,  1,boxSize);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
-//	private final Rotate rotateX = new Rotate(0,  Rotate.X_AXIS);
-//	private final Rotate rotateZ = new Rotate(0,  Rotate.Z_AXIS);
-//	private final Rotate rotateY = new Rotate(0,  Rotate.Y_AXIS);
-	
+
 	private final  Affine rotations =  new Affine();
 	
 	private DHParameterKinematics model;
 	
-//	private OutputStream logWriter = new OutputStream() {
-//		
-//		@Override
-//		public void write(int b) throws IOException {
-//			String log=new String(new byte[]{(byte) b});
-//			System.out.println(log);
-//			logView.setText(logView.getText()+log);
-//		}
-//	};
 
 	private PerspectiveCamera subSceneCamera;
 
