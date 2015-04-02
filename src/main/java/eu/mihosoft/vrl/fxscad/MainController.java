@@ -63,6 +63,7 @@ import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
+import javax.usb.UsbDevice;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
