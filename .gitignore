@@ -5,3 +5,10 @@
 /servoTest.jfxscad
 /wheel.stl
 /.gradle*
+/.gradle*
+/.project
+/.classpath
+/.settings*
+/java-bowler
+/JCSG
+
