@@ -63,7 +63,6 @@ import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
-import javax.usb.UsbDevice;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -395,9 +394,9 @@ public class MainController implements Initializable, IFileChangeListener {
                 CSG csg = (CSG) obj;
 
                 csgObject = csg;
-                CadInteractionEvent interact =new CadInteractionEvent();
+                //CadInteractionEvent interact =new CadInteractionEvent();
                 
-                meshContainer = csg.toJavaFXMesh(interact);
+                meshContainer = csg.toJavaFXMesh(null);
 
                 meshView = meshContainer.getAsMeshViews().get(0);
 

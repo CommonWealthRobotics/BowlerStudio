@@ -37,10 +37,9 @@ dependencies {
     compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
     
     compile 'commons-io:commons-io:2.4'
-    
-    //jar 'java-bowler', 'JCSG'
-    compile fileTree (dir: 'java-bowler/build/libs/', includes: ['*.jar'])
-    compile fileTree (dir: 'JCSG/build/libs/', includes: ['*.jar'])
+    	
+    compile project(':JCSG')
+    compile project(':java-bowler')
     compile fileTree (dir: 'libs/', includes: ['*.jar'])
 }
 
