@@ -1,2 +1,1 @@
-rootProject.name = 'BowlerStudio'
-include 'java-bowler', 'JCSG'
+includeFlat 'java-bowler', 'JCSG'
