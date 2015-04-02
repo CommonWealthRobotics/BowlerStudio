@@ -3,7 +3,7 @@ JFXScad
 
 [![Build Status](https://travis-ci.org/miho/JFXScad.svg?branch=master)](https://travis-ci.org/miho/JFXScad)
 
-JavaFX 3D Printing IDE based on [JCSG](https://github.com/miho/JCSG).
+BowlerStudio Robotics development IDE based on [JCSG](https://github.com/miho/JCSG) and [Java-Bowler](https://github.com/NeuronRobotics/java-bowler)
 
 ![](/resources/img/screenshot-03.png)
 
@@ -19,11 +19,11 @@ JavaFX 3D Printing IDE based on [JCSG](https://github.com/miho/JCSG).
 
 ### IDE
 
-Open the `JFXScad` [Gradle](http://www.gradle.org/) project in your favourite IDE (tested with NetBeans 7.4) and build it
+Open the `BowlerStudio` [Gradle](http://www.gradle.org/) project in your favourite IDE (tested with NetBeans 7.4) and build it
 by calling the `assemble` task.
 
 ### Command Line
-Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/JFXScad`) and enter the following command
+Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerStudio`) and enter the following command
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
 
