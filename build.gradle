@@ -16,6 +16,9 @@ if (!hasProperty('mainClass')) {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/' 
+    }
 }
 
 task wrapper(type: Wrapper) {
@@ -25,10 +28,12 @@ task wrapper(type: Wrapper) {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.10'
     
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.5.1'
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.5.1', classifier: 'sources'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6', classifier: 'sources'
     
-
+    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
+    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT', classifier: 'sources'
+    		
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
