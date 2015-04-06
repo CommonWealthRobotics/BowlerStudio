@@ -16,7 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-public class JFXScad extends Application {
+public class BowlerStudio extends Application {
     
     private static TextArea log;
     private static MainController controller;
@@ -34,14 +34,14 @@ public class JFXScad extends Application {
 
         Scene scene = new Scene(main, 1024, 768,true);
 
-        scene.getStylesheets().add(JFXScad.class.getResource("java-keywords.css").
+        scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
         
         PerspectiveCamera camera = new PerspectiveCamera();
         
         scene.setCamera(camera);
 
-        primaryStage.setTitle("JavaFXScad");
+        primaryStage.setTitle("Bowler Studio");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(768);
@@ -61,17 +61,17 @@ public class JFXScad extends Application {
         }
         
         FXMLLoader fxmlLoader = new FXMLLoader(
-                JFXScad.class.getResource("Main.fxml"));
+                BowlerStudio.class.getResource("Main.fxml"));
         try {
             fxmlLoader.load();
         } catch (IOException ex) {
-            Logger.getLogger(JFXScad.class.getName()).
+            Logger.getLogger(BowlerStudio.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
 
         Parent root = fxmlLoader.getRoot();
         
-        root.getStylesheets().add(JFXScad.class.getResource("java-keywords.css").
+        root.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
 
         controller = fxmlLoader.getController();
