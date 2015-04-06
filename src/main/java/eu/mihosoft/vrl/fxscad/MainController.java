@@ -114,8 +114,7 @@ public class MainController implements Initializable, IFileChangeListener {
     private static final Pattern KEYWORD_PATTERN
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
 
-    private final Group manipulator = new Group();
-    private final Group baseGroup = new Group();
+
 
     private final CodeArea codeArea = new CodeArea();
 
@@ -132,25 +131,12 @@ public class MainController implements Initializable, IFileChangeListener {
     @FXML
     private Pane viewContainer;
 
-    private SubScene subScene;
+    private Jfx3dManager subScene;
 
 	private File openFile;
 
 	private FileChangeWatcher watcher;
-	private int boxSize=50;
-	//private Box myBox = new Box(1,  1,boxSize);
-	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
 
-	private final  Affine rotations =  new Affine();
-	
-	private DHParameterKinematics model;
-	
-
-	private PerspectiveCamera subSceneCamera;
-
-	private DyIO master;
-
-	private boolean buttonPressed = false;
 
 	private MeshContainer meshContainer;
 
@@ -196,7 +182,7 @@ public class MainController implements Initializable, IFileChangeListener {
                 });
 
         codeArea.replaceText(
-                "println(dyio)\n"
+                "\n"
                 + "CSG cube = new Cube(20).toCSG()\n"
                 + "CSG sphere = new Sphere(12.5).toCSG()\n"
                 + "\n"
@@ -204,53 +190,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         editorContainer.setContent(codeArea);
 
-        subScene = new SubScene(baseGroup, 500, 500, true,
-                SceneAntialiasing.BALANCED);
-
-        subSceneCamera = new PerspectiveCamera(false);
-        
-        subScene.setCamera(subSceneCamera);
-        
-
-        //myBox.getTransforms().add(rotations);
-        //viewGroup.getTransforms().add(rotations);
-        
-        //manipulator.getChildren().add(myBox);
-
-        //baseGroup.getChildren().add(new Box(200, 200,2));
-        baseGroup.getChildren().add(manipulator); 
-
-        baseGroup.getTransforms().addAll(
-        		//new Rotate(90, Rotate.X_AXIS),
-        		new Rotate(180, Rotate.Y_AXIS),
-        		new Rotate(180, Rotate.Z_AXIS));
-        subScene.widthProperty().bind(viewContainer.widthProperty());
-        subScene.heightProperty().bind(viewContainer.heightProperty());
-        
-        Platform.runLater(() -> {
-
-        	subSceneCamera.setTranslateX(viewContainer.widthProperty().divide(-1).doubleValue());
-            subSceneCamera.setTranslateY(viewContainer.heightProperty().divide(-1).doubleValue());
-             
-        	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(2).doubleValue());
-        	baseGroup.setTranslateY(-viewContainer.heightProperty().divide(2).doubleValue());
-        	//viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
-        	manipulator.setTranslateX(0);
-        	manipulator.setTranslateY(150);
-        	manipulator.setTranslateZ(120);
-
-        	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
-        });
-        
-//		rotateZ.setAngle(-15);
-//		rotateX.setAngle(-50);
-//		Platform.runLater(() -> {
-//            n.setTranslateX(-302.99);
-//            n.setTranslateY(-156.00);
-//        });
-        
-        
-        VFX3DUtil.addMouseBehavior(baseGroup,viewContainer);
+        subScene = new Jfx3dManager(viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
@@ -270,83 +210,7 @@ public class MainController implements Initializable, IFileChangeListener {
         System.out.println("Starting Application");
     }
 
-    private void attachArm(String usbDev) {
-    	System.out.println("Using arm: "+usbDev);
-        master = new DyIO(new UsbCDCSerialConnection(usbDev));
-
-		master.connect();
-		for (int i=0;i<master.getPIDChannelCount();i++){
-			// disable PID controller, default PID  and dypid configurations are disabled.
-			master.ConfigureDynamicPIDChannels(new DyPIDConfiguration(i));
-			master.ConfigurePIDController(new PIDConfiguration());
-		}
-		model = new DHParameterKinematics(master,"TrobotMaster.xml");
-        Log.enableWarningPrint();
-		model.addPoseUpdateListener(new ITaskSpaceUpdateListenerNR() {			
-			int packetIndex=0;
-			int numSkip = 1;
-			int armScale=1;
-			@Override
-			public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-				ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
-
-				if(packetIndex++==numSkip){
-					packetIndex=0;
-					Platform.runLater(() -> {
-				        for(int i=0;i<joints.size();i++){
-				        	joints.get(i).setTranslateX(jointLocations.get(i).getX()*armScale);
-				        	joints.get(i).setTranslateY(jointLocations.get(i).getY()*armScale);
-				        	joints.get(i).setTranslateZ(jointLocations.get(i).getZ()*armScale);
-				        	
-				        }
-						try{
-							if(buttonPressed){
-								double [][] poseRot = pose.getRotationMatrixArray();
-								rotations.setMxx(poseRot[0][0]);
-								rotations.setMxy(poseRot[0][1]);
-								rotations.setMxz(poseRot[0][2]);
-								rotations.setMyx(poseRot[1][0]);
-								rotations.setMyy(poseRot[1][1]);
-								rotations.setMyz(poseRot[1][2]);
-								rotations.setMzx(poseRot[2][0]);
-								rotations.setMzy(poseRot[2][1]);
-								rotations.setMzz(poseRot[2][2]);
-								rotations.setTx(pose.getX()*armScale);
-								rotations.setTy(pose.getY()*armScale);
-								rotations.setTz(pose.getZ()*armScale);
-//								System.out.println("Camera Transform z="+subSceneCamera.getTranslateZ()+
-//										" y="+subSceneCamera.getTranslateY()+
-//										" x="+subSceneCamera.getTranslateX()+
-//										" o="+subSceneCamera.getNodeOrientation());
-
-								for( Transform t:subSceneCamera.getTransforms()){
-//									System.out.println(t);
-								}
-							}
-						}catch (Exception e){
-							e.printStackTrace();
-						}
-		            });
-
-				}
-			}
-			
-			@Override
-			public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,TransformNR pose) {}
-		});
-		new DigitalInputChannel(master, 23).addDigitalInputListener((source, isHigh) -> {
-			buttonPressed  = !isHigh;
-		});
-		
-        ArrayList<TransformNR> jointLocations =  model.getChainTransformations();
-        for(int i=0;i<jointLocations.size();i++){
-        	Sphere s = new Sphere(10);
-        	s.setMaterial(new PhongMaterial(Color.rgb(0, i*(128/6), 255-i*(128/6))));
-        	joints.add(s);
-        	manipulator.getChildren().add(s);
-        }
-        
-	}
+ 
 
 	private void setCode(String code) {
         codeArea.replaceText(code);
@@ -365,10 +229,6 @@ public class MainController implements Initializable, IFileChangeListener {
         csgObject = null;
 
         //clearLog();
-
-        if(meshView!=null){
-        	baseGroup.getChildren().remove(meshView);
-        }
         
         StringWriter sw = new StringWriter();
     	PrintWriter pw = new PrintWriter(sw);
@@ -392,7 +252,6 @@ public class MainController implements Initializable, IFileChangeListener {
             Binding binding = new Binding();
             System.setOut(new PrintStream(out));
 
-            binding.setVariable("dyio", master);
             GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
             		binding, cc);
 
@@ -410,31 +269,8 @@ public class MainController implements Initializable, IFileChangeListener {
                 
                 meshContainer = csg.toJavaFXMesh(null);
 
-                meshView = meshContainer.getAsMeshViews().get(0);
+                meshView = subScene.replaceObject(meshView, meshContainer.getAsMeshViews().get(0));
 
-//                setMeshScale(meshContainer,
-//                        viewContainer.getBoundsInLocal(), meshView);
-
-                PhongMaterial m = new PhongMaterial(Color.RED);
-
-                meshView.setCullFace(CullFace.NONE);
-
-                meshView.setMaterial(m);
-
-
-//                viewGroup.setTranslateX( viewContainer.widthProperty().divide(2).doubleValue());
-//                viewGroup.setTranslateY( viewContainer.heightProperty().divide(2).doubleValue());
-                
-//                viewContainer.boundsInLocalProperty().addListener(
-//                        (ov, oldV, newV) -> {
-//                            setMeshScale(meshContainer, newV, meshView);
-//                        });
-                
-                
-                //meshView.getTransforms().add(rotations);
-                //
-                //manipulator.getChildren().add(meshView);
-                baseGroup.getChildren().add(meshView);
                 logView.setText("Compile OK\n"+logView.getText());
 
             } else {
@@ -642,44 +478,7 @@ public class MainController implements Initializable, IFileChangeListener {
         if (f == null) {
             return;
         }
-
-        String fName = f.getAbsolutePath();
-
-        if (!fName.toLowerCase().endsWith(".png")) {
-            fName += ".png";
-        }
-
-        int snWidth = 1024;
-        int snHeight = 1024;
-
-        double realWidth = baseGroup.getBoundsInLocal().getWidth();
-        double realHeight = baseGroup.getBoundsInLocal().getHeight();
-
-        double scaleX = snWidth / realWidth;
-        double scaleY = snHeight / realHeight;
-
-        double scale = Math.min(scaleX, scaleY);
-
-        PerspectiveCamera snCam = new PerspectiveCamera(false);
-        snCam.setTranslateZ(-200);
-
-        SnapshotParameters snapshotParameters = new SnapshotParameters();
-        snapshotParameters.setTransform(new Scale(scale, scale));
-        snapshotParameters.setCamera(snCam);
-        snapshotParameters.setDepthBuffer(true);
-        snapshotParameters.setFill(Color.TRANSPARENT);
-
-        WritableImage snapshot = new WritableImage(snWidth, (int) (realHeight * scale));
-
-        baseGroup.snapshot(snapshotParameters, snapshot);
-
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null),
-                    "png", new File(fName));
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
+       subScene.saveToPng(f);
     }
 
     @FXML
@@ -801,10 +600,11 @@ public class MainController implements Initializable, IFileChangeListener {
 		}
 	}
 
+
+
 	public void disconnect() {
-		if(master!=null){
-			master.disconnect();
-		}
+		subScene.disconnect();
 	}
+
 
 }
