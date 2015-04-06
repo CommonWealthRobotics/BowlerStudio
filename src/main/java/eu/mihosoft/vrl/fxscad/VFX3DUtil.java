@@ -104,7 +104,7 @@ class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
 			if(xscale<.1){
 				xscale=.1;
 			}
-			System.out.println("Zoom "+xscale);
+			//System.out.println("Zoom "+xscale);
 			n.setScaleX( xscale);
             n.setScaleY( xscale);
             n.setScaleZ( xscale);
@@ -137,12 +137,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	public MouseBehaviorImpl1(Node n) {
 		this.n = n;
 		n.getTransforms().addAll(rotateX, rotateZ);
-		rotateZ.setAngle(-15);
-		rotateX.setAngle(-50);
-		Platform.runLater(() -> {
-            n.setTranslateX(-302.99);
-            n.setTranslateY(-156.00);
-        });
+
 	}
 
 	@Override
@@ -157,7 +152,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 				anchorAngleY = rotateZ.getAngle();
 				t.consume();
 			} else if (MouseEvent.MOUSE_DRAGGED.equals(t.getEventType())) {
-				System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
+				//System.out.println(" Setting from "+anchorAngleX+" "+anchorAngleY);
 				double rotZ= anchorAngleY + (anchorX - t.getSceneX()) * 0.7;
 				double rotX= anchorAngleX - (anchorY - t.getSceneY()) * 0.7;
 				rotateZ.setAngle(rotZ);

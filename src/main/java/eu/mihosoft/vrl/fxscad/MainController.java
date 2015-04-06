@@ -138,7 +138,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private FileChangeWatcher watcher;
 	private int boxSize=50;
-	private Box myBox = new Box(1,  1,boxSize);
+	//private Box myBox = new Box(1,  1,boxSize);
 	private ArrayList<Sphere> joints = new  ArrayList<Sphere> ();
 
 	private final  Affine rotations =  new Affine();
@@ -204,7 +204,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
         editorContainer.setContent(codeArea);
 
-        subScene = new SubScene(baseGroup, 100, 100, true,
+        subScene = new SubScene(baseGroup, 500, 500, true,
                 SceneAntialiasing.BALANCED);
 
         subSceneCamera = new PerspectiveCamera(false);
@@ -212,12 +212,12 @@ public class MainController implements Initializable, IFileChangeListener {
         subScene.setCamera(subSceneCamera);
         
 
-        myBox.getTransforms().add(rotations);
+        //myBox.getTransforms().add(rotations);
         //viewGroup.getTransforms().add(rotations);
         
-        manipulator.getChildren().add(myBox);
+        //manipulator.getChildren().add(myBox);
 
-        baseGroup.getChildren().add(new Box(200, 200,2));
+        //baseGroup.getChildren().add(new Box(200, 200,2));
         baseGroup.getChildren().add(manipulator); 
 
         baseGroup.getTransforms().addAll(
@@ -239,20 +239,29 @@ public class MainController implements Initializable, IFileChangeListener {
 
         	manipulator.getTransforms().add(new Rotate(45, Rotate.Z_AXIS));
         });
+        
+//		rotateZ.setAngle(-15);
+//		rotateX.setAngle(-50);
+//		Platform.runLater(() -> {
+//            n.setTranslateX(-302.99);
+//            n.setTranslateY(-156.00);
+//        });
+        
+        
         VFX3DUtil.addMouseBehavior(baseGroup,viewContainer);
 
         viewContainer.getChildren().add(subScene);
         
-		List<UsbDevice> prts;
-		try {
-			prts = UsbCDCSerialConnection.getAllUsbBowlerDevices();
-			for(int i=0;i<prts.size();i++) {
-				String s = UsbCDCSerialConnection.getUniqueID(prts.get(i));
-				if(s.contains("DyIO v1.0")){
-					attachArm(s);
-				}
-			}
-		} catch (Exception e) {}
+//		List<UsbDevice> prts;
+//		try {
+//			prts = UsbCDCSerialConnection.getAllUsbBowlerDevices();
+//			for(int i=0;i<prts.size();i++) {
+//				String s = UsbCDCSerialConnection.getUniqueID(prts.get(i));
+//				if(s.contains("DyIO v1.0")){
+//					attachArm(s);
+//				}
+//			}
+//		} catch (Exception e) {}
         
 		
 
@@ -356,7 +365,7 @@ public class MainController implements Initializable, IFileChangeListener {
         //clearLog();
 
         if(meshView!=null){
-        	manipulator.getChildren().remove(meshView);
+        	baseGroup.getChildren().remove(meshView);
         }
         
         StringWriter sw = new StringWriter();
@@ -420,8 +429,10 @@ public class MainController implements Initializable, IFileChangeListener {
 //                        });
                 
                 
-                meshView.getTransforms().add(rotations);
-                manipulator.getChildren().add(meshView);
+                //meshView.getTransforms().add(rotations);
+                //
+                //manipulator.getChildren().add(meshView);
+                baseGroup.getChildren().add(meshView);
                 logView.setText("Compile OK\n"+logView.getText());
 
             } else {
