@@ -60,7 +60,8 @@
                 	 minHeight="0.0" minWidth="0.0"
 	                 prefHeight="320.0" 
 	                 prefWidth="200.0" 
-	                 style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" />
+	                 style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" 
+	                 />
               </items>
             </SplitPane>
           </children>

@@ -224,14 +224,16 @@ public class MainController implements Initializable, IFileChangeListener {
         		//new Rotate(90, Rotate.X_AXIS),
         		new Rotate(180, Rotate.Y_AXIS),
         		new Rotate(180, Rotate.Z_AXIS));
+        subScene.widthProperty().bind(viewContainer.widthProperty());
+        subScene.heightProperty().bind(viewContainer.heightProperty());
+        
         Platform.runLater(() -> {
-            subScene.setWidth(viewContainer.widthProperty().doubleValue());
-            subScene.setHeight(viewContainer.heightProperty().doubleValue());
 
         	subSceneCamera.setTranslateX(viewContainer.widthProperty().divide(-1).doubleValue());
             subSceneCamera.setTranslateY(viewContainer.heightProperty().divide(-1).doubleValue());
              
-        	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(1).doubleValue());
+        	baseGroup.setTranslateX(-viewContainer.widthProperty().divide(2).doubleValue());
+        	baseGroup.setTranslateY(-viewContainer.heightProperty().divide(2).doubleValue());
         	//viewGroup.setTranslateZ(viewContainer.heightProperty().divide(2).doubleValue());
         	manipulator.setTranslateX(0);
         	manipulator.setTranslateY(150);
@@ -445,7 +447,7 @@ public class MainController implements Initializable, IFileChangeListener {
         }
       	logView.setText(sw.toString()+logView.getText());
       	logView.setText(out.toString()+logView.getText());
-      	System.setOut(orig);
+      	
     }
 
 //    private void setMeshScale(
