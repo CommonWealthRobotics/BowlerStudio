@@ -40,6 +40,7 @@ import javafx.scene.transform.Transform;
 
 public class Jfx3dManager extends SubScene {
 	private final Group manipulator = new Group();
+	private final Group lookGroup = new Group();
 	private final static Group baseGroup = new Group();
 	private PerspectiveCamera subSceneCamera;
 
@@ -60,15 +61,7 @@ public class Jfx3dManager extends SubScene {
 		subSceneCamera = new PerspectiveCamera(false);
 
 		setCamera(subSceneCamera);
-
-		// myBox.getTransforms().add(rotations);
-		// viewGroup.getTransforms().add(rotations);
-
-		// manipulator.getChildren().add(myBox);
-
-		// baseGroup.getChildren().add(new Box(200, 200,2));
-		baseGroup.getChildren().add(manipulator);
-
+		
 		baseGroup.getTransforms().addAll(
 		// new Rotate(90, Rotate.X_AXIS),
 				new Rotate(180, Rotate.Y_AXIS), new Rotate(180, Rotate.Z_AXIS));
@@ -100,13 +93,15 @@ public class Jfx3dManager extends SubScene {
 		// n.setTranslateX(-302.99);
 		// n.setTranslateY(-156.00);
 		// });
-
-		VFX3DUtil.addMouseBehavior(baseGroup, viewContainer);
+		
+		baseGroup.getChildren().add(lookGroup);
+		
+		VFX3DUtil.addMouseBehavior(lookGroup, viewContainer);
 	}
 	
 	public MeshView replaceObject(MeshView previous, MeshView current){
         if(previous!=null){
-        	baseGroup.getChildren().remove(previous);
+        	lookGroup.getChildren().remove(previous);
         }
         
         PhongMaterial m = new PhongMaterial(Color.RED);
@@ -115,7 +110,7 @@ public class Jfx3dManager extends SubScene {
 
         current.setMaterial(m);
         
-        baseGroup.getChildren().add(current);
+        lookGroup.getChildren().add(current);
         return current;
 	}
 	

@@ -193,19 +193,6 @@ public class MainController implements Initializable, IFileChangeListener {
         subScene = new Jfx3dManager(viewContainer);
 
         viewContainer.getChildren().add(subScene);
-        
-//		List<UsbDevice> prts;
-//		try {
-//			prts = UsbCDCSerialConnection.getAllUsbBowlerDevices();
-//			for(int i=0;i<prts.size();i++) {
-//				String s = UsbCDCSerialConnection.getUniqueID(prts.get(i));
-//				if(s.contains("DyIO v1.0")){
-//					attachArm(s);
-//				}
-//			}
-//		} catch (Exception e) {}
-        
-		
 
         System.out.println("Starting Application");
     }
@@ -285,22 +272,6 @@ public class MainController implements Initializable, IFileChangeListener {
       	logView.setText(out.toString()+logView.getText());
       	
     }
-
-//    private void setMeshScale(
-//            MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
-//        double maxDim
-//                = Math.max(meshContainer.getWidth(),
-//                        Math.max(meshContainer.getHeight(),
-//                                meshContainer.getDepth()));
-//
-//        double minContDim = Math.min(t1.getWidth(), t1.getHeight());
-//
-//        double scale = minContDim / (maxDim * 2);
-//
-//        meshView.setScaleX(scale);
-//        meshView.setScaleY(scale);
-//        meshView.setScaleZ(scale);
-//    }
 
     /**
      * Returns the location of the Jar archive or .class file the specified

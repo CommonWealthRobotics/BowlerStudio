@@ -58,36 +58,20 @@ public class VFX3DUtil {
 	 * @param btn
 	 *            mouse button that shall be used for this behavior
 	 */
-	public static void addMouseBehavior(Node n, Scene eventReceiver) {
-		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n));
-		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
-		
-	}
-
-	/**
-	 * Adds rotation behavior to the specified node.
-	 *
-	 * @param n
-	 *            node
-	 * @param eventReceiver
-	 *            receiver of the event
-	 * @param btn
-	 *            mouse button that shall be used for this behavior
-	 */
 	public static void addMouseBehavior(Node n, Node eventReceiver) {
-		eventReceiver.addEventHandler(MouseEvent.ANY, new MouseBehaviorImpl1(n));
-		eventReceiver.addEventHandler(ScrollEvent.ANY, new MouseBehaviorImpl2(n));
+		eventReceiver.addEventHandler(MouseEvent.ANY, new LookHandler(n));
+		eventReceiver.addEventHandler(ScrollEvent.ANY, new ScrollHandler(n));
 	
 	}
 }
 
 // rotation behavior implementation
-class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
+class ScrollHandler implements EventHandler<ScrollEvent> {
 
 	private Node n;
 	double xscale;
 
-	public MouseBehaviorImpl2(Node n) {
+	public ScrollHandler(Node n) {
 		n.setScaleX(1);
 		n.setScaleY(1);
 		n.setScaleZ(1);
@@ -119,7 +103,7 @@ class MouseBehaviorImpl2 implements EventHandler<ScrollEvent> {
 }
 
 // rotation behavior implementation
-class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
+class LookHandler implements EventHandler<MouseEvent> {
 
 	private double anchorAngleX;
 	private double anchorAngleY;
@@ -134,7 +118,7 @@ class MouseBehaviorImpl1 implements EventHandler<MouseEvent> {
 	private double initialTranslateX;
 	private double initialTranslateY;
 
-	public MouseBehaviorImpl1(Node n) {
+	public LookHandler(Node n) {
 		this.n = n;
 		n.getTransforms().addAll(rotateX, rotateZ);
 
