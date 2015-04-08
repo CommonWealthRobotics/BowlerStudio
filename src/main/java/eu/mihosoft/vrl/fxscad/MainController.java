@@ -91,6 +91,7 @@ import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
+import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 /**
  * FXML Controller class
  *
@@ -191,7 +192,20 @@ public class MainController implements Initializable, IFileChangeListener {
         editorContainer.setContent(codeArea);
 
         subScene = new Jfx3dManager(viewContainer);
+        subScene.widthProperty().bind(viewContainer.widthProperty());
+        subScene.heightProperty().bind(viewContainer.heightProperty());
+		Platform.runLater(() -> {
 
+			subScene.getSubSceneCamera().setTranslateX(viewContainer.widthProperty()
+					.divide(-1).doubleValue());
+			subScene.getSubSceneCamera().setTranslateY(viewContainer.heightProperty()
+					.divide(-1).doubleValue());
+
+			subScene.getBasegroup().setTranslateX(-viewContainer.widthProperty().divide(2)
+					.doubleValue());
+			subScene.getBasegroup().setTranslateY(-viewContainer.heightProperty().divide(2)
+					.doubleValue());
+		});
         viewContainer.getChildren().add(subScene);
 
         System.out.println("Starting Application");
