@@ -132,7 +132,8 @@ public class MainController implements Initializable, IFileChangeListener {
     @FXML
     private Pane viewContainer;
 
-    private Jfx3dManager subScene;
+    private SubScene subScene;
+    private Jfx3dManager jfx3dmanager ;
 
 	private File openFile;
 
@@ -190,22 +191,11 @@ public class MainController implements Initializable, IFileChangeListener {
                 + "cube.difference(sphere)");
 
         editorContainer.setContent(codeArea);
-
-        subScene = new Jfx3dManager(viewContainer);
+        jfx3dmanager = new Jfx3dManager();
+        subScene = jfx3dmanager.getSubScene();
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());
-		Platform.runLater(() -> {
 
-			subScene.getSubSceneCamera().setTranslateX(viewContainer.widthProperty()
-					.divide(-1).doubleValue());
-			subScene.getSubSceneCamera().setTranslateY(viewContainer.heightProperty()
-					.divide(-1).doubleValue());
-
-			subScene.getBasegroup().setTranslateX(-viewContainer.widthProperty().divide(2)
-					.doubleValue());
-			subScene.getBasegroup().setTranslateY(-viewContainer.heightProperty().divide(2)
-					.doubleValue());
-		});
         viewContainer.getChildren().add(subScene);
 
         System.out.println("Starting Application");
@@ -270,7 +260,7 @@ public class MainController implements Initializable, IFileChangeListener {
                 
                 meshContainer = csg.toJavaFXMesh(null);
 
-                meshView = subScene.replaceObject(meshView, meshContainer.getAsMeshViews().get(0));
+                meshView = jfx3dmanager.replaceObject(meshView, meshContainer.getAsMeshViews().get(0));
 
                 logView.setText("Compile OK\n"+logView.getText());
 
@@ -463,7 +453,7 @@ public class MainController implements Initializable, IFileChangeListener {
         if (f == null) {
             return;
         }
-       subScene.saveToPng(f);
+        jfx3dmanager.saveToPng(f);
     }
 
     @FXML
@@ -588,7 +578,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 
 	public void disconnect() {
-		subScene.disconnect();
+		jfx3dmanager.disconnect();
 	}
 
 
