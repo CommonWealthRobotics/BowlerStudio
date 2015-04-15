@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package eu.mihosoft.vrl.fxscad;
+package com.neuronrobotics.bowlerstudio;
 
 /**
  *

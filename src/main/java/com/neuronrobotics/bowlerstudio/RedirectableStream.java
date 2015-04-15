@@ -50,7 +50,7 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-package eu.mihosoft.vrl.fxscad;
+package com.neuronrobotics.bowlerstudio;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

@@ -1,4 +1,4 @@
-package eu.mihosoft.vrl.fxscad;
+package com.neuronrobotics.bowlerstudio;
 
 import java.io.IOException;
 import java.util.logging.Level;
