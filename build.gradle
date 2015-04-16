@@ -41,7 +41,7 @@ dependencies {
     compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
     compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
     	
-    compile group: 'org.kohsuke', name: 'github-api', version: '1.67'
+    compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
     	
     compile 'commons-io:commons-io:2.4'
     	
