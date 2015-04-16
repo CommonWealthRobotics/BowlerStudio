@@ -11,27 +11,14 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#onLoadFile" text="Load File" />
-                  <MenuItem mnemonicParsing="false" onAction="#onSaveFile" text="Save File" />
-                  <MenuItem mnemonicParsing="false" onAction="#onExportAsSTLFile" text="Export as STL" />
-                  <MenuItem mnemonicParsing="false" onAction="#onExportAsPngFile" text="Export as PNG" />
               <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Connection">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
-              <CheckMenuItem mnemonicParsing="false" onAction="#onAutoCompile" selected="true" text="Auto-Compile" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Samples">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#onBoardMountSample" text="Board Mount" />
-                  <MenuItem mnemonicParsing="false" onAction="#onServoMountSample" text="Servo Mount" />
-                  <MenuItem mnemonicParsing="false" onAction="#onBatteryHolderSample" text="Battery Holder" />
-                  <MenuItem mnemonicParsing="false" onAction="#onWheelSample" text="Wheel" />
-                  <MenuItem mnemonicParsing="false" onAction="#onBreadBoardConnectorSample" text="BreadBoard Connector" />
-              </items>
-            </Menu>
         </menus>
       </MenuBar>
     <SplitPane dividerPositions="0.774247491638796" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="1024.0" VBox.vgrow="ALWAYS">

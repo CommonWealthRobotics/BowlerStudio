@@ -99,7 +99,7 @@ import com.neuronrobotics.sdk.addons.kinematics.gui.*;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class MainController implements Initializable, IFileChangeListener {
+public class MainController implements Initializable {
 
     private static final String[] KEYWORDS = new String[]{
         "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
@@ -134,13 +134,13 @@ public class MainController implements Initializable, IFileChangeListener {
 				Platform.runLater(() -> {
 					String newString = out.toString();
 					out.reset();
-					if(logView!=null){
-						String current = logView.getText()+newString;
+					if(logViewRef!=null){
+						String current = logViewRef.getText()+newString;
 						if(current.getBytes().length>2000)
 							current=new String(current.substring(current.getBytes().length-2000));
 						final String toSet=current;
-						logView.setText(toSet);
-						logView.setScrollTop(Double.MAX_VALUE);	
+						logViewRef.setText(toSet);
+						logViewRef.setScrollTop(Double.MAX_VALUE);	
 					}
 				});
 			}
@@ -153,14 +153,14 @@ public class MainController implements Initializable, IFileChangeListener {
 
 
 
-    private final CodeArea codeArea = new CodeArea();
+    //private final CodeArea codeArea = new CodeArea();
 
     private boolean autoCompile = true;
 
     private CSG csgObject;
-
+    private static TextArea logViewRef=null;
     @FXML
-    private static TextArea logView;
+    private TextArea logView;
 
     @FXML
     private ScrollPane editorContainer;
@@ -173,13 +173,6 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private File openFile;
 
-	private FileChangeWatcher watcher;
-
-
-	private MeshContainer meshContainer;
-
-	private MeshView meshView;
-
 	private BowlerStudioController application;
 	
     /**
@@ -190,42 +183,42 @@ public class MainController implements Initializable, IFileChangeListener {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+    	logViewRef=logView;
         //
-        codeArea.textProperty().addListener(
-                (ov, oldText, newText) -> {
-                    Matcher matcher = KEYWORD_PATTERN.matcher(newText);
-                    int lastKwEnd = 0;
-                    StyleSpansBuilder<Collection<String>> spansBuilder
-                    = new StyleSpansBuilder<>();
-                    while (matcher.find()) {
-                        spansBuilder.add(Collections.emptyList(),
-                                matcher.start() - lastKwEnd);
-                        spansBuilder.add(Collections.singleton("keyword"),
-                                matcher.end() - matcher.start());
-                        lastKwEnd = matcher.end();
-                    }
-                    spansBuilder.add(Collections.emptyList(),
-                            newText.length() - lastKwEnd);
-                    codeArea.setStyleSpans(0, spansBuilder.create());
-                });
+//        codeArea.textProperty().addListener(
+//                (ov, oldText, newText) -> {
+//                    Matcher matcher = KEYWORD_PATTERN.matcher(newText);
+//                    int lastKwEnd = 0;
+//                    StyleSpansBuilder<Collection<String>> spansBuilder
+//                    = new StyleSpansBuilder<>();
+//                    while (matcher.find()) {
+//                        spansBuilder.add(Collections.emptyList(),
+//                                matcher.start() - lastKwEnd);
+//                        spansBuilder.add(Collections.singleton("keyword"),
+//                                matcher.end() - matcher.start());
+//                        lastKwEnd = matcher.end();
+//                    }
+//                    spansBuilder.add(Collections.emptyList(),
+//                            newText.length() - lastKwEnd);
+//                    codeArea.setStyleSpans(0, spansBuilder.create());
+//                });
+//
+//        EventStream<Change<String>> textEvents
+//                = EventStreams.changesOf(codeArea.textProperty());
 
-        EventStream<Change<String>> textEvents
-                = EventStreams.changesOf(codeArea.textProperty());
+//        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
+//                subscribe(code -> {
+//                    if (autoCompile) {
+//                        compile(code.getNewValue());
+//                    }
+//                });
 
-        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
-                subscribe(code -> {
-                    if (autoCompile) {
-                        compile(code.getNewValue());
-                    }
-                });
-
-        codeArea.replaceText(
-                "\n"
-                + "CSG cube = new Cube(20).toCSG()\n"
-                + "CSG sphere = new Sphere(12.5).toCSG()\n"
-                + "\n"
-                + "cube.difference(sphere)");
+//        codeArea.replaceText(
+//                "\n"
+//                + "CSG cube = new Cube(20).toCSG()\n"
+//                + "CSG sphere = new Sphere(12.5).toCSG()\n"
+//                + "\n"
+//                + "cube.difference(sphere)");
 
         application = new BowlerStudioController();
         editorContainer.setContent(application);
@@ -242,72 +235,21 @@ public class MainController implements Initializable, IFileChangeListener {
 
  
 
-	private void setCode(String code) {
-        codeArea.replaceText(code);
-    }
+//	private void setCode(String code) {
+//        codeArea.replaceText(code);
+//    }
+//
+//    private String getCode() {
+//        return codeArea.getText();
+//    }
 
-    private String getCode() {
-        return codeArea.getText();
-    }
-
-    private void clearLog() {
-        logView.setText("");
-    }
-
-    private void compile(String code) {
-
-        csgObject = null;
-
-        //clearLog();
-        
-        StringWriter sw = new StringWriter();
-    	PrintWriter pw = new PrintWriter(sw);
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	
-        try {
-
-            CompilerConfiguration cc = new CompilerConfiguration();
-
-            cc.addCompilationCustomizers(
-                    new ImportCustomizer().
-                    addStarImports("eu.mihosoft.vrl.v3d",
-                            "eu.mihosoft.vrl.v3d.samples").
-                    addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
-            
-            cc.addCompilationCustomizers(
-                    new ImportCustomizer().
-                    addStarImports("com.neuronrobotics.sdk.dyio",
-                            "com.neuronrobotics.sdk.common"));
-        	
-            Binding binding = new Binding();
-            System.setOut(new PrintStream(out));
-
-            GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
-            		binding, cc);
-
-            Script script = shell.parse(code);
- 
-            Object obj = script.run();
-            
-            
-            if (obj instanceof CSG) {
-            	
-                CSG csg = (CSG) obj;
-
-                csgObject = csg;
-                //CadInteractionEvent interact =new CadInteractionEvent();
-                
-                meshContainer = csg.toJavaFXMesh(null);
-
-                meshView = jfx3dmanager.replaceObject(meshView, meshContainer.getAsMeshViews().get(0));
-
-            }
-        } catch (Throwable ex) {
-        	ex.printStackTrace(pw);
-        
-        }
-      	
-    }
+//    private void clearLog() {
+//        logView.setText("");
+//    }
+//
+//    private void compile(String code) {
+//      	
+//    }
 
     /**
      * Returns the location of the Jar archive or .class file the specified
@@ -349,11 +291,11 @@ public class MainController implements Initializable, IFileChangeListener {
     @FXML
     private void onLoadFile(ActionEvent e) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open JFXScad File");
+        fileChooser.setTitle("Open Script File");
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter(
-                        "JFXScad files (*.jfxscad, *.groovy)",
-                        "*.jfxscad", "*.groovy"));
+                        "Script files",
+                        "*.jfxscad", "*.groovy", "*.java"));
         
 
         openFile = fileChooser.showOpenDialog(null);
@@ -361,131 +303,7 @@ public class MainController implements Initializable, IFileChangeListener {
         if (openFile == null) {
             return;
         }
-
-        String fName = openFile.getAbsolutePath();
-
-        if (!fName.toLowerCase().endsWith(".groovy")
-                && !fName.toLowerCase().endsWith(".jfxscad")) {
-            fName += ".jfxscad";
-        }
-
-        try {
-            setCode(new String(Files.readAllBytes(Paths.get(fName)), "UTF-8"));
-            
-            if(watcher!=null){
-            	watcher.close();
-            }
-            watcher = new FileChangeWatcher(openFile);
-            watcher.addIFileChangeListener(this);
-            watcher.start();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-        
-        
-        
-    }
-
-    @FXML
-    private void onSaveFile(ActionEvent e) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save JFXScad File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter(
-                        "JFXScad files (*.jfxscad, *.groovy)",
-                        "*.jfxscad", "*.groovy"));
-        fileChooser.setInitialDirectory(openFile);
-        
-        File f = fileChooser.showSaveDialog(null);
-        
-        if (f == null) {
-            return;
-        }
-
-        String fName = f.getAbsolutePath();
-
-        if (!fName.toLowerCase().endsWith(".groovy")
-                && !fName.toLowerCase().endsWith(".jfxscad")) {
-            fName += ".jfxscad";
-        }
-
-        try {
-            Files.write(Paths.get(fName), getCode().getBytes("UTF-8"));
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @FXML
-    private void onExportAsSTLFile(ActionEvent e) {
-
-        if (csgObject == null) {
-            Action response = Dialogs.create()
-                    .title("Error")
-                    .message("Cannot export STL. There is no geometry :(")
-                    .lightweight()
-                    .showError();
-
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export STL File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter(
-                        "STL files (*.stl)",
-                        "*.stl"));
-
-        File f = fileChooser.showSaveDialog(null);
-
-        if (f == null) {
-            return;
-        }
-
-        String fName = f.getAbsolutePath();
-
-        if (!fName.toLowerCase().endsWith(".stl")) {
-            fName += ".stl";
-        }
-
-        try {
-            eu.mihosoft.vrl.v3d.FileUtil.write(
-                    Paths.get(fName), csgObject.toStlString());
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @FXML
-    private void onExportAsPngFile(ActionEvent e) {
-
-        if (csgObject == null) {
-            Action response = Dialogs.create()
-                    .title("Error")
-                    .message("Cannot export PNG. There is no geometry :(")
-                    .lightweight()
-                    .showError();
-
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export PNG File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter(
-                        "Image files (*.png)",
-                        "*.png"));
-
-        File f = fileChooser.showSaveDialog(null);
-
-        if (f == null) {
-            return;
-        }
-        jfx3dmanager.saveToPng(f);
+        application.createFileTab(openFile);
     }
 
     @FXML
@@ -493,121 +311,15 @@ public class MainController implements Initializable, IFileChangeListener {
     	application.addConnection();
     }
 
-    @FXML
-    private void onServoMountSample(ActionEvent e) {
-
-        try {
-            String code = IOUtils.toString(this.getClass().
-                    getResourceAsStream("ServoMount.jfxscad"),
-                    "UTF-8");
-            setCode(code);
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    @FXML
-    private void onBatteryHolderSample(ActionEvent e) {
-
-        try {
-            String code = IOUtils.toString(this.getClass().
-                    getResourceAsStream("BatteryHolder.jfxscad"),
-                    "UTF-8");
-            setCode(code);
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    @FXML
-    private void onWheelSample(ActionEvent e) {
-
-        try {
-            String code = IOUtils.toString(this.getClass().
-                    getResourceAsStream("Wheel.jfxscad"),
-                    "UTF-8");
-            setCode(code);
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    @FXML
-    private void onBreadBoardConnectorSample(ActionEvent e) {
-
-        try {
-            String code = IOUtils.toString(this.getClass().
-                    getResourceAsStream("BreadBoardConnector.jfxscad"),
-                    "UTF-8");
-            setCode(code);
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    @FXML
-    private void onBoardMountSample(ActionEvent e) {
-
-        try {
-            String code = IOUtils.toString(this.getClass().
-                    getResourceAsStream("BoardMount.jfxscad"),
-                    "UTF-8");
-            setCode(code);
-        } catch (IOException ex) {
-            Logger.getLogger(MainController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-    }
-
+  
     @FXML
     private void onClose(ActionEvent e) {
         System.exit(0);
     }
 
-    @FXML
-    private void onAutoCompile(ActionEvent e) {
-        autoCompile = !autoCompile;
-    }
-
     public TextArea getLogView() {
         return logView;
     }
-
-	@Override
-	public void onFileChange(File fileThatChanged, WatchEvent event) {
-		// TODO Auto-generated method stub
-		if(fileThatChanged.getAbsolutePath().contains(openFile.getAbsolutePath())){
-			System.out.println("Code in "+fileThatChanged.getAbsolutePath()+" changed");
-			Platform.runLater(new Runnable() {
-	            @Override
-	            public void run() {
-	            	try {
-						setCode(new String(Files.readAllBytes(Paths.get(fileThatChanged.getAbsolutePath())), "UTF-8"));
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            }
-	       });
-
-		}else{
-			//System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-		}
-	}
-
-
 
 	public void disconnect() {
 		jfx3dmanager.disconnect();

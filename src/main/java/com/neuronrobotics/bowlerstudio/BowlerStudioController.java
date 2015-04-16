@@ -41,7 +41,7 @@ public class BowlerStudioController extends TabPane{
 	}
 	
 	//Custom function for creation of New Tabs.
-	private void createFileTab(File file) {
+	public void createFileTab(File file) {
 
 		try {
 			addTab(new LocalFileScriptTabTab( connectionManager,  file),true);

@@ -286,7 +286,11 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 				
 				//try{
 					CompilerConfiguration cc = new CompilerConfiguration();
-	
+		            cc.addCompilationCustomizers(
+		                    new ImportCustomizer().
+		                    addStarImports("eu.mihosoft.vrl.v3d",
+		                            "eu.mihosoft.vrl.v3d.samples").
+		                    addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
 		            cc.addCompilationCustomizers(
 		                    new ImportCustomizer().
 		                    addStarImports("com.neuronrobotics",
