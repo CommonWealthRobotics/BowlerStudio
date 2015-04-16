@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerstudio.tabs;
+package com.neuronrobotics.bowlerstudio.scripting;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;

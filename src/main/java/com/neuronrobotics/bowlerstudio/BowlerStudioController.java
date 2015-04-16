@@ -26,7 +26,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import com.neuronrobotics.bowlerstudio.tabs.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;

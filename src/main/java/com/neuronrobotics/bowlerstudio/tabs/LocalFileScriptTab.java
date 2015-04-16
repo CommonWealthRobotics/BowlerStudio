@@ -29,6 +29,8 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 
 import javafx.scene.control.Tab;
 

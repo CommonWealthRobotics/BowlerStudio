@@ -13,7 +13,11 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
 
-public abstract class AbstractImageProvider {
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.BowlerDatagram;
+import com.neuronrobotics.sdk.common.InvalidConnectionException;
+
+public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 	private BufferedImage image = null;
 	private MatOfByte mb = new MatOfByte();
 	/**
@@ -22,6 +26,36 @@ public abstract class AbstractImageProvider {
 	 * @return
 	 */
 	protected abstract boolean captureNewImage(Mat imageData);
+	
+	@Override
+	public void onAsyncResponse(BowlerDatagram data) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public boolean connect(){
+		return true;
+	}
+	
+	/**
+	 * Determines if the device is available.
+	 *
+	 * @return true if the device is avaiable, false if it is not
+	 * @throws InvalidConnectionException the invalid connection exception
+	 */
+	@Override
+	public boolean isAvailable() throws InvalidConnectionException{
+		return true;
+	}
+	
+	/**
+	 * This method tells the connection object to disconnect its pipes and close out the connection. Once this is called, it is safe to remove your device.
+	 */
+	@Override
+	public void disconnect() {
+
+	}
 	
 	
 	public BufferedImage getLatestImage(Mat inputImage, Mat displayImage){

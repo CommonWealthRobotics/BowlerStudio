@@ -8,6 +8,8 @@ import javax.imageio.ImageIO;
 
 import org.opencv.core.Mat;
 
+import com.neuronrobotics.sdk.common.BowlerDatagram;
+
 public class StaticFileProvider extends AbstractImageProvider {
 	
 	private File file;

@@ -76,7 +76,7 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
-import com.neuronrobotics.bowlerstudio.tabs.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.interaction.CadInteractionEvent;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;

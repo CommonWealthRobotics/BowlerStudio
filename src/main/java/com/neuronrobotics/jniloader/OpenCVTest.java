@@ -3,6 +3,8 @@ package com.neuronrobotics.jniloader;
 import java.io.File;
 import java.util.ArrayList;
 
+import javafx.scene.control.Tab;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -63,6 +65,7 @@ public class OpenCVTest  {
 		//detectors.add(faceDetectorObject);
 		detectors.add(new SalientDetector());
 		//detectors.add(new WhiteBlobDetect((int) upper.val[0],(int) upper.val[1], lower));
+		Tab t = new Tab();
 		
 		int x=0;
 		for (AbstractImageProvider img:imageProviders){
