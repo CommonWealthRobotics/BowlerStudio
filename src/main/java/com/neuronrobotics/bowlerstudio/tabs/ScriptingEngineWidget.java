@@ -114,6 +114,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		
 	private ScriptingEngineWidget(ConnectionManager dyio){
 		this.connectionmanager = dyio;
+		
 		runfx.setOnAction(e -> {
 			if(running)
 				stop();
@@ -154,6 +155,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		controlPane.getChildren().add(fileLabel);
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
+		addIScriptEventListener(connectionmanager.getBowlerStudioController());
 	}
 	
 	private void reset(){
@@ -281,6 +283,8 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		running = true;
 		runfx.setText("Stop");
 		scriptRunner = new Thread(){
+			private Object scriptResult;
+
 			public void run() {
 				setName("Bowler Script Runner "+currentFile.getName());
 				
@@ -320,13 +324,14 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		            System.out.println(getCode()+"\n\nStart\n\n");
 		            Script script = shell.parse(getCode());
 		            try{
-			            Object obj = script.run();
+		            	Object obj = script.run();
 			            for(IScriptEventListener l:listeners){
-			            	l.onGroovyScriptFinished(shell, script, obj);
+			            	l.onGroovyScriptFinished(shell, script,obj, scriptResult);
 			            }
 			            Platform.runLater(() -> {
 		            		append("\n"+currentFile+" Completed\n");
 		        		});
+			            scriptResult=obj;
 			            reset();
 			            
 		            }catch(Exception ex){

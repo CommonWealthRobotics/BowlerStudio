@@ -200,11 +200,11 @@ public class MainController implements Initializable {
 //                + "CSG sphere = new Sphere(12.5).toCSG()\n"
 //                + "\n"
 //                + "cube.difference(sphere)");
-
-        application = new BowlerStudioController();
+    	jfx3dmanager = new Jfx3dManager();
+        application = new BowlerStudioController(jfx3dmanager);
         editorContainer.setContent(application);
         
-        jfx3dmanager = new Jfx3dManager();
+        
         subScene = jfx3dmanager.getSubScene();
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());

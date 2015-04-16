@@ -115,7 +115,7 @@ public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
 
 	@Override
 	public void onGroovyScriptFinished(GroovyShell shell, Script script,
-			Object result) {
+			Object result,Object previous) {
 		// TODO Auto-generated method stub
 		
 	}

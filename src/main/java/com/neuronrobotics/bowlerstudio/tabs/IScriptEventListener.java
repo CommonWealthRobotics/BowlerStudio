@@ -5,7 +5,7 @@ import groovy.lang.Script;
 
 public interface IScriptEventListener {
 	
-	void onGroovyScriptFinished(GroovyShell shell, Script script, Object result);
+	void onGroovyScriptFinished(GroovyShell shell, Script script, Object result,Object pervious);
 	
 	void onGroovyScriptChanged(String previous, String current);
 	

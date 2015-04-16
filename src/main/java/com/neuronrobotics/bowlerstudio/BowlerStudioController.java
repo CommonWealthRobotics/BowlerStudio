@@ -1,7 +1,13 @@
 package com.neuronrobotics.bowlerstudio;
 
+import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.MeshContainer;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -16,17 +22,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.shape.MeshView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import com.neuronrobotics.bowlerstudio.tabs.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTabTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 
-public class BowlerStudioController extends TabPane{
+public class BowlerStudioController extends TabPane implements IScriptEventListener{
 
 	private static final String HOME_URL = "http://neuronrobotics.github.io/Java-Code-Library/Digital-Input-Example-Simple/";
 	/**
@@ -34,9 +43,11 @@ public class BowlerStudioController extends TabPane{
 	 */
 	private static final long serialVersionUID = -2686618188618431477L;
 	private ConnectionManager connectionManager;
+	private Jfx3dManager jfx3dmanager;
 
 
-	public BowlerStudioController() {
+	public BowlerStudioController(Jfx3dManager jfx3dmanager) {
+		this.jfx3dmanager = jfx3dmanager;
 		createScene();
 	}
 	
@@ -145,6 +156,51 @@ public class BowlerStudioController extends TabPane{
 
 	public void addConnection() {
 		connectionManager.addConnection();
+	}
+	
+	private void loadObject(Object o,Object p){
+		if(CSG.class.isInstance(o)){
+            CSG csg = (CSG) o;
+
+            //CadInteractionEvent interact =new CadInteractionEvent();
+            
+            MeshContainer meshContainer = csg.toJavaFXMesh(null);
+
+            jfx3dmanager.replaceObject(((CSG) p).toJavaFXMesh(null).getAsMeshViews().get(0), meshContainer.getAsMeshViews().get(0));
+            
+            
+		}else if(Tab.class.isInstance(o)){
+			getTabs().remove(p);
+			addTab((Tab) o,true);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onGroovyScriptFinished(GroovyShell shell, Script script,
+			Object result, Object Previous) {
+		// this is added in the script engine when the connection manager is loaded
+		if(ArrayList.class.isInstance(result) && ArrayList.class.isInstance(Previous)){
+			ArrayList<Object >c = (ArrayList<Object>) result;
+			ArrayList<Object >p = (ArrayList<Object>) Previous;
+			for(int i=0;i<c.size()&&i<p.size();i++){
+				loadObject(c.get(i),p.get(i));
+			}
+		}else{
+			loadObject(result,Previous);
+		}
+	}
+
+	@Override
+	public void onGroovyScriptChanged(String previous, String current) {
+		
+	}
+
+	@Override
+	public void onGroovyScriptError(GroovyShell shell, Script script,
+			Exception except) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

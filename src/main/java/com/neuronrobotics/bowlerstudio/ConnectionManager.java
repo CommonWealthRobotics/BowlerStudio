@@ -44,7 +44,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 	}
 
 	public ConnectionManager(BowlerStudioController bowlerStudioController){
-		this.bowlerStudioController = bowlerStudioController;
+		this.setBowlerStudioController(bowlerStudioController);
 		setText("Connections");
 		
         rootItem = new TreeItem<String> ("Connections", getIcon(
@@ -108,7 +108,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 	public void addConnection(BowlerAbstractDevice c){
 		PluginManager mp;
 		
-		mp= new PluginManager(c,bowlerStudioController);
+		mp= new PluginManager(c,getBowlerStudioController());
 		devices.add(mp);
 		String name = "dyio";
 		if(rootItem.getChildren().size()>0)
@@ -176,6 +176,14 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 
 	public ArrayList<PluginManager> getConnections() {
 		 return devices;
+	}
+
+	public BowlerStudioController getBowlerStudioController() {
+		return bowlerStudioController;
+	}
+
+	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
+		this.bowlerStudioController = bowlerStudioController;
 	}
 	
 	
