@@ -345,7 +345,7 @@ public class MainController implements Initializable {
 		result.ifPresent(letter -> {
 			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
 			String name = "camera"+letter;
-			application.addConnection(new OpenCVImageProvider(Integer.parseInt(letter)),name);
+			application.addConnection(p,name);
 			application.addTab(new CameraTab(p, name), true);
 		});
 		
