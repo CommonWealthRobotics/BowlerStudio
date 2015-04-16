@@ -161,26 +161,29 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void addConnection(BowlerAbstractDevice c, String name) {
 		connectionManager.addConnection(c,name);
 	}
-	private void loadObject(Object o,Object p){
-		if(CSG.class.isInstance(o)){
-           
+	
+	private void removeObject(Object p){
+		if(CSG.class.isInstance(p)){          
             Platform.runLater(() -> {
-            	 CSG csg = (CSG) o;
-
-                 //CadInteractionEvent interact =new CadInteractionEvent();
-                
-                 MeshView previous =null;
-                 MeshView current = csg.getMesh();
-                 if(CSG.class.isInstance(p))
-                 	previous=((CSG) p).getMesh();
-            	 jfx3dmanager.replaceObject(previous,current);
+            	 CSG csg = (CSG) p;
+                 MeshView previous =csg.getMesh();;
+            	 jfx3dmanager.removeObject(previous);
 			});
-          
-            
-            
-		}else if(Tab.class.isInstance(o)){
+		}else if(Tab.class.isInstance(p)){
 			Platform.runLater(() -> {
 				getTabs().remove(p);
+			});
+		}
+	}
+	private void addObject(Object o){
+		if(CSG.class.isInstance(o)){
+            Platform.runLater(() -> {
+            	 CSG csg = (CSG) o;
+                 MeshView current = csg.getMesh();
+            	 jfx3dmanager.addObject(current);
+			});
+		}else if(Tab.class.isInstance(o)){
+			Platform.runLater(() -> {
 				addTab((Tab) o,true);
 			});
 		}
@@ -191,22 +194,22 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void onGroovyScriptFinished(Object result, Object Previous) {
 		Log.warning("Loading script results "+result+ " previous "+ Previous);
 		// this is added in the script engine when the connection manager is loaded
-		if(ArrayList.class.isInstance(result)&& !ArrayList.class.isInstance(Previous) ){
-			Log.warning("Loading array Lists, no previous ");
-			ArrayList<Object>c = (ArrayList<Object>) result;
+		if(ArrayList.class.isInstance(Previous)){
+			ArrayList<Object>c = (ArrayList<Object>) Previous;
 			for(int i=0;i<c.size();i++){
-				loadObject(c.get(i),null);
-			}
-		}else if(ArrayList.class.isInstance(result) && ArrayList.class.isInstance(Previous)){
-			ArrayList<Object>c = (ArrayList<Object>) result;
-			ArrayList<Object >p = (ArrayList<Object>) Previous;
-			
-			for(int i=0;i<c.size()&&i<p.size();i++){
-				Log.warning("Loading array Lists with removals "+c.get(i)+" was "+p.get(i));
-				loadObject(c.get(i),p.get(i));
+				removeObject(c.get(i));
 			}
 		}else{
-			loadObject(result,Previous);
+			removeObject(Previous);
+		}
+		if(ArrayList.class.isInstance(result)){
+			ArrayList<Object>c = (ArrayList<Object>) result;
+			for(int i=0;i<c.size();i++){
+				Log.warning("Loading array Lists with removals "+c.get(i));
+				addObject(c.get(i));
+			}
+		}else{
+			addObject(result);
 		}
 	}
 
