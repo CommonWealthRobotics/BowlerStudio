@@ -17,9 +17,10 @@
               <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Compile">
+          <Menu mnemonicParsing="false" text="Connection">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onCompileAndRun" text="Compile &amp; Run" /><CheckMenuItem mnemonicParsing="false" onAction="#onAutoCompile" selected="true" text="Auto-Compile" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
+              <CheckMenuItem mnemonicParsing="false" onAction="#onAutoCompile" selected="true" text="Auto-Compile" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Samples">

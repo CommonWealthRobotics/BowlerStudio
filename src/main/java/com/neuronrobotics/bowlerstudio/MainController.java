@@ -179,6 +179,8 @@ public class MainController implements Initializable, IFileChangeListener {
 	private MeshContainer meshContainer;
 
 	private MeshView meshView;
+
+	private GistTabbedBrowser application;
 	
     /**
      * Initializes the controller class.
@@ -225,8 +227,8 @@ public class MainController implements Initializable, IFileChangeListener {
                 + "\n"
                 + "cube.difference(sphere)");
 
-        //editorContainer.setContent(codeArea);
-        editorContainer.setContent(new GistTabbedBrowser());
+        application = new GistTabbedBrowser();
+        editorContainer.setContent(application);
         
         jfx3dmanager = new Jfx3dManager();
         subScene = jfx3dmanager.getSubScene();
@@ -487,8 +489,8 @@ public class MainController implements Initializable, IFileChangeListener {
     }
 
     @FXML
-    private void onCompileAndRun(ActionEvent e) {
-        compile(getCode());
+    private void onConnect(ActionEvent e) {
+    	application.addConnection();
     }
 
     @FXML

@@ -34,6 +34,7 @@ public class GistTabbedBrowser extends TabPane{
 	 */
 	private static final long serialVersionUID = -2686618188618431477L;
 	private BowlerAbstractDevice dyio;
+	private ConnectionManager connectionManager;
 
 
 	public GistTabbedBrowser() {
@@ -102,7 +103,8 @@ public class GistTabbedBrowser extends TabPane{
 		//Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 		
-		addTab(new ConnectionManager(),false);
+		connectionManager = new ConnectionManager();
+		addTab(connectionManager,false);
 		
 		createAndSelectNewTab(this, "About NrConsole");
 
@@ -142,6 +144,10 @@ public class GistTabbedBrowser extends TabPane{
 		 if(last != null){
 			 createFileTab(last);
 		 }
+	}
+
+	public void addConnection() {
+		connectionManager.addConnection();
 	}
 
 }
