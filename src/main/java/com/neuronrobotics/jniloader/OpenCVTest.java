@@ -110,7 +110,7 @@ public class OpenCVTest  {
 	 * @param args
 	 */
 	public static void main(String[] args) { // Main entry for object detection 
-		OpenCVJNILoader.load();              // Loads the JNI (java native interface)
+		
         
         new OpenCVTest().run();              // starts
 	}

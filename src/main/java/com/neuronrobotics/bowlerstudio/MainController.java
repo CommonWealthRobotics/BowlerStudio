@@ -78,6 +78,7 @@ import org.reactfx.EventStreams;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.interaction.CadInteractionEvent;
+import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
@@ -102,12 +103,18 @@ import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 public class MainController implements Initializable {
     
 	static ByteArrayOutputStream out = new ByteArrayOutputStream();
-	
+	static boolean opencvOk=true;
 	static{
         System.setOut(new PrintStream(out));
 		Platform.runLater(() -> {
 			handlePrintUpdate();
 		});
+		try{
+			OpenCVJNILoader.load();              // Loads the JNI (java native interface)
+		}catch(Error e){
+			e.printStackTrace();
+			opencvOk=false;
+		}
 	}
 	
 	static void handlePrintUpdate() {
