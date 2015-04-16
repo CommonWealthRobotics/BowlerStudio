@@ -26,18 +26,17 @@ import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 
-public class GistTabbedBrowser extends TabPane{
+public class BowlerStudioController extends TabPane{
 
 	private static final String HOME_URL = "http://neuronrobotics.github.io/Java-Code-Library/Digital-Input-Example-Simple/";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2686618188618431477L;
-	private BowlerAbstractDevice dyio;
 	private ConnectionManager connectionManager;
 
 
-	public GistTabbedBrowser() {
+	public BowlerStudioController() {
 		createScene();
 	}
 	
@@ -45,7 +44,7 @@ public class GistTabbedBrowser extends TabPane{
 	private void createFileTab(File file) {
 
 		try {
-			addTab(new LocalFileScriptTabTab( dyio,  file),true);
+			addTab(new LocalFileScriptTabTab( connectionManager,  file),true);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -58,7 +57,7 @@ public class GistTabbedBrowser extends TabPane{
 
 
 		try {
-			addTab(new ScriptingGistTab(title,dyio , getHomeUrl(),tabPane), false);
+			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,7 +67,7 @@ public class GistTabbedBrowser extends TabPane{
 	
 
 	private Tab createTab() throws IOException, InterruptedException{
-		final ScriptingGistTab tab = new ScriptingGistTab(null,dyio,   null,null);
+		final ScriptingGistTab tab = new ScriptingGistTab(null,connectionManager,   null,null);
 
 		return tab;
 	}
@@ -87,8 +86,6 @@ public class GistTabbedBrowser extends TabPane{
 
 		//BorderPane borderPane = new BorderPane();
 
-		//Preferred Size of TabPane.
-		setPrefSize(1365, 1024);
 
 		//Placement of TabPane.
 		setSide(Side.TOP);

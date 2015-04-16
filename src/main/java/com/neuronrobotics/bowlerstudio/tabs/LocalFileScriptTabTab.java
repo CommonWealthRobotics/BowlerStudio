@@ -27,6 +27,7 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 
 import javafx.scene.control.Tab;
@@ -34,7 +35,7 @@ import javafx.scene.control.Tab;
 public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
 	
 	private ScriptingEngineWidget scripting;
-	private BowlerAbstractDevice dyio;
+	private ConnectionManager dyio;
 	private File file;
 	
     private static final String[] KEYWORDS = new String[]{
@@ -56,10 +57,10 @@ public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
 	private VBox vBox;
 
     
-	public LocalFileScriptTabTab(BowlerAbstractDevice dyio, File file) throws IOException {
-		this.dyio = dyio;
+	public LocalFileScriptTabTab(ConnectionManager connectionManager, File file) throws IOException {
+		this.dyio = connectionManager;
 		this.file = file;
-		scripting = new ScriptingEngineWidget(dyio, file );
+		scripting = new ScriptingEngineWidget(connectionManager, file );
 		setText(file.getName());
         codeArea.textProperty().addListener(
                 (ov, oldText, newText) -> {

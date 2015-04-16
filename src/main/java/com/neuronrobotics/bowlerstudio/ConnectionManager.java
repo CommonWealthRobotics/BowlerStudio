@@ -161,6 +161,10 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		// TODO Auto-generated method stub
 		
 	}
+
+	public ArrayList<PluginManager> getConnections() {
+		 return devices;
+	}
 	
 	
 }

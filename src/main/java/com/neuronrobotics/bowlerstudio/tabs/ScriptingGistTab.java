@@ -10,7 +10,8 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-import com.neuronrobotics.bowlerstudio.GistTabbedBrowser;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -39,7 +40,7 @@ import javafx.scene.web.WebView;
 public class ScriptingGistTab extends Tab {
 	
 	private String Current_URL = "http://gist.github.com/";
-	private BowlerAbstractDevice dyio;
+	private ConnectionManager dyio;
 	private ScriptingGistTab myTab;
 	private TabPane tabPane = null;
 	boolean loaded=false;
@@ -58,8 +59,8 @@ public class ScriptingGistTab extends Tab {
 	
 	
 	
-	public ScriptingGistTab(String title,BowlerAbstractDevice dyio, String Url,TabPane tabPane) throws IOException, InterruptedException{
-		this.dyio = dyio;
+	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,TabPane tabPane) throws IOException, InterruptedException{
+		this.dyio = connectionManager;
 		this.tabPane = tabPane;
 		myTab = this;
 
@@ -136,7 +137,7 @@ public class ScriptingGistTab extends Tab {
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			webEngine.load(GistTabbedBrowser.getHomeUrl());
+			webEngine.load(BowlerStudioController.getHomeUrl());
 		});
 
 		// Layout logic

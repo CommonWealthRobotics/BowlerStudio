@@ -180,7 +180,7 @@ public class MainController implements Initializable, IFileChangeListener {
 
 	private MeshView meshView;
 
-	private GistTabbedBrowser application;
+	private BowlerStudioController application;
 	
     /**
      * Initializes the controller class.
@@ -227,7 +227,7 @@ public class MainController implements Initializable, IFileChangeListener {
                 + "\n"
                 + "cube.difference(sphere)");
 
-        application = new GistTabbedBrowser();
+        application = new BowlerStudioController();
         editorContainer.setContent(application);
         
         jfx3dmanager = new Jfx3dManager();

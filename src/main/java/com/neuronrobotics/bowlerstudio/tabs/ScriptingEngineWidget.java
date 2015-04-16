@@ -47,6 +47,7 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
@@ -72,7 +73,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	private boolean running = false;
 	private Thread scriptRunner=null;
 	private FileChangeWatcher watcher;
-	private BowlerAbstractDevice dyio;
+	private ConnectionManager connectionmanager;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
 
@@ -98,19 +99,19 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	private String addr;
 	boolean loadGist=false;
 	
-	public ScriptingEngineWidget(BowlerAbstractDevice dyio,  File currentFile,String currentGist, WebEngine engine ) throws IOException, InterruptedException{
+	public ScriptingEngineWidget(ConnectionManager dyio,  File currentFile,String currentGist, WebEngine engine ) throws IOException, InterruptedException{
 		this(dyio);
 		this.currentFile = currentFile;
 		loadCodeFromGist(currentGist,engine);
 	}
-	public ScriptingEngineWidget(BowlerAbstractDevice dyio, File currentFile) throws IOException{
+	public ScriptingEngineWidget(ConnectionManager dyio, File currentFile) throws IOException{
 		this(dyio);
 		this.currentFile = currentFile;
 		loadCodeFromFile(currentFile);
 	}
 		
-	private ScriptingEngineWidget(BowlerAbstractDevice dyio){
-		this.dyio = dyio;
+	private ScriptingEngineWidget(ConnectionManager dyio){
+		this.connectionmanager = dyio;
 		runfx.setOnAction(e -> {
 			if(running)
 				stop();
@@ -296,9 +297,13 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		                    );
 		        	
 		            Binding binding = new Binding();
-
+		            for (PluginManager pm:connectionmanager.getConnections()){
+		            	
+		            	binding.setVariable(pm.getName(), pm.getDevice());
+		            	
+		            }
 	
-		            binding.setVariable("dyio", dyio);
+		            
 		            GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
 		            		binding, cc);
 		            System.out.println(getCode()+"\n\nStart\n\n");
