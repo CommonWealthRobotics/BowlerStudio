@@ -41,6 +41,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.kohsuke.github.GHGist;
@@ -456,7 +457,18 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		}
 		return null;
 	}
-	
+	public static Object inlineFileScriptRun(File f , ArrayList<Object> args){
+		byte[] bytes;
+		try {
+			bytes = Files.readAllBytes(f.toPath());
+	        String s =  new String(bytes,"UTF-8");
+			return inlineScriptRun(s,args);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static Object inlineGistScriptRun(String gistID , ArrayList<Object> args){
 		return inlineScriptRun(codeFromGistID(gistID)[0],args);
