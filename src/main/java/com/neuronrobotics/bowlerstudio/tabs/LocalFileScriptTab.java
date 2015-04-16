@@ -32,12 +32,9 @@ import com.neuronrobotics.bowlerstudio.PluginManager;
 
 import javafx.scene.control.Tab;
 
-public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
+public class LocalFileScriptTab extends Tab implements IScriptEventListener{
 	
 	private ScriptingEngineWidget scripting;
-	private ConnectionManager dyio;
-	private File file;
-	
     private static final String[] KEYWORDS = new String[]{
         "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
         "case", "catch", "char", "class", "const",
@@ -53,13 +50,13 @@ public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
 
     private static final Pattern KEYWORD_PATTERN
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+    
+    
     private final CodeArea codeArea = new CodeArea();
 	private VBox vBox;
 
     
-	public LocalFileScriptTabTab(ConnectionManager connectionManager, File file) throws IOException {
-		this.dyio = connectionManager;
-		this.file = file;
+	public LocalFileScriptTab(ConnectionManager connectionManager, File file) throws IOException {
 		scripting = new ScriptingEngineWidget(connectionManager, file );
 		setText(file.getName());
         codeArea.textProperty().addListener(

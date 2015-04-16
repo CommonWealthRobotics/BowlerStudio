@@ -27,7 +27,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import com.neuronrobotics.bowlerstudio.tabs.IScriptEventListener;
-import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTabTab;
+import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
@@ -56,7 +56,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void createFileTab(File file) {
 
 		try {
-			addTab(new LocalFileScriptTabTab( connectionManager,  file),true);
+			addTab(new LocalFileScriptTab( connectionManager,  file),true);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

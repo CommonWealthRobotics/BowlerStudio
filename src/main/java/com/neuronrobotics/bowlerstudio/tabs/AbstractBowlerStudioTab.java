@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio.tabs;
 import java.util.ArrayList;
 
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
 import javafx.scene.control.Tab;
 
@@ -37,6 +39,17 @@ public abstract class AbstractBowlerStudioTab extends Tab {
 		
 		return isAcvive();
 	}
+	
+    public void requestClose() {
+        TabPaneBehavior behavior = getBehavior();
+        if(behavior.canCloseTab(this)) {
+            behavior.closeTab(this);
+        }
+    }
+
+    private TabPaneBehavior getBehavior() {
+        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
+    }
 
 	public void setActive(boolean a){
 		active=a;

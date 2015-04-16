@@ -302,7 +302,8 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		                    		"com.neuronrobotics.sdk.dyio",
 		                    		"com.neuronrobotics.sdk.common",
 		                    		"com.neuronrobotics.sdk.ui",
-		                    		"com.neuronrobotics.sdk.util"
+		                    		"com.neuronrobotics.sdk.util",
+		                    		"javafx.scene.control"
 		                    		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
 		                    );
 		        	
