@@ -78,7 +78,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	private ConnectionManager connectionmanager;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
-
+	private Object scriptResult;
 	private String codeText="println(dyio)\n"
 			+ "while(true){\n"
 			+ "\tThreadUtil.wait(100)                     // Spcae out the loop\n\n"
@@ -283,7 +283,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		running = true;
 		runfx.setText("Stop");
 		scriptRunner = new Thread(){
-			private Object scriptResult;
+			
 
 			public void run() {
 				setName("Bowler Script Runner "+currentFile.getName());
