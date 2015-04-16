@@ -17,6 +17,7 @@
           <Menu mnemonicParsing="false" text="Connection">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
             </items>
           </Menu>
         </menus>

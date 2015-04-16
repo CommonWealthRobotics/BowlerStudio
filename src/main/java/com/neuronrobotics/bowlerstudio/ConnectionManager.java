@@ -99,20 +99,21 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		if(gen.hasNamespace("neuronrobotics.dyio.*")){
 			DyIO dyio = new DyIO(gen.getConnection());
 			dyio.connect();
-			addConnection(dyio);
+			String name = "dyio";
+			if(rootItem.getChildren().size()>0)
+				name+=rootItem.getChildren().size()+1;
+			addConnection(dyio,name);
 		}else{
-			addConnection(gen);
+			addConnection(gen,"device");
 		}
 	}
 	
-	public void addConnection(BowlerAbstractDevice c){
+	public void addConnection(BowlerAbstractDevice c, String name){
 		PluginManager mp;
 		
 		mp= new PluginManager(c,getBowlerStudioController());
 		devices.add(mp);
-		String name = "dyio";
-		if(rootItem.getChildren().size()>0)
-			name+=rootItem.getChildren().size()+1;
+
 		BowlerAbstractConnection con =  c.getConnection();
 		Node icon = getIcon(
         		"images/connection-icon.png"
@@ -149,16 +150,18 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		item.setExpanded(false);
         rootItem.getChildren().add(item);
         mp.setName(name);
-        c.getConnection().addConnectionEventListener( new IConnectionEventListener() {
-			@Override
-			public void onDisconnect(BowlerAbstractConnection source) {
-				// clean up after yourself...
-				devices.remove(mp);
-				rootItem.getChildren().remove(item);
-			}
-			//ignore
-			@Override public void onConnect(BowlerAbstractConnection source) {}
-		});
+        if(c.getConnection()!=null){
+	        c.getConnection().addConnectionEventListener( new IConnectionEventListener() {
+				@Override
+				public void onDisconnect(BowlerAbstractConnection source) {
+					// clean up after yourself...
+					devices.remove(mp);
+					rootItem.getChildren().remove(item);
+				}
+				//ignore
+				@Override public void onConnect(BowlerAbstractConnection source) {}
+			});
+        }
 	}
 
 	@Override

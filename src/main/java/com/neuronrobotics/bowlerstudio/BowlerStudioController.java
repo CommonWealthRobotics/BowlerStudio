@@ -158,7 +158,9 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void addConnection() {
 		connectionManager.addConnection();
 	}
-	
+	public void addConnection(BowlerAbstractDevice c, String name) {
+		connectionManager.addConnection(c,name);
+	}
 	private void loadObject(Object o,Object p){
 		if(CSG.class.isInstance(o)){
            

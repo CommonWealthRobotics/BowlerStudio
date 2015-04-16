@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.WritableImage;
@@ -78,11 +80,13 @@ import org.reactfx.EventStreams;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.interaction.CadInteractionEvent;
+import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
@@ -311,6 +315,33 @@ public class MainController implements Initializable {
 
 	public void disconnect() {
 		jfx3dmanager.disconnect();
+	}
+
+
+
+	@FXML public void onConnectCVCamera(ActionEvent event) {
+		List<String> choices = new ArrayList<>();
+		choices.add("0");
+		choices.add("1");
+		choices.add("2");
+		choices.add("3");
+		choices.add("4");
+		
+		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
+		dialog.setTitle("OpenCV Camera Index Chooser");
+		dialog.setHeaderText("Choose an OpenCV camera");
+		dialog.setContentText("Camera Index:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		
+		// The Java 8 way to get the response value (with lambda expression).
+		result.ifPresent(letter -> {
+			application.addConnection(new OpenCVImageProvider(Integer.parseInt(letter)), "camera"+letter);
+		});
+		
+		
+		
 	}
 
 
