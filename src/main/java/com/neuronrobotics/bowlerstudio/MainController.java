@@ -68,7 +68,7 @@ import javafx.stage.FileChooser;
 
 
 import javax.imageio.ImageIO;
-import javax.usb.UsbDevice;
+//import javax.usb.UsbDevice;
 
 
 import org.apache.commons.io.IOUtils;
