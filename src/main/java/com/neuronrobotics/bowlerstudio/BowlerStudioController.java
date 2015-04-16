@@ -100,7 +100,7 @@ public class BowlerStudioController extends TabPane{
 		//Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 		
-		connectionManager = new ConnectionManager();
+		connectionManager = new ConnectionManager(this);
 		addTab(connectionManager,false);
 		
 		createAndSelectNewTab(this, "About NrConsole");

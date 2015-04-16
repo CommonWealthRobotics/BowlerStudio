@@ -8,6 +8,7 @@ import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.genericdevice.GenericDevice;
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
@@ -33,6 +34,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 	
 	private TreeItem<String> rootItem;
 	private ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
+	private BowlerStudioController bowlerStudioController;
 	private Node getIcon(String s){
 		return new ImageView(
         		new Image(
@@ -41,7 +43,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
         		);
 	}
 
-	public ConnectionManager(){
+	public ConnectionManager(BowlerStudioController bowlerStudioController){
+		this.bowlerStudioController = bowlerStudioController;
 		setText("Connections");
 		
         rootItem = new TreeItem<String> ("Connections", getIcon(
@@ -93,12 +96,19 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 			}
 			throw e;
 		}
-
-		addConnection(gen);
+		if(gen.hasNamespace("neuronrobotics.dyio.*")){
+			DyIO dyio = new DyIO(gen.getConnection());
+			dyio.connect();
+			addConnection(dyio);
+		}else{
+			addConnection(gen);
+		}
 	}
 	
 	public void addConnection(BowlerAbstractDevice c){
-		PluginManager mp = new PluginManager(c);
+		PluginManager mp;
+		
+		mp= new PluginManager(c,bowlerStudioController);
 		devices.add(mp);
 		String name = "dyio";
 		if(rootItem.getChildren().size()>0)
@@ -135,6 +145,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		
 		
 		TreeItem<String> item = new TreeItem<String> (name+" "+c.getAddress(), icon); 
+		mp.setTree(item);
+		item.setExpanded(false);
         rootItem.getChildren().add(item);
         mp.setName(name);
         c.getConnection().addConnectionEventListener( new IConnectionEventListener() {

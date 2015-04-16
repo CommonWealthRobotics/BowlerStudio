@@ -51,9 +51,11 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.pid.GenericPIDDevice;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -298,9 +300,14 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		        	
 		            Binding binding = new Binding();
 		            for (PluginManager pm:connectionmanager.getConnections()){
-		            	
-		            	binding.setVariable(pm.getName(), pm.getDevice());
-		            	
+		            	if(DyIO.class.isInstance(pm.getDevice()))
+		            		binding.setVariable(pm.getName(),(DyIO) pm.getDevice());
+		            	else if(BowlerBoardDevice.class.isInstance(pm.getDevice()))
+		            		binding.setVariable(pm.getName(),(BowlerBoardDevice) pm.getDevice());
+		            	else if(GenericPIDDevice.class.isInstance(pm.getDevice()))
+		            		binding.setVariable(pm.getName(),(GenericPIDDevice) pm.getDevice());
+		            	else
+		            		System.err.println("Device is "+pm.getDevice());
 		            }
 	
 		            
