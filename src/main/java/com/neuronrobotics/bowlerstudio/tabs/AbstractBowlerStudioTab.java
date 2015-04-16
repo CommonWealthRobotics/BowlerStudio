@@ -18,7 +18,9 @@ public abstract class AbstractBowlerStudioTab extends Tab {
 			myNames.add(myNamespaces[i]);
 		}
 		
-		isMyNamespace(pm.getNamespaces());
+		if(!isMyNamespace(pm.getNamespaces())){
+			throw new RuntimeException("Device and namespaces are incompatible ");
+		}
 	}
 	
 	
