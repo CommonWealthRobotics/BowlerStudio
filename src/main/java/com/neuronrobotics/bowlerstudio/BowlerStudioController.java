@@ -33,6 +33,7 @@ import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 
 public class BowlerStudioController extends TabPane implements IScriptEventListener{
@@ -160,13 +161,20 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	
 	private void loadObject(Object o,Object p){
 		if(CSG.class.isInstance(o)){
-            CSG csg = (CSG) o;
+           
+            Platform.runLater(() -> {
+            	 CSG csg = (CSG) o;
 
-            //CadInteractionEvent interact =new CadInteractionEvent();
-            
-            MeshContainer meshContainer = csg.toJavaFXMesh(null);
-
-            jfx3dmanager.replaceObject(((CSG) p).toJavaFXMesh(null).getAsMeshViews().get(0), meshContainer.getAsMeshViews().get(0));
+                 //CadInteractionEvent interact =new CadInteractionEvent();
+                 
+                 MeshContainer meshContainer = csg.toJavaFXMesh(null);
+                 MeshView previous =null;
+                 MeshView current = meshContainer.getAsMeshViews().get(0);
+                 if(CSG.class.isInstance(p))
+                 	previous=((CSG) p).toJavaFXMesh(null).getAsMeshViews().get(0);
+            	 jfx3dmanager.replaceObject(previous,current);
+			});
+          
             
             
 		}else if(Tab.class.isInstance(o)){
@@ -179,9 +187,17 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	@Override
 	public void onGroovyScriptFinished(GroovyShell shell, Script script,
 			Object result, Object Previous) {
+		Log.warning("Loading script results "+result+ " previous "+ Previous);
 		// this is added in the script engine when the connection manager is loaded
-		if(ArrayList.class.isInstance(result) && ArrayList.class.isInstance(Previous)){
-			ArrayList<Object >c = (ArrayList<Object>) result;
+		if(ArrayList.class.isInstance(result) ){
+			Log.warning("Loading array Lists ");
+			ArrayList<Object>c = (ArrayList<Object>) result;
+			for(int i=0;i<c.size();i++){
+				loadObject(c.get(i),null);
+			}
+		}else if(ArrayList.class.isInstance(result) && ArrayList.class.isInstance(Previous)){
+			Log.warning("Loading array Lists ");
+			ArrayList<Object>c = (ArrayList<Object>) result;
 			ArrayList<Object >p = (ArrayList<Object>) Previous;
 			for(int i=0;i<c.size()&&i<p.size();i++){
 				loadObject(c.get(i),p.get(i));

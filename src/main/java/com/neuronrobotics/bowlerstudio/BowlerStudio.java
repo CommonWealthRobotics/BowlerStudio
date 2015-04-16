@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Application;
@@ -52,6 +52,7 @@ public class BowlerStudio extends Application {
         	ThreadUtil.wait(500);
         	System.exit(0);
 		});
+        Log.enableDebugPrint();
     }
 
     public static Parent loadFromFXML() {
