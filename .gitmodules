@@ -1,6 +1,3 @@
-[submodule "java-bowler"]
-	path = java-bowler
-	url = git@github.com:NeuronRobotics/java-bowler.git
 [submodule "JCSG"]
 	path = JCSG
 	url = https://github.com/ThreeCSG/JCSG.git
