@@ -83,10 +83,12 @@ public class LocalFileScriptTabTab extends Tab implements IScriptEventListener{
         EventStream<Change<String>> textEvents
                 = EventStreams.changesOf(codeArea.textProperty());
 
-        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(1000)).
+        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
                 subscribe(code -> {
                     //code in text box changed
+                	scripting.removeIScriptEventListener(this);
                 	scripting.setCode(codeArea.getText());
+                	scripting.addIScriptEventListener(this);
                 	//scripting.save();
                 });
     	Platform.runLater(()->{

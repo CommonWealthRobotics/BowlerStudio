@@ -103,7 +103,7 @@ public class BowlerStudioController extends TabPane{
 		connectionManager = new ConnectionManager(this);
 		addTab(connectionManager,false);
 		
-		createAndSelectNewTab(this, "About NrConsole");
+		createAndSelectNewTab(this, "About Bowler Studio");
 
 
 		//Function to add and display new tabs with default URL display.

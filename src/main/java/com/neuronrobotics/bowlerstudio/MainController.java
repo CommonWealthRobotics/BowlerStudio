@@ -100,22 +100,6 @@ import com.neuronrobotics.sdk.addons.kinematics.gui.*;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MainController implements Initializable {
-
-    private static final String[] KEYWORDS = new String[]{
-        "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
-        "case", "catch", "char", "class", "const",
-        "continue", "default", "do", "double", "else",
-        "enum", "extends", "final", "finally", "float",
-        "for", "goto", "if", "implements", "import",
-        "instanceof", "int", "interface", "long", "native",
-        "new", "package", "private", "protected", "public",
-        "return", "short", "static", "strictfp", "super",
-        "switch", "synchronized", "this", "throw", "throws",
-        "transient", "try", "void", "volatile", "while"
-    };
-
-    private static final Pattern KEYWORD_PATTERN
-            = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
     
 	static ByteArrayOutputStream out = new ByteArrayOutputStream();
 	
@@ -155,9 +139,6 @@ public class MainController implements Initializable {
 
     //private final CodeArea codeArea = new CodeArea();
 
-    private boolean autoCompile = true;
-
-    private CSG csgObject;
     private static TextArea logViewRef=null;
     @FXML
     private TextArea logView;
