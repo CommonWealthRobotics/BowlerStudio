@@ -200,6 +200,9 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 
 	}
 	public void loadCodeFromFile(File currentFile) throws IOException{
+		if(!currentFile.exists()){
+			currentFile.createNewFile();
+		}
 		setUpFile(currentFile);
 		setCode(new String(Files.readAllBytes(currentFile.toPath())));
 	}
