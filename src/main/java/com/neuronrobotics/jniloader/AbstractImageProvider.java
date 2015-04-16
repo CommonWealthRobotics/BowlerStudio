@@ -13,6 +13,7 @@ import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
 
+import org.opencv.core.CvException;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
@@ -75,10 +76,11 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 //		}
 		inputImage.copyTo(displayImage);
 		
-		Highgui.imencode(".jpg", inputImage, mb);
+		
 		try {
+			Highgui.imencode(".jpg", inputImage, mb);
 			image = ImageIO.read(new ByteArrayInputStream(mb.toArray()));
-		} catch (IOException e) {
+		} catch (IOException|CvException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
