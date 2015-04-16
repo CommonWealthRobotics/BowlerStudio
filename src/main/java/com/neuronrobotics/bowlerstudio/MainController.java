@@ -11,6 +11,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -64,8 +66,10 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
+
 import javax.imageio.ImageIO;
 import javax.usb.UsbDevice;
+
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -78,7 +82,9 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
+
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.interaction.CadInteractionEvent;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
@@ -337,7 +343,10 @@ public class MainController implements Initializable {
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			application.addConnection(new OpenCVImageProvider(Integer.parseInt(letter)), "camera"+letter);
+			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
+			String name = "camera"+letter;
+			application.addConnection(new OpenCVImageProvider(Integer.parseInt(letter)),name);
+			application.addTab(new CameraTab(p, name), true);
 		});
 		
 		

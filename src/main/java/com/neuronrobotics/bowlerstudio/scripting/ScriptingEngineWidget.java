@@ -50,6 +50,7 @@ import org.kohsuke.github.GitHub;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
@@ -492,7 +493,9 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"com.neuronrobotics.sdk.ui",
                 		"com.neuronrobotics.sdk.util",
                 		"javafx.scene.control",
-                		"com.neuronrobotics.bowlerstudio.scripting"
+                		"com.neuronrobotics.bowlerstudio.scripting",
+                		"com.neuronrobotics.jniloader",
+                		"com.neuronrobotics.tab"
                 		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
                 );
     	
@@ -504,8 +507,10 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
         		binding.setVariable(pm.getName(),(BowlerBoardDevice) pm.getDevice());
         	else if(GenericPIDDevice.class.isInstance(pm.getDevice()))
         		binding.setVariable(pm.getName(),(GenericPIDDevice) pm.getDevice());
-        	else
-        		System.err.println("Device is "+pm.getDevice());
+        	else if(AbstractImageProvider.class.isInstance(pm.getDevice()))
+        		binding.setVariable(pm.getName(),(AbstractImageProvider) pm.getDevice());
+        	
+        	System.err.println("Device "+pm.getName()+" is "+pm.getDevice());
         }
         binding.setVariable("args",args);
         

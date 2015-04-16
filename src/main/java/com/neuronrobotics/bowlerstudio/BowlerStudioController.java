@@ -35,6 +35,8 @@ import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
 public class BowlerStudioController extends TabPane implements IScriptEventListener{
 
@@ -172,6 +174,11 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		}else if(Tab.class.isInstance(p)){
 			Platform.runLater(() -> {
 				getTabs().remove(p);
+				Tab t =(Tab)p;
+		        TabPaneBehavior behavior = ((TabPaneSkin) getSkin()).getBehavior();
+		        if(behavior.canCloseTab(t)) {
+		            behavior.closeTab(t);
+		        }
 			});
 		}
 	}

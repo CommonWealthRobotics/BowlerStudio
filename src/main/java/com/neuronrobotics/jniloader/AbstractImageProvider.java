@@ -7,6 +7,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+
 import javax.imageio.ImageIO;
 
 import org.opencv.core.Mat;
@@ -121,7 +125,17 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		image2.getRaster().setDataElements(0, 0, cols, rows, data);
 		return image2;
 	}
-	
+	/**
+	 * Converts/writes a Mat into a BufferedImage.
+	 * 
+	 * @param matrix
+	 *            Mat of type CV_8UC3 or CV_8UC1
+	 * @return BufferedImage of type TYPE_3BYTE_BGR or TYPE_BYTE_GRAY
+	 */
+	public static Image matToJfxImage(Mat matrix) {
+		
+		return getJfxImage(matToBufferedImage( matrix) ) ;
+	}
 	public static void bufferedImageToMat(BufferedImage input, Mat output){
 		MatOfByte mb;
 
@@ -154,5 +168,21 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		int w = (int) (in.getWidth() * scale);
 		int h = (int) (in.getHeight() * scale);
 		return toGrayScale(in, w, h);
+	}
+	public static Image getJfxImage(BufferedImage bf) {
+		 WritableImage wr = null;
+       if (bf != null) {
+           wr = new WritableImage(bf.getWidth(), bf.getHeight());
+           PixelWriter pw = wr.getPixelWriter();
+           for (int x = 0; x < bf.getWidth(); x++) {
+               for (int y = 0; y < bf.getHeight(); y++) {
+                   pw.setArgb(x, y, bf.getRGB(x, y));
+               }
+           }
+       }
+       return wr;
+	}
+	public Image getLatestJfxImage() {
+		return getJfxImage(getLatestImage());
 	}
 }
