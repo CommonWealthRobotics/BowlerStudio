@@ -11,71 +11,76 @@ sourceCompatibility = '1.8'
 // prefer. In this case NetBeans will not add these tasks but you may rely on
 // your own implementation.
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
+	ext.mainClass = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
 }
 
 repositories {
-    mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/repositories/snapshots/' 
-    }
+	mavenCentral()
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
+	maven { url 'http://repo.jenkins-ci.org/public/' }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.1'
-}
+task wrapper(type: Wrapper) { gradleVersion = '2.1' }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6', classifier: 'sources'
-    
-    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
-    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT', classifier: 'sources'
-    		
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
-    
-    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
-    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
-    	
-    compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
-    	
-    compile 'commons-io:commons-io:2.4'
-    	
-    compile project(':JCSG')
-    compile project(':java-bowler')
-    compile fileTree (dir: 'libs/', includes: ['*.jar'])
-    compile fileTree (dir: '/usr/share/OpenCV/java/', includes: ['*.jar'])
+	testCompile group: 'junit', name: 'junit', version: '4.10'
+
+	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
+	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6', classifier: 'sources'
+
+	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
+	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT', classifier: 'sources'
+
+	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
+	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
+	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
+
+	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
+	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
+	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
+	compile group: 'org.kohsuke.stapler', name: 'stapler-jetty', version: '1.1'
+	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '3.1.0.201310021548-r'
+	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
+	compile group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
+	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
+	compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
+
+	compile 'commons-io:commons-io:2.4'
+
+	compile project(':JCSG')
+	compile project(':java-bowler')
+	compile fileTree (dir: 'libs/', includes: ['*.jar'])
+	compile fileTree (dir: '/usr/share/OpenCV/java/', includes: ['*.jar'])
 }
 
 // create a fat-jar (class files plus dependencies
 // excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
 jar {
 
-	doFirst { 
-	    // dependencies except VRL
-	    from (configurations.runtime.asFileTree.
-	        filter({file->return !file.name.startsWith("vrl-0")}).
-	        files.collect { zipTree(it) } ){
-	    	exclude 'META-INF/MANIFEST.MF'
-			exclude 'META-INF/*.SF'
-			exclude 'META-INF/*.DSA'
-			exclude 'META-INF/*.RSA'
-	    }
+	doFirst {
+		// dependencies except VRL
+		from (configurations.runtime.asFileTree.
+				filter({file->return !file.name.startsWith("vrl-0")}).
+				files.collect { zipTree(it) } ){
+					exclude 'META-INF/MANIFEST.MF'
+					exclude 'META-INF/*.SF'
+					exclude 'META-INF/*.DSA'
+					exclude 'META-INF/*.RSA'
+				}
 	}
 
-    // project class files compiled from source
-    from files(sourceSets.main.output.classesDir)
-    
-    manifest { attributes 'Main-Class': mainClass }
+	// project class files compiled from source
+	from files(sourceSets.main.output.classesDir)
+
+	manifest { attributes 'Main-Class': mainClass }
 }
 
 task run(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = mainClass;
-    //    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
-    jvmArgs = ['-Dprism.forceGPU=true']
+	classpath = sourceSets.main.runtimeClasspath
+	main = mainClass;
+	//    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
+	jvmArgs = ['-Dprism.forceGPU=true']
 }
