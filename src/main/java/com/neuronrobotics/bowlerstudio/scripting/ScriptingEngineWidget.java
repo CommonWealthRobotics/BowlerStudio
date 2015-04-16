@@ -275,7 +275,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 				setName("Bowler Script Runner "+currentFile.getName());
 
 		            try{
-		            	Object obj = inlineScriptRun(getCode());
+		            	Object obj = inlineScriptRun(getCode(),null);
 			            for(IScriptEventListener l:listeners){
 			            	l.onGroovyScriptFinished(obj, scriptResult);
 			            }
@@ -458,10 +458,10 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	}
 	
 	
-	public static Object inlineGistScriptRun(String gistID){
-		return inlineScriptRun(codeFromGistID(gistID)[0]);
+	public static Object inlineGistScriptRun(String gistID , ArrayList<Object> args){
+		return inlineScriptRun(codeFromGistID(gistID)[0],args);
 	}
-	public static Object inlineScriptRun(String code){
+	public static Object inlineScriptRun(String code, ArrayList<Object> args){
 		CompilerConfiguration cc = new CompilerConfiguration();
         cc.addCompilationCustomizers(
                 new ImportCustomizer().
@@ -492,7 +492,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
         	else
         		System.err.println("Device is "+pm.getDevice());
         }
-
+        binding.setVariable("args",args);
         
         GroovyShell shell = new GroovyShell(connectionmanager.getClass().getClassLoader(),
         		binding, cc);
