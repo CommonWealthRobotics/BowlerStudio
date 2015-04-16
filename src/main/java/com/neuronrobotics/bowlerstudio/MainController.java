@@ -76,6 +76,7 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
+import com.neuronrobotics.bowlerstudio.tabs.ScriptingEngineWidget;
 import com.neuronrobotics.interaction.CadInteractionEvent;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -91,6 +92,7 @@ import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 /**
  * FXML Controller class
@@ -114,6 +116,40 @@ public class MainController implements Initializable, IFileChangeListener {
 
     private static final Pattern KEYWORD_PATTERN
             = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+    
+	static ByteArrayOutputStream out = new ByteArrayOutputStream();
+	
+	static{
+        System.setOut(new PrintStream(out));
+		Platform.runLater(() -> {
+			handlePrintUpdate();
+		});
+	}
+	
+	static void handlePrintUpdate() {
+
+		ThreadUtil.wait(200);
+		Platform.runLater(() -> {
+			if(out.size()>0){
+				Platform.runLater(() -> {
+					String newString = out.toString();
+					out.reset();
+					if(logView!=null){
+						String current = logView.getText()+newString;
+						if(current.getBytes().length>2000)
+							current=new String(current.substring(current.getBytes().length-2000));
+						final String toSet=current;
+						logView.setText(toSet);
+						logView.setScrollTop(Double.MAX_VALUE);	
+					}
+				});
+			}
+		});
+		Platform.runLater(() -> {
+			// TODO Auto-generated method stub
+			handlePrintUpdate();
+		});
+	}
 
 
 
@@ -124,7 +160,7 @@ public class MainController implements Initializable, IFileChangeListener {
     private CSG csgObject;
 
     @FXML
-    private TextArea logView;
+    private static TextArea logView;
 
     @FXML
     private ScrollPane editorContainer;
@@ -143,8 +179,7 @@ public class MainController implements Initializable, IFileChangeListener {
 	private MeshContainer meshContainer;
 
 	private MeshView meshView;
-
-	private PrintStream orig= System.out;;
+	
     /**
      * Initializes the controller class.
      *
@@ -190,7 +225,9 @@ public class MainController implements Initializable, IFileChangeListener {
                 + "\n"
                 + "cube.difference(sphere)");
 
-        editorContainer.setContent(codeArea);
+        //editorContainer.setContent(codeArea);
+        editorContainer.setContent(new GistTabbedBrowser());
+        
         jfx3dmanager = new Jfx3dManager();
         subScene = jfx3dmanager.getSubScene();
         subScene.widthProperty().bind(viewContainer.widthProperty());
@@ -262,18 +299,11 @@ public class MainController implements Initializable, IFileChangeListener {
 
                 meshView = jfx3dmanager.replaceObject(meshView, meshContainer.getAsMeshViews().get(0));
 
-                logView.setText("Compile OK\n"+logView.getText());
-
-            } else {
-            	logView.setText(">> no CSG object returned :(");
             }
-
         } catch (Throwable ex) {
         	ex.printStackTrace(pw);
         
         }
-      	logView.setText(sw.toString()+logView.getText());
-      	logView.setText(out.toString()+logView.getText());
       	
     }
 
