@@ -75,7 +75,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	private boolean running = false;
 	private Thread scriptRunner=null;
 	private FileChangeWatcher watcher;
-	private ConnectionManager connectionmanager;
+	private static ConnectionManager connectionmanager;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
 	private Object scriptResult;
@@ -101,20 +101,20 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	private String addr;
 	boolean loadGist=false;
 	
-	public ScriptingEngineWidget(ConnectionManager dyio,  File currentFile,String currentGist, WebEngine engine ) throws IOException, InterruptedException{
-		this(dyio);
+	public ScriptingEngineWidget( File currentFile,String currentGist, WebEngine engine ) throws IOException, InterruptedException{
+		this();
 		this.currentFile = currentFile;
 		loadCodeFromGist(currentGist,engine);
 	}
-	public ScriptingEngineWidget(ConnectionManager dyio, File currentFile) throws IOException{
-		this(dyio);
+	public ScriptingEngineWidget( File currentFile) throws IOException{
+		this();
 		this.currentFile = currentFile;
 		loadCodeFromFile(currentFile);
 	}
 		
-	private ScriptingEngineWidget(ConnectionManager dyio){
-		this.connectionmanager = dyio;
-		
+	private ScriptingEngineWidget(){
+		if(getConnectionmanager() == null)
+			throw new RuntimeException("Connection manager needs to be added to the Scripting engine");
 		runfx.setOnAction(e -> {
 			if(running)
 				stop();
@@ -155,7 +155,8 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		controlPane.getChildren().add(fileLabel);
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
-		addIScriptEventListener(connectionmanager.getBowlerStudioController());
+		
+		addIScriptEventListener(getConnectionmanager().getBowlerStudioController());
 	}
 	
 	private void reset(){
@@ -287,47 +288,11 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 
 			public void run() {
 				setName("Bowler Script Runner "+currentFile.getName());
-				
-				//try{
-					CompilerConfiguration cc = new CompilerConfiguration();
-		            cc.addCompilationCustomizers(
-		                    new ImportCustomizer().
-		                    addStarImports("eu.mihosoft.vrl.v3d",
-		                            "eu.mihosoft.vrl.v3d.samples").
-		                    addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
-		            cc.addCompilationCustomizers(
-		                    new ImportCustomizer().
-		                    addStarImports("com.neuronrobotics",
-		                    		"com.neuronrobotics.sdk.dyio.peripherals",
-		                    		"com.neuronrobotics.sdk.dyio",
-		                    		"com.neuronrobotics.sdk.common",
-		                    		"com.neuronrobotics.sdk.ui",
-		                    		"com.neuronrobotics.sdk.util",
-		                    		"javafx.scene.control"
-		                    		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
-		                    );
-		        	
-		            Binding binding = new Binding();
-		            for (PluginManager pm:connectionmanager.getConnections()){
-		            	if(DyIO.class.isInstance(pm.getDevice()))
-		            		binding.setVariable(pm.getName(),(DyIO) pm.getDevice());
-		            	else if(BowlerBoardDevice.class.isInstance(pm.getDevice()))
-		            		binding.setVariable(pm.getName(),(BowlerBoardDevice) pm.getDevice());
-		            	else if(GenericPIDDevice.class.isInstance(pm.getDevice()))
-		            		binding.setVariable(pm.getName(),(GenericPIDDevice) pm.getDevice());
-		            	else
-		            		System.err.println("Device is "+pm.getDevice());
-		            }
-	
-		            
-		            GroovyShell shell = new GroovyShell(getClass().getClassLoader(),
-		            		binding, cc);
-		            System.out.println(getCode()+"\n\nStart\n\n");
-		            Script script = shell.parse(getCode());
+
 		            try{
-		            	Object obj = script.run();
+		            	Object obj = inlineScriptRun(getCode());
 			            for(IScriptEventListener l:listeners){
-			            	l.onGroovyScriptFinished(shell, script,obj, scriptResult);
+			            	l.onGroovyScriptFinished(obj, scriptResult);
 			            }
 			            Platform.runLater(() -> {
 		            		append("\n"+currentFile+" Completed\n");
@@ -350,7 +315,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		            		reset();
 		        		});
 		            	for(IScriptEventListener l:listeners){
-			            	l.onGroovyScriptError(shell, script, ex);
+			            	l.onGroovyScriptError( ex);
 			            }
 		            	throw new RuntimeException(ex);
 		            }
@@ -473,6 +438,52 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 
 	public String getFileName() {
 		return currentFile.getName();
+	}
+	public static ConnectionManager getConnectionmanager() {
+		return connectionmanager;
+	}
+	public static void setConnectionmanager(ConnectionManager connectionmanager) {
+		ScriptingEngineWidget.connectionmanager = connectionmanager;
+	}
+	
+	public static Object inlineScriptRun(String code){
+		CompilerConfiguration cc = new CompilerConfiguration();
+        cc.addCompilationCustomizers(
+                new ImportCustomizer().
+                addStarImports("eu.mihosoft.vrl.v3d",
+                        "eu.mihosoft.vrl.v3d.samples").
+                addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
+        cc.addCompilationCustomizers(
+                new ImportCustomizer().
+                addStarImports("com.neuronrobotics",
+                		"com.neuronrobotics.sdk.dyio.peripherals",
+                		"com.neuronrobotics.sdk.dyio",
+                		"com.neuronrobotics.sdk.common",
+                		"com.neuronrobotics.sdk.ui",
+                		"com.neuronrobotics.sdk.util",
+                		"javafx.scene.control"
+                		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
+                );
+    	
+        Binding binding = new Binding();
+        for (PluginManager pm:getConnectionmanager().getConnections()){
+        	if(DyIO.class.isInstance(pm.getDevice()))
+        		binding.setVariable(pm.getName(),(DyIO) pm.getDevice());
+        	else if(BowlerBoardDevice.class.isInstance(pm.getDevice()))
+        		binding.setVariable(pm.getName(),(BowlerBoardDevice) pm.getDevice());
+        	else if(GenericPIDDevice.class.isInstance(pm.getDevice()))
+        		binding.setVariable(pm.getName(),(GenericPIDDevice) pm.getDevice());
+        	else
+        		System.err.println("Device is "+pm.getDevice());
+        }
+
+        
+        GroovyShell shell = new GroovyShell(connectionmanager.getClass().getClassLoader(),
+        		binding, cc);
+        System.out.println(code+"\n\nStart\n\n");
+        Script script = shell.parse(code);
+        
+        return script.run();
 	}
 
 

@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
@@ -62,7 +63,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
         		addConnection();
         	}
         }.start();
-        
+        ScriptingEngineWidget.setConnectionmanager(this);
 	}
 
 	

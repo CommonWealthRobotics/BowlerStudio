@@ -198,7 +198,7 @@ public class ScriptingGistTab extends Tab {
 	
 	
 	private void finishLoadingComponents() throws IOException, InterruptedException{
-		scripting = new ScriptingEngineWidget(dyio,  null ,Current_URL, webEngine);
+		scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
 		
 		//Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {

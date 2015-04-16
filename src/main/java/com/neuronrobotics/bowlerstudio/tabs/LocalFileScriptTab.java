@@ -59,7 +59,7 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener{
 
     
 	public LocalFileScriptTab(ConnectionManager connectionManager, File file) throws IOException {
-		scripting = new ScriptingEngineWidget(connectionManager, file );
+		scripting = new ScriptingEngineWidget( file );
 		setText(file.getName());
         codeArea.textProperty().addListener(
                 (ov, oldText, newText) -> {
@@ -113,8 +113,7 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener{
 
 
 	@Override
-	public void onGroovyScriptFinished(GroovyShell shell, Script script,
-			Object result,Object previous) {
+	public void onGroovyScriptFinished(	Object result,Object previous) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -129,8 +128,7 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener{
 
 
 	@Override
-	public void onGroovyScriptError(GroovyShell shell, Script script,
-			Exception except) {
+	public void onGroovyScriptError(Exception except) {
 		// TODO Auto-generated method stub
 		
 	}

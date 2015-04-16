@@ -188,8 +188,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onGroovyScriptFinished(GroovyShell shell, Script script,
-			Object result, Object Previous) {
+	public void onGroovyScriptFinished(Object result, Object Previous) {
 		Log.warning("Loading script results "+result+ " previous "+ Previous);
 		// this is added in the script engine when the connection manager is loaded
 		if(ArrayList.class.isInstance(result)&& !ArrayList.class.isInstance(Previous) ){
@@ -217,8 +216,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	}
 
 	@Override
-	public void onGroovyScriptError(GroovyShell shell, Script script,
-			Exception except) {
+	public void onGroovyScriptError(Exception except) {
 		// TODO Auto-generated method stub
 		
 	}
