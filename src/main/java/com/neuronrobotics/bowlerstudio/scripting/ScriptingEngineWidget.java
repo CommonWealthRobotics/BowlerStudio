@@ -202,33 +202,18 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		setUpFile(currentFile);
 		setCode(new String(Files.readAllBytes(currentFile.toPath())));
 	}
+	
+
 	public void loadCodeFromGist(String addr,WebEngine engine) throws IOException, InterruptedException{
 		this.addr = addr;
 		this.engine = engine;
 		loadGist=true;
 		String currentGist = getCurrentGist(addr,engine);
-		GitHub github = GitHub.connectAnonymously();
-		Log.debug("Loading Gist: "+currentGist);
-		try{
-			GHGist gist = github.getGist(currentGist);
-			Map<String, GHGistFile> files = gist.getFiles();
-			for (Entry<String, GHGistFile> entry : files.entrySet()) { 
-				if(entry.getKey().endsWith(".java") || entry.getKey().endsWith(".groovy")){
-					GHGistFile ghfile = entry.getValue();	
-					Log.debug("Key = " + entry.getKey());
-					//Platform.runLater(() -> {
-						setCode(ghfile.getContent());
-						String fileName = entry.getKey().toString();
-	            		fileLabel.setText(fileName);
-	            		currentFile = new File(fileName);
-	        		//});
-					break;
-				}
-			}
-		}catch (InterruptedIOException e){
-			System.out.println("Gist Rate limited");
-		}catch(MalformedURLException ex){
-			//ex.printStackTrace();
+		String[] code = codeFromGistID(currentGist);
+		if(code != null){
+			setCode(code[0]);
+			fileLabel.setText(code[1]);
+    		currentFile = new File(code[1]);
 		}
 		
 	}
@@ -446,6 +431,36 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		ScriptingEngineWidget.connectionmanager = connectionmanager;
 	}
 	
+	public static String[] codeFromGistID(String id){
+		try{
+			GitHub github = GitHub.connectAnonymously();
+			Log.debug("Loading Gist: "+id);
+			GHGist gist = github.getGist(id);
+			Map<String, GHGistFile> files = gist.getFiles();
+			for (Entry<String, GHGistFile> entry : files.entrySet()) { 
+				if(entry.getKey().endsWith(".java") || entry.getKey().endsWith(".groovy")){
+					GHGistFile ghfile = entry.getValue();	
+					Log.debug("Key = " + entry.getKey());
+					String code = ghfile.getContent();
+					String fileName = entry.getKey().toString();
+            		return new String[]{code,fileName};
+				}
+			}
+		}catch (InterruptedIOException e){
+			System.out.println("Gist Rate limited");
+		}catch(MalformedURLException ex){
+			//ex.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public static Object inlineGistScriptRun(String gistID){
+		return inlineScriptRun(codeFromGistID(gistID)[0]);
+	}
 	public static Object inlineScriptRun(String code){
 		CompilerConfiguration cc = new CompilerConfiguration();
         cc.addCompilationCustomizers(
