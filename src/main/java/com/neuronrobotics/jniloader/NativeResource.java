@@ -28,6 +28,21 @@ public class NativeResource {
 		loadLib(libraryName);	
 	}
 	
+	public static File jarResourceToFile(String resource){
+		
+		File resourceLocation = prepResourceLocation(resource);
+		
+		try {
+			copyResource(resourceLocation.getClass().getResourceAsStream(resource), resourceLocation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return resourceLocation;
+	}
+	
 	private void inJarLoad(String name)throws UnsatisfiedLinkError, NativeResourceException{
 		//start by assuming the library can be loaded from the jar
 		InputStream resourceSource = locateResource(name);
@@ -91,7 +106,7 @@ public class NativeResource {
 		System.load(resource.getAbsolutePath());
 	}
 
-	private void copyResource(InputStream io, File file) throws IOException {
+	private static void copyResource(InputStream io, File file) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		
 		
@@ -104,7 +119,7 @@ public class NativeResource {
 		io.close();
 	}
 
-	private File prepResourceLocation(String fileName) throws NativeResourceException {		
+	private static File prepResourceLocation(String fileName) throws NativeResourceException {		
 		String tmpDir = System.getProperty("java.io.tmpdir");
 		//String tmpDir = "M:\\";
 		if ((tmpDir == null) || (tmpDir.length() == 0)) {

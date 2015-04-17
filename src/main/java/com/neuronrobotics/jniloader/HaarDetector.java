@@ -27,17 +27,17 @@ public class HaarDetector  implements IObjectDetector{
 	private double scale=.6;
 	
 	public HaarDetector(String cascade){
-
+		File f = NativeResource.jarResourceToFile(cascade);
 		// Create a face detector from the cascade file in the resources
 	    // directory.
-		faceDetector = new CascadeClassifier(cascade);
+		faceDetector = new CascadeClassifier(f.getAbsolutePath());
 	}
 	
 	public HaarDetector(){
 
 		// Create a face detector from the cascade file in the resources
 	    // directory.
-		this(new File("/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml").getAbsolutePath());
+		this("/harr/haarcascade_frontalface_default.xml");
 	}
 
 	
