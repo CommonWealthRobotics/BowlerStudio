@@ -507,7 +507,8 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"com.neuronrobotics.sdk.addons.kinematics.gui",
                 		"javafx.scene.transform",
                 		"javafx.scene.shape"
-                		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
+                		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil",
+                				"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget")
                 );
     	
         Binding binding = new Binding();
