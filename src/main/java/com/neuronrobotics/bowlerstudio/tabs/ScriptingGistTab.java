@@ -198,8 +198,19 @@ public class ScriptingGistTab extends Tab {
 	
 	
 	private void finishLoadingComponents() throws IOException, InterruptedException{
-		scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
-		
+		try{
+			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
+			vBox.getChildren().add(scripting);
+			if(tabPane==null){
+				try{
+					myTab.setText(scripting.getFileName());
+				}catch(java.lang.NullPointerException ex){
+					ex.printStackTrace();
+				}
+			}
+		}catch(Exception e){
+			//no gist on this page
+		}
 		//Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {
 			if( !processNewTab(urlField.getText())){
@@ -211,14 +222,6 @@ public class ScriptingGistTab extends Tab {
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
 
-		vBox.getChildren().add(scripting);
-		if(tabPane==null){
-			try{
-				myTab.setText(scripting.getFileName());
-			}catch(java.lang.NullPointerException ex){
-				ex.printStackTrace();
-			}
-		}
 	}
 	
     public String goBack()

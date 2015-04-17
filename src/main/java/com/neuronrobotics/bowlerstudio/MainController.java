@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,12 +25,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
-
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 /**
  * FXML Controller class
  *
@@ -271,12 +272,26 @@ public class MainController implements Initializable {
 			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
 			String name = "camera"+letter;
 			application.addConnection(p,name);
-			application.addTab(new CameraTab(p, name), true);
+			//application.addTab(new CameraTab(p, name), true);
 		});
 		
 		
 		
 	}
+
+
+
+	@FXML public void onAddDefaultRightArm() {
+
+		application.onAddDefaultRightArm();
+	}
+
+
+
+	@FXML public void onAddVRCamera() {
+		application.onAddVRCamera();
+	}
+	
 
 
 }

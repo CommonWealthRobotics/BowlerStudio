@@ -29,6 +29,7 @@ import javafx.scene.text.FontWeight;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
+import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
@@ -40,7 +41,7 @@ import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
 public class BowlerStudioController extends TabPane implements IScriptEventListener{
 
-	private static final String HOME_URL = "http://neuronrobotics.github.io/Java-Code-Library/Digital-Input-Example-Simple/";
+	private static final String HOME_URL = "http://neuronrobotics.github.io/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
 	 * 
 	 */
@@ -229,6 +230,22 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void onGroovyScriptError(Exception except) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void onAddDefaultRightArm() {
+		// TODO Auto-generated method stub
+		BowlerAbstractDevice dev = connectionManager.pickConnectedDevice();
+		if(DyIO.class.isInstance(dev)){
+			jfx3dmanager.attachArm((DyIO)dev, "TrobotMaster.xml");
+		}
+	}
+
+	public void onAddVRCamera() {
+		// TODO Auto-generated method stub
+		BowlerAbstractDevice dev = connectionManager.pickConnectedDevice();
+		if(AbstractImageProvider.class.isInstance(dev)){
+			
+		}
 	}
 
 }

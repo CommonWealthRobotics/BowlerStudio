@@ -20,6 +20,12 @@
               <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
             </items>
           </Menu>
+          <Menu mnemonicParsing="false" text="CAD">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onAddDefaultRightArm" text="Add Default Right Arm" />
+              <MenuItem mnemonicParsing="false" onAction="#onAddVRCamera" text="Add Camera VR" />
+            </items>
+          </Menu>
         </menus>
       </MenuBar>
     <SplitPane dividerPositions="0.774247491638796" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="1024.0" VBox.vgrow="ALWAYS">

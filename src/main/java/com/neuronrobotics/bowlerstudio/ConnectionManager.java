@@ -1,8 +1,12 @@
 package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
@@ -25,6 +29,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -188,6 +193,32 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 
 	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
 		this.bowlerStudioController = bowlerStudioController;
+	}
+	
+	public BowlerAbstractDevice pickConnectedDevice(){
+		if(devices.size()==0)
+			return null;
+		List<String> choices = new ArrayList<>();
+		for(int i=0;i<devices.size();i++){
+			choices.add(devices.get(i).getName());
+		}
+		
+		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+		dialog.setTitle("Bowler Device Chooser");
+		dialog.setHeaderText("Choose connected bowler device");
+		dialog.setContentText("Device Name:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+			for(int i=0;i<devices.size();i++){
+				if(devices.get(i).getName().contains(result.get())){
+					return devices.get(i).getDevice();
+				}
+			}
+		}
+		return null;
+		
 	}
 	
 	
