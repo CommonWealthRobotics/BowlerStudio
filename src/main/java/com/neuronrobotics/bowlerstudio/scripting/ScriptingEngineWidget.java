@@ -497,7 +497,9 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"com.neuronrobotics.jniloader",
                 		"com.neuronrobotics.tab",
                 		"org.opencv.core",
-                		"org.opencv.features2d"
+                		"org.opencv.features2d",
+                		"javafx.scene.text",
+                		"javafx.scene"
                 		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil")
                 );
     	

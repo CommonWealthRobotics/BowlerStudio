@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.neuronrobotics.jniloader.HaarDetector;
+import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -53,6 +55,7 @@ public class BowlerStudio extends Application {
         	System.exit(0);
 		});
         Log.enableDebugPrint();
+        IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
 
     public static Parent loadFromFXML() {
