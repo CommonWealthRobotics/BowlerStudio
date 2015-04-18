@@ -4,3 +4,6 @@
 [submodule "java-bowler"]
 	path = java-bowler
 	url = https://github.com/NeuronRobotics/java-bowler.git
+[submodule "CHDK-PTP-Java"]
+	path = CHDK-PTP-Java
+	url = https://github.com/acamilo/CHDK-PTP-Java.git
