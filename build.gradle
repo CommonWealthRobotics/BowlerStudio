@@ -51,6 +51,7 @@ dependencies {
 	compile 'commons-io:commons-io:2.4'
 
 	compile project(':JCSG')
+	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 	compile files('/usr/share/java/opencv-249.jar')
