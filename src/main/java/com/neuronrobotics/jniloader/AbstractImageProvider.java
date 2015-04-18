@@ -2,6 +2,7 @@ package com.neuronrobotics.jniloader;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -138,25 +139,18 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		
 		return getJfxImage(matToBufferedImage( matrix) ) ;
 	}
-	public static void bufferedImageToMat(BufferedImage input, Mat output){
-		MatOfByte mb;
-
-		try {
-			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(input, "jpg", baos);
-			baos.flush();
-			byte[] tmpByteArray = baos.toByteArray();
-			baos.close();
-			mb = new MatOfByte(tmpByteArray);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
 	
-		Mat matImageLocal =Highgui.imdecode(mb, 0);
-		matImageLocal.copyTo(output);
+	public static void bufferedImageToMat(BufferedImage input, Mat output){
+		Mat mb;
+
+		byte[] tmpByteArray = ((DataBufferByte) input.getRaster().getDataBuffer()).getData();
+		mb = new Mat(input.getHeight(),input.getWidth(),16); //8uc3
+		System.out.println("Image was ("+input.getWidth()+"x"+input.getHeight()+") array should be: ("+input.getWidth()*input.getHeight()*3+") and is: ("+tmpByteArray.length+")\n Mat is: ("+mb+")");
+	    mb.put(0, 0, tmpByteArray);
+	    mb.copyTo(output);
+	    System.out.println(output);
+		//Mat matImageLocal =Highgui.imdecode(mb, 0);
+		//matImageLocal.copyTo(output);
 	}
 
 	public static  BufferedImage toGrayScale(BufferedImage in, int w, int h) {

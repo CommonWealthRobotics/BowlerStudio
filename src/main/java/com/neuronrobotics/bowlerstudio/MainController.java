@@ -26,6 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -279,7 +280,14 @@ public class MainController implements Initializable {
 		
 	}
 
-
+	@FXML public void onConnectCHDKCamera(ActionEvent event) {
+		try{
+			application.addConnection(new CHDKImageProvider(),"cameraCHDK");
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@FXML public void onAddDefaultRightArm() {
 
