@@ -55,7 +55,7 @@ public class BowlerStudio extends Application {
         	System.exit(0);
 		});
         Log.enableDebugPrint();
-        IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
+        //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
 
     public static Parent loadFromFXML() {
