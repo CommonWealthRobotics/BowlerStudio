@@ -26,7 +26,11 @@ by calling the `assemble` task.
 Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerStudio`) and enter the following command
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
-
+    
+    git submodule init
+    
+    git submodule update
+    
     bash gradlew assemble
     
 #### Windows (CMD)
