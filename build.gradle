@@ -53,7 +53,7 @@ dependencies {
 	compile project(':JCSG')
 	compile project(':java-bowler')
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
-	compile fileTree (dir: '/usr/local/share/OpenCV/java/', includes: ['*.jar'])
+	compile fileTree (dir: '/usr/share/OpenCV/java/', includes: ['*.jar'])
 }
 
 // create a fat-jar (class files plus dependencies
