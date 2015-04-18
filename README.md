@@ -33,6 +33,8 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     
     bash gradlew assemble
     
+    java -jar build/libs/BowlerStudio.jar
+    
 #### Windows (CMD)
 
     gradlew assemble
