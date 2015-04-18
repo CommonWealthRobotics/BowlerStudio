@@ -74,5 +74,4 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 	public void handle(Event event) {
 		open=false;
 	}
-
 }
