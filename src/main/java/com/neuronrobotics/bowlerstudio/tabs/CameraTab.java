@@ -58,10 +58,11 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 					} else {
 						System.out.println("idle: ");
 					}
+				
 					iconsProcessed.setImage(AbstractImageProvider
 							.matToJfxImage(outImage)); // show processed image
 
-				} catch (CvException |IllegalArgumentException e2) {
+				} catch (CvException |NullPointerException |IllegalArgumentException e2) {
 					// startup noise
 					// e.printStackTrace();
 				}
