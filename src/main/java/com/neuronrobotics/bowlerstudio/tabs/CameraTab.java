@@ -25,7 +25,6 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 	private boolean open=true;
 	private AbstractImageProvider provider;
 	private Mat inputImage = new Mat();
-	private Mat displayImage = new Mat();
 	private IObjectDetector detector;
 	private ImageView iconsProcessed;
 	KeyPoint[] data;
@@ -34,7 +33,9 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 		this.detector = detector;
 		setText(name);
 		HBox box = new HBox();
-		iconsProcessed = new ImageView(provider.getLatestJfxImage());
+		// perform the first capture
+		provider.getLatestImage(inputImage,null); 
+		iconsProcessed = new ImageView();
 		box.getChildren().add(iconsProcessed);
 		setContent(box);
 		setOnCloseRequest(this);
@@ -48,11 +49,11 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 		if(open){	
 				try{
 					if(isSelected()){
-						provider.getLatestImage(inputImage,displayImage);                        // capture image
-						data = detector.getObjects(inputImage, displayImage);
+						provider.getLatestImage(inputImage,null);                        // capture image
+						data = detector.getObjects(inputImage, inputImage);
 						System.out.println("Got: "+data.length);
 					}else{
-						System.out.println("idle: "+data.length);
+						System.out.println("idle: ");
 					}
 				}catch(IllegalArgumentException e){
 					//startup noise
@@ -60,7 +61,7 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 				}
 				Platform.runLater(()->{
 					try{
-						iconsProcessed.setImage(AbstractImageProvider.matToJfxImage(displayImage));	// show processed image
+						iconsProcessed.setImage(AbstractImageProvider.matToJfxImage(inputImage));	// show processed image
 					}catch(IllegalArgumentException e){
 						//startup noise
 						//e.printStackTrace();

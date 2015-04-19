@@ -75,7 +75,8 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-		inputImage.copyTo(displayImage);
+		if(displayImage!=null)
+			inputImage.copyTo(displayImage);
 		
 		
 		try {
