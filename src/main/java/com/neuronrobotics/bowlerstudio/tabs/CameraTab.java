@@ -23,55 +23,46 @@ import javafx.scene.layout.HBox;
 
 public class CameraTab extends Tab implements EventHandler<Event> {
 	private boolean open=true;
-	private ArrayList<AbstractImageProvider> imageProviders = new ArrayList<AbstractImageProvider>();
-	public CameraTab(AbstractImageProvider p, String name,IObjectDetector detector ){
+	private AbstractImageProvider provider;
+	private Mat inputImage = new Mat();
+	private Mat displayImage = new Mat();
+	private IObjectDetector detector;
+	private ImageView iconsProcessed;
+	public CameraTab(AbstractImageProvider provider, String name,IObjectDetector detector ){
+		this.provider = provider;
+		this.detector = detector;
 		setText(name);
-		imageProviders.add(p);
-		Mat inputImage = new Mat();
-		Mat displayImage = new Mat();
-		int x=0;
-		ArrayList<ImageView> iconsCaptured = new ArrayList<ImageView>();
-		ArrayList<ImageView> iconsProcessed = new ArrayList<ImageView>();
 		HBox box = new HBox();
-		for (AbstractImageProvider img:imageProviders){
-			img.getLatestImage(inputImage,displayImage);
-			
-			ImageView tmp = new ImageView();
-			tmp.setImage(img.getLatestJfxImage());
-			iconsCaptured.add(tmp);
-
-			detector.getObjects(inputImage, displayImage);
-			ImageView ptmp = new ImageView(img.getLatestJfxImage());
-			iconsProcessed.add(ptmp);
-			box.getChildren().add(ptmp);
-
-		}
-
+		provider.getLatestImage(inputImage,displayImage);
+		detector.getObjects(inputImage, displayImage);
+		iconsProcessed = new ImageView(provider.getLatestJfxImage());
+		box.getChildren().add(iconsProcessed);
 		setContent(box);
-		
 		setOnCloseRequest(this);
-		new Thread(){
-			public void run(){
-				while(open){
-					//ThreadUtil.wait(100);
-					//System.out.print("\r\nRunning "+getText());
-					if(isSelected()){
-						for (int i=0;i< imageProviders.size();i++){ //list of image provid
-							imageProviders.get(i).getLatestImage(inputImage,displayImage);                        // capture image
-							iconsCaptured.get(i).setImage(AbstractImageProvider.matToJfxImage(inputImage));  // show raw image
-
-							KeyPoint[] data = detector.getObjects(inputImage, displayImage);
-							iconsProcessed.get(0).setImage(AbstractImageProvider.matToJfxImage(displayImage));	// show processed image
-							System.out.println("Got: "+data.length);
-							
-						}
-					}
-				}
-			}
-		}.start();
+		//start the infinite loop
+		doUpdate();
 	}
+	
+	private void doUpdate(){
+		if(open){
+			Platform.runLater(()->{
+				if(isSelected()){
+					provider.getLatestImage(inputImage,displayImage);                        // capture image
+					KeyPoint[] data = detector.getObjects(inputImage, displayImage);
+					iconsProcessed.setImage(AbstractImageProvider.matToJfxImage(displayImage));	// show processed image
+					System.out.println("Got: "+data.length);
+					doUpdate();
+				}
+			});
+		}else{
+			System.out.print("\r\nFinished "+getText());
+		}
+	}
+	
+	
 	@Override
 	public void handle(Event event) {
+		System.out.print("\r\nCalling stop for "+getText());
 		open=false;
 	}
 }

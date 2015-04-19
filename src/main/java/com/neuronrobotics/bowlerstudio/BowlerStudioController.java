@@ -170,7 +170,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
             Platform.runLater(() -> {
             	 CSG csg = (CSG) p;
                  MeshView previous =csg.getMesh();;
-            	 jfx3dmanager.removeObject(previous);
+            	 jfx3dmanager.removeObjects();
 			});
 		}else if(Tab.class.isInstance(p)){
 			Platform.runLater(() -> {
@@ -194,6 +194,10 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 			Platform.runLater(() -> {
 				addTab((Tab) o,true);
 			});
+		}else if(BowlerAbstractDevice.class.isInstance(o)){
+
+				addConnection((BowlerAbstractDevice) o, "script");
+			
 		}
 	}
 

@@ -14,7 +14,12 @@ public class OpenCVJNILoader {
 		resource= new NativeResource();
 		
 		if(NativeResource.isLinux()){
-			System.load("/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so");
+			try{
+				System.load("/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so");
+				
+			}catch(UnsatisfiedLinkError e){
+				System.load("/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so");
+			}
 		}else
 		if(NativeResource.isOSX())
 			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);
