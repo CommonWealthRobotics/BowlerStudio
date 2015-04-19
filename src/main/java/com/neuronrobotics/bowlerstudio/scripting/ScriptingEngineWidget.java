@@ -340,14 +340,14 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		if (watcher != null) {
 			watcher.close();
 		}
-		try {
-			watcher = new FileChangeWatcher(currentFile);
-			watcher.addIFileChangeListener(this);
-			watcher.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			watcher = new FileChangeWatcher(currentFile);
+//			watcher.addIFileChangeListener(this);
+//			watcher.start();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	private void updateFile(){

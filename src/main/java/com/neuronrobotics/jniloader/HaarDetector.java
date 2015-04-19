@@ -20,13 +20,14 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.features2d.KeyPoint;
 import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 
 public class HaarDetector  implements IObjectDetector{
 	private MatOfRect faceDetections = new MatOfRect();;
 	private CascadeClassifier faceDetector ;
-	private double scale=.6;
+	//private double scale=.6;
 	
 	public HaarDetector(String cascade){
 		File f = HaarFactory.jarResourceToFile(cascade);
@@ -43,33 +44,17 @@ public class HaarDetector  implements IObjectDetector{
 	}
 
 	
-	public KeyPoint[] getObjects(Mat inputImage, Mat displayImage){
-
-		BufferedImage tmp= AbstractImageProvider.toGrayScale(AbstractImageProvider.matToBufferedImage(inputImage),scale);
-		
-		MatOfByte mb;
-
-		try {
-			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(tmp, "jpg", baos);
-			baos.flush();
-			byte[] tmpByteArray = baos.toByteArray();
-			baos.close();
-			mb = new MatOfByte(tmpByteArray);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+	public KeyPoint[] getObjects(Mat inImage, Mat displayImage){
+		Mat localImage = new Mat();
+		Imgproc.cvtColor(inImage, localImage, Imgproc.COLOR_BGR2GRAY);
+		Size s =localImage.size();
+		double scale = 1;
+//		if(s.height>240 || s.width>320){
+//			scale = s.height/240;
+//			Imgproc.resize(localImage, localImage, new Size(320,240));
+//		}
 	
-		Mat matImageLocal =Highgui.imdecode(mb, 0);
-		
-		if(matImageLocal.empty()){
-			return null;
-		}
-		
-		faceDetector.detectMultiScale(matImageLocal, faceDetections);
+		faceDetector.detectMultiScale(localImage, faceDetections);
 		Rect [] smallArray = faceDetections.toArray();
 		KeyPoint [] myArray = new KeyPoint [smallArray.length];
 		
@@ -86,11 +71,11 @@ public class HaarDetector  implements IObjectDetector{
 		// Draw a bounding box around each face.
 	    for (KeyPoint rect : myArray) {
 	        //Core.rectangle(displayImage, rect.pt, new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-	    	center = new Point(rect.pt.x+(rect.size/2), rect.pt.y+(rect.size/2)) ;
+	    	center = new Point((rect.pt.x+(rect.size/2)), (rect.pt.y+(rect.size/2))) ;
 	    	
 			
-			Size objectSize= new Size(	rect.size/2,
-					rect.size/2);
+			Size objectSize= new Size(	(rect.size/2),
+					(rect.size/2));
 			
 			Core.ellipse(displayImage, center,objectSize, 0, 0, 360, new Scalar(255, 0,
 					255), 4, 8, 0);

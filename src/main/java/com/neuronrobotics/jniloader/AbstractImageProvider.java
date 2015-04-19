@@ -84,7 +84,7 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 			image = ImageIO.read(new ByteArrayInputStream(mb.toArray()));
 		} catch (IOException|CvException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		return image;

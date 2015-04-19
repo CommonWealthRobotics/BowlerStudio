@@ -1,7 +1,10 @@
 package com.neuronrobotics.jniloader;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
+import org.opencv.imgproc.Imgproc;
 
 public class OpenCVImageProvider extends AbstractImageProvider{
 	private VideoCapture vc;
@@ -10,6 +13,7 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 	public OpenCVImageProvider(int camerIndex){
 		this.camerIndex = camerIndex;
 		vc = new VideoCapture(camerIndex);
+
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -19,7 +23,11 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 		if (!vc.isOpened()) {
 			System.out.println("Camera Error");
 		} else {
-			System.out.println("Camera OK");
+			boolean wset = vc.set(Highgui.CV_CAP_PROP_FRAME_WIDTH, 320);
+			boolean hset = vc.set(Highgui.CV_CAP_PROP_FRAME_HEIGHT, 240);
+			System.out.println("Camera OK at "+vc.get(5)+
+					"fps width: "+vc.get(Highgui.CV_CAP_PROP_FRAME_WIDTH)+
+					" height: "+vc.get(Highgui.CV_CAP_PROP_FRAME_HEIGHT) );
 		}
 	}
 	
@@ -35,6 +43,7 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 			return false;
 
 		vc.read(imageData);
+		Imgproc.resize(imageData, imageData, new Size(320,240));
 		return true;
 	}
 
