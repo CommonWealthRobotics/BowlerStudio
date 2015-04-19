@@ -195,9 +195,8 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 				addTab((Tab) o,true);
 			});
 		}else if(BowlerAbstractDevice.class.isInstance(o)){
-
-				addConnection((BowlerAbstractDevice) o, "script");
-			
+			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
+			addConnection((BowlerAbstractDevice) o, bad.getScriptingName());
 		}
 	}
 

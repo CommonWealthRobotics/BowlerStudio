@@ -93,6 +93,8 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		return image;
 	}
 	
+	
+	
 	/**
 	 * Converts/writes a Mat into a BufferedImage.
 	 * 
@@ -136,7 +138,7 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 	 * @return BufferedImage of type TYPE_3BYTE_BGR or TYPE_BYTE_GRAY
 	 */
 	public static Image matToJfxImage(Mat matrix) {
-		
+
 		return getJfxImage(matToBufferedImage( matrix) ) ;
 	}
 	
@@ -166,17 +168,15 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		return toGrayScale(in, w, h);
 	}
 	public static Image getJfxImage(BufferedImage bf) {
-		 WritableImage wr = null;
-       if (bf != null) {
-           wr = new WritableImage(bf.getWidth(), bf.getHeight());
-           PixelWriter pw = wr.getPixelWriter();
-           for (int x = 0; x < bf.getWidth(); x++) {
-               for (int y = 0; y < bf.getHeight(); y++) {
-                   pw.setArgb(x, y, bf.getRGB(x, y));
-               }
-           }
-       }
-       return wr;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    try {
+	        ImageIO.write( bf, "png", out);
+	        out.flush();
+	        } catch (IOException ex) {
+	           
+	        }
+		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+	    return new javafx.scene.image.Image(in);
 	}
 	public Image getLatestJfxImage() {
 		return getJfxImage(getLatestImage());

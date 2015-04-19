@@ -28,32 +28,46 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 	private Mat displayImage = new Mat();
 	private IObjectDetector detector;
 	private ImageView iconsProcessed;
+	KeyPoint[] data;
 	public CameraTab(AbstractImageProvider provider, String name,IObjectDetector detector ){
 		this.provider = provider;
 		this.detector = detector;
 		setText(name);
 		HBox box = new HBox();
-		provider.getLatestImage(inputImage,displayImage);
-		detector.getObjects(inputImage, displayImage);
 		iconsProcessed = new ImageView(provider.getLatestJfxImage());
 		box.getChildren().add(iconsProcessed);
 		setContent(box);
 		setOnCloseRequest(this);
 		//start the infinite loop
+		System.out.println("Starting camera "+name);
 		doUpdate();
 	}
 	
 	private void doUpdate(){
-		if(open){
-			Platform.runLater(()->{
-				if(isSelected()){
-					provider.getLatestImage(inputImage,displayImage);                        // capture image
-					KeyPoint[] data = detector.getObjects(inputImage, displayImage);
-					iconsProcessed.setImage(AbstractImageProvider.matToJfxImage(displayImage));	// show processed image
-					System.out.println("Got: "+data.length);
-					doUpdate();
+		//ThreadUtil.wait(10);
+		if(open){	
+				try{
+					if(isSelected()){
+						provider.getLatestImage(inputImage,displayImage);                        // capture image
+						data = detector.getObjects(inputImage, displayImage);
+						System.out.println("Got: "+data.length);
+					}else{
+						System.out.println("idle: "+data.length);
+					}
+				}catch(IllegalArgumentException e){
+					//startup noise
+					//e.printStackTrace();
 				}
-			});
+				Platform.runLater(()->{
+					try{
+						iconsProcessed.setImage(AbstractImageProvider.matToJfxImage(displayImage));	// show processed image
+					}catch(IllegalArgumentException e){
+						//startup noise
+						//e.printStackTrace();
+					}
+					doUpdate();
+				});
+			
 		}else{
 			System.out.print("\r\nFinished "+getText());
 		}
