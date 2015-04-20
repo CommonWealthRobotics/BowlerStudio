@@ -13,6 +13,12 @@ sourceCompatibility = '1.8'
 if (!hasProperty('mainClass')) {
 	ext.mainClass = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
 }
+File buildDir = file(".");
+
+Properties props = new Properties()
+props.load(new FileInputStream(buildDir.getAbsolutePath()+"/java-bowler/javasdk/NRSDK/src/com/neuronrobotics/sdk/config/build.properties"))
+
+
 
 repositories {
 	mavenCentral()
@@ -60,8 +66,9 @@ dependencies {
 // create a fat-jar (class files plus dependencies
 // excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
 jar {
-
+	jar.baseName= "BowlerStudio-"+props."app.version";
 	doFirst {
+		
 		// dependencies except VRL
 		from (configurations.runtime.asFileTree.
 				filter({file->return !file.name.startsWith("vrl-0")}).
@@ -76,7 +83,20 @@ jar {
 	// project class files compiled from source
 	from files(sourceSets.main.output.classesDir)
 
-	manifest { attributes 'Main-Class': mainClass }
+	manifest {  
+	    attributes(	
+	    				"Main-Class": mainClass,
+		    			"Manifest-Version": "1.0",
+		    			"Created-By": "Neuron Robotics Cooperative",
+		    			"Specification-Title": props."app.name",
+		    			"Specification-Version": props."app.version",
+		    			"Specification-Vendor": "Neuron Robotics Cooperative",,
+		    			"Implementation-Title": props."app.name",
+		    			"Implementation-Version" : props."app.version",
+		    			"Implementation-Vendor": "Neuron Robotics Cooperative"
+		        		
+		    )
+		}
 }
 
 task run(type: JavaExec) {

@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.config.SDKBuildInfo;
+import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
+import com.neuronrobotics.sdk.ui.ConnectionImageIconFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Application;
@@ -16,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class BowlerStudio extends Application {
@@ -54,6 +58,8 @@ public class BowlerStudio extends Application {
         	ThreadUtil.wait(500);
         	System.exit(0);
 		});
+        primaryStage.setTitle("Bowler Studio v "+SDKBuildInfo.getVersion());
+        primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
         Log.enableDebugPrint();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
