@@ -220,6 +220,13 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		return null;
 		
 	}
+
+	public void disconnectAll() {
+		for(int i=0;i<devices.size();i++){
+			devices.get(i).getDevice().disconnect();
+		}
+		
+	}
 	
 	
 }

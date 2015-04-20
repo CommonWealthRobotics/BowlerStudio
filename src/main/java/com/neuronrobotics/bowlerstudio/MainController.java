@@ -248,6 +248,7 @@ public class MainController implements Initializable {
 
 	public void disconnect() {
 		jfx3dmanager.disconnect();
+		application.disconnect();
 	}
 
 

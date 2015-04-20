@@ -251,4 +251,8 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		}
 	}
 
+	public void disconnect() {
+		connectionManager.disconnectAll();
+	}
+
 }

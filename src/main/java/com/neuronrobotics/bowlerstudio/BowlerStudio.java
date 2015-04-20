@@ -38,7 +38,7 @@ public class BowlerStudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1024, 768,true);
+        Scene scene = new Scene(main, 1024, 900,true);
 
         scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
