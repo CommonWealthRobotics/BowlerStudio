@@ -35,6 +35,11 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     
     java -jar build/libs/BowlerStudio.jar
     
+then you can use the Eclipse Gradle plugin to import the project.
+
+http://marketplace.eclipse.org/content/gradle-integration-eclipse-44
+
+    
 #### Windows (CMD)
 
     gradlew assemble
