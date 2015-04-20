@@ -149,7 +149,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	    //Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
-		setPadding(new Insets(20, 0, 20, 20));
+		setPadding(new Insets(1, 0, 3, 20));
 		final FlowPane controlPane = new FlowPane();
 		controlPane.setHgap(100);
 		controlPane.getChildren().add(runfx);
