@@ -513,15 +513,19 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
     	
         Binding binding = new Binding();
         for (PluginManager pm:getConnectionmanager().getConnections()){
-        	if(DyIO.class.isInstance(pm.getDevice()))
-        		binding.setVariable(pm.getName(),(DyIO) pm.getDevice());
-        	else if(BowlerBoardDevice.class.isInstance(pm.getDevice()))
-        		binding.setVariable(pm.getName(),(BowlerBoardDevice) pm.getDevice());
-        	else if(GenericPIDDevice.class.isInstance(pm.getDevice()))
-        		binding.setVariable(pm.getName(),(GenericPIDDevice) pm.getDevice());
-        	else if(AbstractImageProvider.class.isInstance(pm.getDevice()))
-        		binding.setVariable(pm.getName(),(AbstractImageProvider) pm.getDevice());
-        	
+        	try {
+        		//groovy needs the objects cas to thier actual type befor passing into the scipt
+				binding.setVariable(pm.getName(),
+						Class.forName(
+								pm.getDevice().getClass().getName()
+								).cast(
+										pm.getDevice()
+										)
+								);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         	System.err.println("Device "+pm.getName()+" is "+pm.getDevice());
         }
         binding.setVariable("args",args);
