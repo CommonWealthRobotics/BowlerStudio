@@ -64,6 +64,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	
 	@Override
 	public void handle(Event event){
+		System.out.println("Closing "+getText());
 		onTabClosing();
 	}
 }

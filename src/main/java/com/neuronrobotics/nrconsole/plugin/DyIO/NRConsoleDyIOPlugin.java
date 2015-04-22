@@ -167,6 +167,7 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements ICha
 
 	@Override
 	public void onTabClosing() {
+		
 		dyio.removeDyIOEventListener(this);
 		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
 		for(DyIOChannel c : chans) {
