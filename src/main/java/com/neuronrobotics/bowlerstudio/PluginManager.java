@@ -75,13 +75,14 @@ public class PluginManager {
 	private AbstractBowlerStudioTab generateTab(Class<?> c) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		for(AbstractBowlerStudioTab t: liveTabs){
 			if(c.isInstance(t)){
+				// tab already exists, wake it up and return it
 				t.onTabReOpening();
 				return t;
 			}
 		}
 		AbstractBowlerStudioTab t =(AbstractBowlerStudioTab) Class.forName(
 					c.getName()
-				).cast(c.newInstance()
+				).cast(c.newInstance()// This is where the new tab allocation is called
 						)
 				;
 		t.setDevice(dev);

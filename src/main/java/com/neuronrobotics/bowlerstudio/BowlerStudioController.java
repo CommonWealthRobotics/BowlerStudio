@@ -109,7 +109,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		 * tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);*/
 
 		final Tab newtab = new Tab();
-		newtab.setText("New Gist");
+		newtab.setText("+");
 		newtab.setClosable(false);
 
 		//Addition of New Tab to the tabpane.
