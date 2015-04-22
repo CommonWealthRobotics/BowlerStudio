@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
+import com.neuronrobotics.nrconsole.plugin.DyIO.NRConsoleDyIOPlugin;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
@@ -109,6 +110,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 			if(rootItem.getChildren().size()>0)
 				name+=rootItem.getChildren().size()+1;
 			addConnection(dyio,name);
+			bowlerStudioController.addTab(new NRConsoleDyIOPlugin(dyio), true);
 		}else{
 			addConnection(gen,"device");
 		}

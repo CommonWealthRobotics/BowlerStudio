@@ -2,10 +2,16 @@ package com.neuronrobotics.nrconsole.plugin.DyIO;
 
 import java.util.ArrayList;
 
+import javafx.embed.swing.SwingNode;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+
 import net.miginfocom.swing.MigLayout;
 
+import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
@@ -13,45 +19,35 @@ import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOFirmwareOutOfDateException;
 import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
-import com.neuronrobotics.sdk.dyio.DyIORegestry;
 import com.neuronrobotics.sdk.dyio.IDyIOEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 
-public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
+public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements EventHandler<Event> ,IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
 	private boolean active=false;
 	private DyIOPanel devicePanel =null;
 	private DyIOControlsPanel deviceControls = new DyIOControlsPanel();
 	private ArrayList<ChannelManager> channels = new ArrayList<ChannelManager>();
 	//private HexapodConfigPanel hex=null;
 	//private JFrame hexFrame;
-	private JPanel wrapper;
-	public NRConsoleDyIOPlugin() {
-		DyIORegestry.addConnectionEventListener(this);
-		//hex = new HexapodNRConsolePulgin();
-	}
-	
-	
-	public JPanel getTabPane() {
-		wrapper = new JPanel(new MigLayout()){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -5581797073561156394L;
+	private SwingNode wrapper;
+	private DyIO dyio;
+	public NRConsoleDyIOPlugin(DyIO dyio) {
+		super(new String[]{"neuronrobotics.dyio.*"},dyio);
+		this.dyio = dyio;
+		dyio.addConnectionEventListener(this);
+		setConnection();
+		wrapper = new SwingNode();
+		JPanel jp = new JPanel(new MigLayout());
 
-			
-			public void repaint(){
-				super.repaint();
-				getDeviceDisplay().repaint();
-				getDeviceControls().repaint();
-			}
-		};
+		jp.add(getDeviceDisplay(), "pos 5 5");
+		jp.add(getDeviceControls(), "pos 560 5");
+		jp.setBorder(BorderFactory.createLoweredBevelBorder());
+		wrapper.setContent(jp);
+		setContent(wrapper);
+		setText("DyIO Console");
 		
-		wrapper.add(getDeviceDisplay(), "pos 5 5");
-		wrapper.add(getDeviceControls(), "pos 560 5");
-		wrapper.setName("DyIO");
-		wrapper.setBorder(BorderFactory.createLoweredBevelBorder());
-		return wrapper;
 	}
+
 
 	
 	public boolean isMyNamespace(ArrayList<String> names) {
@@ -64,17 +60,14 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 	}
 
 	private boolean setUp = false;
-	public boolean setConnection(BowlerAbstractConnection connection){
+	public boolean setConnection(){
 		//System.err.println(this.getClass()+" setConnection");
 		if(setUp)
 			return true;
 		DyIO.disableFWCheck();
-		
-		DyIORegestry.setConnection(connection);
-		DyIORegestry.get().connect();
 		try {
 			DyIO.enableFWCheck();
-			DyIORegestry.get().checkFirmwareRev();
+			dyio.checkFirmwareRev();
 		}catch(DyIOFirmwareOutOfDateException ex) {
 //			try {
 //				GettingStartedPanel.openPage("http://wiki.neuronrobotics.com/NR_Console_Update_Firmware");
@@ -84,11 +77,11 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 		}
 		DyIO.disableFWCheck();
 		
-		DyIORegestry.get().addDyIOEventListener(this);
-		DyIORegestry.get().setMuteResyncOnModeChange(true);
+		dyio.addDyIOEventListener(this);
+		dyio.setMuteResyncOnModeChange(true);
 		setupDyIO();
-		DyIORegestry.get().setMuteResyncOnModeChange(false);
-		DyIORegestry.get().getBatteryVoltage(true);
+		dyio.setMuteResyncOnModeChange(false);
+		dyio.getBatteryVoltage(true);
 		setUp = true;
 
 		return true;
@@ -96,8 +89,8 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 	private void setupDyIO(){
 		
 		int index = 0;
-		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) DyIORegestry.get().getChannels();
-		Log.debug("DyIO state: "+DyIORegestry.get()+ " \nchans: "+chans );
+		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
+		Log.debug("DyIO state: "+dyio+ " \nchans: "+chans );
 		for(DyIOChannel c : chans) {
 			//System.out.println(this.getClass()+" Adding channel: "+index+" as mode: "+c.getMode());
 			ChannelManager cm = new ChannelManager(c);
@@ -110,8 +103,8 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 
 
 		}
-		DyIORegestry.get().getBatteryVoltage(true);
-		getDeviceDisplay().setBrownOutMode(DyIORegestry.get().isServoPowerSafeMode());
+		dyio.getBatteryVoltage(true);
+		getDeviceDisplay().setBrownOutMode(dyio.isServoPowerSafeMode());
 		//System.out.println(this.getClass()+" setupDyIO: "+ channels.size());
 		getDeviceDisplay().addChannels(channels.subList(00, 12), false);
 		getDeviceDisplay().addChannels(channels.subList(12, 24), true);
@@ -131,7 +124,7 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 
 	public DyIOPanel getDeviceDisplay() {
 		if(devicePanel == null)
-			devicePanel  = new DyIOPanel();
+			devicePanel  = new DyIOPanel(dyio);
 		return devicePanel;
 	}
 	
@@ -196,6 +189,18 @@ public class NRConsoleDyIOPlugin implements IChannelPanelListener,IDyIOEventList
 	public void onRecordingEvent(ChannelManager source, boolean enabled) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+
+	@Override
+	public void handle(Event event) {
+		// TODO Auto-generated method stub
+		dyio.removeDyIOEventListener(this);
+		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
+		for(DyIOChannel c : chans) {
+			c.removeAllChannelEventListeners();
+		}
 	}
 
 

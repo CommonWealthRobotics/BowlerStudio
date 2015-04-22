@@ -22,6 +22,7 @@ import net.miginfocom.swing.MigLayout;
 import com.neuronrobotics.nrconsole.util.NRConsoleDocumentationFactory;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.MACAddress;
+import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
 import com.neuronrobotics.sdk.dyio.DyIOPowerState;
@@ -41,7 +42,9 @@ public class DyIOPanel extends JPanel {
 	private JLabel fw = new JLabel("FW Version: ?.?.?");
 	private JButton fwInfo = new JButton("About FW...");
 	private JCheckBox brownOutDetect = new JCheckBox("Safe Mode");
-	public DyIOPanel() {
+	private DyIO dyio;
+	public DyIOPanel(DyIO dyio) {
+		this.dyio = dyio;
 		try{
 			image = new ImageIcon(DyIOPanel.class.getResource("images/dyio-red2.png"));
 		}catch (Exception e){
@@ -61,15 +64,15 @@ public class DyIOPanel extends JPanel {
 	    setLayout(new MigLayout());
 	    refresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DyIORegestry.get().getBatteryVoltage(true);
+				dyio.getBatteryVoltage(true);
 			}
 		});
 	    reset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DyIORegestry.get().killAllPidGroups();
+				dyio.killAllPidGroups();
 				for(int i =0;i<24;i++){
-					if(DyIORegestry.get().getMode(i) != DyIOChannelMode.DIGITAL_IN)
-						DyIORegestry.get().setMode(i, DyIOChannelMode.DIGITAL_IN);
+					if(dyio.getMode(i) != DyIOChannelMode.DIGITAL_IN)
+						dyio.setMode(i, DyIOChannelMode.DIGITAL_IN);
 				}
 			}
 		});
@@ -84,7 +87,7 @@ public class DyIOPanel extends JPanel {
 		});
 	    int pr = Log.getMinimumPrintLevel();
 	    //Log.enableInfoPrint();
-	    //brownOutDetect.setSelected(DyIORegestry.get().isServoPowerSafeMode());
+	    //brownOutDetect.setSelected(dyio.isServoPowerSafeMode());
 	    Log.setMinimumPrintLevel(pr);
 	    brownOutDetect.addActionListener(new ActionListener() {
 			
@@ -92,14 +95,14 @@ public class DyIOPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(brownOutDetect.isSelected()){
 					System.out.println("Enabling DyIO Brown Out Detect");
-					DyIORegestry.get().setServoPowerSafeMode(true);
+					dyio.setServoPowerSafeMode(true);
 				}else{
 					System.out.println("Disabling DyIO Brown Out Detect");
-					DyIORegestry.get().setServoPowerSafeMode(false);
+					dyio.setServoPowerSafeMode(false);
 				}
-				DyIORegestry.get().fireDyIOEvent(new DyIOPowerEvent(	DyIORegestry.get().getBankAState(),
-																		DyIORegestry.get().getBankBState(),
-																		DyIORegestry.get().getBatteryVoltage(true)
+				dyio.fireDyIOEvent(new DyIOPowerEvent(	dyio.getBankAState(),
+																		dyio.getBankBState(),
+																		dyio.getBatteryVoltage(true)
 																		)
 				);
 			}
@@ -164,8 +167,8 @@ public class DyIOPanel extends JPanel {
 		setVoltage(dyIOPowerEvent.getVoltage());
 		A.setState(dyIOPowerEvent.getChannelAMode());
 		B.setState(dyIOPowerEvent.getChannelBMode());
-	    setMac(DyIORegestry.get().getAddress());
-	    setFw(DyIORegestry.get().getFirmwareRev());
+	    setMac(dyio.getAddress());
+	    setFw(dyio.getFirmwareRev());
 		repaint();
 	}
 	
@@ -215,7 +218,7 @@ public class DyIOPanel extends JPanel {
 		DyIOPowerState state;
 		boolean newState =false;
 		public void setState(DyIOPowerState s){
-			if(!DyIORegestry.get().isServoPowerSafeMode())
+			if(!dyio.isServoPowerSafeMode())
 				return;
 			if(!newState) {
 				old = state;
@@ -225,7 +228,8 @@ public class DyIOPanel extends JPanel {
 				newState =true;
 		}
 		public void run(){
-			while(DyIORegestry.get().isAvailable()) {
+			setName("showOption DyIO thread");
+			while(dyio.isAvailable()) {
 				if(newState) {
 					newState =false;
 					if(old == DyIOPowerState.BATTERY_POWERED && state !=DyIOPowerState.BATTERY_POWERED){
