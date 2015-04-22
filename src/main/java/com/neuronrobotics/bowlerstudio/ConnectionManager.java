@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
@@ -28,11 +29,13 @@ import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
@@ -41,9 +44,9 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ConnectionManager extends Tab implements EventHandler<ActionEvent>, ChangeListener<TreeItem<String>>  {
+public class ConnectionManager extends Tab implements EventHandler<ActionEvent>  {
 	
-	private TreeItem<String> rootItem;
+	private CheckBoxTreeItem<String> rootItem;
 	private ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
 	private BowlerStudioController bowlerStudioController;
 	private Node getIcon(String s){
@@ -58,23 +61,24 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		this.setBowlerStudioController(bowlerStudioController);
 		setText("Connections");
 		
-        rootItem = new TreeItem<String> ("Connections", getIcon(
+        rootItem = new CheckBoxTreeItem<String> ("Connections", getIcon(
         		"images/connection-icon.png"
         		//"images/usb-icon.png"
         		));
         rootItem.setExpanded(true);
+        rootItem.setSelected(true);
+        rootItem.selectedProperty().addListener(b ->{
+        	if(!rootItem.isSelected()){
+        		disconnectAll();
+        	}
+        });
        
         TreeView<String> tree = new TreeView<String> (rootItem); 
         
         tree .setCellFactory(CheckBoxTreeCell.forTreeView());
         
         setContent(tree);
-        tree.getSelectionModel().selectedItemProperty().addListener(this); 
-        new Thread(){
-        	public void run(){
-        		addConnection();
-        	}
-        }.start();
+        
         ScriptingEngineWidget.setConnectionmanager(this);
 	}
 
@@ -174,7 +178,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 			}
 		
 		
-		TreeItem<String> item = new TreeItem<String> (name+" "+c.getAddress(), icon); 
+		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String> (name+" "+c.getAddress(), icon);
+		
 		mp.setTree(item);
 		item.setExpanded(false);
         rootItem.getChildren().add(item);
@@ -191,13 +196,13 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 				@Override public void onConnect(BowlerAbstractConnection source) {}
 			});
         }
-	}
-
-	@Override
-	public void changed(ObservableValue<? extends TreeItem<String>> observable,
-			TreeItem<String> oldValue, TreeItem<String> newValue) {
-		// TODO Auto-generated method stub
-		
+        item.setSelected(true);
+        item.selectedProperty().addListener(b ->{
+        	if(!item.isSelected()){
+        		System.out.println("Disconnecting "+mp.getName());
+        		c.disconnect();
+        	}
+        });
 	}
 
 	@Override
