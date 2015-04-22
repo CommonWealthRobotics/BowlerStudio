@@ -12,6 +12,8 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
+import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -33,6 +35,11 @@ public class PluginManager {
 		
 		if(DyIO.class.isInstance(dev)){
 			deviceSupport.add(DyIOConsole.class);
+			
+		}
+		
+		if(AbstractImageProvider.class.isInstance(dev)){
+			deviceSupport.add(CameraTab.class);
 		}
 		
 	}
@@ -56,7 +63,7 @@ public class PluginManager {
 	private AbstractBowlerStudioTab generateTab(Class<?> c) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		for(AbstractBowlerStudioTab t: liveTabs){
 			if(c.isInstance(t)){
-				
+				t.onTabReOpening();
 				return t;
 			}
 		}
@@ -72,16 +79,16 @@ public class PluginManager {
 
 	public void setTree(TreeItem<String> item) {
 		this.item =item;
-		TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
-		rpc.setExpanded(false);
-		item.getChildren().add(rpc);
-		
+		if(dev.getConnection()!=null){
+			TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
+			rpc.setExpanded(false);
+			item.getChildren().add(rpc);
+		}
 		TreeItem<String> plugins = new TreeItem<String> ("Plugins"); 
 		plugins.setExpanded(false);
 		item.getChildren().add(plugins);
 		
 		for( Class<?> c:deviceSupport){
-
 			CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getSimpleName());
 			p.setSelected(false);
 			p.selectedProperty().addListener(b ->{

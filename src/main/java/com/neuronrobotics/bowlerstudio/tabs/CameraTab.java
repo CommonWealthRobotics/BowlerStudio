@@ -10,7 +10,10 @@ import org.opencv.core.Mat;
 import org.opencv.features2d.KeyPoint;
 
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -18,7 +21,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-public class CameraTab extends Tab implements EventHandler<Event> {
+public class CameraTab extends AbstractBowlerStudioTab  {
 	private boolean open = true;
 	private AbstractImageProvider provider;
 	private Mat inputImage = new Mat();
@@ -27,19 +30,14 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 	private ImageView iconsProcessed = new ImageView();;
 	KeyPoint[] data;
 	private Timer timer;
+	
+	public CameraTab(){
+		detector = new HaarDetector();
+	}
 
-	public CameraTab(AbstractImageProvider pr, String name, IObjectDetector dr) {
+	public CameraTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;
 		this.detector = dr;
-		setText(name);
-		HBox box = new HBox();
-		box.getChildren().add(iconsProcessed);
-		setContent(box);
-		setOnCloseRequest(this);
-		// start the infinite loop
-		System.out.println("Starting camera " + name);
-		update();
-
 	}
 
 	private void update() {
@@ -75,10 +73,34 @@ public class CameraTab extends Tab implements EventHandler<Event> {
 		});
 	}
 
+
 	@Override
-	public void handle(Event event) {
+	public void onTabClosing() {
 		System.out.print("\r\nCalling stop for " + getText());
 		open = false;
+	}
+
+	@Override
+	public String[] getMyNameSpaces() {
+		return new String[0];
+	}
+
+	@Override
+	public void initializeUI(BowlerAbstractDevice pm) {
+		provider = (AbstractImageProvider)pm;
+		setText(pm.getScriptingName());
+		HBox box = new HBox();
+		box.getChildren().add(iconsProcessed);
+		setContent(box);
+		// start the infinite loop
+		System.out.println("Starting camera " + pm.getScriptingName());
+		onTabReOpening();
+	}
+
+	@Override
+	public void onTabReOpening() {
+		open = true;
+		update();
 	}
 }
 

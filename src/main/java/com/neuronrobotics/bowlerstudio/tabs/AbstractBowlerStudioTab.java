@@ -23,13 +23,14 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	
 	public void setDevice(BowlerAbstractDevice pm){
 		 myNames = new ArrayList<String> ();
-		for(int i=0;i<getMyNameSpaces().length;i++){
-			myNames.add(getMyNameSpaces()[i]);
-		}
-		
-		if(!isMyNamespace(pm.getNamespaces())){
-			throw new RuntimeException("Device and namespaces are incompatible ");
-		}
+		 if(getMyNameSpaces().length>0){
+			for(int i=0;i<getMyNameSpaces().length;i++){
+				myNames.add(getMyNameSpaces()[i]);
+			}
+			if(!isMyNamespace(pm.getNamespaces())){
+				throw new RuntimeException("Device and namespaces are incompatible ");
+			}
+		 }
 		setOnCloseRequest(this);
 		initializeUI(pm);
 	}
