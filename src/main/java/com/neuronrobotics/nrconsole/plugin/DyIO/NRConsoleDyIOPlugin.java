@@ -22,8 +22,7 @@ import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 
-public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements EventHandler<Event> ,IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
-	private boolean active=false;
+public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
 	private DyIOPanel devicePanel =null;
 	private DyIOControlsPanel deviceControls = new DyIOControlsPanel();
 	private ArrayList<ChannelManager> channels = new ArrayList<ChannelManager>();
@@ -35,35 +34,7 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements Even
 		super(new String[]{"neuronrobotics.dyio.*"},dyio);
 		this.dyio = dyio;
 		dyio.addConnectionEventListener(this);
-		setConnection();
-		wrapper = new SwingNode();
-		JPanel jp = new JPanel(new MigLayout());
 
-		jp.add(getDeviceDisplay(), "pos 5 5");
-		jp.add(getDeviceControls(), "pos 560 5");
-		jp.setBorder(BorderFactory.createLoweredBevelBorder());
-		wrapper.setContent(jp);
-		setContent(wrapper);
-		setText("DyIO Console");
-		
-	}
-
-
-	
-	public boolean isMyNamespace(ArrayList<String> names) {
-		for(String s:names){
-			if(s.contains("neuronrobotics.dyio.*")){
-				active=true;
-			}
-		}
-		return isAcvive();
-	}
-
-	private boolean setUp = false;
-	public boolean setConnection(){
-		//System.err.println(this.getClass()+" setConnection");
-		if(setUp)
-			return true;
 		DyIO.disableFWCheck();
 		try {
 			DyIO.enableFWCheck();
@@ -82,10 +53,19 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements Even
 		setupDyIO();
 		dyio.setMuteResyncOnModeChange(false);
 		dyio.getBatteryVoltage(true);
-		setUp = true;
 
-		return true;
+		wrapper = new SwingNode();
+		JPanel jp = new JPanel(new MigLayout());
+
+		jp.add(getDeviceDisplay(), "pos 5 5");
+		jp.add(getDeviceControls(), "pos 560 5");
+		jp.setBorder(BorderFactory.createLoweredBevelBorder());
+		wrapper.setContent(jp);
+		setContent(wrapper);
+		setText("DyIO Console");
+		
 	}
+
 	private void setupDyIO(){
 		
 		int index = 0;
@@ -111,12 +91,6 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements Even
 	    
 	}
 
-	
-	public boolean isAcvive() {
-		// TODO Auto-generated method stub
-		return active;
-	}
-	
 	
 	public void selectChannel(ChannelManager cm) {
 		cm.getControlPanel();
@@ -191,11 +165,8 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements Even
 		
 	}
 
-
-
 	@Override
-	public void handle(Event event) {
-		// TODO Auto-generated method stub
+	public void onTabClosing() {
 		dyio.removeDyIOEventListener(this);
 		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
 		for(DyIOChannel c : chans) {

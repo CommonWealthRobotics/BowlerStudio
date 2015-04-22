@@ -6,14 +6,16 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 
-public abstract class AbstractBowlerStudioTab extends Tab {
+public abstract class AbstractBowlerStudioTab extends Tab implements EventHandler<Event> {
 
 	private boolean active = false;
 	ArrayList<String> myNames = new ArrayList<String> ();
 	
-	
+	public abstract void onTabClosing();
 	
 	public AbstractBowlerStudioTab(String myNamespaces[],BowlerAbstractDevice pm){
 		for(int i=0;i<myNamespaces.length;i++){
@@ -23,6 +25,7 @@ public abstract class AbstractBowlerStudioTab extends Tab {
 		if(!isMyNamespace(pm.getNamespaces())){
 			throw new RuntimeException("Device and namespaces are incompatible ");
 		}
+		setOnCloseRequest(this);
 	}
 	
 	
@@ -57,5 +60,10 @@ public abstract class AbstractBowlerStudioTab extends Tab {
 	
 	public boolean isAcvive() {
 		return active;
+	}
+	
+	@Override
+	public void handle(Event event){
+		onTabClosing();
 	}
 }
