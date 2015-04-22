@@ -61,6 +61,7 @@ dependencies {
 	compile project(':java-bowler')
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 	compile files('/usr/share/java/opencv-249.jar')
+	compile group: 'org.bytedeco', name: 'javacv', version: '0.9'
 }
 
 // create a fat-jar (class files plus dependencies

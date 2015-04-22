@@ -30,8 +30,6 @@ public class OpenCVJNILoader {
 			}else{
 				System.load("C:\\"+dir+"\\build\\java\\x86\\"+Core.NATIVE_LIBRARY_NAME+".dll");
 			}
-		}else{
-			throw new RuntimeErrorException(null);
 		}
 		
 		Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
