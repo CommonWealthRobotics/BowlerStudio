@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 
 public class NRBoot {
@@ -14,9 +15,9 @@ public class NRBoot {
 	private CoreLoader loader;
 	private int progressMax=0;
 	private int progressValue=0;
-	public NRBoot(BowlerAbstractConnection ac){
+	public NRBoot(BowlerAbstractDevice pm){
 		try {
-			boot=new NRBootLoader(ac);
+			boot=(NRBootLoader)pm;
 		}catch(RuntimeException e) {
 			//e.printStackTrace();
 			String message = "Not a bootloader device";

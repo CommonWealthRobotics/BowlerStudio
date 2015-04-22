@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javafx.embed.swing.SwingNode;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -13,15 +15,18 @@ import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.Hexml;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.gui.StatusLabel;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.InvalidResponseException;
 import com.neuronrobotics.sdk.common.NoConnectionAvailableException;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 
-public class BootloaderPanel extends JPanel implements ActionListener {
+public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionListener {
 	
 	private NRBoot blApp;
 	
@@ -40,7 +45,7 @@ public class BootloaderPanel extends JPanel implements ActionListener {
 	
 	public BootloaderPanel(){
 		////System.out.println("Starting GUI");
-		setName("NR Bootloader");
+		setText("NR Bootloader");
 //		fileButton = new JButton();
 //		fileButton.addActionListener(this);
 //		resetFile();
@@ -62,18 +67,14 @@ public class BootloaderPanel extends JPanel implements ActionListener {
         buttonPanel.add(loadStatus);
         buttonPanel.add(prog);
         
-        add(buttonPanel);
+        SwingNode sn = new SwingNode();
+        sn.setContent(buttonPanel);
+        setContent(sn);
  
 	}
 	
 
-	public boolean setConnection(BowlerAbstractConnection connection) {
-       
-		blApp = new NRBoot(connection);
-		loadButton.setEnabled(true);
-		selectFile();
-		return connection.isConnected();
-	}
+
 
 	public NRBoot getBlApp() {
 		return blApp;
@@ -227,5 +228,46 @@ public class BootloaderPanel extends JPanel implements ActionListener {
         if (e.getSource() == loadButton) {
         	selectFile();
         }
+	}
+
+
+	@Override
+	public void onTabClosing() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public String[] getMyNameSpaces() {
+		return new String[0];
+	}
+
+
+	@Override
+	public void initializeUI(BowlerAbstractDevice pm) {
+		// TODO Auto-generated method stub
+       
+			blApp = new NRBoot(pm);
+			loadButton.setEnabled(true);
+			selectFile();
+			pm.addConnectionEventListener(new IConnectionEventListener() {
+				
+				@Override
+				public void onDisconnect(BowlerAbstractConnection source) {
+					requestClose();
+				}
+				
+				@Override
+				public void onConnect(BowlerAbstractConnection source) {}
+			});
+
+	}
+
+
+	@Override
+	public void onTabReOpening() {
+		// TODO Auto-generated method stub
+		
 	}
 }

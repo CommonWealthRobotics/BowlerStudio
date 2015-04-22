@@ -15,6 +15,9 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
+import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
+import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 
@@ -41,6 +44,15 @@ public class PluginManager {
 		if(AbstractImageProvider.class.isInstance(dev)){
 			deviceSupport.add(CameraTab.class);
 		}
+		
+		if(NRBootLoader.class.isInstance(dev)){
+			deviceSupport.add(BootloaderPanel.class);
+		}
+		
+		if(BowlerBoardDevice.class.isInstance(dev)){
+			
+		}
+		
 		
 	}
 	

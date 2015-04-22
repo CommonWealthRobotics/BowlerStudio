@@ -71,31 +71,31 @@ public class NRBootLoaderApp {
 		blApp.reset();
 		System.exit(0);
 	}
-	public NRBootLoaderApp(){
-		NR_Bootloader_GUI gui = new NR_Bootloader_GUI();
-		////System.out.println("Waiting for port selection");
-		boolean getAp = false;
-		boolean wasSelected = false;
-		while (true){
-			if(gui.isPortSelect() && !getAp){
-				try {
-					NRBoot b = new NRBoot(ConnectionDialog.promptConnection());
-					gui.setBlApp(b);
-					getAp=true;
-				}catch(Exception e) {
-					gui.resetPort();
-				}
-			}
-			if(wasSelected && !gui.isPortSelect()){
-				getAp = false;
-			}
-			wasSelected =gui.isPortSelect();
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {}
-		}
-		
-	}
+//	public NRBootLoaderApp(){
+//		NR_Bootloader_GUI gui = new NR_Bootloader_GUI();
+//		////System.out.println("Waiting for port selection");
+//		boolean getAp = false;
+//		boolean wasSelected = false;
+//		while (true){
+//			if(gui.isPortSelect() && !getAp){
+//				try {
+//					NRBoot b = new NRBoot(new ConnectionDialog.promptConnection());
+//					gui.setBlApp(b);
+//					getAp=true;
+//				}catch(Exception e) {
+//					gui.resetPort();
+//				}
+//			}
+//			if(wasSelected && !gui.isPortSelect()){
+//				getAp = false;
+//			}
+//			wasSelected =gui.isPortSelect();
+//			try {
+//				Thread.sleep(10);
+//			} catch (InterruptedException e) {}
+//		}
+//		
+//	}
 	
 	private static void fail() {
 		System.err.println("Paramaters are:\n(Can be more then one core)\n--core <num> <type> <path to hex>\n--xml <path to xml>");
