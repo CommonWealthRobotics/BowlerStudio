@@ -37,6 +37,7 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -64,6 +65,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
         rootItem.setExpanded(true);
        
         TreeView<String> tree = new TreeView<String> (rootItem); 
+        
+        tree .setCellFactory(CheckBoxTreeCell.forTreeView());
         
         setContent(tree);
         tree.getSelectionModel().selectedItemProperty().addListener(this); 
