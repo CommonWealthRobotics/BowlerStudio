@@ -7,7 +7,7 @@ import java.util.Optional;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
-import com.neuronrobotics.nrconsole.plugin.DyIO.NRConsoleDyIOPlugin;
+import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
@@ -113,6 +113,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 			if(rootItem.getChildren().size()>0)
 				name+=rootItem.getChildren().size()+1;
 			addConnection(dyio,name);
+			
 		}else if(gen.hasNamespace("bcs.cartesian.*")){
 			BowlerBoardDevice delt = new BowlerBoardDevice();
 			delt.setConnection(gen.getConnection());
@@ -124,7 +125,6 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent>,
 		}else if(gen.hasNamespace("bcs.bootloader.*") || 
 				gen.hasNamespace("neuronrobotics.bootloader.*")){
 			NRBootLoader delt = new NRBootLoader(gen.getConnection());
-			
 			String name = "bootloader";
 			if(rootItem.getChildren().size()>0)
 				name+=rootItem.getChildren().size()+1;

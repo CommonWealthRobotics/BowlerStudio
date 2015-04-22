@@ -16,19 +16,22 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	ArrayList<String> myNames = new ArrayList<String> ();
 	
 	public abstract void onTabClosing();
+	public abstract String[] getMyNameSpaces();
+	public abstract void initializeUI(BowlerAbstractDevice pm);
 	
-	public AbstractBowlerStudioTab(String myNamespaces[],BowlerAbstractDevice pm){
-		for(int i=0;i<myNamespaces.length;i++){
-			myNames.add(myNamespaces[i]);
+	public void setDevice(BowlerAbstractDevice pm){
+		for(int i=0;i<getMyNameSpaces().length;i++){
+			myNames.add(getMyNameSpaces()[i]);
 		}
 		
 		if(!isMyNamespace(pm.getNamespaces())){
 			throw new RuntimeException("Device and namespaces are incompatible ");
 		}
 		setOnCloseRequest(this);
+		initializeUI(pm);
 	}
 	
-	
+
 	public boolean isMyNamespace(ArrayList<String> names) {
 		if (names == null)
 			return false;

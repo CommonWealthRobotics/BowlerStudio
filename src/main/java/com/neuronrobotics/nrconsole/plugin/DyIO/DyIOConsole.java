@@ -13,6 +13,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -22,7 +23,7 @@ import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 
-public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
+public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
 	private DyIOPanel devicePanel =null;
 	private DyIOControlsPanel deviceControls = new DyIOControlsPanel();
 	private ArrayList<ChannelManager> channels = new ArrayList<ChannelManager>();
@@ -30,41 +31,6 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements ICha
 	//private JFrame hexFrame;
 	private SwingNode wrapper;
 	private DyIO dyio;
-	public NRConsoleDyIOPlugin(DyIO dyio) {
-		super(new String[]{"neuronrobotics.dyio.*"},dyio);
-		this.dyio = dyio;
-		dyio.addConnectionEventListener(this);
-
-		DyIO.disableFWCheck();
-		try {
-			DyIO.enableFWCheck();
-			dyio.checkFirmwareRev();
-		}catch(DyIOFirmwareOutOfDateException ex) {
-//			try {
-//				GettingStartedPanel.openPage("http://wiki.neuronrobotics.com/NR_Console_Update_Firmware");
-//			} catch (Exception e) {
-//			}
-//			JOptionPane.showMessageDialog(null, "DyIO Firmware mis-match Warning\n"+ex.getMessage(), "DyIO Warning", JOptionPane.WARNING_MESSAGE);
-		}
-		DyIO.disableFWCheck();
-		
-		dyio.addDyIOEventListener(this);
-		dyio.setMuteResyncOnModeChange(true);
-		setupDyIO();
-		dyio.setMuteResyncOnModeChange(false);
-		dyio.getBatteryVoltage(true);
-
-		wrapper = new SwingNode();
-		JPanel jp = new JPanel(new MigLayout());
-
-		jp.add(getDeviceDisplay(), "pos 5 5");
-		jp.add(getDeviceControls(), "pos 560 5");
-		jp.setBorder(BorderFactory.createLoweredBevelBorder());
-		wrapper.setContent(jp);
-		setContent(wrapper);
-		setText("DyIO Console");
-		
-	}
 
 	private void setupDyIO(){
 		
@@ -173,6 +139,46 @@ public class NRConsoleDyIOPlugin extends AbstractBowlerStudioTab implements ICha
 		for(DyIOChannel c : chans) {
 			c.removeAllChannelEventListeners();
 		}
+	}
+
+	@Override
+	public String[] getMyNameSpaces() {
+		return new String[]{"neuronrobotics.dyio.*"};
+	}
+
+	@Override
+	public void initializeUI(BowlerAbstractDevice pm) {
+		this.dyio = (DyIO)pm;
+		dyio.addConnectionEventListener(this);
+
+		DyIO.disableFWCheck();
+		try {
+			DyIO.enableFWCheck();
+			dyio.checkFirmwareRev();
+		}catch(DyIOFirmwareOutOfDateException ex) {
+//			try {
+//				GettingStartedPanel.openPage("http://wiki.neuronrobotics.com/NR_Console_Update_Firmware");
+//			} catch (Exception e) {
+//			}
+//			JOptionPane.showMessageDialog(null, "DyIO Firmware mis-match Warning\n"+ex.getMessage(), "DyIO Warning", JOptionPane.WARNING_MESSAGE);
+		}
+		DyIO.disableFWCheck();
+		
+		dyio.addDyIOEventListener(this);
+		dyio.setMuteResyncOnModeChange(true);
+		setupDyIO();
+		dyio.setMuteResyncOnModeChange(false);
+		dyio.getBatteryVoltage(true);
+
+		wrapper = new SwingNode();
+		JPanel jp = new JPanel(new MigLayout());
+
+		jp.add(getDeviceDisplay(), "pos 5 5");
+		jp.add(getDeviceControls(), "pos 560 5");
+		jp.setBorder(BorderFactory.createLoweredBevelBorder());
+		wrapper.setContent(jp);
+		setContent(wrapper);
+		setText("DyIO Console");
 	}
 
 
