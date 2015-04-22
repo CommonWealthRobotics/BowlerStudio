@@ -25,8 +25,8 @@ import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 
 public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
 	private DyIOPanel devicePanel =null;
-	private DyIOControlsPanel deviceControls = new DyIOControlsPanel();
-	private ArrayList<ChannelManager> channels = new ArrayList<ChannelManager>();
+	private DyIOControlsPanel deviceControls=null;
+	private ArrayList<ChannelManager> channels =null;
 	//private HexapodConfigPanel hex=null;
 	//private JFrame hexFrame;
 	private SwingNode wrapper;
@@ -135,9 +135,8 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	public void onTabClosing() {
 		
 		dyio.removeDyIOEventListener(this);
-		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
-		for(DyIOChannel c : chans) {
-			c.removeAllChannelEventListeners();
+		for(ChannelManager c : channels) {
+			c.removeListener(this);
 		}
 	}
 
@@ -149,6 +148,8 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		this.dyio = (DyIO)pm;
+		deviceControls = new DyIOControlsPanel();
+		channels = new ArrayList<ChannelManager>();
 		dyio.addConnectionEventListener(this);
 
 		DyIO.disableFWCheck();
@@ -178,7 +179,19 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		jp.setBorder(BorderFactory.createLoweredBevelBorder());
 		wrapper.setContent(jp);
 		setContent(wrapper);
-		setText("DyIO Console");
+		setText(pm.getScriptingName()+" Console");
+		
+		onTabReOpening();
+	}
+
+
+	@Override
+	public void onTabReOpening() {
+		// TODO Auto-generated method stub
+		dyio.addConnectionEventListener(this);
+		for(ChannelManager c : channels) {
+			c.addListener(this);
+		}
 	}
 
 

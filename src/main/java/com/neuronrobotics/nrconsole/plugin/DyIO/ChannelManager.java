@@ -122,4 +122,10 @@ public class ChannelManager implements IDyIOChannelModeChangeListener   {
 		controlPanel.setupModesComboBox();
 	}
 
+	public void removeListener(IChannelPanelListener l) {
+		if(listeners.contains(l)) {
+			listeners.remove(l);
+		}
+	}
+
 }

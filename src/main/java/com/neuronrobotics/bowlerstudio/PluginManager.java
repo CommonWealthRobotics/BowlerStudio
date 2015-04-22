@@ -24,7 +24,7 @@ public class PluginManager {
 	private TreeItem<String> item;
 	
 	private ArrayList<Class> deviceSupport = new ArrayList<Class>();
-
+	ArrayList<AbstractBowlerStudioTab> liveTabs = new ArrayList<>();
 	public PluginManager(BowlerAbstractDevice dev, BowlerStudioController bowlerStudioController){
 		this.dev = dev;
 		this.setBowlerStudioController(bowlerStudioController);
@@ -54,12 +54,19 @@ public class PluginManager {
 	}
 
 	private AbstractBowlerStudioTab generateTab(Class<?> c) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+		for(AbstractBowlerStudioTab t: liveTabs){
+			if(c.isInstance(t)){
+				
+				return t;
+			}
+		}
 		AbstractBowlerStudioTab t =(AbstractBowlerStudioTab) Class.forName(
 					c.getName()
 				).cast(c.newInstance()
 						)
 				;
 		t.setDevice(dev);
+		liveTabs.add(t);
 		return t;
 	}
 
@@ -76,24 +83,25 @@ public class PluginManager {
 		for( Class<?> c:deviceSupport){
 
 			CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getSimpleName());
-//			p.
-//			{
-//				@Override
-//			     public void updateItem(String item, boolean empty) {
-//			        super.updateItem(item, empty);
-//			        System.out.println("Loading tab "+c.getSimpleName());
-//		        	try {
-//						getBowlerStudioController().addTab(generateTab(c), true);
-//					} catch (ClassNotFoundException | InstantiationException
-//							| IllegalAccessException ex) {
-//						// TODO Auto-generated catch block
-//						ex.printStackTrace();
-//					}
-//			     }
-//			
-//			};
-					
-
+			p.setSelected(false);
+			p.selectedProperty().addListener(b ->{
+				try {
+					AbstractBowlerStudioTab t = generateTab(c);
+					if(p.isSelected()){
+						getBowlerStudioController().addTab(t, true);
+						System.out.println("Launching "+c.getSimpleName());
+		        	}else{
+		        		try{
+		        			t.requestClose();
+		        		}catch (NullPointerException ex){};// tab is already cloed
+		        	}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	        	
+	        });
+				
 			plugins.getChildren().add(p);
 		}
 	

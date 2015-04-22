@@ -13,13 +13,16 @@ import javafx.scene.control.Tab;
 public abstract class AbstractBowlerStudioTab extends Tab implements EventHandler<Event> {
 
 	private boolean active = false;
-	ArrayList<String> myNames = new ArrayList<String> ();
+	ArrayList<String> myNames =null;
 	
 	public abstract void onTabClosing();
 	public abstract String[] getMyNameSpaces();
 	public abstract void initializeUI(BowlerAbstractDevice pm);
+	public abstract void onTabReOpening();
+	
 	
 	public void setDevice(BowlerAbstractDevice pm){
+		 myNames = new ArrayList<String> ();
 		for(int i=0;i<getMyNameSpaces().length;i++){
 			myNames.add(getMyNameSpaces()[i]);
 		}
