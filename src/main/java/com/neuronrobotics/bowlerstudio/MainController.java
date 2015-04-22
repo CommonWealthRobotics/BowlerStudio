@@ -19,6 +19,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -51,6 +53,10 @@ public class MainController implements Initializable {
 		}catch(Error e){
 			e.printStackTrace();
 			opencvOk=false;
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("OpenCV missing");
+			alert.setHeaderText("Opencv library is missing");
+			alert.setContentText("You should install OpenCV to get access to cameras and image processing.");
 		}
 	}
 	

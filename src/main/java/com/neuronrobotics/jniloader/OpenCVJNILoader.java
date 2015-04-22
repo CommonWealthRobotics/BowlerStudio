@@ -17,16 +17,23 @@ public class OpenCVJNILoader {
 			try{
 				System.load("/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so");
 				
-			}catch(UnsatisfiedLinkError e){
+			}catch(Error e){
 				System.load("/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so");
 			}
 		}else
 		if(NativeResource.isOSX())
 			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);
-		else{
+		else if(NativeResource.isWindows()){
+			String dir = "OpenCV-"+Core.VERSION.split(".0")[0];
+			if(NativeResource.is64Bit()){
+				System.load("C:\\"+dir+"\\build\\java\\x64\\"+Core.NATIVE_LIBRARY_NAME+".dll");
+			}else{
+				System.load("C:\\"+dir+"\\build\\java\\x86\\"+Core.NATIVE_LIBRARY_NAME+".dll");
+			}
+		}else{
 			throw new RuntimeErrorException(null);
 		}
-	
+		
 		Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
         //System.out.println("m = " + m.dump());
 		
