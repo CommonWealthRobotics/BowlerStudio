@@ -17,8 +17,11 @@
           <Menu mnemonicParsing="false" text="Connection">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
-              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
-              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="Add a new CHDK camera" />
+              <Menu mnemonicParsing="false" text="Cameras">
+	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
+	              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="Add a new CHDK camera" />
+	              <MenuItem mnemonicParsing="false" onAction="#onConnectJavaCVCamera" text="Add a new JavaCV camera" />
+              </Menu>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="CAD">

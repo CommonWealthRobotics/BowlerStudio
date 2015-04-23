@@ -20,6 +20,7 @@ import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 public class PluginManager {
 	
@@ -36,9 +37,15 @@ public class PluginManager {
 		if(!dev.isAvailable())
 			throw new RuntimeException();
 		
+		// add tabs to the support list based on thier class
+		// adding additional classes here will show up in the default 
+		// tabs list for objects of that type
 		if(DyIO.class.isInstance(dev)){
 			deviceSupport.add(DyIOConsole.class);
-			
+		}
+		//any device that implements this interface
+		if(IPidControlNamespace.class.isInstance(dev)){
+			//pid tab
 		}
 		
 		if(AbstractImageProvider.class.isInstance(dev)){
@@ -113,7 +120,7 @@ public class PluginManager {
 		        	}else{
 		        		try{
 		        			t.requestClose();
-		        		}catch (NullPointerException ex){};// tab is already cloed
+		        		}catch (NullPointerException ex){};// tab is already closed
 		        	}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

@@ -32,6 +32,7 @@ import javafx.stage.FileChooser;
 
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
+import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -310,6 +311,33 @@ public class MainController implements Initializable {
 
 	@FXML public void onAddVRCamera() {
 		application.onAddVRCamera();
+	}
+
+
+
+	@FXML public void onConnectJavaCVCamera() {
+		List<String> choices = new ArrayList<>();
+		choices.add("0");
+		choices.add("1");
+		choices.add("2");
+		choices.add("3");
+		choices.add("4");
+		
+		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
+		dialog.setTitle("OpenCV Camera Index Chooser");
+		dialog.setHeaderText("Choose an OpenCV camera");
+		dialog.setContentText("Camera Index:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		
+		// The Java 8 way to get the response value (with lambda expression).
+		result.ifPresent(letter -> {
+			JavaCVImageProvider p = new JavaCVImageProvider(Integer.parseInt(letter));
+			String name = "camera"+letter;
+			application.addConnection(p,name);
+			//application.addTab(new CameraTab(p, name), true);
+		});
 	}
 	
 
