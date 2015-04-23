@@ -18,6 +18,7 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
@@ -69,9 +70,11 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 					} else {
 						System.out.println("idle: ");
 					}
-				
-					iconsProcessed.setImage(AbstractImageProvider
-							.matToJfxImage(outImage)); // show processed image
+					Image Img= AbstractImageProvider
+							.matToJfxImage(outImage);
+					Platform.runLater(() -> {
+						iconsProcessed.setImage(Img); // show processed image
+					});
 					session[3] = System.currentTimeMillis();
 					
 					

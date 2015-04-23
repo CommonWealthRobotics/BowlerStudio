@@ -27,7 +27,7 @@ import org.opencv.objdetect.CascadeClassifier;
 public class HaarDetector  implements IObjectDetector{
 	private MatOfRect faceDetections = new MatOfRect();;
 	private CascadeClassifier faceDetector ;
-	//private double scale=.6;
+	private double scale=.6;
 	
 	public HaarDetector(String cascade){
 		File f = HaarFactory.jarResourceToFile(cascade);
@@ -46,13 +46,9 @@ public class HaarDetector  implements IObjectDetector{
 	
 	public KeyPoint[] getObjects(Mat inImage, Mat displayImage){
 		Mat localImage = new Mat();
-		Imgproc.cvtColor(inImage, localImage, Imgproc.COLOR_BGR2GRAY);
-		Size s =localImage.size();
-		double scale = 1;
-//		if(s.height>240 || s.width>320){
-//			scale = s.height/240;
-//			Imgproc.resize(localImage, localImage, new Size(320,240));
-//		}
+		Size s =inImage.size();
+		Imgproc.resize(inImage, localImage, new Size(s.width*scale,s.height*scale));
+		Imgproc.cvtColor(localImage, localImage, Imgproc.COLOR_BGR2GRAY);
 	
 		faceDetector.detectMultiScale(localImage, faceDetections);
 		Rect [] smallArray = faceDetections.toArray();
