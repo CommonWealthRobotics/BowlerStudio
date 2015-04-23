@@ -91,6 +91,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
         }
         new Thread(){
         	public void run(){
+        		ThreadUtil.wait(750);
         		addConnection();
         	}
         }.start();
