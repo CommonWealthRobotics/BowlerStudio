@@ -25,8 +25,7 @@ import javafx.scene.layout.HBox;
 public class CameraTab extends AbstractBowlerStudioTab  {
 	private boolean open = true;
 	private AbstractImageProvider provider;
-	private Mat inputImage = new Mat();
-	private Mat outImage = new Mat();
+	
 	private IObjectDetector detector;
 	private ImageView iconsProcessed = new ImageView();;
 	KeyPoint[] data;
@@ -48,15 +47,19 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 		Platform.runLater(() -> {
 			//new RuntimeException().printStackTrace();
 			if (open) {
+				Mat inputImage = new Mat();
+				Mat outImage = new Mat();
 				try {
 					long spacing=System.currentTimeMillis()-session[3];
+					double total = System.currentTimeMillis() - session[0];
 					long capture=session[1]-session[0];
 					long process=session[2]-session[1];
 					long show=session[3]-session[2];
-					System.out.println("Frame Spacing "+spacing+"ms "+
+					System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
 							"capture "+capture+"ms "+
 							"process "+process+"ms "+
-							"show "+show+"ms "
+							"show "+show+"ms "+
+							"spacing "+spacing+"ms "
 							);
 					
 					if (isSelected()) {
@@ -70,13 +73,14 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 					} else {
 						System.out.println("idle: ");
 					}
-					Image Img= AbstractImageProvider
-							.matToJfxImage(outImage);
+					update();
 					Platform.runLater(() -> {
+						Image Img= AbstractImageProvider
+								.matToJfxImage(outImage);
 						iconsProcessed.setImage(Img); // show processed image
 					});
 					session[3] = System.currentTimeMillis();
-					
+					return;
 					
 				} catch (CvException |NullPointerException |IllegalArgumentException e2) {
 					// startup noise
