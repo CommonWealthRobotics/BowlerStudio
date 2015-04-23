@@ -1,9 +1,12 @@
 package com.neuronrobotics.bowlerstudio;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.usb.UsbDisconnectedException;
+import javax.usb.UsbException;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
@@ -28,7 +31,6 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
-
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -80,6 +82,18 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
         setContent(tree);
         
         ScriptingEngineWidget.setConnectionmanager(this);
+        try{
+        	if(UsbCDCSerialConnection.getAllUsbBowlerDevices().size()==0){
+        		return;
+        	}
+        }catch(Error | UnsupportedEncodingException | UsbDisconnectedException | SecurityException | UsbException e){
+        	e.printStackTrace();
+        }
+        new Thread(){
+        	public void run(){
+        		addConnection();
+        	}
+        }.start();
 	}
 
 	
