@@ -9,10 +9,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -43,6 +46,7 @@ public class MainController implements Initializable {
     
 	static ByteArrayOutputStream out = new ByteArrayOutputStream();
 	static boolean opencvOk=true;
+
 	static{
         System.setOut(new PrintStream(out));
 		Platform.runLater(() -> {
@@ -62,8 +66,9 @@ public class MainController implements Initializable {
 	
 	static void handlePrintUpdate() {
 
-		ThreadUtil.wait(200);
-		Platform.runLater(() -> {
+
+		FxTimer.runLater(
+				Duration.ofMillis(100) ,() -> {
 			if(out.size()>0){
 				Platform.runLater(() -> {
 					String newString = out.toString();

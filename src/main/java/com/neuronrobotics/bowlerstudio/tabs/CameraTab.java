@@ -30,6 +30,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	private ImageView iconsProcessed = new ImageView();;
 	KeyPoint[] data;
 	private Timer timer;
+	long session []=new long[4];
 	
 	public CameraTab(){
 		detector = new HaarDetector();
@@ -38,19 +39,31 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	public CameraTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;
 		this.detector = dr;
+
 	}
 
 	private void update() {
 
 		Platform.runLater(() -> {
+			//new RuntimeException().printStackTrace();
 			if (open) {
 				try {
+					long spacing=System.currentTimeMillis()-session[3];
+					long capture=session[1]-session[0];
+					long process=session[2]-session[1];
+					long show=session[3]-session[2];
+					System.out.println("Frame Spacing "+spacing+"ms "+
+							"capture "+capture+"ms "+
+							"process "+process+"ms "+
+							"show "+show+"ms "
+							);
+					
 					if (isSelected()) {
-
+						session[0] = System.currentTimeMillis();
 						provider.getLatestImage(inputImage, outImage); // capture
-																		// image
+						session[1] = System.currentTimeMillis();	   // image
 						data = detector.getObjects(inputImage, outImage);
-
+						session[2] = System.currentTimeMillis();
 						if (data.length > 0)
 							System.out.println("Got: " + data.length);
 					} else {
@@ -59,7 +72,9 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 				
 					iconsProcessed.setImage(AbstractImageProvider
 							.matToJfxImage(outImage)); // show processed image
-
+					session[3] = System.currentTimeMillis();
+					
+					
 				} catch (CvException |NullPointerException |IllegalArgumentException e2) {
 					// startup noise
 					// e.printStackTrace();
@@ -101,6 +116,9 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	public void onTabReOpening() {
 		open = true;
 		update();
+		for(int i=0;i<session.length;i++){
+			session[i]=System.currentTimeMillis();
+		}
 	}
 }
 

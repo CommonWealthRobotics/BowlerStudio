@@ -89,6 +89,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	
 	public void addTab(Tab tab, boolean closable){
 		Platform.runLater(()->{
+			//new RuntimeException().printStackTrace();
 			final ObservableList<Tab> tabs = getTabs();
 			tab.setClosable(closable);
 			tabs.add(tabs.size() - 1, tab);
@@ -168,12 +169,14 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private void removeObject(Object p){
 		if(CSG.class.isInstance(p)){          
             Platform.runLater(() -> {
+            	//new RuntimeException().printStackTrace();
             	 CSG csg = (CSG) p;
                  MeshView previous =csg.getMesh();;
             	 jfx3dmanager.removeObjects();
 			});
 		}else if(Tab.class.isInstance(p)){
 			Platform.runLater(() -> {
+				//new RuntimeException().printStackTrace();
 				getTabs().remove(p);
 				Tab t =(Tab)p;
 		        TabPaneBehavior behavior = ((TabPaneSkin) getSkin()).getBehavior();
@@ -186,12 +189,14 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private void addObject(Object o){
 		if(CSG.class.isInstance(o)){
             Platform.runLater(() -> {
+            	//new RuntimeException().printStackTrace();
             	 CSG csg = (CSG) o;
                  MeshView current = csg.getMesh();
             	 jfx3dmanager.addObject(current);
 			});
 		}else if(Tab.class.isInstance(o)){
 			Platform.runLater(() -> {
+				//new RuntimeException().printStackTrace();
 				addTab((Tab) o,true);
 			});
 		}else if(BowlerAbstractDevice.class.isInstance(o)){
