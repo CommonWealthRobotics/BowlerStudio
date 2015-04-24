@@ -201,6 +201,10 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private void finishLoadingComponents() throws IOException, InterruptedException{
 		try{
+			if(scripting!=null){
+				//when navagating to a new file, stop the script that is running
+				scripting.stop();
+			}
 			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
 			setOnCloseRequest(this);
 			vBox.getChildren().add(scripting);
