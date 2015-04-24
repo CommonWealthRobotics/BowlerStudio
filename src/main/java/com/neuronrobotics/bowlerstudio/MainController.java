@@ -333,10 +333,16 @@ public class MainController implements Initializable {
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			JavaCVImageProvider p = new JavaCVImageProvider(Integer.parseInt(letter));
-			String name = "camera"+letter;
-			application.addConnection(p,name);
-			//application.addTab(new CameraTab(p, name), true);
+			JavaCVImageProvider p;
+			try {
+				p = new JavaCVImageProvider(Integer.parseInt(letter));
+				String name = "camera"+letter;
+				application.addConnection(p,name);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		});
 	}
 	

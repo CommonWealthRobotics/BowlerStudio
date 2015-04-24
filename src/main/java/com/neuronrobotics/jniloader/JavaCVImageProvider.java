@@ -39,7 +39,17 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 			return false;
 		}
 		
-		img.getBufferedImage().copyData(imageData.getRaster());
+		AbstractImageProvider.deepCopy(img.getBufferedImage(),imageData);
 		return true;
+	}
+
+	@Override
+	public void disconnect() {
+		try {
+			grabber.release();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

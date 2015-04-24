@@ -55,20 +55,18 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 	 * This method tells the connection object to disconnect its pipes and close out the connection. Once this is called, it is safe to remove your device.
 	 */
 	@Override
-	public void disconnect() {
-
-	}
-	static BufferedImage deepCopy(BufferedImage bi) {
-		 ColorModel cm = bi.getColorModel();
-		 boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-		 WritableRaster raster = bi.copyData(null);
-		 return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	public abstract void disconnect();
+	
+	public static void deepCopy(BufferedImage src, BufferedImage dest) {
+		Graphics g = dest.createGraphics();
+		g.drawImage(src, 0, 0, null);
 	}
 	
 	public BufferedImage getLatestImage(BufferedImage inputImage, BufferedImage displayImage){
 		captureNewImage(inputImage);
-		if(displayImage!=null)
-			inputImage.copyData(displayImage.getRaster());
+		if(displayImage!=null){
+			AbstractImageProvider.deepCopy(inputImage,displayImage);
+		}
 		image = inputImage;
 		
 		return image;

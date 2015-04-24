@@ -46,8 +46,14 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 			return false;
 		
 		vc.read(m);
-		AbstractImageProvider.matToBufferedImage(m).copyData(imageData.getRaster());
+
+		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(m),imageData);
 		return true;
+	}
+
+	@Override
+	public void disconnect() {
+		vc.release();
 	}
 
 }

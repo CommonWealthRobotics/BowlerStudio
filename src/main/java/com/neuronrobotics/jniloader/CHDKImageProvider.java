@@ -2,7 +2,6 @@ package com.neuronrobotics.jniloader;
 
 import java.awt.image.BufferedImage;
 
-
 import chdk.ptp.java.CameraFactory;
 import chdk.ptp.java.ICamera;
 import chdk.ptp.java.SupportedCamera;
@@ -29,7 +28,7 @@ public class CHDKImageProvider extends AbstractImageProvider {
 			try {
 				// Thread.sleep(3000);
 				//bufferedImageToMat(cam.getPicture(), imageData);
-				cam.getPicture().copyData(imageData.getRaster());
+				AbstractImageProvider.deepCopy(cam.getPicture(),imageData);
 				return true;
 			} catch (CameraConnectionException e) {
 				// TODO Auto-generated catch block
@@ -42,6 +41,16 @@ public class CHDKImageProvider extends AbstractImageProvider {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void disconnect() {
+		try {
+			cam.disconnect();
+		} catch (CameraConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

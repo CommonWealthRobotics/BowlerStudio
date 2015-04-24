@@ -26,8 +26,13 @@ public class StaticFileProvider extends AbstractImageProvider {
 		/*In the constructor*/
 		try { buffImg = ImageIO.read(file ); } catch (IOException e) { return false;}
 		
-		buffImg.copyData(imageData.getRaster());
+		AbstractImageProvider.deepCopy(buffImg,imageData);
 		return true;
+	}
+
+	@Override
+	public void disconnect() {
+		//ignore
 	}
 
 }

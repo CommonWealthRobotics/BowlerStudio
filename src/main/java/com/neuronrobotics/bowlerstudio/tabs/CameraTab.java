@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import com.neuronrobotics.bowlerstudio.tabs.*;
 
+import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -10,6 +12,7 @@ import org.opencv.core.Mat;
 import org.opencv.features2d.KeyPoint;
 
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.Detection;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -28,7 +31,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	
 	private IObjectDetector detector;
 	private ImageView iconsProcessed = new ImageView();;
-	KeyPoint[] data;
+	List<Detection> data;
 	private Timer timer;
 	long session []=new long[4];
 	
@@ -74,8 +77,8 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 		new Thread(){
 			public void run(){
 				while (open) {
-					Mat inputImage = new Mat();
-					Mat outImage = new Mat();
+					BufferedImage inputImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
+					BufferedImage outImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
 					try {
 						long spacing=System.currentTimeMillis()-session[3];
 						double total = System.currentTimeMillis() - session[0];
@@ -96,14 +99,15 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 							session[1] = System.currentTimeMillis();	   // image
 							data = detector.getObjects(inputImage, outImage);
 							session[2] = System.currentTimeMillis();
-							if (data.length > 0)
-								System.out.println("Got: " + data.length);
+							if (data.size() > 0)
+								System.out.println("Got: " + data.size());
 						} else {
 							//System.out.println("idle: ");
 						}
 						Image Img= AbstractImageProvider
-								.matToJfxImage(outImage);
+								.getJfxImage(outImage);
 						Platform.runLater(() -> {
+							
 							iconsProcessed.setImage(Img); // show processed image
 						});
 						session[3] = System.currentTimeMillis();
