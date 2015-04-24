@@ -183,7 +183,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 			listeners.remove(l);
 	}
 
-	private void stop() {
+	public void stop() {
 		// TODO Auto-generated method stub
 		reset();
 		while(scriptRunner.isAlive()){

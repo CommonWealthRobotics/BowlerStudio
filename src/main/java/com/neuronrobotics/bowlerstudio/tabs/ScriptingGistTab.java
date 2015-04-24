@@ -26,6 +26,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -38,7 +39,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
-public class ScriptingGistTab extends Tab {
+public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private String Current_URL = "http://gist.github.com/";
 	private ConnectionManager dyio;
@@ -63,6 +64,7 @@ public class ScriptingGistTab extends Tab {
 	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,TabPane tabPane) throws IOException, InterruptedException{
 		this.dyio = connectionManager;
 		this.tabPane = tabPane;
+
 		myTab = this;
 
 		if(title==null)
@@ -200,6 +202,7 @@ public class ScriptingGistTab extends Tab {
 	private void finishLoadingComponents() throws IOException, InterruptedException{
 		try{
 			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
+			setOnCloseRequest(this);
 			vBox.getChildren().add(scripting);
 			if(tabPane==null){
 				try{
@@ -257,6 +260,12 @@ public class ScriptingGistTab extends Tab {
 	    URI uri = new URI(url);
 	    String domain = uri.getHost();
 	    return domain.startsWith("www.") ? domain.substring(4) : domain;
+	}
+
+	@Override
+	public void handle(Event event) {
+		scripting.stop();
+
 	}
 
 	

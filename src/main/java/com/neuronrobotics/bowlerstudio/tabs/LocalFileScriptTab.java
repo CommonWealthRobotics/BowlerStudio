@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -34,7 +36,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 
 import javafx.scene.control.Tab;
 
-public class LocalFileScriptTab extends Tab implements IScriptEventListener{
+public class LocalFileScriptTab extends Tab implements IScriptEventListener, EventHandler<Event> {
 	
 	private ScriptingEngineWidget scripting;
     private static final String[] KEYWORDS = new String[]{
@@ -60,6 +62,7 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener{
     
 	public LocalFileScriptTab(ConnectionManager connectionManager, File file) throws IOException {
 		scripting = new ScriptingEngineWidget( file );
+		setOnCloseRequest(this);
 		setText(file.getName());
         codeArea.textProperty().addListener(
                 (ov, oldText, newText) -> {
@@ -131,5 +134,11 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener{
 	public void onGroovyScriptError(Exception except) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public void handle(Event event) {
+		scripting.stop();
 	}
 }
