@@ -1,5 +1,7 @@
 package com.neuronrobotics.jniloader;
 
+import java.awt.image.BufferedImage;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
@@ -9,6 +11,7 @@ import org.opencv.imgproc.Imgproc;
 public class OpenCVImageProvider extends AbstractImageProvider{
 	private VideoCapture vc;
 	private int camerIndex;
+	Mat m = new Mat();
 	
 	public OpenCVImageProvider(int camerIndex){
 		this.camerIndex = camerIndex;
@@ -38,11 +41,12 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 	}
 	
 	@Override
-	public boolean captureNewImage(Mat imageData) {
+	public boolean captureNewImage(BufferedImage imageData) {
 		if (!vc.isOpened())
 			return false;
-
-		vc.read(imageData);
+		
+		vc.read(m);
+		AbstractImageProvider.matToBufferedImage(m).copyData(imageData.getRaster());
 		return true;
 	}
 

@@ -1,7 +1,9 @@
 package com.neuronrobotics.jniloader;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.scene.control.Tab;
 
@@ -25,8 +27,8 @@ public class OpenCVTest  {
 	public void run() { 
 		HaarDetector faceDetectorObject = new HaarDetector();
 
-		Mat inputImage = new Mat();
-		Mat displayImage = new Mat();
+		BufferedImage inputImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
+		BufferedImage displayImage =  new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
 		
 		JFrame frame = new JFrame();
 
@@ -53,11 +55,11 @@ public class OpenCVTest  {
 		imageProviders.add(new StaticFileProvider(new File("image.png")));
 		
 		
-		mainFilter = new RGBColorDetector(inputImage, 
-				lower,
-				upper, 
-				lower1, 
-				upper1);
+//		mainFilter = new RGBColorDetector(inputImage, 
+//				lower,
+//				upper, 
+//				lower1, 
+//				upper1);
 
 		//add human detector later
 		//detectors.add(faceDetectorObject);
@@ -87,11 +89,11 @@ public class OpenCVTest  {
 			try{
 				for (int i=0;i< imageProviders.size();i++){ //list of image provid
 					imageProviders.get(i).getLatestImage(inputImage,displayImage);                        // capture image
-					iconsCaptured.get(i).setImage(AbstractImageProvider.matToBufferedImage(inputImage));  // show raw image
+					iconsCaptured.get(i).setImage(inputImage);  // show raw image
 				
 					for (int j=0;j<detectors.size();j++){   // list of object detectors
-						KeyPoint[] data = detectors.get(j).getObjects(inputImage, displayImage);
-						iconsProcessed.get(i*j).setImage(AbstractImageProvider.matToBufferedImage(displayImage));	// show processed image
+						List<Detection> data = detectors.get(j).getObjects(inputImage, displayImage);
+						iconsProcessed.get(i*j).setImage(displayImage);	// show processed image
 						
 						//System.out.println("Got: "+data.length);
 						

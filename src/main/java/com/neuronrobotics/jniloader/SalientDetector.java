@@ -3,6 +3,7 @@
 package com.neuronrobotics.jniloader;
 
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class SalientDetector implements IObjectDetector {
 	Mat level_1 = new Mat();
 	Mat level_2 = new Mat();
 	@Override
-	public KeyPoint[] getObjects(Mat inputImage, Mat displayImage) {
-			
+	public List<Detection> getObjects(BufferedImage in, BufferedImage disp){
+		Mat inputImage = new Mat();
+		AbstractImageProvider.bufferedImageToMat(in,inputImage);
 		
 		int Frame_Width = inputImage.cols();
 		int Frame_Height = inputImage.rows() / 3; 
@@ -83,19 +85,7 @@ public class SalientDetector implements IObjectDetector {
 		
 		// Perform Hist
 		
-		return new KeyPoint[0];
-	}
-
-	@Override
-	public void setThreshhold(Scalar rgb_min, Scalar rgb_max) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setThreshhold2(Scalar rgb_min2, Scalar rgb_max2) {
-		// TODO Auto-generated method stub
-
+		return new ArrayList<Detection>();
 	}
 
 }

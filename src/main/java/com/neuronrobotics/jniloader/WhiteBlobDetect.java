@@ -1,5 +1,9 @@
 package com.neuronrobotics.jniloader;
 
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
@@ -28,9 +32,19 @@ public class WhiteBlobDetect  implements IObjectDetector{
 		colorKey=lower.clone();
 	}
 
-
-	@Override
-	public KeyPoint[] getObjects(Mat inputImage, Mat displayImage) {
+	public List<Detection> getObjects(BufferedImage in, BufferedImage disp){
+		Mat inputImage = new Mat();
+		AbstractImageProvider.bufferedImageToMat(in,inputImage);
+		Mat displayImage = new Mat();
+		ArrayList<Detection > ret =new ArrayList<>();
+		KeyPoint[] detects = getObjects(inputImage,displayImage);
+		for(int i=0;i<detects.length;i++){
+			ret.add(new Detection(detects[i].pt.x, detects[i].pt.y, detects[i].size));
+		}
+		return ret;
+	}
+	
+	private KeyPoint[] getObjects(Mat inputImage, Mat displayImage) {
 		
 		Imgproc.cvtColor(inputImage, prethresh, Imgproc.COLOR_RGB2GRAY);
 		Imgproc.threshold( prethresh, postthresh, colorKey.val[1], colorKey.val[0], Imgproc.THRESH_BINARY );
@@ -96,18 +110,6 @@ public class WhiteBlobDetect  implements IObjectDetector{
 		return new KeyPoint[0];
 	}
 
-	@Override
-	public void setThreshhold(Scalar rgb_min, Scalar rgb_max) {
-		System.out.println("Old Color "+colorKey+", New: "+rgb_min);
-		colorKey=rgb_min.clone();
-		this.minSize = (int) rgb_max.val[0];
-		this.maxSize = (int) rgb_max.val[1];
-	}
 
-	@Override
-	public void setThreshhold2(Scalar rgb_min2, Scalar rgb_max2) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

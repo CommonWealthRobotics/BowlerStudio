@@ -19,14 +19,14 @@ public class StaticFileProvider extends AbstractImageProvider {
 	}
 
 	@Override
-	protected boolean captureNewImage(Mat imageData) {
+	protected boolean captureNewImage(BufferedImage imageData) {
 		// TODO Auto-generated method stub
 		BufferedImage buffImg;
 
 		/*In the constructor*/
 		try { buffImg = ImageIO.read(file ); } catch (IOException e) { return false;}
 		
-		StaticFileProvider.bufferedImageToMat(buffImg,imageData);
+		buffImg.copyData(imageData.getRaster());
 		return true;
 	}
 

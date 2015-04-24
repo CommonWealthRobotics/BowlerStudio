@@ -1,5 +1,6 @@
 package com.neuronrobotics.jniloader;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +60,10 @@ public class RGBColorDetector implements IObjectDetector{
 		this.rgb_max2 = rgb_max2;
 	}
 
-	public KeyPoint[] getObjects(Mat inputImage, Mat displayImage) {
-		
+	public List<Detection> getObjects(BufferedImage in, BufferedImage disp){
+		Mat inputImage = new Mat();
+		AbstractImageProvider.bufferedImageToMat(in,inputImage);
+		Mat displayImage = new Mat();
 		// One way to select a range of colors by Hue
 		Imgproc.cvtColor(inputImage, rgb_image, Imgproc.COLOR_BGR2HSV);
 		Core.inRange(rgb_image, rgb_min, rgb_max, thresholded);
@@ -102,9 +105,9 @@ public class RGBColorDetector implements IObjectDetector{
 		int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a
 													// float)
 		float[] data2 = new float[rows * elemSize / 4];
-		KeyPoint[] myArray = new KeyPoint[data2.length];
+		ArrayList<Detection> myArray = new ArrayList<Detection>();
 		Point center=null;// 
-
+		
 		if (data2.length > 0) {
 			circles.get(0, 0, data2); // Points to the first element and reads
 										// the whole thing
@@ -118,8 +121,7 @@ public class RGBColorDetector implements IObjectDetector{
 				// 0 );
 				Core.ellipse(displayImage, center,objectSize, 0, 0, 360, new Scalar(255, 0,
 						255), 4, 8, 0);
-				
-				myArray[i] = new KeyPoint((float)center.x,(float)center.y,(float) objectSize.height);
+				myArray.add(new Detection(center.x, center.y, objectSize.height));
 			}
 			if(center != null){
 				Core.putText(
@@ -128,18 +130,20 @@ public class RGBColorDetector implements IObjectDetector{
 								+ String.valueOf(data[1]) + ","
 								+ String.valueOf(data[2]) + ")"), new Point(30, 30), 2 // FONT_HERSHEY_SCRIPT_SIMPLEX
 						, .5, new Scalar(100, 10, 10, 255), 3);
-				for(int i=0;i<myArray.length;i++){
-					if(myArray[i] != null){
-						Point centerTmp = myArray[i].pt;
+				for(int i=0;i<myArray.size();i++){
+
+						Point centerTmp =  new Point(myArray.get(i).getX(), myArray.get(i).getY());
 						Core.line(displayImage, new Point(150, 50), centerTmp,
 								new Scalar(100, 10, 10)/* CV_BGR(100,10,10) */, 3);
 						Core.circle(displayImage, centerTmp, 10, new Scalar(100, 10, 10),
 								3);
-					}
+					
 				}
 			}
 		}
 		
+		
+		AbstractImageProvider.matToBufferedImage(displayImage).copyData(disp.getRaster());
 		return myArray;
 	}
 }

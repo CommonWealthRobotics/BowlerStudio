@@ -1,6 +1,7 @@
 package com.neuronrobotics.jniloader;
 
-import org.opencv.core.Mat;
+import java.awt.image.BufferedImage;
+
 
 import chdk.ptp.java.CameraFactory;
 import chdk.ptp.java.ICamera;
@@ -22,12 +23,13 @@ public class CHDKImageProvider extends AbstractImageProvider {
 	}
 
 	@Override
-	public boolean captureNewImage(Mat imageData) {
+	public boolean captureNewImage(BufferedImage imageData) {
 		int failure = 0;
 		while (failure < 5) {
 			try {
 				// Thread.sleep(3000);
-				bufferedImageToMat(cam.getPicture(), imageData);
+				//bufferedImageToMat(cam.getPicture(), imageData);
+				cam.getPicture().copyData(imageData.getRaster());
 				return true;
 			} catch (CameraConnectionException e) {
 				// TODO Auto-generated catch block

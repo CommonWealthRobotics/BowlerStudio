@@ -3,24 +3,18 @@ package com.neuronrobotics.jniloader;
 import haar.HaarFactory;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.features2d.KeyPoint;
-import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -28,7 +22,7 @@ import org.opencv.objdetect.CascadeClassifier;
 public class HaarDetector  implements IObjectDetector{
 	private MatOfRect faceDetections = new MatOfRect();;
 	private CascadeClassifier faceDetector ;
-	private double scale=.6;
+	private double scale=.2;
 	
 	public HaarDetector(String cascade){
 		File f = HaarFactory.jarResourceToFile(cascade);
@@ -45,59 +39,47 @@ public class HaarDetector  implements IObjectDetector{
 	}
 
 	
-	public KeyPoint[] getObjects(Mat inImage, Mat displayImage){
+	public List<Detection> getObjects(BufferedImage in, BufferedImage disp){
+		Mat inputImage = new Mat();
+		AbstractImageProvider.bufferedImageToMat(in,inputImage);
 		try{
 			Mat localImage = new Mat();
-			Size s =inImage.size();
-			Imgproc.resize(inImage, localImage, new Size(s.width*scale,s.height*scale));
+			Size s =inputImage.size();
+			Imgproc.resize(inputImage, localImage, new Size(s.width*scale,s.height*scale));
 			Imgproc.cvtColor(localImage, localImage, Imgproc.COLOR_BGR2GRAY);
 		
 			faceDetector.detectMultiScale(localImage, faceDetections);
 			Rect [] smallArray = faceDetections.toArray();
-			KeyPoint [] myArray = new KeyPoint [smallArray.length];
+			ArrayList<Detection> myArray = new ArrayList<Detection>();
 			
 			for(int i=0;i<smallArray.length;i++){
 				Rect r = smallArray[i];
-				myArray[i] = new KeyPoint(	(int)	(r.x/scale),
-										(int)(r.y/scale),
-										(int)(r.width/scale), 
-										(int)(r.height/scale));
+				myArray.add(new Detection((r.x/scale), (r.y/scale), (r.width/scale)));
 			}
-			
+			Mat displayImage = new Mat();
+			AbstractImageProvider.bufferedImageToMat(disp,displayImage);
 			Point center=null;// 
 			//System.out.println(String.format("Detected %s faces", myArray.length));
 			// Draw a bounding box around each face.
-		    for (KeyPoint rect : myArray) {
+		    for (Detection rect : myArray) {
 		        //Core.rectangle(displayImage, rect.pt, new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-		    	center = new Point((rect.pt.x+(rect.size/2)), (rect.pt.y+(rect.size/2))) ;
+		    	center =  new Point(rect.getX(), rect.getY());
 		    	
 				
-				Size objectSize= new Size(	(rect.size/2),
-						(rect.size/2));
+				Size objectSize= new Size(	(rect.getSize()/2),
+						(rect.getSize()/2));
 				
 				Core.ellipse(displayImage, center,objectSize, 0, 0, 360, new Scalar(255, 0,
 						255), 4, 8, 0);
 		    }
+		    AbstractImageProvider.matToBufferedImage(displayImage).copyData(disp.getRaster());
+		    
 			return myArray;
 		} catch (CvException |NullPointerException |IllegalArgumentException e2) {
 			// startup noise
 			// e.printStackTrace();
-			return  new KeyPoint [0];
+			return  new ArrayList<Detection>();
 		}
 	}
 
-
-
-	@Override
-	public void setThreshhold(Scalar rgb_min, Scalar rgb_max) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void setThreshhold2(Scalar rgb_min2, Scalar rgb_max2) {
-		// TODO Auto-generated method stub
-		
-	}
 }

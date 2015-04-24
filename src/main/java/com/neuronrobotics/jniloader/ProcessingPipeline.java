@@ -2,6 +2,7 @@ package com.neuronrobotics.jniloader;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -15,11 +16,11 @@ public class ProcessingPipeline {
 		imageProviders.add(newIp);
 	}
 	
-	public BufferedImage getLatestImage(int index,Mat inputImage, Mat displayImage){
+	public BufferedImage getLatestImage(int index,BufferedImage inputImage, BufferedImage displayImage){
 		return imageProviders.get(index).getLatestImage(inputImage,displayImage);
 	}
 	
-	public KeyPoint[] getObjects(int index,Mat inputImage, Mat displayImage){
+	public List<Detection> getObjects(int index,BufferedImage inputImage, BufferedImage displayImage){
 		return detectors.get(index).getObjects(inputImage, displayImage);
 	}
 	
