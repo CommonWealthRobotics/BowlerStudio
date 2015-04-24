@@ -505,7 +505,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"javafx.scene.text",
                 		"javafx.scene",
                 		"com.neuronrobotics.sdk.addons.kinematics",
-                		"com.neuronrobotics.sdk.addons.math",
+                		"com.neuronrobotics.sdk.addons.kinematics.math",
                 		"com.neuronrobotics.sdk.addons.xml",
                 		"java.util",
                 		"com.neuronrobotics.sdk.addons.kinematics.gui",
