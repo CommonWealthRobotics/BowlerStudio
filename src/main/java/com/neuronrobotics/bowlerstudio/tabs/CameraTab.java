@@ -42,61 +42,6 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 
 	}
 
-	private void update() {
-
-		Platform.runLater(() -> {
-			//new RuntimeException().printStackTrace();
-			if (open) {
-				Mat inputImage = new Mat();
-				Mat outImage = new Mat();
-				try {
-					long spacing=System.currentTimeMillis()-session[3];
-					double total = System.currentTimeMillis() - session[0];
-					long capture=session[1]-session[0];
-					long process=session[2]-session[1];
-					long show=session[3]-session[2];
-
-					
-					if (isSelected()) {
-						System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
-								"capture "+capture+"ms "+
-								"process "+process+"ms "+
-								"show "+show+"ms "+
-								"spacing "+spacing+"ms "
-								);
-						session[0] = System.currentTimeMillis();
-						provider.getLatestImage(inputImage, outImage); // capture
-						session[1] = System.currentTimeMillis();	   // image
-						data = detector.getObjects(inputImage, outImage);
-						session[2] = System.currentTimeMillis();
-						if (data.length > 0)
-							System.out.println("Got: " + data.length);
-					} else {
-						System.out.println("idle: ");
-					}
-					update();
-					Platform.runLater(() -> {
-						Image Img= AbstractImageProvider
-								.matToJfxImage(outImage);
-						iconsProcessed.setImage(Img); // show processed image
-					});
-					session[3] = System.currentTimeMillis();
-					return;
-					
-				} catch (CvException |NullPointerException |IllegalArgumentException e2) {
-					// startup noise
-					// e.printStackTrace();
-				}
-				update();
-
-			} else {
-				System.out.print("\r\nFinished " + getText());
-			}
-
-		});
-	}
-
-
 	@Override
 	public void onTabClosing() {
 		System.out.print("\r\nCalling stop for " + getText());
@@ -123,10 +68,56 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	@Override
 	public void onTabReOpening() {
 		open = true;
-		update();
 		for(int i=0;i<session.length;i++){
 			session[i]=System.currentTimeMillis();
 		}
+		new Thread(){
+			public void run(){
+				while (open) {
+					Mat inputImage = new Mat();
+					Mat outImage = new Mat();
+					try {
+						long spacing=System.currentTimeMillis()-session[3];
+						double total = System.currentTimeMillis() - session[0];
+						long capture=session[1]-session[0];
+						long process=session[2]-session[1];
+						long show=session[3]-session[2];
+
+						
+						if (isSelected()) {
+							System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
+									"capture "+capture+"ms "+
+									"process "+process+"ms "+
+									"show "+show+"ms "+
+									"spacing "+spacing+"ms "
+									);
+							session[0] = System.currentTimeMillis();
+							provider.getLatestImage(inputImage, outImage); // capture
+							session[1] = System.currentTimeMillis();	   // image
+							data = detector.getObjects(inputImage, outImage);
+							session[2] = System.currentTimeMillis();
+							if (data.length > 0)
+								System.out.println("Got: " + data.length);
+						} else {
+							//System.out.println("idle: ");
+						}
+						Image Img= AbstractImageProvider
+								.matToJfxImage(outImage);
+						Platform.runLater(() -> {
+							iconsProcessed.setImage(Img); // show processed image
+						});
+						session[3] = System.currentTimeMillis();
+					
+					} catch (CvException |NullPointerException |IllegalArgumentException e2) {
+						// startup noise
+						// e.printStackTrace();
+					}
+
+				}
+				System.out.print("\r\nFinished " + getText());
+				
+			}
+		}.start();
 	}
 }
 
