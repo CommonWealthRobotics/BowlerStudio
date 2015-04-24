@@ -43,7 +43,6 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 			return false;
 
 		vc.read(imageData);
-		Imgproc.resize(imageData, imageData, new Size(320,240));
 		return true;
 	}
 

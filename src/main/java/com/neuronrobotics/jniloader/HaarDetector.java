@@ -11,6 +11,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 import org.opencv.core.Core;
+import org.opencv.core.CvException;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfRect;
@@ -45,38 +46,44 @@ public class HaarDetector  implements IObjectDetector{
 
 	
 	public KeyPoint[] getObjects(Mat inImage, Mat displayImage){
-		Mat localImage = new Mat();
-		Size s =inImage.size();
-		Imgproc.resize(inImage, localImage, new Size(s.width*scale,s.height*scale));
-		Imgproc.cvtColor(localImage, localImage, Imgproc.COLOR_BGR2GRAY);
-	
-		faceDetector.detectMultiScale(localImage, faceDetections);
-		Rect [] smallArray = faceDetections.toArray();
-		KeyPoint [] myArray = new KeyPoint [smallArray.length];
+		try{
+			Mat localImage = new Mat();
+			Size s =inImage.size();
+			Imgproc.resize(inImage, localImage, new Size(s.width*scale,s.height*scale));
+			Imgproc.cvtColor(localImage, localImage, Imgproc.COLOR_BGR2GRAY);
 		
-		for(int i=0;i<smallArray.length;i++){
-			Rect r = smallArray[i];
-			myArray[i] = new KeyPoint(	(int)	(r.x/scale),
-									(int)(r.y/scale),
-									(int)(r.width/scale), 
-									(int)(r.height/scale));
+			faceDetector.detectMultiScale(localImage, faceDetections);
+			Rect [] smallArray = faceDetections.toArray();
+			KeyPoint [] myArray = new KeyPoint [smallArray.length];
+			
+			for(int i=0;i<smallArray.length;i++){
+				Rect r = smallArray[i];
+				myArray[i] = new KeyPoint(	(int)	(r.x/scale),
+										(int)(r.y/scale),
+										(int)(r.width/scale), 
+										(int)(r.height/scale));
+			}
+			
+			Point center=null;// 
+			//System.out.println(String.format("Detected %s faces", myArray.length));
+			// Draw a bounding box around each face.
+		    for (KeyPoint rect : myArray) {
+		        //Core.rectangle(displayImage, rect.pt, new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+		    	center = new Point((rect.pt.x+(rect.size/2)), (rect.pt.y+(rect.size/2))) ;
+		    	
+				
+				Size objectSize= new Size(	(rect.size/2),
+						(rect.size/2));
+				
+				Core.ellipse(displayImage, center,objectSize, 0, 0, 360, new Scalar(255, 0,
+						255), 4, 8, 0);
+		    }
+			return myArray;
+		} catch (CvException |NullPointerException |IllegalArgumentException e2) {
+			// startup noise
+			// e.printStackTrace();
+			return  new KeyPoint [0];
 		}
-		
-		Point center=null;// 
-		//System.out.println(String.format("Detected %s faces", myArray.length));
-		// Draw a bounding box around each face.
-	    for (KeyPoint rect : myArray) {
-	        //Core.rectangle(displayImage, rect.pt, new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-	    	center = new Point((rect.pt.x+(rect.size/2)), (rect.pt.y+(rect.size/2))) ;
-	    	
-			
-			Size objectSize= new Size(	(rect.size/2),
-					(rect.size/2));
-			
-			Core.ellipse(displayImage, center,objectSize, 0, 0, 360, new Scalar(255, 0,
-					255), 4, 8, 0);
-	    }
-		return myArray;
 	}
 
 

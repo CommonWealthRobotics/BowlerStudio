@@ -118,10 +118,12 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		if(getConnectionmanager() == null)
 			throw new RuntimeException("Connection manager needs to be added to the Scripting engine");
 		runfx.setOnAction(e -> {
+			runfx.setDisable(true);
 			if(running)
 				stop();
 			else
 				start();
+			runfx.setDisable(false);
 		});
 		runsave.setOnAction(e -> {
 			updateFile();
@@ -185,7 +187,9 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 
 	public void stop() {
 		// TODO Auto-generated method stub
+		
 		reset();
+		if(scriptRunner!=null)
 		while(scriptRunner.isAlive()){
 
 			Log.debug("Interrupting");
