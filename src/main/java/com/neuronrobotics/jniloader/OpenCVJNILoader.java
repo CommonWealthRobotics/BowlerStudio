@@ -26,14 +26,17 @@ public class OpenCVJNILoader {
 					try{
 						System.load(lo);
 						Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
+						return;
 					}catch(Error e){
 						//try the next one
 						erBack+=" "+e.getMessage();
 						e.printStackTrace();
 					}
+				}else{
+					erBack+="No file "+lo;
 				}
 			}
-			throw new RuntimeException("None of the locations contain a valid OpenCV jni "+erBack);
+			throw new RuntimeException(erBack);
 		}else
 		if(NativeResource.isOSX())
 			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);
