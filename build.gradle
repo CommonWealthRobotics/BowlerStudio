@@ -59,7 +59,7 @@ dependencies {
 	compile project(':JCSG')
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
-	compile fileTree (dir: 'libs/lavacv-bin/', includes: ['*.jar'])
+	compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
 	compile files('/usr/share/java/opencv-249.jar')
 	
 	compile group: 'org.bytedeco', name: 'javacv', version: '0.11'
