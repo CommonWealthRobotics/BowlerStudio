@@ -1,5 +1,7 @@
 package com.neuronrobotics.jniloader;
 
+import java.io.File;
+
 import javax.management.RuntimeErrorException;
 
 import org.opencv.core.Core;
@@ -20,13 +22,15 @@ public class OpenCVJNILoader {
 			};
 			String erBack ="";
 			for(String lo:possibleLocals){
-				try{
-					System.load(lo);
-					Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
-				}catch(Error e){
-					//try the next one
-					erBack+=" "+e.getMessage();
-					e.printStackTrace();
+				if(new File(lo).exists()){
+					try{
+						System.load(lo);
+						Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
+					}catch(Error e){
+						//try the next one
+						erBack+=" "+e.getMessage();
+						e.printStackTrace();
+					}
 				}
 			}
 			throw new RuntimeException("None of the locations contain a valid OpenCV jni "+erBack);
