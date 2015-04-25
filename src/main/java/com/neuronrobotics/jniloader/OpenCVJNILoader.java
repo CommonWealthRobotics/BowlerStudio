@@ -36,6 +36,7 @@ public class OpenCVJNILoader {
 					erBack+="No file "+lo;
 				}
 			}
+			
 			throw new RuntimeException(erBack);
 		}else
 		if(NativeResource.isOSX())

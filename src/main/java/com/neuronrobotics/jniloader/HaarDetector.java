@@ -22,7 +22,7 @@ import org.opencv.objdetect.CascadeClassifier;
 public class HaarDetector  implements IObjectDetector{
 	private MatOfRect faceDetections = new MatOfRect();;
 	private CascadeClassifier faceDetector ;
-	private double scale=.2;
+	private double scale=.6;
 	
 	public HaarDetector(String cascade){
 		File f = HaarFactory.jarResourceToFile(cascade);

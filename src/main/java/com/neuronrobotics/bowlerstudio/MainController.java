@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_objdetect;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -65,6 +67,12 @@ public class MainController implements Initializable {
 			alert.setContentText(e.getMessage());
 			alert .initModality(Modality.APPLICATION_MODAL);
 			alert.show();
+		}
+		try{
+            // Preload the opencv_objdetect module to work around a known bug.
+            Loader.load(opencv_objdetect.class);
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	

@@ -59,9 +59,29 @@ dependencies {
 	compile project(':JCSG')
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
-	compile fileTree (dir: 'libs/', includes: ['*.jar'])
+	compile fileTree (dir: 'libs/lavacv-bin/', includes: ['*.jar'])
 	compile files('/usr/share/java/opencv-249.jar')
-	compile group: 'org.bytedeco', name: 'javacv', version: '0.9'
+	
+	compile group: 'org.bytedeco', name: 'javacv', version: '0.11'
+	compile group: 'org.bytedeco', name: 'javacpp', version: '0.11'
+	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11'	
+	compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg', version: '2.6.1-0.11'	
+	compile group: 'org.bytedeco.javacpp-presets', name: 'flycapture', version: '2.7.3.19-0.11'	;
+	
+	compile group: 'org.bytedeco.javacpp-presets', name: 'libdc1394', version: '2.2.3-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'libfreenect', version: '0.5.2-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'videoinput', version: '0.200-0.11'	;
+	
+	compile group: 'org.bytedeco.javacpp-presets', name: 'artoolkitplus', version: '2.3.1-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'flandmark', version: '1.07-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'fftw', version: '3.3.4-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'gsl', version: '1.16-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'llvm', version: '3.6.0-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.71-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.03-rc1-0.11'	;
+	compile group: 'org.bytedeco.javacpp-presets', name: 'caffe', version: 'master-0.11'	;
+		
+				
 }
 
 // create a fat-jar (class files plus dependencies

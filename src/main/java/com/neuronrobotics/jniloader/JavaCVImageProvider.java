@@ -3,6 +3,7 @@ package com.neuronrobotics.jniloader;
 import java.awt.image.BufferedImage;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameGrabber.Exception;
 import org.bytedeco.javacv.VideoInputFrameGrabber;
@@ -15,7 +16,7 @@ import org.opencv.imgproc.Imgproc;
 public class JavaCVImageProvider  extends AbstractImageProvider{
 	private FrameGrabber grabber;
 	private int camerIndex;
-	private  IplImage img;
+	private  Frame img;
 	public JavaCVImageProvider(int camerIndex) throws Exception{
 		this.camerIndex = camerIndex;
 		 grabber = new VideoInputFrameGrabber(camerIndex); // 1 for next camera
@@ -39,7 +40,7 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 			return false;
 		}
 		
-		AbstractImageProvider.deepCopy(img.getBufferedImage(),imageData);
+		//AbstractImageProvider.deepCopy(img.,imageData);
 		return true;
 	}
 
