@@ -14,12 +14,21 @@ public class OpenCVJNILoader {
 		resource= new NativeResource();
 		
 		if(NativeResource.isLinux()){
-			try{
-				System.load("/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so");
-				
-			}catch(Error e){
-				System.load("/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so");
+			String [] possibleLocals = new String[]{
+					"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
+					"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
+			};
+			String erBack ="";
+			for(String lo:possibleLocals){
+				try{
+					System.load(lo);
+					Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
+				}catch(Error e){
+					//try the next one
+					erBack+=" "+e.getMessage();
+				}
 			}
+			throw new RuntimeException("None of the locations contain a valid OpenCV jni "+erBack);
 		}else
 		if(NativeResource.isOSX())
 			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);

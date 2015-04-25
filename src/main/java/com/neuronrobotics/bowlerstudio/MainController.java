@@ -29,6 +29,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
@@ -55,13 +56,15 @@ public class MainController implements Initializable {
 		});
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)
-		}catch(Error e){
-			e.printStackTrace();
+		}catch(Exception e){
+			//e.printStackTrace();
 			opencvOk=false;
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("OpenCV missing");
 			alert.setHeaderText("Opencv library is missing");
-			alert.setContentText("You should install OpenCV to get access to cameras and image processing.");
+			alert.setContentText("You should install OpenCV");
+			alert .initModality(Modality.APPLICATION_MODAL);
+			alert.show();
 		}
 	}
 	
