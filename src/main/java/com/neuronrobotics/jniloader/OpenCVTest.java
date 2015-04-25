@@ -27,8 +27,8 @@ public class OpenCVTest  {
 	public void run() { 
 		HaarDetector faceDetectorObject = new HaarDetector();
 
-		BufferedImage inputImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
-		BufferedImage displayImage =  new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
+		BufferedImage inputImage = AbstractImageProvider.newBufferImage(640,480);
+		BufferedImage displayImage =  AbstractImageProvider.newBufferImage(640,480);
 		
 		JFrame frame = new JFrame();
 

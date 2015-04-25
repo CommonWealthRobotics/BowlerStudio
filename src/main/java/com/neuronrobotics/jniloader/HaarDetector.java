@@ -44,7 +44,7 @@ public class HaarDetector  implements IObjectDetector{
 		AbstractImageProvider.bufferedImageToMat(in,inputImage);
 		try{
 			Mat localImage = new Mat();
-			Size s =inputImage.size();
+			Size s =new Size(in.getWidth(),in.getHeight());
 			Imgproc.resize(inputImage, localImage, new Size(s.width*scale,s.height*scale));
 			Imgproc.cvtColor(localImage, localImage, Imgproc.COLOR_BGR2GRAY);
 		
@@ -63,7 +63,7 @@ public class HaarDetector  implements IObjectDetector{
 			// Draw a bounding box around each face.
 		    for (Detection rect : myArray) {
 		        //Core.rectangle(displayImage, rect.pt, new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-		    	center =  new Point(rect.getX(), rect.getY());
+		    	center =  new Point(rect.getX()+(rect.getSize()/2), rect.getY()+(rect.getSize()/2));
 		    	
 				
 				Size objectSize= new Size(	(rect.getSize()/2),

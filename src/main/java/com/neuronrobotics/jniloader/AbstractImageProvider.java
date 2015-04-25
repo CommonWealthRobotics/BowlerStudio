@@ -76,8 +76,10 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		return image;
 	}
 	
+	public static BufferedImage newBufferImage(int w, int h) {
+		return new BufferedImage(w, h,  BufferedImage.TYPE_3BYTE_BGR);
 	
-	
+	}
 	/**
 	 * Converts/writes a Mat into a BufferedImage.
 	 * 
@@ -130,12 +132,8 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 
 		byte[] tmpByteArray = ((DataBufferByte) input.getRaster().getDataBuffer()).getData();
 		mb = new org.opencv.core.Mat(input.getHeight(),input.getWidth(),16); //8uc3
-		System.out.println("Image was ("+input.getWidth()+"x"+input.getHeight()+") array should be: ("+input.getWidth()*input.getHeight()*3+") and is: ("+tmpByteArray.length+")\n Mat is: ("+mb+")");
 	    mb.put(0, 0, tmpByteArray);
 	    mb.copyTo(output);
-	    System.out.println(output);
-		//Mat matImageLocal =Highgui.imdecode(mb, 0);
-		//matImageLocal.copyTo(output);
 	}
 
 	public static  BufferedImage toGrayScale(BufferedImage in, int w, int h) {

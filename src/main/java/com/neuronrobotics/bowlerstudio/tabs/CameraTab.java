@@ -31,10 +31,11 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	
 	private IObjectDetector detector;
 	private ImageView iconsProcessed = new ImageView();;
-	List<Detection> data;
+	private List<Detection> data;
 	private Timer timer;
-	long session []=new long[4];
-	
+	private long session []=new long[4];
+	private BufferedImage inputImage = AbstractImageProvider.newBufferImage(640,480);
+	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640,480);
 	public CameraTab(){
 		detector = new HaarDetector();
 	}
@@ -77,8 +78,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 		new Thread(){
 			public void run(){
 				while (open) {
-					BufferedImage inputImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
-					BufferedImage outImage = new BufferedImage(640, 480,  BufferedImage.TYPE_INT_ARGB);
+
 					try {
 						long spacing=System.currentTimeMillis()-session[3];
 						double total = System.currentTimeMillis() - session[0];
