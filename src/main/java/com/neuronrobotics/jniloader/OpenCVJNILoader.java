@@ -26,6 +26,7 @@ public class OpenCVJNILoader {
 				}catch(Error e){
 					//try the next one
 					erBack+=" "+e.getMessage();
+					e.printStackTrace();
 				}
 			}
 			throw new RuntimeException("None of the locations contain a valid OpenCV jni "+erBack);

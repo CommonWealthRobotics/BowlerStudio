@@ -53,7 +53,7 @@ dependencies {
 	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
 	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
 	compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
-
+	compile 'com.miglayout:miglayout-swing:4.2'
 	compile 'commons-io:commons-io:2.4'
 
 	compile project(':JCSG')

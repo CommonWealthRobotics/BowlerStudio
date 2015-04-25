@@ -62,7 +62,7 @@ public class MainController implements Initializable {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("OpenCV missing");
 			alert.setHeaderText("Opencv library is missing");
-			alert.setContentText("You should install OpenCV");
+			alert.setContentText(e.getMessage());
 			alert .initModality(Modality.APPLICATION_MODAL);
 			alert.show();
 		}
