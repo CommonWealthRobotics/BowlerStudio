@@ -2,7 +2,10 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import com.neuronrobotics.bowlerstudio.tabs.*;
 
+import haar.HaarFactory;
+
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,14 +19,21 @@ import com.neuronrobotics.jniloader.Detection;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+
 
 public class CameraTab extends AbstractBowlerStudioTab  {
 	private boolean open = true;
@@ -58,8 +68,26 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	public void initializeUI(BowlerAbstractDevice pm) {
 		provider = (AbstractImageProvider)pm;
 		setText(pm.getScriptingName());
-		HBox box = new HBox();
+		VBox box = new VBox();
 		box.getChildren().add(iconsProcessed);
+		ObservableList<String> options;
+		try {
+			List<String> l = HaarFactory.getAvailibHaar();
+			System.err.println(l);
+			options = FXCollections.observableArrayList(l);
+			@SuppressWarnings("unchecked")
+			ComboBox<String> comboBox = new ComboBox<String>(options);
+			comboBox.setOnAction((event) -> {
+				String item = comboBox.getSelectionModel().getSelectedItem();
+			   Log.warning("Setting detector to "+item);
+			   setDetector(new HaarDetector(item));
+			});
+			box.getChildren().add(comboBox);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		setContent(box);
 		// start the infinite loop
 		System.out.println("Starting camera " + pm.getScriptingName());
@@ -89,19 +117,19 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	
 							
 							if (isSelected()) {
-								System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
-										"capture="+capture+"ms "+
-										"process="+process+"ms "+
-										"convert="+show+"ms "+
-										"spacing="+spacing+"ms "
-										);
+//								System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
+//										"capture="+capture+"ms "+
+//										"process="+process+"ms "+
+//										"convert="+show+"ms "+
+//										"spacing="+spacing+"ms "
+//										);
 								session[0] = System.currentTimeMillis();
 								provider.getLatestImage(inputImage, outImage); // capture
 								session[1] = System.currentTimeMillis();	   // image
 								data = getDetector().getObjects(inputImage, outImage);
 								session[2] = System.currentTimeMillis();
-								if (data.size() > 0)
-									System.out.println("Got: " + data.size());
+//								if (data.size() > 0)
+//									System.out.println("Got: " + data.size());
 							} else {
 								//System.out.println("idle: ");
 							}
