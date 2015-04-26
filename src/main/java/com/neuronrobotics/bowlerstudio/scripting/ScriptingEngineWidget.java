@@ -500,6 +500,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"com.neuronrobotics.bowlerstudio.scripting",
                 		"com.neuronrobotics.jniloader",
                 		"com.neuronrobotics.tab",
+                		"com.neuronrobotics.bowlerstudio.tabs",
                 		"org.opencv.core",
                 		"org.opencv.features2d",
                 		"javafx.scene.text",
@@ -510,7 +511,8 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
                 		"java.util",
                 		"com.neuronrobotics.sdk.addons.kinematics.gui",
                 		"javafx.scene.transform",
-                		"javafx.scene.shape"
+                		"javafx.scene.shape",
+                		"java.awt.image.BufferedImage"
                 		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil",
                 				"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget")
                 );

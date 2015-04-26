@@ -51,8 +51,7 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 				disconnect();
 				start(camerIndex);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				throw new RuntimeException(e);
 			}
 			return false;
 		}
