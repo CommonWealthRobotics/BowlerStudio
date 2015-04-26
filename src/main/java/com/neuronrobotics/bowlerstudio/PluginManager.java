@@ -104,9 +104,9 @@ public class PluginManager {
 			rpc.setExpanded(false);
 			item.getChildren().add(rpc);
 		}
-		CheckBoxTreeItem<String> plugins = new CheckBoxTreeItem<String> ("Plugins"); 
+		TreeItem<String> plugins = new TreeItem<String> ("Plugins"); 
 		plugins.setExpanded(true);
-		plugins.setSelected(true);
+		//plugins.setSelected(true);
 		item.getChildren().add(plugins);
 		
 		for( Class<?> c:deviceSupport){

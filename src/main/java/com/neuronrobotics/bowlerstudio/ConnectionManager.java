@@ -169,7 +169,11 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 
 	public void addConnection() {
-		addConnection(ConnectionDialog.promptConnection());
+		new Thread() {
+			public void run() {
+				addConnection(ConnectionDialog.promptConnection());
+			}
+		}.start();
 	}
 
 	public void addConnection(BowlerAbstractDevice c, String name) {
