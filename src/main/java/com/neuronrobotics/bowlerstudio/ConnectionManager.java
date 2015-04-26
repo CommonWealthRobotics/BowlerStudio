@@ -199,23 +199,13 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		item.setExpanded(false);
         rootItem.getChildren().add(item);
         mp.setName(name);
-        if(c.getConnection()!=null){
-	        c.getConnection().addConnectionEventListener( new IConnectionEventListener() {
-				@Override
-				public void onDisconnect(BowlerAbstractConnection source) {
-					// clean up after yourself...
-					devices.remove(mp);
-					rootItem.getChildren().remove(item);
-				}
-				//ignore
-				@Override public void onConnect(BowlerAbstractConnection source) {}
-			});
-        }
         item.setSelected(true);
         item.selectedProperty().addListener(b ->{
         	if(!item.isSelected()){
         		System.out.println("Disconnecting "+mp.getName());
         		c.disconnect();
+        		devices.remove(mp);
+				rootItem.getChildren().remove(item);
         	}
         });
 	}
