@@ -32,6 +32,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -595,7 +596,10 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 			// s = "import "+s;
 			System.err.println(s);
-			if(!s.contains("mihosoft")) {
+			if(!s.contains("mihosoft")&&
+					!s.contains("haar")&&
+					!s.contains("com.neuronrobotics.sdk.addons.kinematics.xml")
+					) {
 				interp.exec("import "+s);
 			} else {
 				//from http://stevegilham.blogspot.com/2007/03/standalone-jython-importerror-no-module.html
@@ -629,7 +633,25 @@ public class ScriptingEngineWidget extends BorderPane implements
 		interp.set("args", args);
 
 		interp.exec(code);
-		return interp.get("result");
+		ArrayList<Object> results = new ArrayList<>();
+		try{
+			results.add(interp.get("csg",CSG.class));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		try{
+			results.add(interp.get("tab",Tab.class));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		try{
+			results.add(interp.get("device",BowlerAbstractDevice.class));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		Log.debug("Jython return = "+results);
+		return results;
 	}
 
 	public static Object inlineScriptRun(String code, ArrayList<Object> args) {
