@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -329,15 +330,24 @@ public class MainController implements Initializable {
 
 	@FXML public void onConnectJavaCVCamera() {
 		List<String> choices = new ArrayList<>();
-		choices.add("0");
-		choices.add("1");
-		choices.add("2");
-		choices.add("3");
-		choices.add("4");
+		try {
+			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
+			if(des.length==0)
+				return;
+			for (String s: des){
+				choices.add(s);
+			}
+		} catch (org.bytedeco.javacv.FrameGrabber.Exception |UnsupportedOperationException e1) {
+			choices.add("0");
+			choices.add("1");
+			choices.add("2");
+			choices.add("3");
+			choices.add("4");
+		}
 		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
-		dialog.setTitle("OpenCV Camera Index Chooser");
-		dialog.setHeaderText("Choose an OpenCV camera");
+		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+		dialog.setTitle("JavaCV Camera Index Chooser");
+		dialog.setHeaderText("Choose an JavaCV camera");
 		dialog.setContentText("Camera Index:");
 
 		// Traditional way to get the response value.

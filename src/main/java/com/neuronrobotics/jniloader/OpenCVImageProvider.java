@@ -15,7 +15,7 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 	
 	public OpenCVImageProvider(int camerIndex){
 		this.camerIndex = camerIndex;
-		vc = new VideoCapture(camerIndex);
+		setVc(new VideoCapture(camerIndex));
 
 		try {
 			Thread.sleep(1000);
@@ -23,29 +23,29 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (!vc.isOpened()) {
+		if (!getVc().isOpened()) {
 			System.out.println("Camera Error");
 		} else {
-			boolean wset = vc.set(Highgui.CV_CAP_PROP_FRAME_WIDTH, 320);
-			boolean hset = vc.set(Highgui.CV_CAP_PROP_FRAME_HEIGHT, 240);
-			System.out.println("Camera OK at "+vc.get(5)+
-					"fps width: "+vc.get(Highgui.CV_CAP_PROP_FRAME_WIDTH)+
-					" height: "+vc.get(Highgui.CV_CAP_PROP_FRAME_HEIGHT) );
+			boolean wset = getVc().set(Highgui.CV_CAP_PROP_FRAME_WIDTH, 320);
+			boolean hset = getVc().set(Highgui.CV_CAP_PROP_FRAME_HEIGHT, 240);
+			System.out.println("Camera OK at "+getVc().get(5)+
+					"fps width: "+getVc().get(Highgui.CV_CAP_PROP_FRAME_WIDTH)+
+					" height: "+getVc().get(Highgui.CV_CAP_PROP_FRAME_HEIGHT) );
 		}
 	}
 	
 	@Override
 	public String toString(){
-		String s="OpenCVImageProvider on camera "+camerIndex+" "+vc.toString();
+		String s="OpenCVImageProvider on camera "+camerIndex+" "+getVc().toString();
 		return s;
 	}
 	
 	@Override
 	public boolean captureNewImage(BufferedImage imageData) {
-		if (!vc.isOpened())
+		if (!getVc().isOpened())
 			return false;
 		
-		vc.read(m);
+		getVc().read(m);
 
 		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(m),imageData);
 		return true;
@@ -53,7 +53,17 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 
 	@Override
 	public void disconnect() {
-		vc.release();
+		
+		getVc().release();
+		setVc(null);
+	}
+
+	private VideoCapture getVc() {
+		return vc;
+	}
+
+	private void setVc(VideoCapture vc) {
+		this.vc = vc;
 	}
 
 }

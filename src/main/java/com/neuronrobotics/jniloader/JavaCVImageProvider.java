@@ -23,10 +23,14 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 	//private  OpenCVFrameConverter.ToIplImage grabberConverter = new OpenCVFrameConverter.ToIplImage();
 	private  Java2DFrameConverter paintConverter = new Java2DFrameConverter();
 	public JavaCVImageProvider(int camerIndex) throws Exception{
-		this.camerIndex = camerIndex;
+		start(camerIndex);
+        
+	}
+	
+	private void start(int num) throws Exception{
+		this.camerIndex = num;
 		 grabber = new OpenCVFrameGrabber(camerIndex); // 1 for next camera
 		 grabber.start();
-        
 	}
 	
 	@Override
@@ -41,7 +45,15 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 			img= paintConverter.getBufferedImage(grabber.grab(), 2.2/grabber.getGamma());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			try {
+				System.err.println("Restarting...");
+				disconnect();
+				start(camerIndex);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return false;
 		}
 		

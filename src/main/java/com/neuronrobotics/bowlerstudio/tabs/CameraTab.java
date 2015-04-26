@@ -76,7 +76,10 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 			session[i]=System.currentTimeMillis();
 		}
 		new Thread(){
+			private boolean done;
+
 			public void run(){
+				done=true;// startup passes the frame update check
 				while (open) {
 
 					try {
@@ -106,15 +109,29 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 						}
 						Image Img= AbstractImageProvider
 								.getJfxImage(outImage);
+						
+						//make sure capture never gets ahead of showing
+						while(!done){
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {
+								done=true;//break the loop
+							}
+						}
+						done = false;
 						Platform.runLater(() -> {
 							
 							iconsProcessed.setImage(Img); // show processed image
+							done=true;
 						});
 						session[3] = System.currentTimeMillis();
 					
 					} catch (CvException |NullPointerException |IllegalArgumentException e2) {
 						// startup noise
 						// e.printStackTrace();
+						for(int i=0;i<session.length;i++){
+							session[i]=System.currentTimeMillis();
+						}
 					}
 
 				}
