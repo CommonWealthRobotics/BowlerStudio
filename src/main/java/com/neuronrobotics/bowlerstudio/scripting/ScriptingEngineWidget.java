@@ -4,6 +4,9 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+import org.python.util.PythonInterpreter; 
+import org.python.core.*; 
+
 import java.awt.Dimension;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
