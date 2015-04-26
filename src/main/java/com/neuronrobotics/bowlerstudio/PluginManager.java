@@ -18,7 +18,9 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
+import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
@@ -94,6 +96,16 @@ public class PluginManager {
 				;
 		t.setDevice(dev);
 		liveTabs.add(t);
+		BowlerAbstractConnection con = dev.getConnection();
+		if(con!=null){
+			con.addConnectionEventListener(new IConnectionEventListener() {
+				@Override public void onDisconnect(BowlerAbstractConnection source) {
+					//if the device disconnects, close the tab
+					t.requestClose();
+				}
+				@Override public void onConnect(BowlerAbstractConnection source) {}
+			});
+		}
 		return t;
 	}
 
