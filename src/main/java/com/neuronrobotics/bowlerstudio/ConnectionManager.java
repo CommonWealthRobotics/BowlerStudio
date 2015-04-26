@@ -82,23 +82,24 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 		ScriptingEngineWidget.setConnectionmanager(this);
 		try {
-			ArrayList<UsbDevice> devs = UsbCDCSerialConnection
-					.getAllUsbBowlerDevices();
+			List<String> devs = SerialConnection.getAvailableSerialPorts();
 			if (devs.size() == 0) {
 				return;
 			} else {
 				new Thread() {
 					public void run() {
 						ThreadUtil.wait(750);
-						for (UsbDevice d : devs) {
-							addConnection(new UsbCDCSerialConnection(d));
-						}
+						addConnection();
+//						for (String d : devs) {
+//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
+//								addConnection(new SerialConnection(d));
+//						}
 					}
 				}.start();
 
 			}
-		} catch (Error | UnsupportedEncodingException
-				| UsbDisconnectedException | SecurityException | UsbException e) {
+		} catch (Error 
+				| UsbDisconnectedException | SecurityException  e) {
 			e.printStackTrace();
 		}
 //		UsbCDCSerialConnection
@@ -116,7 +117,6 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			return;
 		}
 		Log.error("Switching to v4 parser");
-		BowlerDatagram.setUseBowlerV4(true);
 
 		GenericDevice gen = new GenericDevice(connection);
 		try {
@@ -171,6 +171,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	public void addConnection() {
 		new Thread() {
 			public void run() {
+				BowlerDatagram.setUseBowlerV4(true);
 				addConnection(ConnectionDialog.promptConnection());
 			}
 		}.start();

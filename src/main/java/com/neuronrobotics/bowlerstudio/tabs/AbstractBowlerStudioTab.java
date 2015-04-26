@@ -6,6 +6,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
@@ -52,10 +53,12 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	}
 	
     public void requestClose() {
-        TabPaneBehavior behavior = getBehavior();
-        if(behavior.canCloseTab(this)) {
-            behavior.closeTab(this);
-        }
+    	Platform.runLater(()->{
+	        TabPaneBehavior behavior = getBehavior();
+	        if(behavior.canCloseTab(this)) {
+	            behavior.closeTab(this);
+	        }
+    	});
     }
 
     private TabPaneBehavior getBehavior() {

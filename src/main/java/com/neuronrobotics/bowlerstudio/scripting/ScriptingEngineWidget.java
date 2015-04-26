@@ -4,8 +4,8 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
-import org.python.util.PythonInterpreter; 
-import org.python.core.*; 
+import org.python.util.PythonInterpreter;
+import org.python.core.*;
 
 import java.awt.Dimension;
 import java.io.BufferedWriter;
@@ -25,6 +25,7 @@ import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -51,6 +52,7 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
+import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
@@ -64,12 +66,17 @@ import com.neuronrobotics.sdk.pid.GenericPIDDevice;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.sdk.addons.kinematics.xml.*;
 
-public class ScriptingEngineWidget extends BorderPane implements IFileChangeListener{
-	
+import eu.mihosoft.vrl.v3d.*;
+import eu.mihosoft.vrl.v3d.samples.*;
+
+@SuppressWarnings("unused")
+public class ScriptingEngineWidget extends BorderPane implements
+		IFileChangeListener {
+
 	public enum ShellType {
-	    GROOVY,
-	    JYTHON
+		GROOVY, JYTHON
 	}
 
 	static ShellType activeType = ShellType.GROOVY;
@@ -78,17 +85,17 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private File currentFile = null;
-	
+
 	private boolean running = false;
-	private Thread scriptRunner=null;
+	private Thread scriptRunner = null;
 	private FileChangeWatcher watcher;
 	private static ConnectionManager connectionmanager;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
 	private Object scriptResult;
-	private String codeText="println(dyio)\n"
+	private String codeText = "println(dyio)\n"
 			+ "while(true){\n"
 			+ "\tThreadUtil.wait(100)                     // Spcae out the loop\n\n"
 			+ "\tlong start = System.currentTimeMillis()  //capture the starting value \n\n"
@@ -98,35 +105,37 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 			+ "\t//Print out this loops values\n"
 			+ "\tprint(\" Loop took = \"+(System.currentTimeMillis()-start))\n"
 			+ "\tprint(\"ms Value= \"+value)\n"
-			+ "\tprintln(\" Scaled= \"+scaled)\n"
-			+ "}";
-	
+			+ "\tprintln(\" Scaled= \"+scaled)\n" + "}";
+
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
 
-	private Button runfx= new Button("Run");;
-	private Button runsave= new Button("Save");;
+	private Button runfx = new Button("Run");;
+	private Button runsave = new Button("Save");;
 	private WebEngine engine;
 
 	private String addr;
-	boolean loadGist=false;
-	
-	public ScriptingEngineWidget( File currentFile,String currentGist, WebEngine engine ) throws IOException, InterruptedException{
+	boolean loadGist = false;
+
+	public ScriptingEngineWidget(File currentFile, String currentGist,
+			WebEngine engine) throws IOException, InterruptedException {
 		this();
 		this.currentFile = currentFile;
-		loadCodeFromGist(currentGist,engine);
+		loadCodeFromGist(currentGist, engine);
 	}
-	public ScriptingEngineWidget( File currentFile) throws IOException{
+
+	public ScriptingEngineWidget(File currentFile) throws IOException {
 		this();
 		this.currentFile = currentFile;
 		loadCodeFromFile(currentFile);
 	}
-		
-	private ScriptingEngineWidget(){
-		if(getConnectionmanager() == null)
-			throw new RuntimeException("Connection manager needs to be added to the Scripting engine");
+
+	private ScriptingEngineWidget() {
+		if (getConnectionmanager() == null)
+			throw new RuntimeException(
+					"Connection manager needs to be added to the Scripting engine");
 		runfx.setOnAction(e -> {
 			runfx.setDisable(true);
-			if(running)
+			if (running)
 				stop();
 			else
 				start();
@@ -137,25 +146,23 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 			save();
 		});
 
-
-
-	    //String ctrlSave = "CTRL Save";
-	    fileLabel.setOnMouseEntered(e->{
-	    	Platform.runLater(() -> {
+		// String ctrlSave = "CTRL Save";
+		fileLabel.setOnMouseEntered(e -> {
+			Platform.runLater(() -> {
 				ThreadUtil.wait(10);
 				fileLabel.setText(currentFile.getAbsolutePath());
 			});
-	    });
+		});
 
-	    fileLabel.setOnMouseExited(e->{
-	    	Platform.runLater(() -> {
+		fileLabel.setOnMouseExited(e -> {
+			Platform.runLater(() -> {
 				ThreadUtil.wait(10);
 				fileLabel.setText(currentFile.getName());
 			});
-	    });
-	    fileLabel.setTextFill(Color.GREEN);
-	    
-	    //Set up the run controls and the code area
+		});
+		fileLabel.setTextFill(Color.GREEN);
+
+		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
 		setPadding(new Insets(1, 0, 3, 20));
@@ -166,168 +173,171 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		controlPane.getChildren().add(fileLabel);
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
-		
-		addIScriptEventListener(getConnectionmanager().getBowlerStudioController());
+
+		addIScriptEventListener(getConnectionmanager()
+				.getBowlerStudioController());
 	}
-	
-	private void reset(){
+
+	private void reset() {
 		running = false;
 		Platform.runLater(() -> {
 			runfx.setText("Run");
 		});
 
 	}
-	
-//	private String getHTMLFromGist(String gist){
-//		return "<script src=\"https://gist.github.com/madhephaestus/"+gist+".js\"></script>";
-//	}
-	
-	public void addIScriptEventListener(IScriptEventListener l){
-		if(!listeners.contains(l))
+
+	// private String getHTMLFromGist(String gist){
+	// return
+	// "<script src=\"https://gist.github.com/madhephaestus/"+gist+".js\"></script>";
+	// }
+
+	public void addIScriptEventListener(IScriptEventListener l) {
+		if (!listeners.contains(l))
 			listeners.add(l);
 	}
-	
-	public void removeIScriptEventListener(IScriptEventListener l){
-		if(listeners.contains(l))
+
+	public void removeIScriptEventListener(IScriptEventListener l) {
+		if (listeners.contains(l))
 			listeners.remove(l);
 	}
 
 	public void stop() {
 		// TODO Auto-generated method stub
-		
-		reset();
-		if(scriptRunner!=null)
-		while(scriptRunner.isAlive()){
 
-			Log.debug("Interrupting");
-			ThreadUtil.wait(10);
-			try {
-				scriptRunner.interrupt();
-				scriptRunner.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		reset();
+		if (scriptRunner != null)
+			while (scriptRunner.isAlive()) {
+
+				Log.debug("Interrupting");
+				ThreadUtil.wait(10);
+				try {
+					scriptRunner.interrupt();
+					scriptRunner.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		}
 
 	}
-	public void loadCodeFromFile(File currentFile) throws IOException{
-		if(!currentFile.exists()){
+
+	public void loadCodeFromFile(File currentFile) throws IOException {
+		if (!currentFile.exists()) {
 			currentFile.createNewFile();
 		}
 		setUpFile(currentFile);
 		setCode(new String(Files.readAllBytes(currentFile.toPath())));
 	}
-	
 
-	public void loadCodeFromGist(String addr,WebEngine engine) throws IOException, InterruptedException{
+	public void loadCodeFromGist(String addr, WebEngine engine)
+			throws IOException, InterruptedException {
 		this.addr = addr;
 		this.engine = engine;
-		loadGist=true;
-		String currentGist = getCurrentGist(addr,engine);
+		loadGist = true;
+		String currentGist = getCurrentGist(addr, engine);
 		String[] code = codeFromGistID(currentGist);
-		if(code != null){
+		if (code != null) {
 			setCode(code[0]);
 			fileLabel.setText(code[1]);
-    		currentFile = new File(code[1]);
+			currentFile = new File(code[1]);
 		}
-		
+
 	}
-	
-	    public String urlToGist(String in) {
-			String domain = in.split("//")[1];
-			String [] tokens = domain.split("/");
-			if (tokens[0].toLowerCase().contains("gist.github.com") && tokens.length>=2){
-				String id = tokens[2].split("#")[0];
 
-				Log.debug("Gist URL Detected "+id);
-				return id;
-			}
-			
-			return null;
-		}
-	    private String returnFirstGist(String html){
-	    	//Log.debug(html);
-	    	String slug = html.split("//gist.github.com/")[1];
-	    	String js=		slug.split(".js")[0];
-	    	String id  = js.split("/")[1];
-	    	
-	    	return id;
-	    }
+	public String urlToGist(String in) {
+		String domain = in.split("//")[1];
+		String[] tokens = domain.split("/");
+		if (tokens[0].toLowerCase().contains("gist.github.com")
+				&& tokens.length >= 2) {
+			String id = tokens[2].split("#")[0];
 
-		public String getCurrentGist(String addr,WebEngine engine) {
-			String gist = urlToGist(addr);
-			if (gist==null){
-				try {
-					Log.debug("Non Gist URL Detected");
-					String html;
-					TransformerFactory tf = TransformerFactory.newInstance();
-					Transformer t = tf.newTransformer();
-					StringWriter sw = new StringWriter();
-					t.transform(new DOMSource(engine.getDocument()), new StreamResult(sw));
-					html = sw.getBuffer().toString();
-					return returnFirstGist(html);
-				} catch (TransformerConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			return gist;
+			Log.debug("Gist URL Detected " + id);
+			return id;
 		}
 
+		return null;
+	}
+
+	private String returnFirstGist(String html) {
+		// Log.debug(html);
+		String slug = html.split("//gist.github.com/")[1];
+		String js = slug.split(".js")[0];
+		String id = js.split("/")[1];
+
+		return id;
+	}
+
+	public String getCurrentGist(String addr, WebEngine engine) {
+		String gist = urlToGist(addr);
+		if (gist == null) {
+			try {
+				Log.debug("Non Gist URL Detected");
+				String html;
+				TransformerFactory tf = TransformerFactory.newInstance();
+				Transformer t = tf.newTransformer();
+				StringWriter sw = new StringWriter();
+				t.transform(new DOMSource(engine.getDocument()),
+						new StreamResult(sw));
+				html = sw.getBuffer().toString();
+				return returnFirstGist(html);
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return gist;
+	}
 
 	private void start() {
 
 		running = true;
 		runfx.setText("Stop");
-		scriptRunner = new Thread(){
-			
+		scriptRunner = new Thread() {
 
 			public void run() {
-				setName("Bowler Script Runner "+currentFile.getName());
+				setName("Bowler Script Runner " + currentFile.getName());
 
-		            try{
-		            	Object obj = inlineScriptRun(getCode(),null);
-			            for(IScriptEventListener l:listeners){
-			            	l.onGroovyScriptFinished(obj, scriptResult);
-			            }
-			            Platform.runLater(() -> {
-		            		append("\n"+currentFile+" Completed\n");
-		        		});
-			            scriptResult=obj;
-			            reset();
-			            
-		            }catch(Exception ex){
-		            	Platform.runLater(() -> {
-		            		if(!ex.getMessage().contains("sleep interrupted")){
-				            	StringWriter sw = new StringWriter();
-				            	PrintWriter pw = new PrintWriter(sw);
-				            	ex.printStackTrace(pw);
-			        			append("\n"+currentFile+" \n"+sw+"\n");
-			        			
-		            		}else{
-		            			append("\n"+currentFile+" Interupted\n");
-		            		}
-		            		
-		            		reset();
-		        		});
-		            	for(IScriptEventListener l:listeners){
-			            	l.onGroovyScriptError( ex);
-			            }
-		            	throw new RuntimeException(ex);
-		            }
-          
-				
+				try {
+					Object obj = inlineScriptRun(getCode(), null);
+					for (IScriptEventListener l : listeners) {
+						l.onGroovyScriptFinished(obj, scriptResult);
+					}
+					Platform.runLater(() -> {
+						append("\n" + currentFile + " Completed\n");
+					});
+					scriptResult = obj;
+					reset();
+
+				} catch (Exception ex) {
+					Platform.runLater(() -> {
+						if (!ex.getMessage().contains("sleep interrupted")) {
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							ex.printStackTrace(pw);
+							append("\n" + currentFile + " \n" + sw + "\n");
+
+						} else {
+							append("\n" + currentFile + " Interupted\n");
+						}
+
+						reset();
+					});
+					for (IScriptEventListener l : listeners) {
+						l.onGroovyScriptError(ex);
+					}
+					throw new RuntimeException(ex);
+				}
+
 			}
 		};
 		Platform.runLater(() -> {
 			try {
-				if(loadGist)
-					loadCodeFromGist( addr, engine);
+				if (loadGist)
+					loadCodeFromGist(addr, engine);
 				else
 					save();
 				scriptRunner.start();
@@ -338,12 +348,12 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		});
 
 	}
-	
-	private void append(String s){
+
+	private void append(String s) {
 		System.out.println(s);
 	}
 
-	private void setUpFile(File f){
+	private void setUpFile(File f) {
 		currentFile = f;
 		Platform.runLater(() -> {
 			fileLabel.setText(f.getName());
@@ -351,58 +361,63 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		if (watcher != null) {
 			watcher.close();
 		}
-//		try {
-//			watcher = new FileChangeWatcher(currentFile);
-//			watcher.addIFileChangeListener(this);
-//			watcher.start();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// watcher = new FileChangeWatcher(currentFile);
+		// watcher.addIFileChangeListener(this);
+		// watcher.start();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
-	
-	private void updateFile(){
-		 File last=FileSelectionFactory.GetFile(currentFile, new GroovyFilter());
-		 if(last != null){
-			 setUpFile(last);
-		 }
-		
+
+	private void updateFile() {
+		File last = FileSelectionFactory.GetFile(currentFile,
+				new GroovyFilter());
+		if (last != null) {
+			setUpFile(last);
+		}
+
 	}
 
 	public void open() {
-		
+
 		updateFile();
 		try {
 			setCode(new String(Files.readAllBytes(currentFile.toPath())));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
 	public void save() {
 		// TODO Auto-generated method stub
-		try
-		{
-		    BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile));
-		    writer.write (getCode());
-		    writer.close();
-		} catch(Exception ex)
-		{
-		   //ex.printStackTrace();
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(
+					currentFile));
+			writer.write(getCode());
+			writer.close();
+		} catch (Exception ex) {
+			// ex.printStackTrace();
 		}
 	}
 
 	@Override
-	public void onFileChange(File fileThatChanged, @SuppressWarnings("rawtypes") WatchEvent event) {
+	public void onFileChange(File fileThatChanged,
+			@SuppressWarnings("rawtypes") WatchEvent event) {
 		// TODO Auto-generated method stub
-		if(fileThatChanged.getAbsolutePath().contains(currentFile.getAbsolutePath())){
-			System.out.println("Code in "+fileThatChanged.getAbsolutePath()+" changed");
+		if (fileThatChanged.getAbsolutePath().contains(
+				currentFile.getAbsolutePath())) {
+			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
+					+ " changed");
 			Platform.runLater(new Runnable() {
-	            @Override
-	            public void run() {
-	            	try {
-						setCode(new String(Files.readAllBytes(Paths.get(fileThatChanged.getAbsolutePath())), "UTF-8"));
+				@Override
+				public void run() {
+					try {
+						setCode(new String(Files.readAllBytes(Paths
+								.get(fileThatChanged.getAbsolutePath())),
+								"UTF-8"));
 						fileLabel.setTextFill(Color.RED);
 						Platform.runLater(() -> {
 							ThreadUtil.wait(750);
@@ -415,202 +430,212 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-	            }
-	       });
+				}
+			});
 
-		}else{
-			//System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+		} else {
+			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
 		}
 	}
-	
-	public String getCode(){
+
+	public String getCode() {
 		return codeText;
 	}
 
 	public void setCode(String string) {
 		String pervious = codeText;
-		codeText=string;
-		//System.out.println(codeText);
-        for(IScriptEventListener l:listeners){
-        	l.onGroovyScriptChanged(pervious, string);
-        } 
+		codeText = string;
+		// System.out.println(codeText);
+		for (IScriptEventListener l : listeners) {
+			l.onGroovyScriptChanged(pervious, string);
+		}
 	}
-
 
 	public String getFileName() {
 		return currentFile.getName();
 	}
+
 	public static ConnectionManager getConnectionmanager() {
 		return connectionmanager;
 	}
+
 	public static void setConnectionmanager(ConnectionManager connectionmanager) {
 		ScriptingEngineWidget.connectionmanager = connectionmanager;
 	}
-	
-	private static void setFilename(String name){
-		if(		name.toString().toLowerCase().endsWith(".java")||
-				name.toString().toLowerCase().endsWith(".groovy")){
-			activeType=ShellType.GROOVY;
+
+	private static void setFilename(String name) {
+		if (name.toString().toLowerCase().endsWith(".java")
+				|| name.toString().toLowerCase().endsWith(".groovy")) {
+			activeType = ShellType.GROOVY;
 			System.out.println("Setting up Groovy Shell");
 		}
-		if(		name.toString().toLowerCase().endsWith(".py")||
-				name.toString().toLowerCase().endsWith(".jy")){
-			activeType=ShellType.JYTHON;
+		if (name.toString().toLowerCase().endsWith(".py")
+				|| name.toString().toLowerCase().endsWith(".jy")) {
+			activeType = ShellType.JYTHON;
 			System.out.println("Setting up Python Shell");
-		}	
+		}
 	}
-	
-	public static String[] codeFromGistID(String id){
-		try{
+
+	public static String[] codeFromGistID(String id) {
+		try {
 			GitHub github = GitHub.connectAnonymously();
-			Log.debug("Loading Gist: "+id);
+			Log.debug("Loading Gist: " + id);
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
-			for (Entry<String, GHGistFile> entry : files.entrySet()) { 
-				if(		entry.getKey().endsWith(".py") || 
-						entry.getKey().endsWith(".jy") || 
-						entry.getKey().endsWith(".java") || 
-						entry.getKey().endsWith(".groovy")){
-					
-						
-					GHGistFile ghfile = entry.getValue();	
+			for (Entry<String, GHGistFile> entry : files.entrySet()) {
+				if (entry.getKey().endsWith(".py")
+						|| entry.getKey().endsWith(".jy")
+						|| entry.getKey().endsWith(".java")
+						|| entry.getKey().endsWith(".groovy")) {
+
+					GHGistFile ghfile = entry.getValue();
 					Log.debug("Key = " + entry.getKey());
 					String code = ghfile.getContent();
 					String fileName = entry.getKey().toString();
 					setFilename(fileName);
-            		return new String[]{code,fileName};
+					return new String[] { code, fileName };
 				}
 			}
-		}catch (InterruptedIOException e){
+		} catch (InterruptedIOException e) {
 			System.out.println("Gist Rate limited");
-		}catch(MalformedURLException ex){
-			//ex.printStackTrace();
+		} catch (MalformedURLException ex) {
+			// ex.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public static Object inlineFileScriptRun(File f , ArrayList<Object> args){
+
+	public static Object inlineFileScriptRun(File f, ArrayList<Object> args) {
 		byte[] bytes;
-		setFilename(f.getName());	
+		setFilename(f.getName());
 		try {
 			bytes = Files.readAllBytes(f.toPath());
-	        String s =  new String(bytes,"UTF-8");
-			return inlineScriptRun(s,args);
+			String s = new String(bytes, "UTF-8");
+			return inlineScriptRun(s, args);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	public static Object inlineGistScriptRun(String gistID , ArrayList<Object> args){
-		return inlineScriptRun(codeFromGistID(gistID)[0],args);
+
+	public static Object inlineGistScriptRun(String gistID,
+			ArrayList<Object> args) {
+		return inlineScriptRun(codeFromGistID(gistID)[0], args);
 	}
-	
-	static String [] imports = new String[]{
-			"com.neuronrobotics",
-    		"com.neuronrobotics.sdk.dyio.peripherals",
-    		"com.neuronrobotics.sdk.dyio",
-    		"com.neuronrobotics.sdk.common",
-    		"com.neuronrobotics.sdk.ui",
-    		"com.neuronrobotics.sdk.util",
-    		"javafx.scene.control",
-    		"com.neuronrobotics.bowlerstudio.scripting",
-    		"com.neuronrobotics.jniloader",
-    		"com.neuronrobotics.tab",
-    		"com.neuronrobotics.bowlerstudio.tabs",
-    		"org.opencv.core",
-    		"org.opencv.features2d",
-    		"javafx.scene.text",
-    		"javafx.scene",
-    		"com.neuronrobotics.sdk.addons.kinematics",
-    		"com.neuronrobotics.sdk.addons.kinematics.math",
-    		"com.neuronrobotics.sdk.addons.xml",
-    		"java.util",
-    		"com.neuronrobotics.sdk.addons.kinematics.gui",
-    		"javafx.scene.transform",
-    		"javafx.scene.shape",
-    		"java.awt.image.BufferedImage",
-    		"eu.mihosoft.vrl.v3d",
-            "eu.mihosoft.vrl.v3d.samples"
-	};
-	
-	private static Object runGroovy(String code, ArrayList<Object> args){
+
+	static final String[] imports = new String[] { "haar",
+			"eu.mihosoft.vrl.v3d",
+			"eu.mihosoft.vrl.v3d.samples",
+			"com.neuronrobotics.sdk.addons.kinematics.xml",
+			"com.neuronrobotics.sdk.dyio.peripherals",
+			"com.neuronrobotics.sdk.dyio",
+			"com.neuronrobotics.sdk.common",
+			"com.neuronrobotics.sdk.ui",
+			"com.neuronrobotics.sdk.util",
+			"javafx.scene.control",
+			"com.neuronrobotics.bowlerstudio.scripting",
+			"com.neuronrobotics.jniloader",
+			"com.neuronrobotics.bowlerstudio.tabs",
+			"org.opencv.core",
+			// "org.opencv.features2d",
+			"javafx.scene.text", "javafx.scene",
+			"com.neuronrobotics.sdk.addons.kinematics",
+			"com.neuronrobotics.sdk.addons.kinematics.math", "java.util",
+			"com.neuronrobotics.sdk.addons.kinematics.gui",
+			"javafx.scene.transform", "javafx.scene.shape",
+			"java.awt.image.BufferedImage" };
+
+	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();
-        cc.addCompilationCustomizers(
-                new ImportCustomizer().
-                addStarImports(
-                		imports
-                		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil",
-                				"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget",
-                				"eu.mihosoft.vrl.v3d.Transform")
-                );
-    	
-        Binding binding = new Binding();
-        for (PluginManager pm:getConnectionmanager().getConnections()){
-        	try {
-        		//groovy needs the objects cas to thier actual type befor passing into the scipt
+		cc.addCompilationCustomizers(new ImportCustomizer()
+				.addStarImports(imports)
+				.addStaticStars(
+						"com.neuronrobotics.sdk.util.ThreadUtil",
+						"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget",
+						"eu.mihosoft.vrl.v3d.Transform"));
+
+		Binding binding = new Binding();
+		for (PluginManager pm : getConnectionmanager().getConnections()) {
+			try {
+				// groovy needs the objects cas to thier actual type befor
+				// passing into the scipt
 				binding.setVariable(pm.getName(),
-						Class.forName(
-								pm.getDevice().getClass().getName()
-								).cast(
-										pm.getDevice()
-										)
-								);
+						Class.forName(pm.getDevice().getClass().getName())
+								.cast(pm.getDevice()));
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        	System.err.println("Device "+pm.getName()+" is "+pm.getDevice());
-        }
-        binding.setVariable("args",args);
-        
-        GroovyShell shell = new GroovyShell(connectionmanager.getClass().getClassLoader(),
-        		binding, cc);
-        System.out.println(code+"\n\nStart\n\n");
-        Script script = shell.parse(code);
-        
-        return script.run();
+			System.err.println("Device " + pm.getName() + " is "
+					+ pm.getDevice());
+		}
+		binding.setVariable("args", args);
+
+		GroovyShell shell = new GroovyShell(connectionmanager.getClass()
+				.getClassLoader(), binding, cc);
+		System.out.println(code + "\n\nStart\n\n");
+		Script script = shell.parse(code);
+
+		return script.run();
 	}
-	
-	private static Object runJython(String code, ArrayList<Object> args){
-		PythonInterpreter interp =new PythonInterpreter();
-		
+
+	private static Object runJython(String code, ArrayList<Object> args) {
+
+		Properties props = new Properties();
+		PythonInterpreter.initialize(System.getProperties(), props,
+				new String[] { "" });
+		PythonInterpreter interp = new PythonInterpreter();
+
 		interp.exec("import sys");
-		
-        for (PluginManager pm:getConnectionmanager().getConnections()){
-        	try {
-        		//groovy needs the objects cas to thier actual type befor passing into the scipt
-        		interp.set(pm.getName(),
-						Class.forName(
-								pm.getDevice().getClass().getName()
-								).cast(
-										pm.getDevice()
-										)
-								);
+		for (String s : imports) {
+
+			// s = "import "+s;
+			System.err.println(s);
+			try {
+				interp.exec("from " + s + " import *");
+			} catch (Exception e) {
+				//from http://stevegilham.blogspot.com/2007/03/standalone-jython-importerror-no-module.html
+				try {
+					interp.exec("sys.packageManager.makeJavaPackage(" + s
+							+ ", " + s + ", None)");
+
+					interp.exec("from " + s + " import *");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+
+		for (PluginManager pm : getConnectionmanager().getConnections()) {
+			try {
+				// passing into the scipt
+				interp.set(pm.getName(),
+						Class.forName(pm.getDevice().getClass().getName())
+								.cast(pm.getDevice()));
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        	System.err.println("Device "+pm.getName()+" is "+pm.getDevice());
-        }
-        interp.set("args",args);
-        
+			System.err.println("Device " + pm.getName() + " is "
+					+ pm.getDevice());
+		}
+		interp.set("args", args);
+
 		interp.exec(code);
 		return interp.get("result");
 	}
-	
-	public static Object inlineScriptRun(String code, ArrayList<Object> args){
-		switch(activeType){
+
+	public static Object inlineScriptRun(String code, ArrayList<Object> args) {
+		switch (activeType) {
 		case JYTHON:
-			return runJython(code,args);
+			return runJython(code, args);
 		case GROOVY:
 		default:
-			return runGroovy(code,args);
+			return runGroovy(code, args);
 		}
 	}
-
 
 }
