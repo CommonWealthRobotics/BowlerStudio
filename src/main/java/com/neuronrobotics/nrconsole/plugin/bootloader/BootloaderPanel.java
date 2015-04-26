@@ -37,7 +37,8 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 	private StatusLabel loadStatus = new StatusLabel();
 	private String revision;
 	private static File file = null;
-
+	//set this variable to make this tab auto open when a device is connected
+	static { isAutoLoad=true;}
 	/**
 	 * 
 	 */
@@ -270,4 +271,5 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 		// TODO Auto-generated method stub
 		
 	}
+
 }

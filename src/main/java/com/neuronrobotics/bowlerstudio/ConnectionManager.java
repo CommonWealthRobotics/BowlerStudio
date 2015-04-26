@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.usb.UsbDevice;
 import javax.usb.UsbDisconnectedException;
 import javax.usb.UsbException;
 
@@ -46,220 +47,246 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ConnectionManager extends Tab implements EventHandler<ActionEvent>  {
-	
+public class ConnectionManager extends Tab implements EventHandler<ActionEvent> {
+
 	private CheckBoxTreeItem<String> rootItem;
 	private ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
 	private BowlerStudioController bowlerStudioController;
-	private Node getIcon(String s){
-		return new ImageView(
-        		new Image(
-        				AbstractConnectionPanel.class.getResourceAsStream(s)
-        				)
-        		);
+
+	private Node getIcon(String s) {
+		return new ImageView(new Image(
+				AbstractConnectionPanel.class.getResourceAsStream(s)));
 	}
 
-	public ConnectionManager(BowlerStudioController bowlerStudioController){
+	public ConnectionManager(BowlerStudioController bowlerStudioController) {
 		this.setBowlerStudioController(bowlerStudioController);
 		setText("Connections");
-		
-        rootItem = new CheckBoxTreeItem<String> ("Connections", getIcon(
-        		"images/connection-icon.png"
-        		//"images/usb-icon.png"
-        		));
-        rootItem.setExpanded(true);
-        rootItem.setSelected(true);
-        rootItem.selectedProperty().addListener(b ->{
-        	if(!rootItem.isSelected()){
-        		disconnectAll();
-        	}
-        });
-       
-        TreeView<String> tree = new TreeView<String> (rootItem); 
-        
-        tree .setCellFactory(CheckBoxTreeCell.forTreeView());
-        
-        setContent(tree);
-        
-        ScriptingEngineWidget.setConnectionmanager(this);
-        try{
-        	if(UsbCDCSerialConnection.getAllUsbBowlerDevices().size()==0){
-        		return;
-        	}
-        }catch(Error | UnsupportedEncodingException | UsbDisconnectedException | SecurityException | UsbException e){
-        	e.printStackTrace();
-        }
-        new Thread(){
-        	public void run(){
-        		ThreadUtil.wait(750);
-        		addConnection();
-        	}
-        }.start();
+
+		rootItem = new CheckBoxTreeItem<String>("Connections",
+				getIcon("images/connection-icon.png"
+				// "images/usb-icon.png"
+				));
+		rootItem.setExpanded(true);
+		rootItem.setSelected(true);
+		rootItem.selectedProperty().addListener(b -> {
+			if (!rootItem.isSelected()) {
+				disconnectAll();
+			}
+		});
+
+		TreeView<String> tree = new TreeView<String>(rootItem);
+
+		tree.setCellFactory(CheckBoxTreeCell.forTreeView());
+
+		setContent(tree);
+
+		ScriptingEngineWidget.setConnectionmanager(this);
+		try {
+			ArrayList<UsbDevice> devs = UsbCDCSerialConnection
+					.getAllUsbBowlerDevices();
+			if (devs.size() == 0) {
+				return;
+			} else {
+				new Thread() {
+					public void run() {
+						ThreadUtil.wait(750);
+						for (UsbDevice d : devs) {
+							addConnection(new UsbCDCSerialConnection(d));
+						}
+					}
+				}.start();
+
+			}
+		} catch (Error | UnsupportedEncodingException
+				| UsbDisconnectedException | SecurityException | UsbException e) {
+			e.printStackTrace();
+		}
+//		UsbCDCSerialConnection
+//				.addUsbDeviceEventListener(device -> new Thread() {
+//					public void run() {
+//						ThreadUtil.wait(750);
+//						addConnection();
+//					}
+//				}.start());
+
 	}
 
-	
-	
-	public void addConnection(){
-		BowlerAbstractConnection connection = ConnectionDialog.promptConnection();
-		if(connection == null) {
+	public void addConnection(BowlerAbstractConnection connection) {
+		if (connection == null) {
 			return;
 		}
 		Log.error("Switching to v4 parser");
 		BowlerDatagram.setUseBowlerV4(true);
-		
+
 		GenericDevice gen = new GenericDevice(connection);
-		try{
-			if(!gen.connect()) {
+		try {
+			if (!gen.connect()) {
 				throw new InvalidConnectionException("Connection is invalid");
 			}
-			if(!gen.ping(true)){
+			if (!gen.ping(true)) {
 				throw new InvalidConnectionException("Communication failed");
 			}
-		} catch(Exception e) {
-			//connection.disconnect();
+		} catch (Exception e) {
+			// connection.disconnect();
 			ThreadUtil.wait(1000);
 			BowlerDatagram.setUseBowlerV4(false);
-			if(!gen.connect()) {
+			if (!gen.connect()) {
 				throw new InvalidConnectionException("Connection is invalid");
 			}
-			if(!gen.ping()){
+			if (!gen.ping()) {
 				connection = null;
 				throw new InvalidConnectionException("Communication failed");
 			}
 			throw e;
 		}
-		if(gen.hasNamespace("neuronrobotics.dyio.*")){
+		if (gen.hasNamespace("neuronrobotics.dyio.*")) {
 			DyIO dyio = new DyIO(gen.getConnection());
 			dyio.connect();
 			String name = "dyio";
-			if(rootItem.getChildren().size()>0)
-				name+=rootItem.getChildren().size()+1;
-			addConnection(dyio,name);
-			
-		}else if(gen.hasNamespace("bcs.cartesian.*")){
+			if (rootItem.getChildren().size() > 0)
+				name += rootItem.getChildren().size() + 1;
+			addConnection(dyio, name);
+
+		} else if (gen.hasNamespace("bcs.cartesian.*")) {
 			BowlerBoardDevice delt = new BowlerBoardDevice();
 			delt.setConnection(gen.getConnection());
 			delt.connect();
 			String name = "bowlerBoard";
-			if(rootItem.getChildren().size()>0)
-				name+=rootItem.getChildren().size()+1;
-			addConnection(delt,name);
-		}else if(gen.hasNamespace("bcs.bootloader.*") || 
-				gen.hasNamespace("neuronrobotics.bootloader.*")){
+			if (rootItem.getChildren().size() > 0)
+				name += rootItem.getChildren().size() + 1;
+			
+			addConnection(delt, name);
+		} else if (gen.hasNamespace("bcs.bootloader.*")
+				|| gen.hasNamespace("neuronrobotics.bootloader.*")) {
 			NRBootLoader delt = new NRBootLoader(gen.getConnection());
 			String name = "bootloader";
-			if(rootItem.getChildren().size()>0)
-				name+=rootItem.getChildren().size()+1;
-			addConnection(delt,name);
-		}else{
-			addConnection(gen,"device");
+			if (rootItem.getChildren().size() > 0)
+				name += rootItem.getChildren().size() + 1;
+			addConnection(delt, name);
+		} else {
+			addConnection(gen, "device");
 		}
 	}
-	
-	public void addConnection(BowlerAbstractDevice c, String name){
+
+	public void addConnection() {
+		addConnection(ConnectionDialog.promptConnection());
+	}
+
+	public void addConnection(BowlerAbstractDevice c, String name) {
+		c.setScriptingName(name);
 		PluginManager mp;
-		
-		mp= new PluginManager(c,getBowlerStudioController());
+		Log.debug("Adding a "+c.getClass().getName()+" with name "+name );
+		mp = new PluginManager(c, getBowlerStudioController());
 		devices.add(mp);
 
-		BowlerAbstractConnection con =  c.getConnection();
-		Node icon = getIcon(
-        		"images/connection-icon.png"
-				//"images/usb-icon.png"
-        		);
-		if(	
-			SerialConnection.class.isInstance(con)	){
+		BowlerAbstractConnection con = c.getConnection();
+		Node icon = getIcon("images/connection-icon.png"
+		// "images/usb-icon.png"
+		);
+		if (SerialConnection.class.isInstance(con)) {
 			icon = getIcon(
-	        		//"images/ethernet-icon.png"
-					"images/usb-icon.png"
-	        		);
-		}else if(	UsbCDCSerialConnection.class.isInstance(con)
-				){
-				icon = getIcon(
-		        		//"images/ethernet-icon.png"
-						"images/usb-icon.png"
-		        		);
-		}else if(BluetoothSerialConnection.class.isInstance(con)){
+			// "images/ethernet-icon.png"
+			"images/usb-icon.png");
+		} else if (UsbCDCSerialConnection.class.isInstance(con)) {
 			icon = getIcon(
-	        		//"images/ethernet-icon.png"
-					"images/bluetooth-icon.png"
-	        		);
-		}else if(	UDPBowlerConnection.class.isInstance(con)||
-				BowlerTCPClient.class.isInstance(con)	){
-				icon = getIcon(
-		        		//"images/ethernet-icon.png"
-						"images/ethernet-icon.png"
-		        		);
-			}
-		
-		
-		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String> (name+" "+c.getAddress(), icon);
-		
+			// "images/ethernet-icon.png"
+			"images/usb-icon.png");
+		} else if (BluetoothSerialConnection.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/bluetooth-icon.png");
+		} else if (UDPBowlerConnection.class.isInstance(con)
+				|| BowlerTCPClient.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/ethernet-icon.png");
+		}
+
+		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(name + " "
+				+ c.getAddress(), icon);
+
 		mp.setTree(item);
 		item.setExpanded(false);
-        rootItem.getChildren().add(item);
-        mp.setName(name);
-        item.setSelected(true);
-        item.selectedProperty().addListener(b ->{
-        	if(!item.isSelected()){
-        		System.out.println("Disconnecting "+mp.getName());
-        		c.disconnect();
-        		devices.remove(mp);
+		rootItem.getChildren().add(item);
+		mp.setName(name);
+		if (c.getConnection() != null) {
+			c.getConnection().addConnectionEventListener(
+					new IConnectionEventListener() {
+						@Override
+						public void onDisconnect(BowlerAbstractConnection source) {
+							// clean up after yourself...
+							devices.remove(mp);
+							rootItem.getChildren().remove(item);
+						}
+
+						// ignore
+						@Override
+						public void onConnect(BowlerAbstractConnection source) {
+						}
+					});
+		}
+		item.setSelected(true);
+		item.selectedProperty().addListener(b -> {
+			if (!item.isSelected()) {
+				System.out.println("Disconnecting " + mp.getName());
+				c.disconnect();
+				devices.remove(mp);
 				rootItem.getChildren().remove(item);
-        	}
-        });
+			}
+		});
 	}
 
 	@Override
 	public void handle(ActionEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public ArrayList<PluginManager> getConnections() {
-		 return devices;
+		return devices;
 	}
 
 	public BowlerStudioController getBowlerStudioController() {
 		return bowlerStudioController;
 	}
 
-	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
+	public void setBowlerStudioController(
+			BowlerStudioController bowlerStudioController) {
 		this.bowlerStudioController = bowlerStudioController;
 	}
-	
-	public BowlerAbstractDevice pickConnectedDevice(){
-		if(devices.size()==0)
+
+	public BowlerAbstractDevice pickConnectedDevice() {
+		if (devices.size() == 0)
 			return null;
 		List<String> choices = new ArrayList<>();
-		for(int i=0;i<devices.size();i++){
+		for (int i = 0; i < devices.size(); i++) {
 			choices.add(devices.get(i).getName());
 		}
-		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+
+		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
+				choices);
 		dialog.setTitle("Bowler Device Chooser");
 		dialog.setHeaderText("Choose connected bowler device");
 		dialog.setContentText("Device Name:");
 
 		// Traditional way to get the response value.
 		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
-			for(int i=0;i<devices.size();i++){
-				if(devices.get(i).getName().contains(result.get())){
+		if (result.isPresent()) {
+			for (int i = 0; i < devices.size(); i++) {
+				if (devices.get(i).getName().contains(result.get())) {
 					return devices.get(i).getDevice();
 				}
 			}
 		}
 		return null;
-		
+
 	}
 
 	public void disconnectAll() {
-		for(int i=0;i<devices.size();i++){
+		for (int i = 0; i < devices.size(); i++) {
 			devices.get(i).getDevice().disconnect();
 		}
-		
+
 	}
-	
-	
+
 }

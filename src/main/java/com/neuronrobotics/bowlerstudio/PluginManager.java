@@ -104,13 +104,26 @@ public class PluginManager {
 			rpc.setExpanded(false);
 			item.getChildren().add(rpc);
 		}
-		TreeItem<String> plugins = new TreeItem<String> ("Plugins"); 
-		plugins.setExpanded(false);
+		CheckBoxTreeItem<String> plugins = new CheckBoxTreeItem<String> ("Plugins"); 
+		plugins.setExpanded(true);
+		plugins.setSelected(true);
 		item.getChildren().add(plugins);
 		
 		for( Class<?> c:deviceSupport){
 			CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getSimpleName());
 			p.setSelected(false);
+			try {
+				if( Class.forName(c.getName()).getField("isAutoLoad").getBoolean(null) ){
+					System.out.println("Auto loading "+c.getSimpleName());
+					p.setSelected(true);
+					getBowlerStudioController().addTab(generateTab(c), true);
+				}
+			} catch (IllegalArgumentException | IllegalAccessException
+					| NoSuchFieldException | SecurityException
+					| ClassNotFoundException | InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			p.selectedProperty().addListener(b ->{
 				try {
 					AbstractBowlerStudioTab t = generateTab(c);

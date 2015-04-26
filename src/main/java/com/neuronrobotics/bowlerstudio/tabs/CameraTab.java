@@ -1,19 +1,12 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import com.neuronrobotics.bowlerstudio.tabs.*;
-
 import haar.HaarFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
-
 import org.opencv.core.CvException;
-import org.opencv.core.Mat;
-import org.opencv.features2d.KeyPoint;
-
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.jniloader.Detection;
 import com.neuronrobotics.jniloader.HaarDetector;
@@ -24,13 +17,9 @@ import com.neuronrobotics.sdk.common.Log;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 
@@ -46,6 +35,8 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	private long session []=new long[4];
 	private BufferedImage inputImage = AbstractImageProvider.newBufferImage(640,480);
 	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640,480);
+	//set this variable to make this tab auto open when a device is connected
+	static { isAutoLoad=false;}
 	public CameraTab(){}//default construtor
 	public CameraTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;
@@ -181,6 +172,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	public void setDetector(IObjectDetector detector) {
 		this.detector = detector;
 	}
+
 }
 
 // new CameraTabMine(camera0,"Camera Test", new HaarDetector());

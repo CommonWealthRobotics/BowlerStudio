@@ -31,6 +31,9 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	//private JFrame hexFrame;
 	private SwingNode wrapper;
 	private DyIO dyio;
+	
+	//set this variable to make this tab auto open when a device is connected
+	static { isAutoLoad=true;}
 
 	private void setupDyIO(){
 		
