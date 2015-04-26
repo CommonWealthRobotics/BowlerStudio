@@ -67,8 +67,12 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class ScriptingEngineWidget extends BorderPane implements IFileChangeListener{
 	
+	public enum ShellType {
+	    GROOVY,
+	    JYTHON
+	}
 
-
+	static ShellType activeType = ShellType.GROOVY;
 
 	/**
 	 * 
@@ -443,6 +447,19 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 		ScriptingEngineWidget.connectionmanager = connectionmanager;
 	}
 	
+	private static void setFilename(String name){
+		if(		name.toString().toLowerCase().endsWith(".java")||
+				name.toString().toLowerCase().endsWith(".groovy")){
+			activeType=ShellType.GROOVY;
+			System.out.println("Setting up Groovy Shell");
+		}
+		if(		name.toString().toLowerCase().endsWith(".py")||
+				name.toString().toLowerCase().endsWith(".jy")){
+			activeType=ShellType.JYTHON;
+			System.out.println("Setting up Python Shell");
+		}	
+	}
+	
 	public static String[] codeFromGistID(String id){
 		try{
 			GitHub github = GitHub.connectAnonymously();
@@ -450,11 +467,17 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
 			for (Entry<String, GHGistFile> entry : files.entrySet()) { 
-				if(entry.getKey().endsWith(".java") || entry.getKey().endsWith(".groovy")){
+				if(		entry.getKey().endsWith(".py") || 
+						entry.getKey().endsWith(".jy") || 
+						entry.getKey().endsWith(".java") || 
+						entry.getKey().endsWith(".groovy")){
+					
+						
 					GHGistFile ghfile = entry.getValue();	
 					Log.debug("Key = " + entry.getKey());
 					String code = ghfile.getContent();
 					String fileName = entry.getKey().toString();
+					setFilename(fileName);
             		return new String[]{code,fileName};
 				}
 			}
@@ -470,6 +493,7 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	}
 	public static Object inlineFileScriptRun(File f , ArrayList<Object> args){
 		byte[] bytes;
+		setFilename(f.getName());	
 		try {
 			bytes = Files.readAllBytes(f.toPath());
 	        String s =  new String(bytes,"UTF-8");
@@ -484,40 +508,44 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
 	public static Object inlineGistScriptRun(String gistID , ArrayList<Object> args){
 		return inlineScriptRun(codeFromGistID(gistID)[0],args);
 	}
-	public static Object inlineScriptRun(String code, ArrayList<Object> args){
+	
+	static String [] imports = new String[]{
+			"com.neuronrobotics",
+    		"com.neuronrobotics.sdk.dyio.peripherals",
+    		"com.neuronrobotics.sdk.dyio",
+    		"com.neuronrobotics.sdk.common",
+    		"com.neuronrobotics.sdk.ui",
+    		"com.neuronrobotics.sdk.util",
+    		"javafx.scene.control",
+    		"com.neuronrobotics.bowlerstudio.scripting",
+    		"com.neuronrobotics.jniloader",
+    		"com.neuronrobotics.tab",
+    		"com.neuronrobotics.bowlerstudio.tabs",
+    		"org.opencv.core",
+    		"org.opencv.features2d",
+    		"javafx.scene.text",
+    		"javafx.scene",
+    		"com.neuronrobotics.sdk.addons.kinematics",
+    		"com.neuronrobotics.sdk.addons.kinematics.math",
+    		"com.neuronrobotics.sdk.addons.xml",
+    		"java.util",
+    		"com.neuronrobotics.sdk.addons.kinematics.gui",
+    		"javafx.scene.transform",
+    		"javafx.scene.shape",
+    		"java.awt.image.BufferedImage",
+    		"eu.mihosoft.vrl.v3d",
+            "eu.mihosoft.vrl.v3d.samples"
+	};
+	
+	private static Object runGroovy(String code, ArrayList<Object> args){
 		CompilerConfiguration cc = new CompilerConfiguration();
         cc.addCompilationCustomizers(
                 new ImportCustomizer().
-                addStarImports("eu.mihosoft.vrl.v3d",
-                        "eu.mihosoft.vrl.v3d.samples").
-                addStaticStars("eu.mihosoft.vrl.v3d.Transform"));
-        cc.addCompilationCustomizers(
-                new ImportCustomizer().
-                addStarImports("com.neuronrobotics",
-                		"com.neuronrobotics.sdk.dyio.peripherals",
-                		"com.neuronrobotics.sdk.dyio",
-                		"com.neuronrobotics.sdk.common",
-                		"com.neuronrobotics.sdk.ui",
-                		"com.neuronrobotics.sdk.util",
-                		"javafx.scene.control",
-                		"com.neuronrobotics.bowlerstudio.scripting",
-                		"com.neuronrobotics.jniloader",
-                		"com.neuronrobotics.tab",
-                		"com.neuronrobotics.bowlerstudio.tabs",
-                		"org.opencv.core",
-                		"org.opencv.features2d",
-                		"javafx.scene.text",
-                		"javafx.scene",
-                		"com.neuronrobotics.sdk.addons.kinematics",
-                		"com.neuronrobotics.sdk.addons.kinematics.math",
-                		"com.neuronrobotics.sdk.addons.xml",
-                		"java.util",
-                		"com.neuronrobotics.sdk.addons.kinematics.gui",
-                		"javafx.scene.transform",
-                		"javafx.scene.shape",
-                		"java.awt.image.BufferedImage"
+                addStarImports(
+                		imports
                 		).addStaticStars("com.neuronrobotics.sdk.util.ThreadUtil",
-                				"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget")
+                				"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget",
+                				"eu.mihosoft.vrl.v3d.Transform")
                 );
     	
         Binding binding = new Binding();
@@ -545,6 +573,43 @@ public class ScriptingEngineWidget extends BorderPane implements IFileChangeList
         Script script = shell.parse(code);
         
         return script.run();
+	}
+	
+	private static Object runJython(String code, ArrayList<Object> args){
+		PythonInterpreter interp =new PythonInterpreter();
+		
+		interp.exec("import sys");
+		
+        for (PluginManager pm:getConnectionmanager().getConnections()){
+        	try {
+        		//groovy needs the objects cas to thier actual type befor passing into the scipt
+        		interp.set(pm.getName(),
+						Class.forName(
+								pm.getDevice().getClass().getName()
+								).cast(
+										pm.getDevice()
+										)
+								);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	System.err.println("Device "+pm.getName()+" is "+pm.getDevice());
+        }
+        interp.set("args",args);
+        
+		interp.exec(code);
+		return interp.get("result");
+	}
+	
+	public static Object inlineScriptRun(String code, ArrayList<Object> args){
+		switch(activeType){
+		case JYTHON:
+			return runJython(code,args);
+		case GROOVY:
+		default:
+			return runGroovy(code,args);
+		}
 	}
 
 
