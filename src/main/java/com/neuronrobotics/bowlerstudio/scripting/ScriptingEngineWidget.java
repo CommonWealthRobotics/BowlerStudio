@@ -527,6 +527,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 	}
 
 	static final String[] imports = new String[] { "haar",
+			"java.awt",
 			"eu.mihosoft.vrl.v3d",
 			"eu.mihosoft.vrl.v3d.samples",
 			"com.neuronrobotics.sdk.addons.kinematics.xml",
@@ -594,15 +595,18 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 			// s = "import "+s;
 			System.err.println(s);
-			try {
-				interp.exec("from " + s + " import *");
-			} catch (Exception e) {
+			if(!s.contains("mihosoft")) {
+				interp.exec("import "+s);
+			} else {
 				//from http://stevegilham.blogspot.com/2007/03/standalone-jython-importerror-no-module.html
 				try {
+					String[] names = s.split("\\.");
+					String packname = (names.length>0?names[names.length-1]:s);
+					Log.error("Forcing "+s+" as "+packname);
 					interp.exec("sys.packageManager.makeJavaPackage(" + s
-							+ ", " + s + ", None)");
+							+ ", " +packname + ", None)");
 
-					interp.exec("from " + s + " import *");
+					interp.exec("import "+packname);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
