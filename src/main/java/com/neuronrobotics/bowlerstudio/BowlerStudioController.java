@@ -17,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Side;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -72,7 +73,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 
 		try {
-			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), false);
+			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), true);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +120,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		connectionManager = new ConnectionManager(this);
 		addTab(connectionManager,false);
 		
-		createAndSelectNewTab(this, "About Bowler Studio");
+		createAndSelectNewTab(this, "Tutorial");
 
 
 		//Function to add and display new tabs with default URL display.
@@ -169,9 +170,6 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private void removeObject(Object p){
 		if(CSG.class.isInstance(p)){          
             Platform.runLater(() -> {
-            	//new RuntimeException().printStackTrace();
-            	 CSG csg = (CSG) p;
-                 MeshView previous =csg.getMesh();;
             	 jfx3dmanager.removeObjects();
 			});
 		}else if(Tab.class.isInstance(p)){
@@ -198,6 +196,11 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 			Platform.runLater(() -> {
 				//new RuntimeException().printStackTrace();
 				addTab((Tab) o,true);
+			});
+		}else if(MeshView.class.isInstance(o)){
+			Platform.runLater(() -> {
+				//new RuntimeException().printStackTrace();
+				jfx3dmanager.addObject((MeshView)o);
 			});
 		}else if(BowlerAbstractDevice.class.isInstance(o)){
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
