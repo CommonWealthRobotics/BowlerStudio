@@ -9,20 +9,29 @@ Every step of this can be performed from within BowlerStudio!
 
 Lets go through the main features:
 
-* Scripting With Gist
-..* About scripts and Gist
-Scripts are bits of code that BowlerStudio and load and run. YOu can open a local file and run it, but BowlerStudio is most powerful when the code libes in Github Gist. Gist is a code snippet hosting service from Github. BowlerStudio allows you to simply give it the URl for a Gist, and it can load and execute that code. Gists can be selected and edited using the built in browser, or inline in another script using the Gist ID. 
-..* Java and Groovy
-BowlerStudio can load and run scripts written in Java, Groovy, and Python. Which parser gets used is determined by the file extention. Files that end in .java or .groovy will be run through the Groovy compiler. These Groovy scripts are compiled fully and run directly in the JVM, meaning they run at full speed as if it were a regular application. 
+# Scripting With Gist
+### About scripts and Gist
+   Scripts are bits of code that BowlerStudio and load and run. YOu can open a local file and run it, but BowlerStudio is most powerful when the code libes in Github Gist. Gist is a code snippet hosting service from Github. BowlerStudio allows you to simply give it the URl for a Gist, and it can load and execute that code. Gists can be selected and edited using the built in browser, or inline in another script using the Gist ID.   
+### Java and Groovy
+   BowlerStudio can load and run scripts written in Java, Groovy, and Python. Which parser gets used is determined by the file extention. Files that end in .java or .groovy will be run through the Groovy compiler. These Groovy scripts are compiled fully and run directly in the JVM, meaning they run at full speed as if it were a regular application.  
+   
+### Python
+   Python on the other hand is very slow, in general 300-400 times slower then Java. With the reduction in speed you get lots of flexibility and a clean and easy to understand syntax. The python code can also create and return objects to BowlerStudio such as CAD csg objects, or UI Tabs.  
 
-Python on the other hand is very slow, in general 300-400 times slower then Java. With the reduction in speed you get lots of flexibility and a clean and easy to understand syntax. The python code can also create and return objects to BowlerStudio such as CAD csg objects, or UI Tabs. 
-..* Python
-..* Device Access
-..* Return Objects
-* Bowler Devices
-* Cameras
-* Image processing
-* 
+### Return Objects
+   A scrit can return a few object tuypes that will be handled by BowlerStudio.
+   Objects of type CSG and MeshView will be added to the 3d display. If a transform is added to either of these and updated by a script the user can move an object in the 3d view. 
+   Objects of type Tab will be added to the Tabmanager and displayed in BowlerStudio. This is an easy way to make control panels or state displays and moniters. 
+   Objects of type BowlerAbstractDevice (or any subclass) will be added to teh connections manager and made availible to all other scripts. These can be external devices or virtual communication bus devices. A bowler Server/Client pair is the prefered mechanism for communication between scripts. 
+### Device Access
+   All scripts are passed all connected devices when the script is run. The name associated with the device in the connections tab is the name to use in the script to access that device. A script can also create and return a device from a script (to connect to a specific device to give a device a specific name) . The device returned will be added to the list oc availible devices and be availible to other scripts. A user can define thier own devices to facilitate communication between scripts. 
+   
+# Bowler Devices
+
+# Cameras
+
+# Image processing
+
 
 ![](/resources/img/screenshot-03.png)
 
