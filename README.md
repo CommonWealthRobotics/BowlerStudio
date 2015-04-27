@@ -1,5 +1,8 @@
 BowlerStudio
 ==========
+
+#[Download Latest](https://github.com/NeuronRobotics/BowlerStudio/releases)
+
 ![](/resources/img/screenshot-03.png)
 
 BowlerStudio Robotics development IDE based on [JCSG](https://github.com/miho/JCSG),  [Java-Bowler](https://github.com/NeuronRobotics/java-bowler), 
