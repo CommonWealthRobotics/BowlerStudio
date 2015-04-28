@@ -111,8 +111,9 @@ dependencies {
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
 	//compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
-	if(isWindows() )
-		compile files("C:\\OpenCV\\build\\java\\opencv-249.jar")
+	
+	if(isWindows())
+		compile files('C:/Program Files/Neuron Robotics Development Kit/build/java/opencv-249.jar')
 	if(isLinux())
 		compile files('/usr/share/java/opencv-249.jar')
 	

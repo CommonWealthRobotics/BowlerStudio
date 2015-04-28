@@ -42,10 +42,11 @@ public class OpenCVJNILoader {
 		if(NativeResource.isOSX())
 			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);
 		else if(NativeResource.isWindows()){
+			String basedir ="C:\\Program Files\\Neuron Robotics Development Kit\\build\\java\\";
 			if(NativeResource.is64Bit()){
-				System.load("C:\\OpenCV\\build\\java\\x64\\"+Core.NATIVE_LIBRARY_NAME+".dll");
+				System.load(basedir+"x64\\"+Core.NATIVE_LIBRARY_NAME+".dll");
 			}else{
-				System.load("C:\\OpenCV\\build\\java\\x86\\"+Core.NATIVE_LIBRARY_NAME+".dll");
+				System.load(basedir+"x86\\"+Core.NATIVE_LIBRARY_NAME+".dll");
 			}
 		}
 		
