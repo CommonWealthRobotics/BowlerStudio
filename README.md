@@ -3,7 +3,7 @@ BowlerStudio
 
 #[Download Latest](https://github.com/NeuronRobotics/BowlerStudio/releases)
 
-![](/resources/img/screenshot-03.png)
+
 
 BowlerStudio Robotics development IDE based on [JCSG](https://github.com/miho/JCSG),  [Java-Bowler](https://github.com/NeuronRobotics/java-bowler), 
 [OpenCV](http://opencv.org/),
@@ -73,7 +73,6 @@ Lets go through the main features:
 ### Virtual Sensors
    Coming soon! Soon we will be able to provide virtual sensor devices, simulating real world sensors within the 3d environment. 
 
-![](http://thingiverse-production.s3.amazonaws.com/renders/0c/a0/c0/dc/53/IMG_20140329_201814_preview_featured.jpg)
 
 ## How to Build BowlerStudio
 
