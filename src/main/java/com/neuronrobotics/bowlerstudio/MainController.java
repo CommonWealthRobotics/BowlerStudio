@@ -51,7 +51,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MainController implements Initializable {
-    
+    private static int sizeOfTextBuffer = 40000;
 	static ByteArrayOutputStream out = new ByteArrayOutputStream();
 	static boolean opencvOk=true;
 
@@ -94,8 +94,8 @@ public class MainController implements Initializable {
 					out.reset();
 					if(logViewRef!=null){
 						String current = logViewRef.getText()+newString;
-						if(current.getBytes().length>2000)
-							current=new String(current.substring(current.getBytes().length-2000));
+						if(current.getBytes().length>sizeOfTextBuffer)
+							current=new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
 						final String toSet=current;
 						logViewRef.setText(toSet);
 						logViewRef.setScrollTop(Double.MAX_VALUE);	
