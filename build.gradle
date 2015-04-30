@@ -18,7 +18,56 @@ File buildDir = file(".");
 Properties props = new Properties()
 props.load(new FileInputStream(buildDir.getAbsolutePath()+"/java-bowler/javasdk/NRSDK/src/com/neuronrobotics/sdk/config/build.properties"))
 
-
+		boolean is64Bit() {
+			////System.out.println("Arch: "+getOsArch());
+			return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
+		}
+		 boolean isARM() {
+			return getOsArch().startsWith("arm");
+		}
+		 boolean isCortexA8(){
+			if(isARM()){
+				//TODO check for cortex a8 vs arm9 generic
+				return true;
+			}
+			return false;
+		}
+		 boolean isWindows() {
+			////System.out.println("OS name: "+getOsName());
+			return getOsName().toLowerCase().startsWith("windows") ||getOsName().toLowerCase().startsWith("microsoft") || getOsName().toLowerCase().startsWith("ms");
+		}
+		
+		 boolean isLinux() {
+			return getOsName().toLowerCase().startsWith("linux");
+		}
+		
+		 boolean isOSX() {
+			return getOsName().toLowerCase().startsWith("mac");
+		}
+		
+		 String getExtension() {
+			if(isWindows()) {
+				return ".dll";
+			}
+			
+			if(isLinux()) {
+				return ".so";
+			}
+			
+			if(isOSX()) {
+				return ".jnilib";
+			}
+			
+			return "";
+		}
+		
+		String getOsName() {	
+			return System.getProperty("os.name");
+		}
+		
+		String getOsArch() {
+			return System.getProperty("os.arch");
+		}
 
 repositories {
 	mavenCentral()
@@ -62,7 +111,11 @@ dependencies {
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
 	//compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
-	compile files('/usr/share/java/opencv-249.jar')
+	
+	if(isWindows())
+		compile files('C:/Program Files/Neuron Robotics Development Kit/build/java/opencv-249.jar')
+	if(isLinux())
+		compile files('/usr/share/java/opencv-249.jar')
 	
 	compile group: 'org.bytedeco', name: 'javacv', version: '0.11';
 	compile group: 'org.bytedeco', name: 'javacpp', version: '0.11';
