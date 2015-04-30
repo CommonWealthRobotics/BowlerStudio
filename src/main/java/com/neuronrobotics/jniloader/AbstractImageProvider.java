@@ -57,6 +57,11 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 	@Override
 	public abstract void disconnect();
 	
+	public static void deepCopy(org.opencv.core.Mat src, BufferedImage dest) {
+		Graphics g = dest.createGraphics();
+		g.drawImage(matToBufferedImage(src), 0, 0, null);
+	}
+	
 	public static void deepCopy(BufferedImage src, BufferedImage dest) {
 		Graphics g = dest.createGraphics();
 		g.drawImage(src, 0, 0, null);
