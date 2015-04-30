@@ -69,7 +69,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	}
 
 	//Custom function for creation of New Tabs.
-	private void createAndSelectNewTab(final TabPane tabPane, final String title) {
+	private void createAndSelectNewTab(final BowlerStudioController tabPane, final String title) {
 
 
 		try {

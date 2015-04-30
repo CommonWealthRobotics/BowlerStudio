@@ -44,7 +44,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	private String Current_URL = "http://gist.github.com/";
 	private ConnectionManager dyio;
 	private ScriptingGistTab myTab;
-	private TabPane tabPane = null;
+	private BowlerStudioController tabPane = null;
 	boolean loaded=false;
 	boolean initialized=false;
 	private WebView webView;
@@ -61,7 +61,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	
 	
-	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,TabPane tabPane) throws IOException, InterruptedException{
+	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,BowlerStudioController tabPane) throws IOException, InterruptedException{
 		this.dyio = connectionManager;
 		this.tabPane = tabPane;
 
@@ -125,7 +125,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 									: "http://" + urlField.getText();
 									
 							Log.debug("Navagating "+Current_URL);	
-							if( processNewTab(urlField.getText())){
+							if( !processNewTab(urlField.getText())){
 								goBack();
 							}
 						}
@@ -153,6 +153,16 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		VBox.setVgrow(webView, Priority.ALWAYS);
 
 		myTab.setContent(vBox);
+		//Action definition for the Button Go.
+		EventHandler<ActionEvent> goAction = event -> {
+			Log.debug("Hitting load");
+			if(processNewTab(urlField.getText())){
+				Log.debug("Loading "+Current_URL);
+				webEngine.load(	Current_URL);
+			}
+		};
+		urlField.setOnAction(goAction);
+		goButton.setOnAction(goAction);
 	}
 	
 	private boolean processNewTab(String url){
@@ -163,18 +173,15 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			if(!Current_URL.contains("neuronrobotics.github.io")){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
-					final ScriptingGistTab tab = new ScriptingGistTab(null,dyio, Current_URL,null);
-					final ObservableList<Tab> tabs = tabPane.getTabs();
-					tab.closableProperty().bind(Bindings.size(tabs).greaterThan(2));
-					tabs.add(tabs.size() - 1, tab);
-					tabPane.getSelectionModel().select(tab);
-					return true;
+					tabPane.addTab(new ScriptingGistTab(null,dyio, Current_URL,null), true);
+					return false;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}else{
+			Log.debug("no load new tab");
 			if(scripting!=null){
 				try{
 					myTab.setText(scripting.getFileName());
@@ -192,7 +199,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				}			
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	
@@ -218,16 +225,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}catch(Exception e){
 			//no gist on this page
 		}
-		//Action definition for the Button Go.
-		EventHandler<ActionEvent> goAction = event -> {
-			if( !processNewTab(urlField.getText())){
-				//Log.debug("Loading "+Current_URL);
-				//webEngine.load(	Current_URL);
-			}
-		};
 
-		urlField.setOnAction(goAction);
-		goButton.setOnAction(goAction);
 
 	}
 	
