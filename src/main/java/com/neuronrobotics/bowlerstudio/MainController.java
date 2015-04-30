@@ -5,6 +5,8 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import haar.HaarFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
@@ -76,6 +78,9 @@ public class MainController implements Initializable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		try{
+			HaarFactory.getStream(null);
+		}catch (Exception ex){}
 	}
 	
 	static void handlePrintUpdate() {
