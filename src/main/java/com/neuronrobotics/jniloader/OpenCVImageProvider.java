@@ -46,8 +46,11 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 			return false;
 		
 		getVc().read(m);
-
-		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(m),imageData);
+		try{
+			AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(m),imageData);
+		}catch(Exception ex){
+			if(InterruptedException.class.isInstance(ex))throw new RuntimeException(ex);
+		}
 		return true;
 	}
 

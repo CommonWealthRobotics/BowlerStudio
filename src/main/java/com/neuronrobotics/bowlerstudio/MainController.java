@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.swing.text.DefaultCaret;
+
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.FrameGrabber;
@@ -24,6 +26,7 @@ import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,12 +57,11 @@ public class MainController implements Initializable {
     private static int sizeOfTextBuffer = 40000;
 	static ByteArrayOutputStream out = new ByteArrayOutputStream();
 	static boolean opencvOk=true;
-
+    private static TextArea logViewRef=null;
+    private static String newString=null;
 	static{
         System.setOut(new PrintStream(out));
-		Platform.runLater(() -> {
-			handlePrintUpdate();
-		});
+        updateLog();
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)
 		}catch(Exception e){
@@ -83,37 +85,39 @@ public class MainController implements Initializable {
 		}catch (Exception ex){}
 	}
 	
-	static void handlePrintUpdate() {
-
-
+	private static void updateLog(){
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
-			if(out.size()>0){
-				Platform.runLater(() -> {
-					String newString = out.toString();
-					out.reset();
 					if(logViewRef!=null){
-						String current = logViewRef.getText()+newString;
-						if(current.getBytes().length>sizeOfTextBuffer)
-							current=new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
-						final String toSet=current;
-						logViewRef.setText(toSet);
-						logViewRef.setScrollTop(Double.MAX_VALUE);	
-					}
-				});
-			}
-		});
-		Platform.runLater(() -> {
-			// TODO Auto-generated method stub
-			handlePrintUpdate();
+						if(out.size()==0){
+							newString=null;
+						}else{
+							newString = out.toString();
+							out.reset();
+						}
+						if(newString!=null){
+							Platform.runLater(() -> {	
+								String current = logViewRef.getText()+newString;
+								if(current.getBytes().length>sizeOfTextBuffer){
+									current=new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
+									logViewRef.setText(current);
+								}else
+									logViewRef.appendText(newString);
+								FxTimer.runLater(
+										Duration.ofMillis(10) ,() -> {
+											logViewRef.setScrollTop(Double.MAX_VALUE);
+										});
+							});
+						}
+					}	
+					updateLog();					
 		});
 	}
 
 
-
     //private final CodeArea codeArea = new CodeArea();
 
-    private static TextArea logViewRef=null;
+
     @FXML
     private TextArea logView;
 
@@ -139,41 +143,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     	logViewRef=logView;
-        //
-//        codeArea.textProperty().addListener(
-//                (ov, oldText, newText) -> {
-//                    Matcher matcher = KEYWORD_PATTERN.matcher(newText);
-//                    int lastKwEnd = 0;
-//                    StyleSpansBuilder<Collection<String>> spansBuilder
-//                    = new StyleSpansBuilder<>();
-//                    while (matcher.find()) {
-//                        spansBuilder.add(Collections.emptyList(),
-//                                matcher.start() - lastKwEnd);
-//                        spansBuilder.add(Collections.singleton("keyword"),
-//                                matcher.end() - matcher.start());
-//                        lastKwEnd = matcher.end();
-//                    }
-//                    spansBuilder.add(Collections.emptyList(),
-//                            newText.length() - lastKwEnd);
-//                    codeArea.setStyleSpans(0, spansBuilder.create());
-//                });
-//
-//        EventStream<Change<String>> textEvents
-//                = EventStreams.changesOf(codeArea.textProperty());
 
-//        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
-//                subscribe(code -> {
-//                    if (autoCompile) {
-//                        compile(code.getNewValue());
-//                    }
-//                });
-
-//        codeArea.replaceText(
-//                "\n"
-//                + "CSG cube = new Cube(20).toCSG()\n"
-//                + "CSG sphere = new Sphere(12.5).toCSG()\n"
-//                + "\n"
-//                + "cube.difference(sphere)");
     	jfx3dmanager = new Jfx3dManager();
         application = new BowlerStudioController(jfx3dmanager);
         editorContainer.setContent(application);
@@ -185,26 +155,9 @@ public class MainController implements Initializable {
 
         viewContainer.getChildren().add(subScene);
 
-        System.out.println("Starting Application");
+        System.out.println("Welcome to BowlerStudio!");
     }
 
- 
-
-//	private void setCode(String code) {
-//        codeArea.replaceText(code);
-//    }
-//
-//    private String getCode() {
-//        return codeArea.getText();
-//    }
-
-//    private void clearLog() {
-//        logView.setText("");
-//    }
-//
-//    private void compile(String code) {
-//      	
-//    }
 
     /**
      * Returns the location of the Jar archive or .class file the specified
