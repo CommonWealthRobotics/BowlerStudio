@@ -108,12 +108,12 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	
 							
 							if (isSelected()) {
-//								System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
-//										"capture="+capture+"ms "+
-//										"process="+process+"ms "+
-//										"convert="+show+"ms "+
-//										"spacing="+spacing+"ms "
-//										);
+								System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
+										"capture="+capture+"ms "+
+										"process="+process+"ms "+
+										"convert="+show+"ms "+
+										"spacing="+spacing+"ms "
+										);
 								session[0] = System.currentTimeMillis();
 								provider.getLatestImage(inputImage, outImage); // capture
 								session[1] = System.currentTimeMillis();	   // image
