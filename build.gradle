@@ -132,7 +132,7 @@ dependencies {
 // create a fat-jar (class files plus dependencies
 // excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
 jar {
-	jar.baseName= "BowlerStudio-"+props."app.version";
+	jar.baseName= "BowlerStudio";
 	doFirst {
 		
 		// dependencies except VRL
