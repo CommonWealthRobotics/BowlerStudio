@@ -112,8 +112,10 @@ dependencies {
 	compile project(':java-bowler')
 	//compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
 	
-	if(isWindows())
-		compile files('C:/Program Files/Neuron Robotics Development Kit/build/java/opencv-249.jar')
+	if(isWindows()){
+		println("Bowler HOME Set to="+System.getenv("BOWLER_HOME"));
+		compile files(System.getenv("BOWLER_HOME")+'/build/java/opencv-249.jar')
+	}
 	if(isLinux())
 		compile files('/usr/share/java/opencv-249.jar')
 	
