@@ -137,7 +137,7 @@ public class PluginManager {
 				TreeItem<String> get = new TreeItem<String> ("GET"); 
 				TreeItem<String> post = new TreeItem<String> ("POST"); 
 				TreeItem<String> async = new TreeItem<String> ("ASYNC"); 
-				TreeItem<String> crit = new TreeItem<String> ("ASYNC");
+				TreeItem<String> crit = new TreeItem<String> ("CRITICAL");
 				get.setExpanded(false);
 				ns.getChildren().add(get);
 				post.setExpanded(false);
