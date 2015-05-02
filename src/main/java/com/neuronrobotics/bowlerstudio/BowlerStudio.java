@@ -38,7 +38,7 @@ public class BowlerStudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1024, 900,true);
+        Scene scene = new Scene(main, 1024, 700,true);
 
         scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
@@ -50,7 +50,7 @@ public class BowlerStudio extends Application {
         primaryStage.setTitle("Bowler Studio");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1024);
-        primaryStage.setMinHeight(768);
+        primaryStage.setMinHeight(700);
         primaryStage.show();
         primaryStage.setOnCloseRequest(arg0 -> {
         	
