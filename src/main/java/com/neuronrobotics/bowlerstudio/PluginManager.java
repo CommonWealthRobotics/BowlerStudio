@@ -14,6 +14,7 @@ import javafx.stage.Popup;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
@@ -72,7 +73,7 @@ public class PluginManager {
 			
 		}
 		if(BowlerCamDevice.class.isInstance(dev)){
-			
+			deviceSupport.add(BowlerCamController.class);
 		}
 		
 	}

@@ -28,6 +28,7 @@ import com.neuronrobotics.sdk.genericdevice.GenericDevice;
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
+import com.neuronrobotics.sdk.pid.GenericPIDDevice;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
@@ -153,6 +154,15 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			delt.setConnection(gen.getConnection());
 			delt.connect();
 			String name = "bowlerBoard";
+			if (rootItem.getChildren().size() > 0)
+				name += rootItem.getChildren().size() + 1;
+			
+			addConnection(delt, name);
+		} else if (gen.hasNamespace("bcs.pid.*")) {
+			GenericPIDDevice delt = new GenericPIDDevice();
+			delt.setConnection(gen.getConnection());
+			delt.connect();
+			String name = "pid";
 			if (rootItem.getChildren().size() > 0)
 				name += rootItem.getChildren().size() + 1;
 			
