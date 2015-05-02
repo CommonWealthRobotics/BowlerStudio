@@ -45,6 +45,7 @@ import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
+import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -217,6 +218,11 @@ public class MainController implements Initializable {
     @FXML
     private void onConnect(ActionEvent e) {
     	application.addConnection();
+    }
+    
+    @FXML
+    private void onConnectVirtual(ActionEvent e) {
+    	application.addConnection(new VirtualGenericPIDDevice(10000),"virtual");
     }
 
   

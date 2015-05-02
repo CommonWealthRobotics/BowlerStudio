@@ -128,7 +128,10 @@ dependencies {
 	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: "macosx-x86_64";	
 	
 	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: "windows-x86";		
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: "windows-x86_64";	
+	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: "windows-x86_64";
+	
+	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
+	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
 }
 
 // create a fat-jar (class files plus dependencies

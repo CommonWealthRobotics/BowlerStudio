@@ -16,7 +16,10 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Connection">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
+              <Menu mnemonicParsing="false" text="Bowler Device">
+              	<MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />
+              	<MenuItem mnemonicParsing="false" onAction="#onConnectVirtual" text="Add Virtual PID Device" />
+              </Menu>
               <Menu mnemonicParsing="false" text="Cameras">
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="Add a new CHDK camera" />
