@@ -36,7 +36,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	private BufferedImage inputImage = AbstractImageProvider.newBufferImage(640,480);
 	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640,480);
 	//set this variable to make this tab auto open when a device is connected
-	static { isAutoLoad=false;}
+
 	public CameraTab(){}//default construtor
 	public CameraTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;

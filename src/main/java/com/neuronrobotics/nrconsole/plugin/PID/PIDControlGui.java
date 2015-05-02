@@ -14,33 +14,23 @@ import net.miginfocom.swing.MigLayout;
 
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.dyio.DyIORegestry;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 public class PIDControlGui extends JPanel {
 	private static final long serialVersionUID = 1L;
-	//private DyIO dyio=null;
+	private DyIO dyio=null;
 	private IPidControlNamespace pid=null;
 	private boolean DyPID=false;
 	
 	private ArrayList<PIDControlWidget> widgits = new ArrayList<PIDControlWidget> ();
 	private JTabbedPane tabbedPane;
 	private JButton stopAll = new JButton("Stop All PID");
-
-	
-	
-	public PIDControlGui() {
-		Log.info("Connecteing DyPID panel");
-		setPidDevice(DyIORegestry.get());
-		setDyPID(true);
-		//dyio.addDyIOEventListener(this);
-		init();
-	}
 	
 	public PIDControlGui(IPidControlNamespace d) {
 		Log.info("Connecteing PID panel");
 		setPidDevice(d);
-		setDyPID(false);
+		
+		
 		init();
 	}
 	private void stopAll(){
@@ -114,10 +104,14 @@ public class PIDControlGui extends JPanel {
 	}
 	
 	public DyIO getDyio() {
-		return DyIORegestry.get();
+		return dyio;
 	}
 	
 	public void setPidDevice(IPidControlNamespace pid) {
+		setDyPID(DyIO.class.isInstance(pid));
+		if(isDyPID()){
+			dyio = (DyIO)pid;
+		}
 		this.pid = pid;
 	}
 	

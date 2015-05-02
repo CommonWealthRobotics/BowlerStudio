@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.ScrollPane;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -33,7 +34,6 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	private DyIO dyio;
 	
 	//set this variable to make this tab auto open when a device is connected
-	static { isAutoLoad=true;}
 
 	private void setupDyIO(){
 		
@@ -181,7 +181,10 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		jp.add(getDeviceControls(), "pos 560 5");
 		jp.setBorder(BorderFactory.createLoweredBevelBorder());
 		wrapper.setContent(jp);
-		setContent(wrapper);
+        ScrollPane s1 = new ScrollPane();
+	       
+        s1.setContent(wrapper);
+        setContent(s1);
 		setText(pm.getScriptingName()+" Console");
 		
 		onTabReOpening();

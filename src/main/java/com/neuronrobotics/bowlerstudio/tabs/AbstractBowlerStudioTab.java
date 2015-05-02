@@ -20,7 +20,6 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	public abstract String[] getMyNameSpaces();
 	public abstract void initializeUI(BowlerAbstractDevice pm);
 	public abstract void onTabReOpening();
-	public static boolean isAutoLoad; 
 	
 	
 	public void setDevice(BowlerAbstractDevice pm){

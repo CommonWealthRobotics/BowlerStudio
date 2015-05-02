@@ -38,7 +38,6 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 	private String revision;
 	private static File file = null;
 	//set this variable to make this tab auto open when a device is connected
-	static { isAutoLoad=true;}
 	/**
 	 * 
 	 */

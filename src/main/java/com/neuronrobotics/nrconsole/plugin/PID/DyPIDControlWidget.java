@@ -18,7 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import com.neuronrobotics.nrconsole.util.IntegerComboBox;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
-import com.neuronrobotics.sdk.dyio.DyIORegestry;
+
 import com.neuronrobotics.sdk.dyio.IDyIOEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
@@ -39,7 +39,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		setLayout(new MigLayout());
 		widgit=widg;
-		DyIORegestry.get().addDyIOEventListener(this);
+		widgit.getGui().getDyio().addDyIOEventListener(this);
 		initDyPID();
 
 		setOpaque(false);
@@ -56,7 +56,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		populateDyPID();
 	}
 	private void populateDyPID() {
-		DyPIDConfiguration conf = DyIORegestry.get().getDyPIDConfiguration(widgit.getGroup());
+		DyPIDConfiguration conf = widgit.getGui().getDyio().getDyPIDConfiguration(widgit.getGroup());
 		
 		if(conf.getInputChannel()==0xff)
 			inChan.setNoneItemSelected();
@@ -116,7 +116,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		//System.out.println("Input channel set to "+inChan.getSelectedItem() );
 		int chan = inChan.getSelectedInteger();
 		if(chan<24 && chan>0){
-			Collection<DyIOChannelMode> m = getAvailableInputModes(DyIORegestry.get().getChannel( chan ).getAvailableModes());
+			Collection<DyIOChannelMode> m = getAvailableInputModes(widgit.getGui().getDyio().getChannel( chan ).getAvailableModes());
 			for(DyIOChannelMode mode :m) {
 				inMode.addItem(mode);
 			}
@@ -131,7 +131,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		//System.out.println("Output channel set to "+outChan.getSelectedItem() );
 		int chan = outChan.getSelectedInteger();
 		if(chan<24 && chan>0){
-			Collection<DyIOChannelMode> m = getAvailableOutputModes(DyIORegestry.get().getChannel(chan ).getAvailableModes());
+			Collection<DyIOChannelMode> m = getAvailableOutputModes(widgit.getGui().getDyio().getChannel(chan ).getAvailableModes());
 			for(DyIOChannelMode mode : m) {
 				outMode.addItem(mode);
 			}
@@ -177,7 +177,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 																		i,
 																		outChan.getSelectedInteger(),
 																		o);
-					DyIORegestry.get().ConfigureDynamicPIDChannels(config);
+					widgit.getGui().getDyio().ConfigureDynamicPIDChannels(config);
 					widgit.stopPID(true);
 				}else {
 					JOptionPane.showMessageDialog(null, "DyIO Channel/Modes are not all set", "DyPID ERROR", JOptionPane.ERROR_MESSAGE);

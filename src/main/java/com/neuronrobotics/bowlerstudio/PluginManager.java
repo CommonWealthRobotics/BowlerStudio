@@ -15,13 +15,16 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.namespace.bcs.pid.IExtendedPIDControl;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 public class PluginManager {
@@ -47,7 +50,7 @@ public class PluginManager {
 		}
 		//any device that implements this interface
 		if(IPidControlNamespace.class.isInstance(dev)){
-			//pid tab
+			deviceSupport.add(PIDControl.class);
 		}
 		
 		if(AbstractImageProvider.class.isInstance(dev)){
@@ -124,14 +127,18 @@ public class PluginManager {
 		for( Class<?> c:deviceSupport){
 			CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getSimpleName());
 			p.setSelected(false);
-			try {
-				if( Class.forName(c.getName()).getField("isAutoLoad").getBoolean(null) ){
+			try {// These tabs are the select few to autoload when a device of theis type is connected
+				if( 	DyIOConsole.class ==c ||
+						BootloaderPanel.class ==c
+						){
 					System.out.println("Auto loading "+c.getSimpleName());
 					p.setSelected(true);
 					getBowlerStudioController().addTab(generateTab(c), true);
+				}else{
+					Log.warning("Not autoloading "+c);
 				}
 			} catch (IllegalArgumentException | IllegalAccessException
-					| NoSuchFieldException | SecurityException
+					 | SecurityException
 					| ClassNotFoundException | InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
