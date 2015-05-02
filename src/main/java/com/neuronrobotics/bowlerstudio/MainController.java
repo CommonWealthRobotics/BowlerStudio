@@ -39,6 +39,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
@@ -134,6 +135,7 @@ public class MainController implements Initializable {
 	private File openFile;
 
 	private BowlerStudioController application;
+	private Stage primaryStage;
 	
     /**
      * Initializes the controller class.
@@ -146,7 +148,7 @@ public class MainController implements Initializable {
     	logViewRef=logView;
 
     	jfx3dmanager = new Jfx3dManager();
-        application = new BowlerStudioController(jfx3dmanager);
+        application = new BowlerStudioController(jfx3dmanager, this);
         editorContainer.setContent(application);
         
         
@@ -330,6 +332,14 @@ public class MainController implements Initializable {
 			}
 
 		});
+	}
+
+	public Stage getPrimaryStage(){
+		return primaryStage;
+	}
+
+	public void setPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
 	}
 	
 

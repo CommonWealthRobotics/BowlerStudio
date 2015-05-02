@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
 
+import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckBoxTreeItem;
@@ -10,6 +11,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Popup;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
@@ -23,6 +25,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IExtendedPIDControl;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
@@ -118,6 +121,58 @@ public class PluginManager {
 			TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
 			rpc.setExpanded(false);
 			item.getChildren().add(rpc);
+			ArrayList<String> nameSpaceList = dev.getNamespaces();
+			for(String namespace:nameSpaceList){
+				TreeItem<String> ns = new TreeItem<String> (namespace); 
+				ns.setExpanded(false);
+				rpc.getChildren().add(ns);
+				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
+				TreeItem<String> get = new TreeItem<String> ("GET"); 
+				TreeItem<String> post = new TreeItem<String> ("POST"); 
+				TreeItem<String> async = new TreeItem<String> ("ASYNC"); 
+				TreeItem<String> crit = new TreeItem<String> ("ASYNC");
+				get.setExpanded(false);
+				ns.getChildren().add(get);
+				post.setExpanded(false);
+				ns.getChildren().add(post);
+				async.setExpanded(false);
+				ns.getChildren().add(async);
+				crit.setExpanded(false);
+				ns.getChildren().add(crit);
+				for(RpcEncapsulation rpcEnc:rpcList){
+					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<String> (rpcEnc.getRpc()); 
+					rc.setExpanded(false);
+					switch(rpcEnc.getDownstreamMethod()){
+					case ASYNCHRONOUS:
+						async.getChildren().add(rc);
+						break;
+					case CRITICAL:
+						crit.getChildren().add(rc);
+						break;
+					case GET:
+						get.getChildren().add(rc);
+						break;
+					case POST:
+						post.getChildren().add(rc);
+						break;
+					default:
+						break;
+					
+					}
+					Popup popup = new Popup();
+					SwingNode sn = new SwingNode();
+			        sn.setContent(new RpcCommandPanel(rpcEnc, dev,rc));
+					popup.getContent().add(sn);		
+					rc.selectedProperty().addListener(b ->{
+						 if(rc.isSelected()){
+							 popup.show(bowlerStudioController.getPrimaryStage());
+						 }else{
+							 popup.hide();
+						 }
+			        });
+					
+				}
+			}
 		}
 		TreeItem<String> plugins = new TreeItem<String> ("Plugins"); 
 		plugins.setExpanded(true);

@@ -60,7 +60,8 @@ public class BowlerStudio extends Application {
 		});
         primaryStage.setTitle("Bowler Studio v "+SDKBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
-        Log.enableDebugPrint();
+        //Log.enableDebugPrint();
+        controller.setPrimaryStage(primaryStage);
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
 
@@ -85,6 +86,7 @@ public class BowlerStudio extends Application {
                 toExternalForm());
 
         controller = fxmlLoader.getController();
+        
         log = controller.getLogView();
         
 

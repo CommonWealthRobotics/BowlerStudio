@@ -26,6 +26,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
@@ -49,10 +51,12 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private static final long serialVersionUID = -2686618188618431477L;
 	private ConnectionManager connectionManager;
 	private Jfx3dManager jfx3dmanager;
+	private MainController mainController;
 
 
-	public BowlerStudioController(Jfx3dManager jfx3dmanager) {
+	public BowlerStudioController(Jfx3dManager jfx3dmanager, MainController mainController) {
 		this.jfx3dmanager = jfx3dmanager;
+		this.mainController = mainController;
 		createScene();
 	}
 	
@@ -261,6 +265,11 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 	public void disconnect() {
 		connectionManager.disconnectAll();
+	}
+
+	public Stage getPrimaryStage() {
+		// TODO Auto-generated method stub
+		return mainController.getPrimaryStage();
 	}
 
 }
