@@ -16,6 +16,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
+import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
@@ -160,6 +161,14 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				|| gen.hasNamespace("neuronrobotics.bootloader.*")) {
 			NRBootLoader delt = new NRBootLoader(gen.getConnection());
 			String name = "bootloader";
+			if (rootItem.getChildren().size() > 0)
+				name += rootItem.getChildren().size() + 1;
+			addConnection(delt, name);
+		} else if (gen.hasNamespace("neuronrobotics.bowlercam.*")) {
+			BowlerCamDevice delt = new BowlerCamDevice();
+			delt.setConnection(gen.getConnection());
+			delt.connect();
+			String name = "bowlercam";
 			if (rootItem.getChildren().size() > 0)
 				name += rootItem.getChildren().size() + 1;
 			addConnection(delt, name);

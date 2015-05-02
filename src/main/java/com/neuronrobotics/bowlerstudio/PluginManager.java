@@ -17,10 +17,12 @@ import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
+import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
+import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
@@ -51,6 +53,7 @@ public class PluginManager {
 		if(DyIO.class.isInstance(dev)){
 			deviceSupport.add(DyIOConsole.class);
 			deviceSupport.add(AnamationSequencer.class);
+			deviceSupport.add(HexapodController.class);
 		}
 		//any device that implements this interface
 		if(IPidControlNamespace.class.isInstance(dev)){
@@ -68,7 +71,9 @@ public class PluginManager {
 		if(BowlerBoardDevice.class.isInstance(dev)){
 			
 		}
-		
+		if(BowlerCamDevice.class.isInstance(dev)){
+			
+		}
 		
 	}
 	
