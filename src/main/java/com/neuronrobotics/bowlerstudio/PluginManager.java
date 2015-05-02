@@ -4,8 +4,6 @@ package com.neuronrobotics.bowlerstudio;
 import java.util.ArrayList;
 
 import javafx.embed.swing.SwingNode;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
@@ -17,6 +15,8 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
+import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
@@ -50,6 +50,7 @@ public class PluginManager {
 		// tabs list for objects of that type
 		if(DyIO.class.isInstance(dev)){
 			deviceSupport.add(DyIOConsole.class);
+			deviceSupport.add(AnamationSequencer.class);
 		}
 		//any device that implements this interface
 		if(IPidControlNamespace.class.isInstance(dev)){
@@ -203,6 +204,11 @@ public class PluginManager {
 					AbstractBowlerStudioTab t = generateTab(c);
 					if(p.isSelected()){
 						getBowlerStudioController().addTab(t, true);
+						t.setOnCloseRequest(arg0 -> {
+							System.out.println("Closing "+t.getText());
+							t.onTabClosing();
+							p.setSelected(false);
+						});
 						System.out.println("Launching "+c.getSimpleName());
 		        	}else{
 		        		try{

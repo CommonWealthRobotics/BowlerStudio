@@ -53,10 +53,12 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	
     public void requestClose() {
     	Platform.runLater(()->{
-	        TabPaneBehavior behavior = getBehavior();
-	        if(behavior.canCloseTab(this)) {
-	            behavior.closeTab(this);
-	        }
+    		try{
+		        TabPaneBehavior behavior = getBehavior();
+		        if(behavior.canCloseTab(this)) {
+		            behavior.closeTab(this);
+		        }
+    		}catch (NullPointerException e){}
     	});
     }
 
