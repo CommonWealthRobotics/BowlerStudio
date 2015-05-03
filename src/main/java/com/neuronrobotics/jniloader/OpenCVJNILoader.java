@@ -38,19 +38,27 @@ public class OpenCVJNILoader {
 			}
 			
 			throw new RuntimeException(erBack);
-		}else
-		if(NativeResource.isOSX())
-			resource.load("lib"+Core.NATIVE_LIBRARY_NAME);
-		else if(NativeResource.isWindows()){
+		}else if(NativeResource.isWindows()){
 			String basedir =System.getenv("OPENCV_DIR");
 			if(basedir == null)
-				throw new RuntimeException("OPENCV was not found, environment variable OPENCV_DIR needs to be set");
-			System.err.println("OPENCV found at "+ basedir);
+				throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+			System.err.println("OPENCV_DIR found at "+ basedir);
 			basedir+="\\..\\..\\java\\";
 			if(basedir.contains("x64")){
 				System.load(basedir+"x64\\"+Core.NATIVE_LIBRARY_NAME+".dll");
 			}else{
 				System.load(basedir+"x86\\"+Core.NATIVE_LIBRARY_NAME+".dll");
+			}
+		}else if(NativeResource.isOSX()){
+			String basedir =System.getenv("OPENCV_DIR");
+			if(basedir == null)
+				throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+			System.err.println("OPENCV_DIR found at "+ basedir);
+			basedir+="/../../java/";
+			if(basedir.contains("x64")){
+				System.load(basedir+"x64/"+Core.NATIVE_LIBRARY_NAME+".jnilib");
+			}else{
+				System.load(basedir+"x86/"+Core.NATIVE_LIBRARY_NAME+".jnilib");
 			}
 		}
 		

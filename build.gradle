@@ -111,10 +111,14 @@ dependencies {
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
 	//compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
-	
+	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
 	if(isWindows()){
-		println("Bowler HOME Set to="+System.getenv("BOWLER_HOME"));
-		compile files(System.getenv("BOWLER_HOME")+'/build/java/opencv-249.jar')
+		println("OPENCV_DIR="+basedir);
+		compile files(basedir)
+	}
+	if(isOSX()){
+		println("OPENCV_DIR Set to="+basedir);
+		compile files(basedir)
 	}
 	if(isLinux())
 		compile files('/usr/share/java/opencv-249.jar')
