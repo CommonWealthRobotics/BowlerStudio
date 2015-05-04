@@ -110,7 +110,7 @@ dependencies {
 	compile project(':JCSG')
 	compile project(':CHDK-PTP-Java')
 	compile project(':java-bowler')
-	//compile fileTree (dir: 'libs/javacv-bin/', includes: ['*.jar'])
+
 	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
 	if(isWindows()){
 		println("OPENCV_DIR="+basedir);
