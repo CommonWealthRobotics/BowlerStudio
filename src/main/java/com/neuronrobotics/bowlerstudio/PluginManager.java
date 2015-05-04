@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
@@ -166,17 +167,19 @@ public class PluginManager {
 						break;
 					
 					}
-					Popup popup = new Popup();
-					SwingNode sn = new SwingNode();
-			        sn.setContent(new RpcCommandPanel(rpcEnc, dev,rc));
-					popup.getContent().add(sn);		
-					rc.selectedProperty().addListener(b ->{
-						 if(rc.isSelected()){
-							 popup.show(bowlerStudioController.getPrimaryStage());
-						 }else{
-							 popup.hide();
-						 }
-			        });
+					Platform.runLater(()->{
+						Popup popup = new Popup();
+						SwingNode sn = new SwingNode();
+				        sn.setContent(new RpcCommandPanel(rpcEnc, dev,rc));
+						popup.getContent().add(sn);		
+						rc.selectedProperty().addListener(b ->{
+							 if(rc.isSelected()){
+								 popup.show(bowlerStudioController.getPrimaryStage());
+							 }else{
+								 popup.hide();
+							 }
+				        });
+					});
 					
 				}
 			}

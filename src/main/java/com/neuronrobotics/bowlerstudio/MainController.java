@@ -75,6 +75,7 @@ public class MainController implements Initializable {
 			alert.setContentText(e.getMessage());
 			alert .initModality(Modality.APPLICATION_MODAL);
 			alert.show();
+			e.printStackTrace();
 		}
 		try{
 			// Preload the opencv_objdetect module to work around a known bug.
@@ -268,7 +269,9 @@ public class MainController implements Initializable {
 			//application.addTab(new CameraTab(p, name), true);
 		});
 		
-		
+//		OpenCVImageProvider p = new OpenCVImageProvider(0);
+//		String name = "camera0";
+//		application.addConnection(p,name);
 		
 	}
 
@@ -332,6 +335,18 @@ public class MainController implements Initializable {
 			}
 
 		});
+		
+//		JavaCVImageProvider p;
+//		try {
+//			p = new JavaCVImageProvider(0);
+//			String name = "camera0";
+//			application.addConnection(p,name);
+//			
+//		} catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
 	}
 
 	public Stage getPrimaryStage(){

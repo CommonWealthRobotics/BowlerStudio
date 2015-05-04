@@ -53,13 +53,10 @@ public class OpenCVJNILoader {
 			String basedir =System.getenv("OPENCV_DIR");
 			if(basedir == null)
 				throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+				//basedir="/Users/hephaestus/Desktop/opencv249build/";
 			System.err.println("OPENCV_DIR found at "+ basedir);
-			basedir+="/../../java/";
-			if(basedir.contains("x64")){
-				System.load(basedir+"x64/"+Core.NATIVE_LIBRARY_NAME+".jnilib");
-			}else{
-				System.load(basedir+"x86/"+Core.NATIVE_LIBRARY_NAME+".jnilib");
-			}
+			System.load(basedir+"/lib/lib"+Core.NATIVE_LIBRARY_NAME+".dylib");
+			
 		}
 		
 		Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);

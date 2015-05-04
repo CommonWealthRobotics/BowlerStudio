@@ -112,13 +112,16 @@ dependencies {
 	compile project(':java-bowler')
 
 	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
+	println("OPENCV_DIR="+basedir);
 	if(isWindows()){
-		println("OPENCV_DIR="+basedir);
+
 		compile files(basedir)
 	}
 	if(isOSX()){
-		println("OPENCV_DIR Set to="+basedir);
-		compile files(basedir)
+		if(System.getenv("OPENCV_DIR")!=null)
+			compile files(basedir)
+		else
+			compile files('/Users/hephaestus/Desktop/opencv249build/bin/opencv-249.jar')
 	}
 	if(isLinux())
 		compile files('/usr/share/java/opencv-249.jar')
