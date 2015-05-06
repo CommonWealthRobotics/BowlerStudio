@@ -111,7 +111,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			
 		});
 		
-		goButton.setDefaultButton(true);
+		//goButton.setDefaultButton(true);
 	
 		webEngine.getLoadWorker().stateProperty().addListener(
 				new ChangeListener<Object>() {
