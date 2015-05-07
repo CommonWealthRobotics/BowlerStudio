@@ -35,6 +35,7 @@ import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -252,6 +253,8 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		BowlerAbstractDevice dev = connectionManager.pickConnectedDevice();
 		if(DyIO.class.isInstance(dev)){
 			jfx3dmanager.attachArm((DyIO)dev, "TrobotMaster.xml");
+		}if(DHParameterKinematics.class.isInstance(dev)){
+			jfx3dmanager.attachArm((DHParameterKinematics)dev);
 		}
 	}
 
