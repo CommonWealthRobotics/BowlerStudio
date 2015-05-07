@@ -52,7 +52,7 @@ import javafx.scene.image.ImageView;
 public class ConnectionManager extends Tab implements EventHandler<ActionEvent> {
 
 	private CheckBoxTreeItem<String> rootItem;
-	private ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
+	private static final ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
 	private BowlerStudioController bowlerStudioController;
 
 	private Node getIcon(String s) {
@@ -145,8 +145,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			DyIO dyio = new DyIO(gen.getConnection());
 			dyio.connect();
 			String name = "dyio";
-			if (rootItem.getChildren().size() > 0)
-				name += rootItem.getChildren().size() + 1;
+
 			addConnection(dyio, name);
 
 		} else if (gen.hasNamespace("bcs.cartesian.*")) {
@@ -154,25 +153,19 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			delt.setConnection(gen.getConnection());
 			delt.connect();
 			String name = "bowlerBoard";
-			if (rootItem.getChildren().size() > 0)
-				name += rootItem.getChildren().size() + 1;
-			
 			addConnection(delt, name);
 		} else if (gen.hasNamespace("bcs.pid.*")) {
 			GenericPIDDevice delt = new GenericPIDDevice();
 			delt.setConnection(gen.getConnection());
 			delt.connect();
 			String name = "pid";
-			if (rootItem.getChildren().size() > 0)
-				name += rootItem.getChildren().size() + 1;
-			
+
 			addConnection(delt, name);
 		} else if (gen.hasNamespace("bcs.bootloader.*")
 				|| gen.hasNamespace("neuronrobotics.bootloader.*")) {
 			NRBootLoader delt = new NRBootLoader(gen.getConnection());
 			String name = "bootloader";
-			if (rootItem.getChildren().size() > 0)
-				name += rootItem.getChildren().size() + 1;
+
 			addConnection(delt, name);
 		} else if (gen.hasNamespace("neuronrobotics.bowlercam.*")) {
 			BowlerCamDevice delt = new BowlerCamDevice();
@@ -197,6 +190,14 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 
 	public void addConnection(BowlerAbstractDevice c, String name) {
+		int numOfThisDeviceType=0;
+		for (int i = 0; i < devices.size(); i++) {
+			if(c.getClass().isInstance(devices.get(i).getDevice()))
+				numOfThisDeviceType++;
+		}
+		if(numOfThisDeviceType>0)
+			name = name+numOfThisDeviceType;
+		
 		c.setScriptingName(name);
 		PluginManager mp;
 		Log.debug("Adding a "+c.getClass().getName()+" with name "+name );
@@ -266,7 +267,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 	}
 
-	public ArrayList<PluginManager> getConnections() {
+	public static ArrayList<PluginManager>  getConnections() {
 		return devices;
 	}
 

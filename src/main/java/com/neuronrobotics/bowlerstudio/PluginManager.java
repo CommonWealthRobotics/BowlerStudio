@@ -5,12 +5,17 @@ import java.util.ArrayList;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
@@ -131,14 +136,14 @@ public class PluginManager {
 			item.getChildren().add(rpc);
 			ArrayList<String> nameSpaceList = dev.getNamespaces();
 			for(String namespace:nameSpaceList){
-				TreeItem<String> ns = new TreeItem<String> (namespace); 
+				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<String> (namespace); 
 				ns.setExpanded(false);
 				rpc.getChildren().add(ns);
 				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
-				TreeItem<String> get = new TreeItem<String> ("GET"); 
-				TreeItem<String> post = new TreeItem<String> ("POST"); 
-				TreeItem<String> async = new TreeItem<String> ("ASYNC"); 
-				TreeItem<String> crit = new TreeItem<String> ("CRITICAL");
+				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<String> ("GET"); 
+				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<String> ("POST"); 
+				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<String> ("ASYNC"); 
+				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<String> ("CRITICAL");
 				get.setExpanded(false);
 				ns.getChildren().add(get);
 				post.setExpanded(false);
@@ -168,15 +173,21 @@ public class PluginManager {
 					
 					}
 					Platform.runLater(()->{
-						Popup popup = new Popup();
+						Stage dialog = new Stage();
+						dialog.initStyle(StageStyle.UTILITY);
+	
 						SwingNode sn = new SwingNode();
 				        sn.setContent(new RpcCommandPanel(rpcEnc, dev,rc));
-						popup.getContent().add(sn);		
+						Scene scene = new Scene(new Group(sn));
+						dialog.setScene(scene);
+						dialog.setOnCloseRequest(event -> {
+							rc.setSelected(false);
+						});
 						rc.selectedProperty().addListener(b ->{
 							 if(rc.isSelected()){
-								 popup.show(bowlerStudioController.getPrimaryStage());
+								 dialog.show();
 							 }else{
-								 popup.hide();
+								 dialog.hide();
 							 }
 				        });
 					});
