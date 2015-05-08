@@ -80,7 +80,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		Log.debug("Loading Gist Tab: "+Url);
 		webView = new WebView();
 		webEngine = webView.getEngine();
-		
+		webEngine.setUserAgent("bowlerstudio");
 		if(Url!=null)
 			Current_URL=Url;
 		webEngine.load(Current_URL);
@@ -112,10 +112,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		    	if(g!=null){
-		    		g=null;
-			        splash.close();
-		    	}
+		    	
 		    }else{
 		    	loaded=false;
 		    	if(g!=null){
@@ -186,8 +183,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private  static void renderSplashFrame(Graphics2D g, int frame) {
 	        final String[] comps = {"OpenCV", "JavaCad", "BowlerEngine"};
-	        g.setComposite(AlphaComposite.Clear);
-	        g.fillRect(120,140,200,40);
+	        //g.setComposite(AlphaComposite.Clear);
+	        //g.fillRect(120,140,200,40);
 	        g.setPaintMode();
 	        g.setColor(Color.RED);
 	        g.drawString("Loading "+comps[(frame/5)%comps.length]+"...", 120, 150);
@@ -236,6 +233,10 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private void finishLoadingComponents() throws IOException, InterruptedException{
 		try{
+			if(g!=null){
+	    		splash.close();
+	    		g=null;
+	    	}
 			if(scripting!=null){
 				//when navagating to a new file, stop the script that is running
 				scripting.stop();
