@@ -84,14 +84,10 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		if(Url!=null)
 			Current_URL=Url;
 		webEngine.load(Current_URL);
-	    if (splash == null) {
-	        System.out.println("SplashScreen.getSplashScreen() returned null");
-	        return;
+	    if (splash != null) {
+	        g = splash.createGraphics();
 	    }
-	    g = splash.createGraphics();
-	    if (g == null) {
-	        System.out.println("g is null");
-	    }
+	    
 		
 		loaded=false;
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
