@@ -63,7 +63,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	//private String currentAddress;
 	private ScriptingEngineWidget scripting;
     final static SplashScreen splash = SplashScreen.getSplashScreen();
-    private Graphics2D g;
+    private Graphics2D splashGraphics;
 
 	
 	
@@ -85,7 +85,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			Current_URL=Url;
 		webEngine.load(Current_URL);
 	    if (splash != null) {
-	        g = splash.createGraphics();
+	        splashGraphics = splash.createGraphics();
 	    }
 	    
 		
@@ -115,8 +115,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    	
 		    }else{
 		    	loaded=false;
-		    	if(g!=null){
-		            renderSplashFrame(g, newValue.intValue());
+		    	if(splashGraphics!=null && splash.isVisible()){
+		            renderSplashFrame(splashGraphics, newValue.intValue());
 		            splash.update();
 		    	}
 		    }
@@ -233,9 +233,9 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private void finishLoadingComponents() throws IOException, InterruptedException{
 		try{
-			if(g!=null){
+			if(splashGraphics!=null && splash.isVisible()){
 	    		splash.close();
-	    		g=null;
+	    		splashGraphics=null;
 	    	}
 			if(scripting!=null){
 				//when navagating to a new file, stop the script that is running
