@@ -1,6 +1,10 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.SplashScreen;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +62,9 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	private TextField urlField;
 	//private String currentAddress;
 	private ScriptingEngineWidget scripting;
-	
+    final static SplashScreen splash = SplashScreen.getSplashScreen();
+    private Graphics2D g;
+
 	
 	
 	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,BowlerStudioController tabPane) throws IOException, InterruptedException{
@@ -78,6 +84,14 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		if(Url!=null)
 			Current_URL=Url;
 		webEngine.load(Current_URL);
+	    if (splash == null) {
+	        System.out.println("SplashScreen.getSplashScreen() returned null");
+	        return;
+	    }
+	    g = splash.createGraphics();
+	    if (g == null) {
+	        System.out.println("g is null");
+	    }
 		
 		loaded=false;
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
@@ -102,8 +116,17 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		    }else
+		    	if(g!=null){
+		    		g=null;
+			        splash.close();
+		    	}
+		    }else{
 		    	loaded=false;
+		    	if(g!=null){
+		            renderSplashFrame(g, newValue.intValue());
+		            splash.update();
+		    	}
+		    }
 		}));
 		urlField = new TextField(Current_URL);
 		webEngine.locationProperty().addListener((ChangeListener<String>) (observable1, oldValue, newValue) ->{
@@ -164,6 +187,15 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
 	}
+	
+	private  static void renderSplashFrame(Graphics2D g, int frame) {
+	        final String[] comps = {"OpenCV", "JavaCad", "BowlerEngine"};
+	        g.setComposite(AlphaComposite.Clear);
+	        g.fillRect(120,140,200,40);
+	        g.setPaintMode();
+	        g.setColor(Color.RED);
+	        g.drawString("Loading "+comps[(frame/5)%comps.length]+"...", 120, 150);
+	    }
 	
 	private boolean processNewTab(String url){
 		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
