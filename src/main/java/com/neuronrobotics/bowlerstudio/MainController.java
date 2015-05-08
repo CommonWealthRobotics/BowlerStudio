@@ -10,6 +10,7 @@ import haar.HaarFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -46,6 +48,8 @@ import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
+import com.neuronrobotics.jniloader.StaticFileProvider;
+import com.neuronrobotics.jniloader.URLImageProvider;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
@@ -355,6 +359,41 @@ public class MainController implements Initializable {
 
 	public void setPrimaryStage(Stage primaryStage) {
 		this.primaryStage = primaryStage;
+	}
+
+
+	@FXML public void onConnectFileSourceCamera() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Image File");
+		File f = fileChooser.showOpenDialog(getPrimaryStage());
+		if(f!=null){
+			StaticFileProvider p = new StaticFileProvider(f);
+			String name = "image";
+			application.addConnection(p,name);
+		}
+	}
+
+
+	@FXML public void onConnectURLSourceCamera() {
+		TextInputDialog dialog = new TextInputDialog("http://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png");
+		dialog.setTitle("URL Image Source");
+		dialog.setHeaderText("This url will be loaded each capture.");
+		dialog.setContentText("URL ");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+			URLImageProvider p;
+			try {
+				p = new URLImageProvider(new URL(result.get()));
+				String name = "url";
+				application.addConnection(p,name);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 	
 

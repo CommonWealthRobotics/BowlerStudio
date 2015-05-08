@@ -11,12 +11,13 @@ import org.opencv.core.Mat;
 
 import com.neuronrobotics.sdk.common.BowlerDatagram;
 
-public class StaticFileProvider extends AbstractImageProvider {
-	
-	private File file;
+public class URLImageProvider extends AbstractImageProvider {
 
-	public StaticFileProvider(File file){
-		this.file = file;
+
+	private URL url;
+
+	public URLImageProvider(URL url) {
+		this.url = url;
 	}
 
 	@Override
@@ -25,7 +26,7 @@ public class StaticFileProvider extends AbstractImageProvider {
 		BufferedImage buffImg;
 
 		/*In the constructor*/
-		try { buffImg = ImageIO.read(file ); } catch (IOException e) { return false;}
+		try { buffImg = ImageIO.read(url ); } catch (IOException e) { return false;}
 		
 		AbstractImageProvider.deepCopy(buffImg,imageData);
 		return true;
