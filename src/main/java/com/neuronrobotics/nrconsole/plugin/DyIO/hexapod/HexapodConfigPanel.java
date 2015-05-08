@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.walker.BasicWalker;
@@ -197,7 +198,7 @@ public class HexapodConfigPanel extends JPanel {
 		return dyio.isAvailable();
 	}
 	private File getFile(File file) {
-		return FileSelectionFactory.GetFile(file, new XmlFilter());
+		return FileSelectionFactory.GetFile(ScriptingEngineWidget.getWorkspace(), new XmlFilter());
 	}
 	
 	private class tester extends Thread{

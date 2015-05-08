@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
@@ -159,7 +160,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 
 	public void open() {
-		 File last=FileSelectionFactory.GetFile(null, new GroovyFilter());
+		 File last=FileSelectionFactory.GetFile(ScriptingEngineWidget.getWorkspace(), new GroovyFilter());
 		 if(last != null){
 			 createFileTab(last);
 		 }

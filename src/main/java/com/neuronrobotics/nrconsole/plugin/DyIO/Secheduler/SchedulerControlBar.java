@@ -18,6 +18,7 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.Mp3Filter;
@@ -191,7 +192,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	
 	private void getFile() {
-        setAudioFile(FileSelectionFactory.GetFile(mp3File, new GroovyFilter()));
+        setAudioFile(FileSelectionFactory.GetFile(mp3File==null?ScriptingEngineWidget.getWorkspace():mp3File, new GroovyFilter()));
 	}
 	public void setAudioFile(File f) {
 		cs.setAudioFile(f);

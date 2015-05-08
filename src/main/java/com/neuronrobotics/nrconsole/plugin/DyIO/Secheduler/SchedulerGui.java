@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.IntegerComboBox;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
@@ -111,6 +112,8 @@ public class SchedulerGui extends JPanel{
 	}
 
 	private void getFile() {
+		if(configFile==null)
+			configFile=ScriptingEngineWidget.getWorkspace();
 		configFile=FileSelectionFactory.GetFile(configFile, new XmlFilter());
 	}
 	

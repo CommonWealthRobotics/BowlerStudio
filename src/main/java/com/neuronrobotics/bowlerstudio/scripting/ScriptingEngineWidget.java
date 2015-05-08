@@ -88,7 +88,15 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private static final long serialVersionUID = 1L;
 
 	private File currentFile = null;
-
+	
+	private static File workspace;
+	static{
+		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
+		if(!workspace.exists()){
+			workspace.mkdir();
+		}
+	}
+	
 	private boolean running = false;
 	private Thread scriptRunner = null;
 	private FileChangeWatcher watcher;
@@ -362,23 +370,28 @@ public class ScriptingEngineWidget extends BorderPane implements
 		if (watcher != null) {
 			watcher.close();
 		}
-		// try {
-		// watcher = new FileChangeWatcher(currentFile);
-		// watcher.addIFileChangeListener(this);
-		// watcher.start();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		 try {
+		 watcher = new FileChangeWatcher(currentFile);
+		 watcher.addIFileChangeListener(this);
+		 watcher.start();
+		 } catch (IOException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
 	}
 
 	private void updateFile() {
-		File last = FileSelectionFactory.GetFile(currentFile,
+		
+		File last = FileSelectionFactory.GetFile(ScriptingEngineWidget.getWorkspace(),
 				new GroovyFilter());
 		if (last != null) {
 			setUpFile(last);
 		}
 
+	}
+
+	public static File getWorkspace() {
+		return workspace;
 	}
 
 	public void open() {
