@@ -25,12 +25,13 @@ public class HaarDetector  implements IObjectDetector{
 	private double scale=.3;
 	
 	public HaarDetector(String cascade){
-		File f = HaarFactory.jarResourceToFile(cascade);
+		this(HaarFactory.jarResourceToFile(cascade));
+	}
+	public HaarDetector(File cascade){
 		// Create a face detector from the cascade file in the resources
 	    // directory.
-		faceDetector = new CascadeClassifier(f.getAbsolutePath());
+		faceDetector = new CascadeClassifier(cascade.getAbsolutePath());
 	}
-	
 	public HaarDetector(){
 
 		// Create a face detector from the cascade file in the resources
