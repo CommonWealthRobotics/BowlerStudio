@@ -97,8 +97,14 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     
     git submodule update
     
-    bash gradlew assemble
+    cd java-bowler/
     
+    git pull origin development
+    
+    cd ..
+    
+    bash gradlew assemble
+        
     java -jar build/libs/BowlerStudio.jar
     
 Now you can use the Eclipse Gradle plugin to import the project.
