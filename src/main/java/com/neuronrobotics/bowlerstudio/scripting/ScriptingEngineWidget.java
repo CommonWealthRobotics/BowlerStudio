@@ -30,6 +30,8 @@ import java.util.Properties;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -57,6 +59,7 @@ import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
@@ -321,7 +324,28 @@ public class ScriptingEngineWidget extends BorderPane implements
 					scriptResult = obj;
 					reset();
 
-				} catch (Exception ex) {
+				} catch (groovy.lang.MissingPropertyException dev){
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Device missing error");
+						String message = "This script needs a device connected: ";
+						if(dev.getLocalizedMessage().contains("dyio"))
+							message+="dyio";
+						else if(dev.getLocalizedMessage().contains("camera"))
+							message+="camera";
+						else
+							message+=dev.getLocalizedMessage();
+						alert.setHeaderText(message);
+						alert.setContentText("You need to connect it before running again");
+						alert.showAndWait();
+						if(dev.getLocalizedMessage().contains("dyio"))
+							connectionmanager.addConnection();
+						else if(dev.getLocalizedMessage().contains("camera"))
+							connectionmanager.addConnection(new OpenCVImageProvider(0),"camera0");
+						reset();
+					});
+					
+				}catch (Exception ex) {
 					Platform.runLater(() -> {
 						if (!ex.getMessage().contains("sleep interrupted")) {
 							StringWriter sw = new StringWriter();
