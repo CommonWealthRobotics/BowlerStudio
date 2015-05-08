@@ -66,7 +66,7 @@ public class HaarFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("HAAR loaded");
+				//System.out.println("HAAR loaded");
 				haarsLoaded=true;
 			}
 		}.start();
