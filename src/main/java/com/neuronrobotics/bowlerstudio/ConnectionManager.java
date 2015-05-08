@@ -62,9 +62,9 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 	public ConnectionManager(BowlerStudioController bowlerStudioController) {
 		this.setBowlerStudioController(bowlerStudioController);
-		setText("Connections");
+		setText("My Devices");
 
-		rootItem = new CheckBoxTreeItem<String>("Connections",
+		rootItem = new CheckBoxTreeItem<String>("",
 				getIcon("images/connection-icon.png"
 				// "images/usb-icon.png"
 				));
@@ -231,7 +231,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				+ c.getAddress(), icon);
 
 		mp.setTree(item);
-		item.setExpanded(false);
+		item.setExpanded(true);
 		rootItem.getChildren().add(item);
 		mp.setName(name);
 		if (c.getConnection() != null) {
@@ -259,6 +259,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				rootItem.getChildren().remove(item);
 			}
 		});
+		getBowlerStudioController().setSelectedTab(this);
 	}
 
 	@Override

@@ -14,7 +14,7 @@
               <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Connection">
+          <Menu mnemonicParsing="false" text="Add Device">
             <items>
               <Menu mnemonicParsing="false" text="Bowler Device">
               	<MenuItem mnemonicParsing="false" onAction="#onConnect" text="Add a new Bowler Connection using Connection dialog" />

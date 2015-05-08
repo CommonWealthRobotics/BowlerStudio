@@ -164,6 +164,7 @@ jar {
 	manifest {  
 	    attributes(	
 	    				"Main-Class": mainClass,
+	    				"SplashScreen-Image": "com/neuronrobotics/nrconsole/images/logo.png",
 		    			"Manifest-Version": "1.0",
 		    			"Created-By": "Neuron Robotics Cooperative",
 		    			"Specification-Title": props."app.name",
@@ -172,6 +173,7 @@ jar {
 		    			"Implementation-Title": props."app.name",
 		    			"Implementation-Version" : props."app.version",
 		    			"Implementation-Vendor": "Neuron Robotics Cooperative"
+
 		        		
 		    )
 		}

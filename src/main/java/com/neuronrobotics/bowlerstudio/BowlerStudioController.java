@@ -275,4 +275,8 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		return mainController.getPrimaryStage();
 	}
 
+	public void setSelectedTab(Tab tab) {
+		getSelectionModel().select(tab);
+	}
+
 }
