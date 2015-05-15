@@ -138,7 +138,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 				//System.out.println("Current position="+cur+" group="+getGroup());
 				setSetpoint(cur);
 				setPositionDisplay(cur);
-				pidRunning.setVisible(true);
+				//pidRunning.setVisible(true);
 			}
 		});
 
@@ -256,11 +256,11 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		
 		if(getPIDConfiguration().isEnabled()){
 			pidStop.setEnabled(true);
-			pidRunning.setVisible(true);
+			//pidRunning.setVisible(true);
 			graphVals();
 		}else{
 			pidStop.setEnabled(false);
-			pidRunning.setVisible(false);
+			//pidRunning.setVisible(false);
 		}
 		
 		
@@ -303,7 +303,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		getPIDConfiguration().setEnabled(false);
 		if(b)
 			ConfigurePIDController();
-		pidRunning.setVisible(false);
+		//pidRunning.setVisible(false);
 	}
 	private void setPID(double p,double i,double d,double vp,double vd, double latch, boolean use, boolean stop, double up, double low){
 		//setSet(true);
