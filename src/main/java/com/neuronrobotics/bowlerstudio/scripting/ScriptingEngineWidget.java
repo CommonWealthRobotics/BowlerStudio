@@ -324,37 +324,49 @@ public class ScriptingEngineWidget extends BorderPane implements
 					scriptResult = obj;
 					reset();
 
-				} catch (groovy.lang.MissingPropertyException dev){
+				} 
+				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Device missing error");
 						String message = "This script needs a device connected: ";
-						if(dev.getLocalizedMessage().contains("dyio"))
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						d.printStackTrace(pw);
+						
+						String stackTrace = sw.toString();
+						
+						if(stackTrace.contains("dyio"))
 							message+="dyio";
-						else if(dev.getLocalizedMessage().contains("camera"))
+						else if(stackTrace.contains("camera"))
 							message+="camera";
 						else
-							message+=dev.getLocalizedMessage();
+							message+=stackTrace;
 						alert.setHeaderText(message);
 						alert.setContentText("You need to connect it before running again");
 						alert.showAndWait();
-						if(dev.getLocalizedMessage().contains("dyio"))
+						if(stackTrace.contains("dyio"))
 							connectionmanager.addConnection();
-						else if(dev.getLocalizedMessage().contains("camera"))
+						else if(stackTrace.contains("camera"))
 							connectionmanager.addConnection(new OpenCVImageProvider(0),"camera0");
 						reset();
 					});
 					
-				}catch (Exception ex) {
+				}
+				catch (Exception ex) {
+					System.err.println("Script exception of type= "+ex.getClass().getName());
 					Platform.runLater(() -> {
-						if (!ex.getMessage().contains("sleep interrupted")) {
+						try{
+							if (ex.getMessage().contains("sleep interrupted")) {
+								append("\n" + currentFile + " Interupted\n");
+							} else{
+								throw new RuntimeException(ex);
+							}
+						}catch(Exception e){
 							StringWriter sw = new StringWriter();
 							PrintWriter pw = new PrintWriter(sw);
 							ex.printStackTrace(pw);
 							append("\n" + currentFile + " \n" + sw + "\n");
-
-						} else {
-							append("\n" + currentFile + " Interupted\n");
 						}
 
 						reset();
@@ -635,7 +647,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 			System.err.println(s);
 			if(!s.contains("mihosoft")&&
 					!s.contains("haar")&&
-					!s.contains("com.neuronrobotics.sdk.addons.kinematics.xml")
+					!s.contains("com.neuronrobotics.sdk.addons.kinematics")
 					) {
 				interp.exec("import "+s);
 			} else {
