@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import gnu.io.NRSerialPort;
 import haar.HaarFactory;
 
 import java.io.ByteArrayOutputStream;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.swing.text.DefaultCaret;
 
@@ -43,6 +45,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
@@ -390,6 +393,34 @@ public class MainController implements Initializable {
 			}
 		}
 
+	}
+
+
+	@FXML public void onConnectHokuyoURG(ActionEvent event) {
+		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
+		List<String> choices = new ArrayList<>();
+		if(ports.size()==0)
+			return;
+		for (String s: ports){
+			choices.add(s);
+		}
+
+		
+		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+		dialog.setTitle("LIDAR Serial Port Chooser");
+		dialog.setHeaderText("Supports URG-04LX-UG01");
+		dialog.setContentText("Lidar Port:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		
+		// The Java 8 way to get the response value (with lambda expression).
+		result.ifPresent(letter -> {
+			HokuyoURGDevice p = new HokuyoURGDevice(new NRSerialPort(letter, 115200));
+			String name = "lidar";
+			application.addConnection(p,name);
+		});
+		
 	}
 	
 

@@ -27,6 +27,9 @@
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectFileSourceCamera" text="Add a new Static File image" />
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectURLSourceCamera" text="Add a new WebCam URL" />
               </Menu>
+              <Menu mnemonicParsing="false" text="3d Scanner">
+	              <MenuItem mnemonicParsing="false" onAction="#onConnectHokuyoURG" text="Add a new Hokuyo URG LIDAR" />
+              </Menu>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="CAD">
