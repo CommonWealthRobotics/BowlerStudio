@@ -43,6 +43,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.JavaCVImageProvider;
@@ -50,6 +51,8 @@ import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.jniloader.StaticFileProvider;
 import com.neuronrobotics.jniloader.URLImageProvider;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
@@ -206,15 +209,8 @@ public class MainController implements Initializable {
     
     @FXML
     private void onLoadFile(ActionEvent e) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Script File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter(
-                        "Script files",
-                        "*.jfxscad", "*.groovy", "*.java"));
-        
-
-        openFile = fileChooser.showOpenDialog(null);
+    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
+				new GroovyFilter());
 
         if (openFile == null) {
             return;

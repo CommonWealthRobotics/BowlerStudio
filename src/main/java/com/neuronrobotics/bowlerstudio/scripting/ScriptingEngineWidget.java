@@ -93,6 +93,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private File currentFile = null;
 	
 	private static File workspace;
+	private static File lastFile;
 	static{
 		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
 		if(!workspace.exists()){
@@ -400,6 +401,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	private void setUpFile(File f) {
 		currentFile = f;
+		setLastFile(f);
 		Platform.runLater(() -> {
 			fileLabel.setText(f.getName());
 		});
@@ -418,7 +420,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	private void updateFile() {
 		
-		File last = FileSelectionFactory.GetFile(ScriptingEngineWidget.getWorkspace(),
+		File last = FileSelectionFactory.GetFile(currentFile==null?getWorkspace():new File(getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
 				new GroovyFilter());
 		if (last != null) {
 			setUpFile(last);
@@ -427,6 +429,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 	}
 
 	public static File getWorkspace() {
+		System.err.println("Workspace: "+workspace.getAbsolutePath());
 		return workspace;
 	}
 
@@ -517,12 +520,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 		if (name.toString().toLowerCase().endsWith(".java")
 				|| name.toString().toLowerCase().endsWith(".groovy")) {
 			activeType = ShellType.GROOVY;
-			System.out.println("Setting up Groovy Shell");
+			//System.out.println("Setting up Groovy Shell");
 		}
 		if (name.toString().toLowerCase().endsWith(".py")
 				|| name.toString().toLowerCase().endsWith(".jy")) {
 			activeType = ShellType.JYTHON;
-			System.out.println("Setting up Python Shell");
+			//System.out.println("Setting up Python Shell");
 		}
 	}
 
@@ -711,6 +714,16 @@ public class ScriptingEngineWidget extends BorderPane implements
 		default:
 			return runGroovy(code, args);
 		}
+	}
+
+	public static File getLastFile() {
+		if(lastFile==null)
+			return getWorkspace();
+		return lastFile;
+	}
+
+	public static void setLastFile(File lastFile) {
+		ScriptingEngineWidget.lastFile = lastFile;
 	}
 
 }
