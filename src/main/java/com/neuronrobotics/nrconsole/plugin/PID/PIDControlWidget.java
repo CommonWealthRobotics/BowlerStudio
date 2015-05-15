@@ -52,14 +52,14 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	
 	private boolean set = false;
 	
-	private PIDControlGui tab;
+	private PIDControl tab;
 
 	private int group;
 	private PIDConfiguration pidconfig; 
 	private PDVelocityConfiguration velconfig; 
 	private int setpointValue;
 	private int positionValue;
-	public PIDControlWidget(int group, int startValue, PIDControlGui tab) {
+	public PIDControlWidget(int group, int startValue, PIDControl tab) {
 //		if(group==0)
 //			Log.enableDebugPrint(true);
 		setBorder(BorderFactory.createRaisedBevelBorder());
@@ -292,10 +292,10 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	public int getGroup() {
 		return group;
 	}
-	public void setGui(PIDControlGui tab) {
+	public void setGui(PIDControl tab) {
 		this.tab = tab;
 	}
-	public PIDControlGui getGui() {
+	public PIDControl getGui() {
 		return tab;
 	}
 	public void stopPID(boolean b){
