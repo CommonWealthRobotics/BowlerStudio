@@ -79,7 +79,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 
 		try {
-			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), true);
+			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
