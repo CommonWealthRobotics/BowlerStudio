@@ -39,10 +39,11 @@ public class PrinterConfiguration extends JPanel {
 	
 	private JButton update=new JButton("Update");
 	private NRPrinter printer;
+	private JPanel controls;
 	
 	public PrinterConfiguration(){
 		setLayout(new MigLayout());
-		JPanel controls = new JPanel(new MigLayout());
+		controls = new JPanel(new MigLayout());
 		controls.add(new JLabel("kP"));controls.add(kp,"wrap");
 		controls.add(new JLabel("kI"));controls.add(ki,"wrap");
 		controls.add(new JLabel("kD"));controls.add(kd,"wrap");
@@ -58,8 +59,7 @@ public class PrinterConfiguration extends JPanel {
 		controls.add(hardPos,"wrap");
 		
 		controls.add(update,"wrap");
-		add(controls,"wrap");
-		add(gui,"wrap");
+
 		
 		update.addActionListener(new ActionListener() {
 			
@@ -102,6 +102,8 @@ public class PrinterConfiguration extends JPanel {
 			minz.setText(new Double(state.getMinZ()).toString());
 			rodlen.setText(new Double(state.getRodLength()).toString());
 			hardPos.setSelected(state.isUseHardPositioning());
+			add(controls,"wrap");
 		}
+		add(gui,"wrap");
 	}
 }
