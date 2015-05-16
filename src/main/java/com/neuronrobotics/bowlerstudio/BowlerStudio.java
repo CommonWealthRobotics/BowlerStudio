@@ -26,6 +26,7 @@ public class BowlerStudio extends Application {
     
     private static TextArea log;
     private static MainController controller;
+	private static Stage primaryStage;
 
     /**
      * @param args the command line arguments
@@ -36,7 +37,8 @@ public class BowlerStudio extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent main = loadFromFXML();
+        setPrimaryStage(primaryStage);
+		Parent main = loadFromFXML();
 
         Scene scene = new Scene(main, 1024, 700,true);
 
@@ -61,7 +63,6 @@ public class BowlerStudio extends Application {
         primaryStage.setTitle("Bowler Studio: SDK v "+SDKBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
         Log.enableDebugPrint();
-        controller.setPrimaryStage(primaryStage);
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
 
@@ -101,4 +102,12 @@ public class BowlerStudio extends Application {
         
         return log;
     }
+
+	public static Stage getPrimaryStage() {
+		return primaryStage;
+	}
+
+	public static void setPrimaryStage(Stage primaryStage) {
+		BowlerStudio.primaryStage = primaryStage;
+	}
 }

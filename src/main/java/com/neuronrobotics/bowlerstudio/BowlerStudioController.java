@@ -66,7 +66,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void createFileTab(File file) {
 
 		try {
-			addTab(new LocalFileScriptTab( connectionManager,  file),true);
+			addTab(new LocalFileScriptTab( getConnectionManager(),  file),true);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -79,7 +79,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 
 		try {
-			addTab(new ScriptingGistTab(title,connectionManager , getHomeUrl(),tabPane), false);
+			addTab(new ScriptingGistTab(title,getConnectionManager() , getHomeUrl(),tabPane), false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,7 +89,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	
 
 	private Tab createTab() throws IOException, InterruptedException{
-		final ScriptingGistTab tab = new ScriptingGistTab(null,connectionManager,   null,null);
+		final ScriptingGistTab tab = new ScriptingGistTab(null,getConnectionManager(),   null,null);
 
 		return tab;
 	}
@@ -123,8 +123,8 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		//Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 		
-		connectionManager = new ConnectionManager(this);
-		addTab(connectionManager,false);
+		setConnectionManager(new ConnectionManager(this));
+		addTab(getConnectionManager(),false);
 		
 		createAndSelectNewTab(this, "Tutorial");
 
@@ -166,12 +166,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		 }
 	}
 
-	public void addConnection() {
-		connectionManager.addConnection();
-	}
-	public void addConnection(BowlerAbstractDevice c, String name) {
-		connectionManager.addConnection(c,name);
-	}
+
 	
 	private void removeObject(Object p){
 		if(CSG.class.isInstance(p)){          
@@ -210,7 +205,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 			});
 		}else if(BowlerAbstractDevice.class.isInstance(o)){
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
-			addConnection((BowlerAbstractDevice) o, bad.getScriptingName());
+			getConnectionManager().addConnection((BowlerAbstractDevice) o, bad.getScriptingName());
 		}
 	}
 
@@ -251,7 +246,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 	public void onAddDefaultRightArm() {
 		// TODO Auto-generated method stub
-		BowlerAbstractDevice dev = connectionManager.pickConnectedDevice();
+		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice();
 		if(DyIO.class.isInstance(dev)){
 			jfx3dmanager.attachArm((DyIO)dev, "TrobotMaster.xml");
 		}if(DHParameterKinematics.class.isInstance(dev)){
@@ -261,23 +256,31 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 	public void onAddVRCamera() {
 		// TODO Auto-generated method stub
-		BowlerAbstractDevice dev = connectionManager.pickConnectedDevice();
+		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice();
 		if(AbstractImageProvider.class.isInstance(dev)){
 			
 		}
 	}
 
 	public void disconnect() {
-		connectionManager.disconnectAll();
+		getConnectionManager().disconnectAll();
 	}
 
 	public Stage getPrimaryStage() {
 		// TODO Auto-generated method stub
-		return mainController.getPrimaryStage();
+		return BowlerStudio.getPrimaryStage();
 	}
 
 	public void setSelectedTab(Tab tab) {
 		getSelectionModel().select(tab);
+	}
+
+	public ConnectionManager getConnectionManager() {
+		return connectionManager;
+	}
+
+	public void setConnectionManager(ConnectionManager connectionManager) {
+		this.connectionManager = connectionManager;
 	}
 
 }

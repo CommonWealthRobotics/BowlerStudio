@@ -30,6 +30,9 @@
               <Menu mnemonicParsing="false" text="3d Scanner">
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectHokuyoURG" text="Add a new Hokuyo URG LIDAR" />
               </Menu>
+              <Menu mnemonicParsing="false" text="Game Controller">
+	              <MenuItem mnemonicParsing="false" onAction="#onConnectGamePad" text="Add a new GamePad JInput " />
+              </Menu>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="CAD">

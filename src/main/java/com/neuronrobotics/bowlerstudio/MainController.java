@@ -22,6 +22,9 @@ import java.util.Set;
 
 import javax.swing.text.DefaultCaret;
 
+import net.java.games.input.Controller;
+import net.java.games.input.ControllerEnvironment;
+
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.FrameGrabber;
@@ -58,6 +61,7 @@ import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 /**
@@ -223,12 +227,12 @@ public class MainController implements Initializable {
 
     @FXML
     private void onConnect(ActionEvent e) {
-    	application.addConnection();
+    	application.getConnectionManager().addConnection();
     }
     
     @FXML
     private void onConnectVirtual(ActionEvent e) {
-    	application.addConnection(new VirtualGenericPIDDevice(10000),"virtual");
+    	application.getConnectionManager().addConnection(new VirtualGenericPIDDevice(10000),"virtual");
     }
 
   
@@ -247,40 +251,9 @@ public class MainController implements Initializable {
 	}
 
 
-
-	@FXML public void onConnectCVCamera(ActionEvent event) {
-		List<String> choices = new ArrayList<>();
-		choices.add("0");
-		choices.add("1");
-		choices.add("2");
-		choices.add("3");
-		choices.add("4");
-		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
-		dialog.setTitle("OpenCV Camera Index Chooser");
-		dialog.setHeaderText("Choose an OpenCV camera");
-		dialog.setContentText("Camera Index:");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		
-		// The Java 8 way to get the response value (with lambda expression).
-		result.ifPresent(letter -> {
-			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
-			String name = "camera"+letter;
-			application.addConnection(p,name);
-			//application.addTab(new CameraTab(p, name), true);
-		});
-		
-//		OpenCVImageProvider p = new OpenCVImageProvider(0);
-//		String name = "camera0";
-//		application.addConnection(p,name);
-		
-	}
-
 	@FXML public void onConnectCHDKCamera(ActionEvent event) {
 		try{
-			application.addConnection(new CHDKImageProvider(),"cameraCHDK");
+			application.getConnectionManager().addConnection(new CHDKImageProvider(),"cameraCHDK");
 		}catch (Exception e)
 		{
 			e.printStackTrace();
@@ -298,128 +271,37 @@ public class MainController implements Initializable {
 		application.onAddVRCamera();
 	}
 
+	
+	@FXML public void onConnectCVCamera(ActionEvent event) {
+		application.getConnectionManager().onConnectCVCamera(event);
+		
+	}
 
 
 	@FXML public void onConnectJavaCVCamera() {
-		List<String> choices = new ArrayList<>();
-		try {
-			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
-			if(des.length==0)
-				return;
-			for (String s: des){
-				choices.add(s);
-			}
-		} catch (org.bytedeco.javacv.FrameGrabber.Exception |UnsupportedOperationException e1) {
-			choices.add("0");
-			choices.add("1");
-			choices.add("2");
-			choices.add("3");
-			choices.add("4");
-		}
-		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("JavaCV Camera Index Chooser");
-		dialog.setHeaderText("Choose an JavaCV camera");
-		dialog.setContentText("Camera Index:");
+		application.getConnectionManager().onConnectJavaCVCamera();
 
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		
-		// The Java 8 way to get the response value (with lambda expression).
-		result.ifPresent(letter -> {
-			JavaCVImageProvider p;
-			try {
-				p = new JavaCVImageProvider(Integer.parseInt(letter));
-				String name = "camera"+letter;
-				application.addConnection(p,name);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		});
-		
-//		JavaCVImageProvider p;
-//		try {
-//			p = new JavaCVImageProvider(0);
-//			String name = "camera0";
-//			application.addConnection(p,name);
-//			
-//		} catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-	}
-
-	public Stage getPrimaryStage(){
-		return primaryStage;
-	}
-
-	public void setPrimaryStage(Stage primaryStage) {
-		this.primaryStage = primaryStage;
 	}
 
 
 	@FXML public void onConnectFileSourceCamera() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Image File");
-		File f = fileChooser.showOpenDialog(getPrimaryStage());
-		if(f!=null){
-			StaticFileProvider p = new StaticFileProvider(f);
-			String name = "image";
-			application.addConnection(p,name);
-		}
+		application.getConnectionManager().onConnectFileSourceCamera();
 	}
 
 
 	@FXML public void onConnectURLSourceCamera() {
-		TextInputDialog dialog = new TextInputDialog("http://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png");
-		dialog.setTitle("URL Image Source");
-		dialog.setHeaderText("This url will be loaded each capture.");
-		dialog.setContentText("URL ");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
-			URLImageProvider p;
-			try {
-				p = new URLImageProvider(new URL(result.get()));
-				String name = "url";
-				application.addConnection(p,name);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		application.getConnectionManager().onConnectURLSourceCamera();
 	}
 
 
 	@FXML public void onConnectHokuyoURG(ActionEvent event) {
-		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
-		List<String> choices = new ArrayList<>();
-		if(ports.size()==0)
-			return;
-		for (String s: ports){
-			choices.add(s);
-		}
-
+		application.getConnectionManager().onConnectHokuyoURG(event);
 		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("LIDAR Serial Port Chooser");
-		dialog.setHeaderText("Supports URG-04LX-UG01");
-		dialog.setContentText("Lidar Port:");
+	}
 
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		
-		// The Java 8 way to get the response value (with lambda expression).
-		result.ifPresent(letter -> {
-			HokuyoURGDevice p = new HokuyoURGDevice(new NRSerialPort(letter, 115200));
-			String name = "lidar";
-			application.addConnection(p,name);
-		});
+
+	@FXML public void onConnectGamePad(ActionEvent event) {
+		application.getConnectionManager().onConnectGamePad(event);
 		
 	}
 	
