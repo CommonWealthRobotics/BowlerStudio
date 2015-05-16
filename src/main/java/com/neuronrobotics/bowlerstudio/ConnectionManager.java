@@ -175,7 +175,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			delt.connect();
 			String name = "bowlerBoard";
 			addConnection(delt, name);
-			addConnection(new NRPrinter(delt), "printer");
+			addConnection(new NRPrinter(delt), "cnc");
 			
 		} else if (gen.hasNamespace("bcs.pid.*")) {
 			GenericPIDDevice delt = new GenericPIDDevice();
