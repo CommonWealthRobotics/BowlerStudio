@@ -335,7 +335,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 	}
 	
-	@FXML public void onConnectCVCamera(ActionEvent event) {
+	 public void onConnectCVCamera() {
 		List<String> choices = new ArrayList<>();
 		choices.add("0");
 		choices.add("1");
@@ -366,7 +366,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 
 
-	@FXML public void onConnectJavaCVCamera() {
+	 public void onConnectJavaCVCamera() {
 		List<String> choices = new ArrayList<>();
 		try {
 			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
@@ -444,7 +444,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 
 
-	 public void onConnectHokuyoURG(ActionEvent event) {
+	 public void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();
 		if(ports.size()==0)
@@ -473,7 +473,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 
 
-	@FXML public void onConnectGamePad(ActionEvent event) {
+	public void onConnectGamePad() {
 		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
 		
 		List<String> choices = new ArrayList<>();

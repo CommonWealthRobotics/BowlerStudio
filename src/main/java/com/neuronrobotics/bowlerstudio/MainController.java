@@ -273,7 +273,7 @@ public class MainController implements Initializable {
 
 	
 	@FXML public void onConnectCVCamera(ActionEvent event) {
-		application.getConnectionManager().onConnectCVCamera(event);
+		application.getConnectionManager().onConnectCVCamera();
 		
 	}
 
@@ -295,13 +295,13 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectHokuyoURG(ActionEvent event) {
-		application.getConnectionManager().onConnectHokuyoURG(event);
+		application.getConnectionManager().onConnectHokuyoURG();
 		
 	}
 
 
 	@FXML public void onConnectGamePad(ActionEvent event) {
-		application.getConnectionManager().onConnectGamePad(event);
+		application.getConnectionManager().onConnectGamePad();
 		
 	}
 	
