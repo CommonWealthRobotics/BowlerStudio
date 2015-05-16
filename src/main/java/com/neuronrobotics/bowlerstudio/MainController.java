@@ -29,6 +29,9 @@ import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -53,12 +56,14 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.JavaCVImageProvider;
+import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.jniloader.StaticFileProvider;
 import com.neuronrobotics.jniloader.URLImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -100,6 +105,23 @@ public class MainController implements Initializable {
 		try{
 			HaarFactory.getStream(null);
 		}catch (Exception ex){}
+		
+		if(NativeResource.isLinux()){
+			String [] possibleLocals = new String[]{
+					"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
+					"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
+			};
+			Slic3r.setExecutableLocation("/usr/bin/slic3r");
+			
+		}else if(NativeResource.isWindows()){
+			String basedir =System.getenv("OPENCV_DIR");
+			if(basedir == null)
+				throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+			System.err.println("OPENCV_DIR found at "+ basedir);
+			basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+			Slic3r.setExecutableLocation(basedir);
+			
+		}
 	}
 	
 	private static void updateLog(){

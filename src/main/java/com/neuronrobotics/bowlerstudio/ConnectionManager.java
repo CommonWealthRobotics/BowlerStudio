@@ -31,6 +31,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
+import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -174,6 +175,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			delt.connect();
 			String name = "bowlerBoard";
 			addConnection(delt, name);
+			addConnection(new NRPrinter(delt), "printer");
+			
 		} else if (gen.hasNamespace("bcs.pid.*")) {
 			GenericPIDDevice delt = new GenericPIDDevice();
 			delt.setConnection(gen.getConnection());

@@ -21,6 +21,7 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
+import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
@@ -28,7 +29,10 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
+import com.neuronrobotics.nrconsole.plugin.cartesian.KinematicsController;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
+import com.neuronrobotics.replicator.driver.NRPrinter;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -77,6 +81,12 @@ public class PluginManager {
 		
 		if(BowlerBoardDevice.class.isInstance(dev)){
 			
+		}
+		if(AbstractKinematicsNR.class.isInstance(dev)){
+			deviceSupport.add(KinematicsController.class);
+		}
+		if(NRPrinter.class.isInstance(dev)){
+			deviceSupport.add(PrinterConiguration.class);
 		}
 		if(BowlerCamDevice.class.isInstance(dev)){
 			deviceSupport.add(BowlerCamController.class);
