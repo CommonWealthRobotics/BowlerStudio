@@ -5,70 +5,41 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
-import gnu.io.NRSerialPort;
 import haar.HaarFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
-
-import javax.swing.text.DefaultCaret;
-
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
-
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
-import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
-import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
-import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.NativeResource;
-import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
-import com.neuronrobotics.jniloader.StaticFileProvider;
-import com.neuronrobotics.jniloader.URLImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 /**
  * FXML Controller class
  *
@@ -103,7 +74,12 @@ public class MainController implements Initializable {
 			e.printStackTrace();
 		}
 		try{
-			HaarFactory.getStream(null);
+			new Thread(){
+				public void run(){
+					HaarFactory.getStream(null);
+				}
+			}.start();
+			
 		}catch (Exception ex){}
 		
 		if(NativeResource.isLinux()){
@@ -289,8 +265,8 @@ public class MainController implements Initializable {
 
 
 
-	@FXML public void onAddVRCamera() {
-		application.onAddVRCamera();
+	@FXML public void onAddVRCamera(ActionEvent event) {
+		application.onAddVRCamera(event);
 	}
 
 	
