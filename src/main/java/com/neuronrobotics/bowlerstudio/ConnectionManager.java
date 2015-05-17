@@ -23,6 +23,7 @@ import org.bytedeco.javacv.OpenCVFrameGrabber;
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.StaticFileProvider;
@@ -303,13 +304,17 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			BowlerStudioController bowlerStudioController) {
 		this.bowlerStudioController = bowlerStudioController;
 	}
-
-	public BowlerAbstractDevice pickConnectedDevice() {
+	
+	public BowlerAbstractDevice pickConnectedDevice(Class class1) {
 		if (devices.size() == 0)
 			return null;
 		List<String> choices = new ArrayList<>();
 		for (int i = 0; i < devices.size(); i++) {
-			choices.add(devices.get(i).getName());
+			if(class1==null)
+				choices.add(devices.get(i).getName());
+			else if(class1.isInstance(devices.get(i))){
+				choices.add(devices.get(i).getName());
+			}
 		}
 
 		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
@@ -328,8 +333,13 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			}
 		}
 		return null;
-
 	}
+
+
+//	public BowlerAbstractDevice pickConnectedDevice() {
+//
+//		return pickConnectedDevice(null);
+//	}
 
 	public void disconnectAll() {
 		for (int i = 0; i < devices.size(); i++) {
@@ -513,5 +523,6 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		});
 		
 	}
+
 
 }
