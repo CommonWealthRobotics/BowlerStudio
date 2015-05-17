@@ -5,12 +5,17 @@ import eu.mihosoft.vrl.v3d.MeshContainer;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.bytedeco.javacpp.DoublePointer;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -27,6 +32,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -35,7 +41,9 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.Detection;
 import com.neuronrobotics.jniloader.HaarDetector;
+import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -45,6 +53,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.util.RollingAverageFilter;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
@@ -59,6 +68,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private ConnectionManager connectionManager;
 	private Jfx3dManager jfx3dmanager;
 	private MainController mainController;
+	private AbstractImageProvider vrCamera;
 	
 
 	public BowlerStudioController(Jfx3dManager jfx3dmanager, MainController mainController) {
@@ -282,11 +292,11 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	public void onAddVRCamera(ActionEvent event) {
 		// TODO Auto-generated method stub
 		
-		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice(AbstractImageProvider.class);
-		if(dev==null)
-			dev= getConnectionManager().onConnectCVCamera();
-		if(dev!=null){
-			dev.addConnectionEventListener(new IConnectionEventListener() {
+		setVrCamera((AbstractImageProvider)getConnectionManager().pickConnectedDevice(AbstractImageProvider.class));
+		if(getVrCamera()==null)
+			setVrCamera(getConnectionManager().onConnectCVCamera());
+		if(getVrCamera()!=null){
+			getVrCamera().addConnectionEventListener(new IConnectionEventListener() {
 				@Override public void onDisconnect(BowlerAbstractConnection source) {
 					mainController.getAddVRCamera().selectedProperty().set(false);
 				}
@@ -294,10 +304,38 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 			});
 			new Thread(){
 				public void run(){
-					HaarDetector faces = new HaarDetector();
+					IObjectDetector detector = new HaarDetector("lbpcascade_frontalface.xml");
+					double xSize = 320;
+					double ySize = 240;
+					// Create the input and display images. The display is where the detector writes its detections overlay on the input image
+					BufferedImage inputImage = AbstractImageProvider.newBufferImage((int)xSize,(int)ySize);
+					BufferedImage displayImage = AbstractImageProvider.newBufferImage((int) xSize,(int)ySize);
 					System.out.println("Camera VR Started");
+					DoubleProperty view = jfx3dmanager.getCameraFieldOfViewProperty();
+					Affine carmermanipulation = jfx3dmanager.getCameraVR();
+					RollingAverageFilter rollingSize = new RollingAverageFilter(10, 0) ;
+					RollingAverageFilter rollingX = new RollingAverageFilter(10, 0) ;
+					RollingAverageFilter rollingY = new RollingAverageFilter(10, 0) ;
 					while(mainController.getAddVRCamera().isSelected()){
-						ThreadUtil.wait(100);
+						getVrCamera().getLatestImage(inputImage,displayImage)    ;           // capture image
+						List<Detection>  data = detector.getObjects(inputImage, displayImage);
+						if(data.size()>0){
+							
+							double xWarp = (((xSize/2)-data.get(0).getX())/(xSize/2))-.5;
+							double yWarp = (((ySize/2)-data.get(0).getY())/(ySize/2))-.5;
+							double sizeWarp = (((ySize/2)-data.get(0).getSize())/(ySize/2));
+							
+							rollingX.add(xWarp);
+							rollingY.add(yWarp);
+							rollingSize.add(sizeWarp);
+							
+							Platform.runLater(() -> {
+								carmermanipulation.setTx(100*rollingX.getValue());
+								carmermanipulation.setTy(-100*rollingY.getValue());
+								view.set(30.0+(20.0*rollingSize.getValue()));
+							});
+
+						}
 					}
 					//bail out when the checkbox is unchecked
 					System.out.println("Camera VR disabled");
@@ -325,6 +363,14 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 
 	public void setConnectionManager(ConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
+	}
+
+	public AbstractImageProvider getVrCamera() {
+		return vrCamera;
+	}
+
+	public void setVrCamera(AbstractImageProvider vrCamera) {
+		this.vrCamera = vrCamera;
 	}
 
 }

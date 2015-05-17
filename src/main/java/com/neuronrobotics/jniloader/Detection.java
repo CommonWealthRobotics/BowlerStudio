@@ -23,4 +23,7 @@ public class Detection {
 	public double getX() {
 		return X;
 	}
+	public String toString(){
+		return "X pos ="+X+" Y pos="+Y+" size="+Size; 
+	}
 }
