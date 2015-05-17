@@ -531,7 +531,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static String[] codeFromGistID(String id) {
 		try {
-			GitHub github = GitHub.connectAnonymously();
+			github = GitHub.connectAnonymously();
 			Log.debug("Loading Gist: " + id);
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
@@ -601,6 +601,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 			"com.neuronrobotics.sdk.addons.kinematics.gui",
 			"javafx.scene.transform", "javafx.scene.shape",
 			"java.awt.image.BufferedImage" };
+
+	private static GitHub github;
 
 	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();

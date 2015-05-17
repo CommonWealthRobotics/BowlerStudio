@@ -140,7 +140,6 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		if (connection == null) {
 			return;
 		}
-		Log.error("Switching to v4 parser");
 
 		GenericDevice gen = new GenericDevice(connection);
 		try {
