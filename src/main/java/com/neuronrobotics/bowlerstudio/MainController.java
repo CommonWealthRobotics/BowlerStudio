@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
+
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -25,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
@@ -73,14 +75,10 @@ public class MainController implements Initializable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		try{
-			new Thread(){
-				public void run(){
-					HaarFactory.getStream(null);
-				}
-			}.start();
+		
+
 			
-		}catch (Exception ex){}
+		
 		
 		if(NativeResource.isLinux()){
 			String [] possibleLocals = new String[]{
@@ -150,6 +148,11 @@ public class MainController implements Initializable {
 	private BowlerStudioController application;
 	private Stage primaryStage;
 	
+    @FXML
+    private CheckMenuItem AddDefaultRightArm;
+    @FXML
+    private CheckMenuItem AddVRCamera;
+	
     /**
      * Initializes the controller class.
      *
@@ -172,6 +175,23 @@ public class MainController implements Initializable {
         viewContainer.getChildren().add(subScene);
 
         System.out.println("Welcome to BowlerStudio!");
+		new Thread(){
+			public void run(){
+				try{
+					HaarFactory.getStream(null);
+				}catch (Exception ex){}
+			}
+		}.start();
+		
+		getAddDefaultRightArm().setOnAction(event -> {
+			
+			application.onAddDefaultRightArm(event);
+		});
+		getAddVRCamera().setOnAction(event -> {
+			if(AddVRCamera.isSelected())
+				application.onAddVRCamera(event);
+		});
+		
     }
 
 
@@ -258,18 +278,8 @@ public class MainController implements Initializable {
 		}
 	}
 
-	@FXML public void onAddDefaultRightArm() {
-
-		application.onAddDefaultRightArm();
-	}
 
 
-
-	@FXML public void onAddVRCamera(ActionEvent event) {
-		application.onAddVRCamera(event);
-	}
-
-	
 	@FXML public void onConnectCVCamera(ActionEvent event) {
 		application.getConnectionManager().onConnectCVCamera();
 		
@@ -301,6 +311,26 @@ public class MainController implements Initializable {
 	@FXML public void onConnectGamePad(ActionEvent event) {
 		application.getConnectionManager().onConnectGamePad();
 		
+	}
+
+
+	public CheckMenuItem getAddVRCamera() {
+		return AddVRCamera;
+	}
+
+
+	public void setAddVRCamera(CheckMenuItem addVRCamera) {
+		AddVRCamera = addVRCamera;
+	}
+
+
+	public CheckMenuItem getAddDefaultRightArm() {
+		return AddDefaultRightArm;
+	}
+
+
+	public void setAddDefaultRightArm(CheckMenuItem addDefaultRightArm) {
+		AddDefaultRightArm = addDefaultRightArm;
 	}
 	
 

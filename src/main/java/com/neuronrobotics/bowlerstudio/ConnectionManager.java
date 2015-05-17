@@ -213,22 +213,22 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		}.start();
 	}
 
-	public void addConnection(BowlerAbstractDevice c, String name) {
+	public void addConnection(BowlerAbstractDevice newDevice, String name) {
 		int numOfThisDeviceType=0;
 		for (int i = 0; i < devices.size(); i++) {
-			if(c.getClass().isInstance(devices.get(i).getDevice()))
+			if(newDevice.getClass().isInstance(devices.get(i).getDevice()))
 				numOfThisDeviceType++;
 		}
 		if(numOfThisDeviceType>0)
 			name = name+numOfThisDeviceType;
 		
-		c.setScriptingName(name);
+		newDevice.setScriptingName(name);
 		PluginManager mp;
-		Log.debug("Adding a "+c.getClass().getName()+" with name "+name );
-		mp = new PluginManager(c, getBowlerStudioController());
+		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+name );
+		mp = new PluginManager(newDevice, getBowlerStudioController());
 		devices.add(mp);
 
-		BowlerAbstractConnection con = c.getConnection();
+		BowlerAbstractConnection con = newDevice.getConnection();
 		Node icon = getIcon("images/connection-icon.png"
 		// "images/usb-icon.png"
 		);
@@ -252,33 +252,33 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		}
 
 		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(name + " "
-				+ c.getAddress(), icon);
+				+ newDevice.getAddress(), icon);
 
 		mp.setTree(item);
 		item.setExpanded(true);
 		rootItem.getChildren().add(item);
 		mp.setName(name);
-		if (c.getConnection() != null) {
-			c.getConnection().addConnectionEventListener(
-					new IConnectionEventListener() {
-						@Override
-						public void onDisconnect(BowlerAbstractConnection source) {
-							// clean up after yourself...
-							devices.remove(mp);
-							rootItem.getChildren().remove(item);
-						}
 
-						// ignore
-						@Override
-						public void onConnect(BowlerAbstractConnection source) {
-						}
-					});
-		}
+		newDevice.addConnectionEventListener(
+				new IConnectionEventListener() {
+					@Override
+					public void onDisconnect(BowlerAbstractConnection source) {
+						// clean up after yourself...
+						devices.remove(mp);
+						rootItem.getChildren().remove(item);
+					}
+
+					// ignore
+					@Override
+					public void onConnect(BowlerAbstractConnection source) {
+					}
+				});
+		
 		item.setSelected(true);
 		item.selectedProperty().addListener(b -> {
 			if (!item.isSelected()) {
 				System.out.println("Disconnecting " + mp.getName());
-				c.disconnect();
+				newDevice.disconnect();
 				devices.remove(mp);
 				rootItem.getChildren().remove(item);
 			}
@@ -312,23 +312,25 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		for (int i = 0; i < devices.size(); i++) {
 			if(class1==null)
 				choices.add(devices.get(i).getName());
-			else if(class1.isInstance(devices.get(i))){
+			else if(class1.isInstance(devices.get(i).getDevice())){
 				choices.add(devices.get(i).getName());
 			}
 		}
-
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
-				choices);
-		dialog.setTitle("Bowler Device Chooser");
-		dialog.setHeaderText("Choose connected bowler device");
-		dialog.setContentText("Device Name:");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			for (int i = 0; i < devices.size(); i++) {
-				if (devices.get(i).getName().contains(result.get())) {
-					return devices.get(i).getDevice();
+		
+		if(choices.size()>0){
+			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
+					choices);
+			dialog.setTitle("Bowler Device Chooser");
+			dialog.setHeaderText("Choose connected bowler device");
+			dialog.setContentText("Device Name:");
+	
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			if (result.isPresent()) {
+				for (int i = 0; i < devices.size(); i++) {
+					if (devices.get(i).getName().contains(result.get())) {
+						return devices.get(i).getDevice();
+					}
 				}
 			}
 		}
@@ -348,7 +350,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 	}
 	
-	 public void onConnectCVCamera() {
+	 public OpenCVImageProvider onConnectCVCamera() {
 		List<String> choices = new ArrayList<>();
 		choices.add("0");
 		choices.add("1");
@@ -365,13 +367,14 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 		Optional<String> result = dialog.showAndWait();
 		
 		// The Java 8 way to get the response value (with lambda expression).
-		result.ifPresent(letter -> {
+		if (result !=null) {
+			String letter = result.get();
 			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
 			String name = "camera"+letter;
 			addConnection(p,name);
-			//application.addTab(new CameraTab(p, name), true);
-		});
-		
+			return p;
+		}
+		return null;
 //		OpenCVImageProvider p = new OpenCVImageProvider(0);
 //		String name = "camera0";
 //		application.addConnection(p,name);

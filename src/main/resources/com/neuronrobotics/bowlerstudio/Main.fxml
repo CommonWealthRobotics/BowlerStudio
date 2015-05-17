@@ -37,8 +37,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="CAD">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onAddDefaultRightArm" text="Add Default Right Arm" />
-              <MenuItem mnemonicParsing="false" onAction="#onAddVRCamera" text="Add Camera VR" />
+              <CheckMenuItem  selected="false" fx:id="AddDefaultRightArm" text="Add Default Right Arm" />
+              <CheckMenuItem  selected="false" fx:id="AddVRCamera" text="Add Camera VR" />
             </items>
           </Menu>
         </menus>

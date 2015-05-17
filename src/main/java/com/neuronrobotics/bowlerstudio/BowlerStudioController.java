@@ -15,6 +15,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -34,13 +35,17 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
+import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
@@ -54,7 +59,7 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 	private ConnectionManager connectionManager;
 	private Jfx3dManager jfx3dmanager;
 	private MainController mainController;
-
+	
 
 	public BowlerStudioController(Jfx3dManager jfx3dmanager, MainController mainController) {
 		this.jfx3dmanager = jfx3dmanager;
@@ -244,21 +249,60 @@ public class BowlerStudioController extends TabPane implements IScriptEventListe
 		
 	}
 
-	public void onAddDefaultRightArm() {
-		// TODO Auto-generated method stub
-		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice();
-		if(DyIO.class.isInstance(dev)){
-			jfx3dmanager.attachArm((DyIO)dev, "TrobotMaster.xml");
-		}if(DHParameterKinematics.class.isInstance(dev)){
-			jfx3dmanager.attachArm((DHParameterKinematics)dev);
+	public void onAddDefaultRightArm(ActionEvent event) {
+		if(mainController.getAddDefaultRightArm().isSelected()){
+			// TODO Auto-generated method stub
+			BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice(DHParameterKinematics.class);
+			IConnectionEventListener l = new IConnectionEventListener() {
+				@Override public void onDisconnect(BowlerAbstractConnection source) {
+					jfx3dmanager.removeArm();
+					mainController.getAddDefaultRightArm().selectedProperty().set(false);
+				}
+				@Override public void onConnect(BowlerAbstractConnection source) {}
+			} ;
+			if(dev == null){
+				DyIO tmp =  (DyIO) getConnectionManager().pickConnectedDevice(DyIO.class);
+				if(tmp!=null){
+					tmp.addConnectionEventListener(l);
+					dev = new DHParameterKinematics(tmp, "TrobotMaster.xml");
+					getConnectionManager().addConnection(dev, "DHArm");
+				}
+			}
+			if(dev!=null){
+				jfx3dmanager.attachArm((DHParameterKinematics)dev);
+				dev.addConnectionEventListener(l);
+			}else{
+				mainController.getAddDefaultRightArm().selectedProperty().set(false);
+			}
+		}else{
+			jfx3dmanager.removeArm();
 		}
 	}
 
-	public void onAddVRCamera() {
+	public void onAddVRCamera(ActionEvent event) {
 		// TODO Auto-generated method stub
-		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice();
-		if(AbstractImageProvider.class.isInstance(dev)){
-			
+		
+		BowlerAbstractDevice dev = getConnectionManager().pickConnectedDevice(AbstractImageProvider.class);
+		if(dev==null)
+			dev= getConnectionManager().onConnectCVCamera();
+		if(dev!=null){
+			dev.addConnectionEventListener(new IConnectionEventListener() {
+				@Override public void onDisconnect(BowlerAbstractConnection source) {
+					mainController.getAddVRCamera().selectedProperty().set(false);
+				}
+				@Override public void onConnect(BowlerAbstractConnection source) {}
+			});
+			new Thread(){
+				public void run(){
+					HaarDetector faces = new HaarDetector();
+					System.out.println("Camera VR Started");
+					while(mainController.getAddVRCamera().isSelected()){
+						ThreadUtil.wait(100);
+					}
+					//bail out when the checkbox is unchecked
+					System.out.println("Camera VR disabled");
+				}
+			}.start();
 		}
 	}
 
