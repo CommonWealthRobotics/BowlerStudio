@@ -139,7 +139,7 @@ dependencies {
 	
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
-	compile group: 'me.dm7.barcodescanner', name: 'zbar', version: '1.7'
+	compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
 }
 
 // create a fat-jar (class files plus dependencies
