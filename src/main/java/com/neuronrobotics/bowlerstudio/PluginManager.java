@@ -4,6 +4,7 @@ package com.neuronrobotics.bowlerstudio;
 import java.util.ArrayList;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -42,6 +43,7 @@ import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IExtendedPIDControl;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class PluginManager {
 	
@@ -230,25 +232,36 @@ public class PluginManager {
 				e.printStackTrace();
 			}
 			p.selectedProperty().addListener(b ->{
-				try {
-					AbstractBowlerStudioTab t = generateTab(c);
-					if(p.isSelected()){
-						getBowlerStudioController().addTab(t, true);
-						t.setOnCloseRequest(arg0 -> {
-							System.out.println("Closing "+t.getText());
-							t.onTabClosing();
-							p.setSelected(false);
-						});
-						System.out.println("Launching "+c.getSimpleName());
-		        	}else{
-		        		try{
-		        			t.requestClose();
-		        		}catch (NullPointerException ex){};// tab is already closed
-		        	}
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				
+				new Thread(){
+					public void run(){
+						try {
+							AbstractBowlerStudioTab t = generateTab(c);
+							if(p.isSelected()){
+								// allow the threads to finish before adding
+								ThreadUtil.wait(50);
+								getBowlerStudioController().addTab(t, true);
+								t.setOnCloseRequest(arg0 -> {
+									System.out.println("Closing "+t.getText());
+									t.onTabClosing();
+									p.setSelected(false);
+								});
+								
+								System.out.println("Launching "+c.getSimpleName());
+				        	}else{
+				        		try{
+				        			t.requestClose();
+				        		}catch (NullPointerException ex){
+				        			ex.printStackTrace();
+				        		};// tab is already closed
+				        	}
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}.start();
+
 	        	
 	        });
 				

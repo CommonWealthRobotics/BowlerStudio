@@ -58,7 +58,9 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 		        if(behavior.canCloseTab(this)) {
 		            behavior.closeTab(this);
 		        }
-    		}catch (NullPointerException e){}
+    		}catch (NullPointerException e){
+    			e.printStackTrace();
+    		}
     	});
     }
 

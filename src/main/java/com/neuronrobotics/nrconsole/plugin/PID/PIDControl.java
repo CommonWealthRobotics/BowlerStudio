@@ -74,39 +74,42 @@ public class PIDControl extends AbstractBowlerStudioTab {
 		
 		for(int i=0;i<initVals.length;i++) {
 			final int index = i;
-			Platform.runLater(() -> {
+
 				// TODO Auto-generated method stub
 				try{
 					PIDControlWidget w = new PIDControlWidget(index, initVals[index], this);
 					widgits.add(w);
-					Stage dialog = new Stage();
-					dialog.initStyle(StageStyle.UTILITY);
-					dialog.setTitle("Channel: "+index);
-					CheckBoxTreeItem<String> chan = new CheckBoxTreeItem<String>("Channel: "+index);
-					
-					SwingNode sn = new SwingNode();
-			        sn.setContent(w);
-					Scene scene = new Scene(new Group(sn));
-					dialog.setScene(scene);
-					dialog.setOnCloseRequest(event -> {
-						chan.setSelected(false);
+					Platform.runLater(() -> {
+						Stage dialog = new Stage();
+						dialog.initStyle(StageStyle.UTILITY);
+						dialog.setTitle("Channel: "+index);
+						CheckBoxTreeItem<String> chan = new CheckBoxTreeItem<String>("Channel: "+index);
+						
+						SwingNode sn = new SwingNode();
+				        sn.setContent(w);
+						Scene scene = new Scene(new Group(sn));
+						dialog.setScene(scene);
+						dialog.setOnCloseRequest(event -> {
+							chan.setSelected(false);
+						});
+						chan.selectedProperty().addListener(b ->{
+							 if(chan.isSelected()){
+								 dialog.show();
+							 }else{
+								 w.stopPID(true);
+								 dialog.hide();
+							 }
+				        });
+						rootItem.getChildren().add(chan);
 					});
-					chan.selectedProperty().addListener(b ->{
-						 if(chan.isSelected()){
-							 dialog.show();
-						 }else{
-							 w.stopPID(true);
-							 dialog.hide();
-						 }
-			        });
-					rootItem.getChildren().add(chan);
+					
 				}catch (Exception e){
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Failed to create a PID widget", "DyPID ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				//tabbedPane.addTab("PID "+index,widgits.get(index));
-			});
+
 		}
 
 		
