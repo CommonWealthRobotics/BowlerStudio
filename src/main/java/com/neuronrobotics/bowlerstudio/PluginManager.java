@@ -250,6 +250,7 @@ public class PluginManager {
 								System.out.println("Launching "+c.getSimpleName());
 				        	}else{
 				        		try{
+				        			System.out.println("Closing "+c.getSimpleName());
 				        			t.requestClose();
 				        		}catch (NullPointerException ex){
 				        			ex.printStackTrace();
