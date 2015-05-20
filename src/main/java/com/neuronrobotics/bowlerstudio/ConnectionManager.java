@@ -18,7 +18,7 @@ import javax.usb.UsbException;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
-import org.bytedeco.javacv.OpenCVFrameGrabber;
+//import org.bytedeco.javacv.OpenCVFrameGrabber;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
@@ -382,44 +382,45 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 
 	 public void onConnectJavaCVCamera() {
-		List<String> choices = new ArrayList<>();
-		try {
-			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
-			if(des.length==0)
-				return;
-			for (String s: des){
-				choices.add(s);
-			}
-		} catch (org.bytedeco.javacv.FrameGrabber.Exception |UnsupportedOperationException e1) {
-			choices.add("0");
-			choices.add("1");
-			choices.add("2");
-			choices.add("3");
-			choices.add("4");
-		}
-		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("JavaCV Camera Index Chooser");
-		dialog.setHeaderText("Choose an JavaCV camera");
-		dialog.setContentText("Camera Index:");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		
-		// The Java 8 way to get the response value (with lambda expression).
-		result.ifPresent(letter -> {
-			JavaCVImageProvider p;
-			try {
-				p = new JavaCVImageProvider(Integer.parseInt(letter));
-				String name = "camera"+letter;
-				addConnection(p,name);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		});
-		
+		 onConnectCVCamera();
+//		List<String> choices = new ArrayList<>();
+//		try {
+//			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
+//			if(des.length==0)
+//				return;
+//			for (String s: des){
+//				choices.add(s);
+//			}
+//		} catch (org.bytedeco.javacv.FrameGrabber.Exception |UnsupportedOperationException e1) {
+//			choices.add("0");
+//			choices.add("1");
+//			choices.add("2");
+//			choices.add("3");
+//			choices.add("4");
+//		}
+//		
+//		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+//		dialog.setTitle("JavaCV Camera Index Chooser");
+//		dialog.setHeaderText("Choose an JavaCV camera");
+//		dialog.setContentText("Camera Index:");
+//
+//		// Traditional way to get the response value.
+//		Optional<String> result = dialog.showAndWait();
+//		
+//		// The Java 8 way to get the response value (with lambda expression).
+//		result.ifPresent(letter -> {
+//			JavaCVImageProvider p;
+//			try {
+//				p = new JavaCVImageProvider(Integer.parseInt(letter));
+//				String name = "camera"+letter;
+//				addConnection(p,name);
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//		});
+//		
 
 	}
 

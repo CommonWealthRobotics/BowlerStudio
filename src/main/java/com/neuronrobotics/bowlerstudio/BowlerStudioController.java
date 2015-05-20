@@ -1,41 +1,26 @@
 package com.neuronrobotics.bowlerstudio;
 
 import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.MeshContainer;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bytedeco.javacpp.DoublePointer;
+//import org.bytedeco.javacpp.DoublePointer;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.geometry.Side;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
@@ -54,7 +39,6 @@ import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.RollingAverageFilter;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
