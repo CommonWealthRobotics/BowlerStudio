@@ -239,7 +239,7 @@ public class PluginManager {
 							AbstractBowlerStudioTab t = generateTab(c);
 							if(p.isSelected()){
 								// allow the threads to finish before adding
-								ThreadUtil.wait(50);
+								//ThreadUtil.wait(50);
 								getBowlerStudioController().addTab(t, true);
 								t.setOnCloseRequest(arg0 -> {
 									System.out.println("Closing "+t.getText());
