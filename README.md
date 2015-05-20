@@ -22,7 +22,7 @@ BowlerStudio is a device manager, scripting engine, CAD package, and simulation 
 
 Every step of this task can be performed from within BowlerStudio!
 
-Lets go through the main features:
+Let's go through the main features:
 
 # Scripting With Gist
 ### About scripts and Gist
