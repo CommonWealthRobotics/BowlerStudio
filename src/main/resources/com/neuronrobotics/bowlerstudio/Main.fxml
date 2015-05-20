@@ -23,7 +23,7 @@
               <Menu mnemonicParsing="false" text="Image Feed">
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="Add a new CHDK camera" />
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectJavaCVCamera" text="Add a new JavaCV camera" />
+	              <!--<MenuItem mnemonicParsing="false" onAction="#onConnectJavaCVCamera" text="Add a new JavaCV camera" />-->
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectFileSourceCamera" text="Add a new Static File image" />
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectURLSourceCamera" text="Add a new WebCam URL" />
               </Menu>
