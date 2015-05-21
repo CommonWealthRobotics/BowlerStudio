@@ -16,7 +16,7 @@ if (!hasProperty('mainClass')) {
 File buildDir = file(".");
 
 Properties props = new Properties()
-props.load(new FileInputStream(buildDir.getAbsolutePath()+"/java-bowler/src/main/resources/com/neuronrobotics/sdk/config/build.properties"))
+props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/com/neuronrobotics/bowlerstudio/build.properties"))
 
 		boolean is64Bit() {
 			////System.out.println("Arch: "+getOsArch());

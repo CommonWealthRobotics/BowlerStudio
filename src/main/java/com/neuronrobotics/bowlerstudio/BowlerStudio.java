@@ -60,7 +60,7 @@ public class BowlerStudio extends Application {
         	ThreadUtil.wait(500);
         	System.exit(0);
 		});
-        primaryStage.setTitle("Bowler Studio: SDK v "+SDKBuildInfo.getVersion());
+        primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
         Log.enableDebugPrint();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
