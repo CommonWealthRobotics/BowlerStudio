@@ -15,10 +15,13 @@ import javax.usb.UsbDevice;
 import javax.usb.UsbDisconnectedException;
 import javax.usb.UsbException;
 
+import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
 //import org.bytedeco.javacv.OpenCVFrameGrabber;
+
+import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
@@ -34,6 +37,7 @@ import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
+import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -514,9 +518,14 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				if(letter.contains(s.getName())){
 					BowlerJInputDevice p =new BowlerJInputDevice(s);
 					p.connect();
-//					p.addListeners((comp, event1, value, eventString) -> {
-//						System.out.println(eventString);
-//					});
+					IJInputEventListener l=new IJInputEventListener() {
+						@Override
+						public void onEvent(Component comp, Event event1,
+								float value, String eventString) {
+									//System.out.println(eventString);
+								}
+					};
+					p.addListeners(l);
 					String name = "gamepad";
 					addConnection(p,name);
 					return;
