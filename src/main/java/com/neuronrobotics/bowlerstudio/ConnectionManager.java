@@ -514,9 +514,9 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				if(letter.contains(s.getName())){
 					BowlerJInputDevice p =new BowlerJInputDevice(s);
 					p.connect();
-					p.addListeners((comp, event1, value, eventString) -> {
-						System.out.println(eventString);
-					});
+//					p.addListeners((comp, event1, value, eventString) -> {
+//						System.out.println(eventString);
+//					});
 					String name = "gamepad";
 					addConnection(p,name);
 					return;
