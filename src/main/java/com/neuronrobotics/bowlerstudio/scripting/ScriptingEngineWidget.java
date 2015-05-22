@@ -341,6 +341,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 							message+="dyio";
 						else if(stackTrace.contains("camera"))
 							message+="camera";
+						else if(stackTrace.contains("gamepad"))
+							message+="gamepad";
 						else
 							message+=stackTrace;
 						alert.setHeaderText(message);
@@ -350,6 +352,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 							connectionmanager.addConnection();
 						else if(stackTrace.contains("camera"))
 							connectionmanager.addConnection(new OpenCVImageProvider(0),"camera0");
+						else if(stackTrace.contains("gamepad"))
+							connectionmanager.onConnectGamePad();
 						reset();
 					});
 					
