@@ -85,7 +85,9 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			Current_URL=Url;
 		webEngine.load(Current_URL);
 	    if (splash != null) {
+	    	try{
 	        splashGraphics = splash.createGraphics();
+	    	}catch (IllegalStateException e){}
 	    }
 	    
 		
