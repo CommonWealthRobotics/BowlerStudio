@@ -357,7 +357,7 @@ public class BowlerStudioController extends TabPane implements
 										.getValue());
 								carmermanipulation.setTy(-100
 										* rollingY.getValue());
-								carmermanipulation.setTz(-300
+								carmermanipulation.setTz(-500
 										* rollingSize.getValue());
 								view.set(30.0 + (-5.0 * rollingSize.getValue()));
 							});
