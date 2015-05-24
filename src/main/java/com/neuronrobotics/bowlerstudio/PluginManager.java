@@ -58,7 +58,7 @@ public class PluginManager {
 		this.dev = dev;
 		this.setBowlerStudioController(bowlerStudioController);
 		if(!dev.isAvailable())
-			throw new RuntimeException();
+			throw new RuntimeException("Device is not reporting availible "+dev.getClass().getSimpleName());
 		
 		// add tabs to the support list based on thier class
 		// adding additional classes here will show up in the default 

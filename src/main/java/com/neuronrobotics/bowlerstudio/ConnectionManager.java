@@ -3,7 +3,6 @@ package com.neuronrobotics.bowlerstudio;
 import gnu.io.NRSerialPort;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,10 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.usb.UsbDevice;
 import javax.usb.UsbDisconnectedException;
-import javax.usb.UsbException;
-
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
@@ -25,14 +21,9 @@ import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
-import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
-import com.neuronrobotics.jniloader.AbstractImageProvider;
-import com.neuronrobotics.jniloader.JavaCVImageProvider;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.StaticFileProvider;
 import com.neuronrobotics.jniloader.URLImageProvider;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
@@ -57,23 +48,18 @@ import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 public class ConnectionManager extends Tab implements EventHandler<ActionEvent> {
 
