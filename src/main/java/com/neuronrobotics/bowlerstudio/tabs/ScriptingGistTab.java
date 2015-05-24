@@ -248,7 +248,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				try{
 					myTab.setText(scripting.getFileName());
 				}catch(java.lang.NullPointerException ex){
-					ex.printStackTrace();
+					// web page contains no gist
+					//ex.printStackTrace();
 				}
 			}
 		}catch(Exception e){
