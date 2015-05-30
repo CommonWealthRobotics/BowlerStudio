@@ -508,7 +508,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 						@Override
 						public void onEvent(Component comp, Event event1,
 								float value, String eventString) {
-									//System.out.println(eventString);
+									//System.out.println(comp.getName()+" is value= "+value);
 								}
 					};
 					p.addListeners(l);
