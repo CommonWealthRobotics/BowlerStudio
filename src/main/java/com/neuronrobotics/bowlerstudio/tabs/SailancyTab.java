@@ -38,7 +38,7 @@ public class SailancyTab extends AbstractBowlerStudioTab  {
 	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640,480);
 	//set this variable to make this tab auto open when a device is connected
 
-
+	public SailancyTab(){}
 	public SailancyTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;
 		this.setDetector(dr);
