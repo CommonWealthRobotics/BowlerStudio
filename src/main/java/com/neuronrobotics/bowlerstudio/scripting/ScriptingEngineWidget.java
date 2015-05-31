@@ -248,7 +248,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 		this.engine = engine;
 		loadGist = true;
 		String currentGist = getCurrentGist(addr, engine);
-		String[] code = codeFromGistID(currentGist);
+		String[] code = codeFromGistID(currentGist,"");
 		if (code != null) {
 			setCode(code[0]);
 			fileLabel.setText(code[1]);
@@ -533,17 +533,18 @@ public class ScriptingEngineWidget extends BorderPane implements
 		}
 	}
 
-	public static String[] codeFromGistID(String id) {
+	public static String[] codeFromGistID(String id, String FileName) {
 		try {
 			github = GitHub.connectAnonymously();
 			Log.debug("Loading Gist: " + id);
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
-				if (entry.getKey().endsWith(".py")
+				if (((entry.getKey().endsWith(".py")
 						|| entry.getKey().endsWith(".jy")
 						|| entry.getKey().endsWith(".java")
-						|| entry.getKey().endsWith(".groovy")) {
+						|| entry.getKey().endsWith(".groovy"))&&(FileName.length()==0))
+						||entry.getKey().contains(FileName)) {
 
 					GHGistFile ghfile = entry.getValue();
 					Log.debug("Key = " + entry.getKey());
@@ -580,7 +581,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static Object inlineGistScriptRun(String gistID,
 			ArrayList<Object> args) {
-		return inlineScriptRun(codeFromGistID(gistID)[0], args);
+		return inlineScriptRun(codeFromGistID(gistID,"")[0], args);
 	}
 
 	static final String[] imports = new String[] { "haar",
