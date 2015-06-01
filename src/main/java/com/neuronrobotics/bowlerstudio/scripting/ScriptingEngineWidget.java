@@ -539,6 +539,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 			Log.debug("Loading Gist: " + id);
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
+
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
 				if (((entry.getKey().endsWith(".py")
 						|| entry.getKey().endsWith(".jy")
