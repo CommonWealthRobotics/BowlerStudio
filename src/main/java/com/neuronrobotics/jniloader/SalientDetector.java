@@ -24,14 +24,12 @@ public class SalientDetector implements IObjectDetector {
 	@Override
 	public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp){
 		
-		
-		int horizon = 100;
+		int Horizon = 100;
 		int minArea = 100;
 		int maxArea = 700;
 		
 		Scalar RedBox = new Scalar(0, 0, 255);
 
-		int horizon = 100;
 			
 		int threshMin = 50;
 		int threshMax = 255;
@@ -177,7 +175,7 @@ public class SalientDetector implements IObjectDetector {
 				rectHold = Imgproc.boundingRect(new MatOfPoint(contours.get(i)));
 	
 				if      (i == 0)                    {contourFinal.add(contours.get(i));}
-				else if (rectHold.tl().y > horizon) {contourFinal.add(contours.get(i));}
+				else if (rectHold.tl().y > Horizon) {contourFinal.add(contours.get(i));}
 		    }
 
 		    int FinalSize = contourFinal.size();
@@ -209,7 +207,7 @@ public class SalientDetector implements IObjectDetector {
 				    int oldX = (int) (test.br().x - (test.width/2));
 				    int oldY = (int) (test.br().y - (test.height/2));
 				    
-				    if (test.br().y > horizon && test.width < newX && test.height < newY){
+				    if (test.br().y > Horizon && test.width < newX && test.height < newY){
 					
 						test.width = newX;
 						test.height = newY;
