@@ -19,6 +19,7 @@ import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 
 public class SalientDetector implements IObjectDetector {
 	@Override
+	
 	public List<Detection> getObjects(java.awt.image.BufferedImage inImg,java.awt.image.BufferedImage disp) {
 		// public KeyPoint[] getObjects(Mat inputImage, Mat displayImage) {
 
@@ -262,17 +263,27 @@ public class SalientDetector implements IObjectDetector {
 		    }
 
 			for (int i = 0; i < boundRect.size(); i++) {
-				Mat holder = new Mat(); // hold the cropped 100x100
+				Mat holder = new Mat();                        // hold the cropped 100x100
 				Core.rectangle(ObjFound, boundRect.get(i).tl(), boundRect.get(i).br(), RedBox, 1, 8, 0); // make box in ObjFound
-				holder = inputImage.submat(boundRect.get(i)); // put cropped 100x100 in holder
+				holder = inputImage.submat(boundRect.get(i));  // put cropped 100x100 in holder
 				RegionsOfInterest.add(holder);                 // put holder in array
 			}
-	
-			AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
+			
+			AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp); // display input image + red boxes
+		
 		}
+		
+		// now to process those small areas.
+		
+		for (int a = 0; a < RegionsOfInterest.size(); a++){
+			
+			
+			
+		}
+		
 		return InterestingArea;
-	}
 	
+	}
 }
 
 
