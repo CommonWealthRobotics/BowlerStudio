@@ -21,24 +21,14 @@ import org.opencv.imgproc.Imgproc;
 
 public class SalientDetector implements IObjectDetector {
 
-	Rect RegionOfInterest = new Rect();
-	
-	int [] L_array = {100, 90, 80};
-	int [] U_array = {120, 110, 100};
-	
-	List<Mat> chs1;
-	List<Mat> chs2;
-	
-	int horizon = 100;
-	int minArea = 100;
-	int maxArea = 700;
-	
-	Mat MeanShift, Luv, Hist, Gradient, Pyramid = new Mat();
-	
-	Mat level_1 = new Mat();
-	Mat level_2 = new Mat();
 	@Override
 	public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp){
+		
+		
+		int horizon = 100;
+		int minArea = 100;
+		int maxArea = 700;
+		
 		Scalar RedBox = new Scalar(0, 0, 255);
 
 		int horizon = 100;
@@ -58,13 +48,12 @@ public class SalientDetector implements IObjectDetector {
 		int PyrSize = 3; // how many times to downsample
 
 		ArrayList<Detection> InterestingArea = new ArrayList<Detection>(); // areas
-			
 		ArrayList<Mat> RegionsOfInterest = new ArrayList<Mat>();
 
-		Mat inputImage = new Mat();
-		Mat MeanShift = new Mat(); // MeanShifted image to reduce noise
-		Mat ObjFound = new Mat(); // Where stuff is found and red boxes drawn
-		Mat Saliency = new Mat(); // Saliency of image
+		Mat inputImage  =  new Mat();
+		Mat MeanShift   =  new Mat(); // MeanShifted image to reduce noise
+		Mat ObjFound    =  new Mat(); // Where stuff is found and red boxes drawn
+		Mat Saliency    =  new Mat(); // Saliency of image
 
 		Mat top = new Mat(); // top level of pyramid
 		Mat bot = new Mat(); // meanshifted image to compare to
@@ -74,7 +63,6 @@ public class SalientDetector implements IObjectDetector {
 
 		AbstractImageProvider.bufferedImageToMat(inImg, inputImage);// ACCESS
 			
-
 		ObjFound = inputImage.clone();
 		MeanShift = inputImage.clone();
 
@@ -83,8 +71,6 @@ public class SalientDetector implements IObjectDetector {
 
 		// Perform Pyramid Function **********************************
 		MeanShift.convertTo(MeanShift, CvType.CV_32F); // 32F between 0 - 1.
-		// **************
-		// IMPORTANT LINE
 		DS = MeanShift.clone();
 
 		for (int i = 0; i < PyrSize; i++) {
@@ -127,11 +113,13 @@ public class SalientDetector implements IObjectDetector {
 		for (int i = 0; i < top.rows(); i++) { // find the smallest value in
 		    // both top and meanShift
 		    for (int j = 0; j < top.cols(); j++) { // this is so you can sub out
-				// the 0 with the min value
-				top.get(i, j, top_temp);
+
+		    	top.get(i, j, top_temp);
 				bot.get(i, j, bot_temp);
+				
 				float a = top_temp[0];
 				float b = bot_temp[0];
+				
 				if (a < top_min && a > 0) {top_min = a;} 
 				if (b < bot_min && b > 0) {bot_min = b;}
 		    }
@@ -139,19 +127,19 @@ public class SalientDetector implements IObjectDetector {
 
 		for (int i = 0; i < top.rows(); i++) {
 		    for (int j = 0; j < top.cols(); j++) {
-			top.get(i, j, top_temp);
-			bot.get(i, j, bot_temp);
+				top.get(i, j, top_temp);
+				bot.get(i, j, bot_temp);
+						
+				float a = top_temp[0];
+				float b = bot_temp[0];
+	
+				if (a == 0) {a = top_min;}
+				if (b == 0) {b = bot_min;}
+	
+				if (a <= b) {sal_temp[0] = (float) (1.0 - a / b);} 
+				else        {sal_temp[0] = (float) (1.0 - b / a);}
 					
-			float a = top_temp[0];
-			float b = bot_temp[0];
-
-			if (a == 0) {a = top_min;}
-			if (b == 0) {b = bot_min;}
-
-			if (a <= b) {sal_temp[0] = (float) (1.0 - a / b);} 
-			else        {sal_temp[0] = (float) (1.0 - b / a);}
-				
-			Saliency.put(i, j, sal_temp);
+				Saliency.put(i, j, sal_temp);
 		    }
 		}
 
@@ -159,11 +147,9 @@ public class SalientDetector implements IObjectDetector {
 
 		Mat thr = new Mat(Saliency.rows(), Saliency.cols(), CvType.CV_8UC1);
 		Saliency.convertTo(thr, CvType.CV_8UC1, 255); // change float to 1-255
-		// so you can use
-		// findContours
 		Imgproc.threshold(thr, Saliency, threshMin, threshMax, Imgproc.THRESH_BINARY); // turn to black and white
 
-		ArrayList<MatOfPoint> contours        = new ArrayList<MatOfPoint>();          // all the shapes aka contours in image stored here
+		ArrayList<MatOfPoint> contours        = new ArrayList<MatOfPoint>();           // all the shapes aka contours in image stored here
 		ArrayList<Rect> boundRect             = new ArrayList<Rect>();
 		ArrayList<MatOfPoint> contourFinal    = new ArrayList<MatOfPoint>();
 
@@ -233,9 +219,6 @@ public class SalientDetector implements IObjectDetector {
 						
 						int shiftX = nX - oldX;
 						int shiftY = nY - oldY;
-	
-		// Perform Hist
-		
 
 						if (test.x <= 0 || test.y <= 0 || test.br().x >= newX || test.br().y >= newY){a = false;}
 						if (a == true) {boundRect.add(test);}			
@@ -279,8 +262,6 @@ public class SalientDetector implements IObjectDetector {
 			
 			ArrayList <MatOfPoint> RawContours;
 			ArrayList <MatOfPoint> FinalContours;
-			
-		
 			
 		}
 		
