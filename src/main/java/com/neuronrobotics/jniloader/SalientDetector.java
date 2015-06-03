@@ -148,7 +148,9 @@ public class SalientDetector implements IObjectDetector {
 	ArrayList<MatOfPoint> contours     = new ArrayList<MatOfPoint>();           // all the shapes aka contours in image stored here
 	ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 	ArrayList<Rect> boundRect          = new ArrayList<Rect>();
-
+	
+	Imgproc.findContours(Saliency, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
+	
 	if(contours.size() < 100){
 
 	    while(true){            // sort by size
@@ -238,6 +240,8 @@ public class SalientDetector implements IObjectDetector {
 	for (int a = 0; a < RegionsOfInterest.size(); a++){ // process those small areas
 			
 	    Mat Interesting = new Mat();
+	    Mat colorResult = new Mat();
+	    Mat hsv1 = Interesting.clone();  // Range of color
 	    Interesting     = RegionsOfInterest.get(a);
 			
 	    int ObjWidth    =  Interesting.cols();   // the first time it runs 250x250 
@@ -249,19 +253,13 @@ public class SalientDetector implements IObjectDetector {
 	    int centoffset  =  80;
 			
 	    if (ObjWidth == 100 && ObjHeight == 100){ // 100x100 squares
-		contMinArea = 50;
-		numbOfObj   = 4;
-		centoffset  = 20;
-		edgeOffset  = 20;
-		ObjCent     = 50;
+			contMinArea = 50;
+			numbOfObj   = 4;
+			centoffset  = 20;
+			edgeOffset  = 20;
+			ObjCent     = 50;
 	    }
-			
-	    ArrayList <MatOfPoint> resultCont;
-	    ArrayList <MatOfPoint> FinalContours;
 						  
-	    Mat colorResult;
-	    Mat hsv1 = Interesting.clone();  // Range of color
-	    
 	    Scalar white_min1 = new Scalar(0,0,100);
 	    Scalar white_max1 = new Scalar(180,100,256);
 	
@@ -281,17 +279,21 @@ public class SalientDetector implements IObjectDetector {
 	    Scalar grey_max1 = new Scalar(0,0, 256);
 	
 	    ArrayList<Scalar> colorRanges = new ArrayList<Scalar>(); // array of scalar min,max for confirmation
-
+	    ArrayList <MatOfPoint> resultCont   = new ArrayList<MatOfPoint>();
+	    ArrayList <MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();
+	    
 	    Imgproc.cvtColor(hsv1, colorResult, Imgproc.COLOR_BGR2HSV);
 	    	    
-	    Core.inRange(white_min1, white_max1, colorResult);
-	    erode  (colorResult, colorResult,  erodeElement);
-	    dilate (colorResult, colorResult, dilateElement);
+	    Core.inRange(hsv1, white_min1, white_max1, colorResult);
+	    Imgproc.erode (colorResult, colorResult,  erodeElement);
+	    Imgproc.dilate (colorResult, colorResult, dilateElement);
 
 	    Imgproc.findContours(colorResult, resultCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
 	    if(!resultCont.isEmpty() && resultCont.size() <= numbOfObj){
-
+	    	for(int z = 0; z < resultCont.size(); z++){
+	    		double area = Imgproc.contourArea(resultCont.get(z));
+	    	}
 	    }
 	  	
 	}
