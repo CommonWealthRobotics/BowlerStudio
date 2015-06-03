@@ -25,21 +25,34 @@ import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+import javafx.stage.Stage;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -51,11 +64,14 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.controlsfx.control.action.AbstractAction;
+import org.controlsfx.control.action.Action;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
 import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
@@ -535,7 +551,48 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static String[] codeFromGistID(String id, String FileName) {
 		try {
-			github = GitHub.connectAnonymously();
+			if(github == null){
+				File creds = new File(System.getProperty("user.home")+"/.github");
+				if (creds.exists()){
+					try{
+						github = GitHub.connect();
+					}catch(IOException ex){
+						
+					}
+				}else{
+					creds.createNewFile();
+				}
+				
+				if(github==null){
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("GitHub Login Missing");
+					alert.setHeaderText("To use BowlerStudio at full speed login with github");
+					alert.setContentText("What would you like to do?");
+	
+					ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
+					ButtonType buttonTypeTwo = new ButtonType("Login");
+					
+					alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+					
+					Optional<ButtonType> result = alert.showAndWait();
+					if (result.get() == buttonTypeOne){
+						github = GitHub.connectAnonymously();
+					} else  {
+						GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
+				        myDialog.sizeToScene();
+				        myDialog.showAndWait();
+				        String content= "login="+myDialog.getUsername()+"\n";
+				        content+= "password="+myDialog.getPw()+"\n";
+				        PrintWriter out = new PrintWriter(creds.getAbsoluteFile());
+				        out.println(content);
+				        out.flush();
+				        out.close();
+				        github = GitHub.connect();
+					} 
+				}
+				
+			}
+			
 			Log.debug("Loading Gist: " + id);
 			GHGist gist = github.getGist(id);
 			Map<String, GHGistFile> files = gist.getFiles();
