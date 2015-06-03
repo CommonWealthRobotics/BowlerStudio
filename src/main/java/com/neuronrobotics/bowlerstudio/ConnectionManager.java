@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.usb.UsbDisconnectedException;
+
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
@@ -24,16 +25,18 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.jniloader.OpenCVImageProvider;
 import com.neuronrobotics.jniloader.StaticFileProvider;
 import com.neuronrobotics.jniloader.URLImageProvider;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
+import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -61,10 +64,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
-public class ConnectionManager extends Tab implements EventHandler<ActionEvent> {
+public class ConnectionManager extends Tab implements IDeviceAddedListener ,EventHandler<ActionEvent> {
 
 	private CheckBoxTreeItem<String> rootItem;
-	private static final ArrayList<PluginManager> devices = new ArrayList<PluginManager>();
+	private static final ArrayList<PluginManager> plugins = new ArrayList<PluginManager>();
 	private BowlerStudioController bowlerStudioController;
 
 	private Node getIcon(String s) {
@@ -103,7 +106,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 				new Thread() {
 					public void run() {
 						ThreadUtil.wait(750);
-						addConnection();
+						DeviceManager.addConnection();
 //						for (String d : devs) {
 //							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
 //								addConnection(new SerialConnection(d));
@@ -123,156 +126,16 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 //						addConnection();
 //					}
 //				}.start());
+		DeviceManager.addDeviceAddedListener(this);
+		
 
 	}
 
-	public void addConnection(BowlerAbstractConnection connection) {
-		if (connection == null) {
-			return;
-		}
 
-		GenericDevice gen = new GenericDevice(connection);
-		try {
-			if (!gen.connect()) {
-				throw new InvalidConnectionException("Connection is invalid");
-			}
-			if (!gen.ping(true)) {
-				throw new InvalidConnectionException("Communication failed");
-			}
-		} catch (Exception e) {
-			// connection.disconnect();
-			ThreadUtil.wait(1000);
-			BowlerDatagram.setUseBowlerV4(false);
-			if (!gen.connect()) {
-				throw new InvalidConnectionException("Connection is invalid");
-			}
-			if (!gen.ping()) {
-				connection = null;
-				throw new InvalidConnectionException("Communication failed");
-			}
-			throw e;
-		}
-		if (gen.hasNamespace("neuronrobotics.dyio.*")) {
-			DyIO dyio = new DyIO(gen.getConnection());
-			dyio.connect();
-			String name = "dyio";
-
-			addConnection(dyio, name);
-
-		} else if (gen.hasNamespace("bcs.cartesian.*")) {
-			BowlerBoardDevice delt = new BowlerBoardDevice();
-			delt.setConnection(gen.getConnection());
-			delt.connect();
-			String name = "bowlerBoard";
-			addConnection(delt, name);
-			addConnection(new NRPrinter(delt), "cnc");
-			
-		} else if (gen.hasNamespace("bcs.pid.*")) {
-			GenericPIDDevice delt = new GenericPIDDevice();
-			delt.setConnection(gen.getConnection());
-			delt.connect();
-			String name = "pid";
-
-			addConnection(delt, name);
-		} else if (gen.hasNamespace("bcs.bootloader.*")
-				|| gen.hasNamespace("neuronrobotics.bootloader.*")) {
-			NRBootLoader delt = new NRBootLoader(gen.getConnection());
-			String name = "bootloader";
-
-			addConnection(delt, name);
-		} else if (gen.hasNamespace("neuronrobotics.bowlercam.*")) {
-			BowlerCamDevice delt = new BowlerCamDevice();
-			delt.setConnection(gen.getConnection());
-			delt.connect();
-			String name = "bowlercam";
-			if (rootItem.getChildren().size() > 0)
-				name += rootItem.getChildren().size() + 1;
-			addConnection(delt, name);
-		} else {
-			addConnection(gen, "device");
-		}
-	}
-
-	public void addConnection() {
-		new Thread() {
-			public void run() {
-				BowlerDatagram.setUseBowlerV4(true);
-				addConnection(ConnectionDialog.promptConnection());
-			}
-		}.start();
-	}
 
 	public void addConnection(BowlerAbstractDevice newDevice, String name) {
-		int numOfThisDeviceType=0;
-		for (int i = 0; i < devices.size(); i++) {
-			if(newDevice.getClass().isInstance(devices.get(i).getDevice()))
-				numOfThisDeviceType++;
-		}
-		if(numOfThisDeviceType>0)
-			name = name+numOfThisDeviceType;
-		
-		newDevice.setScriptingName(name);
-		PluginManager mp;
-		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+name );
-		mp = new PluginManager(newDevice, getBowlerStudioController());
-		devices.add(mp);
+		DeviceManager.addConnection(newDevice, name);
 
-		BowlerAbstractConnection con = newDevice.getConnection();
-		Node icon = getIcon("images/connection-icon.png"
-		// "images/usb-icon.png"
-		);
-		if (SerialConnection.class.isInstance(con)) {
-			icon = getIcon(
-			// "images/ethernet-icon.png"
-			"images/usb-icon.png");
-		} else if (UsbCDCSerialConnection.class.isInstance(con)) {
-			icon = getIcon(
-			// "images/ethernet-icon.png"
-			"images/usb-icon.png");
-		} else if (BluetoothSerialConnection.class.isInstance(con)) {
-			icon = getIcon(
-			// "images/ethernet-icon.png"
-			"images/bluetooth-icon.png");
-		} else if (UDPBowlerConnection.class.isInstance(con)
-				|| BowlerTCPClient.class.isInstance(con)) {
-			icon = getIcon(
-			// "images/ethernet-icon.png"
-			"images/ethernet-icon.png");
-		}
-
-		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(name + " "
-				+ newDevice.getAddress(), icon);
-
-		mp.setTree(item);
-		item.setExpanded(true);
-		rootItem.getChildren().add(item);
-		mp.setName(name);
-
-		newDevice.addConnectionEventListener(
-				new IConnectionEventListener() {
-					@Override
-					public void onDisconnect(BowlerAbstractConnection source) {
-						// clean up after yourself...
-						devices.remove(mp);
-						rootItem.getChildren().remove(item);
-					}
-
-					// ignore
-					@Override
-					public void onConnect(BowlerAbstractConnection source) {
-					}
-				});
-		
-		item.setSelected(true);
-		item.selectedProperty().addListener(b -> {
-			if (!item.isSelected()) {
-				System.out.println("Disconnecting " + mp.getName());
-				newDevice.disconnect();
-				devices.remove(mp);
-				rootItem.getChildren().remove(item);
-			}
-		});
-		getBowlerStudioController().setSelectedTab(this);
 	}
 
 	@Override
@@ -281,8 +144,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 	}
 
-	public static ArrayList<PluginManager>  getConnections() {
-		return devices;
+	public static ArrayList<PluginManager>  getPlugins() {
+		return plugins;
 	}
 
 	public BowlerStudioController getBowlerStudioController() {
@@ -295,16 +158,7 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 	}
 	
 	public BowlerAbstractDevice pickConnectedDevice(Class class1) {
-		if (devices.size() == 0)
-			return null;
-		List<String> choices = new ArrayList<>();
-		for (int i = 0; i < devices.size(); i++) {
-			if(class1==null)
-				choices.add(devices.get(i).getName());
-			else if(class1.isInstance(devices.get(i).getDevice())){
-				choices.add(devices.get(i).getName());
-			}
-		}
+		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
 		if(choices.size()>0){
 			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
@@ -316,9 +170,9 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 			// Traditional way to get the response value.
 			Optional<String> result = dialog.showAndWait();
 			if (result.isPresent()) {
-				for (int i = 0; i < devices.size(); i++) {
-					if (devices.get(i).getName().contains(result.get())) {
-						return devices.get(i).getDevice();
+				for (int i = 0; i < plugins.size(); i++) {
+					if (plugins.get(i).getName().contains(result.get())) {
+						return plugins.get(i).getDevice();
 					}
 				}
 			}
@@ -333,8 +187,8 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 //	}
 
 	public void disconnectAll() {
-		for (int i = 0; i < devices.size(); i++) {
-			devices.get(i).getDevice().disconnect();
+		for (int i = 0; i < plugins.size(); i++) {
+			plugins.get(i).getDevice().disconnect();			
 		}
 
 	}
@@ -520,6 +374,83 @@ public class ConnectionManager extends Tab implements EventHandler<ActionEvent> 
 
 		});
 		
+	}
+
+	@Override
+	public void onNewDeviceAdded(BowlerAbstractDevice newDevice) {
+		PluginManager mp;
+		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+newDevice.getScriptingName() );
+		mp = new PluginManager(newDevice, getBowlerStudioController());
+		plugins.add(mp);
+
+		BowlerAbstractConnection con = newDevice.getConnection();
+		Node icon = getIcon("images/connection-icon.png"
+		// "images/usb-icon.png"
+		);
+		if (SerialConnection.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/usb-icon.png");
+		} else if (UsbCDCSerialConnection.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/usb-icon.png");
+		} else if (BluetoothSerialConnection.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/bluetooth-icon.png");
+		} else if (UDPBowlerConnection.class.isInstance(con)
+				|| BowlerTCPClient.class.isInstance(con)) {
+			icon = getIcon(
+			// "images/ethernet-icon.png"
+			"images/ethernet-icon.png");
+		}
+
+		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(newDevice.getScriptingName() + " "
+				+ newDevice.getAddress(), icon);
+
+		mp.setTree(item);
+		item.setExpanded(true);
+		rootItem.getChildren().add(item);
+		mp.setName(newDevice.getScriptingName());
+
+		newDevice.addConnectionEventListener(
+				new IConnectionEventListener() {
+					@Override
+					public void onDisconnect(BowlerAbstractConnection source) {
+						// clean up after yourself...
+						plugins.remove(mp);
+						DeviceManager.remove(newDevice);
+						rootItem.getChildren().remove(item);
+					}
+
+					// ignore
+					@Override
+					public void onConnect(BowlerAbstractConnection source) {
+					}
+				});
+		
+		item.setSelected(true);
+		item.selectedProperty().addListener(b -> {
+			if (!item.isSelected()) {
+				System.out.println("Disconnecting " + mp.getName());
+				newDevice.disconnect();
+				plugins.remove(mp);
+				DeviceManager.remove(newDevice);
+				rootItem.getChildren().remove(item);
+			}
+		});
+		getBowlerStudioController().setSelectedTab(this);
+	}
+
+	@Override
+	public void onDeviceRemoved(BowlerAbstractDevice bad) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addConnection() {
+		DeviceManager.addConnection();
 	}
 
 

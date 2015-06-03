@@ -620,7 +620,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 						"eu.mihosoft.vrl.v3d.Transform"));
 
 		Binding binding = new Binding();
-		for (PluginManager pm : getConnectionmanager().getConnections()) {
+		for (PluginManager pm : getConnectionmanager().getPlugins()) {
 			try {
 				// groovy needs the objects cas to thier actual type befor
 				// passing into the scipt
@@ -677,7 +677,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 			}
 		}
 
-		for (PluginManager pm : getConnectionmanager().getConnections()) {
+		for (PluginManager pm : getConnectionmanager().getPlugins()) {
 			try {
 				// passing into the scipt
 				interp.set(pm.getName(),
