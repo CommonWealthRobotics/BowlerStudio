@@ -40,6 +40,9 @@ public class SalientDetector implements IObjectDetector {
 	int Dilate_Max = 5;
 	int Dilate_Min = 5;
 
+	Mat erodeElement  = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(Erode_Min,Erode_Max));
+	Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(Dilate_Min, Dilate_Max));
+
 	int PyrSize = 3; // how many times to downsample
 
 	ArrayList<Detection> ReturnedArea = new ArrayList<Detection>(); // areas
@@ -137,6 +140,11 @@ public class SalientDetector implements IObjectDetector {
 	Saliency.convertTo(thr, CvType.CV_8UC1, 255); // change float to 1-255
 	Imgproc.threshold(thr, Saliency, threshMin, threshMax, Imgproc.THRESH_BINARY); // turn to black and white
 
+	Imgproc.erode(Saliency, Saliency, erodeElement);
+	Imgproc.erode(Saliency, Saliency, erodeElement);
+	Imgproc.dilate(Saliency, Saliency, dilateElement);
+	Imgproc.dilate(Saliency, Saliency, dilateElement);
+
 	ArrayList<MatOfPoint> contours     = new ArrayList<MatOfPoint>();           // all the shapes aka contours in image stored here
 	ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 	ArrayList<Rect> boundRect          = new ArrayList<Rect>();
@@ -224,9 +232,7 @@ public class SalientDetector implements IObjectDetector {
 		holder = inputImage.submat(boundRect.get(i));  // put cropped 100x100 in holder
 		RegionsOfInterest.add(holder);                 // put holder in array
 	    }
-			
 	    AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp); // display input image + red boxes
-		
 	}
 	 	
 	for (int a = 0; a < RegionsOfInterest.size(); a++){ // process those small areas
@@ -256,40 +262,38 @@ public class SalientDetector implements IObjectDetector {
 	    Mat colorResult;
 	    Mat hsv1 = Interesting.clone();  // Range of color
 	    
-	    Scalar white_min1 = new Scalar(0,0,0);
-	    Scalar white_max1 = new Scalar(180,40,256);
-
-	    Scalar white_min2 = new Scalar(0,0,0);
-	    Scalar white_max2 = new Scalar(180,60,256);
+	    Scalar white_min1 = new Scalar(0,0,100);
+	    Scalar white_max1 = new Scalar(180,100,256);
 	
-	    Scalar pink_min1 = new Scalar(0,0,0);
-	    Scalar pink_max1 = new Scalar(180,80,256);
+	    Scalar pink_min1 = new Scalar(120,0,0);  // very very very distinct
+	    Scalar pink_max1 = new Scalar(180,0,256);
 
-	    Scalar red_min1 = new Scalar(120,60,0);
-	    Scalar red_max1 = new Scalar(180,256,256);
+	    Scalar red_min1 = new Scalar(0,0,0);
+	    Scalar red_max1 = new Scalar(5,256,256);
 
+	    Scalar red_min2 = new Scalar(0,0,0);
+	    Scalar red_max2 = new Scalar(10,256,256);
+	    
 	    Scalar yellow_min1 = new Scalar(0,0,0);
-	    Scalar yellow_max1= new Scalar(30,256,256);
+	    Scalar yellow_max1 = new Scalar(30,256,256);
 
 	    Scalar grey_min1 = new Scalar(0,0,200);
 	    Scalar grey_max1 = new Scalar(0,0, 256);
 	
-	    Scalar general_min1 = new Scalar(0,0,150);
-	    Scalar general_max1 = new Scalar(180,256,256);
-	
 	    ArrayList<Scalar> colorRanges = new ArrayList<Scalar>(); // array of scalar min,max for confirmation
 
 	    Imgproc.cvtColor(hsv1, colorResult, Imgproc.COLOR_BGR2HSV);
-	    
-	    
-	    for(int z = 0; z < 6; z++){ // Try the color ranges vs the hsv thingy.
-		
-		Imgproc.inRange(colorResult, Scalar(H_MIN, S_MIN, V_MIN), Scalar(H_MAX, S_MAX, V_MAX), colorResult);
-		erode  (colorResult, colorResult,  erodeElement);
-		dilate (colorResult, colorResult, dilateElement);
+	    	    
+	    Core.inRange(white_min1, white_max1, colorResult);
+	    erode  (colorResult, colorResult,  erodeElement);
+	    dilate (colorResult, colorResult, dilateElement);
 
-		Imgproc.findContours(colorResult, resultCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-	    }	
+	    Imgproc.findContours(colorResult, resultCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+	    if(!resultCont.isEmpty() && resultCont.size() <= numbOfObj){
+
+	    }
+	  	
 	}
 		
 	return ReturnedArea;
