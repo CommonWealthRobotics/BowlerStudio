@@ -22,6 +22,10 @@ public class SalientDetector implements IObjectDetector {
     @Override
     public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp){
 	
+    int indexOfInteresting;
+    int numbOfInterestingStuff = 0;
+    double biggestArea = 0;
+    	
 	int Horizon = 100;
 	int minArea = 100;
 	int maxArea = 700;
@@ -246,7 +250,7 @@ public class SalientDetector implements IObjectDetector {
 			
 	    int ObjWidth    =  Interesting.cols();   // the first time it runs 250x250 
 	    int ObjHeight   =  Interesting.rows();
-	    int edgeOffset  =  5;                  
+	    int edge  =  5;                  
 	    int contMinArea =  300;
 	    int numbOfObj   =  8;
 	    int ObjCent     =  125;
@@ -256,7 +260,7 @@ public class SalientDetector implements IObjectDetector {
 			contMinArea = 50;
 			numbOfObj   = 4;
 			centoffset  = 20;
-			edgeOffset  = 20;
+			edge  = 20;
 			ObjCent     = 50;
 	    }
 						  
@@ -284,7 +288,7 @@ public class SalientDetector implements IObjectDetector {
 	    
 	    Imgproc.cvtColor(hsv1, colorResult, Imgproc.COLOR_BGR2HSV);
 	    	    
-	    Core.inRange(hsv1, white_min1, white_max1, colorResult);
+	    Core.inRange(hsv1, white_min1, white_max1, colorResult);  // Only finding white for now
 	    Imgproc.erode (colorResult, colorResult,  erodeElement);
 	    Imgproc.dilate (colorResult, colorResult, dilateElement);
 
@@ -293,12 +297,34 @@ public class SalientDetector implements IObjectDetector {
 	    if(!resultCont.isEmpty() && resultCont.size() <= numbOfObj){
 	    	for(int z = 0; z < resultCont.size(); z++){
 	    		double area = Imgproc.contourArea(resultCont.get(z));
+	    		if(area > contMinArea && area < maxArea){
+	    			if (area < 300){centoffset = 40;}
+	    			
+	    			Rect test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(z)));
+	    			
+	    			int tl_x = (int) test.tl().x;
+	    			int tl_y = (int) test.tl().y;
+	    			
+	    			int br_x = (int) test.br().x;
+	    			int br_y = (int) test.br().y;
+	    			
+	    			int centX = (int) br_x - (test.width/2);
+	    			int centY = (int) br_y - (test.width/2);
+	    			
+	    			if(tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight){
+	    				int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
+	    				int Y1 = ObjCent - centoffset; int Y2 = ObjCent + centoffset;
+	    				
+	    				if(centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2){
+	    					numbOfInterestingStuff++;
+	    					if (area > biggestArea) {biggestArea = area; indexOfInteresting = z;}
+	    				}
+	    			}
+	    		}
 	    	}
 	    }
-	  	
 	}
 		
 	return ReturnedArea;
     }
-
 }
