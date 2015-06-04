@@ -20,6 +20,7 @@ import javafx.stage.StageStyle;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
 import com.neuronrobotics.jniloader.SalientDetector;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
@@ -76,7 +77,7 @@ public class PluginManager {
 		
 		if(AbstractImageProvider.class.isInstance(dev)){
 			deviceSupport.add(CameraTab.class);
-			deviceSupport.add(SalientDetector.class);
+			deviceSupport.add(SalientTab.class);
 		}
 		
 		if(NRBootLoader.class.isInstance(dev)){
