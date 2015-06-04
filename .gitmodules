@@ -7,3 +7,6 @@
 [submodule "CHDK-PTP-Java"]
 	path = CHDK-PTP-Java
 	url = https://github.com/acamilo/CHDK-PTP-Java.git
+[submodule "WalnutiQ"]
+	path = WalnutiQ
+	url = git@github.com:NeuronRobotics/WalnutiQ.git
