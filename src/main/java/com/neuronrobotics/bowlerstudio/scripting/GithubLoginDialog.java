@@ -23,7 +23,7 @@ public class GithubLoginDialog extends Stage {
         initOwner(owner);
         setTitle("title");
         Group root = new Group();
-        Scene scene = new Scene(root, 250, 150, Color.WHITE);
+        Scene scene = new Scene(root, 350, 150, Color.WHITE);
         setScene(scene);
 
         GridPane gridpane = new GridPane();

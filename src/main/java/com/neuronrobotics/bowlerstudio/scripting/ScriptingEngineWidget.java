@@ -8,18 +8,24 @@ import org.python.util.PythonInterpreter;
 import org.python.core.*;
 
 import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
@@ -548,19 +554,71 @@ public class ScriptingEngineWidget extends BorderPane implements
 			//System.out.println("Setting up Python Shell");
 		}
 	}
+	
+	public static String getLoginID(){
+		
+		if(loginID == null){
+			try {
+				String line;
+				try (
+				    InputStream fis = new FileInputStream(getCreds().getAbsolutePath());
+				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+				    BufferedReader br = new BufferedReader(isr);
+				) {
+				    while ((line = br.readLine()) != null) {
+				        if(line.contains("login")){
+				        	loginID = line.split("=")[1];
+				        }
+				    }
+				}
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return loginID;
+	}
+	
+	public static void login() throws IOException{
+		GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
+        myDialog.sizeToScene();
+        myDialog.showAndWait();
+        loginID = myDialog.getUsername();
+        String content= "login="+loginID+"\n";
+        content+= "password="+myDialog.getPw()+"\n";
+        PrintWriter out = new PrintWriter(getCreds().getAbsoluteFile());
+        out.println(content);
+        out.flush();
+        out.close();
+        github = GitHub.connect();
+	}
+
+	public static void logout(){
+		if(getCreds()!= null)
+		try {
+			Files.delete(getCreds().toPath());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		github=null;
+	}
+
 
 	public static String[] codeFromGistID(String id, String FileName) {
 		try {
 			if(github == null){
-				File creds = new File(System.getProperty("user.home")+"/.github");
-				if (creds.exists()){
+
+				if (getCreds().exists()){
 					try{
 						github = GitHub.connect();
 					}catch(IOException ex){
 						
 					}
 				}else{
-					creds.createNewFile();
+					getCreds().createNewFile();
 				}
 				
 				if(github==null){
@@ -578,23 +636,20 @@ public class ScriptingEngineWidget extends BorderPane implements
 					if (result.get() == buttonTypeOne){
 						github = GitHub.connectAnonymously();
 					} else  {
-						GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
-				        myDialog.sizeToScene();
-				        myDialog.showAndWait();
-				        String content= "login="+myDialog.getUsername()+"\n";
-				        content+= "password="+myDialog.getPw()+"\n";
-				        PrintWriter out = new PrintWriter(creds.getAbsoluteFile());
-				        out.println(content);
-				        out.flush();
-				        out.close();
-				        github = GitHub.connect();
+						logout();
+						login();
 					} 
 				}
 				
 			}
 			
 			Log.debug("Loading Gist: " + id);
-			GHGist gist = github.getGist(id);
+			try{
+				gist = github.getGist(id);
+			}catch(IOException ex){
+				logout();
+				return null;
+			}
 			Map<String, GHGistFile> files = gist.getFiles();
 
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
@@ -666,6 +721,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 			"java.awt.image.BufferedImage" };
 
 	private static GitHub github;
+
+	private static String loginID=null;
+
+	private static File creds=null;
+
+	private static GHGist gist;
 
 	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();
@@ -789,6 +850,16 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static void setLastFile(File lastFile) {
 		ScriptingEngineWidget.lastFile = lastFile;
+	}
+
+	public static File getCreds() {
+		if(creds == null)
+			setCreds(new File(System.getProperty("user.home")+"/.github"));
+		return creds;
+	}
+
+	public static void setCreds(File creds) {
+		ScriptingEngineWidget.creds = creds;
 	}
 
 }

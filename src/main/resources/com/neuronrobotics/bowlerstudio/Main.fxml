@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerstudio.MainController">
    <children>
-      <MenuBar minHeight="-Infinity">
+      <MenuBar   minHeight="-Infinity">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -39,6 +39,12 @@
             <items>
               <CheckMenuItem  selected="false" fx:id="AddDefaultRightArm" text="Add Default Right Arm" />
               <CheckMenuItem  selected="false" fx:id="AddVRCamera" text="Add Camera VR" />
+            </items>
+          </Menu>
+           <Menu mnemonicParsing="false" text="GitHub">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
+              <MenuItem fx:id="logoutGithub" mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" />
             </items>
           </Menu>
         </menus>
