@@ -9,4 +9,4 @@
 	url = https://github.com/acamilo/CHDK-PTP-Java.git
 [submodule "WalnutiQ"]
 	path = WalnutiQ
-	url = git@github.com:NeuronRobotics/WalnutiQ.git
+	url = https://github.com/NeuronRobotics/WalnutiQ.git
