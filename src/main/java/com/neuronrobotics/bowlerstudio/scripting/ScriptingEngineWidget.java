@@ -36,8 +36,6 @@ import java.util.Properties;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -53,6 +51,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -143,9 +143,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 			+ "\tprintln(\" Scaled= \"+scaled)\n" + "}";
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<String> history = new ArrayList<>();
+	private int historyIndex=0;
 
 	private Button runfx = new Button("Run");;
-	private Button runsave = new Button("Save");;
+	private Button runsave = new Button("Save");
+	private TextField cmdLineInterface = new TextField ();
 	private WebEngine engine;
 
 	private String addr;
@@ -182,30 +185,84 @@ public class ScriptingEngineWidget extends BorderPane implements
 		});
 
 		// String ctrlSave = "CTRL Save";
-		fileLabel.setOnMouseEntered(e -> {
-			Platform.runLater(() -> {
-				ThreadUtil.wait(10);
-				fileLabel.setText(currentFile.getAbsolutePath());
-			});
-		});
-
-		fileLabel.setOnMouseExited(e -> {
-			Platform.runLater(() -> {
-				ThreadUtil.wait(10);
-				fileLabel.setText(currentFile.getName());
-			});
-		});
+//		fileLabel.setOnMouseEntered(e -> {
+//			Platform.runLater(() -> {
+//				ThreadUtil.wait(10);
+//				fileLabel.setText(currentFile.getAbsolutePath());
+//			});
+//		});
+//
+//		fileLabel.setOnMouseExited(e -> {
+//			Platform.runLater(() -> {
+//				ThreadUtil.wait(10);
+//				fileLabel.setText(currentFile.getName());
+//			});
+//		});
 		fileLabel.setTextFill(Color.GREEN);
-
+		cmdLineInterface.setOnAction(event -> {
+			String text = cmdLineInterface.getText();
+			text+="\r\n";
+			Platform.runLater(() -> {
+				cmdLineInterface.setText("");
+			});
+			System.out.println(text);
+			history.add(text);
+			historyIndex=0;
+			inlineScriptRun(text,null);
+		});
+		cmdLineInterface.setPrefWidth(80*4);
+		cmdLineInterface.addEventFilter( KeyEvent.KEY_PRESSED, event -> {
+			Platform.runLater(() -> {
+			    if( (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) ) {
+			    	System.err.println("Key pressed "+event.getCode()+" history index = "+historyIndex+" history size= "+history.size());
+			    	if(historyIndex==0){
+					       String text = cmdLineInterface.getText();
+					       if(text.length()>0){
+					    	   // store what was in the box into he history
+					    	   history.add(text);
+					       }
+			    	}
+			       
+			       if(event.getCode() == KeyCode.UP)
+			    	   historyIndex++;
+			       else
+			    	   historyIndex--;
+			       if(history.size()>0){
+				       if(historyIndex>history.size()){
+				    	   historyIndex =  history.size();
+				       }
+				       if(historyIndex<0)
+				    	   historyIndex=0;
+				       //History index established
+				       if(historyIndex>0)
+					       Platform.runLater(() -> {
+								cmdLineInterface.setText(history.get(history.size()-historyIndex));
+					       });
+				       else
+				    	   Platform.runLater(() -> {
+								cmdLineInterface.setText("");
+					       }); 
+			       }
+			       event.consume();
+			    } 
+			});
+		});
+		history.add("println dyio");
+		history.add("dyio.setValue(0,1)//sets the value of channel 0 to 1");
+		history.add("dyio.setValue(0,0)//sets the value of channel 0 to 0");
+		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
-		setPadding(new Insets(1, 0, 3, 20));
+		setPadding(new Insets(1, 0, 3, 10));
 		final FlowPane controlPane = new FlowPane();
-		controlPane.setHgap(100);
+		controlPane.setHgap(20);
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(runsave);
 		controlPane.getChildren().add(fileLabel);
+		controlPane.getChildren().add(new Label("Bowler R.E.P.L.:"));
+		controlPane.getChildren().add(cmdLineInterface);
+		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
 
