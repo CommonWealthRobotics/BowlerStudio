@@ -158,87 +158,88 @@ public class SalientDetector implements IObjectDetector {
 	if(contours.size() < 100){
 
 	    while(true){            // sort by size
-		int sortCount = 0;
-		for(int i = 0; i < contours.size()-1; i++){
-				    
-		    MatOfPoint contourHold1, contourHold2;
-		    double area1 = Imgproc.contourArea(contours.get(i), false);
-		    double area2 = Imgproc.contourArea(contours.get(i+1), false);
-				    
-		    if (area1 < area2){
-			contourHold1   =  contours.get(i);
-			contourHold2   = contours.get(i+1);
-			contours.set(i, contourHold2);
-			contours.set(i+1, contourHold1);
-			sortCount++;
-		    }
-		}
-		if(sortCount == 0){break;}
+			int sortCount = 0;
+			for(int i = 0; i < contours.size()-1; i++){
+					    
+			    MatOfPoint contourHold1, contourHold2;
+			    double area1 = Imgproc.contourArea(contours.get(i), false);
+			    double area2 = Imgproc.contourArea(contours.get(i+1), false);
+					    
+			    if (area1 < area2){
+				contourHold1   =  contours.get(i);
+				contourHold2   = contours.get(i+1);
+				contours.set(i, contourHold2);
+				contours.set(i+1, contourHold1);
+				sortCount++;
+			    }
+			}
+			if(sortCount == 0){break;}
 	    }
 
 	    for (int i = 0; i < contours.size(); i++){
-		Rect rectHold = new Rect();
-		rectHold = Imgproc.boundingRect(new MatOfPoint(contours.get(i)));
+			Rect rectHold = new Rect();
+			rectHold = Imgproc.boundingRect(new MatOfPoint(contours.get(i)));
+		
+			if      (i == 0)                    {contourFinal.add(contours.get(i));}
+			else if (rectHold.tl().y > Horizon) {contourFinal.add(contours.get(i));}
+		    }
 	
-		if      (i == 0)                    {contourFinal.add(contours.get(i));}
-		else if (rectHold.tl().y > Horizon) {contourFinal.add(contours.get(i));}
-	    }
-
-	    int FinalSize = contourFinal.size();
-	    if (FinalSize > 15) {FinalSize = 15;} // if there's 16 objects, look for 15, otherwise look for 1-15
-
-	    for(int i = -1; i < FinalSize; i++){
-			
-		Rect test = new Rect();
-		double area;
-		int newX = 100;
-		int newY = 100;
+		    int FinalSize = contourFinal.size();
+		    if (FinalSize > 15) {FinalSize = 15;} // if there's 16 objects, look for 15, otherwise look for 1-15
 	
-		if (i == -1){
-		    newY = 250;
-		    newX = 250;
-		    area = Imgproc.contourArea(contourFinal.get(0), false);             // found contour area
-		    test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(0)));
-		}
-		else{
-		    area = Imgproc.contourArea(contourFinal.get(i), false);             // found contour area
-		    test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i)));
-		}
-
-		if (area >= minArea){ // size check
-				    
-		    Boolean a = true;
-				    
-		    int oldX = (int) (test.br().x - (test.width/2));
-		    int oldY = (int) (test.br().y - (test.height/2));
-				    
-		    if (test.br().y > Horizon && test.width < newX && test.height < newY){
+		    for(int i = -1; i < FinalSize; i++){
 					
-			test.width = newX;
-			test.height = newY;
-						
-			int nX = (int) (test.br().x - (test.width/2));
-			int nY = (int) (test.br().y - (test.height/2));
-						
-			int shiftX = nX - oldX;
-			int shiftY = nY - oldY;
+				Rect test = new Rect();
+				double area;
+				int newX = 100;
+				int newY = 100;
+			
+				if (i == -1){
+				    newY = 250;
+				    newX = 250;
+				    area = Imgproc.contourArea(contourFinal.get(0), false);             // found contour area
+				    test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(0)));
+				}
+				else{
+				    area = Imgproc.contourArea(contourFinal.get(i), false);             // found contour area
+				    test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i)));
+				}
+		
+				if (area >= minArea){ // size check
+						    
+				    Boolean a = true;
+						    
+				    int oldX = (int) (test.br().x - (test.width/2));
+				    int oldY = (int) (test.br().y - (test.height/2));
+						    
+				    if (test.br().y > Horizon && test.width < newX && test.height < newY){
+				    	
+						test.width = newX;
+						test.height = newY;
+									
+						int nX = (int) (test.br().x - (test.width/2));
+						int nY = (int) (test.br().y - (test.height/2));
+									
+						int shiftX = nX - oldX;
+						int shiftY = nY - oldY;
+			
+						test.x -= shiftX; 
+						test.y -= shiftY;
+									
+						if (test.x <= 0 || test.y <= 0 || test.br().x >= newX || test.br().y >= newY){a = false;}
+						if (a == true) {boundRect.add(test);}			
+				    }		  
+				}
+		    }
 
-			test.x -= shiftX; 
-			test.y -= shiftY;
-						
-			if (test.x <= 0 || test.y <= 0 || test.br().x >= newX || test.br().y >= newY){a = false;}
-			if (a == true) {boundRect.add(test);}			
-		    }		  
-		}
-	    }
-
-	    for (int i = 0; i < boundRect.size(); i++) {
-		Mat holder = new Mat();                        // hold the cropped 100x100
-		Core.rectangle(ObjFound, boundRect.get(i).tl(), boundRect.get(i).br(), RedBox, 1, 8, 0); // make box in ObjFound
-		holder = inputImage.submat(boundRect.get(i));  // put cropped 100x100 in holder
-		RegionsOfInterest.add(holder);                 // put holder in array
-	    }
-	    AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp); // display input image + red boxes
+		    for (int i = 0; i < boundRect.size(); i++) {
+		    	Mat holder = new Mat();                        // hold the cropped 100x100
+				Core.rectangle(ObjFound, boundRect.get(i).tl(), boundRect.get(i).br(), RedBox, 1, 8, 0); // make box in ObjFound
+				holder = inputImage.submat(boundRect.get(i));  // put cropped 100x100 in holder
+				RegionsOfInterest.add(holder);                 // put holder in array
+		    }
+		
+		    AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp); // display input image + red boxes
 	}
 	 	
 	for (int a = 0; a < RegionsOfInterest.size(); a++){ // process those small areas
@@ -302,14 +303,14 @@ public class SalientDetector implements IObjectDetector {
 	    			
 	    			Rect test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(z)));
 	    			
-	    			int tl_x = (int) test.tl().x;
-	    			int tl_y = (int) test.tl().y;
+	    			int tl_x = (int) test.tl().x; // top left x
+	    			int tl_y = (int) test.tl().y; // top left y
 	    			
-	    			int br_x = (int) test.br().x;
-	    			int br_y = (int) test.br().y;
+	    			int br_x = (int) test.br().x; // bottom right x
+	    			int br_y = (int) test.br().y; // bottom right y
 	    			
-	    			int centX = (int) br_x - (test.width/2);
-	    			int centY = (int) br_y - (test.width/2);
+	    			int centX = (int) br_x - (test.width/2); // center of shape x
+	    			int centY = (int) br_y - (test.width/2); // 
 	    			
 	    			if(tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight){
 	    				int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
