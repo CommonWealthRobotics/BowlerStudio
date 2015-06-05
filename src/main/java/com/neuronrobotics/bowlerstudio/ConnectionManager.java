@@ -98,6 +98,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		setContent(tree);
 
 		ScriptingEngineWidget.setConnectionmanager(this);
+		DeviceManager.addDeviceAddedListener(this);
 		try {
 			List<String> devs = SerialConnection.getAvailableSerialPorts();
 			if (devs.size() == 0) {
@@ -126,7 +127,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //						addConnection();
 //					}
 //				}.start());
-		DeviceManager.addDeviceAddedListener(this);
+		
 		
 
 	}
