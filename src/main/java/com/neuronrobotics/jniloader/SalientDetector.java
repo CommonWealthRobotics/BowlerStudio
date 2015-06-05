@@ -238,10 +238,11 @@ public class SalientDetector implements IObjectDetector {
 				holder = inputImage.submat(boundRect.get(i));  // put cropped 100x100 in holder
 				RegionsOfInterest.add(holder);                 // put holder in array
 		    }
-		
 		    AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp); // display input image + red boxes
 	}
 	 	
+	// PROCESS SMALL AREAS*************************************************************************************************************
+	
 	for (int a = 0; a < RegionsOfInterest.size(); a++){ // process those small areas
 			
 	    Mat Interesting = new Mat();
@@ -283,13 +284,14 @@ public class SalientDetector implements IObjectDetector {
 	    Scalar grey_min1 = new Scalar(0,0,200);
 	    Scalar grey_max1 = new Scalar(0,0, 256);
 	
-	    ArrayList<Scalar> colorRanges = new ArrayList<Scalar>(); // array of scalar min,max for confirmation
 	    ArrayList <MatOfPoint> resultCont   = new ArrayList<MatOfPoint>();
 	    ArrayList <MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();
 	    
 	    Imgproc.cvtColor(hsv1, colorResult, Imgproc.COLOR_BGR2HSV);
-	    	    
-	    Core.inRange(hsv1, white_min1, white_max1, colorResult);  // Only finding white for now
+	 
+	    // ONLY FINDS WHITE FOR NOW
+	    
+	    Core.inRange(hsv1, white_min1, white_max1, colorResult);  
 	    Imgproc.erode (colorResult, colorResult,  erodeElement);
 	    Imgproc.dilate (colorResult, colorResult, dilateElement);
 
