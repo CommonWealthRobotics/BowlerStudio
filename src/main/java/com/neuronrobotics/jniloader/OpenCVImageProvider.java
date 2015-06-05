@@ -26,8 +26,8 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 		if (!getVc().isOpened()) {
 			System.out.println("Camera Error");
 		} else {
-			boolean wset = getVc().set(Highgui.CV_CAP_PROP_FRAME_WIDTH, 320);
-			boolean hset = getVc().set(Highgui.CV_CAP_PROP_FRAME_HEIGHT, 240);
+//			boolean wset = getVc().set(Highgui.CV_CAP_PROP_FRAME_WIDTH, 320);
+//			boolean hset = getVc().set(Highgui.CV_CAP_PROP_FRAME_HEIGHT, 240);
 			System.out.println("Camera OK at "+getVc().get(5)+
 					"fps width: "+getVc().get(Highgui.CV_CAP_PROP_FRAME_WIDTH)+
 					" height: "+getVc().get(Highgui.CV_CAP_PROP_FRAME_HEIGHT) );
