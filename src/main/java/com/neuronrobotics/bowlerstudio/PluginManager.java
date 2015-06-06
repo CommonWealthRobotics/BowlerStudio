@@ -144,7 +144,7 @@ public class PluginManager {
 	}
 
 	public void setTree(TreeItem<String> item) {
-		this.item =item;
+		this.setItem(item);
 		if(dev.getConnection()!=null){
 			TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
 			rpc.setExpanded(false);
@@ -277,7 +277,7 @@ public class PluginManager {
 
 
 	public TreeItem<String> getTreeItem() {
-		return item;
+		return getCheckBoxItem();
 	}
 
 
@@ -290,6 +290,18 @@ public class PluginManager {
 
 	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
 		this.bowlerStudioController = bowlerStudioController;
+	}
+
+
+
+	public TreeItem<String> getCheckBoxItem() {
+		return item;
+	}
+
+
+
+	public void setItem(TreeItem<String> item) {
+		this.item = item;
 	}
 
 }

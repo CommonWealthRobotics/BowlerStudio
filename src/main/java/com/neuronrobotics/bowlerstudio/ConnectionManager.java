@@ -51,6 +51,7 @@ import com.neuronrobotics.sdk.ui.ConnectionDialog;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -188,8 +189,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //	}
 
 	public void disconnectAll() {
-		for (int i = 0; i < plugins.size(); i++) {
-			plugins.get(i).getDevice().disconnect();			
+		while (plugins.size()>0) {
+			disconectAndRemoveDevice(plugins.get(0));
 		}
 
 	}
@@ -412,7 +413,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 		mp.setTree(item);
 		item.setExpanded(true);
-		rootItem.getChildren().add(item);
+		
 		mp.setName(newDevice.getScriptingName());
 
 		newDevice.addConnectionEventListener(
@@ -420,9 +421,21 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 					@Override
 					public void onDisconnect(BowlerAbstractConnection source) {
 						// clean up after yourself...
-						plugins.remove(mp);
-						DeviceManager.remove(newDevice);
-						rootItem.getChildren().remove(item);
+						//disconectAndRemoveDevice(mp);
+						
+						for(int i=0;i<plugins.size();i++){
+							PluginManager p=plugins.get(i);
+							if(p.getDevice().getConnection()==source){
+								Platform.runLater(() -> {
+									plugins.remove(p);
+									DeviceManager.remove(p.getDevice());
+									refreshItemTree();
+								});
+
+								return;
+							}
+						}
+						
 					}
 
 					// ignore
@@ -434,20 +447,34 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		item.setSelected(true);
 		item.selectedProperty().addListener(b -> {
 			if (!item.isSelected()) {
-				System.out.println("Disconnecting " + mp.getName());
-				newDevice.disconnect();
-				plugins.remove(mp);
-				DeviceManager.remove(newDevice);
-				rootItem.getChildren().remove(item);
+				disconectAndRemoveDevice(mp);
 			}
 		});
+		refreshItemTree();
 		getBowlerStudioController().setSelectedTab(this);
+	}
+	//this is needed because if you just remove one they all disapear
+	private void refreshItemTree(){
+		rootItem.getChildren().clear();
+		for(PluginManager p:plugins){
+			rootItem.getChildren().add(p.getCheckBoxItem());
+		}
+	}
+	
+	private void disconectAndRemoveDevice(PluginManager mp){
+		System.out.println("Disconnecting " + mp.getName());
+		Log.warning("Disconnecting " + mp.getName());
+		if(mp.getDevice().isAvailable())
+			mp.getDevice().disconnect();
+		plugins.remove(mp);
+		DeviceManager.remove(mp.getDevice());
+		refreshItemTree();
 	}
 
 	@Override
 	public void onDeviceRemoved(BowlerAbstractDevice bad) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void addConnection() {
