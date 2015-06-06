@@ -466,9 +466,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		Log.warning("Disconnecting " + mp.getName());
 		if(mp.getDevice().isAvailable())
 			mp.getDevice().disconnect();
-		plugins.remove(mp);
-		DeviceManager.remove(mp.getDevice());
-		refreshItemTree();
+		Platform.runLater(() -> {
+			plugins.remove(mp);
+			DeviceManager.remove(mp.getDevice());
+			refreshItemTree();
+		});
 	}
 
 	@Override
