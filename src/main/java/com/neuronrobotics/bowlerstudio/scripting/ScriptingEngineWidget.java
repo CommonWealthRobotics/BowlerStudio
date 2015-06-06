@@ -74,7 +74,10 @@ import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.control.action.Action;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
+import org.kohsuke.github.GHRelease;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 
 import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -705,10 +708,13 @@ public class ScriptingEngineWidget extends BorderPane implements
 				gist = github.getGist(id);
 			}catch(IOException ex){
 				logout();
+				
 				return null;
 			}
 			Map<String, GHGistFile> files = gist.getFiles();
-
+			GHRepository repo = github.getRepository("");
+			
+			
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
 				if (((entry.getKey().endsWith(".py")
 						|| entry.getKey().endsWith(".jy")
