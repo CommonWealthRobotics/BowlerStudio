@@ -712,8 +712,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 				return null;
 			}
 			Map<String, GHGistFile> files = gist.getFiles();
-			GHRepository repo = github.getRepository("");
-			
+					
 			
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
 				if (((entry.getKey().endsWith(".py")
