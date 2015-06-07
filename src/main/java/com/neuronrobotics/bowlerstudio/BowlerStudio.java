@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -41,6 +43,15 @@ public class BowlerStudio extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    
+	public static void renderSplashFrame(Graphics2D g, int frame) {
+        final String[] comps = {"OpenCV", "JavaCad", "BowlerEngine"};
+        //g.setComposite(AlphaComposite.Clear);
+        g.fillRect(120,140,200,40);
+        g.setPaintMode();
+        g.setColor(Color.RED);
+        g.drawString("Loading "+comps[(frame/5)%comps.length]+"...", 120, 150);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -64,7 +75,7 @@ public class BowlerStudio extends Application {
         primaryStage.setOnCloseRequest(arg0 -> {
         	
         	controller.disconnect();
-        	ThreadUtil.wait(500);
+        	ThreadUtil.wait(100);
         	System.exit(0);
 		});
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());

@@ -100,27 +100,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 		ScriptingEngineWidget.setConnectionmanager(this);
 		DeviceManager.addDeviceAddedListener(this);
-		try {
-			List<String> devs = SerialConnection.getAvailableSerialPorts();
-			if (devs.size() == 0) {
-				return;
-			} else {
-				new Thread() {
-					public void run() {
-						ThreadUtil.wait(750);
-						DeviceManager.addConnection();
-//						for (String d : devs) {
-//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
-//								addConnection(new SerialConnection(d));
-//						}
-					}
-				}.start();
 
-			}
-		} catch (Error 
-				| UsbDisconnectedException | SecurityException  e) {
-			e.printStackTrace();
-		}
 //		UsbCDCSerialConnection
 //				.addUsbDeviceEventListener(device -> new Thread() {
 //					public void run() {
