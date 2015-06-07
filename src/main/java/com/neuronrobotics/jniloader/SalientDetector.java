@@ -5,9 +5,11 @@ package com.neuronrobotics.jniloader;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.*;
 
 import org.opencv.core.Core;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Size;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -24,13 +26,13 @@ public class SalientDetector implements IObjectDetector {
 		int minArea = 100;
 		int maxArea = 700;
 
-		Scalar RedBox = new Scalar(0, 0, 255);
+		Scalar RedBox    = new Scalar(  0,   0, 255);
+		Scalar YellowBox = new Scalar(255, 255,   0);
 
-		int threshMin = 50;
+		
+		int threshMin = 150;
 		int threshMax = 255;
 
-		int MS_SR = 10; // spacial radius
-		int MS_CR = 50; // color radius
 
 		int Erode_Max = 2;
 		int Erode_Min = 2;
@@ -41,7 +43,7 @@ public class SalientDetector implements IObjectDetector {
 		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(Erode_Min, Erode_Max));
 		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(Dilate_Min, Dilate_Max));
 
-		int PyrSize = 3; // how many times to downsample
+		int PyrSize = 5; // how many times to downsample
 
 		ArrayList<Detection> ReturnedArea = new ArrayList<Detection>(); // areas
 
@@ -61,7 +63,7 @@ public class SalientDetector implements IObjectDetector {
 		ObjFound = inputImage.clone();
 		MeanShift = inputImage.clone();
 
-		Imgproc.pyrMeanShiftFiltering(MeanShift, MeanShift, MS_SR, MS_CR);
+		Imgproc.GaussianBlur(MeanShift, MeanShift, new Size(5,5), 0);
 		Imgproc.cvtColor(MeanShift, MeanShift, Imgproc.COLOR_BGR2GRAY);
 
 		// Perform Pyramid Function ****************************************
@@ -71,6 +73,15 @@ public class SalientDetector implements IObjectDetector {
 		for (int i = 0; i < PyrSize; i++) {
 			Mat a = new Mat();
 			Imgproc.pyrDown(DS, a);
+			
+			for(int x = 0; x < a.rows(); x++){
+				for (int y = 0; y < a.cols(); y++){
+					float[] dsTemp = new float[0];
+					a.get(x, y, dsTemp);
+					dsTemp[0] = dsTemp[0] + 100;
+					a.put(x, y, dsTemp);
+				}
+			}
 			DS = a.clone();
 		}
 
@@ -79,6 +90,16 @@ public class SalientDetector implements IObjectDetector {
 		for (int i = 0; i < PyrSize; i++) {
 			Mat a = new Mat();
 			Imgproc.pyrUp(UP, a);
+			
+			for(int x = 0; x < a.rows(); x++){
+				for (int y = 0; y < a.cols(); y++){
+					float[] usTemp = new float[0];
+					a.get(x, y, usTemp);
+					usTemp[0] = usTemp[0] + 100;
+					a.put(x, y, usTemp);
+				}
+			}
+			
 			UP = a.clone();
 		}
 
@@ -97,9 +118,11 @@ public class SalientDetector implements IObjectDetector {
 		float[] bot_temp = new float[channelNumb];
 		float[] sal_temp = new float[channelNumb];
 
-		float top_min = (float) 1.0;
+		float top_min = (float) 255.0;
 		float bot_min = (float) 1.0;
 
+		// CHECK SO YOU DON'T DIVIDE BY ZERO AND THEREFORE BAD THINGS
+		
 		for (int i = 0; i < top.rows(); i++) { // find the smallest value in
 			for (int j = 0; j < top.cols(); j++) { // this is so you can sub out
 				top.get(i, j, top_temp);
@@ -112,7 +135,10 @@ public class SalientDetector implements IObjectDetector {
 				if (b < bot_min && b > 0) {bot_min = b;}			
 			}
 		}
-
+		
+        // END OF CHECK ***************
+		
+		// MAGIC SALIENCY MAP, THANKS TO IOANNIS 
 		for (int i = 0; i < top.rows(); i++) {
 			for (int j = 0; j < top.cols(); j++) {
 
@@ -126,38 +152,42 @@ public class SalientDetector implements IObjectDetector {
 				if (b == 0) {b = bot_min;}
 
 				if (a <= b) {sal_temp[0] = (float) (1.0 - a / b);} 
-				else {sal_temp[0] = (float) (1.0 - b / a);}
-
+				else        {sal_temp[0] = (float) (1.0 - b / a);}
+				
+				sal_temp[0] = (float)Math.sqrt(sal_temp[0]);
 				Saliency.put(i, j, sal_temp);
 			}
-		} // *******************************************************************************************************************
+		} 
+		// *******************************************************************************************************************
 
 		Mat thr = new Mat(Saliency.rows(), Saliency.cols(), CvType.CV_8UC1);
 		Saliency.convertTo(thr, CvType.CV_8UC1, 255); // change float to 1-255
-		Imgproc.threshold(thr, Saliency, threshMin, threshMax,
-				Imgproc.THRESH_BINARY); // turn to black and white
+		Imgproc.threshold(thr, Saliency, threshMin, threshMax,Imgproc.THRESH_BINARY_INV); // turn to black and white
 
 		Imgproc.erode(Saliency, Saliency, erodeElement);
 		Imgproc.erode(Saliency, Saliency, erodeElement);
+		Imgproc.erode(Saliency, Saliency, erodeElement);
+		
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
-
+		Imgproc.dilate(Saliency, Saliency, dilateElement);
+		Imgproc.dilate(Saliency, Saliency, dilateElement);
+		
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
 		ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 		ArrayList<Rect> boundRect = new ArrayList<Rect>();
+		
+		Imgproc.findContours(Saliency, contours, new Mat(),Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
-		Imgproc.findContours(Saliency, contours, new Mat(),
-				Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
-
-		if (contours.size() < 100) {
+		if (contours.size() != 0 && contours.size() < 100) {
 
 			while (true) { // sort by size
 				int sortCount = 0;
 				for (int i = 0; i < contours.size() - 1; i++) {
 
 					MatOfPoint contourHold1, contourHold2;
-					double area1 = Imgproc.contourArea(contours.get(i), false);
-					double area2 = Imgproc.contourArea(contours.get(i + 1),false);
+					double area1 = Imgproc.contourArea(contours.get(i));
+					double area2 = Imgproc.contourArea(contours.get(i + 1));
 
 					if (area1 < area2) {
 						contourHold1 = contours.get(i);
@@ -179,9 +209,8 @@ public class SalientDetector implements IObjectDetector {
 			}
 
 			int FinalSize = contourFinal.size();
-			if (FinalSize > 15) {
-				FinalSize = 15;
-			} // if there's 16 objects, look for 15, otherwise look for 1-15
+			
+			if (FinalSize > 15) {FinalSize = 15;} // if there's 16 objects, look for 15, otherwise look for 1-15
 
 			for (int i = -1; i < FinalSize; i++) {
 
@@ -189,27 +218,44 @@ public class SalientDetector implements IObjectDetector {
 				double area;
 				int newX = 100;
 				int newY = 100;
-
+		        
+				MatOfPoint contour_hold      = new MatOfPoint();
+				MatOfPoint contourApprox     = new MatOfPoint();
+				MatOfPoint2f contour2f       = new MatOfPoint2f();
+				MatOfPoint2f contourApprox2f = new MatOfPoint2f();
+				
 				if (i == -1) {
 					newY = 250;
 					newX = 250;
-					area = Imgproc.contourArea(contourFinal.get(0)); 
-					test = Imgproc.boundingRect(new MatOfPoint(contourFinal
-							.get(0)));
-				} else {
-					area = Imgproc.contourArea(contourFinal.get(i));
-					test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i)));
+					
+					contour_hold = contourFinal.get(0);
+					contour_hold.convertTo(contour2f, CvType.CV_32FC2);
+					Imgproc.approxPolyDP(contour2f, contourApprox2f, 2, true);
+					contourApprox2f.convertTo(contourApprox, CvType.CV_32S);
+					test = Imgproc.boundingRect(new MatOfPoint(contourApprox)); // test = rect around the contour's most outer extremes
+					area = Imgproc.contourArea(contourFinal.get(0), false);
+					
+					//test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(0)));
+				} 
+				else {
+					contour_hold = contourFinal.get(i);
+					contour_hold.convertTo(contour2f, CvType.CV_32FC2);
+					Imgproc.approxPolyDP(contour2f, contourApprox2f, 2, true);
+					contourApprox2f.convertTo(contourApprox, CvType.CV_32S);
+					test = Imgproc.boundingRect(new MatOfPoint(contourApprox)); // test = rect around the contour's most outer extremes
+					area = Imgproc.contourArea(contourFinal.get(i), false);
+					
+					//test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i)));
 				}
 
-				if (area >= minArea) { // size check
+				if (area >= minArea){ // size check
 
 					Boolean a = true;
 
 					int oldX = (int) (test.br().x - (test.width / 2));
 					int oldY = (int) (test.br().y - (test.height / 2));
 
-					if (test.br().y > Horizon && test.width < newX
-							&& test.height < newY) {
+					if (test.width < newX && test.height < newY) { //test.br().y > Horizon && test
 
 						test.width = newX;
 						test.height = newY;
@@ -223,7 +269,7 @@ public class SalientDetector implements IObjectDetector {
 						test.x -= shiftX;
 						test.y -= shiftY;
 
-						if (test.x <= 0 || test.y <= 0 || test.br().x >= newX || test.br().y >= newY) {a = false;}
+						if (test.x <= 0 || test.y <= 0 || test.br().x >= Saliency.cols() || test.br().y >= Saliency.rows()) {a = false;}
 						if (a == true) {boundRect.add(test);}
 					}  
 				}
@@ -232,114 +278,121 @@ public class SalientDetector implements IObjectDetector {
 			for (int i = 0; i < boundRect.size(); i++) {
 				Core.rectangle(ObjFound, boundRect.get(i).tl(), boundRect.get(i).br(), RedBox, 1, 8, 0);
 			}
-		}
 
-		// PROCESS SMALL
-		// AREAS*************************************************************************************************************
-		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(Saliency), disp);
+			// PROCESS SMALL AREAS ******************************************************************************************************
 
-		Boolean stage1 = true;
+			Boolean stage1 = true;
 
-		for (int a = 0; a < boundRect.size(); a++) { // process those small
-											
-			int returnArea_X, returnArea_Y;
+			for (int a = 0; a < boundRect.size(); a++) { // process those small
+												
+				int returnArea_X, returnArea_Y;
+	
+				Rect aRect = new Rect(); // copy of the rect
+				Mat ObjectTemp = new Mat(); // 100x100 or 250x250 cutout
+				Mat colorResult = new Mat(); // hsv version of ObjectTemp
+	
+				int contMinArea = 100;
+				int contMaxArea = 600;
+				int numbOfObj = 10;
+				int ObjCent = 50;
+				int centoffset = 20;
+				int edge = 5;
+	
+				aRect = boundRect.get(a);  // copy of rect
+				ObjectTemp = inputImage.submat(aRect).clone();                  // cutout of 100x100 or 250x250
+				returnArea_X = (int) (aRect.br().x - (aRect.width / 2));
+				returnArea_Y = (int) (aRect.br().y - (aRect.height / 2));
+	
+				colorResult = ObjectTemp.clone(); // Range of color
+	
+				Imgproc.cvtColor(colorResult, colorResult, Imgproc.COLOR_BGR2HSV, 0);
 
-			Rect aRect = new Rect(); // copy of the rect
-			Mat ObjectTemp = new Mat(); // 100x100 or 250x250 cutout
-			Mat colorResult = new Mat(); // hsv version of ObjectTemp
-
-			int contMinArea = 100;
-			int contMaxArea = 400;
-			int numbOfObj = 4;
-			int ObjCent = 50;
-			int centoffset = 20;
-			int edge = 5;
-
-			aRect = Imgproc.boundingRect(new MatOfPoint(contours.get(a)));  // copy of rect
-			ObjectTemp = inputImage.submat(aRect).clone();                  // cutout of 100x100 or 250x250
-			returnArea_X = (int) (aRect.br().x - (aRect.width / 2));
-			returnArea_Y = (int) (aRect.br().y - (aRect.height / 2));
-
-			colorResult = ObjectTemp.clone(); // Range of color
-
-			Imgproc.cvtColor(colorResult, colorResult, Imgproc.COLOR_BGR2HSV);
-
-			int ObjWidth = aRect.width; // the first time it runs 250x250
-			int ObjHeight = aRect.height;
-
-			if (ObjWidth == 250 && ObjHeight == 250) { // 100x100 squares
-				contMinArea = 400;
-				contMaxArea = 1000;
-				numbOfObj = 4;
-				centoffset = 80;
-				ObjCent = 125;
-				edge = 5;
-			}
-
-			Scalar white_min1 = new Scalar(0, 0, 100);
-			Scalar white_max1 = new Scalar(180, 100, 256);
-
-			Scalar pink_min1 = new Scalar(120, 0, 0); // very very very distinct
-			Scalar pink_max1 = new Scalar(180, 0, 256);
-
-			Scalar red_min1 = new Scalar(0, 0, 0);
-			Scalar red_max1 = new Scalar(5, 256, 256);
-
-			Scalar red_min2 = new Scalar(0, 0, 0);
-			Scalar red_max2 = new Scalar(10, 256, 256);
-
-			Scalar yellow_min1 = new Scalar(0, 0, 0);
-			Scalar yellow_max1 = new Scalar(30, 256, 256);
-
-			Scalar grey_min1 = new Scalar(0, 0, 200);
-			Scalar grey_max1 = new Scalar(0, 0, 256);
-
-			ArrayList<MatOfPoint> resultCont = new ArrayList<MatOfPoint>();
-			
-			// ArrayList<MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();
-			// ONLY FINDS WHITE FOR NOW
-
-			for (int colorCount = 0; colorCount < 1; colorCount++) {
+				int ObjWidth = ObjectTemp.cols(); // the first time it runs 250x250
+				int ObjHeight = ObjectTemp.rows();
+	
+				if (ObjWidth == 250 && ObjHeight == 250) { // 100x100 squares
+					contMinArea = 300;
+					contMaxArea = 1000;
+					numbOfObj = 20;
+					centoffset = 80;
+					ObjCent = 125;
+					edge = 5;
+					stage1 = false;
+				}
+	
+				Scalar white_min1 = new Scalar(0, 0, 100);
+				Scalar white_max1 = new Scalar(180, 100, 256);
+	
+				Scalar pink_min1 = new Scalar(120, 0, 0); // very very very distinct
+				Scalar pink_max1 = new Scalar(180, 0, 256);
+	
+				Scalar red_min1 = new Scalar(0, 0, 0);
+				Scalar red_max1 = new Scalar(10, 256, 256);
+	
+				Scalar red_min2 = new Scalar(0, 0, 0);
+				Scalar red_max2 = new Scalar(10, 256, 256);
+	
+				Scalar yellow_min1 = new Scalar(0, 0, 0);
+				Scalar yellow_max1 = new Scalar(30, 256, 256);
+	
+				Scalar grey_min1 = new Scalar(0, 0, 200);
+				Scalar grey_max1 = new Scalar(0, 0, 256);
+	
+				ArrayList<MatOfPoint> resultCont = new ArrayList<MatOfPoint>();
 				
-				Core.inRange(colorResult, white_min1, white_max1, colorResult);
-				Imgproc.erode(colorResult, colorResult, erodeElement);
-				Imgproc.dilate(colorResult, colorResult, dilateElement);
-
-				Imgproc.findContours(colorResult, resultCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-				if (!resultCont.isEmpty() && resultCont.size() <= numbOfObj) {
-					for (int z = 0; z < resultCont.size(); z++) {
-						
-						double area = Imgproc.contourArea(resultCont.get(z));
-						
-						if (area > contMinArea && area < maxArea) {
-							if (area < 300) {centoffset = 40;}
-
-							Rect test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(z)));
-
-							int tl_x = (int) test.tl().x; // top left x
-							int tl_y = (int) test.tl().y; // top left y
-
-							int br_x = (int) test.br().x; // bottom right x
-							int br_y = (int) test.br().y; // bottom right y
-
-							int centX = (int) br_x - (test.width / 2); // set center X
-							int centY = (int) br_y - (test.width / 2); // set center Y
-
-							if (tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight) {
-								int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
-								int Y1 = ObjCent - centoffset; int Y2 = ObjCent + centoffset;
-
-								if (centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2) {
-									returnArea_X = (int) (aRect.br().x - (aRect.width/2)); 
-									returnArea_Y = (int) (aRect.br().y - (aRect.height/2)); 
+				// ArrayList<MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();
+				// ONLY FINDS WHITE FOR NOW
+	
+				for (int colorCount = 0; colorCount < 1; colorCount++) {
+					
+					//Core.inRange(colorResult, pink_min1, pink_max1, colorResult);
+					Core.inRange(colorResult, red_min1, red_max1, colorResult);
+	
+					Imgproc.erode(colorResult, colorResult, erodeElement);
+					Imgproc.dilate(colorResult, colorResult, dilateElement);
+	
+					Imgproc.findContours(colorResult, resultCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+	
+					if (!resultCont.isEmpty() && resultCont.size() <= numbOfObj) {
+						for (int z = 0; z < resultCont.size(); z++) {
+							double area = Imgproc.contourArea(resultCont.get(z), false);
+							
+							if (area > contMinArea) {
+								if (area < 300) {centoffset = 40;}
+	
+								Rect test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(z)));
+	
+								int tl_x = (int) test.tl().x; // top left x
+								int tl_y = (int) test.tl().y; // top left y
+	
+								int br_x = (int) test.br().x; // bottom right x
+								int br_y = (int) test.br().y; // bottom right y
+	
+								int centX = (int) br_x - (test.width / 2); // set center X
+								int centY = (int) br_y - (test.width / 2); // set center Y
+	
+								if (tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight) {
+									int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
+									int Y1 = ObjCent - centoffset; int Y2 = ObjCent + centoffset;
+								    System.out.println("STUFF FOUND");
+	
+									if (centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2) {
+	
+										returnArea_X = (int) (aRect.br().x - (aRect.width/2)); 
+										returnArea_Y = (int) (aRect.br().y - (aRect.height/2));
+										Core.rectangle(ObjFound, boundRect.get(a).tl(), boundRect.get(a).br(), YellowBox, 2,8,0);
+									}
 								}
 							}
 						}
 					}
 				}
+				if (stage1 == false){break;} // if a 250x250 is found forget the rest
 			}
 		}
+		
+		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
+
 		return ReturnedArea;
 	}
 }
