@@ -173,6 +173,8 @@ public class SalientDetector implements IObjectDetector {
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
 		
+		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(Saliency), disp);
+
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
 		ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 		ArrayList<Rect> boundRect = new ArrayList<Rect>();
@@ -391,7 +393,6 @@ public class SalientDetector implements IObjectDetector {
 			}
 		}
 		
-		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
 
 		return ReturnedArea;
 	}
