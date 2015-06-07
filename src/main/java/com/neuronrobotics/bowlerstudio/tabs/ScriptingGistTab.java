@@ -10,17 +10,22 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+import javax.usb.UsbDisconnectedException;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
@@ -92,23 +97,19 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	    
 		
 		loaded=false;
+		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	if(!initialized){
 		    		initialized=true;
-		    		try {
-						finishLoadingComponents();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InterruptedException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
+		    		
+					finishLoadingComponents();
+		
 		    	}
 		    	loaded=true;
 		    	try {
-					scripting.loadCodeFromGist(Current_URL, webEngine);
+		    		if(scripting!=null)
+		    			scripting.loadCodeFromGist(Current_URL, webEngine);
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -118,7 +119,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    }else{
 		    	loaded=false;
 		    	if(splashGraphics!=null && splash.isVisible()){
-		            renderSplashFrame(splashGraphics, newValue.intValue());
+		    		BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
 		            splash.update();
 		    	}
 		    }
@@ -183,14 +184,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		goButton.setOnAction(goAction);
 	}
 	
-	private  static void renderSplashFrame(Graphics2D g, int frame) {
-	        final String[] comps = {"OpenCV", "JavaCad", "BowlerEngine"};
-	        //g.setComposite(AlphaComposite.Clear);
-	        //g.fillRect(120,140,200,40);
-	        g.setPaintMode();
-	        g.setColor(Color.RED);
-	        g.drawString("Loading "+comps[(frame/5)%comps.length]+"...", 120, 150);
-	    }
+
 	
 	private boolean processNewTab(String url){
 		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
@@ -233,30 +227,55 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	
 	
-	private void finishLoadingComponents() throws IOException, InterruptedException{
-		try{
-			if(splashGraphics!=null && splash.isVisible()){
-	    		splash.close();
-	    		splashGraphics=null;
-	    	}
-			if(scripting!=null){
-				//when navagating to a new file, stop the script that is running
-				scripting.stop();
-			}
-			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
-			setOnCloseRequest(this);
-			vBox.getChildren().add(scripting);
-			if(tabPane==null){
-				try{
-					myTab.setText(scripting.getFileName());
-				}catch(java.lang.NullPointerException ex){
-					// web page contains no gist
-					//ex.printStackTrace();
-				}
-			}
-		}catch(Exception e){
-			//no gist on this page
+	private void finishLoadingComponents(){
+
+		if(splashGraphics!=null && splash.isVisible()){
+    		splash.close();
+    		splashGraphics=null;
+    	}
+		if(scripting!=null){
+			//when navagating to a new file, stop the script that is running
+			scripting.stop();
 		}
+		try{
+			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
+			vBox.getChildren().add(scripting);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+		
+		if(tabPane==null){
+			try{
+				myTab.setText(scripting.getFileName());
+			}catch(java.lang.NullPointerException ex){
+				// web page contains no gist
+				//ex.printStackTrace();
+			}
+		}
+		//now that the application is totally loaded check for connections to add
+		try {
+			List<String> devs = SerialConnection.getAvailableSerialPorts();
+			if (devs.size() == 0) {
+				return;
+			} else {
+				new Thread() {
+					public void run() {
+						ThreadUtil.wait(750);
+						DeviceManager.addConnection();
+//						for (String d : devs) {
+//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
+//								addConnection(new SerialConnection(d));
+//						}
+					}
+				}.start();
+
+			}
+		} catch (Error 
+				| UsbDisconnectedException | SecurityException  e) {
+			e.printStackTrace();
+		}
+	
 
 
 	}
