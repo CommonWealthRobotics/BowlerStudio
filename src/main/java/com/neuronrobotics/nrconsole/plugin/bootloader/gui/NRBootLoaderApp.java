@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.Core;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.Hexml;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootCoreType;
+import com.neuronrobotics.sdk.bootloader.Core;
+import com.neuronrobotics.sdk.bootloader.Hexml;
+import com.neuronrobotics.sdk.bootloader.NRBoot;
+import com.neuronrobotics.sdk.bootloader.NRBootCoreType;
 import com.neuronrobotics.sdk.ui.ConnectionDialog;
 
 public class NRBootLoaderApp {

@@ -9,10 +9,17 @@ import haar.HaarFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
+
+import javax.script.ScriptEngine;
+
+
+
+
 
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
@@ -20,6 +27,7 @@ import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,6 +35,9 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
@@ -53,6 +64,10 @@ public class MainController implements Initializable {
 	static boolean opencvOk=true;
     private static TextArea logViewRef=null;
     private static String newString=null;
+    @FXML
+    private MenuBar menuBar;
+    @FXML
+    private MenuItem logoutGithub;
 	static{
         System.setOut(new PrintStream(out));
         updateLog();
@@ -192,6 +207,14 @@ public class MainController implements Initializable {
 				application.onAddVRCamera(event);
 		});
 		
+		FxTimer.runLater(
+				Duration.ofMillis(100) ,() -> {
+					
+					logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
+												
+		});
+		
+
     }
 
 
@@ -331,6 +354,21 @@ public class MainController implements Initializable {
 
 	public void setAddDefaultRightArm(CheckMenuItem addDefaultRightArm) {
 		AddDefaultRightArm = addDefaultRightArm;
+	}
+
+
+	@FXML public void onLogin() {
+		try {
+			ScriptingEngineWidget.login();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+	@FXML public void onLogout() {
+		ScriptingEngineWidget.logout();
 	}
 	
 

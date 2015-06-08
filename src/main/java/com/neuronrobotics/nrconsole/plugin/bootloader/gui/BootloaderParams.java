@@ -1,6 +1,6 @@
 package com.neuronrobotics.nrconsole.plugin.bootloader.gui;
 
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootCoreType;
+import com.neuronrobotics.sdk.bootloader.NRBootCoreType;
 
 
 public class BootloaderParams {

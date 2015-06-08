@@ -16,9 +16,9 @@ import javax.swing.filechooser.FileFilter;
 import net.miginfocom.swing.MigLayout;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.Hexml;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
 import com.neuronrobotics.nrconsole.plugin.bootloader.gui.StatusLabel;
+import com.neuronrobotics.sdk.bootloader.Hexml;
+import com.neuronrobotics.sdk.bootloader.NRBoot;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;

@@ -8,38 +8,57 @@ import org.python.util.PythonInterpreter;
 import org.python.core.*;
 
 import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+import javafx.stage.Stage;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -51,11 +70,17 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.controlsfx.control.action.AbstractAction;
+import org.controlsfx.control.action.Action;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
+import org.kohsuke.github.GHRelease;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 
 import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
@@ -121,9 +146,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 			+ "\tprintln(\" Scaled= \"+scaled)\n" + "}";
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<String> history = new ArrayList<>();
+	private int historyIndex=0;
 
 	private Button runfx = new Button("Run");;
-	private Button runsave = new Button("Save");;
+	private Button runsave = new Button("Save");
+	private TextField cmdLineInterface = new TextField ();
 	private WebEngine engine;
 
 	private String addr;
@@ -160,30 +188,84 @@ public class ScriptingEngineWidget extends BorderPane implements
 		});
 
 		// String ctrlSave = "CTRL Save";
-		fileLabel.setOnMouseEntered(e -> {
-			Platform.runLater(() -> {
-				ThreadUtil.wait(10);
-				fileLabel.setText(currentFile.getAbsolutePath());
-			});
-		});
-
-		fileLabel.setOnMouseExited(e -> {
-			Platform.runLater(() -> {
-				ThreadUtil.wait(10);
-				fileLabel.setText(currentFile.getName());
-			});
-		});
+//		fileLabel.setOnMouseEntered(e -> {
+//			Platform.runLater(() -> {
+//				ThreadUtil.wait(10);
+//				fileLabel.setText(currentFile.getAbsolutePath());
+//			});
+//		});
+//
+//		fileLabel.setOnMouseExited(e -> {
+//			Platform.runLater(() -> {
+//				ThreadUtil.wait(10);
+//				fileLabel.setText(currentFile.getName());
+//			});
+//		});
 		fileLabel.setTextFill(Color.GREEN);
-
+		cmdLineInterface.setOnAction(event -> {
+			String text = cmdLineInterface.getText();
+			text+="\r\n";
+			Platform.runLater(() -> {
+				cmdLineInterface.setText("");
+			});
+			System.out.println(text);
+			history.add(text);
+			historyIndex=0;
+			inlineScriptRun(text,null);
+		});
+		cmdLineInterface.setPrefWidth(80*4);
+		cmdLineInterface.addEventFilter( KeyEvent.KEY_PRESSED, event -> {
+			Platform.runLater(() -> {
+			    if( (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) ) {
+			    	System.err.println("Key pressed "+event.getCode()+" history index = "+historyIndex+" history size= "+history.size());
+			    	if(historyIndex==0){
+					       String text = cmdLineInterface.getText();
+					       if(text.length()>0){
+					    	   // store what was in the box into he history
+					    	   history.add(text);
+					       }
+			    	}
+			       
+			       if(event.getCode() == KeyCode.UP)
+			    	   historyIndex++;
+			       else
+			    	   historyIndex--;
+			       if(history.size()>0){
+				       if(historyIndex>history.size()){
+				    	   historyIndex =  history.size();
+				       }
+				       if(historyIndex<0)
+				    	   historyIndex=0;
+				       //History index established
+				       if(historyIndex>0)
+					       Platform.runLater(() -> {
+								cmdLineInterface.setText(history.get(history.size()-historyIndex));
+					       });
+				       else
+				    	   Platform.runLater(() -> {
+								cmdLineInterface.setText("");
+					       }); 
+			       }
+			       event.consume();
+			    } 
+			});
+		});
+		history.add("println dyio");
+		history.add("dyio.setValue(0,1)//sets the value of channel 0 to 1");
+		history.add("dyio.setValue(0,0)//sets the value of channel 0 to 0");
+		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
-		setPadding(new Insets(1, 0, 3, 20));
+		setPadding(new Insets(1, 0, 3, 10));
 		final FlowPane controlPane = new FlowPane();
-		controlPane.setHgap(100);
+		controlPane.setHgap(20);
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(runsave);
 		controlPane.getChildren().add(fileLabel);
+		controlPane.getChildren().add(new Label("Bowler R.E.P.L.:"));
+		controlPane.getChildren().add(cmdLineInterface);
+		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
 
@@ -248,7 +330,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 		this.engine = engine;
 		loadGist = true;
 		String currentGist = getCurrentGist(addr, engine);
-		String[] code = codeFromGistID(currentGist);
+		String[] code = codeFromGistID(currentGist,"");
 		if (code != null) {
 			setCode(code[0]);
 			fileLabel.setText(code[1]);
@@ -532,18 +614,112 @@ public class ScriptingEngineWidget extends BorderPane implements
 			//System.out.println("Setting up Python Shell");
 		}
 	}
+	
+	public static String getLoginID(){
+		
+		if(loginID == null){
+			try {
+				String line;
+				try (
+				    InputStream fis = new FileInputStream(getCreds().getAbsolutePath());
+				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+				    BufferedReader br = new BufferedReader(isr);
+				) {
+				    while ((line = br.readLine()) != null) {
+				        if(line.contains("login")){
+				        	loginID = line.split("=")[1];
+				        }
+				    }
+				}
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return loginID;
+	}
+	
+	public static void login() throws IOException{
+		GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
+        myDialog.sizeToScene();
+        myDialog.showAndWait();
+        loginID = myDialog.getUsername();
+        String content= "login="+loginID+"\n";
+        content+= "password="+myDialog.getPw()+"\n";
+        PrintWriter out = new PrintWriter(getCreds().getAbsoluteFile());
+        out.println(content);
+        out.flush();
+        out.close();
+        github = GitHub.connect();
+	}
 
-	public static String[] codeFromGistID(String id) {
+	public static void logout(){
+		if(getCreds()!= null)
 		try {
-			github = GitHub.connectAnonymously();
+			Files.delete(getCreds().toPath());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		github=null;
+	}
+
+
+	public static String[] codeFromGistID(String id, String FileName) {
+		try {
+			if(github == null){
+
+				if (getCreds().exists()){
+					try{
+						github = GitHub.connect();
+					}catch(IOException ex){
+						
+					}
+				}else{
+					getCreds().createNewFile();
+				}
+				
+				if(github==null){
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("GitHub Login Missing");
+					alert.setHeaderText("To use BowlerStudio at full speed login with github");
+					alert.setContentText("What would you like to do?");
+	
+					ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
+					ButtonType buttonTypeTwo = new ButtonType("Login");
+					
+					alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+					
+					Optional<ButtonType> result = alert.showAndWait();
+					if (result.get() == buttonTypeOne){
+						github = GitHub.connectAnonymously();
+					} else  {
+						logout();
+						login();
+					} 
+				}
+				
+			}
+			
 			Log.debug("Loading Gist: " + id);
-			GHGist gist = github.getGist(id);
+			try{
+				gist = github.getGist(id);
+			}catch(IOException ex){
+				logout();
+				
+				return null;
+			}
 			Map<String, GHGistFile> files = gist.getFiles();
+					
+			
 			for (Entry<String, GHGistFile> entry : files.entrySet()) {
-				if (entry.getKey().endsWith(".py")
+				if (((entry.getKey().endsWith(".py")
 						|| entry.getKey().endsWith(".jy")
 						|| entry.getKey().endsWith(".java")
-						|| entry.getKey().endsWith(".groovy")) {
+						|| entry.getKey().endsWith(".groovy"))&&(FileName.length()==0))
+						||entry.getKey().contains(FileName)) {
 
 					GHGistFile ghfile = entry.getValue();
 					Log.debug("Key = " + entry.getKey());
@@ -580,7 +756,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static Object inlineGistScriptRun(String gistID,
 			ArrayList<Object> args) {
-		return inlineScriptRun(codeFromGistID(gistID)[0], args);
+		return inlineScriptRun(codeFromGistID(gistID,"")[0], args);
 	}
 
 	static final String[] imports = new String[] { "haar",
@@ -608,6 +784,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	private static GitHub github;
 
+	private static String loginID=null;
+
+	private static File creds=null;
+
+	private static GHGist gist;
+
 	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();
 		cc.addCompilationCustomizers(new ImportCustomizer()
@@ -618,7 +800,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 						"eu.mihosoft.vrl.v3d.Transform"));
 
 		Binding binding = new Binding();
-		for (PluginManager pm : getConnectionmanager().getConnections()) {
+		for (PluginManager pm : getConnectionmanager().getPlugins()) {
 			try {
 				// groovy needs the objects cas to thier actual type befor
 				// passing into the scipt
@@ -675,7 +857,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 			}
 		}
 
-		for (PluginManager pm : getConnectionmanager().getConnections()) {
+		for (PluginManager pm : getConnectionmanager().getPlugins()) {
 			try {
 				// passing into the scipt
 				interp.set(pm.getName(),
@@ -730,6 +912,16 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public static void setLastFile(File lastFile) {
 		ScriptingEngineWidget.lastFile = lastFile;
+	}
+
+	public static File getCreds() {
+		if(creds == null)
+			setCreds(new File(System.getProperty("user.home")+"/.github"));
+		return creds;
+	}
+
+	public static void setCreds(File creds) {
+		ScriptingEngineWidget.creds = creds;
 	}
 
 }

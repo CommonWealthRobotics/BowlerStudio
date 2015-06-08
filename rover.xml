@@ -1,14 +1,14 @@
-<root>
+[<root>
 	
 	<link>
 		<name>RotationTurretPlate</name>
 		<type>pid</type>
 		<index>0</index>
 		<scale>.088</scale>
-		<upperLimit>196</upperLimit>
-		<lowerLimit>41</lowerLimit>
+		<upperLimit>4096</upperLimit>
+		<lowerLimit>-4096</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>189</indexLatch>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>	
 		<homingTPS>500</homingTPS>
 		<DHParameters>
@@ -23,48 +23,48 @@
 		<type>pid</type>
 		<index>1</index>
 		<scale>.088</scale>
-		<upperLimit>205</upperLimit>
-		<lowerLimit>41</lowerLimit>
+		<upperLimit>4096</upperLimit>
+		<lowerLimit>-4096</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>90</indexLatch>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>
 		<homingTPS>500</homingTPS>
 		<DHParameters>
 		    <Delta>0</Delta>
-		    <Theta>90</Theta>
+		    <Theta>-90</Theta>
 		    <Radius>476.25</Radius>
 		    <Alpha>0</Alpha>
 		</DHParameters>			
 	</link>
 	
 	<link>
-		<name>wristTwist</name>
+		<name>secondTilt</name>
 		<type>pid</type>
 		<index>2</index>
 		<scale>.088</scale>
-		<upperLimit>205</upperLimit>
-		<lowerLimit>41</lowerLimit>
+		<upperLimit>4096</upperLimit>
+		<lowerLimit>-4096</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>189</indexLatch>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>
 		<homingTPS>500</homingTPS>
 		<DHParameters>
 		    <Delta>0</Delta>
-		    <Theta>-90</Theta>
+		    <Theta>90</Theta>
 		    <Radius>419</Radius>
 		    <Alpha>90</Alpha>
 		</DHParameters>				
 	</link>
 	
 	<link>
-		<name>wristBend</name>
+		<name>wristTwist</name>
 		<type>pid</type>
 		<index>3</index>
 		<scale>.756</scale>
-		<upperLimit>197</upperLimit>
-		<lowerLimit>0</lowerLimit>
+		<upperLimit>4096</upperLimit>
+		<lowerLimit>-4096</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>111</indexLatch>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>	
 		<homingTPS>500</homingTPS>
 		<DHParameters>
@@ -74,6 +74,26 @@
 		    <Alpha>-90</Alpha>
 		</DHParameters>			
 	</link>
+	
+	<link>
+		<name>cameraFrame</name>
+		<type>pid</type>
+		<index>4</index>
+		<scale>.756</scale>
+		<upperLimit>4096</upperLimit>
+		<lowerLimit>-4096</lowerLimit>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>
+		<DHParameters>
+		    <Delta>-168.25</Delta>
+		    <Theta>0</Theta>
+		    <Radius>0</Radius>
+		    <Alpha>-90</Alpha>
+		</DHParameters>			
+	</link>
+	
 	
 
 	
@@ -87,3 +107,4 @@
 		<rotz>0</rotz>
 	</baseToZframe>
 </root>
+, rover.xml]

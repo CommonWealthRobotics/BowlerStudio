@@ -20,7 +20,9 @@ import javafx.stage.StageStyle;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.jniloader.SalientDetector;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
@@ -29,11 +31,11 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
 import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBootLoader;
 import com.neuronrobotics.nrconsole.plugin.cartesian.KinematicsController;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -58,7 +60,7 @@ public class PluginManager {
 		this.dev = dev;
 		this.setBowlerStudioController(bowlerStudioController);
 		if(!dev.isAvailable())
-			throw new RuntimeException();
+			throw new RuntimeException("Device is not reporting availible "+dev.getClass().getSimpleName());
 		
 		// add tabs to the support list based on thier class
 		// adding additional classes here will show up in the default 
@@ -75,6 +77,7 @@ public class PluginManager {
 		
 		if(AbstractImageProvider.class.isInstance(dev)){
 			deviceSupport.add(CameraTab.class);
+			deviceSupport.add(SalientTab.class);
 		}
 		
 		if(NRBootLoader.class.isInstance(dev)){
@@ -141,7 +144,7 @@ public class PluginManager {
 	}
 
 	public void setTree(TreeItem<String> item) {
-		this.item =item;
+		this.setItem(item);
 		if(dev.getConnection()!=null){
 			TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
 			rpc.setExpanded(false);
@@ -274,7 +277,7 @@ public class PluginManager {
 
 
 	public TreeItem<String> getTreeItem() {
-		return item;
+		return getCheckBoxItem();
 	}
 
 
@@ -287,6 +290,18 @@ public class PluginManager {
 
 	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
 		this.bowlerStudioController = bowlerStudioController;
+	}
+
+
+
+	public TreeItem<String> getCheckBoxItem() {
+		return item;
+	}
+
+
+
+	public void setItem(TreeItem<String> item) {
+		this.item = item;
 	}
 
 }

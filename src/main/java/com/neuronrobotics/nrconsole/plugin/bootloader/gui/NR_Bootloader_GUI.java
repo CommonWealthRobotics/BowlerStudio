@@ -15,8 +15,8 @@ import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.Hexml;
-import com.neuronrobotics.nrconsole.plugin.bootloader.core.NRBoot;
+import com.neuronrobotics.sdk.bootloader.Hexml;
+import com.neuronrobotics.sdk.bootloader.NRBoot;
 import com.neuronrobotics.sdk.common.InvalidResponseException;
 import com.neuronrobotics.sdk.common.NoConnectionAvailableException;
 
