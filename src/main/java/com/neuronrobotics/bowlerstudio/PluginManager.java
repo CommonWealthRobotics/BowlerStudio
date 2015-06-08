@@ -222,9 +222,11 @@ public class PluginManager {
 				if( 	DyIOConsole.class ==c ||
 						BootloaderPanel.class ==c
 						){
-					System.out.println("Auto loading "+c.getSimpleName());
-					p.setSelected(true);
-					getBowlerStudioController().addTab(generateTab(c), true);
+					if(getBowlerStudioController()!=null){
+						System.out.println("Auto loading "+c.getSimpleName());
+						p.setSelected(true);
+						getBowlerStudioController().addTab(generateTab(c), true);
+					}
 				}else{
 					Log.warning("Not autoloading "+c);
 				}

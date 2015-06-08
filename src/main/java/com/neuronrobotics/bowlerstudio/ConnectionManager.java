@@ -451,6 +451,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 		});
 		refreshItemTree();
+		if(	getBowlerStudioController()!=null)
 		getBowlerStudioController().setSelectedTab(this);
 	}
 	//this is needed because if you just remove one they all disapear
