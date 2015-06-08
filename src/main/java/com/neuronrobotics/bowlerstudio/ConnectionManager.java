@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio;
 import gnu.io.NRSerialPort;
 
 import java.io.File;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -70,6 +72,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private CheckBoxTreeItem<String> rootItem;
 	private static final ArrayList<PluginManager> plugins = new ArrayList<PluginManager>();
 	private BowlerStudioController bowlerStudioController;
+	String formatStr="%1$-40s %2$-60s  %3$-40s";
+
 
 	private Node getIcon(String s) {
 		return new ImageView(new Image(
@@ -80,7 +84,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		this.setBowlerStudioController(bowlerStudioController);
 		setText("My Devices");
 
-		rootItem = new CheckBoxTreeItem<String>("",
+		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
 				getIcon("images/connection-icon.png"
 				// "images/usb-icon.png"
 				));
@@ -391,9 +395,12 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			// "images/ethernet-icon.png"
 			"images/ethernet-icon.png");
 		}
-
-		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(newDevice.getScriptingName() + " "
-				+ newDevice.getAddress(), icon);
+		String line = String.format(formatStr, 
+				newDevice.getScriptingName(),
+				newDevice.getClass().getSimpleName(),
+				newDevice.getAddress());
+		CheckBoxTreeItem<String> item = new CheckBoxTreeItem<String>(line, icon);
+		
 
 		mp.setTree(item);
 		item.setExpanded(true);
