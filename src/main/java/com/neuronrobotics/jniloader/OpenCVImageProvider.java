@@ -2,6 +2,8 @@ package com.neuronrobotics.jniloader;
 
 import java.awt.image.BufferedImage;
 
+import javafx.application.Platform;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
@@ -56,8 +58,10 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 
 	@Override
 	public void disconnect() {
-		
-		getVc().release();
+		Platform.runLater(() -> {
+			getVc().release();
+		});
+
 		setVc(null);
 	}
 
