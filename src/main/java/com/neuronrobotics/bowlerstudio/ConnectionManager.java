@@ -169,8 +169,12 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //	}
 
 	public void disconnectAll() {
-		while (plugins.size()>0) {
-			disconectAndRemoveDevice(plugins.get(0));
+
+		//extract list int thread safe object
+		Object [] pms= plugins.toArray();
+		for (int i=0;i<pms.length;i++) {
+			disconectAndRemoveDevice((PluginManager)pms[i]);
+			ThreadUtil.wait(50);
 		}
 
 	}
