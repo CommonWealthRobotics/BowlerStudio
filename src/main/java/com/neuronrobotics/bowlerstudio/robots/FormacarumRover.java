@@ -6,6 +6,7 @@ import com.neuronrobotics.addons.driving.AbstractRobotDrive;
 import com.neuronrobotics.addons.driving.AckermanBotDriveData;
 import com.neuronrobotics.addons.driving.AckermanBotVelocityData;
 import com.neuronrobotics.addons.driving.AckermanDefaultKinematics;
+import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.addons.driving.IAckermanBotKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ServoRotoryLink;
 import com.neuronrobotics.sdk.common.Log;
@@ -34,6 +35,9 @@ public class FormacarumRover extends AbstractRobotDrive {
 	private DigitalOutputChannel driveDirection;
 	private double scale = 360.0/4096.0;
 	private int currentEncoderReading;
+	private DigitalOutputChannel driveThree;
+	private HokuyoURGDevice laser;
+	private ServoRotoryLink noding;
 	
 	public FormacarumRover(	PIDChannel drive,
 						PIDChannel lSteer,
@@ -41,7 +45,13 @@ public class FormacarumRover extends AbstractRobotDrive {
 						PIDChannel bSteer, 
 						DigitalOutputChannel driveEnable, 
 						DigitalOutputChannel driveDirection,
+						DigitalOutputChannel driveThree,
+						HokuyoURGDevice laser,
+						ServoRotoryLink noding,
 						IAckermanBotKinematics akermanConfigs) {
+		this.driveThree = driveThree;
+		this.laser = laser;
+		this.noding = noding;
 		ak=akermanConfigs;
 		this.driveEnable = driveEnable;
 		this.driveDirection = driveDirection;
@@ -53,6 +63,15 @@ public class FormacarumRover extends AbstractRobotDrive {
 		complexSteering=true;
 		SetDriveVelocity(0);
 	}
+	
+	public void setNodAngle(double  angle){
+		noding.setTargetAngle(angle);
+	}
+	
+	public double getNodAngle(){
+		return noding.getTargetAngle();
+	}
+	
 	
 	protected void setPIDChanel(PIDChannel d){
 		drive=d;
