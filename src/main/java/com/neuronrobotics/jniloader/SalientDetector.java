@@ -165,9 +165,7 @@ public class SalientDetector implements IObjectDetector {
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
-				
-				AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(Saliency), disp);
-		
+						
 				ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
 				ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 				ArrayList<Rect> boundRect = new ArrayList<Rect>();
@@ -214,33 +212,16 @@ public class SalientDetector implements IObjectDetector {
 						int newX = 100;
 						int newY = 100;
 				        
-						MatOfPoint contour_hold      = new MatOfPoint();
-						MatOfPoint contourApprox     = new MatOfPoint();
-						MatOfPoint2f contour2f       = new MatOfPoint2f();
-						MatOfPoint2f contourApprox2f = new MatOfPoint2f();
-						
 						if (i == -1) {
 							newY = 250;
 							newX = 250;
 							
-							contour_hold = contourFinal.get(0);
-							contour_hold.convertTo(contour2f, CvType.CV_32FC2);
-							Imgproc.approxPolyDP(contour2f, contourApprox2f, 2, true);
-							contourApprox2f.convertTo(contourApprox, CvType.CV_32S);
-							test = Imgproc.boundingRect(new MatOfPoint(contourApprox)); // test = rect around the contour's most outer extremes
-							area = Imgproc.contourArea(contourFinal.get(0), false);
-							
-							//test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(0)));
+							test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(0))); // test = rect around the contour's most outer extremes
+							area = Imgproc.contourArea(contourFinal.get(0));
 						} 
 						else {
-							contour_hold = contourFinal.get(i);
-							contour_hold.convertTo(contour2f, CvType.CV_32FC2);
-							Imgproc.approxPolyDP(contour2f, contourApprox2f, 2, true);
-							contourApprox2f.convertTo(contourApprox, CvType.CV_32S);
-							test = Imgproc.boundingRect(new MatOfPoint(contourApprox)); // test = rect around the contour's most outer extremes
-							area = Imgproc.contourArea(contourFinal.get(i), false);
-							
-							//test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i)));
+							test = Imgproc.boundingRect(new MatOfPoint(contourFinal.get(i))); // test = rect around the contour's most outer extremes
+							area = Imgproc.contourArea(contourFinal.get(i));
 						}
 		
 						if (area >= minArea){ // size check
@@ -341,7 +322,7 @@ public class SalientDetector implements IObjectDetector {
 						for (int colorCount = 0; colorCount < 1; colorCount++) {
 							
 							//Core.inRange(colorResult, pink_min1, pink_max1, colorResult);
-							Core.inRange(colorResult, red_min1, red_max1, colorResult);
+							Core.inRange(colorResult, white_min1, white_max1, colorResult);
 			
 							Imgproc.erode(colorResult, colorResult, erodeElement);
 							Imgproc.dilate(colorResult, colorResult, dilateElement);
@@ -389,8 +370,10 @@ public class SalientDetector implements IObjectDetector {
 						if (stage1 == false){break;} // if a 250x250 is found forget the rest
 					}
 				}
+				AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
 			}
 		}
+
 		return ReturnedArea;
 	}
 }
