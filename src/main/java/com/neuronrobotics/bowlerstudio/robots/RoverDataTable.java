@@ -29,6 +29,11 @@ public class RoverDataTable extends NonBowlerDevice {
 	public ArrayList<ObjectDetectionDataTableElement> getDetections() {
 		return detections;
 	}
+	
+	public void addDetector(ObjectDetectionDataTableElement el){
+		if(!detections.contains(el))
+			detections.add(el);
+	}
 
 	public ObjectDetectionDataTableElement getSpecificDetection(String name ) {
 		for (ObjectDetectionDataTableElement o:detections){
