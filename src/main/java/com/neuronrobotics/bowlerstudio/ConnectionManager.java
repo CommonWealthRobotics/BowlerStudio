@@ -106,13 +106,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		DeviceManager.addDeviceAddedListener(this);
 		
-		new Thread(){
-			public void run(){
-				ThreadUtil.wait(5000);
-		        DeviceManager.addConnection(new StaticFileProvider(new File("/home/jonlee/my_photo-41.jpg")), "devName");
-
-			}
-		}.start();
+//		new Thread(){
+//			public void run(){
+//				ThreadUtil.wait(5000);
+//		        DeviceManager.addConnection(new StaticFileProvider(new File("/home/jonlee/my_photo-41.jpg")), "devName");
+//
+//			}
+//		}.start();
 
 //		UsbCDCSerialConnection
 //				.addUsbDeviceEventListener(device -> new Thread() {
