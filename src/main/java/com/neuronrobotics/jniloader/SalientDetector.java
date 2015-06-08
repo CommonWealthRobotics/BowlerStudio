@@ -8,6 +8,7 @@ import java.util.List;
 import java.math.*;
 
 import org.opencv.core.Core;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Size;
@@ -16,9 +17,15 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.python.modules.math;
+
+import com.kenai.jffi.Array;
 
 public class SalientDetector implements IObjectDetector {
 
+	Boolean stage1 = true;
+	Boolean stage2 = false;
+	
 	@Override
 	public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp) {
 
@@ -28,11 +35,9 @@ public class SalientDetector implements IObjectDetector {
 
 		Scalar RedBox    = new Scalar(  0,   0, 255);
 		Scalar YellowBox = new Scalar(255, 255,   0);
-
 		
 		int threshMin = 150;
 		int threshMax = 255;
-
 
 		int Erode_Max = 2;
 		int Erode_Min = 2;
@@ -48,38 +53,47 @@ public class SalientDetector implements IObjectDetector {
 		ArrayList<Detection> ReturnedArea = new ArrayList<Detection>(); // areas
 
 		Mat inputImage = new Mat(); // original webcam image
-		Mat MeanShift = new Mat(); // MeanShifted image to reduce noise
-		Mat ObjFound = new Mat(); // Where stuff is found and red boxes drawn
-		Mat Saliency = new Mat(); // Saliency of image
+		Mat GaussBlur = new Mat();  // GaussBlured image to reduce noise
+		Mat ObjFound = new Mat();   // Where stuff is found and red boxes drawn
+		Mat Saliency = new Mat();   // Saliency of image
 
 		Mat top = new Mat(); // top level of pyramid
-		Mat bot = new Mat(); // meanshifted image to compare to
+		Mat bot = new Mat(); // GaussBlured image to compare to
 
+		Mat DS_raw = new Mat();
+		Mat UP_raw = new Mat();
 		Mat DS = new Mat();
 		Mat UP = new Mat();
 
 		AbstractImageProvider.bufferedImageToMat(inImg, inputImage);// ACCESS
 
 		ObjFound = inputImage.clone();
-		MeanShift = inputImage.clone();
-
-		Imgproc.GaussianBlur(MeanShift, MeanShift, new Size(5,5), 0);
-		Imgproc.cvtColor(MeanShift, MeanShift, Imgproc.COLOR_BGR2GRAY);
-
-		// Perform Pyramid Function ****************************************
-		MeanShift.convertTo(MeanShift, CvType.CV_32F);
-		DS = MeanShift.clone();
-
+		GaussBlur = inputImage.clone();
+		
+		Imgproc.cvtColor(GaussBlur, GaussBlur, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.GaussianBlur(GaussBlur, GaussBlur, new Size(5,5), 0);
+		
+		/*Mat thr = new Mat(Saliency.rows(), Saliency.cols(), CvType.CV_8UC1);
+		Saliency.convertTo(thr, CvType.CV_8UC1, 255); // change float to 1-255
+		Imgproc.threshold(thr, Saliency, 150, 255,Imgproc.THRESH_BINARY); // turn to black and white*/
+		//Mat gaussThresh = new Mat(GaussBlur.rows(), GaussBlur.cols(), CvType.CV_32F);
+		//Imgproc.threshold(gaussThresh, Saliency, 0, 255, Imgproc.TH)
+		GaussBlur.convertTo(GaussBlur, CvType.CV_32F);
+		
+		DS = GaussBlur.clone();
 		for (int i = 0; i < PyrSize; i++) {
 			Mat a = new Mat();
 			Imgproc.pyrDown(DS, a);
-			
-			for(int x = 0; x < a.rows(); x++){
-				for (int y = 0; y < a.cols(); y++){
-					float[] dsTemp = new float[0];
-					a.get(x, y, dsTemp);
-					dsTemp[0] = dsTemp[0] + 100;
-					a.put(x, y, dsTemp);
+
+			float[] blah = new float[1];
+			blah[0] = (float) 10.0;
+			float[] bleh = new float[1];
+
+			for (int j = 0; j < a.rows(); j++) {
+				for (int k = 0; k < a.cols(); k++) {
+					a.get(j, k, bleh);
+					bleh[0] = bleh[0] + blah[0];
+					a.put(j, k, bleh);
 				}
 			}
 			DS = a.clone();
@@ -91,79 +105,52 @@ public class SalientDetector implements IObjectDetector {
 			Mat a = new Mat();
 			Imgproc.pyrUp(UP, a);
 			
-			for(int x = 0; x < a.rows(); x++){
-				for (int y = 0; y < a.cols(); y++){
-					float[] usTemp = new float[0];
-					a.get(x, y, usTemp);
-					usTemp[0] = usTemp[0] + 100;
-					a.put(x, y, usTemp);
+			float[] blah = new float[1];
+			blah[0] = (float)10.0;
+			float[] bleh = new float[1];
+			for (int j = 0; j < a.rows(); j++) {
+				for (int k = 0; k < a.cols(); k++) {
+					a.get(j, k, bleh);
+					bleh[0] = bleh[0] + blah[0];
+					a.put(j, k, bleh);
 				}
 			}
-			
 			UP = a.clone();
 		}
 
-		top = UP.clone(); // most downsampled then upsampled image
-		bot = MeanShift.clone();
-		Saliency = MeanShift.clone();
-		// *******************************************************************
-
-		// AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(top),disp);
-		// http://answers.opencv.org/question/5/how-to-get-and-modify-the-pixel-of-mat-in-java/
-		// http://www.tutorialspoint.com/java_dip/applying_weighted_average_filter.htm
-
-		int channelNumb = top.channels();
-
-		float[] top_temp = new float[channelNumb];
-		float[] bot_temp = new float[channelNumb];
-		float[] sal_temp = new float[channelNumb];
-
-		float top_min = (float) 255.0;
-		float bot_min = (float) 1.0;
-
-		// CHECK SO YOU DON'T DIVIDE BY ZERO AND THEREFORE BAD THINGS
+		top      = UP.clone();  
+		bot      = GaussBlur.clone();
+		Saliency = GaussBlur.clone();
+	 
+		int cSize = top.channels();
 		
-		for (int i = 0; i < top.rows(); i++) { // find the smallest value in
-			for (int j = 0; j < top.cols(); j++) { // this is so you can sub out
-				top.get(i, j, top_temp);
+		float[] top_temp = new float[cSize];
+		float[] bot_temp = new float[cSize];
+		float[] sal_temp = new float[cSize];
+	
+		Boolean tester = false;
+		for (int i = 0; i < top.rows(); i++){
+		    for (int j = 0; j < top.cols(); j++){
+		    	top.get(i, j, top_temp);
 				bot.get(i, j, bot_temp);
-
-				float a = top_temp[0]; 
-				float b = bot_temp[0];
-
-				if (a < top_min && a > 0) {top_min = a;}
-				if (b < bot_min && b > 0) {bot_min = b;}			
-			}
-		}
-		
-        // END OF CHECK ***************
-		
-		// MAGIC SALIENCY MAP, THANKS TO IOANNIS 
-		for (int i = 0; i < top.rows(); i++) {
-			for (int j = 0; j < top.cols(); j++) {
-
-				top.get(i, j, top_temp);
-				bot.get(i, j, bot_temp);
-
+				
 				float a = top_temp[0];
 				float b = bot_temp[0];
-
-				if (a == 0) {a = top_min;}
-				if (b == 0) {b = bot_min;}
-
-				if (a <= b) {sal_temp[0] = (float) (1.0 - a / b);} 
-				else        {sal_temp[0] = (float) (1.0 - b / a);}
 				
-				sal_temp[0] = (float)Math.sqrt(sal_temp[0]);
-				Saliency.put(i, j, sal_temp);
-			}
-		} 
-		// *******************************************************************************************************************
+		 
+				if (a <= b) {sal_temp[0] = (float) (1 - a/b);}
+				else        {sal_temp[0] = (float) (1 - b/a);}
+				
+				sal_temp[0] = (float) math.sqrt(sal_temp[0]);
+				
+				Saliency.put(i,j, sal_temp);
+		    }
+		}
 
 		Mat thr = new Mat(Saliency.rows(), Saliency.cols(), CvType.CV_8UC1);
 		Saliency.convertTo(thr, CvType.CV_8UC1, 255); // change float to 1-255
-		Imgproc.threshold(thr, Saliency, threshMin, threshMax,Imgproc.THRESH_BINARY_INV); // turn to black and white
-
+		Imgproc.threshold(thr, Saliency, 150, 255,Imgproc.THRESH_BINARY_INV); // turn to black and white
+		
 		Imgproc.erode(Saliency, Saliency, erodeElement);
 		Imgproc.erode(Saliency, Saliency, erodeElement);
 		Imgproc.erode(Saliency, Saliency, erodeElement);
@@ -173,15 +160,14 @@ public class SalientDetector implements IObjectDetector {
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
 		Imgproc.dilate(Saliency, Saliency, dilateElement);
 		
-		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(Saliency), disp);
-
+		
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
 		ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 		ArrayList<Rect> boundRect = new ArrayList<Rect>();
 		
 		Imgproc.findContours(Saliency, contours, new Mat(),Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
-		if (contours.size() != 0 && contours.size() < 100) {
+		if (contours.size() != 0 && contours.size() < 100){
 
 			while (true) { // sort by size
 				int sortCount = 0;
@@ -383,6 +369,10 @@ public class SalientDetector implements IObjectDetector {
 										returnArea_X = (int) (aRect.br().x - (aRect.width/2)); 
 										returnArea_Y = (int) (aRect.br().y - (aRect.height/2));
 										Core.rectangle(ObjFound, boundRect.get(a).tl(), boundRect.get(a).br(), YellowBox, 2,8,0);
+										double m = (double)returnArea_X;
+										double n = (double)returnArea_Y;
+										Detection INTERESTING = new Detection(m, n, area);
+										ReturnedArea.add(INTERESTING);
 									}
 								}
 							}
@@ -393,7 +383,9 @@ public class SalientDetector implements IObjectDetector {
 			}
 		}
 		
+		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
 
+		
 		return ReturnedArea;
 	}
 }
