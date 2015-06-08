@@ -73,8 +73,6 @@ public class SalientDetector implements IObjectDetector {
 				Mat top = new Mat(); // top level of pyramid
 				Mat bot = new Mat(); // GaussBlured image to compare to
 		
-				Mat DS_raw = new Mat();
-				Mat UP_raw = new Mat();
 				Mat DS = new Mat();
 				Mat UP = new Mat();
 				
