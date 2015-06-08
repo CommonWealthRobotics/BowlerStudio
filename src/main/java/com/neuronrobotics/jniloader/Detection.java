@@ -1,11 +1,15 @@
 package com.neuronrobotics.jniloader;
 
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+
 public class Detection {
 
 	private final double X;
 	private final double Y;
 	private final double Size;
 	private double confidence;
+	
+	private TransformNR detectionLocation=null;
 	
 	public Detection(double x, double y, double size){
 		X=x;
@@ -48,5 +52,11 @@ public class Detection {
 
 	public void setConfidence(double confidence) {
 		this.confidence = confidence;
+	}
+	public TransformNR getDetectionLocation() {
+		return detectionLocation;
+	}
+	public void setDetectionLocation(TransformNR detectionLocation) {
+		this.detectionLocation = detectionLocation;
 	}
 }
