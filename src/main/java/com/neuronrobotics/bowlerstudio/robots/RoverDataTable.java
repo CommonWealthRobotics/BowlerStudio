@@ -6,7 +6,7 @@ import com.neuronrobotics.sdk.common.NonBowlerDevice;
 
 public class RoverDataTable extends NonBowlerDevice {
 	
-	
+	private ArrayList<ObjectDetectionDataTableElement> detections = new ArrayList<>();
 
 	@Override
 	public void disconnectDeviceImp() {
@@ -24,6 +24,14 @@ public class RoverDataTable extends NonBowlerDevice {
 	public ArrayList<String> getNamespacesImp() {
 		// TODO Auto-generated method stub
 		return new ArrayList<String>();
+	}
+
+	public ArrayList<ObjectDetectionDataTableElement> getDetections() {
+		return detections;
+	}
+
+	public void setDetections(ArrayList<ObjectDetectionDataTableElement> detections) {
+		this.detections = detections;
 	}
 
 }
