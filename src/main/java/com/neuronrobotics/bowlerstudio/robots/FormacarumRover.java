@@ -114,20 +114,23 @@ public class FormacarumRover extends AbstractRobotDrive {
 	protected void SetDriveDistance(int ticks, double seconds){
 		Log.debug("Seting PID set point of= "+ticks+" currently at "+currentEncoderReading);
 		//drive.SetPIDSetPoint(ticks, seconds);
-		driveDirection.setHigh(ticks< currentEncoderReading);
-		driveEnable.setHigh(false);
+		SetDriveVelocity((int) (ticks/seconds));
 		ThreadUtil.wait((int) (seconds*1000));
-		driveEnable.setHigh(true);
+		SetDriveVelocity(0);
 		Log.debug("Arrived at= "+currentEncoderReading);
 	}
 	
-	protected void SetDriveVelocity(int ticksPerSecond){
+	public void SetDriveVelocity(int ticksPerSecond){
 		Log.debug("Seting PID Velocity set point of="+ticksPerSecond);
 		if(ticksPerSecond>0){
-			driveDirection.setHigh(ticksPerSecond> 0);
+			driveDirection.setHigh(false);
 			driveEnable.setHigh(false);
-		}else{
+		}if(ticksPerSecond==0){
+			driveDirection.setHigh(false);//doesnt matter, stopped
 			driveEnable.setHigh(true);
+		}else{
+			driveDirection.setHigh(true);
+			driveEnable.setHigh(false);
 		}
 
 	}
