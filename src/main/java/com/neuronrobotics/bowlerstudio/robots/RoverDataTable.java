@@ -7,6 +7,9 @@ import com.neuronrobotics.sdk.common.NonBowlerDevice;
 public class RoverDataTable extends NonBowlerDevice {
 	
 	private ArrayList<ObjectDetectionDataTableElement> detections = new ArrayList<>();
+	
+	private long startOfApp = System.currentTimeMillis();
+	private double hungry=0;
 
 	@Override
 	public void disconnectDeviceImp() {
@@ -42,6 +45,24 @@ public class RoverDataTable extends NonBowlerDevice {
 			}
 		}
 		return null;
+	}
+	
+
+
+	public double getHungry() {
+		return hungry;
+	}
+
+	public void setHungry(double hungry) {
+		this.hungry = hungry;
+	}
+
+	public long getStartOfApp() {
+		return startOfApp;
+	}
+
+	public void setStartOfApp(long startOfApp) {
+		this.startOfApp = startOfApp;
 	}
 
 }
