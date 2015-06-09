@@ -19,10 +19,12 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.python.modules.math;
 
-import com.kenai.jffi.Array;
-
 public class SalientDetector implements IObjectDetector {
 
+	Boolean avoidDeath = false;
+	Boolean findNorth = false;
+	Boolean findHome = false;
+	
 	Boolean stage1 = true;
 	Boolean stage2 = false;
 	Boolean stage3 = false;
@@ -35,6 +37,16 @@ public class SalientDetector implements IObjectDetector {
 	int s2_limit = 30;
 	int s3_limit = 15;
 	
+	public SalientDetector(){}
+	
+	public SalientDetector(Boolean s1,Boolean s2,Boolean s3, Boolean s4, Boolean s5, Boolean s6){
+		stage1=s1;
+		stage2=s2;
+		stage3=s3;
+		avoidDeath=s4;
+		findNorth=s5;
+		findHome=s6;
+	}
 	@Override
 	public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp) {
 
@@ -51,9 +63,6 @@ public class SalientDetector implements IObjectDetector {
 		
 				Scalar RedBox    = new Scalar(  0,   0, 255);
 				Scalar YellowBox = new Scalar(255, 255,   0);
-				
-				int threshMin = 150;
-				int threshMax = 255;
 		
 				int Erode_Max = 2;
 				int Erode_Min = 2;
@@ -70,8 +79,8 @@ public class SalientDetector implements IObjectDetector {
 				Mat ObjFound = new Mat();   // Where stuff is found and red boxes drawn
 				Mat Saliency = new Mat();   // Saliency of image
 		
-				Mat top = new Mat(); // top level of pyramid
-				Mat bot = new Mat(); // GaussBlured image to compare to
+				Mat a_mat = new Mat(); // top level of pyramid
+				Mat b_mat = new Mat(); // GaussBlured image to compare to
 		
 				Mat DS = new Mat();
 				Mat UP = new Mat();
@@ -79,8 +88,8 @@ public class SalientDetector implements IObjectDetector {
 				ObjFound = inputImage.clone();
 				GaussBlur = inputImage.clone();
 				
-				Imgproc.cvtColor(GaussBlur, GaussBlur, Imgproc.COLOR_BGR2GRAY);
 				Imgproc.GaussianBlur(GaussBlur, GaussBlur, new Size(5,5), 0);
+				Imgproc.cvtColor(GaussBlur, GaussBlur, Imgproc.COLOR_BGR2GRAY);
 				
 				GaussBlur.convertTo(GaussBlur, CvType.CV_32F);
 				
@@ -90,7 +99,7 @@ public class SalientDetector implements IObjectDetector {
 					Imgproc.pyrDown(DS, a);
 		
 					float[] blah = new float[1];
-					blah[0] = (float) 10.0;
+					blah[0] = (float) 10;
 					float[] bleh = new float[1];
 		
 					for (int j = 0; j < a.rows(); j++) {
@@ -110,7 +119,7 @@ public class SalientDetector implements IObjectDetector {
 					Imgproc.pyrUp(UP, a);
 					
 					float[] blah = new float[1];
-					blah[0] = (float)10.0;
+					blah[0] = (float)10;
 					float[] bleh = new float[1];
 					for (int j = 0; j < a.rows(); j++) {
 						for (int k = 0; k < a.cols(); k++) {
@@ -122,24 +131,23 @@ public class SalientDetector implements IObjectDetector {
 					UP = a.clone();
 				}
 		
-				top      = UP.clone();  
-				bot      = GaussBlur.clone();
+				a_mat      = UP.clone();  
+				b_mat      = GaussBlur.clone();
 				Saliency = GaussBlur.clone();
 			 
-				int cSize = top.channels();
+				int cSize = a_mat.channels();
 				
-				float[] top_temp = new float[cSize];
-				float[] bot_temp = new float[cSize];
+				float[] a_mat_temp = new float[cSize];
+				float[] b_mat_temp = new float[cSize];
 				float[] sal_temp = new float[cSize];
 			
-				Boolean tester = false;
-				for (int i = 0; i < top.rows(); i++){
-				    for (int j = 0; j < top.cols(); j++){
-				    	top.get(i, j, top_temp);
-						bot.get(i, j, bot_temp);
+				for (int i = 0; i < a_mat.rows(); i++){
+				    for (int j = 0; j < a_mat.cols(); j++){
+				    	a_mat.get(i, j, a_mat_temp);
+						b_mat.get(i, j, b_mat_temp);
 						
-						float a = top_temp[0];
-						float b = bot_temp[0];
+						float a = a_mat_temp[0];
+						float b = b_mat_temp[0];
 						
 				 
 						if (a <= b) {sal_temp[0] = (float) (1 - a/b);}
@@ -163,7 +171,7 @@ public class SalientDetector implements IObjectDetector {
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
 				Imgproc.dilate(Saliency, Saliency, dilateElement);
-						
+				
 				ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
 				ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
 				ArrayList<Rect> boundRect = new ArrayList<Rect>();
@@ -256,6 +264,7 @@ public class SalientDetector implements IObjectDetector {
 					// PROCESS SMALL AREAS ******************************************************************************************************
 		
 					Boolean stage1 = true;
+					int bigBox_X = 0, bigBox_Y = 0;
 		
 					for (int a = 0; a < boundRect.size(); a++) { // process those small
 														
@@ -279,7 +288,7 @@ public class SalientDetector implements IObjectDetector {
 			
 						colorResult = ObjectTemp.clone(); // Range of color
 			
-						Imgproc.cvtColor(colorResult, colorResult, Imgproc.COLOR_BGR2HSV, 0);
+						Imgproc.cvtColor(colorResult, colorResult, Imgproc.COLOR_BGR2HSV);
 		
 						int ObjWidth = ObjectTemp.cols(); // the first time it runs 250x250
 						int ObjHeight = ObjectTemp.rows();
@@ -291,11 +300,10 @@ public class SalientDetector implements IObjectDetector {
 							centoffset = 80;
 							ObjCent = 125;
 							edge = 5;
-							stage1 = false;
 						}
 			
-						Scalar white_min1 = new Scalar(0, 0, 100);
-						Scalar white_max1 = new Scalar(180, 100, 256);
+						Scalar white_min1 = new Scalar(0, 0, 0);
+						Scalar white_max1 = new Scalar(180, 100, 200);
 			
 						Scalar pink_min1 = new Scalar(120, 0, 0); // very very very distinct
 						Scalar pink_max1 = new Scalar(180, 0, 256);
@@ -317,8 +325,10 @@ public class SalientDetector implements IObjectDetector {
 						// ArrayList<MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();
 						// ONLY FINDS WHITE FOR NOW
 			
+						Boolean bigbox = false;
+						
 						for (int colorCount = 0; colorCount < 1; colorCount++) {
-							
+							Boolean smallbox = false;
 							//Core.inRange(colorResult, pink_min1, pink_max1, colorResult);
 							Core.inRange(colorResult, white_min1, white_max1, colorResult);
 			
@@ -330,9 +340,10 @@ public class SalientDetector implements IObjectDetector {
 							if (!resultCont.isEmpty() && resultCont.size() <= numbOfObj) {
 								for (int z = 0; z < resultCont.size(); z++) {
 									double area = Imgproc.contourArea(resultCont.get(z));
-									
+									double confidence = 0;
+
 									if (area > contMinArea) {
-										if (area < 300) {centoffset = 40;}
+										//if (area < 200) {centoffset = 40;}
 		
 										Rect test = Imgproc.boundingRect(new MatOfPoint(resultCont.get(z)));
 			
@@ -348,24 +359,56 @@ public class SalientDetector implements IObjectDetector {
 										if (tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight) {
 											int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
 											int Y1 = ObjCent - centoffset; int Y2 = ObjCent + centoffset;
-										    System.out.println("STUFF FOUND");
 			
-											if (centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2) {
+											if (centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2) {	 // VALID INTERESTING AREA
+												
 												stage1_count++;
 												returnArea_X = (int) (aRect.br().x - (aRect.width/2)); 
 												returnArea_Y = (int) (aRect.br().y - (aRect.height/2));
+												
+												if(ObjWidth == 250 && ObjHeight == 250){
+													bigBox_X = returnArea_X;
+													bigBox_Y = returnArea_Y;
+													bigbox = true;
+												}
+												else {
+													smallbox = true;
+												}
+												
 												Core.rectangle(ObjFound, boundRect.get(a).tl(), boundRect.get(a).br(), YellowBox, 2,8,0);
+											
 												double m = (double)returnArea_X;
 												double n = (double)returnArea_Y;
-												Detection INTERESTING = new Detection(m, n, area);
+												
+												if (smallbox == true && bigbox == true){  // if small box is inside big box
+													if (bigBox_X == returnArea_X && bigBox_Y == returnArea_Y){
+														confidence = 1;
+														
+													}
+												}
+												else if (smallbox == true){
+													if (area < 110)     {confidence = 0.1;}
+													else if (area < 120){confidence = 0.2;}
+													else if (area < 150){confidence = 0.3;}
+													else if (area < 200){confidence = 0.4;}
+													else if (area < 250){confidence = 0.5;}
+													else if (area < 260){confidence = 0.6;}
+													else if (area < 280){confidence = 0.7;}
+													else if (area < 300){confidence = 0.8;}
+													else if (area > 300){confidence = 0.9;}
+												}
+												
+												Detection INTERESTING = new Detection(m, n, area, confidence);
 												ReturnedArea.add(INTERESTING);
+												
+											    System.out.println("STUFF FOUND" + m + "," + n + " AREA : " + area + " CONFIDENCE : " + confidence);
+												
 											}
 										}
 									}
 								}
 							}
 						}
-						if (stage1 == false){break;} // if a 250x250 is found forget the rest
 					}
 				}
 				AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
