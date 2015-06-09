@@ -23,13 +23,17 @@ import org.python.modules.math;
 
 public class SalientDetector implements IObjectDetector {
 
+	int countPositiveHits = 0;
+	int startReturning = 20;
+	int timeBetweenPosHits = 0;
+	
 	Boolean avoidDeath = false;
 	Boolean findNorth = false;
 	Boolean findHome = false;
 	
-	Boolean stage1 = true;
-	Boolean stage2 = true;
-	Boolean stage3 = false;
+	Boolean stage1 = false;
+	Boolean stage2 = false;
+	Boolean stage3 = true;
 	
 	Boolean Object_Dropped = false;
 	
@@ -60,10 +64,10 @@ public class SalientDetector implements IObjectDetector {
 		findHome=s6;
 	}
 	
+	
 	public ArrayList<Rect> Stage2_Canny(Mat a, ArrayList<Rect> b){
 		
-		return b;
-		
+		return b;	
 	}
 	public Mat FindSalient(Mat original, Mat Sal, Mat erodeElement, Mat dilateElement){
 		
@@ -266,11 +270,10 @@ public class SalientDetector implements IObjectDetector {
 			ArrayList<Rect> STAGE1_BOXES = new ArrayList<Rect>();
 			ArrayList<Rect> STAGE2_BOXES = new ArrayList<Rect>(); 	
 
-			
 			Mat ObjFound = new Mat();   // Where stuff is found and red boxes drawn
 			ObjFound = original.clone();
 			
-			 if (stage1 == false && stage2 == true){
+			 if (stage2 == true){ // lowering
 				
 				int Horizon = 100;
 				int minArea = 100;
@@ -284,18 +287,16 @@ public class SalientDetector implements IObjectDetector {
 				
 				ArrayList<MatOfPoint> contourCanny = new ArrayList<MatOfPoint>();
 				Imgproc.findContours(Canny, contourCanny, new Mat(),Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
-				
 					
 				STAGE2_BOXES = SortFindContours(contourCanny, STAGE2_BOXES, Canny,  Horizon,  minArea);
 				
 				for (int i = 0; i < STAGE2_BOXES.size(); i++){
 					Core.rectangle(ObjFound, STAGE2_BOXES.get(i).tl(), STAGE2_BOXES.get(i).br(), RedBox, 1, 8, 0);
-				}
-									
+				}						
 			 }
 			
-			 else if (stage1 == true || stage3 == true){
-
+			 else if (stage1 == true || stage3 == true){ // captured, now retrieving
+				 
 				int Horizon = 100;
 				int minArea = 100;
 		
@@ -309,6 +310,7 @@ public class SalientDetector implements IObjectDetector {
 				Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(Dilate_Min, Dilate_Max));
 						
 				Mat Saliency = new Mat();   // Saliency of image
+				
 				Saliency = FindSalient(original, Saliency, erodeElement, dilateElement);
 				
 				if (stage1 == false && stage3 == true){ // This is stage 3, it is all solo
@@ -344,15 +346,13 @@ public class SalientDetector implements IObjectDetector {
 				else if (stage1 == true && stage3 == false){
 	
 					ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); 
-					ArrayList<Rect> boundRect = new ArrayList<Rect>();
-					ArrayList<Rect> Stage2_Rect = new ArrayList<Rect>();
 					
 					Imgproc.findContours(Saliency, contours, new Mat(),Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 					
-					boundRect = SortFindContours(contours, boundRect, Saliency, Horizon, minArea);		
+					STAGE1_BOXES = SortFindContours(contours, STAGE1_BOXES, Saliency, Horizon, minArea);		
 				    
-					for (int i = 0; i < boundRect.size(); i++) {
-						Core.rectangle(ObjFound, boundRect.get(i).tl(), boundRect.get(i).br(), RedBox, 1, 8, 0);
+					for (int i = 0; i < STAGE1_BOXES.size(); i++) {
+						Core.rectangle(ObjFound, STAGE1_BOXES.get(i).tl(), STAGE1_BOXES.get(i).br(), RedBox, 1, 8, 0);
 					}
 		
 					// PROCESS SMALL AREAS ******************************************************************************************************
@@ -360,7 +360,7 @@ public class SalientDetector implements IObjectDetector {
 					
 					int bigBox_X = 0, bigBox_Y = 0;
 		
-					for (int a1 = 0; a1 < boundRect.size(); a1++) { // process those small
+					for (int a1 = 0; a1 < STAGE1_BOXES.size(); a1++) { // process those small
 														
 						int returnArea_X, returnArea_Y;
 			
@@ -374,7 +374,7 @@ public class SalientDetector implements IObjectDetector {
 						int centoffset = 20;
 						int edge = 5;
 						
-						aRect = boundRect.get(a1);  // copy of rect
+						aRect = STAGE1_BOXES.get(a1);  // copy of rect
 						ObjectTemp = original.submat(aRect).clone();                  // cutout of 100x100 or 250x250
 						
 						returnArea_X = (int) (aRect.br().x - (aRect.width / 2));
@@ -479,7 +479,7 @@ public class SalientDetector implements IObjectDetector {
 													smallbox = true;
 												}
 												
-												Core.rectangle(ObjFound, boundRect.get(a1).tl(), boundRect.get(a1).br(), YellowBox, 2,8,0);
+												Core.rectangle(ObjFound, STAGE1_BOXES.get(a1).tl(), STAGE1_BOXES.get(a1).br(), YellowBox, 2,8,0);
 												AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(ObjFound), disp);
 
 												double m = (double)returnArea_X;
@@ -505,7 +505,7 @@ public class SalientDetector implements IObjectDetector {
 												
 												Detection INTERESTING = new Detection(m, n, area, confidence);
 												ReturnedArea.add(INTERESTING);
-												
+												countPositiveHits++;
 											    System.out.println("STUFF FOUND" + m + "," + n + " AREA : " + area + " CONFIDENCE : " + confidence);
 												
 											}
