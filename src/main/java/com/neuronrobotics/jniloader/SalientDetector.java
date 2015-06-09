@@ -303,7 +303,7 @@ public class SalientDetector implements IObjectDetector {
 						}
 			
 						Scalar white_min1 = new Scalar(0, 0, 0);
-						Scalar white_max1 = new Scalar(180, 100, 256);
+						Scalar white_max1 = new Scalar(180, 100, 200);
 			
 						Scalar pink_min1 = new Scalar(120, 0, 0); // very very very distinct
 						Scalar pink_max1 = new Scalar(180, 0, 256);
@@ -343,7 +343,7 @@ public class SalientDetector implements IObjectDetector {
 									double confidence = 0;
 
 									if (area > contMinArea) {
-										if (area < 300) {centoffset = 40;}
+										//if (area < 200) {centoffset = 40;}
 		
 										Rect test = Imgproc.boundingRect(new MatOfPoint(resultCont.get(z)));
 			
@@ -359,7 +359,6 @@ public class SalientDetector implements IObjectDetector {
 										if (tl_x - edge > 0 && tl_y - edge > 0 && br_x + edge < ObjWidth && br_y + edge < ObjHeight) {
 											int X1 = ObjCent - centoffset; int X2 = ObjCent + centoffset;
 											int Y1 = ObjCent - centoffset; int Y2 = ObjCent + centoffset;
-										    System.out.println("STUFF FOUND");
 			
 											if (centX >= X1 && centX <= X2 && centY >= Y1 && centY <= Y2) {	 // VALID INTERESTING AREA
 												
@@ -384,12 +383,25 @@ public class SalientDetector implements IObjectDetector {
 												if (smallbox == true && bigbox == true){  // if small box is inside big box
 													if (bigBox_X == returnArea_X && bigBox_Y == returnArea_Y){
 														confidence = 1;
-														Detection INTERESTING = new Detection(m, n, area, confidence);
-														ReturnedArea.add(INTERESTING);
+														
 													}
 												}
+												else if (smallbox == true){
+													if (area < 110)     {confidence = 0.1;}
+													else if (area < 120){confidence = 0.2;}
+													else if (area < 150){confidence = 0.3;}
+													else if (area < 200){confidence = 0.4;}
+													else if (area < 250){confidence = 0.5;}
+													else if (area < 260){confidence = 0.6;}
+													else if (area < 280){confidence = 0.7;}
+													else if (area < 300){confidence = 0.8;}
+													else if (area > 300){confidence = 0.9;}
+												}
 												
+												Detection INTERESTING = new Detection(m, n, area, confidence);
+												ReturnedArea.add(INTERESTING);
 												
+											    System.out.println("STUFF FOUND" + m + "," + n + " AREA : " + area + " CONFIDENCE : " + confidence);
 												
 											}
 										}
