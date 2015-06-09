@@ -59,7 +59,8 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 	@Override
 	public void disconnect() {
 		Platform.runLater(() -> {
-			getVc().release();
+			
+			vc.release();
 		});
 
 		setVc(null);
