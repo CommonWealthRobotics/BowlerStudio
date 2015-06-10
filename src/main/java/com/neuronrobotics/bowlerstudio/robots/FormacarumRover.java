@@ -33,7 +33,6 @@ public class FormacarumRover extends AbstractRobotDrive {
 	private IAckermanBotKinematics ak = new AckermanDefaultKinematics();
 	private DigitalOutputChannel driveEnable;
 	private DigitalOutputChannel driveDirection;
-	private double scale = 360.0/4096.0;
 	private int currentEncoderReading;
 	private DigitalOutputChannel driveThree;
 	private HokuyoURGDevice laser;
@@ -84,9 +83,9 @@ public class FormacarumRover extends AbstractRobotDrive {
 			steering.flush(0);
 			
 		}else{
-			this.lSteer.SetPIDSetPoint((int) (s/scale), 0);
-			this.rSteer.SetPIDSetPoint((int) (s/scale), 0);
-			this.bSteer.SetPIDSetPoint(0, 0);
+			this.lSteer.SetPIDSetPoint(0, 0);
+			this.rSteer.SetPIDSetPoint(0, 0);
+			this.bSteer.SetPIDSetPoint((int)(s), 0);
 		}
 	}
 	
