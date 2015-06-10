@@ -2,6 +2,9 @@
 //				AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(Saliency), disp);
 
 // ssdasd
+
+//set microsoft life 3000 to approperiate settings or the low sat will cause havoc
+//v4l2-ctl --set-ctrl=contrast=10,saturation=200,white_balance_temperature_auto=0,brightness=30 -d/dev/video1
 package com.neuronrobotics.jniloader;
 
 import java.awt.image.BufferedImage;
@@ -31,9 +34,9 @@ public class SalientDetector implements IObjectDetector {
 	Boolean findNorth = false;
 	Boolean findHome = false;
 	
-	Boolean stage1 = false;
+	Boolean stage1 = true;
 	Boolean stage2 = false;
-	Boolean stage3 = true;
+	Boolean stage3 = false;
 	
 	Boolean Object_Dropped = false;
 	
