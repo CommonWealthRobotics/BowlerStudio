@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.neuronrobotics.addons.driving.AbstractRobotDrive;
 import com.neuronrobotics.addons.driving.AckermanBotDriveData;
 import com.neuronrobotics.addons.driving.AckermanBotVelocityData;
+import com.neuronrobotics.addons.driving.AckermanConfiguration;
 import com.neuronrobotics.addons.driving.AckermanDefaultKinematics;
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.addons.driving.IAckermanBotKinematics;
@@ -37,6 +38,7 @@ public class FormacarumRover extends AbstractRobotDrive {
 	private DigitalOutputChannel driveThree;
 	private HokuyoURGDevice laser;
 	private ServoRotoryLink noding;
+	private AckermanConfiguration akermanConfigs;
 	
 	public FormacarumRover(	PIDChannel drive,
 						PIDChannel lSteer,
@@ -47,11 +49,12 @@ public class FormacarumRover extends AbstractRobotDrive {
 						DigitalOutputChannel driveThree,
 						HokuyoURGDevice laser,
 						ServoRotoryLink noding,
-						IAckermanBotKinematics akermanConfigs) {
+						AckermanConfiguration akermanConfigs) {
 		this.driveThree = driveThree;
 		this.laser = laser;
 		this.noding = noding;
-		ak=akermanConfigs;
+		this.akermanConfigs = akermanConfigs;
+		ak=new AckermanDefaultKinematics(akermanConfigs);
 		this.driveEnable = driveEnable;
 		this.driveDirection = driveDirection;
 		setPIDChanel(drive);
@@ -85,7 +88,7 @@ public class FormacarumRover extends AbstractRobotDrive {
 		}else{
 			this.lSteer.SetPIDSetPoint(0, 0);
 			this.rSteer.SetPIDSetPoint(0, 0);
-			this.bSteer.SetPIDSetPoint((int)(s), 0);
+			this.bSteer.SetPIDSetPoint((int)(s* akermanConfigs.getSteerAngleToServo()), 0);
 		}
 	}
 	
