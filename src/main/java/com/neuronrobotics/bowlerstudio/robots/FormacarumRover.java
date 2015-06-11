@@ -13,6 +13,7 @@ import com.neuronrobotics.sdk.addons.kinematics.ServoRotoryLink;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.peripherals.DigitalOutputChannel;
 import com.neuronrobotics.sdk.pid.PIDChannel;
+import com.neuronrobotics.sdk.pid.PIDCommandException;
 import com.neuronrobotics.sdk.pid.PIDEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -115,11 +116,11 @@ public class FormacarumRover extends AbstractRobotDrive {
 	}
 	protected void SetDriveDistance(int ticks, double seconds){
 		Log.debug("Seting PID set point of= "+ticks+" currently at "+currentEncoderReading);
-		//drive.SetPIDSetPoint(ticks, seconds);
-		SetDriveVelocity((int) (ticks/seconds));
-		ThreadUtil.wait((int) (seconds*1000));
-		SetDriveVelocity(0);
-		Log.debug("Arrived at= "+currentEncoderReading);
+		drive.SetPIDSetPoint(ticks, seconds);
+//		SetDriveVelocity((int) (ticks/seconds));
+//		ThreadUtil.wait((int) (seconds*1000));
+//		SetDriveVelocity(0);
+//		Log.debug("Arrived at= "+currentEncoderReading);
 	}
 	
 	public void SetDriveVelocity(int ticksPerSecond){
@@ -133,6 +134,12 @@ public class FormacarumRover extends AbstractRobotDrive {
 		}else{
 			driveDirection.setHigh(true);
 			driveEnable.setHigh(false);
+		}
+		try {
+			drive.SetPDVelocity(ticksPerSecond, 0);
+		} catch (PIDCommandException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
