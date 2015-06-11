@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
+import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.common.Log;
@@ -23,6 +25,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
@@ -40,8 +43,44 @@ public class BowlerStudio extends Application {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        launch(args);
+    @SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+    	if(args.length==0)
+    		launch(args);
+    	else{
+            new JFXPanel(); // initializes JavaFX environment
+            OpenCVJNILoader.load();              // Loads the OpenCV JNI (java native interface)
+    		new ConnectionManager(null);// create a connection manager to access devices and provide them to scripts
+    		boolean startLoadingScripts=false;
+    		for(String s :args){
+    			if(s.contains("scripts")){
+    				startLoadingScripts=true;
+    			}
+    			if(startLoadingScripts){
+    				try{
+    					ScriptingEngineWidget.inlineFileScriptRun(new File(s), null);
+    				}catch(Error e)
+    				{
+    					e.printStackTrace();
+    				}
+    			}
+    		}
+    		startLoadingScripts=false;
+    		Object ret=null;
+    		for(String s :args){
+    			if(s.contains("pipe")){
+    				startLoadingScripts=true;
+    			}
+    			if(startLoadingScripts){
+    				try{
+    					ret=ScriptingEngineWidget.inlineFileScriptRun(new File(s), (ArrayList<Object>)ret);
+    				}catch(Error e)
+    				{
+    					e.printStackTrace();
+    				}
+    			}
+    		}
+    	}
     }
     
 	public static void renderSplashFrame(Graphics2D g, int frame) {
