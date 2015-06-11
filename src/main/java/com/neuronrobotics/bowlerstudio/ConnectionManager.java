@@ -41,6 +41,7 @@ import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.NonBowlerDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.genericdevice.GenericDevice;
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
@@ -465,7 +466,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private void disconectAndRemoveDevice(PluginManager mp){
 		System.out.println("Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
-		if(mp.getDevice().isAvailable())
+		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp))
 			mp.getDevice().disconnect();
 		Platform.runLater(() -> {
 			plugins.remove(mp);
