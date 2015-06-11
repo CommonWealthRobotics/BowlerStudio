@@ -53,9 +53,6 @@ public class BowlerStudio extends Application {
     		new ConnectionManager(null);// create a connection manager to access devices and provide them to scripts
     		boolean startLoadingScripts=false;
     		for(String s :args){
-    			if(s.contains("scripts")){
-    				startLoadingScripts=true;
-    			}
     			if(startLoadingScripts){
     				try{
     					ScriptingEngineWidget.inlineFileScriptRun(new File(s), null);
@@ -64,13 +61,14 @@ public class BowlerStudio extends Application {
     					e.printStackTrace();
     				}
     			}
+    			if(s.contains("scripts")){
+    				startLoadingScripts=true;
+    			}
     		}
     		startLoadingScripts=false;
     		Object ret=null;
     		for(String s :args){
-    			if(s.contains("pipe")){
-    				startLoadingScripts=true;
-    			}
+
     			if(startLoadingScripts){
     				try{
     					ret=ScriptingEngineWidget.inlineFileScriptRun(new File(s), (ArrayList<Object>)ret);
@@ -78,6 +76,9 @@ public class BowlerStudio extends Application {
     				{
     					e.printStackTrace();
     				}
+    			}
+    			if(s.contains("pipe")){
+    				startLoadingScripts=true;
     			}
     		}
     	}
