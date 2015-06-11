@@ -7,7 +7,7 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
-public class KinematicsController  extends AbstractBowlerStudioTab {
+public class AdvancedKinematicsController  extends AbstractBowlerStudioTab {
 
 	private PrinterConfiguration gui = new PrinterConfiguration();
 
@@ -34,7 +34,7 @@ public class KinematicsController  extends AbstractBowlerStudioTab {
        
         s1.setContent(sn);
         setContent(s1);
-        setText("Kinematics Control");
+        setText("Advanced Kinematics");
 		onTabReOpening();
 	}
 

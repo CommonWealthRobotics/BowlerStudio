@@ -31,7 +31,8 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
 import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
-import com.neuronrobotics.nrconsole.plugin.cartesian.KinematicsController;
+import com.neuronrobotics.nrconsole.plugin.cartesian.AdvancedKinematicsController;
+import com.neuronrobotics.nrconsole.plugin.cartesian.JogKinematicsDevice;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -88,7 +89,8 @@ public class PluginManager {
 			
 		}
 		if(AbstractKinematicsNR.class.isInstance(dev)){
-			deviceSupport.add(KinematicsController.class);
+			deviceSupport.add(JogKinematicsDevice.class);
+			deviceSupport.add(AdvancedKinematicsController.class);
 		}
 		if(NRPrinter.class.isInstance(dev)){
 			deviceSupport.add(PrinterConiguration.class);
