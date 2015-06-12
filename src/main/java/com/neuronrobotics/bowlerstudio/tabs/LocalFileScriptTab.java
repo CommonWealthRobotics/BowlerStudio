@@ -149,6 +149,7 @@ public class LocalFileScriptTab extends Stage implements IScriptEventListener, E
             @Override
             public void run() {
             	sn.setContent(sp);
+            	
             }
         });
 
@@ -159,9 +160,27 @@ public class LocalFileScriptTab extends Stage implements IScriptEventListener, E
 		vBox = new VBox(5);
 		vBox.getChildren().setAll(hBox, scripting);
 		VBox.setVgrow(sn, Priority.ALWAYS);
-		
-		Scene scene = new Scene(new Group(vBox));
+		Group g = new Group(vBox);
+		g.setAutoSizeChildren(true);
+		Scene scene = new Scene(g);
 		setScene(scene);
+		
+		widthProperty().addListener((w,o,n)->{
+			sp.setSize((int)getWidth(), (int)getHeight());
+			sn.resize((int)getWidth(), (int)getHeight());
+			textArea.setSize((int)getWidth(), (int)getHeight());
+			//System.err.println("Resize width");
+
+		});
+		
+		heightProperty().addListener((w,o,n)->{
+			sp.setSize((int)getWidth(), (int)getHeight());
+			sn.resize((int)getWidth(), (int)getHeight());
+			textArea.setSize((int)getWidth(), (int)getHeight());
+			//System.err.println("Resize height");
+		});
+		setHeight(480);
+		setWidth(640);
 		show();
 	      
 	}
