@@ -29,6 +29,8 @@ import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -43,8 +45,10 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 
 import javafx.scene.control.Tab;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-public class LocalFileScriptTab extends Tab implements IScriptEventListener, EventHandler<Event> {
+public class LocalFileScriptTab extends Stage implements IScriptEventListener, EventHandler<WindowEvent> {
 	
 	private ScriptingEngineWidget scripting;
     private static final String[] KEYWORDS = new String[]{
@@ -73,7 +77,7 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener, Eve
 	public LocalFileScriptTab(ConnectionManager connectionManager, File file) throws IOException {
 		scripting = new ScriptingEngineWidget( file );
 		setOnCloseRequest(this);
-		setText(file.getName());
+		setTitle(file.getName());
 		l=this;
 //        codeArea.textProperty().addListener(
 //                (ov, oldText, newText) -> {
@@ -156,9 +160,9 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener, Eve
 		vBox.getChildren().setAll(hBox, scripting);
 		VBox.setVgrow(sn, Priority.ALWAYS);
 		
-		setContent(vBox);
-		
-	    
+		Scene scene = new Scene(new Group(vBox));
+		setScene(scene);
+		show();
 	      
 	}
 	
@@ -190,9 +194,9 @@ public class LocalFileScriptTab extends Tab implements IScriptEventListener, Eve
 		
 	}
 
-
 	@Override
-	public void handle(Event event) {
+	public void handle(WindowEvent event) {
+		// TODO Auto-generated method stub
 		scripting.stop();
 	}
 }

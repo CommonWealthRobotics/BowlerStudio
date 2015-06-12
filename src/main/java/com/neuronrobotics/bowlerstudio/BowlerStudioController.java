@@ -70,7 +70,7 @@ public class BowlerStudioController extends TabPane implements
 	public void createFileTab(File file) {
 
 		try {
-			addTab(new LocalFileScriptTab(getConnectionManager(), file), true);
+			new LocalFileScriptTab(getConnectionManager(), file);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
