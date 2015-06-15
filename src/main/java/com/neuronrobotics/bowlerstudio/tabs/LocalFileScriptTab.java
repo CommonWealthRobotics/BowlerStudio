@@ -79,44 +79,7 @@ public class LocalFileScriptTab extends Stage implements IScriptEventListener, E
 		setOnCloseRequest(this);
 		setTitle(file.getName());
 		l=this;
-//        codeArea.textProperty().addListener(
-//                (ov, oldText, newText) -> {
-//                    Matcher matcher = KEYWORD_PATTERN.matcher(newText);
-//                    int lastKwEnd = 0;
-//                    StyleSpansBuilder<Collection<String>> spansBuilder
-//                    = new StyleSpansBuilder<>();
-//                    while (matcher.find()) {
-//                        spansBuilder.add(Collections.emptyList(),
-//                                matcher.start() - lastKwEnd);
-//                        spansBuilder.add(Collections.singleton("keyword"),
-//                                matcher.end() - matcher.start());
-//                        lastKwEnd = matcher.end();
-//                    }
-//                    spansBuilder.add(Collections.emptyList(),
-//                            newText.length() - lastKwEnd);
-//                    codeArea.setStyleSpans(0, spansBuilder.create());
-//                });
-//
-//        EventStream<Change<String>> textEvents
-//                = EventStreams.changesOf(codeArea.textProperty());
-//
-//        textEvents.reduceSuccessions((a, b) -> b, Duration.ofMillis(500)).
-//                subscribe(code -> {
-//                    //code in text box changed
-//                	scripting.removeIScriptEventListener(this);
-//                	scripting.setCode(codeArea.getText());
-//                	scripting.addIScriptEventListener(this);
-//                	//scripting.save();
-//                });
-//    	Platform.runLater(()->{
-//            codeArea.replaceText(scripting.getCode());
-//		});
-//
-//        
-//        
-//		
-//        
-		// Layout logic
+
 
 		scripting.addIScriptEventListener(l);
 		

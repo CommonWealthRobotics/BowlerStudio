@@ -191,7 +191,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				? urlField.getText() 
 				: "http://" + urlField.getText();
 		if(tabPane!=null ){
-			if(!Current_URL.contains("neuronrobotics.github.io")){
+			if(!Current_URL.contains("neuronrobotics.com")){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
 					tabPane.addTab(new ScriptingGistTab(null,dyio, Current_URL,null), true);
