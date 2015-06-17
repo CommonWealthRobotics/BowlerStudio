@@ -264,6 +264,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 		history.add("dyio.setValue(0,1)//sets the value of channel 0 to 1");
 		history.add("dyio.setValue(0,0)//sets the value of channel 0 to 0");
 		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
+		history.add("println dyio");
+		history.add("ThreadUtil.wait(10000)");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
@@ -407,7 +409,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 		scriptRunner = new Thread() {
 
 			public void run() {
-				setName("Bowler Script Runner " + currentFile.getName());
+				if(type!= ScriptingWidgetType.CMDLINE)
+					setName("Bowler Script Runner " + currentFile.getName());
 
 				try {
 					Object obj = inlineScriptRun(getCode(), null);
