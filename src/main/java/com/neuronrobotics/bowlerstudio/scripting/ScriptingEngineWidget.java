@@ -53,9 +53,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
@@ -220,7 +224,6 @@ public class ScriptingEngineWidget extends BorderPane implements
 			history.add(text);
 			historyIndex=0;
 			setCode(text);
-			stop();
 			startStopAction();
 		});
 		cmdLineInterface.setPrefWidth(80*4);
@@ -272,11 +275,13 @@ public class ScriptingEngineWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 		
 		
-		final FlowPane controlPane = new FlowPane();
-		controlPane.setHgap(20);
+		
 		if(type ==ScriptingWidgetType.CMDLINE ){
+			controlPane = new HBox(10);
 			controlPane.getChildren().add(new Label("Bowler CMD:"));
 			controlPane.getChildren().add(cmdLineInterface);
+		}else{
+			controlPane = new HBox(20);
 		}
 		controlPane.getChildren().add(runfx);
 		if(type !=ScriptingWidgetType.CMDLINE ){
@@ -289,12 +294,19 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 		addIScriptEventListener(getConnectionmanager()
 				.getBowlerStudioController());
+		reset();
 	}
 
 	private void reset() {
 		running = false;
 		Platform.runLater(() -> {
-			runfx.setText("Run");
+			if(type ==ScriptingWidgetType.CMDLINE ){
+				runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+				runfx.setText("Go");
+			}else{
+				runfx.setText("Run");
+				runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+			}
 		});
 
 	}
@@ -408,7 +420,11 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private void start() {
 
 		running = true;
-		runfx.setText("Stop");
+		if(type ==ScriptingWidgetType.CMDLINE )
+			runfx.setText("Kill");
+		else
+			runfx.setText("Stop");
+		runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 		scriptRunner = new Thread() {
 
 			public void run() {
@@ -809,6 +825,8 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private static File creds=null;
 
 	private static GHGist gist;
+
+	private HBox controlPane;
 
 	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();
