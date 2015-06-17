@@ -270,15 +270,18 @@ public class ScriptingEngineWidget extends BorderPane implements
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
 		setPadding(new Insets(1, 0, 3, 10));
+		
+		
 		final FlowPane controlPane = new FlowPane();
 		controlPane.setHgap(20);
+		if(type ==ScriptingWidgetType.CMDLINE ){
+			controlPane.getChildren().add(new Label("Bowler CMD:"));
+			controlPane.getChildren().add(cmdLineInterface);
+		}
 		controlPane.getChildren().add(runfx);
 		if(type !=ScriptingWidgetType.CMDLINE ){
 			controlPane.getChildren().add(runsave);
 			controlPane.getChildren().add(fileLabel);
-		}else{
-			controlPane.getChildren().add(new Label("Bowler R.E.P.L.:"));
-			controlPane.getChildren().add(cmdLineInterface);
 		}
 		
 		// put the flowpane in the top area of the BorderPane

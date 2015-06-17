@@ -62,28 +62,17 @@
             </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
           <children>
-            <SplitPane dividerPositions="0.3764705882352941" focusTraversable="true" prefHeight="460.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <SplitPane dividerPositions="0.51" focusTraversable="true" prefHeight="460.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                  <children>
-                  
 				<AnchorPane fx:id="logView" 
-				layoutX="230.0" 
-				layoutY="-29.0" 
-				prefHeight="131.0" 
-				prefWidth="1022.0" 
-				AnchorPane.bottomAnchor="0.0" 
-				AnchorPane.leftAnchor="0.0" 
-				AnchorPane.rightAnchor="0.0" 
-				AnchorPane.topAnchor="0.0" />
-
-                  </children>
-                </AnchorPane>
-                
+		             minHeight="0.0" minWidth="0.0"
+	                 prefHeight="320.0" 
+	                 prefWidth="100.0"  />
+				                
                 <AnchorPane fx:id="viewContainer" 
                 	 minHeight="0.0" minWidth="0.0"
 	                 prefHeight="320.0" 
-	                 prefWidth="200.0" 
+	                 prefWidth="100.0" 
 	                 style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" 
 	                 />
               </items>

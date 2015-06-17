@@ -23,6 +23,7 @@ import javax.script.ScriptEngine;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -43,6 +44,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -217,13 +219,20 @@ public class MainController implements Initializable {
 					logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
 												
 		});
-		
+		//logView.resize(250, 300);
 		// after connection manager set up, add scripting widget
     	logViewRef=new TextArea();
+    	logViewRef.prefWidthProperty().bind( logView.widthProperty().divide(2));
+    	logViewRef.prefHeightProperty().bind( logView.heightProperty().subtract(40));
+    	
+    	
     	cmdLine = new ScriptingEngineWidget(ScriptingWidgetType.CMDLINE);
     	VBox box = new VBox();
     	box.getChildren().add(logViewRef);
     	box.getChildren().add(cmdLine);
+    	VBox.setVgrow(logViewRef, Priority.ALWAYS);
+    	box.prefWidthProperty().bind( logView.widthProperty().subtract(10));
+    	
     	logView.getChildren().addAll(box);
 		
 
