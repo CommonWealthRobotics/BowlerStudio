@@ -181,7 +181,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 		runfx.setDisable(false);
 	}
 
-	private ScriptingEngineWidget(ScriptingWidgetType type) {
+	public ScriptingEngineWidget(ScriptingWidgetType type) {
 		this.type = type;
 		if (getConnectionmanager() == null)
 			throw new RuntimeException(
@@ -608,6 +608,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 	}
 
 	public static ConnectionManager getConnectionmanager() {
+	
 		return connectionmanager;
 	}
 

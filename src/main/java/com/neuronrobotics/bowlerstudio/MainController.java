@@ -21,6 +21,8 @@ import javax.script.ScriptEngine;
 
 
 
+
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -41,10 +43,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
@@ -147,7 +151,7 @@ public class MainController implements Initializable {
 
 
     @FXML
-    private TextArea logView;
+    private Pane logView;
 
     @FXML
     private ScrollPane editorContainer;
@@ -167,6 +171,7 @@ public class MainController implements Initializable {
     private CheckMenuItem AddDefaultRightArm;
     @FXML
     private CheckMenuItem AddVRCamera;
+	private ScriptingEngineWidget cmdLine;
 	
     /**
      * Initializes the controller class.
@@ -176,7 +181,6 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-    	logViewRef=logView;
 
     	jfx3dmanager = new Jfx3dManager();
         application = new BowlerStudioController(jfx3dmanager, this);
@@ -213,6 +217,14 @@ public class MainController implements Initializable {
 					logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
 												
 		});
+		
+		// after connection manager set up, add scripting widget
+    	logViewRef=new TextArea();
+    	cmdLine = new ScriptingEngineWidget(ScriptingWidgetType.CMDLINE);
+    	VBox box = new VBox();
+    	box.getChildren().add(logViewRef);
+    	box.getChildren().add(cmdLine);
+    	logView.getChildren().addAll(box);
 		
 
     }
@@ -283,7 +295,7 @@ public class MainController implements Initializable {
     }
 
     public TextArea getLogView() {
-        return logView;
+        return logViewRef;
     }
 
 	public void disconnect() {
