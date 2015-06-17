@@ -157,33 +157,41 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private String addr;
 	boolean loadGist = false;
 
+	private ScriptingWidgetType type;
+
 	public ScriptingEngineWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
-		this();
+		this(ScriptingWidgetType.GIST);
 		this.currentFile = currentFile;
 		loadCodeFromGist(currentGist, engine);
 	}
 
 	public ScriptingEngineWidget(File currentFile) throws IOException {
-		this();
+		this(ScriptingWidgetType.FILE);
 		this.currentFile = currentFile;
 		loadCodeFromFile(currentFile);
 	}
+	
+	private void startStopAction(){
+		runfx.setDisable(true);
+		if (running)
+			stop();
+		else
+			start();
+		runfx.setDisable(false);
+	}
 
-	private ScriptingEngineWidget() {
+	private ScriptingEngineWidget(ScriptingWidgetType type) {
+		this.type = type;
 		if (getConnectionmanager() == null)
 			throw new RuntimeException(
 					"Connection manager needs to be added to the Scripting engine");
 		runfx.setOnAction(e -> {
-			runfx.setDisable(true);
-			if (running)
-				stop();
-			else
-				start();
-			runfx.setDisable(false);
+			startStopAction();
 		});
 		runsave.setOnAction(e -> {
-			updateFile();
+			if(type!= ScriptingWidgetType.FILE)
+				updateFile();
 			save();
 		});
 
@@ -211,7 +219,9 @@ public class ScriptingEngineWidget extends BorderPane implements
 			System.out.println(text);
 			history.add(text);
 			historyIndex=0;
-			inlineScriptRun(text,null);
+			setCode(text);
+			stop();
+			startStopAction();
 		});
 		cmdLineInterface.setPrefWidth(80*4);
 		cmdLineInterface.addEventFilter( KeyEvent.KEY_PRESSED, event -> {
@@ -261,10 +271,13 @@ public class ScriptingEngineWidget extends BorderPane implements
 		final FlowPane controlPane = new FlowPane();
 		controlPane.setHgap(20);
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(runsave);
-		controlPane.getChildren().add(fileLabel);
-		controlPane.getChildren().add(new Label("Bowler R.E.P.L.:"));
-		controlPane.getChildren().add(cmdLineInterface);
+		if(type !=ScriptingWidgetType.CMDLINE ){
+			controlPane.getChildren().add(runsave);
+			controlPane.getChildren().add(fileLabel);
+		}else{
+			controlPane.getChildren().add(new Label("Bowler R.E.P.L.:"));
+			controlPane.getChildren().add(cmdLineInterface);
+		}
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
