@@ -48,7 +48,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class LocalFileScriptTab extends Stage implements IScriptEventListener, EventHandler<WindowEvent> {
+public class LocalFileScriptTab extends Group implements IScriptEventListener, EventHandler<WindowEvent> {
 	
 	private ScriptingEngineWidget scripting;
     private static final String[] KEYWORDS = new String[]{
@@ -74,10 +74,9 @@ public class LocalFileScriptTab extends Stage implements IScriptEventListener, E
 	private RSyntaxTextArea textArea;
 
     
-	public LocalFileScriptTab(ConnectionManager connectionManager, File file) throws IOException {
+	public LocalFileScriptTab( File file) throws IOException {
 		scripting = new ScriptingEngineWidget( file );
-		setOnCloseRequest(this);
-		setTitle(file.getName());
+
 		l=this;
 
 
@@ -123,28 +122,7 @@ public class LocalFileScriptTab extends Stage implements IScriptEventListener, E
 		vBox = new VBox(5);
 		vBox.getChildren().setAll(hBox, scripting);
 		VBox.setVgrow(sn, Priority.ALWAYS);
-		Group g = new Group(vBox);
-		g.setAutoSizeChildren(true);
-		Scene scene = new Scene(g);
-		setScene(scene);
-		
-		widthProperty().addListener((w,o,n)->{
-			sp.setSize((int)getWidth(), (int)getHeight());
-			sn.resize((int)getWidth(), (int)getHeight());
-			textArea.setSize((int)getWidth(), (int)getHeight());
-			//System.err.println("Resize width");
-
-		});
-		
-		heightProperty().addListener((w,o,n)->{
-			sp.setSize((int)getWidth(), (int)getHeight());
-			sn.resize((int)getWidth(), (int)getHeight());
-			textArea.setSize((int)getWidth(), (int)getHeight());
-			//System.err.println("Resize height");
-		});
-		setHeight(480);
-		setWidth(640);
-		show();
+		getChildren().add(vBox);
 	      
 	}
 	

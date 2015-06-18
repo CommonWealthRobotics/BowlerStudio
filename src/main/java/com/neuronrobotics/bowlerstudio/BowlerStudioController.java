@@ -11,6 +11,7 @@ import java.util.List;
 //import org.bytedeco.javacpp.DoublePointer;
 
 
+
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -18,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Side;
+import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.shape.MeshView;
@@ -70,7 +72,16 @@ public class BowlerStudioController extends TabPane implements
 	public void createFileTab(File file) {
 
 		try {
-			new LocalFileScriptTab(getConnectionManager(), file);
+			LocalFileScriptTab t =new LocalFileScriptTab( file);
+			Stage dialog = new Stage();
+			dialog.setOnCloseRequest(t);
+			dialog.setTitle(file.getName());
+			Scene scene = new Scene(t);
+			dialog.setScene(scene);
+
+			setHeight(600);
+			setWidth(800);
+			dialog.show();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
