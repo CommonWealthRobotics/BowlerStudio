@@ -223,11 +223,9 @@ public class MainController implements Initializable {
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
 					if(ScriptingEngineWidget.getLoginID()!=null){
-						logoutGithub.disableProperty().set(true);
-						logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
+						setToLoggedIn(ScriptingEngineWidget.getLoginID());
 					}else{
-						logoutGithub.disableProperty().set(true);
-						logoutGithub.setText("Anonymous");
+						setToLoggedOut();
 					}
 												
 		});
@@ -235,19 +233,12 @@ public class MainController implements Initializable {
 			
 			@Override
 			public void onLogout(String oldUsername) {
-				Platform.runLater(() -> {
-					logoutGithub.disableProperty().set(true);
-					logoutGithub.setText("Anonymous");
-				});
+				setToLoggedOut();
 			}
 			
 			@Override
 			public void onLogin(String newUsername) {
-				FxTimer.runLater(
-						Duration.ofMillis(100) ,() -> {
-					logoutGithub.disableProperty().set(false);
-					logoutGithub.setText("Log out "+newUsername);
-				});
+				setToLoggedIn(newUsername);
 			}
 		});
 		//logView.resize(250, 300);
@@ -267,6 +258,21 @@ public class MainController implements Initializable {
     	logView.getChildren().addAll(box);
 		
 
+    }
+    
+    private void setToLoggedIn(final String name){
+		FxTimer.runLater(
+				Duration.ofMillis(100) ,() -> {
+			logoutGithub.disableProperty().set(false);
+			logoutGithub.setText("Log out "+name);
+		});
+    }
+    
+    private void setToLoggedOut(){
+		Platform.runLater(() -> {
+			logoutGithub.disableProperty().set(true);
+			logoutGithub.setText("Anonymous");
+		});
     }
 
 
