@@ -14,7 +14,7 @@ public class PIDConstantsDialog extends JPanel {
 	private double kp=1;
 	private double ki=0;
 	private double kd=0;
-	private JFrame f= new JFrame();
+
 	private JTextField pData=new JTextField(5);
 	private JTextField iData=new JTextField(5);
 	private JTextField dData=new JTextField(5);
@@ -52,27 +52,6 @@ public class PIDConstantsDialog extends JPanel {
 			}
 		});
 		add(set);
-		f.add(this);
-		f.setTitle("Constants");
-		f.setVisible(true);
-		f.setLocationRelativeTo(null);
-		f.pack();
-		
-		new Thread(){
-			public void run(){
-				while(true){
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(!f.isVisible()){
-						f.setVisible(true);
-					}
-				}
-			}
-		}.start();
 	}
 	public void setKp(double kp) {
 		this.kp = kp;

@@ -1,10 +1,8 @@
 package com.neuronrobotics.pidsim;
 
-import javax.swing.JFrame;
 
 public class PIDSim {
 	
-	private JFrame frame = new JFrame("Neuron Robotics PIDSim");
 	private GraphingPanel graphingPanel;
 	private LinearPhysicsEngine phy;
 	
@@ -16,20 +14,13 @@ public class PIDSim {
     private double dyFriction = .3;
     private long time = 0;
 	private double maxTorque = 20;// Newton meters
+	private PIDConstantsDialog constants = new PIDConstantsDialog(	.1,//kp
+			0,//ki
+			0);//kd
     
-    public void initialize() {
-    	setGraphingPanel(new GraphingPanel(this, "Neuron Robotics PIDSim"));
-    	getGraphingPanel().setVisible(true);
-    	frame.add(getGraphingPanel());
-    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	frame.pack();
-    	frame.setLocationRelativeTo(null);
-    	frame.setVisible(true);
-    	
-    	
-    	phy = new LinearPhysicsEngine();
-    	phy.setPid(this);
-    	phy.connect();
+    public PIDSim() {
+    	graphingPanel = new GraphingPanel(this,constants, "Neuron Robotics PIDSim");
+   
     }
     
     public double getSetPoint() {
@@ -115,7 +106,13 @@ public class PIDSim {
 		return graphingPanel;
 	}
 
-	public void setGraphingPanel(GraphingPanel graphingPanel) {
-		this.graphingPanel = graphingPanel;
+
+
+	public PIDConstantsDialog getConstants() {
+		return constants;
+	}
+
+	public void setConstants(PIDConstantsDialog constants) {
+		this.constants = constants;
 	}
 }

@@ -38,14 +38,16 @@ class GraphingPanel extends JPanel implements ChangeListener {
 	private SettingsDialog settingsDialog;
 	private PIDSim sim;
 	private DataPanel dataFrame;
+	private PIDConstantsDialog constants;
 	
-	public GraphingPanel(PIDSim sim, String title) {
+	public GraphingPanel(PIDSim sim, PIDConstantsDialog constants, String title) {
 		this.sim = sim;
+		this.constants = constants;
 		
     	dataFrame = new DataPanel("Live Data");
     	//dataFrame.pack();
     	
-		settingsDialog = new SettingsDialog(sim);
+		settingsDialog = new SettingsDialog(sim,constants);
 		
 		dataset1 = new DefaultValueDataset(0.0);
 		dataset2 = new DefaultValueDataset(0.0);

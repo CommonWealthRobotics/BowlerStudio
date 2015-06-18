@@ -19,9 +19,11 @@ class SettingsDialog extends JPanel implements ActionListener {
 	private JTextField stFricTxt = new JTextField(5);
 	private JTextField dyFricTxt = new JTextField(5);
 	private JButton saveBtn = new JButton("Save");
+	private PIDConstantsDialog constants;
 	
-	public SettingsDialog(PIDSim sim) {
+	public SettingsDialog(PIDSim sim, PIDConstantsDialog constants) {
 		this.sim = sim;
+		this.constants = constants;
 		
 		saveBtn.addActionListener(this);
 				
@@ -35,7 +37,7 @@ class SettingsDialog extends JPanel implements ActionListener {
 		p.add(new JLabel("Dynamic Friction Coefficient:"), "cell 0 3");
 		p.add(dyFricTxt, " cell 1 3");
 		p.add(saveBtn, "cell 0 4, spanx");
-		
+		p.add(constants, "cell 0 5, spanx");
 		refreshValues();
 		
 		add(p);
