@@ -161,7 +161,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			webEngine.load(BowlerStudioController.getHomeUrl());
+			webEngine.load("http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 		});
 
 		// Layout logic

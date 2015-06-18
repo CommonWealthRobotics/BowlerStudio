@@ -346,10 +346,13 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		String[] tokens = domain.split("/");
 		if (tokens[0].toLowerCase().contains("gist.github.com")
 				&& tokens.length >= 2) {
-			String id = tokens[2].split("#")[0];
-
-			Log.debug("Gist URL Detected " + id);
-			return id;
+			try{
+				String id = tokens[2].split("#")[0];
+				Log.debug("Gist URL Detected " + id);
+				return id;
+			}catch(ArrayIndexOutOfBoundsException e){
+				return "d4312a0787456ec27a2a";
+			}
 		}
 
 		return null;
