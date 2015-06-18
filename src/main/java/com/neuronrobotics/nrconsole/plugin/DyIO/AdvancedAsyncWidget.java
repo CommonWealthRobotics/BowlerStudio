@@ -28,8 +28,8 @@ public class AdvancedAsyncWidget extends JPanel {
 	private ControlPanel controlPanel;
 	private JCheckBox async = new JCheckBox("Async");
 	private JPanel advanced = new JPanel(new MigLayout());
-	private JComboBox type = new JComboBox();
-	private JComboBox edge = new JComboBox();
+	private JComboBox<AsyncMode> type = new JComboBox<AsyncMode>();
+	private JComboBox<AsyncThreshholdEdgeType> edge = new JComboBox<AsyncThreshholdEdgeType>();
 	private JTextField time =  new JTextField(4);
 	private JTextField dvalue =  new JTextField(4);
 	private JTextField tvalue =  new JTextField(4);
