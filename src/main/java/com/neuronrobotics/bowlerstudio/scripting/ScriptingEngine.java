@@ -88,7 +88,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static File workspace;
 	private static File lastFile;
 	private static String loginID=null;
-	static{
+	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
+	
+ 	static{
 		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
 		if(!workspace.exists()){
 			workspace.mkdir();
@@ -114,7 +116,18 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			}
 		}
 	}
-	
+ 	
+ 	public static void addIGithubLoginListener(IGithubLoginListener l){
+ 		if(!loginListeners.contains(l)){
+ 			loginListeners.add(l);
+ 		}
+ 	}
+ 	public static void removeIGithubLoginListener(IGithubLoginListener l){
+ 		if(loginListeners.contains(l)){
+ 			loginListeners.remove(l);
+ 		}
+ 	}
+ 	
 	public static File getWorkspace() {
 		System.err.println("Workspace: "+workspace.getAbsolutePath());
 		return workspace;
@@ -151,6 +164,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
         out.flush();
         out.close();
         github = GitHub.connect();
+        for(IGithubLoginListener l:loginListeners){
+        	l.onLogin(loginID);
+        }
 	}
 
 	public static void logout(){
@@ -163,6 +179,10 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			e.printStackTrace();
 		}
 		github=null;
+        for(IGithubLoginListener l:loginListeners){
+        	l.onLogout(loginID);
+        }
+        loginID=null;
 	}
 
 
