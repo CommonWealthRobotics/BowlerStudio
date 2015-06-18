@@ -98,7 +98,7 @@ public class BowlerStudioController extends TabPane implements
 			final String title) {
 
 		try {
-			addTab(new ScriptingGistTab(title, getConnectionManager(),
+			addTab(new ScriptingGistTab(title,
 					getHomeUrl(), tabPane), false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -109,7 +109,7 @@ public class BowlerStudioController extends TabPane implements
 
 	private Tab createTab() throws IOException, InterruptedException {
 		final ScriptingGistTab tab = new ScriptingGistTab(null,
-				getConnectionManager(), null, null);
+				 null, null);
 
 		return tab;
 	}
@@ -147,8 +147,8 @@ public class BowlerStudioController extends TabPane implements
 		// Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 
-		setConnectionManager(new ConnectionManager());
-		addTab(getConnectionManager(), false);
+
+		addTab(ConnectionManager.getConnectionManager(), false);
 
 		createAndSelectNewTab(this, "Tutorial");
 
@@ -228,7 +228,7 @@ public class BowlerStudioController extends TabPane implements
 			});
 		} else if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
-			getConnectionManager().addConnection((BowlerAbstractDevice) o,
+			ConnectionManager.addConnection((BowlerAbstractDevice) o,
 					bad.getScriptingName());
 		}
 	}
@@ -273,7 +273,7 @@ public class BowlerStudioController extends TabPane implements
 	public void onAddDefaultRightArm(ActionEvent event) {
 		if (mainController.getAddDefaultRightArm().isSelected()) {
 			// TODO Auto-generated method stub
-			BowlerAbstractDevice dev = getConnectionManager()
+			BowlerAbstractDevice dev = ConnectionManager
 					.pickConnectedDevice(DHParameterKinematics.class);
 			IConnectionEventListener l = new IConnectionEventListener() {
 				@Override
@@ -288,12 +288,12 @@ public class BowlerStudioController extends TabPane implements
 				}
 			};
 			if (dev == null) {
-				DyIO tmp = (DyIO) getConnectionManager().pickConnectedDevice(
+				DyIO tmp = (DyIO) ConnectionManager.pickConnectedDevice(
 						DyIO.class);
 				if (tmp != null) {
 					tmp.addConnectionEventListener(l);
 					dev = new DHParameterKinematics(tmp, "TrobotMaster.xml");
-					getConnectionManager().addConnection(dev, "DHArm");
+					ConnectionManager.addConnection(dev, "DHArm");
 				}
 			}
 			if (dev != null) {
@@ -311,10 +311,10 @@ public class BowlerStudioController extends TabPane implements
 	public void onAddVRCamera(ActionEvent event) {
 		// TODO Auto-generated method stub
 
-		setVrCamera((AbstractImageProvider) getConnectionManager()
+		setVrCamera((AbstractImageProvider) ConnectionManager
 				.pickConnectedDevice(AbstractImageProvider.class));
 		if (getVrCamera() == null)
-			setVrCamera(getConnectionManager().onConnectCVCamera());
+			setVrCamera(ConnectionManager.onConnectCVCamera());
 		if (getVrCamera() != null) {
 			getVrCamera().addConnectionEventListener(
 					new IConnectionEventListener() {
@@ -387,7 +387,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public void disconnect() {
-		getConnectionManager().disconnectAll();
+		ConnectionManager.disconnectAll();
 	}
 
 	public Stage getPrimaryStage() {
@@ -397,14 +397,6 @@ public class BowlerStudioController extends TabPane implements
 
 	public void setSelectedTab(Tab tab) {
 		getSelectionModel().select(tab);
-	}
-
-	public ConnectionManager getConnectionManager() {
-		return connectionManager;
-	}
-
-	public void setConnectionManager(ConnectionManager connectionManager) {
-		this.connectionManager = connectionManager;
 	}
 
 	public AbstractImageProvider getVrCamera() {

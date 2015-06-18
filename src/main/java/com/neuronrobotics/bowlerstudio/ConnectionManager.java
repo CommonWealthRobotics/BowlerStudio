@@ -70,10 +70,14 @@ import javafx.stage.FileChooser;
 
 public class ConnectionManager extends Tab implements IDeviceAddedListener ,EventHandler<ActionEvent> {
 
-	private CheckBoxTreeItem<String> rootItem;
+	private static CheckBoxTreeItem<String> rootItem;
 	private static final ArrayList<PluginManager> plugins = new ArrayList<PluginManager>();
 	//private BowlerStudioController bowlerStudioController;
 	String formatStr="%1$-40s %2$-60s  %3$-40s";
+	private static final ConnectionManager connectionManager;
+	static{
+		connectionManager = new ConnectionManager();
+	}
 
 
 	private Node getIcon(String s) {
@@ -82,6 +86,9 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 	public ConnectionManager() {
+		if(connectionManager!=null){
+			throw new RuntimeException("Connection manager is a static singleton, access it using ConnectionManager.getConnectionmanager()");
+		}
 		setText("My Devices");
 
 		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
@@ -150,7 +157,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		this.bowlerStudioController = bowlerStudioController;
 //	}
 	
-	public BowlerAbstractDevice pickConnectedDevice(Class class1) {
+	public static BowlerAbstractDevice pickConnectedDevice(Class class1) {
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
 		if(choices.size()>0){
@@ -179,7 +186,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		return pickConnectedDevice(null);
 //	}
 
-	public void disconnectAll() {
+	public static void disconnectAll() {
 
 		//extract list int thread safe object
 		Object [] pms= plugins.toArray();
@@ -190,7 +197,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	}
 	
-	 public OpenCVImageProvider onConnectCVCamera() {
+	 public static OpenCVImageProvider onConnectCVCamera() {
 		List<String> choices = new ArrayList<>();
 		choices.add("0");
 		choices.add("1");
@@ -222,7 +229,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	 public void onConnectJavaCVCamera() {
+	 public static void onConnectJavaCVCamera() {
 		 onConnectCVCamera();
 //		List<String> choices = new ArrayList<>();
 //		try {
@@ -266,7 +273,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	 public void onConnectFileSourceCamera() {
+	 public static void onConnectFileSourceCamera() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
 		File f = fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage());
@@ -278,7 +285,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	public void onConnectURLSourceCamera() {
+	public static void onConnectURLSourceCamera() {
 		TextInputDialog dialog = new TextInputDialog("http://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png");
 		dialog.setTitle("URL Image Source");
 		dialog.setHeaderText("This url will be loaded each capture.");
@@ -301,7 +308,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	 public void onConnectHokuyoURG() {
+	 public static void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();
 		if(ports.size()==0)
@@ -458,14 +465,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 	//this is needed because if you just remove one they all disapear
-	private void refreshItemTree(){
+	private static void refreshItemTree(){
 		rootItem.getChildren().clear();
 		for(PluginManager p:plugins){
 			rootItem.getChildren().add(p.getCheckBoxItem());
 		}
 	}
 	
-	private void disconectAndRemoveDevice(PluginManager mp){
+	private static void disconectAndRemoveDevice(PluginManager mp){
 		System.out.println("Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
 		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp))
@@ -490,6 +497,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	public void onConnectPidSim() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public static ConnectionManager getConnectionManager() {
+		return connectionManager;
 	}
 
 

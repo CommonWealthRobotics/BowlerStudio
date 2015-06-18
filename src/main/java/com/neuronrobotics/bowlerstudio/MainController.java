@@ -25,6 +25,9 @@ import javax.script.ScriptEngine;
 
 
 
+
+
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -50,6 +53,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
@@ -217,9 +222,33 @@ public class MainController implements Initializable {
 		
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
-					
-					logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
+					if(ScriptingEngineWidget.getLoginID()!=null){
+						logoutGithub.disableProperty().set(true);
+						logoutGithub.setText("Log out "+ScriptingEngineWidget.getLoginID());
+					}else{
+						logoutGithub.disableProperty().set(true);
+						logoutGithub.setText("Anonymous");
+					}
 												
+		});
+		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+			
+			@Override
+			public void onLogout(String oldUsername) {
+				Platform.runLater(() -> {
+					logoutGithub.disableProperty().set(true);
+					logoutGithub.setText("Anonymous");
+				});
+			}
+			
+			@Override
+			public void onLogin(String newUsername) {
+				FxTimer.runLater(
+						Duration.ofMillis(100) ,() -> {
+					logoutGithub.disableProperty().set(false);
+					logoutGithub.setText("Log out "+newUsername);
+				});
+			}
 		});
 		//logView.resize(250, 300);
 		// after connection manager set up, add scripting widget
@@ -291,12 +320,12 @@ public class MainController implements Initializable {
 
     @FXML
     private void onConnect(ActionEvent e) {
-    	application.getConnectionManager().addConnection();
+    	ConnectionManager.addConnection();
     }
     
     @FXML
     private void onConnectVirtual(ActionEvent e) {
-    	application.getConnectionManager().addConnection(new VirtualGenericPIDDevice(10000),"virtual");
+    	ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000),"virtual");
     }
 
   
@@ -317,7 +346,7 @@ public class MainController implements Initializable {
 
 	@FXML public void onConnectCHDKCamera(ActionEvent event) {
 		try{
-			application.getConnectionManager().addConnection(new CHDKImageProvider(),"cameraCHDK");
+			ConnectionManager.addConnection(new CHDKImageProvider(),"cameraCHDK");
 		}catch (Exception e)
 		{
 			e.printStackTrace();
@@ -327,35 +356,35 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectCVCamera(ActionEvent event) {
-		application.getConnectionManager().onConnectCVCamera();
+		ConnectionManager.onConnectCVCamera();
 		
 	}
 
 
 	@FXML public void onConnectJavaCVCamera() {
-		application.getConnectionManager().onConnectJavaCVCamera();
+		ConnectionManager.onConnectJavaCVCamera();
 
 	}
 
 
 	@FXML public void onConnectFileSourceCamera() {
-		application.getConnectionManager().onConnectFileSourceCamera();
+		ConnectionManager.onConnectFileSourceCamera();
 	}
 
 
 	@FXML public void onConnectURLSourceCamera() {
-		application.getConnectionManager().onConnectURLSourceCamera();
+		ConnectionManager.onConnectURLSourceCamera();
 	}
 
 
 	@FXML public void onConnectHokuyoURG(ActionEvent event) {
-		application.getConnectionManager().onConnectHokuyoURG();
+		ConnectionManager.onConnectHokuyoURG();
 		
 	}
 
 
 	@FXML public void onConnectGamePad(ActionEvent event) {
-		application.getConnectionManager().onConnectGamePad();
+		ConnectionManager.onConnectGamePad();
 		
 	}
 
@@ -396,7 +425,7 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectPidSim() {
-		application.getConnectionManager().addConnection(new LinearPhysicsEngine(),"physics");
+		ConnectionManager.addConnection(new LinearPhysicsEngine(),"physics");
 	}
 	
 

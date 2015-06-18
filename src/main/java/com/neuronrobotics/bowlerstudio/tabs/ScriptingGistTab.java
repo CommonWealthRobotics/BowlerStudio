@@ -51,7 +51,7 @@ import javafx.scene.web.WebView;
 public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private String Current_URL = "http://gist.github.com/";
-	private ConnectionManager dyio;
+
 	private ScriptingGistTab myTab;
 	private BowlerStudioController tabPane = null;
 	boolean loaded=false;
@@ -73,8 +73,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 
 	
 	
-	public ScriptingGistTab(String title,ConnectionManager connectionManager, String Url,BowlerStudioController tabPane) throws IOException, InterruptedException{
-		this.dyio = connectionManager;
+	public ScriptingGistTab(String title, String Url,BowlerStudioController tabPane) throws IOException, InterruptedException{
+
 		this.tabPane = tabPane;
 
 		myTab = this;
@@ -195,7 +195,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			if(!Current_URL.contains("neuronrobotics.com")){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
-					tabPane.addTab(new ScriptingGistTab(null,dyio, Current_URL,null), true);
+					tabPane.addTab(new ScriptingGistTab(null, Current_URL,null), true);
 					return false;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
