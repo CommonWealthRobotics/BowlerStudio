@@ -20,6 +20,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
@@ -192,7 +193,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				? urlField.getText() 
 				: "http://" + urlField.getText();
 		if(tabPane!=null ){
-			if(!Current_URL.contains("neuronrobotics.com")){
+			if(!(Current_URL.contains("neuronrobotics.com") || Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID()) )){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
 					tabPane.addTab(new ScriptingGistTab(null, Current_URL,null), true);

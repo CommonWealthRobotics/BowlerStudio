@@ -12,6 +12,7 @@ import java.util.List;
 
 
 
+
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +28,7 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
@@ -51,7 +53,7 @@ import com.sun.javafx.scene.control.skin.TabPaneSkin;
 public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
-	private static final String HOME_URL = "http://neuronrobotics.github.io/BowlerStudio/Welcome-To-BowlerStudio/";
+	private static final String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
 	 * 
 	 */
@@ -178,6 +180,8 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public static String getHomeUrl() {
+		if(ScriptingEngine.getLoginID() != null)
+			return "http://gist.github.com/"+ScriptingEngine.getLoginID();
 		return HOME_URL;
 	}
 
