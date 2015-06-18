@@ -13,7 +13,6 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
 public class PidLab extends AbstractBowlerStudioTab {
 	LinearPhysicsEngine engine;
-	PIDSim simPanel = new PIDSim();
 	private SwingNode wrapper;
 	
 	@Override
@@ -30,10 +29,9 @@ public class PidLab extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		engine = (LinearPhysicsEngine)pm;
-		engine.setPid(simPanel);
 		wrapper = new SwingNode();
 
-		wrapper.setContent(simPanel.getGraphingPanel());
+		wrapper.setContent(engine.getPid().getGraphingPanel());
         ScrollPane s1 = new ScrollPane();
 	       
         s1.setContent(wrapper);
