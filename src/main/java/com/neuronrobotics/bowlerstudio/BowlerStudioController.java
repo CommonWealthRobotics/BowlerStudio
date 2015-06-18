@@ -60,9 +60,13 @@ public class BowlerStudioController extends TabPane implements
 	private Jfx3dManager jfx3dmanager;
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
+	private static BowlerStudioController bowlerStudio=null;
 
 	public BowlerStudioController(Jfx3dManager jfx3dmanager,
 			MainController mainController) {
+		if(getBowlerStudio()!=null)
+			throw new RuntimeException("There can be only one Bowler Studio controller");
+		setBowlerStudio(this);
 		this.jfx3dmanager = jfx3dmanager;
 		this.mainController = mainController;
 		createScene();
@@ -143,7 +147,7 @@ public class BowlerStudioController extends TabPane implements
 		// Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 
-		setConnectionManager(new ConnectionManager(this));
+		setConnectionManager(new ConnectionManager());
 		addTab(getConnectionManager(), false);
 
 		createAndSelectNewTab(this, "Tutorial");
@@ -409,6 +413,14 @@ public class BowlerStudioController extends TabPane implements
 
 	public void setVrCamera(AbstractImageProvider vrCamera) {
 		this.vrCamera = vrCamera;
+	}
+
+	public static BowlerStudioController getBowlerStudio() {
+		return bowlerStudio;
+	}
+
+	private static void setBowlerStudio(BowlerStudioController bowlerStudio) {
+		BowlerStudioController.bowlerStudio = bowlerStudio;
 	}
 
 }

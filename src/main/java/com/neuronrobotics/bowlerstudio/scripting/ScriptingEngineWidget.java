@@ -85,6 +85,7 @@ import org.kohsuke.github.PagedIterable;
 
 import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
@@ -105,35 +106,12 @@ import eu.mihosoft.vrl.v3d.*;
 import eu.mihosoft.vrl.v3d.samples.*;
 
 @SuppressWarnings("unused")
-public class ScriptingEngineWidget extends BorderPane implements
+public class ScriptingEngineWidget extends ScriptingEngine implements
 		IFileChangeListener {
 
-	public enum ShellType {
-		GROOVY, JYTHON
-	}
-
-	static ShellType activeType = ShellType.GROOVY;
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private File currentFile = null;
-	
-	private static File workspace;
-	private static File lastFile;
-	static{
-		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
-		if(!workspace.exists()){
-			workspace.mkdir();
-		}
-	}
-	
 	private boolean running = false;
 	private Thread scriptRunner = null;
 	private FileChangeWatcher watcher;
-	private static ConnectionManager connectionmanager;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
 	private Object scriptResult;
@@ -187,9 +165,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	public ScriptingEngineWidget(ScriptingWidgetType type) {
 		this.type = type;
-		if (getConnectionmanager() == null)
-			throw new RuntimeException(
-					"Connection manager needs to be added to the Scripting engine");
+
 		runfx.setOnAction(e -> {
 			startStopAction();
 		});
@@ -292,8 +268,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
 
-		addIScriptEventListener(getConnectionmanager()
-				.getBowlerStudioController());
+		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
 		reset();
 	}
 
@@ -466,11 +441,11 @@ public class ScriptingEngineWidget extends BorderPane implements
 						alert.setContentText("You need to connect it before running again");
 						alert.showAndWait();
 						if(stackTrace.contains("dyio"))
-							connectionmanager.addConnection();
+							ConnectionManager.addConnection();
 						else if(stackTrace.contains("camera"))
-							connectionmanager.addConnection(new OpenCVImageProvider(0),"camera0");
+							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
 						else if(stackTrace.contains("gamepad"))
-							connectionmanager.onConnectGamePad();
+							ConnectionManager.onConnectGamePad();
 						reset();
 					});
 					
@@ -549,10 +524,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 	}
 
-	public static File getWorkspace() {
-		System.err.println("Workspace: "+workspace.getAbsolutePath());
-		return workspace;
-	}
+
 
 	public void open() {
 
@@ -629,337 +601,12 @@ public class ScriptingEngineWidget extends BorderPane implements
 		return currentFile.getName();
 	}
 
-	public static ConnectionManager getConnectionmanager() {
-	
-		return connectionmanager;
-	}
 
-	public static void setConnectionmanager(ConnectionManager connectionmanager) {
-		ScriptingEngineWidget.connectionmanager = connectionmanager;
-	}
-
-	private static void setFilename(String name) {
-		if (name.toString().toLowerCase().endsWith(".java")
-				|| name.toString().toLowerCase().endsWith(".groovy")) {
-			activeType = ShellType.GROOVY;
-			//System.out.println("Setting up Groovy Shell");
-		}
-		if (name.toString().toLowerCase().endsWith(".py")
-				|| name.toString().toLowerCase().endsWith(".jy")) {
-			activeType = ShellType.JYTHON;
-			//System.out.println("Setting up Python Shell");
-		}
-	}
-	
-	public static String getLoginID(){
-		
-		if(loginID == null){
-			try {
-				String line;
-				try (
-				    InputStream fis = new FileInputStream(getCreds().getAbsolutePath());
-				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				    BufferedReader br = new BufferedReader(isr);
-				) {
-				    while ((line = br.readLine()) != null) {
-				        if(line.contains("login")){
-				        	loginID = line.split("=")[1];
-				        }
-				    }
-				}
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return loginID;
-	}
-	
-	public static void login() throws IOException{
-		GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
-        myDialog.sizeToScene();
-        myDialog.showAndWait();
-        loginID = myDialog.getUsername();
-        String content= "login="+loginID+"\n";
-        content+= "password="+myDialog.getPw()+"\n";
-        PrintWriter out = new PrintWriter(getCreds().getAbsoluteFile());
-        out.println(content);
-        out.flush();
-        out.close();
-        github = GitHub.connect();
-	}
-
-	public static void logout(){
-		if(getCreds()!= null)
-		try {
-			Files.delete(getCreds().toPath());
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		github=null;
-	}
-
-
-	public static String[] codeFromGistID(String id, String FileName) {
-		try {
-			if(github == null){
-
-				if (getCreds().exists()){
-					try{
-						github = GitHub.connect();
-					}catch(IOException ex){
-						
-					}
-				}else{
-					getCreds().createNewFile();
-				}
-				
-				if(github==null){
-					Alert alert = new Alert(AlertType.CONFIRMATION);
-					alert.setTitle("GitHub Login Missing");
-					alert.setHeaderText("To use BowlerStudio at full speed login with github");
-					alert.setContentText("What would you like to do?");
-	
-					ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
-					ButtonType buttonTypeTwo = new ButtonType("Login");
-					
-					alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-					
-					Optional<ButtonType> result = alert.showAndWait();
-					if (result.get() == buttonTypeOne){
-						github = GitHub.connectAnonymously();
-					} else  {
-						logout();
-						login();
-					} 
-				}
-				
-			}
-			
-			Log.debug("Loading Gist: " + id);
-			try{
-				gist = github.getGist(id);
-			}catch(IOException ex){
-				logout();
-				
-				return null;
-			}
-			Map<String, GHGistFile> files = gist.getFiles();
-					
-			
-			for (Entry<String, GHGistFile> entry : files.entrySet()) {
-				if (((entry.getKey().endsWith(".py")
-						|| entry.getKey().endsWith(".jy")
-						|| entry.getKey().endsWith(".java")
-						|| entry.getKey().endsWith(".groovy"))&&(FileName.length()==0))
-						||entry.getKey().contains(FileName)) {
-
-					GHGistFile ghfile = entry.getValue();
-					Log.debug("Key = " + entry.getKey());
-					String code = ghfile.getContent();
-					String fileName = entry.getKey().toString();
-					setFilename(fileName);
-					return new String[] { code, fileName };
-				}
-			}
-		} catch (InterruptedIOException e) {
-			System.out.println("Gist Rate limited");
-		} catch (MalformedURLException ex) {
-			// ex.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Object inlineFileScriptRun(File f, ArrayList<Object> args) {
-		byte[] bytes;
-		setFilename(f.getName());
-		try {
-			bytes = Files.readAllBytes(f.toPath());
-			String s = new String(bytes, "UTF-8");
-			return inlineScriptRun(s, args);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Object inlineGistScriptRun(String gistID,
-			ArrayList<Object> args) {
-		return inlineScriptRun(codeFromGistID(gistID,"")[0], args);
-	}
-
-	static final String[] imports = new String[] { "haar",
-			"java.awt",
-			"eu.mihosoft.vrl.v3d",
-			"eu.mihosoft.vrl.v3d.samples",
-			"com.neuronrobotics.sdk.addons.kinematics.xml",
-			"com.neuronrobotics.sdk.dyio.peripherals",
-			"com.neuronrobotics.sdk.dyio",
-			"com.neuronrobotics.sdk.common",
-			"com.neuronrobotics.sdk.ui",
-			"com.neuronrobotics.sdk.util",
-			"javafx.scene.control",
-			"com.neuronrobotics.bowlerstudio.scripting",
-			"com.neuronrobotics.jniloader",
-			"com.neuronrobotics.bowlerstudio.tabs",
-			"org.opencv.core",
-			// "org.opencv.features2d",
-			"javafx.scene.text", "javafx.scene",
-			"com.neuronrobotics.sdk.addons.kinematics",
-			"com.neuronrobotics.sdk.addons.kinematics.math", "java.util",
-			"com.neuronrobotics.sdk.addons.kinematics.gui",
-			"javafx.scene.transform", "javafx.scene.shape",
-			"java.awt.image.BufferedImage" };
-
-	private static GitHub github;
-
-	private static String loginID=null;
-
-	private static File creds=null;
-
-	private static GHGist gist;
 
 	private HBox controlPane;
 
-	private static Object runGroovy(String code, ArrayList<Object> args) {
-		CompilerConfiguration cc = new CompilerConfiguration();
-		cc.addCompilationCustomizers(new ImportCustomizer()
-				.addStarImports(imports)
-				.addStaticStars(
-						"com.neuronrobotics.sdk.util.ThreadUtil",
-						"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget",
-						"eu.mihosoft.vrl.v3d.Transform"));
 
-		Binding binding = new Binding();
-		for (PluginManager pm : getConnectionmanager().getPlugins()) {
-			try {
-				// groovy needs the objects cas to thier actual type befor
-				// passing into the scipt
-				binding.setVariable(pm.getName(),
-						Class.forName(pm.getDevice().getClass().getName())
-								.cast(pm.getDevice()));
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.err.println("Device " + pm.getName() + " is "
-					+ pm.getDevice());
-		}
-		binding.setVariable("args", args);
 
-		GroovyShell shell = new GroovyShell(connectionmanager.getClass()
-				.getClassLoader(), binding, cc);
-		System.out.println(code + "\n\nStart\n\n");
-		Script script = shell.parse(code);
 
-		return script.run();
-	}
-
-	private static Object runJython(String code, ArrayList<Object> args) {
-
-		Properties props = new Properties();
-		PythonInterpreter.initialize(System.getProperties(), props,
-				new String[] { "" });
-		PythonInterpreter interp = new PythonInterpreter();
-
-		interp.exec("import sys");
-		for (String s : imports) {
-
-			// s = "import "+s;
-			System.err.println(s);
-			if(!s.contains("mihosoft")&&
-					!s.contains("haar")&&
-					!s.contains("com.neuronrobotics.sdk.addons.kinematics")
-					) {
-				interp.exec("import "+s);
-			} else {
-				//from http://stevegilham.blogspot.com/2007/03/standalone-jython-importerror-no-module.html
-				try {
-					String[] names = s.split("\\.");
-					String packname = (names.length>0?names[names.length-1]:s);
-					Log.error("Forcing "+s+" as "+packname);
-					interp.exec("sys.packageManager.makeJavaPackage(" + s
-							+ ", " +packname + ", None)");
-
-					interp.exec("import "+packname);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-
-		for (PluginManager pm : getConnectionmanager().getPlugins()) {
-			try {
-				// passing into the scipt
-				interp.set(pm.getName(),
-						Class.forName(pm.getDevice().getClass().getName())
-								.cast(pm.getDevice()));
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.err.println("Device " + pm.getName() + " is "
-					+ pm.getDevice());
-		}
-		interp.set("args", args);
-
-		interp.exec(code);
-		ArrayList<Object> results = new ArrayList<>();
-		try{
-			results.add(interp.get("csg",CSG.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		try{
-			results.add(interp.get("tab",Tab.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		try{
-			results.add(interp.get("device",BowlerAbstractDevice.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		Log.debug("Jython return = "+results);
-		return results;
-	}
-
-	public static Object inlineScriptRun(String code, ArrayList<Object> args) {
-		switch (activeType) {
-		case JYTHON:
-			return runJython(code, args);
-		case GROOVY:
-		default:
-			return runGroovy(code, args);
-		}
-	}
-
-	public static File getLastFile() {
-		if(lastFile==null)
-			return getWorkspace();
-		return lastFile;
-	}
-
-	public static void setLastFile(File lastFile) {
-		ScriptingEngineWidget.lastFile = lastFile;
-	}
-
-	public static File getCreds() {
-		if(creds == null)
-			setCreds(new File(System.getProperty("user.home")+"/.github"));
-		return creds;
-	}
-
-	public static void setCreds(File creds) {
-		ScriptingEngineWidget.creds = creds;
-	}
 
 }

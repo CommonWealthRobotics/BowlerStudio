@@ -54,14 +54,12 @@ public class PluginManager {
 	
 	private String name;
 	private BowlerAbstractDevice dev;
-	private BowlerStudioController bowlerStudioController;
 	private TreeItem<String> item;
 	
 	private ArrayList<Class> deviceSupport = new ArrayList<Class>();
 	ArrayList<AbstractBowlerStudioTab> liveTabs = new ArrayList<>();
-	public PluginManager(BowlerAbstractDevice dev, BowlerStudioController bowlerStudioController){
+	public PluginManager(BowlerAbstractDevice dev){
 		this.dev = dev;
-		this.setBowlerStudioController(bowlerStudioController);
 		if(!dev.isAvailable())
 			throw new RuntimeException("Device is not reporting availible "+dev.getClass().getSimpleName());
 		
@@ -292,15 +290,8 @@ public class PluginManager {
 
 
 	public BowlerStudioController getBowlerStudioController() {
-		return bowlerStudioController;
+		return BowlerStudioController.getBowlerStudio();
 	}
-
-
-
-	public void setBowlerStudioController(BowlerStudioController bowlerStudioController) {
-		this.bowlerStudioController = bowlerStudioController;
-	}
-
 
 
 	public TreeItem<String> getCheckBoxItem() {

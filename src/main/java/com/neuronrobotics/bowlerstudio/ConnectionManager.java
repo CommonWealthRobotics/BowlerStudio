@@ -72,7 +72,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	private CheckBoxTreeItem<String> rootItem;
 	private static final ArrayList<PluginManager> plugins = new ArrayList<PluginManager>();
-	private BowlerStudioController bowlerStudioController;
+	//private BowlerStudioController bowlerStudioController;
 	String formatStr="%1$-40s %2$-60s  %3$-40s";
 
 
@@ -81,8 +81,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				AbstractConnectionPanel.class.getResourceAsStream(s)));
 	}
 
-	public ConnectionManager(BowlerStudioController bowlerStudioController) {
-		this.setBowlerStudioController(bowlerStudioController);
+	public ConnectionManager() {
 		setText("My Devices");
 
 		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
@@ -102,8 +101,6 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		tree.setCellFactory(CheckBoxTreeCell.forTreeView());
 
 		setContent(tree);
-
-		ScriptingEngineWidget.setConnectionmanager(this);
 		
 		DeviceManager.addDeviceAddedListener(this);
 		
@@ -129,7 +126,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 
-	public void addConnection(BowlerAbstractDevice newDevice, String name) {
+	public static void addConnection(BowlerAbstractDevice newDevice, String name) {
 		DeviceManager.addConnection(newDevice, name);
 
 	}
@@ -143,15 +140,15 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	public static ArrayList<PluginManager>  getPlugins() {
 		return plugins;
 	}
-
-	public BowlerStudioController getBowlerStudioController() {
-		return bowlerStudioController;
-	}
-
-	public void setBowlerStudioController(
-			BowlerStudioController bowlerStudioController) {
-		this.bowlerStudioController = bowlerStudioController;
-	}
+//
+//	public BowlerStudioController getBowlerStudioController() {
+//		return bowlerStudioController;
+//	}
+//
+//	public void setBowlerStudioController(
+//			BowlerStudioController bowlerStudioController) {
+//		this.bowlerStudioController = bowlerStudioController;
+//	}
 	
 	public BowlerAbstractDevice pickConnectedDevice(Class class1) {
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
@@ -333,7 +330,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	public void onConnectGamePad() {
+	public static void onConnectGamePad() {
 		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
 		
 		List<String> choices = new ArrayList<>();
@@ -380,7 +377,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	public void onNewDeviceAdded(BowlerAbstractDevice newDevice) {
 		PluginManager mp;
 		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+newDevice.getScriptingName() );
-		mp = new PluginManager(newDevice, getBowlerStudioController());
+		mp = new PluginManager(newDevice);
 		plugins.add(mp);
 
 		BowlerAbstractConnection con = newDevice.getConnection();
@@ -455,6 +452,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		if(	getBowlerStudioController()!=null)
 		getBowlerStudioController().setSelectedTab(this);
 	}
+	private BowlerStudioController getBowlerStudioController() {
+		// TODO Auto-generated method stub
+		return BowlerStudioController.getBowlerStudio();
+	}
+
 	//this is needed because if you just remove one they all disapear
 	private void refreshItemTree(){
 		rootItem.getChildren().clear();
@@ -481,7 +483,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	}
 
-	public void addConnection() {
+	public static void addConnection() {
 		DeviceManager.addConnection();
 	}
 

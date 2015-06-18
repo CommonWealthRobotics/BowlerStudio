@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
@@ -50,12 +51,11 @@ public class BowlerStudio extends Application {
     	else{
             new JFXPanel(); // initializes JavaFX environment
             OpenCVJNILoader.load();              // Loads the OpenCV JNI (java native interface)
-    		new ConnectionManager(null);// create a connection manager to access devices and provide them to scripts
     		boolean startLoadingScripts=false;
     		for(String s :args){
     			if(startLoadingScripts){
     				try{
-    					ScriptingEngineWidget.inlineFileScriptRun(new File(s), null);
+    					ScriptingEngine.inlineFileScriptRun(new File(s), null);
     				}catch(Error e)
     				{
     					e.printStackTrace();
@@ -71,7 +71,7 @@ public class BowlerStudio extends Application {
 
     			if(startLoadingScripts){
     				try{
-    					ret=ScriptingEngineWidget.inlineFileScriptRun(new File(s), (ArrayList<Object>)ret);
+    					ret=ScriptingEngine.inlineFileScriptRun(new File(s), (ArrayList<Object>)ret);
     				}catch(Error e)
     				{
     					e.printStackTrace();
