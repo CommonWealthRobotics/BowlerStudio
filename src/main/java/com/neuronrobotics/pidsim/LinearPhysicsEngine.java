@@ -1,6 +1,10 @@
 package com.neuronrobotics.pidsim;
 
-class LinearPhysicsEngine extends Thread {
+import java.util.ArrayList;
+
+import com.neuronrobotics.sdk.common.NonBowlerDevice;
+
+public class LinearPhysicsEngine extends NonBowlerDevice {
 	/**
 	 *
 	 */
@@ -17,68 +21,6 @@ class LinearPhysicsEngine extends Thread {
 	private long time = 0l;// Seconds
 	double acceleration;
 	private boolean run = true;
-	
-	public LinearPhysicsEngine(PIDSim pidSim,double maxTorque) {
-		pid = pidSim;
-		setMass(pid.getMass());
-		setLinkLen(pid.getLength());
-		setMuStatic(pid.getStaticFriction());
-		setMuDynamic(pid.getDynamicFriction());
-		setTime(System.currentTimeMillis());
-		this.maxTorque=maxTorque;
-	}
-	
-	public void run() {
-		System.out.println("Starting physics engine.");
-		while (run) {
-			
-			long localStep = (long) (step*1000);
-			
-			setTime(getTime() + localStep);
-			pid.setTime(getTime());
-			double I = getMass() * getLinkLen() * getLinkLen() ;
-			double tGravity = (getLinkLen()*Math.cos(angle)) * ((getMass()  * -9.8)); // the torque due to gravity
-			double tTotal = torque + tGravity;
-			
-			if( w==0 && (getMuStatic()>Math.abs(tTotal))){
-				//System.out.println("Static friction not overcome");
-				tTotal=0;
-			}
-			if(w!=0){
-				double t = tTotal;
-				if(tTotal>0){
-					tTotal =t-getMuDynamic()*w;
-				}else{
-					tTotal =t+getMuDynamic()*w*-1;
-				}
-//				if(tTotal!=0)
-//					System.out.println("Torque: \n\tgravity="+ tGravity+" \n\tgravity plus set="+t+" \n\tafter friction="+tTotal);
-			}
-
-			acceleration = tTotal/I;
-			
-			w+=acceleration*step*step;
-			
-			if(w != 0) {
-				angle+=w*step;
-			}
-			
-			if(Math.toDegrees(angle) >181){
-				angle = Math.PI;
-				w=0;
-			}
-			
-			if(Math.toDegrees(angle) < -1){
-				angle = 0;
-				w=0;
-			}
-			
-			//System.out.println("Controls: \n\ttorque: "+torque+" \n\tTorque Total: "+tTotal+" \n\tTg: "+tGravity+" \n\tAceleration: "+acceleration+" \n\tAngular velocity: "+w+" \n\tAngle: "+Math.toDegrees(angle));
-			pid.setPosition(Math.toDegrees(angle));
-			
-			try {Thread.sleep(localStep);} catch (InterruptedException e) {}
-		}
-	}
 	
 	public void setEnabled(boolean isEnabled) {
 		run = isEnabled;
@@ -142,5 +84,93 @@ class LinearPhysicsEngine extends Thread {
 
 	public long getTime() {
 		return time;
+	}
+
+	@Override
+	public void disconnectDeviceImp() {
+		// TODO Auto-generated method stub
+		run=false;
+	}
+
+	@Override
+	public boolean connectDeviceImp() {
+		run=true;
+		getPid();
+		new Thread(){
+			public void run() {
+				System.out.println("Starting physics engine.");
+				while (run) {
+					
+					long localStep = (long) (step*1000);
+					
+					setTime(getTime() + localStep);
+					getPid().setTime(getTime());
+					double I = getMass() * getLinkLen() * getLinkLen() ;
+					double tGravity = (getLinkLen()*Math.cos(angle)) * ((getMass()  * -9.8)); // the torque due to gravity
+					double tTotal = torque + tGravity;
+					
+					if( w==0 && (getMuStatic()>Math.abs(tTotal))){
+						//System.out.println("Static friction not overcome");
+						tTotal=0;
+					}
+					if(w!=0){
+						double t = tTotal;
+						if(tTotal>0){
+							tTotal =t-getMuDynamic()*w;
+						}else{
+							tTotal =t+getMuDynamic()*w*-1;
+						}
+//						if(tTotal!=0)
+//							System.out.println("Torque: \n\tgravity="+ tGravity+" \n\tgravity plus set="+t+" \n\tafter friction="+tTotal);
+					}
+
+					acceleration = tTotal/I;
+					
+					w+=acceleration*step*step;
+					
+					if(w != 0) {
+						angle+=w*step;
+					}
+					
+					if(Math.toDegrees(angle) >181){
+						angle = Math.PI;
+						w=0;
+					}
+					
+					if(Math.toDegrees(angle) < -1){
+						angle = 0;
+						w=0;
+					}
+					
+					//System.out.println("Controls: \n\ttorque: "+torque+" \n\tTorque Total: "+tTotal+" \n\tTg: "+tGravity+" \n\tAceleration: "+acceleration+" \n\tAngular velocity: "+w+" \n\tAngle: "+Math.toDegrees(angle));
+					getPid().setPosition(Math.toDegrees(angle));
+					
+					try {Thread.sleep(localStep);} catch (InterruptedException e) {}
+				}
+			}
+		}.start();
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getNamespacesImp() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PIDSim getPid() {
+		if(pid==null)
+			setPid(new PIDSim());
+		return pid;
+	}
+
+	public void setPid(PIDSim pid) {
+		this.pid = pid;
+		setMass(getPid().getMass());
+		setLinkLen(getPid().getLength());
+		setMuStatic(getPid().getStaticFriction());
+		setMuDynamic(getPid().getDynamicFriction());
+		setTime(System.currentTimeMillis());
+		this.maxTorque=pid.getMaxTorque();
 	}
 }

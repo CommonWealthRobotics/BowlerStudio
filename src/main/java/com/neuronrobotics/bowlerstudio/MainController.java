@@ -24,6 +24,7 @@ import javax.script.ScriptEngine;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -56,6 +57,7 @@ import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
@@ -390,6 +392,11 @@ public class MainController implements Initializable {
 
 	@FXML public void onLogout() {
 		ScriptingEngineWidget.logout();
+	}
+
+
+	@FXML public void onConnectPidSim() {
+		application.getConnectionManager().addConnection(new LinearPhysicsEngine(),"physics");
 	}
 	
 

@@ -485,5 +485,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		DeviceManager.addConnection();
 	}
 
+	public void onConnectPidSim() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

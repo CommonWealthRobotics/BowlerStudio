@@ -17,16 +17,6 @@ public class PIDSim {
     private long time = 0;
 	private double maxTorque = 20;// Newton meters
     
-    public PIDSim() { }
-    
-    public PIDSim(double mass, double linkLegnth,double muStatic, double muDynamic, double maxTorque) {
-    	this.mass=mass;
-    	this.length=linkLegnth;
-    	stFriction=muStatic;
-    	dyFriction=muDynamic;
-    	this.setMaxTorque(maxTorque);
-    }
-    
     public void initialize() {
     	setGraphingPanel(new GraphingPanel(this, "Neuron Robotics PIDSim"));
     	getGraphingPanel().setVisible(true);
@@ -37,8 +27,9 @@ public class PIDSim {
     	frame.setVisible(true);
     	
     	
-    	phy = new LinearPhysicsEngine(this,getMaxTorque());
-    	phy.start();
+    	phy = new LinearPhysicsEngine();
+    	phy.setPid(this);
+    	phy.connect();
     }
     
     public double getSetPoint() {

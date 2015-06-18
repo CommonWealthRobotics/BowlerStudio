@@ -33,6 +33,8 @@ import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.cartesian.AdvancedKinematicsController;
 import com.neuronrobotics.nrconsole.plugin.cartesian.JogKinematicsDevice;
+import com.neuronrobotics.pidsim.LinearPhysicsEngine;
+import com.neuronrobotics.pidsim.PidLab;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -97,6 +99,9 @@ public class PluginManager {
 		}
 		if(BowlerCamDevice.class.isInstance(dev)){
 			deviceSupport.add(BowlerCamController.class);
+		}
+		if(LinearPhysicsEngine.class.isInstance(dev)){
+			deviceSupport.add(PidLab.class);
 		}
 		
 	}
