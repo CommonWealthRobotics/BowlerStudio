@@ -95,7 +95,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		if(!workspace.exists()){
 			workspace.mkdir();
 		}
-		if(loginID == null){
+		if(loginID == null && getCreds().exists()){
 			try {
 				String line;
 				try (
