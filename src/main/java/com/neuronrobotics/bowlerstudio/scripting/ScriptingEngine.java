@@ -42,7 +42,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 
 
-public class ScriptingEngine extends BorderPane{
+public class ScriptingEngine extends BorderPane{// this subclasses boarder pane for the widgets sake, because multiple inheritance is TOO hard for java...
 	/**
 	 * 
 	 */
@@ -69,8 +69,6 @@ public class ScriptingEngine extends BorderPane{
 			"com.neuronrobotics.bowlerstudio.scripting",
 			"com.neuronrobotics.jniloader",
 			"com.neuronrobotics.bowlerstudio.tabs",
-			"org.opencv.core",
-			// "org.opencv.features2d",
 			"javafx.scene.text", "javafx.scene",
 			"com.neuronrobotics.sdk.addons.kinematics",
 			"com.neuronrobotics.sdk.addons.kinematics.math", "java.util",

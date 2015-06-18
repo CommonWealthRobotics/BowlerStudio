@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class GithubLoginDialog extends Stage {
+public class GithubLoginDialog extends Stage implements EventHandler<ActionEvent> {
     private TextField userNameFld;
 	private PasswordField passwordFld;
 
@@ -44,12 +44,9 @@ public class GithubLoginDialog extends Stage {
         gridpane.add(passwordFld, 1, 2);
 
         Button login = new Button("Login");
-        login.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                close();
-            }
-        });
+        login.setOnAction(this);
+        passwordFld.setOnAction(this);
+        
         gridpane.add(login, 1, 3);
         GridPane.setHalignment(login, HPos.RIGHT);
         root.getChildren().add(gridpane);
@@ -61,4 +58,10 @@ public class GithubLoginDialog extends Stage {
     String getPw(){
     	return passwordFld.getText();
     }
+
+	@Override
+	public void handle(ActionEvent event) {
+		// TODO Auto-generated method stub
+		 close();
+	}
 }

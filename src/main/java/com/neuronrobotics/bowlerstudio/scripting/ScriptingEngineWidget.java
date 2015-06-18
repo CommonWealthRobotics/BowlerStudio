@@ -245,6 +245,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
 		history.add("println dyio");
 		history.add("ThreadUtil.wait(10000)");
+		history.add("println 'Hello World Command line'");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
@@ -286,10 +287,6 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	}
 
-	// private String getHTMLFromGist(String gist){
-	// return
-	// "<script src=\"https://gist.github.com/madhephaestus/"+gist+".js\"></script>";
-	// }
 
 	public void addIScriptEventListener(IScriptEventListener l) {
 		if (!listeners.contains(l))
