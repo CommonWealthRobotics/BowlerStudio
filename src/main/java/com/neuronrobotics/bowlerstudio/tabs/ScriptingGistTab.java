@@ -69,6 +69,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	private ScriptingEngineWidget scripting;
     final static SplashScreen splash = SplashScreen.getSplashScreen();
     private Graphics2D splashGraphics;
+    private static boolean firstBoot=true;
 
 	
 	
@@ -253,31 +254,33 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				//ex.printStackTrace();
 			}
 		}
-		//now that the application is totally loaded check for connections to add
-		try {
-			List<String> devs = SerialConnection.getAvailableSerialPorts();
-			if (devs.size() == 0) {
-				return;
-			} else {
-				new Thread() {
-					public void run() {
-						ThreadUtil.wait(750);
-						DeviceManager.addConnection();
-//						for (String d : devs) {
-//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
-//								addConnection(new SerialConnection(d));
-//						}
-					}
-				}.start();
-
-			}
-		} catch (Error 
-				| UsbDisconnectedException | SecurityException  e) {
-			e.printStackTrace();
-		}
+		if(firstBoot){
+			firstBoot=false;
+			//now that the application is totally loaded check for connections to add
+			try {
+				List<String> devs = SerialConnection.getAvailableSerialPorts();
+				if (devs.size() == 0) {
+					return;
+				} else {
+					new Thread() {
+						public void run() {
+							ThreadUtil.wait(750);
+							DeviceManager.addConnection();
+	//						for (String d : devs) {
+	//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
+	//								addConnection(new SerialConnection(d));
+	//						}
+						}
+					}.start();
 	
+				}
+			} catch (Error 
+					| UsbDisconnectedException | SecurityException  e) {
+				e.printStackTrace();
+			}
+		
 
-
+		}
 	}
 	
     public String goBack()
