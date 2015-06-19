@@ -174,4 +174,10 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 		this.maxTorque=pid.getMaxTorque();
 		
 	}
+	
+	@Override
+	public String toString(){
+		return "Torque set= "+torque+" max torque"+maxTorque;
+	}
+	
 }
