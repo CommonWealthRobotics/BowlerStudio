@@ -46,7 +46,7 @@ public class OpenCVJNILoader {
 			if((!NativeResource.is64Bit() && basedir.contains("x64"))){
 				
 				basedir.replace("x64", "x86");
-				System.out.println("OPENCV_DIR environment variable is not set correctly");
+				System.err.println("OPENCV_DIR environment variable is not set correctly");
 			}
 			basedir+="\\..\\..\\java\\";
 			if(basedir.contains("x64")){
