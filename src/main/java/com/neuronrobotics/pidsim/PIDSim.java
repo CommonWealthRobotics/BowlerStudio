@@ -18,9 +18,9 @@ public class PIDSim {
 			0,//ki
 			0);//kd
     
-    public PIDSim() {
+    public PIDSim(LinearPhysicsEngine eng) {
     	graphingPanel = new GraphingPanel(this,constants, "Neuron Robotics PIDSim");
-   
+    	phy=eng;
     }
     
     public double getSetPoint() {

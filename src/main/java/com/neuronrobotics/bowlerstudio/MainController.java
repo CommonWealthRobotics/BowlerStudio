@@ -431,7 +431,7 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectPidSim() {
-		ConnectionManager.addConnection(new LinearPhysicsEngine(),"physics");
+		ConnectionManager.addConnection(new LinearPhysicsEngine(),"engine");
 	}
 	
 

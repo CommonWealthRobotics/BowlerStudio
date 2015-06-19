@@ -128,8 +128,10 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}));
 		urlField = new TextField(Current_URL);
 		webEngine.locationProperty().addListener((ChangeListener<String>) (observable1, oldValue, newValue) ->{
-			urlField.setText(newValue);
-			
+			Platform.runLater(() -> {
+				System.out.println("Navigating to: "+newValue);
+				urlField.setText(newValue);
+			});
 		});
 		
 		//goButton.setDefaultButton(true);

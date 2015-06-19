@@ -160,7 +160,7 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 
 	public PIDSim getPid() {
 		if(pid==null)
-			setPid(new PIDSim());
+			setPid(new PIDSim(this));
 		return pid;
 	}
 
@@ -172,5 +172,6 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 		setMuDynamic(getPid().getDynamicFriction());
 		setTime(System.currentTimeMillis());
 		this.maxTorque=pid.getMaxTorque();
+		
 	}
 }
