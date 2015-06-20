@@ -123,7 +123,7 @@ dependencies {
 			compile files(basedir)
 		else
 			//If you set your OPENCV_DIR environment variable, then we wouldnt have to do hacky things
-			compile files('/Users/hephaestus/Desktop/opencv249build/bin/opencv-249.jar')
+			compile files('/Users/acamilo/Desktop/rdk/opencv249build/bin/opencv-249.jar')
 	}
 	if(isLinux())
 		compile files('/usr/share/java/opencv-249.jar')

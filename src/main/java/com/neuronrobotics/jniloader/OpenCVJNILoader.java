@@ -59,8 +59,9 @@ public class OpenCVJNILoader {
 			if(basedir == null)
 				throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
 				//basedir="/Users/hephaestus/Desktop/opencv249build/";
-			System.err.println("OPENCV_DIR found at "+ basedir);
-			System.load(basedir+"/lib/lib"+Core.NATIVE_LIBRARY_NAME+".dylib");
+			String lib = basedir.trim()+"/lib/lib"+Core.NATIVE_LIBRARY_NAME+".dylib";
+			System.err.println("OPENCV_DIR found at "+ lib);
+			System.load(lib);
 			
 		}
 		
