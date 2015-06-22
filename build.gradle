@@ -127,7 +127,7 @@ dependencies {
 	}
 	if(isLinux()){
 		//compile files('/usr/share/java/opencv-249.jar')
-		compile fileTree (dir: '/usr/share/java/', includes: ['*.jar'])
+		compile fileTree (dir: '/usr/share/java/', includes: ['*opencv-24*.jar'])
 	}
 	
 //	compile group: 'org.bytedeco', name: 'javacv', version: '0.9';
