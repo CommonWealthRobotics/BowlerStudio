@@ -192,12 +192,15 @@ public class PluginManager {
 						break;
 					
 					}
+					RpcCommandPanel panel =new RpcCommandPanel(rpcEnc, dev,rc);
+					SwingNode sn = new SwingNode();
+					
 					Platform.runLater(()->{
 						Stage dialog = new Stage();
+						dialog.setHeight(panel.getHeight());
+						dialog.setWidth(panel.getWidth());
 						dialog.initStyle(StageStyle.UTILITY);
-	
-						SwingNode sn = new SwingNode();
-				        sn.setContent(new RpcCommandPanel(rpcEnc, dev,rc));
+					    sn.setContent(panel);
 						Scene scene = new Scene(new Group(sn));
 						dialog.setScene(scene);
 						dialog.setOnCloseRequest(event -> {

@@ -90,7 +90,6 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		webEngine.setUserAgent("bowlerstudio");
 		if(Url!=null)
 			Current_URL=Url;
-		webEngine.load(Current_URL);
 	    if (splash != null) {
 	    	try{
 	        splashGraphics = splash.createGraphics();
@@ -151,6 +150,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 							if( !processNewTab(urlField.getText())){
 								goBack();
 							}
+						}else{
+							Log.error("State load fault: "+newValue+" object:" +observable);
 						}
 					}
 				});
@@ -163,7 +164,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			webEngine.load("http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+			loadUrl("http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 		});
 
 		// Layout logic
@@ -181,13 +182,24 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			Log.debug("Hitting load");
 			if(processNewTab(urlField.getText())){
 				Log.debug("Loading "+Current_URL);
-				webEngine.load(	Current_URL);
+				loadUrl(	Current_URL);
 			}
 		};
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
+		//Once all components are loaded, load URL
+		
+		loadUrl(Current_URL);
 	}
 	
+	
+	public void loadUrl(String url){
+		Current_URL = url;
+		
+		Platform.runLater(() -> {
+			webEngine.load(url);
+		});
+	}
 
 	
 	private boolean processNewTab(String url){
@@ -254,33 +266,25 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				myTab.setText(scripting.getFileName());
 			}catch(java.lang.NullPointerException ex){
 				// web page contains no gist
-				//ex.printStackTrace();
+				ex.printStackTrace();
 			}
 		}
 		if(firstBoot){
 			firstBoot=false;
 			//now that the application is totally loaded check for connections to add
-			try {
-				List<String> devs = SerialConnection.getAvailableSerialPorts();
-				if (devs.size() == 0) {
-					return;
-				} else {
-					new Thread() {
-						public void run() {
-							ThreadUtil.wait(750);
-							DeviceManager.addConnection();
-	//						for (String d : devs) {
-	//							if(d.contains("DyIO") || d.contains("Bootloader")||d.contains("COM"))
-	//								addConnection(new SerialConnection(d));
-	//						}
-						}
-					}.start();
-	
+
+			new Thread() {
+				public void run() {
+					ThreadUtil.wait(750);
+					List<String> devs = SerialConnection.getAvailableSerialPorts();
+					if (devs.size() == 0) {
+						return;
+					} else {
+						DeviceManager.addConnection();
+					}
 				}
-			} catch (Error 
-					| UsbDisconnectedException | SecurityException  e) {
-				e.printStackTrace();
-			}
+			}.start();
+	
 		
 
 		}
@@ -297,7 +301,9 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
       Platform.runLater(() ->{
     	  try{
     		  history.go(-1);
-    	  }catch(Exception e){}
+    	  }catch(Exception e){
+    		  e.printStackTrace();
+    	  }
       });
       return entryList.get(currentIndex>0?currentIndex-1:currentIndex).getUrl();
     }
@@ -310,7 +316,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 //      Out("currentIndex = "+currentIndex);
 //      Out(entryList.toString().replace("],","]\n"));
 
-      Platform.runLater(() -> history.go(1));
+      Platform.runLater(() -> 
+      history.go(1));
       return entryList.get(currentIndex<entryList.size()-1?currentIndex+1:currentIndex).getUrl();
     }
 	
@@ -323,8 +330,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 
 	@Override
 	public void handle(Event event) {
-		scripting.stop();
-
+		if(scripting!=null)
+			scripting.stop();
 	}
 
 	

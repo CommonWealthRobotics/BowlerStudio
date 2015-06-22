@@ -214,17 +214,16 @@ public class BowlerStudioController extends TabPane implements
 
 	private void addObject(Object o) {
 		if (CSG.class.isInstance(o)) {
+			CSG csg = (CSG) o;
+			MeshView current = csg.getMesh();
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
-				CSG csg = (CSG) o;
-				MeshView current = csg.getMesh();
 				jfx3dmanager.addObject(current);
 			});
 		} else if (Tab.class.isInstance(o)) {
-			Platform.runLater(() -> {
-				// new RuntimeException().printStackTrace();
-				addTab((Tab) o, true);
-			});
+
+			addTab((Tab) o, true);
+
 		} else if (MeshView.class.isInstance(o)) {
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
@@ -400,7 +399,9 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public void setSelectedTab(Tab tab) {
-		getSelectionModel().select(tab);
+		Platform.runLater(() -> {
+			getSelectionModel().select(tab);
+		});
 	}
 
 	public AbstractImageProvider getVrCamera() {

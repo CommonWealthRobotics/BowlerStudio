@@ -468,7 +468,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private static void refreshItemTree(){
 		rootItem.getChildren().clear();
 		for(PluginManager p:plugins){
-			rootItem.getChildren().add(p.getCheckBoxItem());
+			Platform.runLater(() -> rootItem.getChildren().add(p.getCheckBoxItem()));
 		}
 	}
 	

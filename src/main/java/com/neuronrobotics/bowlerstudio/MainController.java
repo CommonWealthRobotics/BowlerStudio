@@ -128,28 +128,38 @@ public class MainController implements Initializable {
 	
 	private static void updateLog(){
 		FxTimer.runLater(
-				Duration.ofMillis(100) ,() -> {
+				Duration.ofMillis(200) ,() -> {
 					if(logViewRef!=null){
-						if(out.size()==0){
-							newString=null;
-						}else{
-							newString = out.toString();
-							out.reset();
-						}
-						if(newString!=null){
-							Platform.runLater(() -> {	
-								String current = logViewRef.getText()+newString;
-								if(current.getBytes().length>sizeOfTextBuffer){
-									current=new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
-									logViewRef.setText(current);
-								}else
-									logViewRef.appendText(newString);
-								FxTimer.runLater(
-										Duration.ofMillis(10) ,() -> {
-											logViewRef.setScrollTop(Double.MAX_VALUE);
-										});
-							});
-						}
+						new Thread(){
+							private String current;
+							private String finalStr;
+
+							public void run(){
+								if(out.size()==0){
+									newString=null;
+								}else{
+									newString = out.toString();
+									out.reset();
+								}
+								if(newString!=null){
+									current = logViewRef.getText()+newString;
+									try{
+										finalStr =new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
+									}catch (StringIndexOutOfBoundsException ex){
+										finalStr =current;
+									}
+									Platform.runLater(() -> {	
+
+										logViewRef.setText(finalStr);
+
+										FxTimer.runLater(
+												Duration.ofMillis(5) ,() -> {
+													logViewRef.setScrollTop(Double.MAX_VALUE);
+												});
+									});
+								}
+							}
+						}.start();
 					}	
 					updateLog();					
 		});
