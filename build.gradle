@@ -125,17 +125,19 @@ dependencies {
 			//If you set your OPENCV_DIR environment variable, then we wouldnt have to do hacky things
 			compile files('/Users/hephaestus/Desktop/opencv249build/bin/opencv-249.jar')
 	}
-	if(isLinux())
-		compile files('/usr/share/java/opencv-249.jar')
+	if(isLinux()){
+		//compile files('/usr/share/java/opencv-249.jar')
+		compile fileTree (dir: '/usr/share/java/', includes: ['*.jar'])
+	}
 	
-	compile group: 'org.bytedeco', name: 'javacv', version: '0.9';
-	compile group: 'org.bytedeco', name: 'javacpp', version: '0.9';
-	 //found at https://github.com/bytedeco/javacv/issues/122
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86";		
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86_64";	
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "macosx-x86_64";	
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86";		
-	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86_64";
+//	compile group: 'org.bytedeco', name: 'javacv', version: '0.9';
+//	compile group: 'org.bytedeco', name: 'javacpp', version: '0.9';
+//	 //found at https://github.com/bytedeco/javacv/issues/122
+//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86";		
+//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86_64";	
+//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "macosx-x86_64";	
+//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86";		
+//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86_64";
 	
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
