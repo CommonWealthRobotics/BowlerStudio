@@ -6,6 +6,7 @@ import groovy.lang.Script;
 
 import org.python.util.PythonInterpreter;
 import org.python.core.*;
+import org.reactfx.util.FxTimer;
 
 import java.awt.Dimension;
 import java.io.BufferedReader;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -565,8 +567,8 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 								.get(fileThatChanged.getAbsolutePath())),
 								"UTF-8"));
 						fileLabel.setTextFill(Color.RED);
-						Platform.runLater(() -> {
-							ThreadUtil.wait(750);
+						FxTimer.runLater(
+								Duration.ofMillis(750) ,() -> {
 							fileLabel.setTextFill(Color.GREEN);
 						});
 					} catch (UnsupportedEncodingException e) {
