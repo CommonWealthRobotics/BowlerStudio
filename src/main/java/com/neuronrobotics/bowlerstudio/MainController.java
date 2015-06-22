@@ -153,7 +153,7 @@ public class MainController implements Initializable {
 										logViewRef.setText(finalStr);
 
 										FxTimer.runLater(
-												Duration.ofMillis(5) ,() -> {
+												Duration.ofMillis(10) ,() -> {
 													logViewRef.setScrollTop(Double.MAX_VALUE);
 												});
 									});

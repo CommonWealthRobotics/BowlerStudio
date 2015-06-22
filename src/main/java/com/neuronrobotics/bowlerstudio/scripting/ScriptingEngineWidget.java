@@ -206,7 +206,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		});
 		cmdLineInterface.setPrefWidth(80*4);
 		cmdLineInterface.addEventFilter( KeyEvent.KEY_PRESSED, event -> {
-			Platform.runLater(() -> {
+			//Platform.runLater(() -> {
 			    if( (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) ) {
 			    	System.err.println("Key pressed "+event.getCode()+" history index = "+historyIndex+" history size= "+history.size());
 			    	if(historyIndex==0){
@@ -239,7 +239,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 			       }
 			       event.consume();
 			    } 
-			});
+			//});
 		});
 		history.add("println dyio");
 		history.add("dyio.setValue(0,1)//sets the value of channel 0 to 1");
@@ -478,18 +478,17 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 			}
 		};
-		Platform.runLater(() -> {
-			try {
-				if (loadGist)
-					loadCodeFromGist(addr, engine);
-				else
-					save();
-				scriptRunner.start();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+
+		try {
+			if (loadGist)
+				loadCodeFromGist(addr, engine);
+			else
+				save();
+			scriptRunner.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
