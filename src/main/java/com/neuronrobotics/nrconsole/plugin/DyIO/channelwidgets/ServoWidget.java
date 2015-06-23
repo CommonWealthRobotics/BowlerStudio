@@ -143,9 +143,7 @@ public class ServoWidget extends ControlWidget implements ChangeListener, Action
 			ex.printStackTrace();
 		}
 		
-		if(sc.getChannel().getDevice().getCachedMode()){
-			sc.getChannel().getDevice().setCachedMode(false);
-		}
+		
 		
 		if(sliderUI.getValue() !=saveValue )
 			save.setEnabled(true);
@@ -154,7 +152,9 @@ public class ServoWidget extends ControlWidget implements ChangeListener, Action
 		
 		if( startup == false ) {
 			sc.SetPosition(sliderUI.getValue(),((float)(speed.getValue()))/1000);
-			//recordValue(sliderUI.getValue());
+			if(sc.getChannel().getCachedMode()){
+				sc.getChannel().flush();
+			}
 		}
 	}
 	
