@@ -113,22 +113,24 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 
 #####Ubuntu Dependancies
 
-   sudo add-apt-repository ppa:webupd8team/java
+    sudo add-apt-repository ppa:webupd8team/java
    
-   sudo apt-get update
+    sudo apt-get update
    
-   sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java libopencv2.4-jni
+    sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java libopencv2.4-jni
    
-   git clone https://github.com/NeuronRobotics/BowlerStudio.git
+#####All Unix  
    
-   cd BowlerStudio
+    git clone https://github.com/NeuronRobotics/BowlerStudio.git
+   
+    cd BowlerStudio
     
     git submodule init
     
     git submodule update
     
     gradle assemble
-        
+    
     java -jar build/libs/BowlerStudio.jar
     
 Now you can use the Eclipse Gradle plugin to import the project.
