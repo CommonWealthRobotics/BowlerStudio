@@ -91,6 +91,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static File lastFile;
 	private static String loginID=null;
 	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
+
+
+	private static String pw;
 	
  	static{
 		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
@@ -155,12 +158,20 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 	
 	public static void login() throws IOException{
-		GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
-        myDialog.sizeToScene();
-        myDialog.showAndWait();
-        loginID = myDialog.getUsername();
+		loginID=null;
+
+		Platform.runLater(() -> {
+			GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
+	        myDialog.sizeToScene();
+	        myDialog.showAndWait();
+	        loginID = myDialog.getUsername();
+	        pw=myDialog.getPw();
+		});
+        while(loginID==null)ThreadUtil.wait(100);
+        
         String content= "login="+loginID+"\n";
-        content+= "password="+myDialog.getPw()+"\n";
+        content+= "password="+pw+"\n";
+        pw=null;
         PrintWriter out = new PrintWriter(getCreds().getAbsoluteFile());
         out.println(content);
         out.flush();
