@@ -91,6 +91,22 @@ Let's go through the main features:
 ### Virtual Sensors
    Coming soon! Soon we will be able to provide virtual sensor devices, simulating real world sensors within the 3d environment. 
 
+# Make A Contribution
+BowlerStudio is an open source project nd is always looking for help with both the application code and the tutorials content. 
+
+### Java Contributions
+
+If you are a Java developme, skip ahead to [The Build Instructions](#command-line). The application is a light plugin framework for UI, 3D and Device interaction. 
+
+### Adding Tutorials
+
+All of the content for BowlerStudio Tutorials is housed on our [Neuronrobotics.github.io](https://github.com/NeuronRobotics/NeuronRobotics.github.io) web page. Fork that repository and make contributions based on the README.md file in the root of the repository. TO merge the changes into the main website, send a pull request with your changes to official repository. 
+
+Examples of tutorials that need to be added are [A simple Java Programming Introduction](https://github.com/NeuronRobotics/NeuronRobotics.github.io/issues/59). This tutorial set would go through the basic syntax of java and what all of the symbols mean and how to use them. 
+
+Another example of a tutorial that could be added is one for [JavaCad Cheatsheet](https://github.com/NeuronRobotics/NeuronRobotics.github.io/issues/58) where you would add a 'cheat sheet' of commands to use in the JavaCad system. 
+
+If a tutorial is missing and not described as needed by an issue, feel free to add additional issues. 
 
 ## How to Build BowlerStudio
 
