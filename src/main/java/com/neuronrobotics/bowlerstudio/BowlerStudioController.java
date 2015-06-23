@@ -101,7 +101,7 @@ public class BowlerStudioController extends TabPane implements
 
 		try {
 			addTab(new ScriptingGistTab(title,
-					getHomeUrl(), tabPane), false);
+					getHomeUrl(), true), false);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,7 +111,7 @@ public class BowlerStudioController extends TabPane implements
 
 	private Tab createTab() throws IOException, InterruptedException {
 		final ScriptingGistTab tab = new ScriptingGistTab(null,
-				 null, null);
+				 null);
 
 		return tab;
 	}

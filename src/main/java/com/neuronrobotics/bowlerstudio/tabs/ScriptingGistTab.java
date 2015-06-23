@@ -10,11 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.usb.UsbDisconnectedException;
+
+import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -54,7 +57,6 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	private String Current_URL = "http://gist.github.com/";
 
 	private ScriptingGistTab myTab;
-	private BowlerStudioController tabPane = null;
 	boolean loaded=false;
 	boolean initialized=false;
 	private WebView webView;
@@ -72,12 +74,17 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
     private Graphics2D splashGraphics;
     private static boolean firstBoot=true;
 
-	
-	
-	public ScriptingGistTab(String title, String Url,BowlerStudioController tabPane) throws IOException, InterruptedException{
+	private boolean isTutorialTab =false;
 
-		this.tabPane = tabPane;
+	public ScriptingGistTab(String title, String Url) throws IOException, InterruptedException{
+		this(title,Url,false);
+	}
+	
+	public ScriptingGistTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
+
+
+		this.isTutorialTab = isTutorialTab;
 		myTab = this;
 
 		if(title==null)
@@ -103,9 +110,11 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    if(!(newValue.intValue()<100)){
 		    	if(!initialized){
 		    		initialized=true;
-		    		
-					finishLoadingComponents();
-		
+		    		new Thread(){
+		    			public void run(){
+		    				finishLoadingComponents();
+		    			}
+	    			}.start();
 		    	}
 		    	loaded=true;
 	
@@ -123,22 +132,27 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 						}
 	    			}
     			}.start();
-
-		    	
+    			System.err.println("Done Loading to: "+webEngine.getLocation());
+    			
 		    }else{
 		    	loaded=false;
 		    	if(splashGraphics!=null && splash.isVisible()){
 		    		BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
 		            splash.update();
 		    	}
+		    	System.err.println("Not Done Loading to: "+webEngine.getLocation());
 		    }
 		}));
 		urlField = new TextField(Current_URL);
-		webEngine.locationProperty().addListener((ChangeListener<String>) (observable1, oldValue, newValue) ->{
-			Platform.runLater(() -> {
-				System.out.println("Navigating to: "+newValue);
-				urlField.setText(newValue);
-			});
+		webEngine.locationProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
+				
+						System.out.println("Navigating to: "+newValue);
+						Platform.runLater(() -> {
+							urlField.setText(newValue);
+						});
+			}
 		});
 		
 		//goButton.setDefaultButton(true);
@@ -154,12 +168,12 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 									? urlField.getText() 
 									: "http://" + urlField.getText();
 									
-							Log.debug("Navagating "+Current_URL);	
+							Log.debug("Loading "+Current_URL);	
 							if( !processNewTab(urlField.getText())){
 								goBack();
 							}
 						}else{
-							Log.error("State load fault: "+newValue+" object:" +observable);
+							//Log.error("State load fault: "+newValue+" object:" +observable);
 						}
 					}
 				});
@@ -196,17 +210,20 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
 		//Once all components are loaded, load URL
+		FxTimer.runLater(
+				Duration.ofMillis(200) ,() -> loadUrl(Current_URL));
 		
-		loadUrl(Current_URL);
+		
+		
 	}
 	
 	
 	public void loadUrl(String url){
-		Current_URL = url;
-		
-		Platform.runLater(() -> {
-			webEngine.load(url);
-		});
+		if(processNewTab(Current_URL)){
+			Platform.runLater(() -> {
+				webEngine.load(url);
+			});
+		}
 	}
 
 	
@@ -214,11 +231,11 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
 				? urlField.getText() 
 				: "http://" + urlField.getText();
-		if(tabPane!=null ){
+		if(isTutorialTab ){
 			if(!(Current_URL.contains("neuronrobotics.com") || Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID()) )){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
-					tabPane.addTab(new ScriptingGistTab(null, Current_URL,null), true);
+					BowlerStudioController.getBowlerStudio().addTab(new ScriptingGistTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -263,13 +280,14 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}
 		try{
 			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
-			vBox.getChildren().add(scripting);
+			Platform.runLater(() -> vBox.getChildren().add(scripting));
+			
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		
 		
-		if(tabPane==null){
+		if(!isTutorialTab){
 			try{
 				myTab.setText(scripting.getFileName());
 			}catch(java.lang.NullPointerException ex){

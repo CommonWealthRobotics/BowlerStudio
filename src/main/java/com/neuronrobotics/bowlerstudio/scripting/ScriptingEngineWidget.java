@@ -337,7 +337,8 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		String[] code = codeFromGistID(currentGist,"");
 		if (code != null) {
 			setCode(code[0]);
-			fileLabel.setText(code[1]);
+			Platform.runLater(() -> fileLabel.setText(code[1]));
+			
 			currentFile = new File(code[1]);
 		}
 
