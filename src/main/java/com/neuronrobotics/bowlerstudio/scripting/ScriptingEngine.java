@@ -34,7 +34,9 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
@@ -201,25 +203,45 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				}
 				
 				if(github==null){
-					Alert alert = new Alert(AlertType.CONFIRMATION);
-					alert.setTitle("GitHub Login Missing");
-					alert.setHeaderText("To use BowlerStudio at full speed login with github");
-					alert.setContentText("What would you like to do?");
-	
-					ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
-					ButtonType buttonTypeTwo = new ButtonType("Login");
-					
-					alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-					
-					Optional<ButtonType> result = alert.showAndWait();
-					if (result.get() == buttonTypeOne){
-						github = GitHub.connectAnonymously();
-					} else  {
-						logout();
-						login();
-					} 
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.CONFIRMATION);
+						alert.setTitle("GitHub Login Missing");
+						alert.setHeaderText("To use BowlerStudio at full speed login with github");
+						alert.setContentText("What would you like to do?");
+		
+						ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
+						ButtonType buttonTypeTwo = new ButtonType("Login");
+						
+						alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+						Optional<ButtonType> result = alert.showAndWait();
+						new Thread(){
+							public void run(){
+								if (result.get() == buttonTypeOne){
+									try {
+										github = GitHub.connectAnonymously();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								} else  {
+									logout();
+									try {
+										login();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								} 
+							}
+						}.start();
+
+					});
+
 				}
 				
+			}
+			while(github==null){
+				ThreadUtil.wait(100);
 			}
 			
 			Log.debug("Loading Gist: " + id);
