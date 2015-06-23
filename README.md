@@ -92,15 +92,15 @@ Let's go through the main features:
    Coming soon! Soon we will be able to provide virtual sensor devices, simulating real world sensors within the 3d environment. 
 
 # Make A Contribution
-BowlerStudio is an open source project nd is always looking for help with both the application code and the tutorials content. 
+BowlerStudio is an open source project and is always looking for help with both the application code and the tutorials content. 
 
 ### Java Contributions
 
-If you are a Java developme, skip ahead to [The Build Instructions](#command-line). The application is a light plugin framework for UI, 3D and Device interaction. 
+If you are a Java developmer, skip ahead to [The Build Instructions](#command-line). The application is a light plugin framework for UI, 3D and Device interaction. You can look at this repository for issues. 
 
 ### Adding Tutorials
 
-All of the content for BowlerStudio Tutorials is housed on our [Neuronrobotics.github.io](https://github.com/NeuronRobotics/NeuronRobotics.github.io) web page. Fork that repository and make contributions based on the README.md file in the root of the repository. TO merge the changes into the main website, send a pull request with your changes to official repository. 
+All of the content for BowlerStudio Tutorials is housed on our [Neuronrobotics.github.io](https://github.com/NeuronRobotics/NeuronRobotics.github.io) web page. Fork that repository and make contributions based on the README.md file in the root of the repository. To merge the changes into the main website, send a pull request with your changes to official repository. 
 
 Examples of tutorials that need to be added are [A simple Java Programming Introduction](https://github.com/NeuronRobotics/NeuronRobotics.github.io/issues/59). This tutorial set would go through the basic syntax of java and what all of the symbols mean and how to use them. 
 
