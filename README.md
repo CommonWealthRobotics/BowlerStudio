@@ -149,10 +149,7 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     
     java -jar build/libs/BowlerStudio.jar
     
-Now you can use the Eclipse Gradle plugin to import the project.
-
-http://marketplace.eclipse.org/content/gradle-integration-eclipse-44
-
+Now you can use the Eclipse Marketplace to install the Gradle Plugin
     
 #### Windows (CMD)
 
