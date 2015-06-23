@@ -211,7 +211,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		goButton.setOnAction(goAction);
 		//Once all components are loaded, load URL
 		FxTimer.runLater(
-				Duration.ofMillis(200) ,() -> loadUrl(Current_URL));
+				Duration.ofMillis(200) ,() -> goAction.handle(null));
 		
 		
 		
