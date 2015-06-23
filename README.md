@@ -110,18 +110,24 @@ by calling the `assemble` task.
 Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerStudio`) and enter the following command:
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
+
+#####Ubuntu Dependancies
+
+   sudo add-apt-repository ppa:webupd8team/java
+   
+   sudo apt-get update
+   
+   sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java libopencv2.4-jni
+   
+   git clone https://github.com/NeuronRobotics/BowlerStudio.git
+   
+   cd BowlerStudio
     
     git submodule init
     
     git submodule update
     
-    cd java-bowler/
-    
-    git pull origin development
-    
-    cd ..
-    
-    bash gradlew assemble
+    gradle assemble
         
     java -jar build/libs/BowlerStudio.jar
     
