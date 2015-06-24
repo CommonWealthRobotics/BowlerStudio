@@ -43,20 +43,20 @@ public class HaarFactory {
 								}
 							}
 						} else {
-//							while (true) {
-//
-//								if (e == null) {
-//									Log.debug("end of jar " + jar);
-//									break;
-//								}
-//								String name = e.getName();
-//								if (name.endsWith(".xml")&& name.startsWith("haar/") ) {
-//									availibleHaar.add(name.split("/")[1]);
-//								} else {
-//									//Log.debug("Rejecting Haar " + name);
-//								}
-//								e = zip.getNextEntry();
-//							}
+							while (true) {
+
+								if (e == null) {
+									Log.debug("end of jar " + jar);
+									break;
+								}
+								String name = e.getName();
+								if (name.endsWith(".xml")&& name.startsWith("haar/") ) {
+									availibleHaar.add(name.split("/")[1]);
+								} else {
+									//Log.debug("Rejecting Haar " + name);
+								}
+								e = zip.getNextEntry();
+							}
 						}
 					} else {
 						/* Fail... */
