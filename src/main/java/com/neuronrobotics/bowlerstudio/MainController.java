@@ -28,6 +28,7 @@ import javax.script.ScriptEngine;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -371,81 +372,54 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectCHDKCamera(ActionEvent event) {
-    	new Thread(){
-    		public void run(){
-
-    			try{
-    				ConnectionManager.addConnection(new CHDKImageProvider(),"cameraCHDK");
-    			}catch (Exception e)
-    			{
-    				e.printStackTrace();
-    			}
-    		}
-    	}.start();
+		Platform.runLater(()->{
+			try {
+				ConnectionManager.addConnection(new CHDKImageProvider(),"cameraCHDK");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 
 
 
 	@FXML public void onConnectCVCamera(ActionEvent event) {
-    	new Thread(){
-    		public void run(){
-
-    			ConnectionManager.onConnectCVCamera();
-    		}
-    	}.start();
+   
+		Platform.runLater(()->ConnectionManager.onConnectCVCamera());
+  
 		
 	}
 
 
 	@FXML public void onConnectJavaCVCamera() {
-    	new Thread(){
-    		public void run(){
 
-    			ConnectionManager.onConnectJavaCVCamera();
-    		}
-    	}.start();
-
+		Platform.runLater(()->ConnectionManager.onConnectJavaCVCamera());
+    
 	}
 
 
 	@FXML public void onConnectFileSourceCamera() {
-    	new Thread(){
-    		public void run(){
+    	Platform.runLater(()->ConnectionManager.onConnectFileSourceCamera());
 
-    			ConnectionManager.onConnectFileSourceCamera();
-    		}
-    	}.start();
 	}
 
 
 	@FXML public void onConnectURLSourceCamera() {
-    	new Thread(){
-    		public void run(){
 
-    			ConnectionManager.onConnectURLSourceCamera();
-    		}
-    	}.start();
+    	Platform.runLater(()->ConnectionManager.onConnectURLSourceCamera());
+
 	}
 
 
 	@FXML public void onConnectHokuyoURG(ActionEvent event) {
-		new Thread(){
-    		public void run(){
-
-    			ConnectionManager.onConnectHokuyoURG();
-    		}
-    	}.start();
+		Platform.runLater(()->ConnectionManager.onConnectHokuyoURG());
 		
 	}
 
 
 	@FXML public void onConnectGamePad(ActionEvent event) {
-    	new Thread(){
-    		public void run(){
-
-    			ConnectionManager.onConnectGamePad();
-    		}
-    	}.start();
+		Platform.runLater(()->ConnectionManager.onConnectGamePad());
 		
 	}
 

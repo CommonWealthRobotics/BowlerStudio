@@ -274,6 +274,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	 public static void onConnectFileSourceCamera() {
+		 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
 		File f = fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage());
