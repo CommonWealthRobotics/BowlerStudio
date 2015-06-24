@@ -108,37 +108,40 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
+		    	System.err.println("Just finished! "+webEngine.getLocation());
 		    	if(!initialized){
 		    		initialized=true;
 		    		new Thread(){
 		    			public void run(){
+							setName("Start finalizing components");
 		    				finishLoadingComponents();
+		    		    	loaded=true;
+		    		    	
+		    	    		if(scripting!=null)
+		    	    			new Thread(){
+		    	    			public void run(){
+		    						setName("Load gist");
+		    	    				try {
+		    							scripting.loadCodeFromGist(Current_URL, webEngine);
+		    						} catch (IOException e) {
+		    							// TODO Auto-generated catch block
+		    							e.printStackTrace();
+		    						} catch (InterruptedException e) {
+		    							// TODO Auto-generated catch block
+		    							e.printStackTrace();
+		    						}
+		    	    			}
+		        			}.start();
+		        			System.err.println("Done Loading to: "+webEngine.getLocation());
 		    			}
 	    			}.start();
 		    	}
-		    	loaded=true;
-	
-	    		if(scripting!=null)
-	    			new Thread(){
-	    			public void run(){
-	    				try {
-							scripting.loadCodeFromGist(Current_URL, webEngine);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	    			}
-    			}.start();
-    			System.err.println("Done Loading to: "+webEngine.getLocation());
     			
 		    }else{
 		    	loaded=false;
 		    	if(splashGraphics!=null && splash.isVisible()){
-		    		BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
-		            splash.update();
+		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
+		            //splash.update();
 		    	}
 		    	System.err.println("Not Done Loading to: "+webEngine.getLocation());
 		    }
@@ -148,7 +151,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			@Override
 			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
 				
-						System.out.println("Navigating to: "+newValue);
+						System.out.println("Location Changed: "+newValue);
 						Platform.runLater(() -> {
 							urlField.setText(newValue);
 						});
@@ -168,7 +171,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 									? urlField.getText() 
 									: "http://" + urlField.getText();
 									
-							Log.debug("Loading "+Current_URL);	
+							Log.debug("Load Worker State Changed "+Current_URL);	
 							if( !processNewTab(urlField.getText())){
 								goBack();
 							}
@@ -219,6 +222,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	
 	public void loadUrl(String url){
+		
 		if(processNewTab(Current_URL)){
 			Platform.runLater(() -> {
 				webEngine.load(url);
@@ -269,14 +273,18 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	
 	private void finishLoadingComponents(){
-
-		if(splashGraphics!=null && splash.isVisible()){
-    		splash.close();
-    		splashGraphics=null;
-    	}
-		if(scripting!=null){
-			//when navagating to a new file, stop the script that is running
-			scripting.stop();
+		System.err.println("Finalizing: "+webEngine.getLocation());
+		try{
+			if(splashGraphics!=null && splash.isVisible()){
+	    		splash.close();
+	    		splashGraphics=null;
+	    	}
+			if(scripting!=null){
+				//when navagating to a new file, stop the script that is running
+				scripting.stop();
+			}
+		}catch(Exception E){
+			E.printStackTrace();
 		}
 		try{
 			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
@@ -301,6 +309,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 
 			new Thread() {
 				public void run() {
+					setName("Get First Connection");
 					ThreadUtil.wait(750);
 					List<String> devs = SerialConnection.getAvailableSerialPorts();
 					if (devs.size() == 0) {
