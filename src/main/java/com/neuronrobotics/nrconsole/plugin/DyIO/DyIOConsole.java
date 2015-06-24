@@ -174,24 +174,23 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		setupDyIO();
 		dyio.setMuteResyncOnModeChange(false);
 		dyio.getBatteryVoltage(true);
-		Platform.runLater(()->{
+		JPanel jp = new JPanel(new MigLayout());
+		jp.add(getDeviceDisplay(), "pos 5 5");
+		jp.add(getDeviceControls(), "pos 560 5");
+		jp.setBorder(BorderFactory.createLoweredBevelBorder());
+		Platform.runLater(() -> {
 			wrapper = new SwingNode();
-			JPanel jp = new JPanel(new MigLayout());
-
-			jp.add(getDeviceDisplay(), "pos 5 5");
-			jp.add(getDeviceControls(), "pos 560 5");
-			jp.setBorder(BorderFactory.createLoweredBevelBorder());
 			wrapper.setContent(jp);
-	        ScrollPane s1 = new ScrollPane();
-		       
-	        s1.setContent(wrapper);
-	        setContent(s1);
+		    ScrollPane s1 = new ScrollPane();
+		    s1.setContent(wrapper);
+		    setContent(s1);
 			setText(pm.getScriptingName()+" Console");
-			
 			onTabReOpening();
 		});
 
 	}
+	
+	
 
 
 	@Override

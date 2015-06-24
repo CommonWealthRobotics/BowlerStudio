@@ -79,15 +79,18 @@ public class BowlerStudioController extends TabPane implements
 
 		try {
 			LocalFileScriptTab t =new LocalFileScriptTab( file);
-			Stage dialog = new Stage();
-			dialog.setOnCloseRequest(t);
-			dialog.setTitle(file.getName());
-			Scene scene = new Scene(t);
-			dialog.setScene(scene);
+			Platform.runLater(() -> {
+				Stage dialog = new Stage();
+				dialog.setOnCloseRequest(t);
+				dialog.setTitle(file.getName());
+				Scene scene = new Scene(t);
+				dialog.setScene(scene);
 
-			setHeight(600);
-			setWidth(800);
-			dialog.show();
+				setHeight(600);
+				setWidth(800);
+				dialog.show();
+			});
+
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

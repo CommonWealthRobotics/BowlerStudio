@@ -325,22 +325,32 @@ public class MainController implements Initializable {
     
     @FXML
     private void onLoadFile(ActionEvent e) {
-    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
-				new GroovyFilter());
+    	new Thread(){
+    		public void run(){
+    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
+    					new GroovyFilter());
 
-        if (openFile == null) {
-            return;
-        }
-        application.createFileTab(openFile);
+    	        if (openFile == null) {
+    	            return;
+    	        }
+    	        application.createFileTab(openFile);
+    		}
+    	}.start();
     }
 
     @FXML
     private void onConnect(ActionEvent e) {
-    	ConnectionManager.addConnection();
+    	new Thread(){
+    		public void run(){
+
+    	    	ConnectionManager.addConnection();
+    		}
+    	}.start();
     }
     
     @FXML
     private void onConnectVirtual(ActionEvent e) {
+    	
     	ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000),"virtual");
     }
 
@@ -361,46 +371,81 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectCHDKCamera(ActionEvent event) {
-		try{
-			ConnectionManager.addConnection(new CHDKImageProvider(),"cameraCHDK");
-		}catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+    	new Thread(){
+    		public void run(){
+
+    			try{
+    				ConnectionManager.addConnection(new CHDKImageProvider(),"cameraCHDK");
+    			}catch (Exception e)
+    			{
+    				e.printStackTrace();
+    			}
+    		}
+    	}.start();
 	}
 
 
 
 	@FXML public void onConnectCVCamera(ActionEvent event) {
-		ConnectionManager.onConnectCVCamera();
+    	new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectCVCamera();
+    		}
+    	}.start();
 		
 	}
 
 
 	@FXML public void onConnectJavaCVCamera() {
-		ConnectionManager.onConnectJavaCVCamera();
+    	new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectJavaCVCamera();
+    		}
+    	}.start();
 
 	}
 
 
 	@FXML public void onConnectFileSourceCamera() {
-		ConnectionManager.onConnectFileSourceCamera();
+    	new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectFileSourceCamera();
+    		}
+    	}.start();
 	}
 
 
 	@FXML public void onConnectURLSourceCamera() {
-		ConnectionManager.onConnectURLSourceCamera();
+    	new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectURLSourceCamera();
+    		}
+    	}.start();
 	}
 
 
 	@FXML public void onConnectHokuyoURG(ActionEvent event) {
-		ConnectionManager.onConnectHokuyoURG();
+		new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectHokuyoURG();
+    		}
+    	}.start();
 		
 	}
 
 
 	@FXML public void onConnectGamePad(ActionEvent event) {
-		ConnectionManager.onConnectGamePad();
+    	new Thread(){
+    		public void run(){
+
+    			ConnectionManager.onConnectGamePad();
+    		}
+    	}.start();
 		
 	}
 
@@ -426,12 +471,17 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onLogin() {
-		try {
-			ScriptingEngineWidget.login();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	new Thread(){
+    		public void run(){
+    			try {
+    				ScriptingEngineWidget.login();
+    			} catch (IOException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+    		}
+    	}.start();
+	
 	}
 
 

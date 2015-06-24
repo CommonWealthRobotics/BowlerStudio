@@ -169,12 +169,22 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		this.type = type;
 
 		runfx.setOnAction(e -> {
-			startStopAction();
+	    	new Thread(){
+	    		public void run(){
+
+	    			startStopAction();
+	    		}
+	    	}.start();
 		});
 		runsave.setOnAction(e -> {
-			if(type!= ScriptingWidgetType.FILE)
-				updateFile();
-			save();
+	    	new Thread(){
+	    		public void run(){
+	    			if(type!= ScriptingWidgetType.FILE)
+	    				updateFile();
+	    			save();
+	    		}
+	    	}.start();
+
 		});
 
 		// String ctrlSave = "CTRL Save";
