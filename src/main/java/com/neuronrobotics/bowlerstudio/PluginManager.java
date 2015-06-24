@@ -193,9 +193,9 @@ public class PluginManager {
 					
 					}
 					RpcCommandPanel panel =new RpcCommandPanel(rpcEnc, dev,rc);
-					SwingNode sn = new SwingNode();
-					
+
 					Platform.runLater(()->{
+						SwingNode sn = new SwingNode();
 						Stage dialog = new Stage();
 						dialog.setHeight(panel.getHeight());
 						dialog.setWidth(panel.getWidth());

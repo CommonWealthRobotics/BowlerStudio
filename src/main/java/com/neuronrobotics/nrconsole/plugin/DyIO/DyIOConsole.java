@@ -102,7 +102,7 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	
 	public void onDyIOEvent(IDyIOEvent e) {
 		if(e.getClass() == DyIOPowerEvent.class){
-			System.out.println("Got power event: "+e);
+			//System.out.println("Got power event: "+e);
 			getDeviceDisplay().setPowerEvent(((DyIOPowerEvent)e));
 			try{
 				for(ChannelManager cm : channels) {
