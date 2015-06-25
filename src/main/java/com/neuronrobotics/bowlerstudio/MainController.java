@@ -120,6 +120,8 @@ public class MainController implements Initializable {
 		}
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			// This is a workaround for #8 and is only relavent on osx
+			// it causes the SwingNodes not to load if not called way ahead of time
 			javafx.scene.text.Font.getFamilies();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
