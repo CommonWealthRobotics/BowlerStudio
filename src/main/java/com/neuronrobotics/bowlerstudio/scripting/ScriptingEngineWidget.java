@@ -408,11 +408,14 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	private void start() {
 
 		running = true;
-		if(type ==ScriptingWidgetType.CMDLINE )
-			runfx.setText("Kill");
-		else
-			runfx.setText("Stop");
-		runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+		Platform.runLater(()->{
+			if(type ==ScriptingWidgetType.CMDLINE )
+				runfx.setText("Kill");
+			else
+				runfx.setText("Stop");
+			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			
+		});
 		scriptRunner = new Thread() {
 
 			public void run() {
