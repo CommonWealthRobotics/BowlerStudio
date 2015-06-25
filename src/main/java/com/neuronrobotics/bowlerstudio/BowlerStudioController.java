@@ -86,8 +86,8 @@ public class BowlerStudioController extends TabPane implements
 				Scene scene = new Scene(t);
 				dialog.setScene(scene);
 
-				setHeight(600);
-				setWidth(800);
+				dialog.setHeight(600);
+				dialog.setWidth(800);
 				dialog.show();
 			});
 

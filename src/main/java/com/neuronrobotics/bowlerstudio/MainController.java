@@ -29,6 +29,10 @@ import javax.script.ScriptEngine;
 
 
 
+import javax.swing.UIManager;
+
+import javax.swing.UnsupportedLookAndFeelException;
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -98,17 +102,6 @@ public class MainController implements Initializable {
 			alert.show();
 			e.printStackTrace();
 		}
-//		try{
-//			// Preload the opencv_objdetect module to work around a known bug.
-//		    Loader.load(opencv_objdetect.class);
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		}
-//		
-
-			
-		
-		
 		if(NativeResource.isLinux()){
 			String [] possibleLocals = new String[]{
 					"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
@@ -124,6 +117,22 @@ public class MainController implements Initializable {
 			basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
 			Slic3r.setExecutableLocation(basedir);
 			
+		}
+		try {
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			javafx.scene.text.Font.getFamilies();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
