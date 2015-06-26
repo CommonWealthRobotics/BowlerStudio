@@ -456,9 +456,12 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			sp.getItems().clear();
 
 			double [] dividers = new double[plugins.size()];
-			 
+			
 			for(int i=0;i<plugins.size();i++){
-				dividers[i] = ((double)i)/((double)plugins.size());
+				if(plugins.size()>1)
+					dividers[i] = ((double)i)/((double)plugins.size()-1) +.1;
+				else
+					dividers[i]=.1;
 				StackPane sp1 = new StackPane();
 				 sp1.getChildren().add(plugins.get(i));
 				 sp.getItems().add(sp1);
