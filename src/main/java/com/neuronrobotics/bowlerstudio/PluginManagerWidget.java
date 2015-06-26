@@ -12,6 +12,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 public class PluginManagerWidget extends HBox {
 	private PluginManager manager;
@@ -39,7 +40,7 @@ public class PluginManagerWidget extends HBox {
 			disconnectAll.setText("Disconnect "+manager.getName());
 		});
 		Platform.runLater(()->deviceName.setText(manager.getName()));
-		
+		setHgrow(tree, Priority.ALWAYS);
 		getChildren().addAll(disconnectAll,deviceName,tree);
 		
 	}
