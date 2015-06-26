@@ -119,18 +119,18 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    				finishLoadingComponents();
 	    				}
 
-	    	    		if(scripting!=null){
-    	    				try {
-    							scripting.loadCodeFromGist(Current_URL, webEngine);
-    						} catch (IOException e) {
-    							// TODO Auto-generated catch block
-    							e.printStackTrace();
-    						} catch (InterruptedException e) {
-    							// TODO Auto-generated catch block
-    							e.printStackTrace();
-    						}
+
+	    				try {
+							scripting.loadCodeFromGist(Current_URL, webEngine);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	    	    			
-	        			}
+	        			
 	        			System.err.println("Done Loading to: "+webEngine.getLocation());
 	    			}
     			}.start();
