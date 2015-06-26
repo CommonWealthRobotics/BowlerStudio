@@ -44,29 +44,33 @@ import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 public class ConnectionManager extends Tab implements IDeviceAddedListener ,EventHandler<ActionEvent> {
 
-	private static AnchorPane rootItem;
+	private static VBox rootItem;
 	private static final ArrayList<PluginManagerWidget> plugins = new ArrayList<PluginManagerWidget>();
 	//private BowlerStudioController bowlerStudioController;
 	String formatStr="%1$-40s %2$-60s  %3$-40s";
 	private static final ConnectionManager connectionManager;
 	private static Button disconnectAll;
 	private static HBox topLine;
+	private static SplitPane sp;
 	static{
 		connectionManager = new ConnectionManager();
 	}
@@ -83,7 +87,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		}
 		setText("My Devices");
 		
-		rootItem = new AnchorPane();
+		rootItem = new VBox(10);
 		
 		
 		topLine = new HBox(20);
@@ -98,6 +102,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		disconnectAll.setDisable(true);
 		topLine.getChildren().addAll(icon,new Text("Connected Devices"),disconnectAll);
 		rootItem.getChildren().add(topLine);
+		 sp = new SplitPane();
+		 sp.setOrientation(Orientation.VERTICAL);
+
+		 rootItem.getChildren().add(sp);
 //		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
 //				getIcon("images/connection-icon.png"
 //				// "images/usb-icon.png"
@@ -445,13 +453,17 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
 			Log.warning("Refreshing Tree size="+plugins.size());
-			rootItem.getChildren().clear();
-			rootItem.getChildren().add(topLine);
-			
-			for(PluginManagerWidget p:plugins){
-				//new RuntimeException().printStackTrace();
-				 rootItem.getChildren().add(p);
+			sp.getItems().clear();
+
+			double [] dividers = new double[plugins.size()];
+			 
+			for(int i=0;i<plugins.size();i++){
+				dividers[i] = ((double)i)/((double)plugins.size());
+				StackPane sp1 = new StackPane();
+				 sp1.getChildren().add(plugins.get(i));
+				 sp.getItems().add(sp1);
 			}
+			sp.setDividerPositions(dividers);
 			if(plugins.size()>0){
 				disconnectAll.setDisable(false);
 			}else{
