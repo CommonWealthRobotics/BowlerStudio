@@ -109,30 +109,32 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	System.err.println("Just finished! "+webEngine.getLocation());
-		    	if(!initialized){
-		    		initialized=true;
-		    		new Thread(){
-		    			public void run(){
+		    	
+	    		new Thread(){
+	    			public void run(){
+	    				if(!initialized){
+	    		    		initialized=true;
+	    		    		loaded=true;
 							setName("Start finalizing components");
 		    				finishLoadingComponents();
-		    		    	loaded=true;
-		    		    	
-		    	    		if(scripting!=null){
-	    	    				try {
-	    							scripting.loadCodeFromGist(Current_URL, webEngine);
-	    						} catch (IOException e) {
-	    							// TODO Auto-generated catch block
-	    							e.printStackTrace();
-	    						} catch (InterruptedException e) {
-	    							// TODO Auto-generated catch block
-	    							e.printStackTrace();
-	    						}
-		    	    			
-		        			}
-		        			System.err.println("Done Loading to: "+webEngine.getLocation());
-		    			}
-	    			}.start();
-		    	}
+	    				}
+
+	    	    		if(scripting!=null){
+    	    				try {
+    							scripting.loadCodeFromGist(Current_URL, webEngine);
+    						} catch (IOException e) {
+    							// TODO Auto-generated catch block
+    							e.printStackTrace();
+    						} catch (InterruptedException e) {
+    							// TODO Auto-generated catch block
+    							e.printStackTrace();
+    						}
+	    	    			
+	        			}
+	        			System.err.println("Done Loading to: "+webEngine.getLocation());
+	    			}
+    			}.start();
+		    	
     			
 		    }else{
 		    	loaded=false;
