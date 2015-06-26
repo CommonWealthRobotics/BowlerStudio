@@ -455,18 +455,17 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			Log.warning("Refreshing Tree size="+plugins.size());
 			sp.getItems().clear();
 
-			double [] dividers = new double[plugins.size()];
+			double [] dividers = new double[plugins.size()-1];
 			
 			for(int i=0;i<plugins.size();i++){
-				if(plugins.size()>1)
-					dividers[i] = ((double)i)/((double)plugins.size()-1) +.1;
-				else
-					dividers[i]=.1;
+				if(plugins.size()>1 && i>0)
+					dividers[i-1] = ((double)i)/((double)plugins.size()-1) +.1;
 				StackPane sp1 = new StackPane();
 				 sp1.getChildren().add(plugins.get(i));
 				 sp.getItems().add(sp1);
 			}
-			sp.setDividerPositions(dividers);
+			if(plugins.size()>1)
+				sp.setDividerPositions(dividers);
 			if(plugins.size()>0){
 				disconnectAll.setDisable(false);
 			}else{

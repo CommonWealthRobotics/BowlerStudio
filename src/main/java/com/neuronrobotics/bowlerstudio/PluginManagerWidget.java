@@ -5,6 +5,7 @@ import com.neuronrobotics.sdk.common.DeviceManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -21,7 +22,9 @@ public class PluginManagerWidget extends HBox {
 	private Button disconnectAll;
 
 	public PluginManagerWidget(PluginManager manager, Node graphic){
-		super(20);
+
+		setSpacing(20);
+		setPadding(new Insets(0, 20, 10, 20)); 
 		this.setManager(manager);
 		rootItem = new TreeItem<String>(manager.getDevice().getClass().getSimpleName(), graphic);
 		TreeView<String> tree = new TreeView<String>(rootItem);
@@ -35,6 +38,7 @@ public class PluginManagerWidget extends HBox {
 		    	DeviceManager.remove(getManager().getDevice());
 		    }
 		});
+		
 		deviceName.setOnAction(event -> {
 			getManager().setName(deviceName.getText());
 			disconnectAll.setText("Disconnect "+manager.getName());
