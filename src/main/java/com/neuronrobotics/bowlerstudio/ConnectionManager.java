@@ -454,7 +454,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				Duration.ofMillis(100) ,() -> {
 			Log.warning("Refreshing Tree size="+plugins.size());
 			sp.getItems().clear();
-
+			if(plugins.size()==0)
+				return;
 			double [] dividers = new double[plugins.size()-1];
 			
 			for(int i=0;i<plugins.size();i++){
