@@ -32,12 +32,14 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.cartesian.AdvancedKinematicsController;
+import com.neuronrobotics.nrconsole.plugin.cartesian.DHKinematicsLab;
 import com.neuronrobotics.nrconsole.plugin.cartesian.JogKinematicsDevice;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -101,7 +103,9 @@ public class PluginManager {
 		if(LinearPhysicsEngine.class.isInstance(dev)){
 			deviceSupport.add(PidLab.class);
 		}
-		
+		if(DHParameterKinematics.class.isInstance(dev)){
+			deviceSupport.add(DHKinematicsLab.class);
+		}
 	}
 	
 	
