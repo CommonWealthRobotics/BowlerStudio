@@ -1,5 +1,7 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
+import java.text.DecimalFormat;
+
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -22,10 +24,11 @@ public class DHLinkWidget extends Group{
 		AbstractLink abstractLink  = device.getAbstractLink(linkIndex);
 		
 		
-		TextField delta = new TextField(""+dhLink.getDelta());
+		TextField delta = new TextField(getFormatted(dhLink.getDelta()));
 		delta.setOnAction(event -> {
 			dhLink.setDelta(Double.parseDouble(delta.getText()));
 			device.getCurrentTaskSpaceTransform();
+			Log.debug("Setting the setpoint on #"+linkIndex+" to "+delta.getText());
 		});
 		
 		Slider theta = new Slider();
@@ -37,23 +40,23 @@ public class DHLinkWidget extends Group{
 		theta.setMajorTickUnit(50);
 		theta.setMinorTickCount(5);
 		theta.setBlockIncrement(10);
-		theta.setSnapToTicks(true);
-		final Label thetaValue = new Label(
-		        Double.toString(theta.getValue()));
+		//theta.setSnapToTicks(true);
+		final Label thetaValue = new Label(getFormatted(theta.getValue()));
 		theta.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                     Number old_val, Number new_val) {
             		dhLink.setTheta(Math.toRadians(new_val.doubleValue()));
             		device.getCurrentTaskSpaceTransform();
 
-            		thetaValue.setText(Double.toString(theta.getValue()));
+            		thetaValue.setText(getFormatted(new_val.doubleValue()));
                 }
         });
 		
-		TextField radius = new TextField(""+dhLink.getRadius());
+		TextField radius = new TextField(getFormatted(dhLink.getRadius()));
 		radius.setOnAction(event -> {
 			dhLink.setRadius(Double.parseDouble(radius.getText()));
 			device.getCurrentTaskSpaceTransform();
+			Log.debug("Setting the setpoint on #"+linkIndex+" to "+radius.getText());
 		});
 		
 		Slider Alpha = new Slider();
@@ -65,15 +68,14 @@ public class DHLinkWidget extends Group{
 		Alpha.setMajorTickUnit(50);
 		Alpha.setMinorTickCount(5);
 		Alpha.setBlockIncrement(10);
-		Alpha.setSnapToTicks(true);
-		final Label AlphaValue = new Label(
-		        Double.toString(Alpha.getValue()));
+		//Alpha.setSnapToTicks(true);
+		final Label AlphaValue = new Label(getFormatted(Alpha.getValue()));
 		Alpha.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                     Number old_val, Number new_val) {
             		dhLink.setAlpha(Math.toRadians(new_val.doubleValue()));
             		device.getCurrentTaskSpaceTransform();
-            		AlphaValue.setText(Double.toString(Alpha.getValue()));
+            		AlphaValue.setText(getFormatted(new_val.doubleValue()));
                 }
         });
 		
@@ -88,12 +90,11 @@ public class DHLinkWidget extends Group{
 		setpoint.setValue(0);
 		setpoint.setShowTickLabels(true);
 		setpoint.setShowTickMarks(true);
-		setpoint.setSnapToTicks(true);
+		//setpoint.setSnapToTicks(true);
 		setpoint.setMajorTickUnit(50);
 		setpoint.setMinorTickCount(5);
 		setpoint.setBlockIncrement(10);
-		final Label setpointValue = new Label(
-		        Double.toString(setpoint.getValue()));
+		final Label setpointValue = new Label(getFormatted(setpoint.getValue()));
 		setpoint.valueProperty().addListener(new ChangeListener<Number>() {
 
             public void changed(ObservableValue<? extends Number> ov,
@@ -102,7 +103,7 @@ public class DHLinkWidget extends Group{
             			
         				device.setDesiredJointAxisValue(linkIndex, new_val.doubleValue(), 0);
         				Log.debug("Setting the setpoint on #"+linkIndex+" to "+new_val);
-        				setpointValue.setText(Double.toString(setpoint.getValue()));
+        				setpointValue.setText(getFormatted(new_val.doubleValue()));
         			} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -129,5 +130,9 @@ public class DHLinkWidget extends Group{
 									Alpha,AlphaValue
 									);
 		getChildren().add(panel);
+	}
+	
+	private String getFormatted(double value){
+	    return String.format("%4.3f%n", (double)value);
 	}
 }

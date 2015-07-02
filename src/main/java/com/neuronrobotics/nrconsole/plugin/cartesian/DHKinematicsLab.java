@@ -6,14 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+
 import sun.security.action.GetLongAction;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -49,7 +52,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 					File last = FileSelectionFactory.GetFile(currentFile==null?
 										ScriptingEngine.getWorkspace():
 										new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-							new GroovyFilter());
+							new XmlFilter());
 					if (last != null) {
 						try {
 							Files.write(Paths.get(last.getAbsolutePath()),device.getXml().getBytes() );
