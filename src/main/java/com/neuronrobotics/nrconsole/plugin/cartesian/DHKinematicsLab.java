@@ -45,6 +45,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		device=(DHParameterKinematics)pm;
 		Log.debug("Loading xml: "+device.getXml());
 		VBox links = new VBox(20);
+		links.getChildren().add(new JogWidget(device));
 		Button save = new Button("Save Configuration");
 		save.setOnAction(event -> {
 			new Thread(){
