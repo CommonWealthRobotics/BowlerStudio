@@ -295,12 +295,16 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		
 		
 		if(!isTutorialTab){
-			try{
-				myTab.setText(scripting.getFileName());
-			}catch(java.lang.NullPointerException ex){
-				// web page contains no gist
-				ex.printStackTrace();
-			}
+			Platform.runLater(()->{
+				try{
+					
+					myTab.setText(scripting.getFileName());
+				}catch(java.lang.NullPointerException ex){
+					// web page contains no gist
+					ex.printStackTrace();
+					myTab.setText("Web");
+				}
+			});
 		}
 		if(firstBoot){
 			firstBoot=false;
@@ -309,7 +313,6 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			new Thread() {
 				public void run() {
 					setName("Get First Connection");
-					ThreadUtil.wait(750);
 					List<String> devs = SerialConnection.getAvailableSerialPorts();
 					if (devs.size() == 0) {
 						return;

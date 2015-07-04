@@ -613,7 +613,10 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	}
 
 	public String getFileName() {
-		return currentFile.getName();
+		if(currentFile!=null)
+			return currentFile.getName();
+		else
+			return "Web";
 	}
 
 

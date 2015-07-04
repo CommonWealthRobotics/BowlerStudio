@@ -183,6 +183,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 
 	public static void logout(){
+		new RuntimeException("Logout callsed").printStackTrace();
 		if(getCreds()!= null)
 		try {
 			Files.delete(getCreds().toPath());
@@ -259,7 +260,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			try{
 				gist = github.getGist(id);
 			}catch(IOException ex){
-				logout();
+				//ex.printStackTrace();
 				
 				return null;
 			}

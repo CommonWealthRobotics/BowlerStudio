@@ -85,15 +85,7 @@ public class BowlerStudio extends Application {
     		}
     	}
     }
-    
-//	public static void renderSplashFrame(Graphics2D g, int frame) {
-//        final String[] comps = {"OpenCV", "JavaCad", "BowlerEngine"};
-//        //g.setComposite(AlphaComposite.Clear);
-//        g.fillRect(120,140,200,40);
-//        g.setPaintMode();
-//        g.setColor(Color.RED);
-//        g.drawString("Loading "+comps[(frame/5)%comps.length]+"...", 120, 150);
-//    }
+   
 
     @Override
     public void start(Stage primaryStage) throws Exception {
