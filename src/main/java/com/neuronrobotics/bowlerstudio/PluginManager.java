@@ -15,6 +15,7 @@ import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -69,29 +70,29 @@ public class PluginManager {
 	// tabs list for objects of that type
 	static{
 		//DyIO
-		deviceSupport.add(new DeviceSupportPluginMap(DyIO.class, DyIOConsole.class));
-		deviceSupport.add(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
-		deviceSupport.add(new DeviceSupportPluginMap(DyIO.class, HexapodController.class));
+		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOConsole.class));
+		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
+		addPlugin(new DeviceSupportPluginMap(DyIO.class, HexapodController.class));
 		//Ipid
-		deviceSupport.add(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
+		addPlugin(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
 		// Image s
-		deviceSupport.add(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
-		deviceSupport.add(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
 		// Bootloader
-		deviceSupport.add(new DeviceSupportPluginMap(NRBootLoader.class, BootloaderPanel.class));
+		addPlugin(new DeviceSupportPluginMap(NRBootLoader.class, BootloaderPanel.class));
 		//BowlerBoard Specific
-		//deviceSupport.add(new DeviceSupportPlugginMap(BowlerBoardDevice.class, //none yet));
+		//addPlugin(new DeviceSupportPlugginMap(BowlerBoardDevice.class, //none yet));
 		//AbstractKinematicsNR
-		deviceSupport.add(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
-		deviceSupport.add(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
 		//NRPrinter
-		deviceSupport.add(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
+		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
 		//Bowler Cam
-		deviceSupport.add(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
+		addPlugin(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
 		//LinearPhysicsEngine
-		deviceSupport.add(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
+		addPlugin(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
 		//LinearPhysicsEngine
-		deviceSupport.add(new DeviceSupportPluginMap(DHParameterKinematics.class, DHKinematicsLab.class));
+		addPlugin(new DeviceSupportPluginMap(DHParameterKinematics.class, DHKinematicsLab.class));
 	}
 	
 	public PluginManager(BowlerAbstractDevice dev){
@@ -101,9 +102,14 @@ public class PluginManager {
 	}
 	
 	public static void addPlugin(DeviceSupportPluginMap newMap){
-		if(!newMap.isFactoryProvided()){
-			throw new RuntimeException("To add a plugin at runtime, the plugin factory must be provided: ");
+
+		for(int i=0;i<deviceSupport.size();i++){
+			if(		deviceSupport.get(i).getDevice() == newMap.getDevice() && 
+					deviceSupport.get(i).getPlugin() == newMap.getPlugin() ){
+				System.out.println("Removing duplicate plugin: "+deviceSupport.remove(i));
+			}
 		}
+		Log.debug("Adding Plugin "+newMap);
 		deviceSupport.add(newMap);
 	}
 	
@@ -141,10 +147,24 @@ public class PluginManager {
 
 	public void setTree(TreeItem<String> item) {
 
+
+
+	
+	}
+
+	
+	public BowlerStudioController getBowlerStudioController() {
+		return BowlerStudioController.getBowlerStudio();
+	}
+	
+	public Node getBowlerBrowser(){
+
+		CheckBoxTreeItem<String> rpc = new CheckBoxTreeItem<String> ("Bowler RPC"); 
+		TreeView<String> treeView =new  TreeView<String>(rpc);
+		treeView.setCellFactory(CheckBoxTreeCell.forTreeView());
+		
 		if(dev.getConnection()!=null){
-			TreeItem<String> rpc = new TreeItem<String> ("Bowler RPC"); 
-			rpc.setExpanded(false);
-			item.getChildren().add(rpc);
+			rpc.setExpanded(true);
 			ArrayList<String> nameSpaceList = dev.getNamespaces();
 			for(String namespace:nameSpaceList){
 				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<String> (namespace); 
@@ -209,17 +229,8 @@ public class PluginManager {
 				}
 			}
 		}
-
-	
-	}
-
-	
-	public BowlerStudioController getBowlerStudioController() {
-		return BowlerStudioController.getBowlerStudio();
-	}
-	
-	public Node getBowlerBwowser(){
-		return null;
+		
+		return treeView;
 		
 	}
 
@@ -285,9 +296,9 @@ public class PluginManager {
 			}
 		}
 		
-		plugins.add(new TitledPane("Device Type", new Text(dev.getClass().getSimpleName())));
+		plugins.add(new TitledPane("Device Info", new Text(dev.getClass().getSimpleName())));
 		if(dev.getConnection()!=null)
-			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBwowser()));
+			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBrowser()));
 		plugins.add(new TitledPane("Plugins",  pluginLauncher));
 		return plugins;
 	}

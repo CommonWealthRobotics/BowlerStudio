@@ -30,8 +30,8 @@ import javax.script.ScriptEngine;
 
 
 import javax.swing.UIManager;
-
 import javax.swing.UnsupportedLookAndFeelException;
+
 
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
@@ -65,12 +65,14 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
+import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
+import com.neuronrobotics.sdk.dyio.DyIO;
 /**
  * FXML Controller class
  *

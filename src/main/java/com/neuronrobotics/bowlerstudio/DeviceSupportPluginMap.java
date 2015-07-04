@@ -48,6 +48,12 @@ public class DeviceSupportPluginMap implements PluginFactory{
 		else
 			throw new RuntimeException("Plugins must subclass AbstractBowlerStudioTab");
 	}
+	
+	@Override
+	public String toString(){
+		return "Device: "+device.getCanonicalName()+" Plugin: "+plugin.getCanonicalName();
+	}
+	
 	@Override
 	public AbstractBowlerStudioTab generateNewPlugin() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if(factory!=null)
