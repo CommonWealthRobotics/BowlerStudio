@@ -46,12 +46,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -70,7 +72,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private static final ConnectionManager connectionManager;
 	private static Button disconnectAll;
 	private static HBox topLine;
-	private static SplitPane sp;
+	final static Accordion accordion = new Accordion (); 
 	static{
 		connectionManager = new ConnectionManager();
 	}
@@ -102,10 +104,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		disconnectAll.setDisable(true);
 		topLine.getChildren().addAll(icon,new Text("Connected Devices"),disconnectAll);
 		rootItem.getChildren().add(topLine);
-		 sp = new SplitPane();
-		 sp.setOrientation(Orientation.VERTICAL);
 
-		 rootItem.getChildren().add(sp);
+		 rootItem.getChildren().add(accordion);
 //		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
 //				getIcon("images/connection-icon.png"
 //				// "images/usb-icon.png"
@@ -453,22 +453,21 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
 			Log.warning("Refreshing Tree size="+plugins.size());
-			sp.getItems().clear();
+			accordion.getPanes().clear();
 			if(plugins.size()==0)
 				return;
-			double [] dividers = new double[plugins.size()-1];
-			
+			TitledPane last=null;
 			for(int i=0;i<plugins.size();i++){
-				if(plugins.size()>1 && i>0)
-					dividers[i-1] = ((double)i)/((double)plugins.size()-1) +.1;
-				StackPane sp1 = new StackPane();
-				 sp1.getChildren().add(plugins.get(i));
-				 sp.getItems().add(sp1);
+
+				 TitledPane  sp1 = new TitledPane(plugins.get(i).getManager().getName(),plugins.get(i)); 
+				 last=sp1;
+				 accordion.getPanes().add(sp1);
 			}
-			if(plugins.size()>1)
-				sp.setDividerPositions(dividers);
+			
+
 			if(plugins.size()>0){
 				disconnectAll.setDisable(false);
+				accordion.setExpandedPane(last);
 			}else{
 				disconnectAll.setDisable(true);
 			}
