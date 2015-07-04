@@ -458,10 +458,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				return;
 			TitledPane last=null;
 			for(int i=0;i<plugins.size();i++){
-
-				 TitledPane  sp1 = new TitledPane(plugins.get(i).getManager().getName(),plugins.get(i)); 
-				 last=sp1;
-				 accordion.getPanes().add(sp1);
+				 last=plugins.get(i);
+				 accordion.getPanes().add(last);
 			}
 			
 

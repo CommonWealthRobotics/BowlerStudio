@@ -19,18 +19,16 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-public class PluginManagerWidget extends HBox {
+public class PluginManagerWidget extends TitledPane {
 	private PluginManager manager;
 	private TextField deviceName = new TextField();
 	private Button disconnectAll;
 	final Accordion accordion = new Accordion (); 
 
 	public PluginManagerWidget(PluginManager manager, Node graphic){
+		HBox content = new HBox(20);
 
-		setSpacing(20);
-		
-		
-		setPadding(new Insets(0, 20, 10, 20)); 
+		content.setPadding(new Insets(0, 20, 10, 20)); 
 		this.setManager(manager);
 		ArrayList<TitledPane> plugins = manager.getPlugins();
 		accordion.getPanes().addAll(plugins);
@@ -43,12 +41,14 @@ public class PluginManagerWidget extends HBox {
 		});
 		deviceName.setOnAction(event -> {
 			getManager().setName(deviceName.getText());
+			setText("Scripting name: "+manager.getName());
 			disconnectAll.setText("Disconnect "+manager.getName());
 		});
 		Platform.runLater(()->deviceName.setText(manager.getName()));
-		setHgrow(accordion, Priority.ALWAYS);
-		getChildren().addAll(graphic,disconnectAll,deviceName,accordion);
-		
+		content.setHgrow(accordion, Priority.ALWAYS);
+		content.getChildren().addAll(graphic,disconnectAll,deviceName,accordion);
+		setContent(content);
+		setText("Scripting name: "+manager.getName());
 	}
 
 	public PluginManager getManager() {

@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 public class DeviceSupportPluginMap implements PluginFactory{
 	
@@ -31,7 +32,7 @@ public class DeviceSupportPluginMap implements PluginFactory{
 	}
 	
 	private void setDevice(Class<?> device) {
-		if(device.isInstance(BowlerAbstractDevice.class) )
+		if(BowlerAbstractDevice.class.isAssignableFrom(device) || IPidControlNamespace.class.isAssignableFrom(device) )
 			this.device = device;
 		else
 			throw new RuntimeException("Devices must subclass BowlerAbstractDevice or NonBowlerDevice");
@@ -42,7 +43,7 @@ public class DeviceSupportPluginMap implements PluginFactory{
 	}
 
 	private void setPlugin(Class<?> plugin) {
-		if(plugin.isInstance(AbstractBowlerStudioTab.class) )
+		if(AbstractBowlerStudioTab.class.isAssignableFrom(plugin) )
 			this.plugin = plugin;
 		else
 			throw new RuntimeException("Plugins must subclass AbstractBowlerStudioTab");

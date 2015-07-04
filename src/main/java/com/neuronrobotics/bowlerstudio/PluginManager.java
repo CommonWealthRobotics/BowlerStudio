@@ -7,14 +7,18 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -205,22 +209,35 @@ public class PluginManager {
 				}
 			}
 		}
-		TreeItem<String> plugins = new TreeItem<String> ("Plugins"); 
-		plugins.setExpanded(true);
-		//plugins.setSelected(true);
-		item.getChildren().add(plugins);
+
+	
+	}
+
+	
+	public BowlerStudioController getBowlerStudioController() {
+		return BowlerStudioController.getBowlerStudio();
+	}
+	
+	public Node getBowlerBwowser(){
+		return null;
+		
+	}
+
+	public ArrayList<TitledPane> getPlugins() {
+		ArrayList<TitledPane> plugins = new ArrayList<TitledPane>();
+		
+		VBox pluginLauncher = new VBox(20);
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getPlugin().getSimpleName());
-				p.setSelected(false);
+				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName());
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOConsole.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
-							p.setSelected(true);
+							//launcher.setDisable(true);
 							getBowlerStudioController().addTab(generateTab(c), true);
 						}
 					}else{
@@ -232,31 +249,28 @@ public class PluginManager {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				p.selectedProperty().addListener(b ->{
+				launcher.setOnAction(b ->{
 					
 					new Thread(){
 						public void run(){
 							try {
 								AbstractBowlerStudioTab t = generateTab(c);
-								if(p.isSelected()){
-									// allow the threads to finish before adding
-									//ThreadUtil.wait(50);
-									getBowlerStudioController().addTab(t, true);
-									t.setOnCloseRequest(arg0 -> {
-										System.out.println("Closing "+t.getText());
-										t.onTabClosing();
-										p.setSelected(false);
-									});
-									
-									System.out.println("Launching "+c.getPlugin().getSimpleName());
-					        	}else{
-					        		try{
-					        			System.out.println("Closing "+c.getPlugin().getSimpleName());
-					        			t.requestClose();
-					        		}catch (NullPointerException ex){
-					        			ex.printStackTrace();
-					        		};// tab is already closed
-					        	}
+
+								// allow the threads to finish before adding
+								//ThreadUtil.wait(50);
+								getBowlerStudioController().addTab(t, true);
+								
+								t.setOnCloseRequest(arg0 -> {
+									System.out.println("PM is Closing "+t.getText());
+									t.onTabClosing();
+									Platform.runLater(()->launcher.setDisable(false));
+								});
+								Platform.runLater(()->{
+									launcher.setDisable(true);
+								});
+								
+								System.out.println("Launching "+c.getPlugin().getSimpleName());
+					        	
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -267,20 +281,15 @@ public class PluginManager {
 		        	
 		        });
 					
-				plugins.getChildren().add(p);
+				pluginLauncher.getChildren().add(launcher);
 			}
 		}
-	
-	}
-
-	
-	public BowlerStudioController getBowlerStudioController() {
-		return BowlerStudioController.getBowlerStudio();
-	}
-
-	public ArrayList<TitledPane> getPlugins() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		plugins.add(new TitledPane("Device Type", new Text(dev.getClass().getSimpleName())));
+		if(dev.getConnection()!=null)
+			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBwowser()));
+		plugins.add(new TitledPane("Plugins",  pluginLauncher));
+		return plugins;
 	}
 
 }
