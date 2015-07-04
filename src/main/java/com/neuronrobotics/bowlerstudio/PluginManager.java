@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseEvent;
@@ -58,54 +59,47 @@ public class PluginManager {
 	private BowlerAbstractDevice dev;
 	private TreeItem<String> item;
 	
-	private ArrayList<Class> deviceSupport = new ArrayList<Class>();
+	private static ArrayList<DeviceSupportPlugginMap> deviceSupport = new ArrayList<DeviceSupportPlugginMap>();
 	ArrayList<AbstractBowlerStudioTab> liveTabs = new ArrayList<>();
+	
+	// add tabs to the support list based on thier class
+	// adding additional classes here will show up in the default 
+	// tabs list for objects of that type
+	static{
+		//DyIO
+		deviceSupport.add(new DeviceSupportPlugginMap(DyIO.class, DyIOConsole.class));
+		deviceSupport.add(new DeviceSupportPlugginMap(DyIO.class, AnamationSequencer.class));
+		deviceSupport.add(new DeviceSupportPlugginMap(DyIO.class, HexapodController.class));
+		//Ipid
+		deviceSupport.add(new DeviceSupportPlugginMap(IPidControlNamespace.class, PIDControl.class));
+		// Image s
+		deviceSupport.add(new DeviceSupportPlugginMap(AbstractImageProvider.class, CameraTab.class));
+		deviceSupport.add(new DeviceSupportPlugginMap(AbstractImageProvider.class, SalientTab.class));
+		// Bootloader
+		deviceSupport.add(new DeviceSupportPlugginMap(NRBootLoader.class, BootloaderPanel.class));
+		//BowlerBoard Specific
+		//deviceSupport.add(new DeviceSupportPlugginMap(BowlerBoardDevice.class, //none yet));
+		//AbstractKinematicsNR
+		deviceSupport.add(new DeviceSupportPlugginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
+		deviceSupport.add(new DeviceSupportPlugginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
+		//NRPrinter
+		deviceSupport.add(new DeviceSupportPlugginMap(NRPrinter.class, PrinterConiguration.class));
+		//Bowler Cam
+		deviceSupport.add(new DeviceSupportPlugginMap(BowlerCamDevice.class, BowlerCamController.class));
+		//LinearPhysicsEngine
+		deviceSupport.add(new DeviceSupportPlugginMap(LinearPhysicsEngine.class, PidLab.class));
+		//LinearPhysicsEngine
+		deviceSupport.add(new DeviceSupportPlugginMap(DHParameterKinematics.class, DHKinematicsLab.class));
+	}
+	
 	public PluginManager(BowlerAbstractDevice dev){
 		this.dev = dev;
 		if(!dev.isAvailable())
 			throw new RuntimeException("Device is not reporting availible "+dev.getClass().getSimpleName());
+	}
+	
+	public void addPlugin(DeviceSupportPlugginMap newMap){
 		
-		// add tabs to the support list based on thier class
-		// adding additional classes here will show up in the default 
-		// tabs list for objects of that type
-		if(DyIO.class.isInstance(dev)){
-			deviceSupport.add(DyIOConsole.class);
-			deviceSupport.add(AnamationSequencer.class);
-			deviceSupport.add(HexapodController.class);
-		}
-		//any device that implements this interface
-		if(IPidControlNamespace.class.isInstance(dev)){
-			deviceSupport.add(PIDControl.class);
-		}
-		
-		if(AbstractImageProvider.class.isInstance(dev)){
-			deviceSupport.add(CameraTab.class);
-			deviceSupport.add(SalientTab.class);
-		}
-		
-		if(NRBootLoader.class.isInstance(dev)){
-			deviceSupport.add(BootloaderPanel.class);
-		}
-		
-		if(BowlerBoardDevice.class.isInstance(dev)){
-			
-		}
-		if(AbstractKinematicsNR.class.isInstance(dev)){
-			deviceSupport.add(JogKinematicsDevice.class);
-			deviceSupport.add(AdvancedKinematicsController.class);
-		}
-		if(NRPrinter.class.isInstance(dev)){
-			deviceSupport.add(PrinterConiguration.class);
-		}
-		if(BowlerCamDevice.class.isInstance(dev)){
-			deviceSupport.add(BowlerCamController.class);
-		}
-		if(LinearPhysicsEngine.class.isInstance(dev)){
-			deviceSupport.add(PidLab.class);
-		}
-		if(DHParameterKinematics.class.isInstance(dev)){
-			deviceSupport.add(DHKinematicsLab.class);
-		}
 	}
 	
 	
@@ -132,23 +126,16 @@ public class PluginManager {
 				return t;
 			}
 		}
-		AbstractBowlerStudioTab t =(AbstractBowlerStudioTab) Class.forName(
-					c.getName()
-				).cast(c.newInstance()// This is where the new tab allocation is called
-						)
-				;
+		AbstractBowlerStudioTab t=null;
+		for(int i=0;i<deviceSupport.size()&&t==null;i++){
+			if(deviceSupport.get(i).getPlugin() == c){
+				t=deviceSupport.get(i).generateNewPlugin();
+			}
+		}
+
 		t.setDevice(dev);
 		liveTabs.add(t);
-		BowlerAbstractConnection con = dev.getConnection();
-		if(con!=null){
-			con.addConnectionEventListener(new IConnectionEventListener() {
-				@Override public void onDisconnect(BowlerAbstractConnection source) {
-					//if the device disconnects, close the tab
-					t.requestClose();
-				}
-				@Override public void onConnect(BowlerAbstractConnection source) {}
-			});
-		}
+
 		return t;
 	}
 
@@ -227,68 +214,70 @@ public class PluginManager {
 		//plugins.setSelected(true);
 		item.getChildren().add(plugins);
 		
-		for( Class<?> c:deviceSupport){
-			CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getSimpleName());
-			p.setSelected(false);
-			try {// These tabs are the select few to autoload when a device of theis type is connected
-				if( 	DyIOConsole.class ==c ||
-						BootloaderPanel.class ==c
-						){
-					if(getBowlerStudioController()!=null){
-						System.out.println("Auto loading "+c.getSimpleName());
-						p.setSelected(true);
-						getBowlerStudioController().addTab(generateTab(c), true);
-					}
-				}else{
-					Log.warning("Not autoloading "+c);
-				}
-			} catch (IllegalArgumentException | IllegalAccessException
-					 | SecurityException
-					| ClassNotFoundException | InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			p.selectedProperty().addListener(b ->{
-				
-				new Thread(){
-					public void run(){
-						try {
-							AbstractBowlerStudioTab t = generateTab(c);
-							if(p.isSelected()){
-								// allow the threads to finish before adding
-								//ThreadUtil.wait(50);
-								getBowlerStudioController().addTab(t, true);
-								t.setOnCloseRequest(arg0 -> {
-									System.out.println("Closing "+t.getText());
-									t.onTabClosing();
-									p.setSelected(false);
-								});
-								
-								System.out.println("Launching "+c.getSimpleName());
-				        	}else{
-				        		try{
-				        			System.out.println("Closing "+c.getSimpleName());
-				        			t.requestClose();
-				        		}catch (NullPointerException ex){
-				        			ex.printStackTrace();
-				        		};// tab is already closed
-				        	}
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+		for( DeviceSupportPlugginMap c:deviceSupport){
+			if(c.getDevice().isInstance(dev)){
+				CheckBoxTreeItem<String> p = new CheckBoxTreeItem<String> (c.getPlugin().getSimpleName());
+				p.setSelected(false);
+				try {// These tabs are the select few to autoload when a device of theis type is connected
+					if( 	DyIOConsole.class ==c.getPlugin() ||
+							BootloaderPanel.class ==c.getPlugin()
+							){
+						if(getBowlerStudioController()!=null){
+							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
+							p.setSelected(true);
+							getBowlerStudioController().addTab(generateTab(c.getPlugin()), true);
 						}
+					}else{
+						Log.warning("Not autoloading "+c);
 					}
-				}.start();
-
-	        	
-	        });
-				
-			plugins.getChildren().add(p);
+				} catch (IllegalArgumentException | IllegalAccessException
+						 | SecurityException
+						| ClassNotFoundException | InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				p.selectedProperty().addListener(b ->{
+					
+					new Thread(){
+						public void run(){
+							try {
+								AbstractBowlerStudioTab t = generateTab(c.getPlugin());
+								if(p.isSelected()){
+									// allow the threads to finish before adding
+									//ThreadUtil.wait(50);
+									getBowlerStudioController().addTab(t, true);
+									t.setOnCloseRequest(arg0 -> {
+										System.out.println("Closing "+t.getText());
+										t.onTabClosing();
+										p.setSelected(false);
+									});
+									
+									System.out.println("Launching "+c.getPlugin().getSimpleName());
+					        	}else{
+					        		try{
+					        			System.out.println("Closing "+c.getPlugin().getSimpleName());
+					        			t.requestClose();
+					        		}catch (NullPointerException ex){
+					        			ex.printStackTrace();
+					        		};// tab is already closed
+					        	}
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}.start();
+	
+		        	
+		        });
+					
+				plugins.getChildren().add(p);
+			}
 		}
 	
 	}
 
-
+	
 
 	public TreeItem<String> getTreeItem() {
 		return getCheckBoxItem();
@@ -309,6 +298,13 @@ public class PluginManager {
 
 	public void setItem(TreeItem<String> item) {
 		this.item = item;
+	}
+
+
+
+	public ArrayList<TitledPane> getPlugins() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

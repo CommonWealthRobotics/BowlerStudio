@@ -105,7 +105,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		topLine.getChildren().addAll(icon,new Text("Connected Devices"),disconnectAll);
 		rootItem.getChildren().add(topLine);
 
-		 rootItem.getChildren().add(accordion);
+		rootItem.getChildren().add(accordion);
 //		rootItem = new CheckBoxTreeItem<String>( String.format("  "+formatStr, "SCRIPTING NAME","DEVICE TYPE","MAC ADDRESS"),
 //				getIcon("images/connection-icon.png"
 //				// "images/usb-icon.png"

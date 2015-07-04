@@ -2,7 +2,9 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
@@ -34,6 +36,13 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 		 }
 		setOnCloseRequest(this);
 		initializeUI(pm);
+		pm.addConnectionEventListener(new IConnectionEventListener() {
+				@Override public void onDisconnect(BowlerAbstractConnection source) {
+					//if the device disconnects, close the tab
+					requestClose();
+				}
+				@Override public void onConnect(BowlerAbstractConnection source) {}
+		});
 	}
 	
 
