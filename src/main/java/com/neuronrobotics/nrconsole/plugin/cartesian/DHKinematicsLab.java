@@ -1,16 +1,16 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-
 import sun.security.action.GetLongAction;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
@@ -75,7 +75,8 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 													)
 									);
 		}
-		setContent(links);
+
+		setContent(new ScrollPane(links));
 	}
 
 	@Override

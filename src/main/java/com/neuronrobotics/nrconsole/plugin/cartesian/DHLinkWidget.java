@@ -11,10 +11,15 @@ import com.neuronrobotics.sdk.common.Log;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
 public class DHLinkWidget extends Group{
@@ -40,6 +45,7 @@ public class DHLinkWidget extends Group{
 		theta.setMajorTickUnit(50);
 		theta.setMinorTickCount(5);
 		theta.setBlockIncrement(10);
+		theta.setMaxWidth(300);
 		//theta.setSnapToTicks(true);
 		final Label thetaValue = new Label(getFormatted(theta.getValue()));
 		theta.valueProperty().addListener(new ChangeListener<Number>() {
@@ -68,6 +74,7 @@ public class DHLinkWidget extends Group{
 		Alpha.setMajorTickUnit(50);
 		Alpha.setMinorTickCount(5);
 		Alpha.setBlockIncrement(10);
+		Alpha.setMaxWidth(300);
 		//Alpha.setSnapToTicks(true);
 		final Label AlphaValue = new Label(getFormatted(Alpha.getValue()));
 		Alpha.valueProperty().addListener(new ChangeListener<Number>() {
@@ -112,27 +119,38 @@ public class DHLinkWidget extends Group{
         });
 		
 		
-		
-		
-		
+		final Accordion accordion = new Accordion();
+		GridPane gridpane = new GridPane();
+		gridpane.getColumnConstraints().add(new ColumnConstraints(75)); // column 1 is 75 wide
+	    gridpane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
+	    gridpane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+		gridpane.add(new Text("Delta"), 0, 0);
+		gridpane.add(delta, 1, 0);
+		gridpane.add(new Text("Theta"), 0, 1);
+		gridpane.add(theta, 1, 1);
+		gridpane.add(thetaValue, 2, 1);
+		gridpane.add(new Text("Radius"), 0, 2);
+		gridpane.add(radius, 1, 2);
+		gridpane.add(new Text("Alpha"), 0, 3);
+		gridpane.add(Alpha, 1, 3);
+		gridpane.add(AlphaValue, 2, 3);
+		accordion.getPanes().add(new TitledPane("Configure D-H", gridpane));
+		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device)));
 		
 		panel.getChildren().addAll(	new Text("#"+linkIndex),
 									name,
 									setpoint,
 									setpointValue,
-									new Text("Delta"),
-									delta,
-									new Text("Theta"),
-									theta,thetaValue,
-									new Text("Radius"),
-									radius,
-									new Text("Alpha"),
-									Alpha,AlphaValue
+									accordion
 									);
 		getChildren().add(panel);
 	}
 	
-	private String getFormatted(double value){
+	public static String getFormatted(double value){
 	    return String.format("%4.3f%n", (double)value);
 	}
 }
