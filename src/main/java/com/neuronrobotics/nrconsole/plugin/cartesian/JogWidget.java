@@ -23,7 +23,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 	Button ny = new Button("-Y");
 	Button pz = new Button("+Z");
 	Button nz = new Button("-Z");
+	Button home = new Button("home");
 	TextField increment=new TextField("10");
+	TextField sec=new TextField("1");
 	Label positionx = new Label();
 	Label positiony = new Label();
 	Label positionz = new Label();
@@ -33,12 +35,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 	public JogWidget(AbstractKinematicsNR kin){
 		this.kin = kin;
 		
-		getColumnConstraints().add(new ColumnConstraints(40)); // column 1 is 75 wide
-	    getColumnConstraints().add(new ColumnConstraints(40)); // column 2 is 300 wide
-	    getColumnConstraints().add(new ColumnConstraints(40)); // column 2 is 100 wide
-	    getColumnConstraints().add(new ColumnConstraints(40)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
+	    getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 300 wide
+	    getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
+	    getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
 	    
-	    getColumnConstraints().add(new ColumnConstraints(60)); // column 1 is 75 wide
+	    getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
 	    getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
 	    getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
 	    getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
@@ -79,11 +81,23 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 				if(event.getSource() == nz){
 					current.translateZ(-inc);
 				}
-				try {
-					kin.setDesiredTaskSpaceTransform(current, 5);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(event.getSource() == home){
+					for(int i=0;i<kin.getNumberOfLinks();i++){
+						try {
+							kin.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+							
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}else{
+					try {
+						kin.setDesiredTaskSpaceTransform(current,  Double.parseDouble(sec.getText()));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		};
@@ -96,13 +110,19 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 		ny.setOnAction(l);
 		pz.setOnAction(l);
 		nz.setOnAction(l);
+		home.setOnAction(l);
 		
 		add(	ny, 
 				0, 
 				1);
+		add(	home, 
+				1, 
+				1);
 		add(	py, 
 				2, 
 				1);
+		
+		
 		add(	px, 
 				1, 
 				0);
@@ -111,11 +131,19 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 				1, 
 				2);
 		add(	increment, 
-				1, 
+				0, 
 				3);
 		add(	new Label("mm"), 
+				1, 
+				3);
+		
+		add(	sec, 
 				2, 
 				3);
+		add(	new Label("sec"), 
+				3, 
+				3);
+		
 		add(	pz, 
 				3, 
 				0);

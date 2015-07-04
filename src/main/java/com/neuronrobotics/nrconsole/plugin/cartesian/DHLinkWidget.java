@@ -1,13 +1,20 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
 import java.text.DecimalFormat;
+import java.time.Duration;
 
+import org.reactfx.util.FxTimer;
+
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.common.Log;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
@@ -22,9 +29,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
-public class DHLinkWidget extends Group{
+public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJointSpaceUpdateListenerNR {
+	private DHParameterKinematics device;
+	private int linkIndex;
+	private Label setpointValue;
+	private Slider setpoint;
 	public DHLinkWidget(int linkIndex, DHLink dhLink, DHParameterKinematics device ) {
 
+		this.linkIndex = linkIndex;
+		this.device = device;
 		HBox panel = new HBox(10);
 		AbstractLink abstractLink  = device.getAbstractLink(linkIndex);
 		
@@ -91,7 +104,7 @@ public class DHLinkWidget extends Group{
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
 		
-		Slider setpoint = new Slider();
+		setpoint = new Slider();
 		setpoint.setMin(abstractLink.getMinEngineeringUnits());
 		setpoint.setMax(abstractLink.getMaxEngineeringUnits());
 		setpoint.setValue(0);
@@ -101,22 +114,20 @@ public class DHLinkWidget extends Group{
 		setpoint.setMajorTickUnit(50);
 		setpoint.setMinorTickCount(5);
 		setpoint.setBlockIncrement(10);
-		final Label setpointValue = new Label(getFormatted(setpoint.getValue()));
+		setpointValue = new Label(getFormatted(setpoint.getValue()));
+		
+		setpoint.valueChangingProperty().addListener(this);
 		setpoint.valueProperty().addListener(new ChangeListener<Number>() {
 
-            public void changed(ObservableValue<? extends Number> ov,
-                    Number old_val, Number new_val) {
-            		try {
-            			
-        				device.setDesiredJointAxisValue(linkIndex, new_val.doubleValue(), 0);
-        				Log.debug("Setting the setpoint on #"+linkIndex+" to "+new_val);
-        				setpointValue.setText(getFormatted(new_val.doubleValue()));
-        			} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					};
-                }
-        });
+			@Override
+			public void changed(ObservableValue<? extends Number> observable,
+					Number oldValue, Number newValue) {
+				setpointValue.setText(getFormatted(newValue.doubleValue()));
+				
+			}
+
+		});
+		
 		
 		
 		final Accordion accordion = new Accordion();
@@ -148,9 +159,49 @@ public class DHLinkWidget extends Group{
 									accordion
 									);
 		getChildren().add(panel);
+		device.addJointSpaceListener(this);
 	}
 	
 	public static String getFormatted(double value){
 	    return String.format("%4.3f%n", (double)value);
+	}
+	public void changed(ObservableValue<? extends Boolean> observableValue,
+            Boolean wasChanging,
+            Boolean changing) {
+    		try {
+				device.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+        }
+
+	@Override
+	public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
+		Platform.runLater(()->{
+			setpoint.valueChangingProperty().removeListener(this);
+			setpoint.setValue(joints[linkIndex]);
+			FxTimer.runLater(
+					Duration.ofMillis(10) ,() -> {
+						setpoint.valueChangingProperty().addListener(this);
+			});
+		});
+		
+		
+	}
+
+	@Override
+	public void onJointSpaceTargetUpdate(AbstractKinematicsNR source,
+			double[] joints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis,
+			JointLimit event) {
+		// TODO Auto-generated method stub
+		
 	}
 }
