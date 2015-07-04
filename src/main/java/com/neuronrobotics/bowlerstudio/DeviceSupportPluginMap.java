@@ -3,23 +3,29 @@ package com.neuronrobotics.bowlerstudio;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
-public class DeviceSupportPlugginMap implements PluginFactory{
+public class DeviceSupportPluginMap implements PluginFactory{
 	
 	private Class<?> device;
 	private Class<?> plugin;
 	private PluginFactory factory=null;
+	
 
-	public DeviceSupportPlugginMap(Class<?> device,Class<?> plugin){
+	DeviceSupportPluginMap(Class<?> device,Class<?> plugin){
 		this.setDevice(device);
 		this.setPlugin(plugin);
 		
 	}
-	public DeviceSupportPlugginMap(Class<?> device,Class<?> plugin, PluginFactory factory){
+	public DeviceSupportPluginMap(Class<?> device,Class<?> plugin, PluginFactory factory){
 		this.factory = factory;
 		this.setDevice(device);
 		this.setPlugin(plugin);
 		
 	}
+	
+	public boolean isFactoryProvided(){
+		return factory!=null;
+	}
+	
 	public Class<?> getDevice() {
 		return device;
 	}
