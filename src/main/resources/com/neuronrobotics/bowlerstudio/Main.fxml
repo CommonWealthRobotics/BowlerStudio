@@ -21,6 +21,9 @@
               	<MenuItem mnemonicParsing="false" onAction="#onConnectVirtual" text="Add Virtual PID Device" />
               	<MenuItem mnemonicParsing="false" onAction="#onConnectPidSim" text="Add Virtual Torque Controller" />
               </Menu>
+              <Menu mnemonicParsing="false" text="Robots">
+              	<MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
+              </Menu>
               <Menu mnemonicParsing="false" text="Image Feed">
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="Add a new OpenCV camera" />
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="Add a new CHDK camera" />
