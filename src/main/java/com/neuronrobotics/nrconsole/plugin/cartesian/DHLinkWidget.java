@@ -19,6 +19,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -34,10 +35,12 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 	private int linkIndex;
 	private Label setpointValue;
 	private Slider setpoint;
-	public DHLinkWidget(int linkIndex, DHLink dhLink, DHParameterKinematics device ) {
+	private Button del;
+	public DHLinkWidget(int linkIndex, DHLink dhLink, DHParameterKinematics device, Button del ) {
 
 		this.linkIndex = linkIndex;
 		this.device = device;
+		this.del = del;
 		AbstractLink abstractLink  = device.getAbstractLink(linkIndex);
 		
 		
@@ -153,26 +156,30 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device)));
 		
 		GridPane panel = new GridPane();
-
+		
+		panel.getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 100 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
 		
-		panel.add(	new Text("#"+linkIndex), 
+		panel.add(	del, 
 				0, 
 				0);
-		panel.add(	name, 
+		panel.add(	new Text("#"+linkIndex), 
 				1, 
 				0);
-		panel.add(	setpoint, 
+		panel.add(	name, 
 				2, 
 				0);
-		panel.add(	setpointValue, 
+		panel.add(	setpoint, 
 				3, 
 				0);
-		panel.add(	accordion, 
+		panel.add(	setpointValue, 
 				4, 
+				0);
+		panel.add(	accordion, 
+				5, 
 				0);
 
 		getChildren().add(panel);

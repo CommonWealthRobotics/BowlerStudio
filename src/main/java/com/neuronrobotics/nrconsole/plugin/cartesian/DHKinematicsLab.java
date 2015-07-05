@@ -84,16 +84,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		});
 		add.setOnAction(event -> {
 			LinkConfiguration newLink = new LinkConfiguration();
-			LinkFactory factory  =device.getFactory();
-			//remove the link listener while the number of links could chnage
-			factory.removeLinkListener(device);
-			AbstractLink link = factory.getLink(newLink);
-			DHChain chain =  device.getDhChain() ;
-			chain.addLink(new DHLink(0, 0, 0, 0));
-			//set the modified kinematics chain
-			device.setChain(chain);
-			//once the new link configuration is set up, re add the listener
-			factory.addLinkListener(device);
+			device.addNewLink(newLink,new DHLink(0, 0, 0, 0));
 			onTabReOpening();
 		});
 		refresh.setOnAction(event -> {
@@ -119,10 +110,19 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		
 		for(int i=0;i<dhLinks.size();i++){
 			DHLink dh  =dhLinks.get(i);
+			Button del = new Button("Delete");
+			final int linkIndex=i;
+			del.setOnAction(event -> {
+				device.removeLink(linkIndex);
+				onTabReOpening();
+				
+			});
+			
 			links.getChildren().add(
 									new DHLinkWidget(i,
 													dh,
-													device
+													device,
+													del
 													)
 									);
 			
