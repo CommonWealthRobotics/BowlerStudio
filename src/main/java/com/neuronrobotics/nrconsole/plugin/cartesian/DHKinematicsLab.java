@@ -12,7 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
@@ -27,10 +29,16 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 
+import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.Transform;
+
 public class DHKinematicsLab extends AbstractBowlerStudioTab {
 	DHParameterKinematics device;
 	private File currentFile=null;
-	
+	private VBox links;
+	private HBox controls;
+	JogWidget jog = null;
 	@Override
 	public void onTabClosing() {
 		// TODO Auto-generated method stub
@@ -49,11 +57,13 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		setText("DH Lab");
 		device=(DHParameterKinematics)pm;
 		Log.debug("Loading xml: "+device.getXml());
-		VBox links = new VBox(20);
-		HBox controls = new HBox(10);
-		controls.getChildren().add(new JogWidget(device));
+		links = new VBox(20);
+		controls = new HBox(10);
+		jog = new JogWidget(device);
+		controls.getChildren().add(jog);
 		Button save = new Button("Save Configuration");
 		Button add = new Button("Add Link");
+		Button refresh = new Button("RefreshModel");
 		save.setOnAction(event -> {
 			new Thread(){
 				public void run(){
@@ -84,30 +94,53 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 			device.setChain(chain);
 			//once the new link configuration is set up, re add the listener
 			factory.addLinkListener(device);
+			onTabReOpening();
+		});
+		refresh.setOnAction(event -> {
+			onTabReOpening();
 		});
 		
 		
-		ArrayList<DHLink> dhLinks = device.getChain().getLinks();
 		controls.getChildren().add(save);
 		controls.getChildren().add(add);
-		links.getChildren().add(controls);
-		for(int i=0;i<dhLinks.size();i++){
-			
-			links.getChildren().add(
-									new DHLinkWidget(i,
-													dhLinks.get(i),
-													device
-													)
-									);
-		}
+		controls.getChildren().add(refresh);
+		onTabReOpening();
 
 		setContent(new ScrollPane(links));
 	}
 
+
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
+		links.getChildren().clear();
+		ArrayList<DHLink> dhLinks = device.getChain().getLinks();
+		links.getChildren().add(controls);
+		ArrayList<CSG> csg = new ArrayList<CSG>();
+		
+		for(int i=0;i<dhLinks.size();i++){
+			DHLink dh  =dhLinks.get(i);
+			links.getChildren().add(
+									new DHLinkWidget(i,
+													dh,
+													device
+													)
+									);
+			
+			// Create an axis to represent the link
+			double y = dh.getD()>0?dh.getD():2;
+			double  x= dh.getRadius()>0?dh.getRadius():2;
 
+			CSG cube = new Cube(x,y,2).toCSG();
+			cube=cube.transformed(new Transform().translateX(-x/2));
+			cube=cube.transformed(new Transform().translateY(y/2));
+			//add listner to axis
+			cube.setManipulator(dh.getListener());
+			cube.setColor(Color.GOLD);
+			// add ax to list of objects to be returned
+			csg.add(cube);
+		}
+		BowlerStudioController.setCsg(csg);
+		jog.home();
 	}
 
 }

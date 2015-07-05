@@ -82,15 +82,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 					current.translateZ(-inc);
 				}
 				if(event.getSource() == home){
-					for(int i=0;i<kin.getNumberOfLinks();i++){
-						try {
-							kin.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
-							
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					home();
 				}else{
 					try {
 						kin.setDesiredTaskSpaceTransform(current,  Double.parseDouble(sec.getText()));
@@ -190,6 +182,17 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 		add(	targetz, 
 				7, 
 				2);
+	}
+	public void home(){
+		for(int i=0;i<kin.getNumberOfLinks();i++){
+			try {
+				kin.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
