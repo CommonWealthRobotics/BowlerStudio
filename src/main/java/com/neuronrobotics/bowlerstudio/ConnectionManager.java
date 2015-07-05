@@ -91,7 +91,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		rootItem = new VBox(10);
 		
-		
+//		rootItem.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
+//		rootItem. getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
+//		rootItem.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
+//		rootItem.getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
+//		
 		topLine = new HBox(20);
 		
 		Node icon = getIcon("images/connection-icon.png");

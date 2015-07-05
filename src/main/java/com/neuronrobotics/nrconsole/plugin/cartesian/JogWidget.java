@@ -112,13 +112,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 		nz.setOnAction(l);
 		home.setOnAction(l);
 		
-		add(	ny, 
+		add(	py, 
 				0, 
 				1);
 		add(	home, 
 				1, 
 				1);
-		add(	py, 
+		add(	ny, 
 				2, 
 				1);
 		

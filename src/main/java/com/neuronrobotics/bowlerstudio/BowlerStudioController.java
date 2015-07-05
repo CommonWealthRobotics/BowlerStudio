@@ -214,6 +214,16 @@ public class BowlerStudioController extends TabPane implements
 			});
 		}
 	}
+	
+	public void setCsg(List<CSG> toadd){
+		Platform.runLater(() -> {
+			jfx3dmanager.removeObjects();
+			for(CSG c:toadd){
+				MeshView current = c.getMesh();
+				jfx3dmanager.addObject(current);
+			}
+		});
+	}
 
 	private void addObject(Object o) {
 		if (CSG.class.isInstance(o)) {

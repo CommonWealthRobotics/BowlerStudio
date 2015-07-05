@@ -13,9 +13,6 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 

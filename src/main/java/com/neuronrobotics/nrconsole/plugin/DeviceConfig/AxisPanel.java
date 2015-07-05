@@ -7,6 +7,7 @@ import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 import java.awt.FlowLayout;
@@ -55,7 +56,7 @@ private SettingsListItem setScale;
 		viewPanel.add(setLinkName = new SettingsListItem("Link Name", thisLink.getName()), "cell 0 0");
 		FlowLayout flowLayout = (FlowLayout) setLinkName.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		viewPanel.add(setLinkType = new SettingsListItem("Link Type", thisLink.getType()), "cell 0 1");
+		viewPanel.add(setLinkType = new SettingsListItem("Link Type", thisLink.getType().getName()), "cell 0 1");
 		FlowLayout flowLayout_1 = (FlowLayout) setLinkType.getLayout();
 		flowLayout_1.setAlignment(FlowLayout.LEFT);
 		viewPanel.add(setHardwareIndex = new SettingsListItem("Hardware Index", thisLink.getHardwareIndex()), "cell 0 2");
@@ -114,7 +115,7 @@ private SettingsListItem setScale;
 	}
 	private void reloadSettings(){
 		setLinkName.loadValues("Link Name", thisLink.getName());
-		setLinkType.loadValues("Link Type", thisLink.getType());
+		setLinkType.loadValues("Link Type", thisLink.getType().getName());
 		setHardwareIndex.loadValues("Hardware Index", thisLink.getHardwareIndex());
 		setHomingTicksPerSecond.loadValues("Homing Ticks per Second", thisLink.getHomingTicksPerSecond());
 		setIndexLatch.loadValues("Index Latch",thisLink.getIndexLatch());
@@ -131,7 +132,7 @@ private SettingsListItem setScale;
 	}
 	public void writeSettings(){
 		thisLink.setName(setLinkName.getStringValue());
-		thisLink.setType(setLinkType.getStringValue());
+		thisLink.setType(LinkType.fromString(setLinkType.getStringValue()));
 		thisLink.setIndex(setHardwareIndex.getIntValue());
 		thisLink.setHomingTicksPerSecond(setHomingTicksPerSecond.getIntValue());
 		thisLink.setIndexLatch(setIndexLatch.getIntValue());

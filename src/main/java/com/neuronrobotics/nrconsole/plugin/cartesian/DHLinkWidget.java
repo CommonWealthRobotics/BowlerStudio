@@ -38,7 +38,6 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 
 		this.linkIndex = linkIndex;
 		this.device = device;
-		HBox panel = new HBox(10);
 		AbstractLink abstractLink  = device.getAbstractLink(linkIndex);
 		
 		
@@ -100,6 +99,7 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
         });
 		
 		TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
+		name.setMaxWidth(100.0);
 		name.setOnAction(event -> {
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
@@ -115,7 +115,7 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 		setpoint.setMinorTickCount(5);
 		setpoint.setBlockIncrement(10);
 		setpointValue = new Label(getFormatted(setpoint.getValue()));
-		
+		setpoint.setMaxWidth(300);
 		setpoint.valueChangingProperty().addListener(this);
 		setpoint.valueProperty().addListener(new ChangeListener<Number>() {
 
@@ -152,12 +152,29 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 		accordion.getPanes().add(new TitledPane("Configure D-H", gridpane));
 		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device)));
 		
-		panel.getChildren().addAll(	new Text("#"+linkIndex),
-									name,
-									setpoint,
-									setpointValue,
-									accordion
-									);
+		GridPane panel = new GridPane();
+
+		panel.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
+		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
+		panel.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 100 wide
+		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
+		
+		panel.add(	new Text("#"+linkIndex), 
+				0, 
+				0);
+		panel.add(	name, 
+				1, 
+				0);
+		panel.add(	setpoint, 
+				2, 
+				0);
+		panel.add(	setpointValue, 
+				3, 
+				0);
+		panel.add(	accordion, 
+				4, 
+				0);
+
 		getChildren().add(panel);
 		device.addJointSpaceListener(this);
 	}
