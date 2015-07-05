@@ -157,7 +157,7 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 		
 		GridPane panel = new GridPane();
 		
-		panel.getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
+		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 100 wide
@@ -183,7 +183,6 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 				0);
 
 		getChildren().add(panel);
-		device.addJointSpaceListener(this);
 	}
 	
 	public static String getFormatted(double value){
@@ -205,7 +204,11 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
 	public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
 		Platform.runLater(()->{
 			setpoint.valueChangingProperty().removeListener(this);
-			setpoint.setValue(joints[linkIndex]);
+			try{
+				setpoint.setValue(joints[linkIndex]);
+			}catch(ArrayIndexOutOfBoundsException ex){
+				return;
+			}
 			FxTimer.runLater(
 					Duration.ofMillis(10) ,() -> {
 						setpoint.valueChangingProperty().addListener(this);

@@ -39,6 +39,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 	private VBox links;
 	private HBox controls;
 	JogWidget jog = null;
+	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
 	@Override
 	public void onTabClosing() {
 		// TODO Auto-generated method stub
@@ -103,29 +104,34 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
+		for(DHLinkWidget wid:widgets){
+			device.removeJointSpaceUpdateListener(wid);
+		}
+		widgets.clear();
 		links.getChildren().clear();
 		ArrayList<DHLink> dhLinks = device.getChain().getLinks();
 		links.getChildren().add(controls);
 		ArrayList<CSG> csg = new ArrayList<CSG>();
 		
 		for(int i=0;i<dhLinks.size();i++){
+			Log.warning("Adding Link Widget: "+i);
 			DHLink dh  =dhLinks.get(i);
 			Button del = new Button("Delete");
 			final int linkIndex=i;
 			del.setOnAction(event -> {
 				device.removeLink(linkIndex);
+				
 				onTabReOpening();
 				
 			});
-			
-			links.getChildren().add(
-									new DHLinkWidget(i,
-													dh,
-													device,
-													del
-													)
-									);
-			
+			DHLinkWidget w = new DHLinkWidget(i,
+					dh,
+					device,
+					del
+					);
+			widgets.add(w);
+			links.getChildren().add(w);
+			device.addJointSpaceListener(w);
 			// Create an axis to represent the link
 			double y = dh.getD()>0?dh.getD():2;
 			double  x= dh.getRadius()>0?dh.getRadius():2;
