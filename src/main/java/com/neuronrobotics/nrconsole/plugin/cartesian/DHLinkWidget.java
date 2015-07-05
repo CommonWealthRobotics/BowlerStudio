@@ -1,6 +1,5 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
-import java.text.DecimalFormat;
 import java.time.Duration;
 
 import org.reactfx.util.FxTimer;
@@ -11,7 +10,6 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
-import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
@@ -26,7 +24,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
@@ -100,6 +97,7 @@ public class DHLinkWidget extends Group implements ChangeListener<Boolean>, IJoi
             		AlphaValue.setText(getFormatted(new_val.doubleValue()));
                 }
         });
+		
 		
 		TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
 		name.setMaxWidth(100.0);
