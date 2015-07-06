@@ -244,7 +244,8 @@ public class PluginManager {
 				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName());
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOConsole.class ==c.getPlugin() ||
-							BootloaderPanel.class ==c.getPlugin()
+							BootloaderPanel.class ==c.getPlugin()||
+							DHKinematicsLab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
