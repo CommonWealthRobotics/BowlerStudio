@@ -84,7 +84,13 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 
 	@Override
 	public void onSliderMoving(AngleSliderWidget source, double newAngleDegrees) {
-		handle(null);
+		onChange.onTransformChaging(new TransformNR(	Double.parseDouble(tx.getText()),
+				Double.parseDouble(ty.getText()),
+				Double.parseDouble(tz.getText()),
+				Math.toRadians(rw.getValue()),
+				Math.toRadians(rx.getValue()),
+				Math.toRadians(ry.getValue()),
+				Math.toRadians(rz.getValue())));
 	}
 
 	@Override
@@ -96,7 +102,7 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	@Override
 	public void handle(ActionEvent event) {
 		// TODO Auto-generated method stub
-		onChange.onTransformChange(new TransformNR(	Double.parseDouble(tx.getText()),
+		onChange.onTransformFinished(new TransformNR(	Double.parseDouble(tx.getText()),
 													Double.parseDouble(ty.getText()),
 													Double.parseDouble(tz.getText()),
 													Math.toRadians(rw.getValue()),

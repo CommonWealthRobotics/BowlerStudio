@@ -26,6 +26,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 
@@ -93,17 +94,41 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		});
 		
 		controls.getChildren().add(new TransformWidget("Limb to Base", 
-				device.getRobotToFiducialTransform(), newTrans -> {
-					Log.debug("Limb to base"+newTrans.toString());
-					device.setBaseToZframeTransform(newTrans);
+				device.getRobotToFiducialTransform(), new IOnTransformChange() {
+					
+					@Override
+					public void onTransformFinished(TransformNR newTrans) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onTransformChaging(TransformNR newTrans) {
+						Log.debug("Limb to base"+newTrans.toString());
+						device.setBaseToZframeTransform(newTrans);
+						device.getCurrentTaskSpaceTransform();
+					}
 				}
 				));
 		controls.getChildren().add(new TransformWidget("Base to Global", 
-				device.getRobotToFiducialTransform(), newTrans -> {
-					Log.debug("Base to Global"+newTrans.toString());
-					device.setGlobalToFiducialTransform(newTrans);
+				device.getRobotToFiducialTransform(),new IOnTransformChange() {
+					
+					@Override
+					public void onTransformFinished(TransformNR newTrans) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onTransformChaging(TransformNR newTrans) {
+						Log.debug("Base to Global"+newTrans.toString());
+						device.setGlobalToFiducialTransform(newTrans);
+						device.getCurrentTaskSpaceTransform();
+					}
 				}
 				));
+		
+
 		controls.getChildren().add(save);
 		controls.getChildren().add(add);
 		controls.getChildren().add(refresh);
