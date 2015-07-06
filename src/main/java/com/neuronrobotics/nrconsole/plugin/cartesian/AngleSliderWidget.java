@@ -47,7 +47,7 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 				1, 
 				0);
 		add(	new Text("(degrees)"), 
-				1, 
+				2, 
 				0);
 	}
 	@Override
