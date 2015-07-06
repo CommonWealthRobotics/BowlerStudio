@@ -92,7 +92,11 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 			onTabReOpening();
 		});
 		
-		
+		controls.getChildren().add(new TransformWidget("Limb to base", 
+				device.getRobotToFiducialTransform(), newTrans -> {
+					Log.debug(newTrans.toString());
+				}
+				));
 		controls.getChildren().add(save);
 		controls.getChildren().add(add);
 		controls.getChildren().add(refresh);
