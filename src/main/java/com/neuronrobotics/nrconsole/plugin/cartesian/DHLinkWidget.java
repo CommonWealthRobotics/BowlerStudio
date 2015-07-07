@@ -27,28 +27,33 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
-public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR {
+public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR, IOnAngleChange {
 	private DHParameterKinematics device;
 	private int linkIndex;
 	private Label setpointValue;
 	private AngleSliderWidget setpoint;
 	private Button del;
+	private DHLink dhLink;
+	private TextField delta;
+	private AngleSliderWidget theta;
+	private AngleSliderWidget alpha;
 	public DHLinkWidget(int linkIndex, DHLink dhLink, DHParameterKinematics device, Button del ) {
 
 		this.linkIndex = linkIndex;
+		this.dhLink = dhLink;
 		this.device = device;
 		this.del = del;
 		AbstractLink abstractLink  = device.getAbstractLink(linkIndex);
 		
 		
-		TextField delta = new TextField(getFormatted(dhLink.getDelta()));
+		delta = new TextField(getFormatted(dhLink.getDelta()));
 		delta.setOnAction(event -> {
 			dhLink.setDelta(Double.parseDouble(delta.getText()));
 			device.getCurrentTaskSpaceTransform();
 			Log.debug("Setting the setpoint on #"+linkIndex+" to "+delta.getText());
 		});
 		
-		AngleSliderWidget theta = new AngleSliderWidget(null,
+		theta = new AngleSliderWidget(this,
 				-180,
 				180,
 				Math.toDegrees(dhLink.getTheta()),
@@ -61,7 +66,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 			Log.debug("Setting the setpoint on #"+linkIndex+" to "+radius.getText());
 		});
 		
-		AngleSliderWidget Alpha = new AngleSliderWidget(null,
+		alpha = new AngleSliderWidget(this,
 														-180,
 														180,
 														Math.toDegrees(dhLink.getAlpha()),
@@ -119,7 +124,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		gridpane.add(radius, 1, 2);
 		gridpane.add(new Text("mm"), 2, 2);
 		gridpane.add(new Text("Alpha"), 0, 3);
-		gridpane.add(Alpha, 1, 3);
+		gridpane.add(alpha, 1, 3);
 		accordion.getPanes().add(new TitledPane("Configure D-H", gridpane));
 		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device)));
 		
@@ -182,6 +187,21 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 	@Override
 	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis,
 			JointLimit event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSliderMoving(AngleSliderWidget source, double newAngleDegrees) {
+		dhLink.setTheta(Math.toRadians(theta.getValue()));
+		dhLink.setAlpha(Math.toRadians(alpha.getValue()));
+		device.getCurrentTaskSpaceTransform();
+
+	}
+
+	@Override
+	public void onSliderDoneMoving(AngleSliderWidget source,
+			double newAngleDegrees) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -7,9 +7,11 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -138,8 +140,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		add(	buttons, 
 				0, 
 				0);
-		transform = new TransformWidget("Current Pos", getKin().getCurrentPoseTarget(), this);
-		add(	transform, 
+		transform = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
+		Accordion advancedPanel = new Accordion();
+		advancedPanel.getPanes().add(new TitledPane("Advanced Positioning", transform));
+		add(	advancedPanel, 
 				0, 
 				1);
 	}
