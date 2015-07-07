@@ -47,6 +47,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceDialog;
@@ -54,6 +55,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -62,6 +64,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 
 public class ConnectionManager extends Tab implements IDeviceAddedListener ,EventHandler<ActionEvent> {
 
@@ -175,6 +178,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 					}
 				}
 			}
+		}else{
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("No Printers connected");
+			alert.setHeaderText("Connect a "+class1.getSimpleName());
+			alert.setContentText("A device of type "+class1.getSimpleName()+" is needed");
+			alert .initModality(Modality.APPLICATION_MODAL);
+			alert.show();
 		}
 		return null;
 	}
@@ -226,6 +236,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		application.addConnection(p,name);
 		
 	}
+
 
 
 	 public static void onConnectJavaCVCamera() {

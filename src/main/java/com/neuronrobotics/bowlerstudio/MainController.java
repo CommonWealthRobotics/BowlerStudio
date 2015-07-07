@@ -7,7 +7,6 @@ package com.neuronrobotics.bowlerstudio;
 
 import haar.HaarFactory;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
-
 
 import javax.script.ScriptEngine;
 
@@ -36,11 +34,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
-
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -62,7 +60,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
@@ -74,6 +71,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
+import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -489,6 +487,14 @@ public class MainController implements Initializable {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	@FXML public void onPrint(ActionEvent event) {
+		NRPrinter printer =(NRPrinter) ConnectionManager.pickConnectedDevice(NRPrinter.class);
+		if(printer!=null){
+			// run a print here
+		}
+		
 	}
 	
 
