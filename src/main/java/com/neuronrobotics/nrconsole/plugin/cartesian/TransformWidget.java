@@ -1,7 +1,12 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import Jama.Matrix;
 
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.Log;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
@@ -19,8 +24,10 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	private TextField tx;
 	private TextField ty;
 	private TextField tz;
+	private TransformNR initialState;
 
 	public TransformWidget(String title, TransformNR initialState, IOnTransformChange onChange){
+		this.initialState = initialState;
 		this.onChange = onChange;
 		tx = new TextField(DHLinkWidget.getFormatted(initialState.getX()));
 		ty = new TextField(DHLinkWidget.getFormatted(initialState.getY()));
@@ -28,30 +35,30 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 		tx.setOnAction(this);
 		ty.setOnAction(this);
 		tz.setOnAction(this);
-		rw = new AngleSliderWidget(this, -180, 180, Math.toDegrees(initialState.getRotation().getRotationMatrix2QuaturnionW()), 100);
-		rx = new AngleSliderWidget(this, -180, 180, Math.toDegrees(initialState.getRotation().getRotationMatrix2QuaturnionX()), 100);
-		ry = new AngleSliderWidget(this, -180, 180, Math.toDegrees(initialState.getRotation().getRotationMatrix2QuaturnionY()), 100);
-		rz = new AngleSliderWidget(this, -180, 180, Math.toDegrees(initialState.getRotation().getRotationMatrix2QuaturnionZ()), 100);
+		RotationNR rot = initialState.getRotation();
+		rx = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationX()), 100);
+		ry = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationY()), 100);
+		rz = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationZ()), 100);
 
-		getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(60)); // translate values
-	    getColumnConstraints().add(new ColumnConstraints(30)); // units
-	    getColumnConstraints().add(new ColumnConstraints(30)); // rotate text
+	    getColumnConstraints().add(new ColumnConstraints(50)); // units
+	    getColumnConstraints().add(new ColumnConstraints(20)); // rotate text
 	    setHgap(20);// gab between elements
 	    
 	    
 	    add(	new Text(title), 
 	    		1,  0);
-	    add(	new Text("(r)W"), 
-	    		3,  0);
-	    add(	rw, 
-	    		4,  0);
+//	    add(	new Text("(r)W"), 
+//	    		3,  0);
+//	    add(	rw, 
+//	    		4,  0);
 	    //X line
 	    add(	new Text("X"), 
 	    		0,  1);
 		add(	tx, 
 				1,  1);
-		 add(	new Text(" mm"), 
+		 add(	new Text("mm"), 
 	    		2,  1);
 		 add(	new Text("(r)X"), 
 	    		3,  1);
@@ -81,16 +88,18 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	    		4,  3);
 		
 	}
+	
+	private 	TransformNR getCurrent(){
+		TransformNR tmp = new TransformNR(Double.parseDouble(tx.getText()),
+				Double.parseDouble(ty.getText()),
+				Double.parseDouble(tz.getText()),new RotationNR( rx.getValue(),ry.getValue(), rz.getValue()));
+
+		return tmp;
+	}
 
 	@Override
 	public void onSliderMoving(AngleSliderWidget source, double newAngleDegrees) {
-		onChange.onTransformChaging(new TransformNR(	Double.parseDouble(tx.getText()),
-				Double.parseDouble(ty.getText()),
-				Double.parseDouble(tz.getText()),
-				Math.toRadians(rw.getValue()),
-				Math.toRadians(rx.getValue()),
-				Math.toRadians(ry.getValue()),
-				Math.toRadians(rz.getValue())));
+		onChange.onTransformChaging(getCurrent());
 	}
 
 	@Override
@@ -101,15 +110,21 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 
 	@Override
 	public void handle(ActionEvent event) {
-		// TODO Auto-generated method stub
-		onChange.onTransformFinished(new TransformNR(	Double.parseDouble(tx.getText()),
-													Double.parseDouble(ty.getText()),
-													Double.parseDouble(tz.getText()),
-													Math.toRadians(rw.getValue()),
-													Math.toRadians(rx.getValue()),
-													Math.toRadians(ry.getValue()),
-													Math.toRadians(rz.getValue()))
-		);
+		onChange.onTransformChaging(getCurrent());
+		onChange.onTransformFinished(getCurrent());
+	}
+
+	public void updatePose(TransformNR pose) {
+		//Log.debug("Transform widget is updating to: "+pose);
+		Platform.runLater(() -> {
+			tx.setText(DHLinkWidget.getFormatted(pose.getX()));
+			ty.setText(DHLinkWidget.getFormatted(pose.getY()));
+			tz.setText(DHLinkWidget.getFormatted(pose.getZ()));
+		});
+		RotationNR rot = pose.getRotation();
+		rx.setValue(Math.toDegrees(rot.getRotationX()));
+		ry .setValue(Math.toDegrees(rot.getRotationY()));
+		rz .setValue(Math.toDegrees(rot.getRotationZ()));
 	}
 
 }

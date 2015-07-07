@@ -14,7 +14,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
-public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
+public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange {
 	
 	private AbstractKinematicsNR kin;
 	Button px = new Button("+X");
@@ -26,34 +26,17 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 	Button home = new Button("home");
 	TextField increment=new TextField("10");
 	TextField sec=new TextField("1");
-	Label positionx = new Label();
-	Label positiony = new Label();
-	Label positionz = new Label();
-	Label targetx = new Label();
-	Label targety = new Label();
-	Label targetz = new Label();
-	public JogWidget(AbstractKinematicsNR kin){
-		this.kin = kin;
+	private TransformWidget transform;
+
+	public JogWidget(AbstractKinematicsNR kinimatics){
+		this.setKin(kinimatics);
 		
-		getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
-	    getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 300 wide
-	    getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
-	    getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
-	    
-	    getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
-	    getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
-	    getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
-	    getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
-	    
-	    getRowConstraints().add(new RowConstraints(30)); // 
-	    getRowConstraints().add(new RowConstraints(30)); // 
-	    getRowConstraints().add(new RowConstraints(30)); // 
-	    getRowConstraints().add(new RowConstraints(30)); // 
+		
 		EventHandler<ActionEvent> l = new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent event) {
-				TransformNR current = kin.getCurrentTaskSpaceTransform();
+				TransformNR current = getKin().getCurrentTaskSpaceTransform();
 				double inc;
 				try{
 					inc = Double.parseDouble(increment.getText());
@@ -85,7 +68,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 					home();
 				}else{
 					try {
-						kin.setDesiredTaskSpaceTransform(current,  Double.parseDouble(sec.getText()));
+						getKin().setDesiredTaskSpaceTransform(current,  Double.parseDouble(sec.getText()));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -93,7 +76,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 				}
 			}
 		};
-		kin.addPoseUpdateListener(this);
+		getKin().addPoseUpdateListener(this);
 
 		
 		px.setOnAction(l);
@@ -103,90 +86,67 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 		pz.setOnAction(l);
 		nz.setOnAction(l);
 		home.setOnAction(l);
+		GridPane buttons = new GridPane();
+		buttons.getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
+		buttons.getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 300 wide
+		buttons.getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
+		buttons. getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
+	    
+		buttons.getRowConstraints().add(new RowConstraints(30)); // 
+		buttons. getRowConstraints().add(new RowConstraints(30)); // 
+		buttons. getRowConstraints().add(new RowConstraints(30)); // 
+		buttons.getRowConstraints().add(new RowConstraints(30)); // 
 		
-		add(	py, 
+		buttons.add(	py, 
 				0, 
 				1);
-		add(	home, 
+		buttons.add(	home, 
 				1, 
 				1);
-		add(	ny, 
+		buttons.add(	ny, 
 				2, 
 				1);
 		
 		
-		add(	px, 
+		buttons.add(	px, 
 				1, 
 				0);
 		
-		add(	nx, 
+		buttons.add(	nx, 
 				1, 
 				2);
-		add(	increment, 
+		buttons.add(	increment, 
 				0, 
 				3);
-		add(	new Label("mm"), 
+		buttons.add(	new Label("mm"), 
 				1, 
 				3);
 		
-		add(	sec, 
+		buttons.add(	sec, 
 				2, 
 				3);
-		add(	new Label("sec"), 
+		buttons.add(	new Label("sec"), 
 				3, 
 				3);
 		
-		add(	pz, 
+		buttons.add(	pz, 
 				3, 
 				0);
-		add(	nz, 
+		buttons.add(	nz, 
 				3, 
 				1);
-		
-		add(	new Label("X="), 
-				4, 
+		add(	buttons, 
+				0, 
 				0);
-		add(	new Label("Y="), 
-				4, 
+		transform = new TransformWidget("Current Pos", getKin().getCurrentPoseTarget(), this);
+		add(	transform, 
+				0, 
 				1);
-		add(	new Label("Z="), 
-				4, 
-				2);
-		
-		add(	positionx, 
-				5, 
-				0);
-		add(	positiony, 
-				5, 
-				1);
-		add(	positionz, 
-				5, 
-				2);
-		
-		add(	new Label("  (to)X="), 
-				6, 
-				0);
-		add(	new Label("  (to)Y="), 
-				6, 
-				1);
-		add(	new Label("  (to)Z="), 
-				6, 
-				2);
-		
-		add(	targetx, 
-				7, 
-				0);
-		add(	targety, 
-				7, 
-				1);
-		add(	targetz, 
-				7, 
-				2);
 	}
 	public void home(){
-		for(int i=0;i<kin.getNumberOfLinks();i++){
+		for(int i=0;i<getKin().getNumberOfLinks();i++){
 			try {
-				kin.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+				getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -199,9 +159,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 		// TODO Auto-generated method stub
 		Platform.runLater(() -> {
-			positionx.setText(DHLinkWidget.getFormatted(pose.getX()));
-			positiony.setText(DHLinkWidget.getFormatted(pose.getY()));
-			positionz.setText(DHLinkWidget.getFormatted(pose.getZ()));
+			transform.updatePose(pose);
 		});
 	}
 
@@ -209,10 +167,32 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR {
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,
 			TransformNR pose) {
 		Platform.runLater(() -> {
-			targetx.setText(DHLinkWidget.getFormatted(pose.getX()));
-			targety.setText(DHLinkWidget.getFormatted(pose.getY()));
-			targetz.setText(DHLinkWidget.getFormatted(pose.getZ()));
+			transform.updatePose(pose);
 		});
+	}
+	
+	@Override
+	public void onTransformChaging(TransformNR newTrans) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onTransformFinished(TransformNR newTrans) {
+		try {
+			getKin().setDesiredTaskSpaceTransform(newTrans,  Double.parseDouble(sec.getText()));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public AbstractKinematicsNR getKin() {
+		return kin;
+	}
+	public void setKin(AbstractKinematicsNR kin) {
+		this.kin = kin;
 	}
 
 }

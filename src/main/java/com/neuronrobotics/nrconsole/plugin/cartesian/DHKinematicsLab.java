@@ -8,8 +8,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import sun.security.action.GetLongAction;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -38,7 +40,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 	DHParameterKinematics device;
 	private File currentFile=null;
 	private VBox links;
-	private HBox controls;
+	private VBox controls;
 	JogWidget jog = null;
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
 	@Override
@@ -60,9 +62,13 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 		device=(DHParameterKinematics)pm;
 		Log.debug("Loading xml: "+device.getXml());
 		links = new VBox(20);
-		controls = new HBox(10);
+		controls = new VBox(10);
 		jog = new JogWidget(device);
-		controls.getChildren().add(jog);
+		
+		VBox advanced = new VBox(10);
+		
+		
+		
 		Button save = new Button("Save Configuration");
 		Button add = new Button("Add Link");
 		Button refresh = new Button("RefreshModel");
@@ -93,7 +99,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 			onTabReOpening();
 		});
 		
-		controls.getChildren().add(new TransformWidget("Limb to Base", 
+		advanced.getChildren().add(new TransformWidget("Limb to Base", 
 				device.getRobotToFiducialTransform(), new IOnTransformChange() {
 					
 					@Override
@@ -105,13 +111,13 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 					@Override
 					public void onTransformChaging(TransformNR newTrans) {
 						Log.debug("Limb to base"+newTrans.toString());
-						device.setBaseToZframeTransform(newTrans);
+						device.setRobotToFiducialTransform(newTrans);
 						device.getCurrentTaskSpaceTransform();
 					}
 				}
 				));
-		controls.getChildren().add(new TransformWidget("Base to Global", 
-				device.getRobotToFiducialTransform(),new IOnTransformChange() {
+		advanced.getChildren().add(new TransformWidget("Base to Global", 
+				device.getFiducialToGlobalTransform(),new IOnTransformChange() {
 					
 					@Override
 					public void onTransformFinished(TransformNR newTrans) {
@@ -129,9 +135,13 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 				));
 		
 
-		controls.getChildren().add(save);
-		controls.getChildren().add(add);
-		controls.getChildren().add(refresh);
+		advanced.getChildren().add(save);
+		advanced.getChildren().add(add);
+		advanced.getChildren().add(refresh);
+		Accordion advancedPanel = new Accordion();
+		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
+		controls.getChildren().add(jog);
+		controls.getChildren().add(advancedPanel);
 		onTabReOpening();
 
 		setContent(new ScrollPane(links));

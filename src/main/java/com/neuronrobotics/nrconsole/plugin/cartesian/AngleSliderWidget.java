@@ -5,12 +5,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 public class AngleSliderWidget extends GridPane implements ChangeListener<Number>{
-	private Label setpointValue;
+	private TextField setpointValue;
 	private Slider setpoint;
 	private IOnAngleChange listener;
 	
@@ -27,7 +28,17 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 		setpoint.setMajorTickUnit(50);
 		setpoint.setMinorTickCount(5);
 		setpoint.setBlockIncrement(10);
-		setpointValue = new Label(getFormatted(current));
+		setpointValue = new TextField(getFormatted(current));
+		setpointValue.setOnAction(event -> {
+			Platform.runLater(() -> {
+				double val =Double.parseDouble(setpointValue.getText());
+				setpoint.valueProperty().removeListener(this);
+				setpoint.setValue(val);
+				setpointValue.setText(getFormatted(setpoint.getValue()));
+				setpoint.valueProperty().addListener(this);
+				getListener().onSliderDoneMoving(this,val);
+			});
+		});
 		setpoint.setMaxWidth(width);
 		setpoint.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			double val =Double.parseDouble(setpointValue.getText());
@@ -35,9 +46,9 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 		});
 		setpoint.valueProperty().addListener(this);
 		
-		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(width+10)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
 		
 		
 		add(	setpoint, 
@@ -53,11 +64,14 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 	@Override
 	public void changed(ObservableValue<? extends Number> observable,
 			Number oldValue, Number newValue) {
+		updateValue();
+	}
+	
+	private void updateValue(){
 		Platform.runLater(() -> {
-			setpointValue.setText(getFormatted(newValue.doubleValue()));
-			getListener().onSliderMoving(this,newValue.doubleValue());
+			setpointValue.setText(getFormatted(setpoint.getValue()));
+			getListener().onSliderMoving(this,setpoint.getValue());
 		});
-
 	}
 
 	
