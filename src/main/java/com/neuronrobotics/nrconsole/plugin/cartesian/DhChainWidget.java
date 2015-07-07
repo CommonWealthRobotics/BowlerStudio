@@ -206,6 +206,7 @@ public class DhChainWidget extends Group implements ICadGenerator{
 			// add ax to list of objects to be returned
 			csg.add(cube);
 		}
+		BowlerStudioController.setCsg(csg);
 		return csg;
 	}
 	public ICadGenerator getCadEngine() {

@@ -38,7 +38,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Transform;
 
-public class DHKinematicsLab extends AbstractBowlerStudioTab {
+public class CreatureLab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabClosing() {
@@ -55,7 +55,7 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		// TODO Auto-generated method stub
-		setText("DH Lab");
+		setText("Creature Lab");
 
 		GridPane dhlabTopLevel=new GridPane();
 		

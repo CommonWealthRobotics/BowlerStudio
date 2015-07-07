@@ -29,9 +29,9 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	public TransformWidget(String title, TransformNR initialState, IOnTransformChange onChange){
 		this.initialState = initialState;
 		this.onChange = onChange;
-		tx = new TextField(DHKinematicsLab.getFormatted(initialState.getX()));
-		ty = new TextField(DHKinematicsLab.getFormatted(initialState.getY()));
-		tz = new TextField(DHKinematicsLab.getFormatted(initialState.getZ()));
+		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
+		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
+		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
 		tx.setOnAction(this);
 		ty.setOnAction(this);
 		tz.setOnAction(this);
@@ -117,9 +117,9 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	public void updatePose(TransformNR pose) {
 		//Log.debug("Transform widget is updating to: "+pose);
 		Platform.runLater(() -> {
-			tx.setText(DHKinematicsLab.getFormatted(pose.getX()));
-			ty.setText(DHKinematicsLab.getFormatted(pose.getY()));
-			tz.setText(DHKinematicsLab.getFormatted(pose.getZ()));
+			tx.setText(CreatureLab.getFormatted(pose.getX()));
+			ty.setText(CreatureLab.getFormatted(pose.getY()));
+			tz.setText(CreatureLab.getFormatted(pose.getZ()));
 		});
 		RotationNR rot = pose.getRotation();
 		rx.setValue(Math.toDegrees(rot.getRotationX()));

@@ -21,7 +21,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnAngleChan
 	public DhSettingsWidget(DHLink dhLink,DHParameterKinematics device2){
 		this.dhLink = dhLink;
 		this.device2 = device2;
-		delta = new TextField(DHKinematicsLab.getFormatted(dhLink.getDelta()));
+		delta = new TextField(CreatureLab.getFormatted(dhLink.getDelta()));
 		delta.setOnAction(event -> {
 			dhLink.setDelta(Double.parseDouble(delta.getText()));
 			device2.getCurrentTaskSpaceTransform();
@@ -33,7 +33,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnAngleChan
 				Math.toDegrees(dhLink.getTheta()),
 				180);
 		
-		radius = new TextField(DHKinematicsLab.getFormatted(dhLink.getRadius()));
+		radius = new TextField(CreatureLab.getFormatted(dhLink.getRadius()));
 		radius.setOnAction(event -> {
 			dhLink.setRadius(Double.parseDouble(radius.getText()));
 			device2.getCurrentTaskSpaceTransform();

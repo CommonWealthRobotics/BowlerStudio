@@ -38,7 +38,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.cartesian.AdvancedKinematicsController;
-import com.neuronrobotics.nrconsole.plugin.cartesian.DHKinematicsLab;
+import com.neuronrobotics.nrconsole.plugin.cartesian.CreatureLab;
 import com.neuronrobotics.nrconsole.plugin.cartesian.JogKinematicsDevice;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
@@ -85,14 +85,14 @@ public class PluginManager {
 		//AbstractKinematicsNR
 		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
 		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, CreatureLab.class));
 		//NRPrinter
 		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
 		//Bowler Cam
 		addPlugin(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
 		//LinearPhysicsEngine
 		addPlugin(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
-		//LinearPhysicsEngine
-		addPlugin(new DeviceSupportPluginMap(DHParameterKinematics.class, DHKinematicsLab.class));
+
 	}
 	
 	public PluginManager(BowlerAbstractDevice dev){
@@ -245,7 +245,7 @@ public class PluginManager {
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOConsole.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
-							DHKinematicsLab.class ==c.getPlugin()
+							CreatureLab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
