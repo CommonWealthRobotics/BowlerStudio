@@ -1,6 +1,7 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
 
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 
@@ -32,11 +33,14 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 
 		GridPane dhlabTopLevel=new GridPane();
 		
+		
 		if(DHParameterKinematics.class.isInstance(pm)){
 			DHParameterKinematics device=(DHParameterKinematics)pm;
 			Log.debug("Loading xml: "+device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
+			Button refresh = new Button("Generate CAD");
+			Button save = new Button("Save Configuration");
 			MobileBase device=(MobileBase)pm;
 			Log.debug("Loading xml: "+device.getXml());
 			

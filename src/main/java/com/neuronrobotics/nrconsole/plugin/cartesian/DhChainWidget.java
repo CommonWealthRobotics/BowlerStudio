@@ -56,7 +56,7 @@ public class DhChainWidget extends Group implements ICadGenerator{
 		
 		Button save = new Button("Save Configuration");
 		Button add = new Button("Add Link");
-		Button refresh = new Button("RefreshModel");
+		Button refresh = new Button("Generate CAD");
 		save.setOnAction(event -> {
 			new Thread(){
 				public void run(){

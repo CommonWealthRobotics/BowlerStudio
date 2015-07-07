@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -53,6 +54,10 @@ public class GithubLoginDialog extends Stage implements EventHandler<ActionEvent
     }
     
     String getUsername(){
+    	if(userNameFld.getText().contains("@")){
+    		Platform.runLater(()->userNameFld.setText("Username not email"));
+    		return null;
+    	}
     	return userNameFld.getText();
     }
     String getPw(){

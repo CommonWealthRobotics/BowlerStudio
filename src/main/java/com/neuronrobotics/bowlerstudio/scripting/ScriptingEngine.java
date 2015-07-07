@@ -162,10 +162,12 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
 		Platform.runLater(() -> {
 			GithubLoginDialog myDialog = new GithubLoginDialog(BowlerStudio.getPrimaryStage());
-	        myDialog.sizeToScene();
-	        myDialog.showAndWait();
-	        loginID = myDialog.getUsername();
-	        pw=myDialog.getPw();
+			do{
+		        myDialog.sizeToScene();
+		        myDialog.showAndWait();
+		        loginID = myDialog.getUsername();
+		        pw=myDialog.getPw();
+			}while(loginID==null);
 		});
         while(loginID==null)ThreadUtil.wait(100);
         
