@@ -1,11 +1,17 @@
 package com.neuronrobotics.nrconsole.plugin.cartesian;
 
+import java.time.Duration;
+
+import org.reactfx.util.FxTimer;
+
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -33,61 +39,31 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
-		
-		EventHandler<ActionEvent> l = new EventHandler<ActionEvent>() {
-			
-			@Override
-			public void handle(ActionEvent event) {
-				TransformNR current = getKin().getCurrentTaskSpaceTransform();
-				double inc;
-				try{
-					inc = Double.parseDouble(increment.getText());
-				}catch(Exception e){
-					Platform.runLater(() -> {
-						increment.setText("10");
-					});
-					inc=100;
-				}
-				if(event.getSource() == px){
-					current.translateX(inc);
-				}
-				if(event.getSource() == nx){
-					current.translateX(-inc);
-				}
-				if(event.getSource() == py){
-					current.translateY(inc);
-				}
-				if(event.getSource() == ny){
-					current.translateY(-inc);
-				}
-				if(event.getSource() == pz){
-					current.translateZ(inc);
-				}
-				if(event.getSource() == nz){
-					current.translateZ(-inc);
-				}
-				if(event.getSource() == home){
-					home();
-				}else{
-					try {
-						getKin().setDesiredTaskSpaceTransform(current,  Double.parseDouble(sec.getText()));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		};
+
 		getKin().addPoseUpdateListener(this);
 
 		
-		px.setOnAction(l);
-		nx.setOnAction(l);
-		py.setOnAction(l);
-		ny.setOnAction(l);
-		pz.setOnAction(l);
-		nz.setOnAction(l);
-		home.setOnAction(l);
+		px.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		nx.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		py.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		ny.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		pz.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		nz.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		home.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		
+		px.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		nx.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		py.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		ny.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		pz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		nz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		home.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		
+		
+		
+		
+		
+		
 		GridPane buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 300 wide
@@ -147,6 +123,69 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				0, 
 				1);
 	}
+	
+	private void handle(final Button button ){
+		TransformNR current = getKin().getCurrentTaskSpaceTransform();
+		double inc;
+		try{
+			inc = Double.parseDouble(increment.getText());
+		}catch(Exception e){
+			Platform.runLater(() -> {
+				increment.setText("10");
+			});
+			inc=100;
+		}
+		if(!button.isPressed()){
+			// button released
+			Log.warning(button.getText()+" Button released ");
+			try {
+				getKin().setDesiredTaskSpaceTransform(current,  0);
+			} catch (Exception e) {}
+			return;
+		}else{
+			Log.warning(button.getText()+" Button pressed ");
+		}
+		if(button == px){
+			current.translateX(inc);
+		}
+		if(button == nx){
+			current.translateX(-inc);
+		}
+		if(button == py){
+			current.translateY(inc);
+		}
+		if(button == ny){
+			current.translateY(-inc);
+		}
+		if(button == pz){
+			current.translateZ(inc);
+		}
+		if(button == nz){
+			current.translateZ(-inc);
+		}
+		if(button == home){
+			home();
+		}else{
+			try {
+				double seconds =Double.parseDouble(sec.getText());
+				getKin().setDesiredTaskSpaceTransform(current,  seconds);
+				
+				FxTimer.runLater(
+						Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
+							Log.warning(button.getText()+" Completion handler");
+							if(button.isPressed()){
+								handle( button);
+								return;
+							}
+							Log.warning(button.getText()+" Still pressed");
+						});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void home(){
 		for(int i=0;i<getKin().getNumberOfLinks();i++){
 			try {
