@@ -83,8 +83,8 @@ public class PluginManager {
 		//BowlerBoard Specific
 		//addPlugin(new DeviceSupportPlugginMap(BowlerBoardDevice.class, //none yet));
 		//AbstractKinematicsNR
-		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
-		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
+		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
+		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
 		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, CreatureLab.class));
 		//NRPrinter
 		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
