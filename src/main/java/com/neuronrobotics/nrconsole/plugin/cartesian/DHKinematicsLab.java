@@ -12,6 +12,7 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -22,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -37,12 +39,7 @@ import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Transform;
 
 public class DHKinematicsLab extends AbstractBowlerStudioTab {
-	DHParameterKinematics device;
-	private File currentFile=null;
-	private VBox links;
-	private VBox controls;
-	JogWidget jog = null;
-	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
+
 	@Override
 	public void onTabClosing() {
 		// TODO Auto-generated method stub
@@ -59,140 +56,30 @@ public class DHKinematicsLab extends AbstractBowlerStudioTab {
 	public void initializeUI(BowlerAbstractDevice pm) {
 		// TODO Auto-generated method stub
 		setText("DH Lab");
-		device=(DHParameterKinematics)pm;
-		Log.debug("Loading xml: "+device.getXml());
-		links = new VBox(20);
-		controls = new VBox(10);
-		jog = new JogWidget(device);
-		
-		VBox advanced = new VBox(10);
-		
-		
-		
-		Button save = new Button("Save Configuration");
-		Button add = new Button("Add Link");
-		Button refresh = new Button("RefreshModel");
-		save.setOnAction(event -> {
-			new Thread(){
-				public void run(){
-					File last = FileSelectionFactory.GetFile(currentFile==null?
-										ScriptingEngine.getWorkspace():
-										new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-							new XmlFilter());
-					if (last != null) {
-						try {
-							Files.write(Paths.get(last.getAbsolutePath()),device.getXml().getBytes() );
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			}.start();
-		});
-		add.setOnAction(event -> {
-			LinkConfiguration newLink = new LinkConfiguration();
-			device.addNewLink(newLink,new DHLink(0, 0, 0, 0));
-			onTabReOpening();
-		});
-		refresh.setOnAction(event -> {
-			onTabReOpening();
-		});
-		
-		advanced.getChildren().add(new TransformWidget("Limb to Base", 
-				device.getRobotToFiducialTransform(), new IOnTransformChange() {
-					
-					@Override
-					public void onTransformFinished(TransformNR newTrans) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onTransformChaging(TransformNR newTrans) {
-						Log.debug("Limb to base"+newTrans.toString());
-						device.setRobotToFiducialTransform(newTrans);
-						device.getCurrentTaskSpaceTransform();
-					}
-				}
-				));
-		advanced.getChildren().add(new TransformWidget("Base to Global", 
-				device.getFiducialToGlobalTransform(),new IOnTransformChange() {
-					
-					@Override
-					public void onTransformFinished(TransformNR newTrans) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onTransformChaging(TransformNR newTrans) {
-						Log.debug("Base to Global"+newTrans.toString());
-						device.setGlobalToFiducialTransform(newTrans);
-						device.getCurrentTaskSpaceTransform();
-					}
-				}
-				));
-		
 
-		advanced.getChildren().add(save);
-		advanced.getChildren().add(add);
-		advanced.getChildren().add(refresh);
-		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
-		controls.getChildren().add(jog);
-		controls.getChildren().add(advancedPanel);
-		onTabReOpening();
-
-		setContent(new ScrollPane(links));
+		GridPane dhlabTopLevel=new GridPane();
+		
+		if(DHParameterKinematics.class.isInstance(pm)){
+			DHParameterKinematics device=(DHParameterKinematics)pm;
+			Log.debug("Loading xml: "+device.getXml());
+			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
+		}else if(AbstractKinematicsNR.class.isInstance(pm)) {
+			AbstractKinematicsNR device=(AbstractKinematicsNR)pm;
+			Log.debug("Loading xml: "+device.getXml());
+			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
+		}
+		
+		setContent(new ScrollPane(dhlabTopLevel));
 	}
 
 
 	@Override
 	public void onTabReOpening() {
-		for(DHLinkWidget wid:widgets){
-			device.removeJointSpaceUpdateListener(wid);
-		}
-		widgets.clear();
-		links.getChildren().clear();
-		ArrayList<DHLink> dhLinks = device.getChain().getLinks();
-		links.getChildren().add(controls);
-		ArrayList<CSG> csg = new ArrayList<CSG>();
 		
-		for(int i=0;i<dhLinks.size();i++){
-			Log.warning("Adding Link Widget: "+i);
-			DHLink dh  =dhLinks.get(i);
-			Button del = new Button("Delete");
-			final int linkIndex=i;
-			del.setOnAction(event -> {
-				device.removeLink(linkIndex);
-				
-				onTabReOpening();
-				
-			});
-			DHLinkWidget w = new DHLinkWidget(i,
-					dh,
-					device,
-					del
-					);
-			widgets.add(w);
-			links.getChildren().add(w);
-			device.addJointSpaceListener(w);
-			// Create an axis to represent the link
-			double y = dh.getD()>0?dh.getD():2;
-			double  x= dh.getRadius()>0?dh.getRadius():2;
-
-			CSG cube = new Cube(x,y,2).toCSG();
-			cube=cube.transformed(new Transform().translateX(-x/2));
-			cube=cube.transformed(new Transform().translateY(y/2));
-			//add listner to axis
-			cube.setManipulator(dh.getListener());
-			cube.setColor(Color.GOLD);
-			// add ax to list of objects to be returned
-			csg.add(cube);
-		}
-		BowlerStudioController.setCsg(csg);
-		jog.home();
+	}
+	
+	public static String getFormatted(double value){
+	    return String.format("%4.3f%n", (double)value);
 	}
 
 }

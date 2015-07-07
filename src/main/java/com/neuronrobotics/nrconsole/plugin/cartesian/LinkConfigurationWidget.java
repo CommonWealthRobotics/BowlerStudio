@@ -36,7 +36,7 @@ public class LinkConfigurationWidget extends GridPane {
 	    getColumnConstraints().add(new ColumnConstraints(10)); // column 2 is 300 wide
 	    setHgap(20);
 	    
-	    TextField scale = new TextField(DHLinkWidget.getFormatted(conf.getScale()));
+	    TextField scale = new TextField(DHKinematicsLab.getFormatted(conf.getScale()));
 	    scale.setOnAction(event -> {
 			conf.setScale(Double.parseDouble(scale.getText()));
 		});
@@ -52,17 +52,17 @@ public class LinkConfigurationWidget extends GridPane {
 		    		0);
 
 		
-	    TextField lbound = new TextField(DHLinkWidget.getFormatted(conf.getLowerLimit()));
+	    TextField lbound = new TextField(DHKinematicsLab.getFormatted(conf.getLowerLimit()));
 	    lbound.setOnAction(event -> {
 			conf.setLowerLimit(Double.parseDouble(lbound.getText()));
 		});
 	    
-	    TextField ubound = new TextField(DHLinkWidget.getFormatted(conf.getUpperLimit()));
+	    TextField ubound = new TextField(DHKinematicsLab.getFormatted(conf.getUpperLimit()));
 	    ubound.setOnAction(event -> {
 			conf.setUpperLimit(Double.parseDouble(ubound.getText()));
 		});
 	    
-		TextField offset = new TextField(DHLinkWidget.getFormatted(conf.getStaticOffset()));
+		TextField offset = new TextField(DHKinematicsLab.getFormatted(conf.getStaticOffset()));
 			offset.setOnAction(event -> {
 			conf.setStaticOffset(Double.parseDouble(offset.getText()));
 		});
