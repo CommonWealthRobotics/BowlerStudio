@@ -42,7 +42,8 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				//if the device disconnects, close the tab
-				requestClose();
+				if(source ==pm && source !=null )
+					requestClose();
 			}
 			
 			@Override

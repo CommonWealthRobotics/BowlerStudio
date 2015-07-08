@@ -38,7 +38,6 @@ public class PluginManagerWidget extends TitledPane {
 
 				    	Log.warning("Disconnect button for "+manager.getName()+" pressed");
 				    	getManager().getDevice().disconnect();
-				    	DeviceManager.remove(getManager().getDevice());
 			    	
 				}
 			}.start();

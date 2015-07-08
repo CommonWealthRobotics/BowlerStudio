@@ -509,7 +509,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	@Override
 	public void onDeviceRemoved(BowlerAbstractDevice bad) {
 		Log.warning("Removing Device " + bad.getScriptingName());
-		new RuntimeException().printStackTrace();
+		//new RuntimeException().printStackTrace();
 		for(int i=0;i<plugins.size();i++){
 			PluginManager p=plugins.get(i).getManager();
 			if(p.getDevice()==bad){
