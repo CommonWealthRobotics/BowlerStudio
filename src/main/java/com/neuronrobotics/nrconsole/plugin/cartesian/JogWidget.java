@@ -2,17 +2,21 @@ package com.neuronrobotics.nrconsole.plugin.cartesian;
 
 import java.time.Duration;
 
+import net.java.games.input.Component;
+
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
+import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,7 +26,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
-public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange {
+public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
 	
 	private AbstractKinematicsNR kin;
 	Button px = new Button("+X");
@@ -32,10 +36,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button pz = new Button("+Z");
 	Button nz = new Button("-Z");
 	Button home = new Button("home");
+	Button game = new Button("Add Game Controller");
 	TextField increment=new TextField("10");
 	TextField sec=new TextField("1");
 	private TransformWidget transform;
-
+	BowlerJInputDevice gameController=null;
+	double x,y,rz,slider=0;
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
@@ -58,10 +64,28 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		pz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
 		nz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
 		home.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		
-		
-		
-		
+		game.setOnAction(event -> {
+			if(gameController == null){
+				gameController = (BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController");
+				if(gameController==null){
+					ConnectionManager.onConnectGamePad("jogController");
+					gameController = (BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController");
+				}
+				if(gameController!=null){
+					gameController.addListeners(this);
+					game.setText("Remove Game Controller");
+					controllerLoop();
+					//TODO open a configuration panel here
+				}else{
+					//the controller must not be availible, bailing
+				}
+				
+			}else{
+				gameController.removeListeners(this);
+				game.setText("Add Game Controller");
+				gameController=null;
+			}
+		});
 		
 		
 		GridPane buttons = new GridPane();
@@ -113,6 +137,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	nz, 
 				3, 
 				1);
+		buttons.add(	game, 
+				4, 
+				0);
 		add(	buttons, 
 				0, 
 				0);
@@ -236,6 +263,78 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	}
 	public void setKin(AbstractKinematicsNR kin) {
 		this.kin = kin;
+	}
+	
+	
+	private void controllerLoop(){
+		if(gameController!=null){
+			double seconds =Double.parseDouble(sec.getText());
+			if(!(x==0.0&&y==0.0 &&rz==0.0&&slider==0)){ 
+				
+				TransformNR current = getKin().getCurrentTaskSpaceTransform();
+				double inc;
+				try{
+					inc = Double.parseDouble(increment.getText());
+				}catch(Exception e){
+					Platform.runLater(() -> {
+						increment.setText("10");
+					});
+					inc=100;
+				}
+				current.translateX(inc*x);
+				current.translateY(inc*y);
+				current.translateZ(inc*slider);
+				try {
+					getKin().setDesiredTaskSpaceTransform(current,  seconds);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			FxTimer.runLater(
+					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
+						controllerLoop();
+					});
+		}
+	}
+	
+
+	@Override
+	public void onEvent(Component comp, net.java.games.input.Event event,
+			float value, String eventString) {
+		System.out.println(comp.getName()+" is value= "+value);
+
+		
+		
+
+		
+		if(comp.getName().toLowerCase().contentEquals("x"))
+			x=value;
+		if(comp.getName().toLowerCase().contentEquals("y"))
+			y=value;
+		if(comp.getName().toLowerCase().contentEquals("rz"))
+			rz=value;
+		if(comp.getName().toLowerCase().contentEquals("slider"))
+			slider=value;
+		if(Math.abs(x)<.03)
+			x=0;
+		if(Math.abs(y)<.03)
+			y=0;
+		if(Math.abs(rz)<.03)
+			rz=0;
+		if(Math.abs(slider)<.03)
+			slider=0;
+		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
+			//stop
+			try {
+				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 	}
 
 }

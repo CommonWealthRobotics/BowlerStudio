@@ -461,7 +461,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 						else if(stackTrace.contains("camera"))
 							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
 						else if(stackTrace.contains("gamepad"))
-							ConnectionManager.onConnectGamePad();
+							ConnectionManager.onConnectGamePad("gamepad");
 						reset();
 					});
 					

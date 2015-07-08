@@ -192,7 +192,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 		}else{
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("No Printers connected");
+			alert.setTitle("Device not availible");
 			alert.setHeaderText("Connect a "+class1.getSimpleName());
 			alert.setContentText("A device of type "+class1.getSimpleName()+" is needed");
 			alert .initModality(Modality.APPLICATION_MODAL);
@@ -360,7 +360,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	public static void onConnectGamePad() {
+	public static void onConnectGamePad(String name ) {
 		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
 		
 		List<String> choices = new ArrayList<>();
@@ -393,7 +393,6 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 								}
 					};
 					p.addListeners(l);
-					String name = "gamepad";
 					addConnection(p,name);
 					return;
 				}

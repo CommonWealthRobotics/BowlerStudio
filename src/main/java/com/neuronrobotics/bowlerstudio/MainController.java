@@ -427,7 +427,7 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onConnectGamePad(ActionEvent event) {
-		Platform.runLater(()->ConnectionManager.onConnectGamePad());
+		Platform.runLater(()->ConnectionManager.onConnectGamePad("gamepad"));
 		
 	}
 
