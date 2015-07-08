@@ -38,6 +38,7 @@ import com.neuronrobotics.sdk.common.BowlerMethod;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.MACAddress;
 import com.neuronrobotics.sdk.common.NonBowlerDevice;
@@ -45,7 +46,6 @@ import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.common.device.server.BowlerAbstractDeviceServerNamespace;
 import com.neuronrobotics.sdk.common.device.server.BowlerAbstractServer;
 import com.neuronrobotics.sdk.common.device.server.IBowlerCommandProcessor;
-
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
@@ -444,15 +444,15 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		mp.setName(newDevice.getScriptingName());
 
 		newDevice.addConnectionEventListener(
-				new IConnectionEventListener() {
+				new IDeviceConnectionEventListener() {
 					@Override
-					public void onDisconnect(BowlerAbstractConnection source) {
+					public void onDisconnect(BowlerAbstractDevice source) {
 						// clean up after yourself...
 						//disconectAndRemoveDevice(mp);
 						
 						for(int i=0;i<plugins.size();i++){
 							PluginManager p=plugins.get(i).getManager();
-							if(p.getDevice().getConnection()==source){
+							if(p.getDevice()==source){
 								DeviceManager.remove(p.getDevice());
 								return;
 							}
@@ -462,7 +462,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 					// ignore
 					@Override
-					public void onConnect(BowlerAbstractConnection source) {
+					public void onConnect(BowlerAbstractDevice source) {
 					}
 				});
 		refreshItemTree();
@@ -509,6 +509,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	@Override
 	public void onDeviceRemoved(BowlerAbstractDevice bad) {
 		Log.warning("Removing Device " + bad.getScriptingName());
+		new RuntimeException().printStackTrace();
 		for(int i=0;i<plugins.size();i++){
 			PluginManager p=plugins.get(i).getManager();
 			if(p.getDevice()==bad){

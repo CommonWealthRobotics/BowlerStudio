@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio;
 import java.util.ArrayList;
 
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,40 +20,43 @@ import javafx.scene.layout.Priority;
 public class PluginManagerWidget extends TitledPane {
 	private PluginManager manager;
 	private TextField deviceName = new TextField();
-	private Button disconnectAll;
+	private Button disconnectTHis;
 	final Accordion accordion = new Accordion (); 
 
-	public PluginManagerWidget(PluginManager manager, Node graphic){
+	public PluginManagerWidget(PluginManager m, Node graphic){
 		HBox content = new HBox(20);
 
 		content.setPadding(new Insets(0, 20, 10, 20)); 
-		this.setManager(manager);
+		this.manager = m;
 		ArrayList<TitledPane> plugins = manager.getPlugins();
 		accordion.getPanes().addAll(plugins);
-		disconnectAll = new Button("Disconnect "+manager.getName());
-		disconnectAll.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		    	getManager().getDevice().disconnect();
-		    	DeviceManager.remove(getManager().getDevice());
-		    }
+		disconnectTHis = new Button("Disconnect "+manager.getName());
+
+		disconnectTHis.setOnMousePressed(	event -> {
+			new Thread(){
+				public void run(){
+
+				    	Log.warning("Disconnect button for "+manager.getName()+" pressed");
+				    	getManager().getDevice().disconnect();
+				    	DeviceManager.remove(getManager().getDevice());
+			    	
+				}
+			}.start();
+
 		});
 		deviceName.setOnAction(event -> {
 			getManager().setName(deviceName.getText());
 			setText("Scripting name: "+manager.getName());
-			disconnectAll.setText("Disconnect "+manager.getName());
+			disconnectTHis.setText("Disconnect "+manager.getName());
 		});
 		Platform.runLater(()->deviceName.setText(manager.getName()));
 		content.setHgrow(accordion, Priority.ALWAYS);
-		content.getChildren().addAll(graphic,disconnectAll,deviceName,accordion);
+		content.getChildren().addAll(graphic,disconnectTHis,deviceName,accordion);
 		setContent(content);
 		setText("Scripting name: "+manager.getName());
 	}
 
 	public PluginManager getManager() {
 		return manager;
-	}
-
-	public void setManager(PluginManager manager) {
-		this.manager = manager;
 	}
 }

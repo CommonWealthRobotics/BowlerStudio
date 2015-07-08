@@ -13,6 +13,7 @@ import java.util.List;
 
 
 
+
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -43,6 +44,7 @@ import com.neuronrobotics.sdk.addons.kinematics.gui.Jfx3dManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.RollingAverageFilter;
@@ -291,16 +293,16 @@ public class BowlerStudioController extends TabPane implements
 			// TODO Auto-generated method stub
 			BowlerAbstractDevice dev = ConnectionManager
 					.pickConnectedDevice(DHParameterKinematics.class);
-			IConnectionEventListener l = new IConnectionEventListener() {
+			IDeviceConnectionEventListener l = new IDeviceConnectionEventListener() {
 				@Override
-				public void onDisconnect(BowlerAbstractConnection source) {
+				public void onDisconnect(BowlerAbstractDevice source) {
 					jfx3dmanager.removeArm();
 					mainController.getAddDefaultRightArm().selectedProperty()
 							.set(false);
 				}
 
 				@Override
-				public void onConnect(BowlerAbstractConnection source) {
+				public void onConnect(BowlerAbstractDevice source) {
 				}
 			};
 			if (dev == null) {
@@ -333,15 +335,15 @@ public class BowlerStudioController extends TabPane implements
 			setVrCamera(ConnectionManager.onConnectCVCamera());
 		if (getVrCamera() != null) {
 			getVrCamera().addConnectionEventListener(
-					new IConnectionEventListener() {
+					new IDeviceConnectionEventListener() {
 						@Override
-						public void onDisconnect(BowlerAbstractConnection source) {
+						public void onDisconnect(BowlerAbstractDevice source) {
 							mainController.getAddVRCamera().selectedProperty()
 									.set(false);
 						}
 
 						@Override
-						public void onConnect(BowlerAbstractConnection source) {
+						public void onConnect(BowlerAbstractDevice source) {
 						}
 					});
 			new Thread() {
