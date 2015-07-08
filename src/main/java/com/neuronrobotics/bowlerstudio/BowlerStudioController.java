@@ -433,4 +433,9 @@ public class BowlerStudioController extends TabPane implements
 		BowlerStudioController.bowlerStudio = bowlerStudio;
 	}
 
+	public static void setup() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

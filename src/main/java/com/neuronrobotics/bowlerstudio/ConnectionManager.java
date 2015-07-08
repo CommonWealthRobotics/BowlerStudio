@@ -3,8 +3,11 @@ package com.neuronrobotics.bowlerstudio;
 import gnu.io.NRSerialPort;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +32,20 @@ import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.BowlerDataType;
+import com.neuronrobotics.sdk.common.BowlerDatagram;
+import com.neuronrobotics.sdk.common.BowlerMethod;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.MACAddress;
 import com.neuronrobotics.sdk.common.NonBowlerDevice;
+import com.neuronrobotics.sdk.common.RpcEncapsulation;
+import com.neuronrobotics.sdk.common.device.server.BowlerAbstractDeviceServerNamespace;
+import com.neuronrobotics.sdk.common.device.server.BowlerAbstractServer;
+import com.neuronrobotics.sdk.common.device.server.IBowlerCommandProcessor;
+
 import com.neuronrobotics.sdk.javaxusb.UsbCDCSerialConnection;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
@@ -520,4 +532,5 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
+	
 }
