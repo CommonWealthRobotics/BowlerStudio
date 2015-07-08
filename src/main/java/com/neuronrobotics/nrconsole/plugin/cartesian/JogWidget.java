@@ -38,10 +38,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button home = new Button("home");
 	Button game = new Button("Add Game Controller");
 	TextField increment=new TextField("10");
-	TextField sec=new TextField("1");
+	TextField sec=new TextField(".1");
 	private TransformWidget transform;
 	BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
+	private boolean stop=true;
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
@@ -267,29 +268,38 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	
 	
 	private void controllerLoop(){
+		double seconds=.1;
 		if(gameController!=null){
-			double seconds =Double.parseDouble(sec.getText());
-			if(!(x==0.0&&y==0.0 &&rz==0.0&&slider==0)){ 
+			try{
+				seconds =Double.parseDouble(sec.getText());
+				if(!stop){ 
+					
+					TransformNR current = getKin().getCurrentTaskSpaceTransform();
+					double inc;
+					try{
+						inc = Double.parseDouble(increment.getText());
+					}catch(Exception e){
+						Platform.runLater(() -> {
+							increment.setText("10");
+						});
+						inc=10;
+					}
+					current.translateX(inc*x);
+					current.translateY(inc*y);
+					current.translateZ(inc*slider);
+					try {
+						getKin().setDesiredTaskSpaceTransform(current,  seconds);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}catch(Exception e){
 				
-				TransformNR current = getKin().getCurrentTaskSpaceTransform();
-				double inc;
-				try{
-					inc = Double.parseDouble(increment.getText());
-				}catch(Exception e){
-					Platform.runLater(() -> {
-						increment.setText("10");
-					});
-					inc=100;
-				}
-				current.translateX(inc*x);
-				current.translateY(inc*y);
-				current.translateZ(inc*slider);
-				try {
-					getKin().setDesiredTaskSpaceTransform(current,  seconds);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
+			if(seconds<.1){
+				seconds=.1;
+				sec.setText(".1");
 			}
 			FxTimer.runLater(
 					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
@@ -302,20 +312,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	@Override
 	public void onEvent(Component comp, net.java.games.input.Event event,
 			float value, String eventString) {
-		System.out.println(comp.getName()+" is value= "+value);
 
-		
-		
-
-		
 		if(comp.getName().toLowerCase().contentEquals("x"))
 			x=value;
 		if(comp.getName().toLowerCase().contentEquals("y"))
-			y=value;
+			y=-value;
 		if(comp.getName().toLowerCase().contentEquals("rz"))
 			rz=value;
 		if(comp.getName().toLowerCase().contentEquals("slider"))
-			slider=value;
+			slider=-value;
 		if(Math.abs(x)<.03)
 			x=0;
 		if(Math.abs(y)<.03)
@@ -325,14 +330,16 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(Math.abs(slider)<.03)
 			slider=0;
 		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
-			//stop
+			System.out.println("Stoping on="+comp.getName());
+			stop=true;
 			try {
 				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}else
+			stop=false;
 		
 		
 	}

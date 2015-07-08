@@ -251,17 +251,6 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 			blApp = new NRBoot(pm);
 			loadButton.setEnabled(true);
 			selectFile();
-			pm.addConnectionEventListener(new IConnectionEventListener() {
-				
-				@Override
-				public void onDisconnect(BowlerAbstractConnection source) {
-					requestClose();
-				}
-				
-				@Override
-				public void onConnect(BowlerAbstractConnection source) {}
-			});
-
 	}
 
 

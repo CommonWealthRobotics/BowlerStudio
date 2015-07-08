@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
@@ -25,7 +26,7 @@ import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEvent;
 import com.neuronrobotics.sdk.dyio.IDyIOEventListener;
 
-public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener  {
+public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPanelListener,IDyIOEventListener , IConnectionEventListener, IDeviceConnectionEventListener  {
 	private DyIOPanel devicePanel =null;
 	private DyIOControlsPanel deviceControls=null;
 	private ArrayList<ChannelManager> channels =null;
@@ -200,6 +201,19 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		for(ChannelManager c : channels) {
 			c.addListener(this);
 		}
+	}
+
+
+	@Override
+	public void onDisconnect(BowlerAbstractDevice source) {
+		onDisconnect(source.getConnection());
+	}
+
+
+	@Override
+	public void onConnect(BowlerAbstractDevice source) {
+		// TODO Auto-generated method stub
+		onConnect(source.getConnection());
 	}
 
 

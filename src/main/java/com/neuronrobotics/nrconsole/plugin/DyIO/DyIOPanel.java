@@ -26,7 +26,6 @@ import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.DyIOPowerEvent;
 import com.neuronrobotics.sdk.dyio.DyIOPowerState;
-import com.neuronrobotics.sdk.dyio.DyIORegestry;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class DyIOPanel extends JPanel {
