@@ -39,6 +39,7 @@ import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.nrconsole.plugin.cartesian.AdvancedKinematicsController;
 import com.neuronrobotics.nrconsole.plugin.cartesian.CreatureLab;
+import com.neuronrobotics.nrconsole.plugin.cartesian.DhLab;
 import com.neuronrobotics.nrconsole.plugin.cartesian.JogKinematicsDevice;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
@@ -46,6 +47,7 @@ import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -85,7 +87,8 @@ public class PluginManager {
 		//AbstractKinematicsNR
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
-		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, CreatureLab.class));
+		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, DhLab.class));
+		addPlugin(new DeviceSupportPluginMap(MobileBase.class, CreatureLab.class));
 		//NRPrinter
 		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
 		//Bowler Cam

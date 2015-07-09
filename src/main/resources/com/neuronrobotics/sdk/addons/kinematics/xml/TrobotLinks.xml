@@ -1,0 +1,148 @@
+<root>
+	<mobilebase>
+		<name>BasicArmWorkspace</name><!-- Name, used to regester the link with a specific location in the robot  -->
+	
+	<driveType>none</driveType>
+	
+<appendage>
+<name>RobotArm</name>
+<link>
+	<name>basePan</name>
+	<deviceName>dyio</deviceName>
+	<type>servo-rotory</type>
+	<index>11</index>
+	<scale>0.33</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>235.0</staticOffset>
+	<isLatch>true</isLatch>
+	<indexLatch>235</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+
+	<DHParameters>
+		<Delta>13.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>32.0</Radius>
+		<Alpha>-90.0</Alpha>
+	</DHParameters>
+
+</link>
+<link>
+	<name>baseTilt</name>
+	<deviceName>dyio</deviceName>
+	<type>servo-rotory</type>
+	<index>10</index>
+	<scale>0.33</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>128.0</staticOffset>
+	<isLatch>true</isLatch>
+	<indexLatch>128</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+
+	<DHParameters>
+		<Delta>25.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>93.0</Radius>
+		<Alpha>180.0</Alpha>
+	</DHParameters>
+
+</link>
+<link>
+	<name>elbow</name>
+	<deviceName>dyio</deviceName>
+	<type>servo-rotory</type>
+	<index>9</index>
+	<scale>0.33</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>121.0</staticOffset>
+	<isLatch>true</isLatch>
+	<indexLatch>121</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+
+	<DHParameters>
+		<Delta>11.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>131.0</Radius>
+		<Alpha>0.0</Alpha>
+	</DHParameters>
+
+</link>
+<link>
+	<name>wrist2</name>
+	<deviceName>dyio</deviceName>
+	<type>servo-rotory</type>
+	<index>7</index>
+	<scale>-0.3125</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>175.0</staticOffset>
+	<isLatch>true</isLatch>
+	<indexLatch>175</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+
+	<DHParameters>
+		<Delta>0.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>0.0</Radius>
+		<Alpha>90.0</Alpha>
+	</DHParameters>
+
+</link>
+<link>
+	<name>wrist3</name>
+	<deviceName>dyio</deviceName>
+	<type>servo-rotory</type>
+	<index>6</index>
+	<scale>0.3125</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>255.0</staticOffset>
+	<isLatch>true</isLatch>
+	<indexLatch>255</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+
+	<DHParameters>
+		<Delta>98.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>0.0</Radius>
+		<Alpha>-90.0</Alpha>
+	</DHParameters>
+
+</link>
+
+<ZframeToRAS>	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</ZframeToRAS>
+<baseToZframe>	<x>200.0</x>
+	<y>200.0</y>
+	<z>0.0</z>
+	<rotw>0.7071067811865476</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>-0.7071067811865475</rotz>
+</baseToZframe>
+</appendage>
+</mobilebase>
+</root>

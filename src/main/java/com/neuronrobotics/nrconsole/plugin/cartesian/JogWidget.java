@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
@@ -29,6 +30,7 @@ import javafx.scene.layout.RowConstraints;
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
 	
 	private AbstractKinematicsNR kin;
+	private MobileBase mobilebase=null;
 	Button px = new Button("+X");
 	Button nx = new Button("-X");
 	Button py = new Button("+Y");
@@ -263,6 +265,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		return kin;
 	}
 	public void setKin(AbstractKinematicsNR kin) {
+		if(MobileBase.class.isInstance(kin))
+			setMobilebase((MobileBase)kin);
 		this.kin = kin;
 	}
 	
@@ -288,7 +292,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
 					try {
-						getKin().setDesiredTaskSpaceTransform(current,  seconds);
+						if(getMobilebase()==null)
+							getKin().setDesiredTaskSpaceTransform(current,  seconds);
+						else
+							getMobilebase().DriveArc(current, seconds);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -342,6 +349,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			stop=false;
 		
 		
+	}
+
+	public MobileBase getMobilebase() {
+		return mobilebase;
+	}
+
+	public void setMobilebase(MobileBase mobilebase) {
+		this.mobilebase = mobilebase;
 	}
 
 }

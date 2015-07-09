@@ -24,6 +24,7 @@
               </Menu>
               <Menu mnemonicParsing="false" text="Creatures">
               	<MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
+              	<MenuItem mnemonicParsing="false" onAction="#onHexapod" text="Six Leg Walker" />
               </Menu>
               <Menu mnemonicParsing="false" text="Vision">
 	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="OpenCV camera" />

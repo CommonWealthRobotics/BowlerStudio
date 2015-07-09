@@ -35,6 +35,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
+
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
@@ -75,7 +77,9 @@ import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
+import com.neuronrobotics.sdk.addons.kinematics.xml.XmlFactory;
 import com.neuronrobotics.sdk.dyio.DyIO;
 /**
  * FXML Controller class
@@ -481,7 +485,8 @@ public class MainController implements Initializable {
 	@FXML public void onRobotArm(ActionEvent event) {
 		Platform.runLater(()->{
 			try {
-				ConnectionManager.addConnection(new DHParameterKinematics(),"DHArm");
+				MobileBase mb = new MobileBase(XmlFactory.getDefaultConfigurationStream("TrobotLinks.xml"));
+				ConnectionManager.addConnection(mb,mb.getScriptingName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -495,6 +500,18 @@ public class MainController implements Initializable {
 			// run a print here
 		}
 		
+	}
+
+	@FXML public void onHexapod() {
+		Platform.runLater(()->{
+			try {
+				MobileBase mb = new MobileBase(XmlFactory.getDefaultConfigurationStream("HaoSuHex.xml"));
+				ConnectionManager.addConnection(mb,mb.getScriptingName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 	
 
