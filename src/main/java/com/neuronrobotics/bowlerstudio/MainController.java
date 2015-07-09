@@ -9,6 +9,7 @@ import haar.HaarFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
@@ -31,6 +32,8 @@ import javax.script.ScriptEngine;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+
 
 
 
@@ -72,6 +75,7 @@ import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
+import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
@@ -512,6 +516,31 @@ public class MainController implements Initializable {
 				e.printStackTrace();
 			}
 		});
+		
+
+	}
+
+	@FXML public void onMobileBaseFromFile() {
+    	new Thread(){
+    		public void run(){
+    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
+    					new XmlFilter());
+
+    	        if (openFile == null) {
+    	            return;
+    	        }
+    	        Platform.runLater(()->{
+    				try {
+    					MobileBase mb = new MobileBase(new FileInputStream(openFile));
+    					ConnectionManager.addConnection(mb,mb.getScriptingName());
+    				} catch (Exception e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+    			});
+    		}
+    	}.start();
+		
 	}
 	
 
