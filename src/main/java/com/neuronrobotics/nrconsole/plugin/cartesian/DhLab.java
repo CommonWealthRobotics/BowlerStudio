@@ -14,5 +14,11 @@ import com.neuronrobotics.sdk.common.Log;
 
 public class DhLab extends CreatureLab {
 
+	@Override
+	public void initializeUI(BowlerAbstractDevice pm) {
+		super.initializeUI(pm);
+		setText("DH Lab");
+	}
+
 
 }
