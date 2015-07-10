@@ -24,6 +24,7 @@ import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -98,9 +99,13 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 			mobileBaseControls.add(refresh, 1, 0);
 			
 			dhlabTopLevel.add(mobileBaseControls, 0, 0);
-			dhlabTopLevel.add(new DhChainWidget(device), 0, 1);
+			
 			
 			Accordion advancedPanel = new Accordion();
+			TitledPane rp =new TitledPane("Multi-Appendage Cordinated Motion", new DhChainWidget(device));
+			advancedPanel.getPanes().add(rp);
+
+
 			addAppendagePanel(device.getLegs(),"Legs",advancedPanel);
 			addAppendagePanel(device.getAppendages(),"Appandges",advancedPanel);
 			addAppendagePanel(device.getSteerable(),"Steerable",advancedPanel);
@@ -108,6 +113,9 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 			
 			dhlabTopLevel.add(advancedPanel, 0, 2);
 			
+			if(device.getDriveType() != DrivingType.NONE){
+				advancedPanel.setExpandedPane(rp);
+			}
 			
 		}else if(AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device=(AbstractKinematicsNR)pm;
@@ -120,11 +128,11 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 	
 	private void addAppendagePanel(ArrayList<DHParameterKinematics> apps,String title,Accordion advancedPanel){
 		if(apps.size()>0){
-			Accordion legPanels = new Accordion();
 			for(DHParameterKinematics l:apps){
-				legPanels.getPanes().add(new TitledPane(l.getScriptingName(), new DhChainWidget(l)));
+				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(), new DhChainWidget(l));
+				advancedPanel.getPanes().add(rp);
+				advancedPanel.setExpandedPane(rp);
 			}
-			advancedPanel.getPanes().add(new TitledPane(title, legPanels));
 		}
 	}
 	

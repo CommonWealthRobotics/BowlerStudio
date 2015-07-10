@@ -1,7 +1,7 @@
 <root>
 <mobilebase>
-
 <name>WalkingBase</name>
+<driveType>walking</driveType>
 <leg>
 
 <name>Hex_One</name>

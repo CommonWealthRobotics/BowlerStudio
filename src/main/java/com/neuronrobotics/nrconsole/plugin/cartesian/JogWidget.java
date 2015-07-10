@@ -148,14 +148,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				0);
 		transform = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
 		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Advanced Positioning", transform));
+		advancedPanel.getPanes().add(new TitledPane("Exact Positioning", transform));
 		add(	advancedPanel, 
 				0, 
 				1);
 	}
 	
 	private void handle(final Button button ){
-		TransformNR current = getKin().getCurrentTaskSpaceTransform();
+		TransformNR current = new TransformNR();
 		double inc;
 		try{
 			inc = Double.parseDouble(increment.getText());
@@ -198,7 +198,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		}else{
 			try {
 				double seconds =Double.parseDouble(sec.getText());
-				getKin().setDesiredTaskSpaceTransform(current,  seconds);
+				if(getMobilebase()==null)
+					getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform().times(current),  seconds);
+				else
+					getMobilebase().DriveArc(current, seconds);
 				
 				FxTimer.runLater(
 						Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
@@ -278,7 +281,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				seconds =Double.parseDouble(sec.getText());
 				if(!stop){ 
 					
-					TransformNR current = getKin().getCurrentTaskSpaceTransform();
+					TransformNR current = new TransformNR();
 					double inc;
 					try{
 						inc = Double.parseDouble(increment.getText());
@@ -292,9 +295,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
 					try {
-						if(getMobilebase()==null)
+						if(getMobilebase()==null){
+							current = getKin().getCurrentTaskSpaceTransform();
+							current.translateX(inc*x);
+							current.translateY(inc*y);
+							current.translateZ(inc*slider);
 							getKin().setDesiredTaskSpaceTransform(current,  seconds);
-						else
+						}else
 							getMobilebase().DriveArc(current, seconds);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

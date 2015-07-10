@@ -16,6 +16,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 
@@ -38,6 +39,7 @@ public class DhChainWidget extends Group implements ICadGenerator{
 	
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice=null;
+	private MobileBase mbase=null;
 	private ICadGenerator cadEngine =null;
 
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
@@ -45,6 +47,9 @@ public class DhChainWidget extends Group implements ICadGenerator{
 		this.device = device2;
 		if(DHParameterKinematics.class.isInstance(device2)){
 			dhdevice=(DHParameterKinematics)device2;
+		}
+		if(MobileBase.class.isInstance(device2)){
+			mbase=(MobileBase)device2;
 		}
 		links = new VBox(20);
 		controls = new VBox(10);
@@ -126,7 +131,8 @@ public class DhChainWidget extends Group implements ICadGenerator{
 		Accordion advancedPanel = new Accordion();
 		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
 		controls.getChildren().add(jog);
-		controls.getChildren().add(advancedPanel);
+		if(mbase==null)
+			controls.getChildren().add(advancedPanel);
 		onTabReOpening();
 
 		getChildren().add(new ScrollPane(links));
