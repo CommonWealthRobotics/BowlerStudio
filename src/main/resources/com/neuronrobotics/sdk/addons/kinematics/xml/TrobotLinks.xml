@@ -1,10 +1,9 @@
 <root>
-	<mobilebase>
-		<name>BasicArmWorkspace</name><!-- Name, used to regester the link with a specific location in the robot  -->
-	
-	<driveType>none</driveType>
-	
+<mobilebase>
+
+<name>BasicArmWorkspace</name>
 <appendage>
+
 <name>RobotArm</name>
 <link>
 	<name>basePan</name>
@@ -83,12 +82,12 @@
 	<deviceName>dyio</deviceName>
 	<type>servo-rotory</type>
 	<index>7</index>
-	<scale>-0.3125</scale>
+	<scale>0.313</scale>
 	<upperLimit>255.0</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>175.0</staticOffset>
+	<staticOffset>200.0</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>175</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -127,7 +126,8 @@
 
 </link>
 
-<ZframeToRAS>	<x>0.0</x>
+<ZframeToRAS
+>	<x>0.0</x>
 	<y>0.0</y>
 	<z>0.0</z>
 	<rotw>1.0</rotw>
@@ -135,7 +135,9 @@
 	<roty>0.0</roty>
 	<rotz>0.0</rotz>
 </ZframeToRAS>
-<baseToZframe>	<x>200.0</x>
+
+<baseToZframe>
+	<x>200.0</x>
 	<y>200.0</y>
 	<z>0.0</z>
 	<rotw>0.7071067811865476</rotw>
@@ -143,6 +145,29 @@
 	<roty>0.0</roty>
 	<rotz>-0.7071067811865475</rotz>
 </baseToZframe>
+
 </appendage>
+
+<ZframeToRAS>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</ZframeToRAS>
+
+<baseToZframe>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</baseToZframe>
+
 </mobilebase>
+
 </root>
