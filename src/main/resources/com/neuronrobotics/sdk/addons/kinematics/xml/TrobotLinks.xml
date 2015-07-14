@@ -82,7 +82,7 @@
 	<deviceName>dyio</deviceName>
 	<type>servo-rotory</type>
 	<index>7</index>
-	<scale>0.313</scale>
+	<scale>-0.313</scale>
 	<upperLimit>255.0</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>

@@ -5,6 +5,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,10 @@ import java.util.List;
 
 
 
+
+
+
+import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -105,8 +110,20 @@ public class BowlerStudioController extends TabPane implements
 			final String title) {
 
 		try {
+			if(ScriptingEngine.getLoginID() != null)
+			
 			addTab(new ScriptingGistTab(title,
 					getHomeUrl(), true), false);
+//			FxTimer.runLater(
+//					Duration.ofMillis(200) ,() -> {
+//						try {
+//							addTab(new ScriptingGistTab(title,
+//									"https://gist.github.com/"+ScriptingEngine.getLoginID()+"/", false), false);
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//					});
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -185,8 +202,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public static String getHomeUrl() {
-		if(ScriptingEngine.getLoginID() != null)
-			return "http://gist.github.com/"+ScriptingEngine.getLoginID();
+
 		return HOME_URL;
 	}
 
