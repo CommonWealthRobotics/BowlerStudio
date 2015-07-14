@@ -1,11 +1,15 @@
-package com.neuronrobotics.nrconsole.plugin.cartesian;
+package com.neuronrobotics.bowlerstudio.creature;
 
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
+
+import org.python.core.exceptions;
 
 import javafx.application.Platform;
 import javafx.scene.control.Accordion;
@@ -17,9 +21,11 @@ import javafx.scene.paint.Color;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -28,21 +34,28 @@ import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.FileChangeWatcher;
+import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Transform;
 
-public class CreatureLab extends AbstractBowlerStudioTab {
+public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerator {
 
-	private CreatureLab cadEngine;
+	private ICadGenerator cadEngine;
 	private BowlerAbstractDevice pm;
 	private File openMobileBaseConfiguration;
+	private File cadScript;
+	private FileChangeWatcher watcher;
 
 	@Override
 	public void onTabClosing() {
 		// TODO Auto-generated method stub
-
+		if (watcher != null) {
+			watcher.close();
+		}
 	}
 
 	@Override
@@ -68,6 +81,7 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 			Button refresh = new Button("Generate CAD");
 			refresh.setOnAction(event -> generateCad());
 			Button save = new Button("Save Configuration");
+			Button script = new Button("Set Cad Script");
 			MobileBase device=(MobileBase)pm;
 			save.setOnAction(event -> {
 		    	new Thread(){
@@ -94,10 +108,27 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 		    		}
 		    	}.start();
 			});
+			script.setOnAction(event -> {
+		    	new Thread(){
+
+					public void run(){
+						if(getCadScript()==null)
+							setCadScript(ScriptingEngineWidget.getLastFile());
+		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript(),
+		    					new GroovyFilter()));
+
+		    	        if (getCadScript() == null) {
+		    	            return;
+		    	        }
+		    	        generateCad();
+		    	        
+		    		}
+		    	}.start();
+			});
 			GridPane mobileBaseControls=new GridPane();
 			mobileBaseControls.add(save, 0, 0);
 			mobileBaseControls.add(refresh, 1, 0);
-			
+			mobileBaseControls.add(script, 2, 0);
 			dhlabTopLevel.add(mobileBaseControls, 0, 0);
 			
 			
@@ -155,6 +186,11 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 	}
 	
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
+		if (getCadScript() != null) {
+			try{
+			cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+			}catch(Exception e){}
+        }
 		if(cadEngine!=null)
 			return cadEngine.generateCad(dhLinks);
 		ArrayList<CSG> csg = new ArrayList<CSG>();
@@ -169,11 +205,21 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 				CSG cube = new Cube(x,y,2).toCSG();
 				cube=cube.transformed(new Transform().translateX(-x/2));
 				cube=cube.transformed(new Transform().translateY(y/2));
+				CSG servo=null;
+				try {
+					servo=(STL.file(new File("/home/hephaestus/bowler-workspace/hxt900-servo.stl").toPath()));
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//add listner to axis
 				cube.setManipulator(dh.getListener());
+				servo.setManipulator(dh.getListener());
 				cube.setColor(Color.GOLD);
 				// add ax to list of objects to be returned
 				csg.add(cube);
+				csg.add(servo);
 			}
 		}
 		return csg;
@@ -182,11 +228,48 @@ public class CreatureLab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
-		
+		setCadScript(getCadScript());
+		try{
+			generateCad();
+		}catch(Exception ex){
+			
+		}
 	}
 	
 	public static String getFormatted(double value){
 	    return String.format("%4.3f%n", (double)value);
+	}
+
+	public File getCadScript() {
+		return cadScript;
+	}
+
+	public void setCadScript(File cadScript) {
+		if (watcher != null) {
+		
+			watcher.close();
+		}
+		 try {
+		 watcher = new FileChangeWatcher(cadScript);
+		 watcher.addIFileChangeListener(new IFileChangeListener() {
+			
+			@Override
+			public void onFileChange(File fileThatChanged, WatchEvent event) {
+				try{
+					generateCad();
+				}catch(Exception ex){
+					
+				}
+				
+			}
+		});
+		 watcher.start();
+		 } catch (IOException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
+		this.cadScript = cadScript;
+		
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.neuronrobotics.nrconsole.plugin.cartesian;
+package com.neuronrobotics.bowlerstudio.creature;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

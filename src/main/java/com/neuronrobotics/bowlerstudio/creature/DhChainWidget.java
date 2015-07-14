@@ -1,6 +1,9 @@
-package com.neuronrobotics.nrconsole.plugin.cartesian;
+package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
+import eu.mihosoft.vrl.v3d.STL;
+import java.nio.file.Path;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -205,8 +208,15 @@ public class DhChainWidget extends Group implements ICadGenerator{
 				double  x= dh.getRadius()>0?dh.getRadius():2;
 	
 				CSG cube = new Cube(x,y,2).toCSG();
+				try {
+					cube.intersect(STL.file(new File("/home/hephaestus/bowler-workspace/hxt900-servo.stl").toPath()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				cube=cube.transformed(new Transform().translateX(-x/2));
 				cube=cube.transformed(new Transform().translateY(y/2));
+
 				//add listner to axis
 				cube.setManipulator(dh.getListener());
 				cube.setColor(Color.GOLD);

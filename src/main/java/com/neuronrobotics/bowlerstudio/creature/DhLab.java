@@ -1,4 +1,4 @@
-package com.neuronrobotics.nrconsole.plugin.cartesian;
+package com.neuronrobotics.bowlerstudio.creature;
 
 
 import javafx.scene.control.Button;
