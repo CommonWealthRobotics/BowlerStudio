@@ -282,8 +282,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 					Log.debug("Key = " + entry.getKey());
 					String code = ghfile.getContent();
 					String fileName = entry.getKey().toString();
-					setFilename(fileName);
-					return new String[] { code, fileName };
+					if(setFilename(fileName)!=ShellType.NONE || entry.getKey().contains(FileName))
+						return new String[] { code, fileName };
 				}
 			}
 		} catch (InterruptedIOException e) {
