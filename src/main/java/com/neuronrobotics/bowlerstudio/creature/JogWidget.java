@@ -77,7 +77,6 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				if(gameController!=null){
 					gameController.addListeners(this);
 					game.setText("Remove Game Controller");
-					controllerLoop();
 					//TODO open a configuration panel here
 				}else{
 					//the controller must not be availible, bailing
@@ -152,56 +151,63 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		add(	advancedPanel, 
 				0, 
 				1);
+		controllerLoop();
 	}
 	
 	private void handle(final Button button ){
-		TransformNR current = new TransformNR();
-		double inc;
-		try{
-			inc = Double.parseDouble(increment.getText());
-		}catch(Exception e){
-			Platform.runLater(() -> {
-				increment.setText("10");
-			});
-			inc=100;
-		}
+
 		if(!button.isPressed()){
 			// button released
 			Log.warning(button.getText()+" Button released ");
 			try {
-				getKin().setDesiredTaskSpaceTransform(current,  0);
+				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
 			} catch (Exception e) {}
+			if(button == px){
+				x=0;
+			}
+			if(button == nx){
+				x=0;
+			}
+			if(button == py){
+				y=0;
+			}
+			if(button == ny){
+				y=0;
+			}
+			if(button == pz){
+				rz=0;
+			}
+			if(button == nz){
+				rz=0;
+			}
+			stop=true;
 			return;
 		}else{
 			Log.warning(button.getText()+" Button pressed ");
 		}
 		if(button == px){
-			current.translateX(inc);
+			x=1;
 		}
 		if(button == nx){
-			current.translateX(-inc);
+			x=-1;
 		}
 		if(button == py){
-			current.translateY(inc);
+			y=1;
 		}
 		if(button == ny){
-			current.translateY(-inc);
+			y=-1;
 		}
 		if(button == pz){
-			current.translateZ(inc);
+			rz=1;
 		}
 		if(button == nz){
-			current.translateZ(-inc);
+			rz=-1;
 		}
 		if(button == home){
 			home();
 		}else{
 			try {
 				double seconds =Double.parseDouble(sec.getText());
-				if(getMobilebase()==null)
-					getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform().times(current),  seconds);
-				else
-					getMobilebase().DriveArc(current, seconds);
 				
 				FxTimer.runLater(
 						Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
@@ -217,6 +223,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				e.printStackTrace();
 			}
 		}
+		controllerLoop();
+		stop=false;
 	}
 	
 	public void home(){
@@ -276,7 +284,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	
 	private void controllerLoop(){
 		double seconds=.1;
-		if(gameController!=null){
+		if(gameController!=null || stop==false){
 			try{
 				seconds =Double.parseDouble(sec.getText());
 				if(!stop){ 
@@ -335,16 +343,16 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			rz=value;
 		if(comp.getName().toLowerCase().contentEquals("slider"))
 			slider=-value;
-		if(Math.abs(x)<.03)
+		if(Math.abs(x)<.1)
 			x=0;
-		if(Math.abs(y)<.03)
+		if(Math.abs(y)<.1)
 			y=0;
-		if(Math.abs(rz)<.03)
+		if(Math.abs(rz)<.1)
 			rz=0;
-		if(Math.abs(slider)<.03)
+		if(Math.abs(slider)<.1)
 			slider=0;
 		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
-			System.out.println("Stoping on="+comp.getName());
+			//System.out.println("Stoping on="+comp.getName());
 			stop=true;
 			try {
 				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
