@@ -77,6 +77,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				if(gameController!=null){
 					gameController.addListeners(this);
 					game.setText("Remove Game Controller");
+					controllerLoop();
 					//TODO open a configuration panel here
 				}else{
 					//the controller must not be availible, bailing
@@ -175,10 +176,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				y=0;
 			}
 			if(button == pz){
-				rz=0;
+				slider=0;
 			}
 			if(button == nz){
-				rz=0;
+				slider=0;
 			}
 			stop=true;
 			return;
@@ -198,10 +199,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			y=-1;
 		}
 		if(button == pz){
-			rz=1;
+			slider=1;
 		}
 		if(button == nz){
-			rz=-1;
+			slider=-1;
 		}
 		if(button == home){
 			home();
