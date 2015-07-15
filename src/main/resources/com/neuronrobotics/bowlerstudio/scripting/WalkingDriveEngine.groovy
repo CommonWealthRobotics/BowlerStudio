@@ -9,7 +9,9 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 	double stepOverHeight=5;
+	@Override
 	public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
+		
 		int numlegs = source.getLegs().size();
 		TransformNR [] feetLocations = new TransformNR[numlegs];
 		TransformNR [] home = new TransformNR[numlegs];
@@ -31,12 +33,15 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 		// New target calculated appliaed to global offset
 		source.setGlobalToFiducialTransform(global);
 		for(int i=0;i<numlegs;i++){
+			
 			if(!legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
+				feetLocations[i].translateX(-newPose.getX());
+				feetLocations[i].translateY(-newPose.getY());
 				//new leg position is not reachable, reverse course and walk up the line to a better location
-				loop {
+				while(legs.get(i).checkTaskSpaceTransform(feetLocations[i])) {
 					feetLocations[i].translateX(-newPose.getX());
 					feetLocations[i].translateY(-newPose.getY());
-				}until{legs.get(i).checkTaskSpaceTransform(feetLocations[i])};
+				}
 				//step back one increment for new location
 				feetLocations[i].translateX(newPose.getX());
 				feetLocations[i].translateY(newPose.getY());
@@ -58,6 +63,7 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 				}
 				
 			}
+			println "Leg "+i+" new foot location ok"
 
 		}
 		//all legs have a valid target set, perform coordinated motion
@@ -73,13 +79,13 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 		
 	}
 
-	
+	@Override
 	public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	
+	@Override
 	public void DriveVelocityArc(MobileBase source, double degreesPerSecond,
 			double cmRadius) {
 		// TODO Auto-generated method stub

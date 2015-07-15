@@ -1,3 +1,4 @@
+import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
@@ -6,7 +7,7 @@ return new DhInverseSolver() {
 	
 	@Override
 	public double[] inverseKinematics(TransformNR target,
-			double[] jointSpaceVector) {
+			double[] jointSpaceVector, DHChain links) {
 		int linkNum = jointSpaceVector.length;
 		double [] inv = new double[linkNum];
 		// this is an ad-hock kinematic model for d-h parameters and only works for specific configurations

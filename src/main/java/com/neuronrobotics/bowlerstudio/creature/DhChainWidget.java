@@ -1,27 +1,37 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
-import eu.mihosoft.vrl.v3d.STL;
-import java.nio.file.Path;
 
+import eu.mihosoft.vrl.v3d.STL;
+
+import java.nio.file.Path;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
+import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.FileChangeWatcher;
+import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
@@ -34,7 +44,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class DhChainWidget extends Group implements ICadGenerator{
+public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnectionEventListener{
 	private File currentFile=null;
 	private VBox links;
 	private VBox controls;
@@ -44,15 +54,34 @@ public class DhChainWidget extends Group implements ICadGenerator{
 	private DHParameterKinematics dhdevice=null;
 	private MobileBase mbase=null;
 	private ICadGenerator cadEngine =null;
+	private File kinematicsFile;
 
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
+	private FileChangeWatcher watcher;
 	public DhChainWidget(AbstractKinematicsNR device2){
 		this.device = device2;
+		device.addConnectionEventListener(this);
 		if(DHParameterKinematics.class.isInstance(device2)){
 			dhdevice=(DHParameterKinematics)device2;
+        	try {
+				dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineUrlScriptRun(
+						ScriptingEngine.class.getResource("DefaultDhSolver.groovy"),
+						null));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(MobileBase.class.isInstance(device2)){
 			mbase=(MobileBase)device2;
+			try {
+				mbase.setWalkingDriveEngine( (IDriveEngine) ScriptingEngine.inlineUrlScriptRun(
+						ScriptingEngine.class.getResource("WalkingDriveEngine.groovy"),
+						null));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		links = new VBox(20);
 		controls = new VBox(10);
@@ -65,6 +94,26 @@ public class DhChainWidget extends Group implements ICadGenerator{
 		Button save = new Button("Save Configuration");
 		Button add = new Button("Add Link");
 		Button refresh = new Button("Generate CAD");
+		Button kinematics = new Button("Set Kinematics");
+		kinematics.setOnAction(event -> {
+	    	new Thread(){
+
+
+
+				public void run(){
+					if(getKinematicsFile()==null)
+						setKinematicsFile(ScriptingEngineWidget.getLastFile());
+					setKinematicsFile(FileSelectionFactory.GetFile(getKinematicsFile(),
+	    					new GroovyFilter()));
+
+	    	        if (getKinematicsFile() == null) {
+	    	            return;
+	    	        }
+
+	    	        setKinematics();
+	    		}
+	    	}.start();
+		});
 		save.setOnAction(event -> {
 			new Thread(){
 				public void run(){
@@ -131,15 +180,30 @@ public class DhChainWidget extends Group implements ICadGenerator{
 		advanced.getChildren().add(save);
 		advanced.getChildren().add(add);
 		advanced.getChildren().add(refresh);
+		if(mbase!=null)
+			advanced.getChildren().add(kinematics);
 		Accordion advancedPanel = new Accordion();
 		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
 		controls.getChildren().add(jog);
 		if(mbase==null)
 			controls.getChildren().add(advancedPanel);
+		else
+			controls.getChildren().add(kinematics);
 		onTabReOpening();
 
 		getChildren().add(new ScrollPane(links));
 	}
+	
+	private void setKinematics(){
+		if(getKinematicsFile()!=null){
+	        if(mbase!=null){
+	        	mbase.setWalkingDriveEngine( (IDriveEngine) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
+	        }else if (dhdevice != null){
+	        	dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
+	        }
+		}
+	}
+	
 	public ArrayList<CSG> onTabReOpening() {
 		for(DHLinkWidget wid:widgets){
 			device.removeJointSpaceUpdateListener(wid);
@@ -233,6 +297,55 @@ public class DhChainWidget extends Group implements ICadGenerator{
 	}
 	public void setCadEngine(ICadGenerator cadEngine) {
 		this.cadEngine = cadEngine;
+	}
+
+	public File getKinematicsFile() {
+		return kinematicsFile;
+	}
+
+	public void setKinematicsFile(File kinematicsFile) {
+		if(kinematicsFile!=null){
+			if (watcher != null) {
+
+				watcher.close();
+			}
+			try {
+				watcher = new FileChangeWatcher(kinematicsFile);
+				watcher.addIFileChangeListener(new IFileChangeListener() {
+
+					@Override
+					public void onFileChange(File fileThatChanged,
+							WatchEvent event) {
+						try {
+							setKinematics();
+						} catch (Exception ex) {
+
+						}
+
+					}
+				});
+				watcher.start();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		this.kinematicsFile = kinematicsFile;
+	}
+
+	@Override
+	public void onDisconnect(BowlerAbstractDevice source) {
+		// TODO Auto-generated method stub
+		if (watcher != null) {
+			
+			watcher.close();
+		}
+	}
+
+	@Override
+	public void onConnect(BowlerAbstractDevice source) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
