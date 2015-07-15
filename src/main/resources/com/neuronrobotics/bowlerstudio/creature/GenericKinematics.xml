@@ -1,0 +1,124 @@
+<root>
+<appendage>	
+	<link>
+		<name>xTranslation</name>
+		<type>pid</type>
+		<index>0</index>
+		<scale>1</scale>
+		<upperLimit>10000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>0.125</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>false</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>			
+	</link>
+	<link>
+		<name>yTranslation</name>
+		<type>pid</type>
+		<index>1</index>
+		<scale>1</scale>
+		<upperLimit>10000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>0.4</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>false</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>	
+	</link>
+	
+	<link>
+		<name>zTranslation</name>
+		<type>pid</type>
+		<index>2</index>
+		<scale>1</scale>
+		<upperLimit>10000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>0.225</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>true</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>			
+	</link>
+	
+	<link>
+		<name>xRotation</name>
+		<type>pid</type>
+		<index>3</index>
+		<scale>1</scale>
+		<upperLimit>10000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>0.37</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>true</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>			
+	</link>
+	
+	<link>
+		<name>yRotation</name>
+		<type>pid</type>
+		<index>4</index>
+		<scale>1</scale>
+		<upperLimit>100000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>-0.6</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>false</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>			
+	</link>
+	
+	<link>
+		<name>zRotation</name>
+		<type>pid</type>
+		<index>0</index>
+		<scale>1</scale>
+		<upperLimit>100000000</upperLimit>
+		<lowerLimit>-10000000</lowerLimit>
+		<pGain>1</pGain>
+		<iGain>0</iGain>
+		<dGain>0</dGain>
+		<isInverted>false</isInverted>
+		<isLatch>true</isLatch>
+		<indexLatch>0</indexLatch>
+		<isStopOnLatch>false</isStopOnLatch>	
+		<homingTPS>500</homingTPS>			
+	</link>
+
+	<ZframeToRAS>
+		<x>0</x>
+		<y>0</y>
+		<z>0</z>
+		<rotw>1</rotw>
+		<rotx>0</rotx>
+		<roty>0</roty>
+		<rotz>0</rotz>
+	</ZframeToRAS>
+
+<baseToZframe>
+		<x>0</x>
+		<y>0</y>
+		<z>0</z>
+		<rotw>1</rotw>
+		<rotx>0</rotx>
+		<roty>0</roty>
+		<rotz>0</rotz>
+	</baseToZframe>
+</appendage>		
+</root>
