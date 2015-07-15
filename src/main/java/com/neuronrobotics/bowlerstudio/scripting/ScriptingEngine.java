@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -96,9 +98,13 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static String pw;
 	
  	static{
+ 		File scriptingDir = new File(System.getProperty("user.home")+"/git/BowlerStudio/src/main/resources/com/neuronrobotics/bowlerstudio/");
 		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
 		if(!workspace.exists()){
 			workspace.mkdir();
+		}
+		if(scriptingDir.exists()){
+			workspace=scriptingDir;
 		}
 		if(loginID == null && getCreds().exists()){
 			try {
@@ -312,6 +318,31 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	public static Object inlineGistScriptRun(String gistID,
 			ArrayList<Object> args) {
 		return inlineScriptRun(codeFromGistID(gistID,"")[0], args);
+	}
+	
+	public static String getText(URL website) throws Exception {
+
+        URLConnection connection = website.openConnection();
+        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(
+                                    connection.getInputStream()));
+
+        StringBuilder response = new StringBuilder();
+        String inputLine;
+
+        while ((inputLine = in.readLine()) != null) 
+            response.append(inputLine+"\n");
+
+        in.close();
+
+        return response.toString();
+    }
+
+	
+	public static Object inlineUrlScriptRun(URL gistID,
+			ArrayList<Object> args) throws Exception {
+		
+		return inlineScriptRun(getText(gistID), args);
 	}
 	
 	public static File getLastFile() {
