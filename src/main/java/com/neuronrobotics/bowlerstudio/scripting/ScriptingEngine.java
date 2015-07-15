@@ -52,11 +52,6 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public enum ShellType {
-		GROOVY, JYTHON
-	}
-
-	static ShellType activeType = ShellType.GROOVY;
 
 	
 	static final String[] imports = new String[] { "haar",
@@ -144,17 +139,18 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		return workspace;
 	}
 
-	private static void setFilename(String name) {
+	public static ShellType setFilename(String name) {
 		if (name.toString().toLowerCase().endsWith(".java")
 				|| name.toString().toLowerCase().endsWith(".groovy")) {
-			activeType = ShellType.GROOVY;
+			return ShellType.GROOVY;
 			//System.out.println("Setting up Groovy Shell");
 		}
 		if (name.toString().toLowerCase().endsWith(".py")
 				|| name.toString().toLowerCase().endsWith(".jy")) {
-			activeType = ShellType.JYTHON;
+			return ShellType.JYTHON;
 			//System.out.println("Setting up Python Shell");
 		}
+		return ShellType.NONE;
 	}
 	
 	public static String getLoginID(){
@@ -303,11 +299,11 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
 	public static Object inlineFileScriptRun(File f, ArrayList<Object> args) {
 		byte[] bytes;
-		setFilename(f.getName());
+
 		try {
 			bytes = Files.readAllBytes(f.toPath());
 			String s = new String(bytes, "UTF-8");
-			return inlineScriptRun(s, args);
+			return inlineScriptRun(s, args,setFilename(f.getName()) );
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -317,8 +313,10 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
 	public static Object inlineGistScriptRun(String gistID,
 			ArrayList<Object> args) {
-		return inlineScriptRun(codeFromGistID(gistID,"")[0], args);
+		String[] gistData = codeFromGistID(gistID,"");
+		return inlineScriptRun(gistData[0], args,setFilename(gistData[1]));
 	}
+	
 	
 	public static String getText(URL website) throws Exception {
 
@@ -338,11 +336,15 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
         return response.toString();
     }
 
-	
 	public static Object inlineUrlScriptRun(URL gistID,
 			ArrayList<Object> args) throws Exception {
 		
-		return inlineScriptRun(getText(gistID), args);
+		return inlineUrlScriptRun(gistID, args,ShellType.GROOVY);
+	}
+	public static Object inlineUrlScriptRun(URL gistID,
+			ArrayList<Object> args, ShellType type) throws Exception {
+		
+		return inlineScriptRun(getText(gistID), args,type);
 	}
 	
 	public static File getLastFile() {
@@ -365,7 +367,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		ScriptingEngine.creds = creds;
 	}
 	
-	public static Object inlineScriptRun(String code, ArrayList<Object> args) {
+	public static Object inlineScriptRun(String code, ArrayList<Object> args,ShellType activeType) {
 		switch (activeType) {
 		case JYTHON:
 			return runJython(code, args);
