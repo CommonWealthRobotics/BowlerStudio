@@ -32,8 +32,8 @@ return new DhInverseSolver() {
 		
 		
 		double orentation = polarTheta-adjustedTheta;
-		xSet = adjustedR*Math.sin(orentation);
-		ySet = adjustedR*Math.cos(orentation);
+		xSet = adjustedR*Math.sin(adjustedTheta);
+		ySet = adjustedR*Math.cos(adjustedTheta);
 	
 		
 		double zSet = target.getZ()
@@ -53,17 +53,18 @@ return new DhInverseSolver() {
 		double l2 = links.get(2).getR();
 
 		double vect = Math.sqrt(xSet*xSet+ySet*ySet+zSet*zSet);
-		println ( "TO: "+overGripper);
-		println ( "polarR: "+polarR);
-		println( "polarTheta: "+Math.toDegrees(polarTheta));
-		println( "adjustedTheta: "+Math.toDegrees(adjustedTheta));
-		println( "adjustedR: "+adjustedR);
-		
-		println( "x Correction: "+xSet);
-		println( "y Correction: "+ySet);
-		
-		println( "Orentation: "+Math.toDegrees(orentation));
-		println( "z: "+zSet);
+//		println ( "TO: "+target);
+//		println ( "Trangular TO: "+overGripper);
+//		println ( "polarR: "+polarR);
+//		println( "polarTheta: "+Math.toDegrees(polarTheta));
+//		println( "adjustedTheta: "+Math.toDegrees(adjustedTheta));
+//		println( "adjustedR: "+adjustedR);
+//		
+//		println( "x Correction: "+xSet);
+//		println( "y Correction: "+ySet);
+//		
+//		println( "Orentation: "+Math.toDegrees(orentation));
+//		println( "z: "+zSet);
 
 		
 

@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import haar.HaarFactory;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
+
 
 import javax.script.ScriptEngine;
 
@@ -40,10 +42,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
+
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -65,6 +69,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+
+import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
@@ -489,7 +495,7 @@ public class MainController implements Initializable {
 	@FXML public void onRobotArm(ActionEvent event) {
 		Platform.runLater(()->{
 			try {
-				MobileBase mb = new MobileBase(XmlFactory.getDefaultConfigurationStream("TrobotLinks.xml"));
+				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("TrobotLinks.xml"));
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -509,7 +515,7 @@ public class MainController implements Initializable {
 	@FXML public void onHexapod() {
 		Platform.runLater(()->{
 			try {
-				MobileBase mb = new MobileBase(XmlFactory.getDefaultConfigurationStream("HaoSuHex.xml"));
+				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("HaoSuHex.xml"));
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

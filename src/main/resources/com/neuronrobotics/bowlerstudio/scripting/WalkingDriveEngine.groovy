@@ -47,9 +47,19 @@ IDriveEngine engine =  new IDriveEngine (){
 				println "Leg "+i+" cant reach x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 				feetLocations[i].setX(home[i].getX()-newPose.getX());
 				feetLocations[i].setY(home[i].getY()-newPose.getY());
+				println " Trying from  to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
+				int j=0;
+				while(legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
+					feetLocations[i].translateX(newPose.getX());
+					feetLocations[i].translateY(newPose.getY());
+					j++;
+				}
+				//step back one to ensure a valid reset location
+				feetLocations[i].translateX(-newPose.getX());
+				feetLocations[i].translateY(-newPose.getY());
 				//perform the step over
 				home[i].translateZ(stepOverHeight);
-				println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
+				println j+" iterations Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 				try {
 					// lift leg above home
 					legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds/10);

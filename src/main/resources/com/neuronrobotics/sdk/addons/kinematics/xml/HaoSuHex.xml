@@ -1,7 +1,7 @@
 <root>
 <mobilebase>
+
 <name>WalkingBase</name>
-<driveType>walking</driveType>
 <leg>
 
 <name>Hex_One</name>
@@ -79,9 +79,9 @@
 </link>
 
 <ZframeToRAS
->	<x>0.0</x>
-	<y>0.0</y>
-	<z>0.0</z>
+>	<x>255.6502871358399</x>
+	<y>578.6229267910164</y>
+	<z>6.919879153817893</z>
 	<rotw>1.0</rotw>
 	<rotx>0.0</rotx>
 	<roty>0.0</roty>
@@ -91,19 +91,19 @@
 <baseToZframe>
 	<x>-200.0</x>
 	<y>-20.0</y>
-	<z>0</z>
-	<rotw>0.7071067811865476</rotw>
-	<rotx>0.0</rotx>
-	<roty>0.0</roty>
-	<rotz>-0.7071067811865475</rotz>
+	<z>0.0</z>
+	<rotw>0.6123724356957946</rotw>
+	<rotx>0.2583351157751177</rotx>
+	<roty>-0.3535533905932736</roty>
+	<rotz>-0.6582271400948586</rotz>
 </baseToZframe>
 
 </leg>
 
 <ZframeToRAS>
-	<x>0.0</x>
-	<y>0.0</y>
-	<z>0.0</z>
+	<x>255.6502871358399</x>
+	<y>578.6229267910164</y>
+	<z>6.919879153817893</z>
 	<rotw>1.0</rotw>
 	<rotx>0.0</rotx>
 	<roty>0.0</roty>
