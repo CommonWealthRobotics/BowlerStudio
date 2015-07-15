@@ -1,4 +1,7 @@
+import java.util.ArrayList;
+
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
@@ -7,14 +10,14 @@ return new DhInverseSolver() {
 	
 	@Override
 	public double[] inverseKinematics(TransformNR target,
-			double[] jointSpaceVector, DHChain links) {
+			double[] jointSpaceVector, ArrayList<DHLink> links) {
 		int linkNum = jointSpaceVector.length;
 		double [] inv = new double[linkNum];
 		// this is an ad-hock kinematic model for d-h parameters and only works for specific configurations
 
-		double dx = links.get(1).getD()-
+		double d = links.get(1).getD()-
 				links.get(2).getD();
-		double dy = links.get(0).getR();
+		double r = links.get(0).getR();
 		
 		double xSet = target.getX();
 		double ySet = target.getY();
@@ -23,15 +26,15 @@ return new DhInverseSolver() {
 		double polarTheta = Math.asin(ySet/polarR);
 		
 		
-		double adjustedR = Math.sqrt((polarR*polarR)+(dx*dx))-dy;
-		double adjustedTheta =Math.asin(dx/polarR);
+		double adjustedR = Math.sqrt((polarR*polarR)+(d*d))-r;
+		double adjustedTheta =Math.asin(d/polarR);
 		
 		
-		xSet = adjustedR*Math.sin(polarTheta-adjustedTheta);
-		ySet = adjustedR*Math.cos(polarTheta-adjustedTheta);
-	
 		
 		double orentation = polarTheta-adjustedTheta;
+		xSet = adjustedR*Math.sin(orentation);
+		ySet = adjustedR*Math.cos(orentation);
+	
 		
 		double zSet = target.getZ()
 				-links.get(0).getD();
@@ -50,21 +53,21 @@ return new DhInverseSolver() {
 		double l2 = links.get(2).getR();
 
 		double vect = Math.sqrt(xSet*xSet+ySet*ySet+zSet*zSet);
-		Log.info( "TO: "+overGripper);
-		Log.info( "polarR: "+polarR);
-		Log.info( "polarTheta: "+Math.toDegrees(polarTheta));
-		Log.info( "adjustedTheta: "+Math.toDegrees(adjustedTheta));
-		Log.info( "adjustedR: "+adjustedR);
+		println ( "TO: "+overGripper);
+		println ( "polarR: "+polarR);
+		println( "polarTheta: "+Math.toDegrees(polarTheta));
+		println( "adjustedTheta: "+Math.toDegrees(adjustedTheta));
+		println( "adjustedR: "+adjustedR);
 		
-		Log.info( "x Correction: "+xSet);
-		Log.info( "y Correction: "+ySet);
+		println( "x Correction: "+xSet);
+		println( "y Correction: "+ySet);
 		
-		Log.info( "Orentation: "+Math.toDegrees(orentation));
-		Log.info( "z: "+zSet);
+		println( "Orentation: "+Math.toDegrees(orentation));
+		println( "z: "+zSet);
 
 		
 
-		if (vect > l1+l2) {
+		if (vect > l1+l2 ||  vect<0 ||adjustedR<0 ) {
 			throw new RuntimeException("Hypotenus too long: "+vect+" longer then "+l1+l2);
 		}
 		//from https://www.mathsisfun.com/algebra/trig-solving-sss-triangles.html

@@ -180,8 +180,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		advanced.getChildren().add(save);
 		advanced.getChildren().add(add);
 		advanced.getChildren().add(refresh);
-		if(mbase!=null)
-			advanced.getChildren().add(kinematics);
+		advanced.getChildren().add(kinematics);
 		Accordion advancedPanel = new Accordion();
 		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
 		controls.getChildren().add(jog);

@@ -6,20 +6,25 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 
-return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
+IDriveEngine engine =  new IDriveEngine (){
 	double stepOverHeight=5;
+	boolean takingStep = false;
 	@Override
 	public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
-		
+		if(takingStep)
+			return;
+		takingStep = true;
 		int numlegs = source.getLegs().size();
 		TransformNR [] feetLocations = new TransformNR[numlegs];
 		TransformNR [] home = new TransformNR[numlegs];
 		ArrayList<DHParameterKinematics> legs = source.getLegs();
 		// Load in the locations of the tips of each of the feet. 
 		for(int i=0;i<numlegs;i++){
-			feetLocations[i]=legs.get(i).getCurrentPoseTarget();
+			feetLocations[i]=legs.get(i).getCurrentTaskSpaceTransform();
 			home[i] = legs.get(i).calcHome();
+			feetLocations[i].setZ(home[i].getZ());
 		}
 		//Apply transform to each dimention of current pose
 		TransformNR global= source.getFiducialToGlobalTransform();
@@ -33,20 +38,18 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 		// New target calculated appliaed to global offset
 		source.setGlobalToFiducialTransform(global);
 		for(int i=0;i<numlegs;i++){
-			
+			double footx,footy;
+			TransformNR startLocation = legs.get(i).getCurrentTaskSpaceTransform();
+			// start by storing where the feet are
+			footx = startLocation.getX();
+			footy = startLocation.getY();
 			if(!legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
-				feetLocations[i].translateX(-newPose.getX());
-				feetLocations[i].translateY(-newPose.getY());
-				//new leg position is not reachable, reverse course and walk up the line to a better location
-				while(legs.get(i).checkTaskSpaceTransform(feetLocations[i])) {
-					feetLocations[i].translateX(-newPose.getX());
-					feetLocations[i].translateY(-newPose.getY());
-				}
-				//step back one increment for new location
-				feetLocations[i].translateX(newPose.getX());
-				feetLocations[i].translateY(newPose.getY());
+				println "Leg "+i+" cant reach x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
+				feetLocations[i].setX(home[i].getX()-newPose.getX());
+				feetLocations[i].setY(home[i].getY()-newPose.getY());
 				//perform the step over
 				home[i].translateZ(stepOverHeight);
+				println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 				try {
 					// lift leg above home
 					legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds/10);
@@ -63,7 +66,6 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 				}
 				
 			}
-			println "Leg "+i+" new foot location ok"
 
 		}
 		//all legs have a valid target set, perform coordinated motion
@@ -75,7 +77,7 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 				e.printStackTrace();
 			}
 		}
-		
+		takingStep = false;
 		
 	}
 
@@ -95,3 +97,5 @@ return  new com.neuronrobotics.sdk.addons.kinematics.IDriveEngine (){
 
 
 }
+
+return engine;
