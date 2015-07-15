@@ -115,7 +115,7 @@ return new ICadGenerator(){
 							if(servo!=null){
 								servo.setManipulator(dh.getListener());
 								//if(i>2)
-								csg.add(servo);
+								//csg.add(servo);
 							}
 						}
 					}
