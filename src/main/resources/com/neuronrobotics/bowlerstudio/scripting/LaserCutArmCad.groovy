@@ -23,6 +23,7 @@ return new ICadGenerator(){
 					ArrayList<CSG> csg = new ArrayList<CSG>();
 					CSG previousServo=null;
 					CSG servoModel = null;
+
 					try {
 						servoModel = STL.file(Paths.get(CreatureLab.class.getResource("hxt900-servo.stl").toURI()));
 					} catch (IOException e1) {
@@ -115,7 +116,7 @@ return new ICadGenerator(){
 							if(servo!=null){
 								servo.setManipulator(dh.getListener());
 								//if(i>2)
-								//csg.add(servo);
+								csg.add(servo);
 							}
 						}
 					}
