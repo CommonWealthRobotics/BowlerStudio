@@ -76,6 +76,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 
 	private boolean isTutorialTab =false;
 
+	private boolean finishedLoadingScriptingWidget;
+
 	public ScriptingGistTab(String title, String Url) throws IOException, InterruptedException{
 		this(title,Url,false);
 	}
@@ -94,7 +96,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		Log.debug("Loading Gist Tab: "+Url);
 		webView = new WebView();
 		webEngine = webView.getEngine();
-		webEngine.setUserAgent("bowlerstudio");
+		//webEngine.setUserAgent("bowlerstudio");
 		if(Url!=null)
 			Current_URL=Url;
 	    if (splash != null) {
@@ -285,27 +287,34 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}catch(Exception E){
 			E.printStackTrace();
 		}
+		finishedLoadingScriptingWidget=false;
 		try{
 			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
-			Platform.runLater(() -> vBox.getChildren().add(scripting));
+			Platform.runLater(() -> {
+				vBox.getChildren().add(scripting);
+				if(!isTutorialTab){
+					Platform.runLater(()->{
+						try{
+							
+							myTab.setText(scripting.getFileName());
+						}catch(java.lang.NullPointerException ex){
+							// web page contains no gist
+							ex.printStackTrace();
+							myTab.setText("Web");
+						}
+						finishedLoadingScriptingWidget=true;
+					});
+				}
+			});
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		
-		
-		if(!isTutorialTab){
-			Platform.runLater(()->{
-				try{
-					
-					myTab.setText(scripting.getFileName());
-				}catch(java.lang.NullPointerException ex){
-					// web page contains no gist
-					ex.printStackTrace();
-					myTab.setText("Web");
-				}
-			});
+		while(!finishedLoadingScriptingWidget){
+			ThreadUtil.wait(10);
 		}
+
 		if(firstBoot){
 			firstBoot=false;
 			//now that the application is totally loaded check for connections to add
@@ -321,9 +330,6 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 					}
 				}
 			}.start();
-	
-		
-
 		}
 	}
 	
