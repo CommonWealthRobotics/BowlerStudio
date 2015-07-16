@@ -10,7 +10,8 @@
 		<upperLimit>1024</upperLimit><!-- limit in link units -->
 		<lowerLimit>0</lowerLimit><!-- limit in link units -->
 		<isLatch>true</isLatch><!-- Tells the controller to latch index pulses -->
-		<indexLatch>614</indexLatch><!-- Tells the controller what value to latch at index. This is also the offset value uses by the controller to calculate offsets -->
+		<indexLatch>0</indexLatch>
+		<staticOffset>614</staticOffset><!-- Tells the controller what value to latch at index. This is also the offset value uses by the controller to calculate offsets -->
 		<isStopOnLatch>false</isStopOnLatch><!-- Tells the controller to stop on the latch value -->	
 		<homingTPS>500</homingTPS><!-- Tells the controller how fast to home -->
 		<DHParameters>
@@ -29,7 +30,8 @@
 		<upperLimit>1024</upperLimit>
 		<lowerLimit>0</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>526</indexLatch>
+		<staticOffset>526</staticOffset>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>
 		<homingTPS>500</homingTPS>
 		<DHParameters>
@@ -49,7 +51,8 @@
 		<upperLimit>1024</upperLimit>
 		<lowerLimit>0</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>148</indexLatch>
+		<staticOffset>148</staticOffset>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>
 		<homingTPS>500</homingTPS>	
 		<DHParameters>
@@ -69,7 +72,8 @@
 		<upperLimit>1024</upperLimit>
 		<lowerLimit>0</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>458</indexLatch>
+		<staticOffset>458</staticOffset>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>	
 		<homingTPS>500</homingTPS>
 		<DHParameters>
@@ -89,7 +93,8 @@
 		<upperLimit>1024</upperLimit>
 		<lowerLimit>0</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>603</indexLatch>
+		<staticOffset>603</staticOffset>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>	
 		<homingTPS>500</homingTPS>
 		<DHParameters>
@@ -108,7 +113,8 @@
 		<upperLimit>1024</upperLimit>
 		<lowerLimit>0</lowerLimit>
 		<isLatch>true</isLatch>
-		<indexLatch>450</indexLatch>
+		<staticOffset>450</staticOffset>
+		<indexLatch>0</indexLatch>
 		<isStopOnLatch>false</isStopOnLatch>	
 		<homingTPS>500</homingTPS>
 		<DHParameters>
