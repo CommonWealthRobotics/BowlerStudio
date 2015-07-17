@@ -318,7 +318,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 						try {
 							setKinematics();
 						} catch (Exception ex) {
-
+							ex.printStackTrace();
 						}
 
 					}

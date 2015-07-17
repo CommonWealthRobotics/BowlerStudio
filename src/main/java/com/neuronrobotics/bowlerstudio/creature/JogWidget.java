@@ -317,6 +317,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							double toSeconds=seconds;
 							new Thread(){
 								public void run(){
+									setName("Jog Widget Set Drive Arc Command");
 									getMobilebase().DriveArc(toSet, toSeconds);
 								}
 							}.start();
