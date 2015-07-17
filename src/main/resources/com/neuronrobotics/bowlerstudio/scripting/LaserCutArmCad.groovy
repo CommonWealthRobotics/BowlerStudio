@@ -8,8 +8,10 @@ import javafx.scene.paint.Color;
 
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
+import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
@@ -25,7 +27,7 @@ return new ICadGenerator(){
 					CSG servoModel = null;
 
 					try {
-						servoModel = STL.file(Paths.get(CreatureLab.class.getResource("hxt900-servo.stl").toURI()));
+						servoModel = new MicroServo().toCSG();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -63,8 +65,7 @@ return new ICadGenerator(){
 
 							CSG servo=null;
 							if(i< (dhLinks.size()-1) ){
-								servo=servoModel.transformed(new Transform().translateZ(-19.3));
-								servo=servo.transformed(new Transform().translateX(5.4));
+								servo=servoModel.clone();
 								if(i==3&&dhLinks.size()>4){
 									
 									servo=servo.transformed(new Transform().translateZ(lastServoOffset));
@@ -74,13 +75,10 @@ return new ICadGenerator(){
 									cube=cube.difference(servo);
 								}
 								if(previousServo!=null){
-									CSG attach = servo.transformed( new Transform().translateZ(-8.5));
+									CSG attach = servoModel.clone().transformed( new Transform().translateZ(-8.5));
 									if(i==3){
-										attach = servoModel.
-										transformed(
-											new Transform().rotX(90));
-										attach=attach.transformed(new Transform().translateY(-18.3));
-										attach=attach.transformed(new Transform().translateX(5.4));
+										attach = servoModel.transformed( new Transform().rotX(90));
+
 										attach = attach.transformed( new Transform().translateZ(0));
 										
 									}else

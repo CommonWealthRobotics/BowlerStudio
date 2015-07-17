@@ -1,5 +1,6 @@
 package com.neuronrobotics.jniloader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,16 +34,26 @@ public class NativeResource {
 	private void inJarLoad(String name)throws UnsatisfiedLinkError, NativeResourceException{
 		//start by assuming the library can be loaded from the jar
 		InputStream resourceSource = locateResource(name);
+		File resourceLocation;
+		try {
+			resourceLocation = inJarLoad(resourceSource,name);
+			loadResource(resourceLocation);
+			testNativeCode();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static File inJarLoad(InputStream inputStream, String name) throws IOException{
+		InputStream resourceSource = inputStream;
 		File resourceLocation = prepResourceLocation(name);
 		System.out.println("Resource selected "+resourceSource);
 		System.out.println("Resource target "+resourceLocation);
-		try {
-			copyResource(resourceSource, resourceLocation);
-		} catch (IOException e) {
-			throw new UnsatisfiedLinkError();
-		}
-		loadResource(resourceLocation);
-		testNativeCode();
+
+		copyResource(resourceSource, resourceLocation);
+		return resourceLocation;
 	}
 	private void loadLib(String name) throws NativeResourceException {
 

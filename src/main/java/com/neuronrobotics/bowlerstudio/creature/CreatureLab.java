@@ -168,6 +168,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				advancedPanel.setExpandedPane(rp);
 			}
 		}
+		
 	}
 	
 	private void generateCad(){
