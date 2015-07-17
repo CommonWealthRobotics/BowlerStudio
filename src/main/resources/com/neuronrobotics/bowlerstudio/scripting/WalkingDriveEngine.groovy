@@ -52,11 +52,11 @@ IDriveEngine engine =  new IDriveEngine (){
 				//println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 				try {
 					// lift leg above home
-					legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds/10);
-					ThreadUtil.wait((int) (seconds*100));
+					legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds);
+					ThreadUtil.wait((int) (seconds*1000));
 					//step to new target
-					legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], seconds/10);
-					ThreadUtil.wait((int) (seconds*100));
+					legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], seconds);
+					ThreadUtil.wait((int) (seconds*1000));
 					//set new target for the coordinated motion step at the end
 					feetLocations[i].translateX(newPose.getX());
 					feetLocations[i].translateY(newPose.getY());

@@ -206,6 +206,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		}
 		if(button == home){
 			home();
+			stop=true;
+			return;
 		}else{
 			try {
 				double seconds =Double.parseDouble(sec.getText());
@@ -310,8 +312,16 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							current.translateY(inc*y);
 							current.translateZ(inc*slider);
 							getKin().setDesiredTaskSpaceTransform(current,  seconds);
-						}else
-							getMobilebase().DriveArc(current, seconds);
+						}else{
+							TransformNR toSet = current.copy();
+							double toSeconds=seconds;
+							new Thread(){
+								public void run(){
+									getMobilebase().DriveArc(toSet, toSeconds);
+								}
+							}.start();
+						}
+							
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

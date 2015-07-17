@@ -1,6 +1,8 @@
 <root>
+<mobilebase>
+	<name>InputArmBase</name><!-- Name, used to regester the link with a specific location in the robot  -->
 	<appendage>
-	<name>BasicArm</name><!-- Name, used to regester the link with a specific location in the robot  -->
+	<name>InputArm</name><!-- Name, used to regester the link with a specific location in the robot  -->
 	<link>
 		<deviceName>dyio</deviceName>
 		<name>basePan</name><!-- Name, used to regester the link with a specific location in the robot  -->
@@ -135,4 +137,25 @@
 		<rotz>0</rotz>
 	</baseToZframe>
 	</appendage>
+	<ZframeToRAS>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</ZframeToRAS>
+
+<baseToZframe>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</baseToZframe>
+
+</mobilebase>
 </root>
