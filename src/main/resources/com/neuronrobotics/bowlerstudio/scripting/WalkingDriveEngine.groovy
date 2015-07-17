@@ -30,6 +30,7 @@ IDriveEngine engine =  new IDriveEngine (){
 					if(zLock==null){
 						//sets a standard plane at the z location of the first leg. 
 						zLock=feetLocations[i].getZ();
+						println "ZLock level set to "+zLock
 					}
 					home[i] = legs.get(i).calcHome();
 					//feetLocations[i].setZ(home[i].getZ());
@@ -42,32 +43,36 @@ IDriveEngine engine =  new IDriveEngine (){
 				global.translateY(newPose.getY());
 				global.translateZ(newPose.getZ());
 				double rotz = newPose.getRotation().getRotationZ() +global.getRotation().getRotationZ() ;
-				double roty = newPose.getRotation().getRotationY() ;
 				double rotx = newPose.getRotation().getRotationX() ;
-				global.setRotation(new RotationNR( rotx,roty, rotz) );
+				double roty = newPose.getRotation().getRotationY() ;
+				RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
+													Math.toDegrees(roty),
+													Math.toDegrees(rotz));//RotationNR.getRotationZ(Math.toDegrees(rotz));
+
+				global.setRotation(neRot );
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				for(int i=0;i<numlegs;i++){
 					double footx,footy;
 					TransformNR startLocation = legs.get(i).getCurrentTaskSpaceTransform();
 					// start by storing where the feet are
-					footx = startLocation.getX();
-					footy = startLocation.getY();
+					footx = startLocation.getX() - feetLocations[i].getX() ;
+					footy = startLocation.getY() - feetLocations[i].getY() ;
 					if(!legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
 						
-						feetLocations[i].setX(home[i].getX()-newPose.getX());
-						feetLocations[i].setY(home[i].getY()-newPose.getY());
+						feetLocations[i].setX(home[i].getX()-footx);
+						feetLocations[i].setY(home[i].getY()-footy);
 						int j=0;
 						while(legs.get(i).checkTaskSpaceTransform(feetLocations[i]) && j<20){
 							//increment by the xy unit vectors
-							feetLocations[i].translateX(newPose.getX()/2);
-							feetLocations[i].translateY(newPose.getY()/2);
+							feetLocations[i].translateX(footx/2);
+							feetLocations[i].translateY(footy/2);
 							j++;
 							
 						}
 						//step back one unit vector
-						feetLocations[i].translateX(-newPose.getX());
-						feetLocations[i].translateY(-newPose.getY());
+						feetLocations[i].translateX(-footx);
+						feetLocations[i].translateY(-footy);
 						
 						//perform the step over
 						home[i].setZ(stepOverHeight+zLock+newPose.getZ());

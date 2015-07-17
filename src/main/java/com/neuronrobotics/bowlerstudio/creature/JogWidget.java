@@ -12,6 +12,7 @@ import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
@@ -292,7 +293,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				seconds =Double.parseDouble(sec.getText());
 				if(!stop){ 
 					
-					TransformNR current = new TransformNR();
+					
 					double inc;
 					try{
 						inc = Double.parseDouble(increment.getText());
@@ -302,9 +303,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						});
 						inc=10;
 					}
+					double rxl=0;
+					double ryl=inc*slider;
+					double rzl=inc/4*rz;
+					TransformNR current = new TransformNR(0,0,0,new RotationNR(rxl, ryl, rzl));
 					current.translateX(inc*x);
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
+					
 					try {
 						if(getMobilebase()==null){
 							current = getKin().getCurrentTaskSpaceTransform();
@@ -318,6 +324,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							new Thread(){
 								public void run(){
 									setName("Jog Widget Set Drive Arc Command");
+									toSet.setZ(0);
+									
 									getMobilebase().DriveArc(toSet, toSeconds);
 								}
 							}.start();
