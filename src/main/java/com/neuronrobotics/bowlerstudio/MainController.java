@@ -7,7 +7,6 @@ package com.neuronrobotics.bowlerstudio;
 
 import haar.HaarFactory;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +15,6 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
-
 
 import javax.script.ScriptEngine;
 
@@ -43,11 +41,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
+
 //import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
-
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -69,12 +67,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
+import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
@@ -147,6 +145,7 @@ public class MainController implements Initializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 	
 	private static void updateLog(){

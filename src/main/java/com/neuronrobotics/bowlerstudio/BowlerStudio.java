@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 import com.neuronrobotics.jniloader.HaarDetector;
 import com.neuronrobotics.jniloader.IObjectDetector;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
@@ -115,7 +116,7 @@ public class BowlerStudio extends Application {
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
         Log.enableDebugPrint();
-       
+		new MicroServo().toCSG();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }
 
