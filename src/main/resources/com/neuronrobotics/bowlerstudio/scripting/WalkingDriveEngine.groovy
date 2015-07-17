@@ -44,9 +44,19 @@ IDriveEngine engine =  new IDriveEngine (){
 			footx = startLocation.getX();
 			footy = startLocation.getY();
 			if(!legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
-				//println "Leg "+i+" cant reach x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
+				
 				feetLocations[i].setX(home[i].getX()-newPose.getX());
 				feetLocations[i].setY(home[i].getY()-newPose.getY());
+				
+				while(legs.get(i).checkTaskSpaceTransform(feetLocations[i])){
+					//increment by the xy unit vectors
+					feetLocations[i].translateX(newPose.getX()/2);
+					feetLocations[i].translateY(newPose.getY()/2);
+				}
+				//step back one unit vector
+				feetLocations[i].translateX(-newPose.getX());
+				feetLocations[i].translateY(-newPose.getY());
+				
 				//perform the step over
 				home[i].translateZ(stepOverHeight);
 				//println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
