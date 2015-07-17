@@ -243,7 +243,7 @@
 
 	<DHParameters>
 		<Delta>25.0</Delta>
-		<Theta>0.0</Theta>
+		<Theta>-21.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
@@ -288,10 +288,10 @@
 	<x>50.0</x>
 	<y>-20.0</y>
 	<z>0.0</z>
-	<rotw>0.9778917956532961</rotw>
-	<rotx>-0.016630099714977236</rotx>
-	<roty>-0.19008290954232632</roty>
-	<rotz>-0.08555444627467286</rotz>
+	<rotw>0.9961946980917455</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>-0.08715574274765817</rotz>
 </baseToZframe>
 
 </leg>
@@ -489,6 +489,7 @@
 </baseToZframe>
 
 </leg>
+
 <leg>
 
 <name>Hex_Six</name>
@@ -510,7 +511,7 @@
 
 	<DHParameters>
 		<Delta>13.0</Delta>
-		<Theta>8.696884527439039</Theta>
+		<Theta>0.0</Theta>
 		<Radius>32.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
@@ -534,7 +535,7 @@
 
 	<DHParameters>
 		<Delta>25.0</Delta>
-		<Theta>0.0</Theta>
+		<Theta>-21.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
@@ -544,7 +545,7 @@
 	<name>elbow</name>
 	<deviceName>dyio</deviceName>
 	<type>servo-rotory</type>
-	<index>18</index>
+	<index>17</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
@@ -579,10 +580,10 @@
 	<x>50.0</x>
 	<y>20.0</y>
 	<z>0.0</z>
-	<rotw>0.9778917956532961</rotw>
-	<rotx>0.016630099714977236</rotx>
-	<roty>-0.19008290954232632</roty>
-	<rotz>0.08555444627467286</rotz>
+	<rotw>0.9961946980917455</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.08715574274765817</rotz>
 </baseToZframe>
 
 </leg>

@@ -180,22 +180,22 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			for(DHParameterKinematics l:device.getAllDHChains()){
 				for(CSG csg:generateCad(l.getChain().getLinks())){
 					allCad.add(csg);
-					new Thread(){
-						public void run(){
-							BowlerStudioController.setCsg(allCad);
-						}
-					}.start();
+//					new Thread(){
+//						public void run(){
+//							BowlerStudioController.setCsg(allCad);
+//						}
+//					}.start();
 				}
 			}
 			
 		}else if(DHParameterKinematics.class.isInstance(pm)){
 			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
 				allCad.add(csg);
-				new Thread(){
-					public void run(){
-						BowlerStudioController.setCsg(allCad);
-					}
-				}.start();
+//				new Thread(){
+//					public void run(){
+//						BowlerStudioController.setCsg(allCad);
+//					}
+//				}.start();
 				
 			}
 		}
