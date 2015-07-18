@@ -45,7 +45,15 @@ public class NativeResource {
 		}
 
 	}
-	
+	public static File inJarLoad(Class inputClass, String name) throws IOException{
+		InputStream resourceSource = inputClass.getResourceAsStream(name);
+		File resourceLocation = prepResourceLocation(name);
+		System.out.println("Resource selected "+resourceSource);
+		System.out.println("Resource target "+resourceLocation);
+
+		copyResource(resourceSource, resourceLocation);
+		return resourceLocation;
+	}
 	public static File inJarLoad(InputStream inputStream, String name) throws IOException{
 		InputStream resourceSource = inputStream;
 		File resourceLocation = prepResourceLocation(name);

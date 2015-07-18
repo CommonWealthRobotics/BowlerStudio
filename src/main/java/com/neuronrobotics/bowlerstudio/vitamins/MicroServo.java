@@ -17,11 +17,13 @@ public class MicroServo implements IVitamin {
 	static{
 		
 		try {
-			File stl = NativeResource.inJarLoad(IVitamin.class.getResourceAsStream("hxt900-servo.stl"),"hxt900-servo.stl");
-			servoModel = STL.file(stl.toPath());
+			File 	stl = NativeResource.inJarLoad(IVitamin.class,"hxt900-servo.stl");
+			servoModel = STL.file(stl.toPath());	
 			servoModel=servoModel.transformed(new Transform().translateZ(-19.3));
 			servoModel=servoModel.transformed(new Transform().translateX(5.4));
-		} catch (IOException e) {
+//					stl = NativeResource.inJarLoad(IVitamin.class	,"arm.stl");
+//			servoModel=servoModel.union(STL.file(stl.toPath()));
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
