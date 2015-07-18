@@ -15,40 +15,10 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
-
-import javax.script.ScriptEngine;
-
-
-
-
-
-
-
-
-
-
-
-
-
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-
-
-
-
-
-
-
-
-
-//import org.bytedeco.javacpp.Loader;
-//import org.bytedeco.javacpp.opencv_objdetect;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
-
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,7 +26,6 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -66,17 +35,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
-import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 import com.neuronrobotics.jniloader.CHDKImageProvider;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.jniloader.OpenCVJNILoader;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
@@ -84,11 +50,8 @@ import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
-import com.neuronrobotics.sdk.addons.kinematics.xml.XmlFactory;
-import com.neuronrobotics.sdk.dyio.DyIO;
 /**
  * FXML Controller class
  *
