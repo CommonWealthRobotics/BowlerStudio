@@ -547,6 +547,19 @@ public class MainController implements Initializable {
     	}.start();
 		
 	}
+
+	@FXML public void onGrasshopper() {
+		Platform.runLater(()->{
+			try {
+				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("GrassHoppper.xml"));
+				ConnectionManager.addConnection(mb,mb.getScriptingName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		
+	}
 	
 
 
