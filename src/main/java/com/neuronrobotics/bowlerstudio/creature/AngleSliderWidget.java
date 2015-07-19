@@ -36,6 +36,7 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 				setpoint.setValue(val);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);
+				getListener().onSliderMoving(this,setpoint.getValue());
 				getListener().onSliderDoneMoving(this,val);
 			});
 		});

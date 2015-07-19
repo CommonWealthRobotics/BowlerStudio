@@ -344,13 +344,22 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		this.engine = engine;
 		loadGist = true;
 		String currentGist = getCurrentGist(addr, engine);
-		String[] code = codeFromGistID(currentGist,"");
-		if (code != null) {
-			setCode(code[0]);
-			Platform.runLater(() -> fileLabel.setText(code[1]));
-			
-			currentFile = new File(code[1]);
+		String[] code;
+		try {
+			code = codeFromGistID(currentGist,"");
+			if (code != null) {
+				setCode(code[0]);
+				Platform.runLater(() -> fileLabel.setText(code[1]));
+				
+				currentFile = new File(code[1]);
+			}
+		} catch (Exception e) {
+			  StringWriter sw = new StringWriter();
+		      PrintWriter pw = new PrintWriter(sw);
+		      e.printStackTrace(pw);
+		      System.out.println(sw.toString());
 		}
+		
 
 	}
 

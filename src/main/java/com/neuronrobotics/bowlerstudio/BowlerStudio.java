@@ -46,9 +46,10 @@ public class BowlerStudio extends Application {
 
     /**
      * @param args the command line arguments
+     * @throws Exception 
      */
     @SuppressWarnings("unchecked")
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
     	if(args.length==0)
     		launch(args);
     	else{

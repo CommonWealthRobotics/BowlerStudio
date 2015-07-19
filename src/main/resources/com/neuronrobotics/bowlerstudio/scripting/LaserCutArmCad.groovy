@@ -54,6 +54,7 @@ return new ICadGenerator(){
 							if(i<3){
 								cube = new Cube(x,y,2).toCSG();
 								cube=cube.transformed(new Transform().translateX((-x/2)+radiusAddOn-10));
+								
 							}else if(i==3 && dhLinks.size()>4){
 								
 								cube = new Cube(y,2,lastServoOffset+lasLinkOffset).toCSG();
@@ -114,7 +115,8 @@ return new ICadGenerator(){
 							if(servo!=null){
 								servo.setManipulator(dh.getListener());
 								//if(i>2)
-								//csg.add(servo);
+								
+								csg.add(servo);
 							}
 						}
 					}

@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import eu.mihosoft.vrl.v3d.STL;
 
@@ -68,8 +70,10 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 						ScriptingEngine.class.getResource("DefaultDhSolver.groovy"),
 						null));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
 			}
 		}
 		if(MobileBase.class.isInstance(device2)){
@@ -79,8 +83,10 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 						ScriptingEngine.class.getResource("WalkingDriveEngine.groovy"),
 						null));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
 			}
 		}
 		links = new VBox(20);
@@ -195,11 +201,18 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 	
 	private void setKinematics(){
 		if(getKinematicsFile()!=null){
-	        if(mbase!=null){
-	        	mbase.setWalkingDriveEngine( (IDriveEngine) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
-	        }else if (dhdevice != null){
-	        	dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
-	        }
+			try{
+		        if(mbase!=null){
+		        	mbase.setWalkingDriveEngine( (IDriveEngine) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
+		        }else if (dhdevice != null){
+		        	dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
+		        }
+			}catch(Exception e){
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
 		}
 	}
 	

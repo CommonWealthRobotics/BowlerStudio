@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -210,18 +211,32 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		if (getCadScript() != null) {
 			try{
 			cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-			}catch(Exception e){}
+			}catch(Exception e){
+			      StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
         }
 		if(cadEngine==null){
 			try {
 				cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("LaserCutArmCad.groovy"),null);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
 			}
 		}
-		
-		return cadEngine.generateCad(dhLinks);
+		try {
+			return cadEngine.generateCad(dhLinks);
+		} catch (Exception e) {
+			  StringWriter sw = new StringWriter();
+		      PrintWriter pw = new PrintWriter(sw);
+		      e.printStackTrace(pw);
+		      System.out.println(sw.toString());
+		}
+		return null;
 		
 	}
 

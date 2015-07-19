@@ -204,7 +204,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 
 
-	public static String[] codeFromGistID(String id, String FileName) {
+	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
 		try {
 			if(github == null){
 
@@ -297,7 +297,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		return null;
 	}
 
-	public static Object inlineFileScriptRun(File f, ArrayList<Object> args) {
+	public static Object inlineFileScriptRun(File f, ArrayList<Object> args) throws Exception{
 		byte[] bytes;
 
 		try {
@@ -312,7 +312,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 
 	public static Object inlineGistScriptRun(String gistID,
-			ArrayList<Object> args) {
+			ArrayList<Object> args)  throws Exception{
 		String[] gistData = codeFromGistID(gistID,"");
 		return inlineScriptRun(gistData[0], args,setFilename(gistData[1]));
 	}
