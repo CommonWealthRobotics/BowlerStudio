@@ -21,7 +21,7 @@ import eu.mihosoft.vrl.v3d.Transform;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import javafx.scene.paint.Color;
 return new ICadGenerator(){
-	CSG servoReference=  new MicroServo().toCSG().transformed(new Transform().translateZ(-12.5))
+	CSG servoReference=  new MicroServo().toCSG()
 	CSG horn = new Cube(6,4,18).toCSG();
 	private double attachmentRodWidth=10;
 	private double attachmentBaseWidth=20;
@@ -114,25 +114,26 @@ return new ICadGenerator(){
 		csg.add(foot);//This is the root that attaches to the base
 		
 		CSG servoKeepaway = toXMin(toZMax(	new Cube(Math.abs(servoReference.getBounds().getMin().x) +
-									 Math.abs(servoReference.getBounds().getMax().x),
-									 Math.abs(servoReference.getBounds().getMin().y) +
-									 Math.abs(servoReference.getBounds().getMax().y),
-									 Math.abs(servoReference.getBounds().getMin().z) +
-									 Math.abs(servoReference.getBounds().getMax().z)).toCSG(),
-								 
-					 )
-			)
-		servoKeepaway = servoKeepaway.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
+			Math.abs(servoReference.getBounds().getMax().x),
+			Math.abs(servoReference.getBounds().getMin().y) +
+			Math.abs(servoReference.getBounds().getMax().y),
+			Math.abs(servoReference.getBounds().getMax().z)).toCSG(),
 		
-		servoReference = servoReference.union(servoKeepaway)
-			
+		)
+		)
+		servoKeepaway = servoKeepaway
+		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
+		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
+		//servoReference = servoReference.union(servoKeepaway)
+
 		
 		if(dhLinks!=null){
 			for(int i=0;i<dhLinks.size();i++){
 				dh = dhLinks.get(i);
 				CSG nextAttachment=getAttachment();
 
-				CSG servo=servoReference.clone()// allign to the horn
+				CSG servo=servoReference.transformed(new Transform().translateZ(-12.5))// allign to the horn
+				.union(servoKeepaway)
 				.transformed(new Transform().rotX(180))// allign to the horn
 				.transformed(new Transform().rotZ(-90))// allign to the horn
 				;
@@ -179,7 +180,7 @@ return new ICadGenerator(){
 				servo.setManipulator(dh.getListener());
 				upperLink.setColor(Color.GREEN);
 				upperLink.setManipulator(dh.getListener());
-				csg.add(upperLink);//This is the root that attaches to the base
+				//csg.add(upperLink);//This is the root that attaches to the base
 				
 				lowerLink.setColor(Color.WHITE);
 				lowerLink.setManipulator(dh.getListener());
