@@ -62,7 +62,23 @@ return new ICadGenerator(){
 	private CSG toYMax(CSG incoming){
 		return toYMax(incoming,incoming);
 	}
-	
+	private CSG getMountScrewKeepaway(){
+		CSG screw = new Cylinder(// The first part is the hole to put the screw in
+					7.5/2,
+					 100,
+					 (int)20).toCSG()
+		screw =screw.union(new Cylinder(// This the the hole in the fasening part
+					4.1/2,
+					 3,
+					 (int)20).toCSG().toZMax()
+					 ).toZMin()
+		screw =screw.union(new Cylinder(// This the the hole in the threaded part
+			2.6/2,
+			 30,
+			 (int)20).toCSG().toZMax()
+			 )
+		return screw;
+	}
 	private CSG getAttachment(){
 		CSG attachmentbase = toZMin(new Cube(attachmentBaseWidth,attachmentBaseWidth,4).toCSG());
 		CSG post = toZMin(new Cube(	attachmentRodWidth,
@@ -107,7 +123,7 @@ return new ICadGenerator(){
 		
 		CSG rootAttachment=getAttachment();
 		rootAttachment.setManipulator(dh.getRootListener());
-		//csg.add(rootAttachment);//This is the root that attaches to the base
+		csg.add(rootAttachment);//This is the root that attaches to the base
 		rootAttachment.setColor(Color.CHOCOLATE);
 		
 		CSG foot=getFoot();
@@ -124,7 +140,6 @@ return new ICadGenerator(){
 		servoKeepaway = servoKeepaway
 		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
 		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
-		//servoReference = servoReference.union(servoKeepaway)
 
 		
 		if(dhLinks!=null){
@@ -161,7 +176,20 @@ return new ICadGenerator(){
 				linkThickness +=3;
 				servo= moveDHValues(servo,dh);
 				double cylandarRadius = 13
+				double yScrewOffset = 2.5
 				CSG upperLink = toZMin(new Cylinder(cylandarRadius,linkThickness,(int)20).toCSG())
+				CSG upperScrews = getMountScrewKeepaway()
+					.transformed(new Transform().translateX(4+(attachmentBaseWidth+3)/2))
+					.transformed(new Transform().translateY(yScrewOffset+(attachmentBaseWidth+3)/2))
+				.union( getMountScrewKeepaway()
+					.transformed(new Transform().translateX(-(4+(attachmentBaseWidth+3)/2)))
+					.transformed(new Transform().translateY((yScrewOffset+(attachmentBaseWidth+3)/2)))
+					)
+				if(dh.getR()>60){
+					upperScrews =upperScrews.union( getMountScrewKeepaway()
+						.transformed(new Transform().translateY(rOffsetForNextLink-5))
+						)
+				}
 				// adding the radius rod
 				CSG rod = toYMin(
 									toZMin(
@@ -183,10 +211,14 @@ return new ICadGenerator(){
 					)
 					.transformed(new Transform().translateY(rOffsetForNextLink))// allign to the NEXT ATTACHMENT
 					.transformed(new Transform().translateZ(linkThickness))// allign to the NEXT ATTACHMENT
-					
-				upperLink=upperLink.union(rod,clip);
+				
+				CSG screwHoles =  new Cylinder(9.5/2,linkThickness,(int)20).toCSG()
+										.transformed(new Transform().translateX(-(4+(attachmentBaseWidth+3)/2)))
+										.transformed(new Transform().translateY((yScrewOffset+(attachmentBaseWidth+3)/2)))
+										
+				upperLink=upperLink.union(rod,clip,screwHoles,upperScrews);
+				upperLink= upperLink.difference(upperScrews);
 				upperLink=upperLink.transformed(new Transform().translateZ(Math.abs(servoReference.getBounds().getMax().z-3)))
-
 				upperLink= moveDHValues(upperLink,dh).difference(servo);
 				if(i== dhLinks.size()-1)
 					upperLink= upperLink.difference(foot);
@@ -199,23 +231,30 @@ return new ICadGenerator(){
 					 (int)20).toCSG()
 
 				)
+				
 				lowerLink=lowerLink.transformed(new Transform().translateZ(-attachmentRodWidth/2))
-				CSG lowerClip = toYMin(
-						toZMin(
+				CSG lowerClip =
+						
 						new Cube(
 							attachmentBaseWidth+3,
 							rOffsetForNextLink,
 							LowerLinkThickness +linkThickness+3
-							).toCSG()
-						)
-					)
+							).toCSG().toZMin().toYMin()
+					
+					
 					.transformed(new Transform().translateY(9))// allign to the NEXT ATTACHMENT
+					
 					.transformed(new Transform().translateZ(-attachmentRodWidth/2 -LowerLinkThickness ))
+					
+				CSG lowerScrewHoles = new Cylinder(9.5/2,LowerLinkThickness +linkThickness+3,(int)20).toCSG()
+						.transformed(new Transform().translateX(-(4+(attachmentBaseWidth+3)/2)))
+						.transformed(new Transform().translateY((yScrewOffset+(attachmentBaseWidth+3)/2)))
+						.transformed(new Transform().translateZ(-attachmentRodWidth/2 -LowerLinkThickness ))
 				lowerLink=lowerLink.union(
-					lowerClip
+					lowerClip,lowerScrewHoles
 					);
 				//Remove the divit or the bearing
-				lowerLink= lowerLink.difference(nextAttachment);
+				lowerLink= lowerLink.difference(nextAttachment,upperScrews.transformed(new Transform().translateZ(6)))// allign to the NEXT ATTACHMENT);
 				lowerLink= moveDHValues(lowerLink,dh);
 				//remove the next links connector and the upper link for mating surface
 				lowerLink= lowerLink.difference(nextAttachment,upperLink,servo);
@@ -238,9 +277,9 @@ return new ICadGenerator(){
 				lowerLink.setColor(Color.WHITE);
 				lowerLink.setManipulator(dh.getListener());
 				csg.add(lowerLink);//This is the root that attaches to the base
-				//csg.add(servo);//This is the root that attaches to the base
-//				if(i<dhLinks.size()-1)
-//					csg.add(nextAttachment);//This is the root that attaches to the base
+//				csg.add(servo);//This is the root that attaches to the base
+				if(i<dhLinks.size()-1)
+					csg.add(nextAttachment);//This is the root that attaches to the base
 					
 			}
 			foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());

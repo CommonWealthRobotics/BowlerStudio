@@ -91,7 +91,7 @@ return new DhInverseSolver() {
 //		println( "l2 from l1: "+Math.toDegrees(C));
 		inv[0] = Math.toDegrees(orentation);
 		inv[1] = -Math.toDegrees((A+elevation+links.get(1).getTheta()));
-		inv[2] = (Math.toDegrees(C))+//interior angle of the triangle, map to external angle
+		inv[2] = (Math.toDegrees(C))-180-//interior angle of the triangle, map to external angle
 				Math.toDegrees(links.get(2).getTheta());// offset for kinematics
 		if(links.size()>3)
 			inv[3] =(inv[1] -inv[2]);// keep it parallell
