@@ -93,8 +93,10 @@ return new ICadGenerator(){
 	private CSG moveDHValues(CSG incoming,DHLink dh ){
 		return incoming.transformed(new Transform().translateZ(-dh.getD()))
 		.transformed(new Transform().rotZ(-Math.toDegrees(dh.getTheta())))
+		.transformed(new Transform().rotZ((90+Math.toDegrees(dh.getTheta()))))
 		.transformed(new Transform().translateX(-dh.getR()))
 		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
+		
 	}
 				
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
@@ -109,9 +111,7 @@ return new ICadGenerator(){
 		rootAttachment.setColor(Color.CHOCOLATE);
 		
 		CSG foot=getFoot();
-		foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
-		foot.setColor(Color.GOLD);
-		csg.add(foot);//This is the root that attaches to the base
+
 		
 		CSG servoKeepaway = toXMin(toZMax(	new Cube(Math.abs(servoReference.getBounds().getMin().x) +
 			Math.abs(servoReference.getBounds().getMax().x),
@@ -138,25 +138,56 @@ return new ICadGenerator(){
 				.transformed(new Transform().rotZ(-90))// allign to the horn
 				;
 				
-				CSG offseter = nextAttachment;
-				
-				if(i<dhLinks.size()-1)
-					offseter=foot
-				double rOffsetForNextLink = dh.getR()-
-				(	5+
-					Math.abs(offseter.getBounds().getMin().z) +
-					 Math.abs(offseter.getBounds().getMax().z)
-				)
-				servo= moveDHValues(servo,dh);
-				CSG upperLink = toZMin(new Cylinder(attachmentBaseWidth/1.2, dh.getD()+3,(int)20).toCSG())
-				// adding the radius rod
-				CSG rod = toYMin(toZMin(new Cube( attachmentBaseWidth+3,rOffsetForNextLink,dh.getD()+3).toCSG()));
-				
-				upperLink=upperLink.union(rod);
-				upperLink=upperLink.transformed(new Transform().translateZ(Math.abs(servoReference.getBounds().getMax().z)))
 
-				upperLink= moveDHValues(upperLink,dh);
-				CSG lowerLink = toZMax(new Cylinder(attachmentBaseWidth/1.2, attachmentBaseWidth,(int)20).toCSG()
+				double rOffsetForNextLink;
+				if(i==dhLinks.size()-1){
+						 rOffsetForNextLink = dh.getR()-
+					(	2.1+
+						Math.abs(foot.getBounds().getMin().x) 
+					)
+				}else{
+					rOffsetForNextLink = dh.getR()-
+					(	2.1+
+						Math.abs(nextAttachment.getBounds().getMin().x)
+					)
+				}
+				println "Link # "+i+" offset = "+(dh.getR()-rOffsetForNextLink)
+				if(rOffsetForNextLink<attachmentBaseWidth){
+					rOffsetForNextLink=attachmentBaseWidth
+				}
+				double linkThickness = dh.getD()+6;
+				if(linkThickness<attachmentBaseWidth/2)
+					linkThickness=attachmentBaseWidth/2
+				servo= moveDHValues(servo,dh);
+				double cylandarRadius = attachmentBaseWidth/1.4
+				CSG upperLink = toZMin(new Cylinder(cylandarRadius,linkThickness,(int)20).toCSG())
+				// adding the radius rod
+				CSG rod = toYMin(
+									toZMin(
+										new Cube( 
+											attachmentBaseWidth+3,
+											rOffsetForNextLink,
+											upperLink.getBounds().getMax().z
+											).toCSG()
+										)
+									)
+				CSG clip = toYMin(
+					toZMax(
+						new Cube(
+							attachmentBaseWidth+3,
+							rOffsetForNextLink+9,
+							attachmentBaseWidth/2
+							).toCSG()
+						)
+					)
+					.transformed(new Transform().translateZ(linkThickness))// allign to the NEXT ATTACHMENT
+					
+				upperLink=upperLink.union(rod,clip);
+				upperLink=upperLink.transformed(new Transform().translateZ(Math.abs(servoReference.getBounds().getMax().z-3)))
+
+				upperLink= moveDHValues(upperLink,dh).difference(servo,nextAttachment);
+				
+				CSG lowerLink = toZMax(new Cylinder(cylandarRadius, attachmentBaseWidth,(int)20).toCSG()
 
 				)
 				lowerLink=lowerLink.transformed(new Transform().translateZ(
@@ -180,16 +211,19 @@ return new ICadGenerator(){
 				servo.setManipulator(dh.getListener());
 				upperLink.setColor(Color.GREEN);
 				upperLink.setManipulator(dh.getListener());
-				//csg.add(upperLink);//This is the root that attaches to the base
+				csg.add(upperLink);//This is the root that attaches to the base
 				
 				lowerLink.setColor(Color.WHITE);
 				lowerLink.setManipulator(dh.getListener());
 				//csg.add(lowerLink);//This is the root that attaches to the base
 				csg.add(servo);//This is the root that attaches to the base
-				if(i<dhLinks.size()-1)
-					csg.add(nextAttachment);//This is the root that attaches to the base
+//				if(i<dhLinks.size()-1)
+//					csg.add(nextAttachment);//This is the root that attaches to the base
+					
 			}
-
+			foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
+			foot.setColor(Color.GOLD);
+			csg.add(foot);//This is the root that attaches to the base
 		}
 		return csg;
 	}
