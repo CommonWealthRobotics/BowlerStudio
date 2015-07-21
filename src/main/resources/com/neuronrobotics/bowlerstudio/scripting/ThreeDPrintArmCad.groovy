@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 
 
 
+
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
@@ -19,6 +20,7 @@ import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Sphere;
 import eu.mihosoft.vrl.v3d.Transform;
@@ -118,6 +120,11 @@ return new ICadGenerator(){
 		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
 		
 	}
+	ArrayList<CSG> generateBodyParts(MobileBase base ){
+		ArrayList<CSG> allCad=new ArrayList<>();
+		
+		return allCad;
+	}
 	ArrayList<CSG> generateBody(MobileBase base ){
 		
 		ArrayList<CSG> allCad=new ArrayList<>();
@@ -128,13 +135,54 @@ return new ICadGenerator(){
 			}
 		}
 		//now we genrate the base pieces
+		for(CSG csg:generateBodyParts( base )){
+			allCad.add(csg);
+		}
 		
+		return allCad;
 	}
 	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
-		return null;
+		ArrayList<File> allCadStl = new ArrayList<>();
+		int leg=0;
+		//Start by generating the legs using the DH link based generator
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			int link=0;
+			for(CSG csg:generateCad(l.getChain().getLinks())){
+				File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/"+l.getScriptingName())
+				if(!dir.exists())
+					dir.mkdirs();
+				File stl = new File(dir.getAbsolutePath()+"/Leg_"+leg+"_part_"+link+".stl");
+				FileUtil.write(
+						Paths.get(stl.getAbsolutePath()),
+						csg.toStlString()
+				);
+				allCadStl.add(stl);
+				link++;
+			}
+			leg++;
+		}
+		int link=0;
+		//now we genrate the base pieces
+		for(CSG csg:generateBodyParts( base )){
+			File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/")
+			if(!dir.exists())
+				dir.mkdirs();
+			File stl = new File(dir.getAbsolutePath()+"/Body_part_"+link+".stl");
+			FileUtil.write(
+					Paths.get(stl.getAbsolutePath()),
+					csg.toStlString()
+			);
+			allCadStl.add(stl);
+			link++;
+		}
+		 
+		return allCadStl;
 	}
-				
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
+		return generateCad(dhLinks ,false);
+	}
+	
+	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks,boolean printBed ){
 		
 		ArrayList<CSG> csg = new ArrayList<CSG>();
 

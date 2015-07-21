@@ -16,12 +16,17 @@ import org.python.core.exceptions;
 
 import javafx.application.Platform;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -82,23 +87,36 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			Log.debug("Loading xml: "+device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
-			Button refresh = new Button("Generate CAD");
+			Button refresh = new Button("Generate Printable CAD");
 			refresh.setOnAction(event -> {
+				File defaultStlDir =new File(System.getProperty("user.home")+"/bowler-workspace/STL/");
+				if(!defaultStlDir.exists()){
+					defaultStlDir.mkdirs();
+				}
+				DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select Output Directory For .STL files");
+			
+				chooser.setInitialDirectory(defaultStlDir);
+    	    	File baseDirForFiles = chooser.showDialog(BowlerStudio.getPrimaryStage());
+
+    	        if (baseDirForFiles == null) {
+    	            return;
+    	        }
 		    	new Thread(){
 
 					public void run(){
-						File defaultStlDir =new File(System.getProperty("user.home")+"/bowler-workspace/STL/");
-						if(!defaultStlDir.exists()){
-							defaultStlDir.mkdirs();
-						}
-		    	    	File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,new DirectoryFilter());
-
-		    	        if (baseDirForFiles == null) {
-		    	            return;
-		    	        }
+						
 		    	        generateCad();
-		    	        cadEngine.generateStls((MobileBase) pm, baseDirForFiles);
-		    	        
+		    	        ArrayList<File> files = cadEngine.generateStls((MobileBase) pm, baseDirForFiles);
+		    	        Platform.runLater(()->{
+		    				Alert alert = new Alert(AlertType.INFORMATION);
+		    				alert.setTitle("Stl Export Success!");
+		    				alert.setHeaderText("Stl Export Success");
+		    				alert.setContentText("All SLT's for the Creature Generated at\n"+files.get(0).getAbsolutePath());
+		    				alert.setWidth(500);
+		    				alert .initModality(Modality.APPLICATION_MODAL);
+		    				alert.show();
+		    	        });
 		    		}
 		    	}.start();
 				generateCad();
