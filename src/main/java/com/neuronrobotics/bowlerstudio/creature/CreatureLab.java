@@ -220,7 +220,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
         }
 		if(cadEngine==null){
 			try {
-				cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("LaserCutArmCad.groovy"),null);
+				cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("ThreeDPrintArmCad.groovy"),null);
 			} catch (Exception e) {
 				  StringWriter sw = new StringWriter();
 			      PrintWriter pw = new PrintWriter(sw);

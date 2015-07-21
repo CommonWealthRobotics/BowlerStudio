@@ -1,5 +1,10 @@
 
+import java.time.Duration;
 import java.util.ArrayList;
+
+import javafx.application.Platform;
+
+import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -12,6 +17,33 @@ IDriveEngine engine =  new IDriveEngine (){
 	double stepOverHeight=5;
 	boolean takingStep = false;
 	private Double zLock=null;
+	TransformNR previousGLobalState;
+	TransformNR target;
+
+	private void interopolate(double iteration,double end,double time,MobileBase source){
+		FxTimer.runLater(
+				Duration.ofMillis((int)(time*1000.0)/end) ,new Runnable() {
+					@Override
+					public void run() {
+
+						previousGLobalState.translateX(target.getX()/end);
+						previousGLobalState.translateY(target.getY()/end);
+						previousGLobalState.translateZ(target.getZ()/end);
+						double rotz = -target.getRotation().getRotationZ()/end +previousGLobalState.getRotation().getRotationZ() ;
+						double rotx = target.getRotation().getRotationX() ;
+						double roty = target.getRotation().getRotationY();
+						RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
+															Math.toDegrees(roty),
+															Math.toDegrees(rotz));//RotationNR.getRotationZ(Math.toDegrees(rotz));
+		
+						previousGLobalState.setRotation(neRot );
+						// New target calculated appliaed to global offset
+						source.setGlobalToFiducialTransform(previousGLobalState);
+						if(iteration<end)
+							interopolate(iteration+1, end, time,source);
+					}
+				});
+	}
 	@Override
 	public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
 		
@@ -21,6 +53,7 @@ IDriveEngine engine =  new IDriveEngine (){
 		try{
 				int numlegs = source.getLegs().size();
 				TransformNR [] feetLocations = new TransformNR[numlegs];
+				TransformNR [] newFeetLocations = new TransformNR[numlegs];
 				TransformNR [] home = new TransformNR[numlegs];
 				ArrayList<DHParameterKinematics> legs = source.getLegs();
 				
@@ -36,13 +69,14 @@ IDriveEngine engine =  new IDriveEngine (){
 					//feetLocations[i].setZ(home[i].getZ());
 				}
 				//zLock =zLock+newPose.getZ();
-				
+				previousGLobalState = source.getFiducialToGlobalTransform().copy();
+				target= newPose.copy();
 				//Apply transform to each dimention of current pose
 				TransformNR global= source.getFiducialToGlobalTransform();
 				global.translateX(newPose.getX());
 				global.translateY(newPose.getY());
 				global.translateZ(newPose.getZ());
-				double rotz = newPose.getRotation().getRotationZ() +global.getRotation().getRotationZ() ;
+				double rotz = -newPose.getRotation().getRotationZ() +global.getRotation().getRotationZ() ;
 				double rotx = newPose.getRotation().getRotationX() ;
 				double roty = newPose.getRotation().getRotationY() ;
 				RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
@@ -53,8 +87,15 @@ IDriveEngine engine =  new IDriveEngine (){
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				for(int i=0;i<numlegs;i++){
+					//legs.get(i).setGlobalToFiducialTransform(global);
+					newFeetLocations[i]=legs.get(i).getCurrentTaskSpaceTransform();
+					
+				}
+				//Set it back to where it was to use the interpolator for global move at the end
+
+				for(int i=0;i<numlegs;i++){
 					double footx,footy;
-					TransformNR startLocation = legs.get(i).getCurrentTaskSpaceTransform();
+					TransformNR startLocation = newFeetLocations[i];
 					// start by storing where the feet are
 					footx = startLocation.getX() - feetLocations[i].getX() ;
 					footy = startLocation.getY() - feetLocations[i].getY() ;
@@ -79,11 +120,11 @@ IDriveEngine engine =  new IDriveEngine (){
 						//println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 						try {
 							// lift leg above home
-							legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds);
-							ThreadUtil.wait((int) (seconds*1000));
+							legs.get(i).setDesiredTaskSpaceTransform(home[i], seconds/2);
+							ThreadUtil.wait((int) (seconds*500));
 							//step to new target
-							legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], seconds);
-							ThreadUtil.wait((int) (seconds*1000));
+							legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], seconds/2);
+							ThreadUtil.wait((int) (seconds*500));
 							//set new target for the coordinated motion step at the end
 							feetLocations[i].translateX(newPose.getX());
 							feetLocations[i].translateY(newPose.getY());
@@ -95,6 +136,7 @@ IDriveEngine engine =  new IDriveEngine (){
 					}
 		
 				}
+				
 				//all legs have a valid target set, perform coordinated motion
 				for(int i=0;i<numlegs;i++){
 					feetLocations[i].setZ(zLock.doubleValue()+newPose.getZ());
@@ -105,6 +147,9 @@ IDriveEngine engine =  new IDriveEngine (){
 						e.printStackTrace();
 					}
 				}
+				source.setGlobalToFiducialTransform(previousGLobalState);
+				interopolate(1,5,seconds/2,source);
+				
 		}catch (Exception ex){
 			ex.printStackTrace();
 		}
