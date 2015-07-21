@@ -27,6 +27,7 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
+import com.neuronrobotics.nrconsole.util.DirectoryFilter;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
@@ -82,7 +83,26 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
 			Button refresh = new Button("Generate CAD");
-			refresh.setOnAction(event -> generateCad());
+			refresh.setOnAction(event -> {
+		    	new Thread(){
+
+					public void run(){
+						File defaultStlDir =new File(System.getProperty("user.home")+"/bowler-workspace/STL/");
+						if(!defaultStlDir.exists()){
+							defaultStlDir.mkdirs();
+						}
+		    	    	File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,new DirectoryFilter());
+
+		    	        if (baseDirForFiles == null) {
+		    	            return;
+		    	        }
+		    	        generateCad();
+		    	        cadEngine.generateStls((MobileBase) pm, baseDirForFiles);
+		    	        
+		    		}
+		    	}.start();
+				generateCad();
+			});
 			Button save = new Button("Save Configuration");
 			Button script = new Button("Set Cad Script");
 			MobileBase device=(MobileBase)pm;
@@ -171,41 +191,83 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		}
 		
 	}
-	
 	private void generateCad(){
-		Log.warning("Generating cad");
-		//new Exception().printStackTrace();
-		ArrayList<CSG> allCad=new ArrayList<>();
-		if(MobileBase.class.isInstance(pm)) {
-			MobileBase device=(MobileBase)pm;
-			for(DHParameterKinematics l:device.getAllDHChains()){
-				for(CSG csg:generateCad(l.getChain().getLinks())){
-					allCad.add(csg);
-//					new Thread(){
-//						public void run(){
-//							BowlerStudioController.setCsg(allCad);
-//						}
-//					}.start();
-				}
-			}
-			
-		}else if(DHParameterKinematics.class.isInstance(pm)){
-			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
-				allCad.add(csg);
-//				new Thread(){
-//					public void run(){
-//						BowlerStudioController.setCsg(allCad);
-//					}
-//				}.start();
-				
-			}
-		}
 		new Thread(){
 			public void run(){
+				Log.warning("Generating cad");
+				//new Exception().printStackTrace();
+				ArrayList<CSG> allCad=new ArrayList<>();
+				if(MobileBase.class.isInstance(pm)) {
+					MobileBase device=(MobileBase)pm;
+					if (getCadScript() != null) {
+						try{
+						cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+						}catch(Exception e){
+						      StringWriter sw = new StringWriter();
+						      PrintWriter pw = new PrintWriter(sw);
+						      e.printStackTrace(pw);
+						      System.out.println(sw.toString());
+						}
+			        }
+					if(cadEngine==null){
+						try {
+							cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("ThreeDPrintArmCad.groovy"),null);
+						} catch (Exception e) {
+							  StringWriter sw = new StringWriter();
+						      PrintWriter pw = new PrintWriter(sw);
+						      e.printStackTrace(pw);
+						      System.out.println(sw.toString());
+						}
+					}
+					try {
+						allCad= cadEngine.generateBody(device);
+					} catch (Exception e) {
+						  StringWriter sw = new StringWriter();
+					      PrintWriter pw = new PrintWriter(sw);
+					      e.printStackTrace(pw);
+					      System.out.println(sw.toString());
+					}
+					
+				}else if(DHParameterKinematics.class.isInstance(pm)){
+					for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
+						allCad.add(csg);
+						
+					}
+				}
 				BowlerStudioController.setCsg(allCad);
 			}
 		}.start();
 	}
+//	private void generateCad(){
+//		Log.warning("Generating cad");
+//		//new Exception().printStackTrace();
+//		ArrayList<CSG> allCad=new ArrayList<>();
+//		if(MobileBase.class.isInstance(pm)) {
+//			MobileBase device=(MobileBase)pm;
+//			for(DHParameterKinematics l:device.getAllDHChains()){
+//				for(CSG csg:generateCad(l.getChain().getLinks())){
+//					allCad.add(csg);
+//				}
+//			}
+//			
+//		}else if(DHParameterKinematics.class.isInstance(pm)){
+//			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
+//				allCad.add(csg);
+////				new Thread(){
+////					public void run(){
+////						BowlerStudioController.setCsg(allCad);
+////					}
+////				}.start();
+//				
+//			}
+//		}
+//		new Thread(){
+//			public void run(){
+//				
+//				BowlerStudioController.setCsg(allCad);
+//			}
+//		}.start();
+//	}
 	
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
 		if (getCadScript() != null) {
@@ -285,6 +347,18 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		 }
 		this.cadScript = cadScript;
 		
+	}
+
+	@Override
+	public ArrayList<CSG> generateBody(MobileBase base) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

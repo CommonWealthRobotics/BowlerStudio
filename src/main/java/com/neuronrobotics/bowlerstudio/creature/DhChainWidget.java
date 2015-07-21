@@ -360,4 +360,16 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		
 	}
 
+	@Override
+	public ArrayList<CSG> generateBody(MobileBase base) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

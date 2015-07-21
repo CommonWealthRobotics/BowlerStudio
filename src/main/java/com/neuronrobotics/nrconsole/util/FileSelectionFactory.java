@@ -18,10 +18,11 @@ public class FileSelectionFactory {
     	}else{
     		fc.setCurrentDirectory(dir1);
     	}
-    	for (FileFilter fileFilter : filter) {
-    		fc.setAcceptAllFileFilterUsed(false);
-    		fc.addChoosableFileFilter(fileFilter);
-		}
+    	if(filter!=null)
+	    	for (FileFilter fileFilter : filter) {
+	    		fc.setAcceptAllFileFilterUsed(false);
+	    		fc.addChoosableFileFilter(fileFilter);
+			}
     	 fc.setDialogTitle("Select a file");
         int returnVal = fc.showDialog(null, "Open");
        

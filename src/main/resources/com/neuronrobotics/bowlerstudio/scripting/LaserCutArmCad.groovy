@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 
@@ -19,7 +20,13 @@ import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Transform;
 
 return new ICadGenerator(){
-				
+	ArrayList<CSG> generateBody(MobileBase base ){
+		return null;
+	}
+	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
+		return null;
+	}
+			
 				public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
 					
 					ArrayList<CSG> csg = new ArrayList<CSG>();

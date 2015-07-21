@@ -6,10 +6,14 @@ import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 
+
+
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 
@@ -113,6 +117,21 @@ return new ICadGenerator(){
 		.transformed(new Transform().translateX(-dh.getR()))
 		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
 		
+	}
+	ArrayList<CSG> generateBody(MobileBase base ){
+		
+		ArrayList<CSG> allCad=new ArrayList<>();
+		//Start by generating the legs using the DH link based generator
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			for(CSG csg:generateCad(l.getChain().getLinks())){
+				allCad.add(csg);
+			}
+		}
+		//now we genrate the base pieces
+		
+	}
+	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
+		return null;
 	}
 				
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){

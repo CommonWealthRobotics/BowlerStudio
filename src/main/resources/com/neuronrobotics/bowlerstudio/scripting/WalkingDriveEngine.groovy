@@ -147,8 +147,8 @@ IDriveEngine engine =  new IDriveEngine (){
 						e.printStackTrace();
 					}
 				}
-				source.setGlobalToFiducialTransform(previousGLobalState);
-				interopolate(1,5,seconds/2,source);
+				//source.setGlobalToFiducialTransform(previousGLobalState);
+				//interopolate(1,5,seconds/4,source);
 				
 		}catch (Exception ex){
 			ex.printStackTrace();
