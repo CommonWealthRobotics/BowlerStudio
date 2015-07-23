@@ -344,7 +344,7 @@ return new ICadGenerator(){
 				lowerLink.setColor(Color.WHITE);
 				lowerLink.setManipulator(dh.getListener());
 				csg.add(lowerLink);//This is the root that attaches to the base
-//				csg.add(servo);//This is the root that attaches to the base
+				//csg.add(servo);//This is the root that attaches to the base
 				if(i<dhLinks.size()-1)
 					csg.add(nextAttachment);//This is the root that attaches to the base
 					
