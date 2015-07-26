@@ -1,5 +1,7 @@
 <root>
+<mobilebase>
 
+<name>Default_leg</name>
 <appendage>
 
 <name>Default_Leg</name>
@@ -20,9 +22,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>60</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -44,9 +46,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>42.0</Radius>
+		<Radius>60</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
 
@@ -68,9 +70,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0</Delta>
 		<Theta>-90.0</Theta>
-		<Radius>37.0</Radius>
+		<Radius>100</Radius>
 		<Alpha>0.0</Alpha>
 	</DHParameters>
 
@@ -87,15 +89,15 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>-200.0</x>
-	<y>-20.0</y>
+	<x>0</x>
+	<y>0</y>
 	<z>0</z>
-	<rotw>0.7071067811865476</rotw>
+	<rotw>1</rotw>
 	<rotx>0.0</rotx>
 	<roty>0.0</roty>
-	<rotz>-0.7071067811865475</rotz>
+	<rotz>0</rotz>
 </baseToZframe>
 
 </appendage>
-
+</mobilebase>
 </root>

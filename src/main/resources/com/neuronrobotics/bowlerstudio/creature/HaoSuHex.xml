@@ -24,9 +24,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -48,7 +48,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -72,7 +72,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -91,13 +91,13 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>-200.0</x>
-	<y>-20.0</y>
+	<x>-100.0</x>
+	<y>-40.0</y>
 	<z>0.0</z>
-	<rotw>0.5735764363510462</rotw>
-	<rotx>0.0</rotx>
-	<roty>0.0</roty>
-	<rotz>-0.8191520442889917</rotz>
+	<rotw>0.42283170450393226</rotw>
+	<rotx>-0.22347308055651766</rotx>
+	<roty>0.410365389908517</roty>
+	<rotz>-0.7764492119244569</rotz>
 </baseToZframe>
 
 </leg>
@@ -121,9 +121,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -145,7 +145,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -169,7 +169,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -189,7 +189,7 @@
 
 <baseToZframe>
 	<x>0.0</x>
-	<y>-20.0</y>
+	<y>-60.0</y>
 	<z>0.0</z>
 	<rotw>0.7071067811865476</rotw>
 	<rotx>0.0</rotx>
@@ -218,9 +218,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -242,7 +242,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -266,7 +266,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -285,8 +285,8 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>200.0</x>
-	<y>-20.0</y>
+	<x>100.0</x>
+	<y>-40.0</y>
 	<z>0.0</z>
 	<rotw>0.8191520442889918</rotw>
 	<rotx>0.0</rotx>
@@ -315,9 +315,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -339,7 +339,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -363,7 +363,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -382,13 +382,13 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>-200.0</x>
-	<y>20.0</y>
+	<x>100.0</x>
+	<y>40.0</y>
 	<z>0.0</z>
-	<rotw>0.5735764363510462</rotw>
+	<rotw>0.8191520442889918</rotw>
 	<rotx>0.0</rotx>
 	<roty>0.0</roty>
-	<rotz>0.8191520442889917</rotz>
+	<rotz>0.573576436351046</rotz>
 </baseToZframe>
 
 </leg>
@@ -412,9 +412,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -436,7 +436,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -460,7 +460,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -480,7 +480,7 @@
 
 <baseToZframe>
 	<x>0.0</x>
-	<y>20.0</y>
+	<y>60.0</y>
 	<z>0.0</z>
 	<rotw>0.7071067811865476</rotw>
 	<rotx>0.0</rotx>
@@ -509,9 +509,9 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>50.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -533,7 +533,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
 		<Radius>142.0</Radius>
 		<Alpha>180.0</Alpha>
@@ -557,7 +557,7 @@
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>-90.0</Theta>
 		<Radius>137.0</Radius>
 		<Alpha>0.0</Alpha>
@@ -576,13 +576,13 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>200.0</x>
-	<y>20.0</y>
+	<x>-100.0</x>
+	<y>40.0</y>
 	<z>0.0</z>
-	<rotw>0.8191520442889918</rotw>
-	<rotx>0.0</rotx>
-	<roty>0.0</roty>
-	<rotz>0.573576436351046</rotz>
+	<rotw>0.45859291693601983</rotw>
+	<rotx>0.1572669845183992</rotx>
+	<roty>0.28371715039872386</roty>
+	<rotz>0.827323522381801</rotz>
 </baseToZframe>
 
 </leg>
