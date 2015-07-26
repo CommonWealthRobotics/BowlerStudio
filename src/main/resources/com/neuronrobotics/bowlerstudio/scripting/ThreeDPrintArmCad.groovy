@@ -234,8 +234,8 @@ return new ICadGenerator(){
 						
 		upperBody.setColor(Color.DEEPPINK);
 		lowerBody.setColor(Color.ALICEBLUE);
-//		upperBody.setManipulator(base.getRootListener());
-//		lowerBody.setManipulator(base.getRootListener());
+		upperBody.setManipulator(base.getRootListener());
+		lowerBody.setManipulator(base.getRootListener());
 		allCad.addAll(upperBody,lowerBody
 		)
 		
