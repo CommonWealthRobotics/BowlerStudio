@@ -46,18 +46,22 @@ import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import javafx.scene.paint.Color;
 return new ICadGenerator(){
-	File 	stl = NativeResource.inJarLoad(IVitamin.class,"hxt900-servo.stl");
+	File 	stl = NativeResource.inJarLoad(IVitamin.class,"smallservo.stl");
 	
 	CSG servoReference=  STL.file(stl.toPath())
-	.transformed(new Transform().translateZ(-19.3))
-	.transformed(new Transform().translateX(5.4));
+	.transformed(new Transform().rotZ(-90))
+	.transformed(new Transform().translateZ(12.0))
+//	.transformed(new Transform().translateX(5.4));
 	
+	File 	hornFile = NativeResource.inJarLoad(IVitamin.class,"smallservo.stl");
+	
+	//CSG horn=  STL.file(hornFile.toPath())
 	CSG horn = new Cube(6,4,18).toCSG();
 	private double attachmentRodWidth=10;
 	private double attachmentBaseWidth=15;
-	private double printerTollerence =0.3;
+	private double printerTollerence =0.4;
 	
-	double cylandarRadius = 13;
+	double cylandarRadius = 14;
 	
 	private CSG toZMin(CSG incoming,CSG target){
 		return incoming.transformed(new Transform().translateZ(-target.getBounds().getMin().z));
@@ -99,16 +103,37 @@ return new ICadGenerator(){
 	
 	private CSG makeKeepaway(CSG incoming){
 		
-		return incoming;
+		double x = Math.abs(incoming.getBounds().getMax().x )+ Math.abs(incoming.getBounds().getMin().x)
+		double y = Math.abs(incoming.getBounds().getMax().y) + Math.abs(incoming.getBounds().getMin().y)
+		
+		double z = Math.abs(incoming.getBounds().getMax().z )+ Math.abs(incoming.getBounds().getMin().z)
+		
+		double xtol=(x+printerTollerence)/x
+		double ytol= (y+printerTollerence)/y
+		double ztol=(z+printerTollerence)/z
+		
+		double xPer=-(Math.abs(incoming.getBounds().getMax().x)-Math.abs(incoming.getBounds().getMin().x))/x
+		double yPer=-(Math.abs(incoming.getBounds().getMax().y)-Math.abs(incoming.getBounds().getMin().y))/y
+		double zPer=-(Math.abs(incoming.getBounds().getMax().z)-Math.abs(incoming.getBounds().getMin().z))/z
+		
+		println " Keep away x = "+y+" new = "+ytol
+		return 	incoming
+				.transformed(new Transform().scale(xtol,
+													ytol,
+													 ztol ))
+				.transformed(new Transform().translateX(printerTollerence * xPer))
+				.transformed(new Transform().translateY(printerTollerence*yPer))
+				.transformed(new Transform().translateZ(printerTollerence*zPer))
+				
 	}
 	
 	
 	private CSG getAppendageMount(){
-		CSG attachmentbase =getAttachment()
+		CSG attachmentbase =makeKeepaway(getAttachment())
 		.union(new Cube(cylandarRadius*4+3,200,200).toCSG()
 			.transformed(new Transform().translateX(cylandarRadius))
 		)
-		return makeKeepaway(attachmentbase);
+		return attachmentbase;
 	}
 	
 	
@@ -168,6 +193,12 @@ return new ICadGenerator(){
 		
 	}
 	
+	private CSG reverseDHValues(CSG incoming,DHLink dh ){
+		return incoming
+		.transformed(new Transform().rotX(-Math.toDegrees(dh.getAlpha())))
+		//.transformed(new Transform().rotZ(Math.toDegrees(dh.getTheta())))
+	}
+	
 	private CSG moveDHValues(CSG incoming,DHLink dh ){
 		return incoming.transformed(new Transform().translateZ(-dh.getD()))
 		.transformed(new Transform().rotZ(-Math.toDegrees(dh.getTheta())))
@@ -176,7 +207,7 @@ return new ICadGenerator(){
 		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
 		
 	}
-	ArrayList<CSG> generateBodyParts(MobileBase base ){
+	ArrayList<CSG> generateBodyParts(MobileBase base ,boolean printing){
 		ArrayList<CSG> allCad=new ArrayList<>();
 		ArrayList<Vector3d> points=new ArrayList<>();
 		ArrayList<CSG> cutouts=new ArrayList<>();
@@ -212,6 +243,9 @@ return new ICadGenerator(){
 			
 			cutouts.add(getAppendageMount()
 				.transformed(new Transform(rotation))
+				.union(getMountScrewKeepaway()
+					.transformed(new Transform().translateX(position.getX()))
+					)
 				);
 			
 			points.add(new Vector3d(position.getX(), position.getY()));
@@ -231,12 +265,20 @@ return new ICadGenerator(){
 			lowerBody= lowerBody.difference(c);
 			//allCad.add(c)
 		}
-						
-		upperBody.setColor(Color.DEEPPINK);
-		lowerBody.setColor(Color.ALICEBLUE);
-		upperBody.setManipulator(base.getRootListener());
-		lowerBody.setManipulator(base.getRootListener());
-		allCad.addAll(upperBody,lowerBody
+		if(!printing){			
+			upperBody.setColor(Color.DEEPPINK);
+			lowerBody.setColor(Color.ALICEBLUE);
+			upperBody.setManipulator(base.getRootListener());
+			lowerBody.setManipulator(base.getRootListener());
+		}else{
+			upperBody=upperBody
+					.transformed(new Transform().rotX(180))
+					.toZMin()
+			lowerBody=	lowerBody
+				.toZMin()
+		}
+		allCad.addAll(upperBody,
+			lowerBody
 		)
 		
 		return allCad;
@@ -251,7 +293,7 @@ return new ICadGenerator(){
 			}
 		}
 		//now we genrate the base pieces
-		for(CSG csg:generateBodyParts( base )){
+		for(CSG csg:generateBodyParts( base ,false)){
 			allCad.add(csg);
 		}
 		
@@ -263,7 +305,7 @@ return new ICadGenerator(){
 		//Start by generating the legs using the DH link based generator
 		for(DHParameterKinematics l:base.getAllDHChains()){
 			int link=0;
-			for(CSG csg:generateCad(l.getChain().getLinks())){
+			for(CSG csg:generateCad(l.getChain().getLinks(),true)){
 				File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/"+l.getScriptingName())
 				if(!dir.exists())
 					dir.mkdirs();
@@ -279,7 +321,7 @@ return new ICadGenerator(){
 		}
 		int link=0;
 		//now we genrate the base pieces
-		for(CSG csg:generateBodyParts( base )){
+		for(CSG csg:generateBodyParts( base,true )){
 			File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/")
 			if(!dir.exists())
 				dir.mkdirs();
@@ -306,10 +348,17 @@ return new ICadGenerator(){
 		
 		CSG rootAttachment=getAttachment();
 		//CSG rootAttachment=getAppendageMount();
-		rootAttachment.setManipulator(dh.getRootListener());
+		if(printBed){
+			
+			rootAttachment=rootAttachment 
+			.transformed(new Transform().rotY(90))
+			.toZMin()
+		}else{
+			rootAttachment.setManipulator(dh.getRootListener());
+
+		}
 		csg.add(rootAttachment);//This is the root that attaches to the base
 		rootAttachment.setColor(Color.GOLD);
-		
 		CSG foot=getFoot();
 
 		
@@ -323,7 +372,7 @@ return new ICadGenerator(){
 		)
 		servoKeepaway = servoKeepaway
 		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
-		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
+		//.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
 
 		
 		if(dhLinks!=null){
@@ -336,7 +385,7 @@ return new ICadGenerator(){
 				.transformed(new Transform().rotX(180))// allign to the horn
 				.transformed(new Transform().rotZ(-90))// allign to the horn
 				;
-				
+				servo= makeKeepaway(servo)
 
 				double rOffsetForNextLink;
 				if(i==dhLinks.size()-1){
@@ -427,10 +476,14 @@ return new ICadGenerator(){
 					lowerClip
 					);
 				//Remove the divit or the bearing
-				lowerLink= lowerLink.difference(nextAttachment,upperScrews.transformed(new Transform().translateZ(6)))// allign to the NEXT ATTACHMENT);
+				lowerLink= lowerLink.difference(makeKeepaway(nextAttachment),upperScrews.transformed(new Transform().translateZ(6)))// allign to the NEXT ATTACHMENT);
 				lowerLink= moveDHValues(lowerLink,dh);
 				//remove the next links connector and the upper link for mating surface
-				lowerLink= lowerLink.difference(nextAttachment,upperLink,servo);
+				lowerLink= lowerLink.difference(upperLink,servo);
+				if(i== dhLinks.size()-1)
+					lowerLink= lowerLink.difference(makeKeepaway(foot));
+				else
+					lowerLink= lowerLink.difference(makeKeepaway(nextAttachment));
 				
 				if(dhLinks.size()>4){
 					if(i== dhLinks.size()-2){
@@ -440,25 +493,54 @@ return new ICadGenerator(){
 						servo=servo.transformed(new Transform().translateY(-dhLinks.get(dhLinks.size()-1).getD()/3));// allign to the horn
 					}
 				}
-				nextAttachment.setManipulator(dh.getListener());
-				nextAttachment.setColor(Color.CHOCOLATE);
-				servo.setManipulator(dh.getListener());
-				upperLink.setColor(Color.GREEN);
-				upperLink.setManipulator(dh.getListener());
-				csg.add(upperLink);//This is the root that attaches to the base
+				if(printBed){
+					upperLink=reverseDHValues(upperLink,dh)
+					.transformed(new Transform().rotY(180))
+					.toZMin()
+					
+					lowerLink=reverseDHValues(lowerLink,dh)
+					.transformed(new Transform().rotY(0))
+					.toZMin()
+					
+					nextAttachment=nextAttachment
+					.transformed(new Transform().rotY(90))
+					.toZMin()
+					
+				}else{
 				
-				lowerLink.setColor(Color.WHITE);
-				lowerLink.setManipulator(dh.getListener());
-				csg.add(lowerLink);//White link forming the lower link
-				//csg.add(servo);// view the servo
-				//csg.add(upperScrews);//view the screws
+					nextAttachment.setManipulator(dh.getListener());
+					nextAttachment.setColor(Color.CHOCOLATE);
+					servo.setManipulator(dh.getListener());
+					upperLink.setColor(Color.GREEN);
+					upperLink.setManipulator(dh.getListener());
+					
+					
+					lowerLink.setColor(Color.WHITE);
+					lowerLink.setManipulator(dh.getListener());
+					
+					csg.add(servo);// view the servo
+					//csg.add(upperScrews);//view the screws
+				}
+				
 				if(i<dhLinks.size()-1)
 					csg.add(nextAttachment);//This is the root that attaches to the base
+				csg.add(upperLink);//This is the root that attaches to the base
+				csg.add(lowerLink);//White link forming the lower link
+
 					
 			}
-			foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
+			if(printBed){
+				
+				foot=foot
+				.transformed(new Transform().rotY(90))
+				.toZMin()
+			}else{
+				foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
+				
+			}
 			foot.setColor(Color.GOLD);
 			csg.add(foot);//This is the root that attaches to the base
+
 		}
 		return csg;
 	}
