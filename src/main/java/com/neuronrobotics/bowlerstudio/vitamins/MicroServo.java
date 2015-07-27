@@ -17,7 +17,7 @@ public class MicroServo implements IVitamin {
 	static{
 		
 		try {
-			File 	stl = NativeResource.inJarLoad(IVitamin.class,"smallservo.stl");
+			File 	stl = NativeResource.inJarLoad(IVitamin.class,"hxt900-servo.stl");
 			servoModel = STL.file(stl.toPath());	
 			servoModel=servoModel.transformed(new Transform().translateZ(-19.3));
 			servoModel=servoModel.transformed(new Transform().translateX(5.4));

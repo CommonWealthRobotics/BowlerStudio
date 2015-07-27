@@ -20,6 +20,8 @@ import javafx.scene.paint.Color;
 
 
 
+
+
 import javax.vecmath.Matrix4d;
 
 import Jama.Matrix;
@@ -37,6 +39,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.bowlerstudio.vitamins.IVitamin;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
@@ -48,16 +51,13 @@ import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import javafx.scene.paint.Color;
 return new ICadGenerator(){
-	File 	stl = NativeResource.inJarLoad(IVitamin.class,"smallservo.stl");
-	
-	CSG servoReference=  STL.file(stl.toPath())
-	.transformed(new Transform().rotZ(-90))
-	.transformed(new Transform().translateZ(12.0))
+	CSG servoReference= new MicroServo().toCSG();
+//	CSG servoReference=  Vitamins.get("smallservo.stl")
+//	.transformed(new Transform().rotZ(-90))
+//	.transformed(new Transform().translateZ(12.0))
 //	.transformed(new Transform().translateX(5.4));
 	
-	File 	hornFile = NativeResource.inJarLoad(IVitamin.class,"smallservo.stl");
-	
-	//CSG horn=  STL.file(hornFile.toPath())
+	//CSG horn=  STL.file(NativeResource.inJarLoad(IVitamin.class,"smallmotorhorn.stl").toPath())
 	CSG horn = new Cube(6,4,18).toCSG();
 	private double attachmentRodWidth=10;
 	private double attachmentBaseWidth=15;
@@ -118,7 +118,7 @@ return new ICadGenerator(){
 		double yPer=-(Math.abs(incoming.getBounds().getMax().y)-Math.abs(incoming.getBounds().getMin().y))/y
 		double zPer=-(Math.abs(incoming.getBounds().getMax().z)-Math.abs(incoming.getBounds().getMin().z))/z
 		
-		println " Keep away x = "+y+" new = "+ytol
+		//println " Keep away x = "+y+" new = "+ytol
 		return 	incoming
 				.transformed(new Transform().scale(xtol,
 													ytol,
@@ -374,7 +374,7 @@ return new ICadGenerator(){
 		)
 		servoKeepaway = servoKeepaway
 		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
-		//.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
+		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
 
 		if(dhLinks!=null){
 			for(int i=0;i<dhLinks.size();i++){
@@ -520,7 +520,7 @@ return new ICadGenerator(){
 					lowerLink.setColor(Color.WHITE);
 					lowerLink.setManipulator(dh.getListener());
 					
-					csg.add(servo);// view the servo
+					//csg.add(servo);// view the servo
 					//csg.add(upperScrews);//view the screws
 				}
 				

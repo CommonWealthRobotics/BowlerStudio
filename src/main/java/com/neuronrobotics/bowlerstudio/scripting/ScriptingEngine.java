@@ -73,7 +73,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			"com.neuronrobotics.sdk.addons.kinematics.math", "java.util",
 			"com.neuronrobotics.sdk.addons.kinematics.gui",
 			"javafx.scene.transform", "javafx.scene.shape",
-			"java.awt.image.BufferedImage" };
+			"java.awt.image.BufferedImage",
+			"com.neuronrobotics.bowlerstudio.vitamins.Vitamins"};
 
 	private static GitHub github;
 
