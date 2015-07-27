@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 
 
 
+
 import javax.vecmath.Matrix4d;
 
 import Jama.Matrix;
@@ -26,6 +27,7 @@ import Jama.Matrix;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
+import com.neuronrobotics.nrconsole.plugin.BowlerCam.RGBSlider.ColorBox;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -266,7 +268,7 @@ return new ICadGenerator(){
 			//allCad.add(c)
 		}
 		if(!printing){			
-			upperBody.setColor(Color.DEEPPINK);
+			upperBody.setColor(Color.CYAN);
 			lowerBody.setColor(Color.ALICEBLUE);
 			upperBody.setManipulator(base.getRootListener());
 			lowerBody.setManipulator(base.getRootListener());
@@ -374,7 +376,6 @@ return new ICadGenerator(){
 		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
 		//.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
 
-		
 		if(dhLinks!=null){
 			for(int i=0;i<dhLinks.size();i++){
 				dh = dhLinks.get(i);
@@ -386,7 +387,8 @@ return new ICadGenerator(){
 				.transformed(new Transform().rotZ(-90))// allign to the horn
 				;
 				servo= makeKeepaway(servo)
-
+				
+				
 				double rOffsetForNextLink;
 				if(i==dhLinks.size()-1){
 						 rOffsetForNextLink = dh.getR()-
@@ -464,7 +466,7 @@ return new ICadGenerator(){
 						new Cube(
 							attachmentBaseWidth+3,
 							rOffsetForNextLink,
-							LowerLinkThickness +linkThickness+3
+							LowerLinkThickness +linkThickness+6
 							).toCSG().toZMin().toYMin()
 					
 					
