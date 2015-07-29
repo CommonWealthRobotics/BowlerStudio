@@ -33,9 +33,9 @@ import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import javafx.scene.paint.Color;
 return new ICadGenerator(){
-	CSG servoReference= new MicroServo().toCSG();
-//	CSG servoReference=  Vitamins.get("smallservo.stl")
-//	.transformed(new Transform().rotZ(-90))
+	//CSG servoReference= new MicroServo().toCSG();
+	CSG servoReference=  Vitamins.get("smallservo.stl")
+	.transformed(new Transform().rotZ(-90))
 //	.transformed(new Transform().translateZ(12.0))
 //	.transformed(new Transform().translateX(5.4));
 	
@@ -43,7 +43,7 @@ return new ICadGenerator(){
 	CSG horn = new Cube(6,4,18).toCSG();
 	private double attachmentRodWidth=10;
 	private double attachmentBaseWidth=15;
-	private double printerTollerence =0.4;
+	private double printerTollerence =0.5;
 	
 	double cylandarRadius = 14;
 	
@@ -505,7 +505,7 @@ return new ICadGenerator(){
 					lowerLink.setColor(Color.WHITE);
 					lowerLink.setManipulator(dh.getListener());
 					
-					csg.add(servo);// view the servo
+					//csg.add(servo);// view the servo
 					//csg.add(upperScrews);//view the screws
 				}
 				
