@@ -5,27 +5,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
 import javafx.scene.paint.Color;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import javax.vecmath.Matrix4d;
-
 import Jama.Matrix;
-
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
@@ -294,11 +276,14 @@ return new ICadGenerator(){
 				allCad.add(csg);
 			}
 		}
-		//now we genrate the base pieces
-		for(CSG csg:generateBodyParts( base ,false)){
-			allCad.add(csg);
+		try{
+			//now we genrate the base pieces
+			for(CSG csg:generateBodyParts( base ,false)){
+				allCad.add(csg);
+			}
+		}catch (Exception ex){
+			
 		}
-		
 		return allCad;
 	}
 	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
@@ -520,7 +505,7 @@ return new ICadGenerator(){
 					lowerLink.setColor(Color.WHITE);
 					lowerLink.setManipulator(dh.getListener());
 					
-					//csg.add(servo);// view the servo
+					csg.add(servo);// view the servo
 					//csg.add(upperScrews);//view the screws
 				}
 				
