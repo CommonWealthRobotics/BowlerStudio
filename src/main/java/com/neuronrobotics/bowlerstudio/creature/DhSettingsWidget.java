@@ -71,8 +71,8 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
 		gridpane.add(new Text("Delta (Height)"), 0, 0);
 		gridpane.add(delta, 1, 0);
-		gridpane.add(new Text("Theta"), 0, 1);
-		gridpane.add(theta, 1, 1);
+//		gridpane.add(new Text("Theta"), 0, 1);
+//		gridpane.add(theta, 1, 1);
 		gridpane.add(new Text("Radius (Length)"), 0, 2);
 		gridpane.add(radius, 1, 2);
 		
