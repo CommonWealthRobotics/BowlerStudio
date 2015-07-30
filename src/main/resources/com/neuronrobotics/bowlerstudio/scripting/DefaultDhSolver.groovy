@@ -82,17 +82,19 @@ return new DhInverseSolver() {
 		double B =Math.acos((Math.pow(c,2)+ Math.pow(a,2) - Math.pow(b,2)) / (2.0*a*c));
 		double C =Math.PI-A-B;//Rule of triangles
 		double elevation = Math.asin(zSet/vect);
-
-
+		double configurationOffset = Math.toDegrees(links.get(1).getTheta()-links.get(2).getTheta())
+		double configurationOffsetSecond = -Math.toDegrees(links.get(1).getTheta()+links.get(2).getTheta())
 //		println( "vect: "+vect);
 //		println( "A: "+Math.toDegrees(A));
 //		println( "elevation: "+Math.toDegrees(elevation));
 //		println( "l1 from x/y plane: "+Math.toDegrees(A+elevation));
 //		println( "l2 from l1: "+Math.toDegrees(C));
+		println( "configurationOffset: "+configurationOffset);
+		println( "configurationOffsetSecond: "+configurationOffsetSecond);
+		println( "COmplex: "+Math.toDegrees(Math.sqrt(Math.pow(links.get(1).getTheta(),2)+Math.pow(links.get(2).getTheta(),2))))
 		inv[0] = Math.toDegrees(orentation)-Math.toDegrees(links.get(0).getTheta());// offset for kinematics;
-		inv[1] = -Math.toDegrees((A+elevation+links.get(1).getTheta()));
-		inv[2] = (Math.toDegrees(C))-180-//interior angle of the triangle, map to external angle
-				Math.toDegrees(links.get(2).getTheta());// offset for kinematics
+		inv[1] = Math.toDegrees(A+elevation)+ Math.toDegrees(links.get(1).getTheta())
+		inv[2] = Math.toDegrees(C)-180- Math.toDegrees(links.get(2).getTheta())
 		if(links.size()>3)
 			inv[3] =(inv[1] -inv[2]);// keep it parallell
 			// We know the wrist twist will always be 0 for this model
