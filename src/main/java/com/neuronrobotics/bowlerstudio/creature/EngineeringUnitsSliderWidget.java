@@ -10,13 +10,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class AngleSliderWidget extends GridPane implements ChangeListener<Number>{
+public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number>{
 	private TextField setpointValue;
 	private Slider setpoint;
-	private IOnAngleChange listener;
+	private IOnEngineeringUnitsChange listener;
 	
 	
-	public AngleSliderWidget(IOnAngleChange listener, double min, double max, double current, double width){
+	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
 		setpoint = new Slider();
 		setpoint.setMin(min);
@@ -33,6 +33,11 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 			Platform.runLater(() -> {
 				double val =Double.parseDouble(setpointValue.getText());
 				setpoint.valueProperty().removeListener(this);
+				if(val>setpoint.getMax()){
+					setpoint.setMax(val);
+				}if(val<setpoint.getMin()){
+					setpoint.setMin(val);
+				}
 				setpoint.setValue(val);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);
@@ -58,7 +63,7 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 		add(	setpointValue, 
 				1, 
 				0);
-		add(	new Text("(degrees)"), 
+		add(	new Text("("+units+")"), 
 				2, 
 				0);
 	}
@@ -79,6 +84,11 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 	public void setValue(double value){
 		Platform.runLater(() -> {
 				setpoint.valueProperty().removeListener(this);
+				if(value>setpoint.getMax()){
+					setpoint.setMax(value);
+				}if(value<setpoint.getMin()){
+					setpoint.setMin(value);
+				}
 				setpoint.setValue(value);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);
@@ -93,19 +103,19 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 	public static String getFormatted(double value){
 	    return String.format("%4.3f%n", (double)value);
 	}
-	public IOnAngleChange getListener() {
+	public IOnEngineeringUnitsChange getListener() {
 		if(listener==null)
-			return new IOnAngleChange() {
+			return new IOnEngineeringUnitsChange() {
 
 				@Override
-				public void onSliderMoving(AngleSliderWidget source,
+				public void onSliderMoving(EngineeringUnitsSliderWidget source,
 						double newAngleDegrees) {
 					// TODO Auto-generated method stub
 					
 				}
 
 				@Override
-				public void onSliderDoneMoving(AngleSliderWidget source,
+				public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 						double newAngleDegrees) {
 					// TODO Auto-generated method stub
 					
@@ -114,7 +124,7 @@ public class AngleSliderWidget extends GridPane implements ChangeListener<Number
 			};
 		return listener;
 	}
-	public void setListener(IOnAngleChange listener) {
+	public void setListener(IOnEngineeringUnitsChange listener) {
 		this.listener = listener;
 	}
 }

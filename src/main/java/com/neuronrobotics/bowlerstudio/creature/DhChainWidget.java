@@ -60,8 +60,11 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
 	private FileChangeWatcher watcher;
-	public DhChainWidget(AbstractKinematicsNR device2){
+	private IOnEngineeringUnitsChange externalListener;
+	public DhChainWidget(AbstractKinematicsNR device2,IOnEngineeringUnitsChange externalListener){
 		this.device = device2;
+		this.externalListener = externalListener;
+	
 		device.addConnectionEventListener(this);
 		if(DHParameterKinematics.class.isInstance(device2)){
 			dhdevice=(DHParameterKinematics)device2;
@@ -259,8 +262,8 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 			DHLinkWidget w = new DHLinkWidget(i,
 					dh,
 					device,
-					del
-					);
+					del,
+					externalListener);
 			widgets.add(w);
 			links.getChildren().add(w);
 			device.addJointSpaceListener(w);

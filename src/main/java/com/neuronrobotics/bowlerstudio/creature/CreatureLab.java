@@ -51,7 +51,7 @@ import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Transform;
 
-public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerator {
+public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerator, IOnEngineeringUnitsChange {
 
 	private ICadGenerator cadEngine;
 	private BowlerAbstractDevice pm;
@@ -85,7 +85,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		if(DHParameterKinematics.class.isInstance(pm)){
 			DHParameterKinematics device=(DHParameterKinematics)pm;
 			Log.debug("Loading xml: "+device.getXml());
-			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
+			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
 			Button refresh = new Button("Generate Printable CAD");
 			refresh.setOnAction(event -> {
@@ -174,7 +174,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			
 			
 			Accordion advancedPanel = new Accordion();
-			TitledPane rp =new TitledPane("Multi-Appendage Cordinated Motion", new DhChainWidget(device));
+			TitledPane rp =new TitledPane("Multi-Appendage Cordinated Motion", new DhChainWidget(device, this));
 			advancedPanel.getPanes().add(rp);
 
 
@@ -191,7 +191,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			
 		}else if(AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device=(AbstractKinematicsNR)pm;
-			dhlabTopLevel.add(new DhChainWidget(device), 0, 0);
+			dhlabTopLevel.add(new DhChainWidget(device,null), 0, 0);
 		}
 		generateCad();
 		
@@ -202,7 +202,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private void addAppendagePanel(ArrayList<DHParameterKinematics> apps,String title,Accordion advancedPanel){
 		if(apps.size()>0){
 			for(DHParameterKinematics l:apps){
-				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(), new DhChainWidget(l));
+				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(), new DhChainWidget(l, this));
 				advancedPanel.getPanes().add(rp);
 				advancedPanel.setExpandedPane(rp);
 			}
@@ -377,6 +377,18 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+			double newAngleDegrees) {
+		generateCad();
 	}
 
 }

@@ -32,13 +32,13 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 	private DHParameterKinematics dhdevice;
 
 	private int linkIndex;
-	private AngleSliderWidget setpoint;
+	private EngineeringUnitsSliderWidget setpoint;
 	private Button del;
 
 	
 	
 	
-	public DHLinkWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2, Button del ) {
+	public DHLinkWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2, Button del,IOnEngineeringUnitsChange externalListener ) {
 
 		this.linkIndex = linkIndex;
 		this.device = device2;
@@ -56,16 +56,16 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
 		
-		setpoint = new AngleSliderWidget(new IOnAngleChange() {
+		setpoint = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
-			public void onSliderMoving(AngleSliderWidget source, double newAngleDegrees) {
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
-			public void onSliderDoneMoving(AngleSliderWidget source,
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 					double newAngleDegrees) {
 	    		try {
 					device2.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 2);
@@ -79,14 +79,14 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		abstractLink.getMinEngineeringUnits(), 
 		abstractLink.getMaxEngineeringUnits(), 
 		device2.getCurrentJointSpaceVector()[linkIndex], 
-		180);
+		180,"degrees");
 		
 		
 		
 		final Accordion accordion = new Accordion();
 
 		if(dhdevice!=null)
-			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice)));
+			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice,externalListener)));
 		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device2)));
 		
 		GridPane panel = new GridPane();

@@ -14,13 +14,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class TransformWidget extends GridPane implements IOnAngleChange, EventHandler<ActionEvent> {
+public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent> {
 	
 	private IOnTransformChange onChange;
-	AngleSliderWidget rw;
-	AngleSliderWidget rx;
-	AngleSliderWidget ry;
-	AngleSliderWidget rz;
+	EngineeringUnitsSliderWidget rw;
+	EngineeringUnitsSliderWidget rx;
+	EngineeringUnitsSliderWidget ry;
+	EngineeringUnitsSliderWidget rz;
 	private TextField tx;
 	private TextField ty;
 	private TextField tz;
@@ -36,9 +36,9 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 		ty.setOnAction(this);
 		tz.setOnAction(this);
 		RotationNR rot = initialState.getRotation();
-		rx = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationX()), 100);
-		ry = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationY()), 100);
-		rz = new AngleSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationZ()), 100);
+		rx = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationX()), 100,"degrees");
+		ry = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationY()), 100,"degrees");
+		rz = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationZ()), 100,"degrees");
 
 		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(60)); // translate values
@@ -98,12 +98,12 @@ public class TransformWidget extends GridPane implements IOnAngleChange, EventHa
 	}
 
 	@Override
-	public void onSliderMoving(AngleSliderWidget source, double newAngleDegrees) {
+	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		onChange.onTransformChaging(getCurrent());
 	}
 
 	@Override
-	public void onSliderDoneMoving(AngleSliderWidget source,
+	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 			double newAngleDegrees) {
 		handle(null);
 	}
