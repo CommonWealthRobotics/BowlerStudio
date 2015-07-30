@@ -89,9 +89,9 @@ return new DhInverseSolver() {
 //		println( "elevation: "+Math.toDegrees(elevation));
 //		println( "l1 from x/y plane: "+Math.toDegrees(A+elevation));
 //		println( "l2 from l1: "+Math.toDegrees(C));
-		println( "configurationOffset: "+configurationOffset);
-		println( "configurationOffsetSecond: "+configurationOffsetSecond);
-		println( "COmplex: "+Math.toDegrees(Math.sqrt(Math.pow(links.get(1).getTheta(),2)+Math.pow(links.get(2).getTheta(),2))))
+//		println( "configurationOffset: "+configurationOffset);
+//		println( "configurationOffsetSecond: "+configurationOffsetSecond);
+//		println( "COmplex: "+Math.toDegrees(Math.sqrt(Math.pow(links.get(1).getTheta(),2)+Math.pow(links.get(2).getTheta(),2))))
 		inv[0] = Math.toDegrees(orentation)-Math.toDegrees(links.get(0).getTheta());// offset for kinematics;
 		inv[1] = Math.toDegrees(A+elevation)+ Math.toDegrees(links.get(1).getTheta())
 		inv[2] = Math.toDegrees(C)-180- Math.toDegrees(links.get(2).getTheta())
