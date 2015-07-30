@@ -89,7 +89,7 @@ return new DhInverseSolver() {
 //		println( "elevation: "+Math.toDegrees(elevation));
 //		println( "l1 from x/y plane: "+Math.toDegrees(A+elevation));
 //		println( "l2 from l1: "+Math.toDegrees(C));
-		inv[0] = Math.toDegrees(orentation);
+		inv[0] = Math.toDegrees(orentation)-Math.toDegrees(links.get(0).getTheta());// offset for kinematics;
 		inv[1] = -Math.toDegrees((A+elevation+links.get(1).getTheta()));
 		inv[2] = (Math.toDegrees(C))-180-//interior angle of the triangle, map to external angle
 				Math.toDegrees(links.get(2).getTheta());// offset for kinematics
