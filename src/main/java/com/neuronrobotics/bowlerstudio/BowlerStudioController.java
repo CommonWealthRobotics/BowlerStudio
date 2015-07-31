@@ -109,25 +109,18 @@ public class BowlerStudioController extends TabPane implements
 	private void createAndSelectNewTab(final BowlerStudioController tabPane,
 			final String title) {
 
-		try {
-			if(ScriptingEngine.getLoginID() != null)
-			
-			addTab(new ScriptingGistTab(title,
-					getHomeUrl(), true), false);
-//			FxTimer.runLater(
-//					Duration.ofMillis(200) ,() -> {
-//						try {
-//							addTab(new ScriptingGistTab(title,
-//									"https://gist.github.com/"+ScriptingEngine.getLoginID()+"/", false), false);
-//						} catch (Exception e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//					});
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+			Platform.runLater(() -> {
+				try {
+					if(ScriptingEngine.getLoginID() != null)
+						
+						addTab(new ScriptingGistTab(title,getHomeUrl(), true), false);
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+
 
 	}
 
@@ -141,10 +134,11 @@ public class BowlerStudioController extends TabPane implements
 	public void addTab(Tab tab, boolean closable) {
 
 		//new RuntimeException().printStackTrace();
-		final ObservableList<Tab> tabs = getTabs();
-		tab.setClosable(closable);
-		int index = tabs.size() - 1;
+
 		Platform.runLater(() -> {
+			final ObservableList<Tab> tabs = getTabs();
+			tab.setClosable(closable);
+			int index = tabs.size() - 1;
 			//new RuntimeException().printStackTrace();
 			tabs.add(index, tab);
 			setSelectedTab(tab);
