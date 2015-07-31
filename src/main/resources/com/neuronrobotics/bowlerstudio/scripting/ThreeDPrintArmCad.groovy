@@ -114,8 +114,13 @@ return new ICadGenerator(){
 	
 	private CSG getAppendageMount(){
 		CSG attachmentbase =makeKeepaway(getAttachment())
-		.union(new Cube(cylandarRadius*4+3,200,200).toCSG()
-			.transformed(new Transform().translateX(cylandarRadius))
+		.union(new Cylinder(// The first part is the hole to put the screw in
+					100,
+					200,
+					 (int)20).toCSG()
+					 .toXMin()
+			.transformed(new Transform().translateX(-cylandarRadius*1.2))
+			.transformed(new Transform().translateZ(-100))
 		)
 		return attachmentbase;
 	}
