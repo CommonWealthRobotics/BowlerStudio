@@ -150,23 +150,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 			onTabReOpening();
 		});
 		
-		advanced.getChildren().add(new TransformWidget("Limb to Base", 
-				device.getRobotToFiducialTransform(), new IOnTransformChange() {
-					
-					@Override
-					public void onTransformFinished(TransformNR newTrans) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onTransformChaging(TransformNR newTrans) {
-						Log.debug("Limb to base"+newTrans.toString());
-						device.setRobotToFiducialTransform(newTrans);
-						device.getCurrentTaskSpaceTransform();
-					}
-				}
-				));
+
 		advanced.getChildren().add(new TransformWidget("Base to Global", 
 				device.getFiducialToGlobalTransform(),new IOnTransformChange() {
 					
@@ -193,12 +177,32 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		Accordion advancedPanel = new Accordion();
 		advancedPanel.getPanes().add(new TitledPane("Advanced Options", advanced));
 		controls.getChildren().add(jog);
-		if(mbase==null)
+		if(mbase==null){
+			
 			controls.getChildren().add(advancedPanel);
-		else
+			controls.getChildren().add(new TransformWidget("Place Limb", 
+					device.getRobotToFiducialTransform(), new IOnTransformChange() {
+				
+				@Override
+				public void onTransformFinished(TransformNR newTrans) {
+					// Force a cad regeneration
+					externalListener.onSliderDoneMoving(null, 0);
+				}
+				
+				@Override
+				public void onTransformChaging(TransformNR newTrans) {
+					Log.debug("Limb to base"+newTrans.toString());
+					device.setRobotToFiducialTransform(newTrans);
+					device.getCurrentTaskSpaceTransform();
+	
+				}
+			}
+			));
+		}else{
 			controls.getChildren().add(kinematics);
-		onTabReOpening();
 
+		}
+		onTabReOpening();
 		getChildren().add(new ScrollPane(links));
 	}
 	

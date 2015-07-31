@@ -21,27 +21,34 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	EngineeringUnitsSliderWidget rx;
 	EngineeringUnitsSliderWidget ry;
 	EngineeringUnitsSliderWidget rz;
-	private TextField tx;
-	private TextField ty;
-	private TextField tz;
+	EngineeringUnitsSliderWidget tx;
+	EngineeringUnitsSliderWidget ty;
+	EngineeringUnitsSliderWidget tz;
+//	private TextField tx;
+//	private TextField ty;
+//	private TextField tz;
 	private TransformNR initialState;
 
 	public TransformWidget(String title, TransformNR initialState, IOnTransformChange onChange){
 		this.initialState = initialState;
 		this.onChange = onChange;
-		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
-		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
-		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
-		tx.setOnAction(this);
-		ty.setOnAction(this);
-		tz.setOnAction(this);
+//		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
+//		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
+//		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
+//		tx.setOnAction(this);
+//		ty.setOnAction(this);
+//		tz.setOnAction(this);
+		tx = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getX(), 100,"mm");
+		ty = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getY(), 100,"mm");
+		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
+		
 		RotationNR rot = initialState.getRotation();
 		rx = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationX()), 100,"degrees");
 		ry = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationY()), 100,"degrees");
 		rz = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationZ()), 100,"degrees");
 
 		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
-	    getColumnConstraints().add(new ColumnConstraints(60)); // translate values
+	    getColumnConstraints().add(new ColumnConstraints(130)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
 	    getColumnConstraints().add(new ColumnConstraints(20)); // rotate text
 	    setHgap(20);// gab between elements
@@ -58,8 +65,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    		0,  1);
 		add(	tx, 
 				1,  1);
-		 add(	new Text("mm"), 
-	    		2,  1);
+	
 		 add(	new Text("(r)X"), 
 	    		3,  1);
 		 add(	rx, 
@@ -69,8 +75,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    		0,  2);
 		add(	ty, 
 				1,  2);
-		 add(	new Text(" mm"), 
-	    		2,  2);
+	
 		 add(	new Text("(r)Y"), 
 	    		3,  2);
 		 add(	ry, 
@@ -80,8 +85,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    		0,  3);
 		add(	tz, 
 				1,  3);
-		 add(	new Text(" mm"), 
-	    		2,  3);
+	
 		 add(	new Text("(r)Z"), 
 	    		3,  3);
 		 add(	rz, 
@@ -90,10 +94,16 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	}
 	
 	private 	TransformNR getCurrent(){
-		TransformNR tmp = new TransformNR(Double.parseDouble(tx.getText()),
-				Double.parseDouble(ty.getText()),
-				Double.parseDouble(tz.getText()),new RotationNR( rx.getValue(),ry.getValue(), rz.getValue()));
+		TransformNR tmp = new TransformNR(
+				tx.getValue(),
+				ty.getValue(),
+				tz.getValue(),
+				new RotationNR( 
+						rx.getValue(),
+						ry.getValue(), 
+						rz.getValue()));
 
+		
 		return tmp;
 	}
 
@@ -117,9 +127,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public void updatePose(TransformNR pose) {
 		//Log.debug("Transform widget is updating to: "+pose);
 		Platform.runLater(() -> {
-			tx.setText(CreatureLab.getFormatted(pose.getX()));
-			ty.setText(CreatureLab.getFormatted(pose.getY()));
-			tz.setText(CreatureLab.getFormatted(pose.getZ()));
+			tx.setValue(pose.getX());
+			ty.setValue(pose.getY());
+			tz.setValue(pose.getZ());
 		});
 		RotationNR rot = pose.getRotation();
 		rx.setValue(Math.toDegrees(rot.getRotationX()));
