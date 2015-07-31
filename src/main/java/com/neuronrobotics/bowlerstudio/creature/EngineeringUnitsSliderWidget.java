@@ -14,7 +14,13 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private TextField setpointValue;
 	private Slider setpoint;
 	private IOnEngineeringUnitsChange listener;
-	
+	private boolean intCast;
+
+	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units, boolean intCast){
+		this(listener, min, max, current, width, units);
+		this.intCast = intCast;
+		
+	}
 	
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
@@ -100,7 +106,9 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		return setpoint.getValue();
 	}
 	
-	public static String getFormatted(double value){
+	public  String getFormatted(double value){
+		if(intCast)
+			return ""+((int)value);
 	    return String.format("%4.3f%n", (double)value);
 	}
 	public IOnEngineeringUnitsChange getListener() {
