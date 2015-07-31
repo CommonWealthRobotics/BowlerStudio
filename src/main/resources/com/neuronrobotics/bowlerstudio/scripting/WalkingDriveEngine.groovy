@@ -14,9 +14,9 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 
 IDriveEngine engine =  new IDriveEngine (){
-	double stepOverHeight=5;
+	double stepOverHeight=20;
 	boolean takingStep = false;
-	private Double zLock=-67;
+	private Double zLock=-77;
 	TransformNR previousGLobalState;
 	TransformNR target;
 
@@ -119,13 +119,13 @@ IDriveEngine engine =  new IDriveEngine (){
 						home[i].setZ(stepOverHeight+zLock+newPose.getZ());
 						//println "Leg "+i+" setep over to x="+feetLocations[i].getX()+" y="+feetLocations[i].getY()
 						try {
-							double time = 0.05
+							double time = 0.2
 							// lift leg above home
-							legs.get(i).setDesiredTaskSpaceTransform(home[i], time);
+							legs.get(i).setDesiredTaskSpaceTransform(home[i], 0);
 							ThreadUtil.wait((int)(time*1000.0));
 							//step to new target
-							legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], time);
-							ThreadUtil.wait((int)(time*1000.0));
+							legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], 0);
+							ThreadUtil.wait((int)(time*500.0));
 							//set new target for the coordinated motion step at the end
 							feetLocations[i].translateX(newPose.getX());
 							feetLocations[i].translateY(newPose.getY());
