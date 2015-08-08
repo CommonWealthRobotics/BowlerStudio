@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
@@ -19,6 +20,7 @@ import com.neuronrobotics.jniloader.OpenCVJNILoader;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -27,6 +29,7 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.ui.ConnectionImageIconFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -50,6 +53,7 @@ public class BowlerStudio extends Application {
      */
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
+    	
     	if(args.length==0)
     		launch(args);
     	else{

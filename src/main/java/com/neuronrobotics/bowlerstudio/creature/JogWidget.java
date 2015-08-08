@@ -232,6 +232,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	}
 	
 	public void home(){
+		if(getMobilebase()!=null){
+			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
+		}
 		for(int i=0;i<getKin().getNumberOfLinks();i++){
 			try {
 				getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
