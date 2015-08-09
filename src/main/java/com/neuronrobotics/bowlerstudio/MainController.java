@@ -477,7 +477,7 @@ public class MainController implements Initializable {
 	@FXML public void onHexapod() {
 		Platform.runLater(()->{
 			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("HaoSuHex.xml"));
+				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("CarlTheRobot.xml"));
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
