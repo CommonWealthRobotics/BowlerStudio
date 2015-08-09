@@ -523,6 +523,18 @@ public class MainController implements Initializable {
 		});
 		
 	}
+
+	@FXML public void onInputArm() {
+		Platform.runLater(()->{
+			try {
+				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("TrobotMaster.xml"));
+				ConnectionManager.addConnection(mb,mb.getScriptingName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+	}
 	
 
 

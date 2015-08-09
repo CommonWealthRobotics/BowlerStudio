@@ -26,6 +26,7 @@
               	<MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
               	<MenuItem mnemonicParsing="false" onAction="#onHexapod" text="Six Leg Walker" />
               	<MenuItem mnemonicParsing="false" onAction="#onGrasshopper" text="Grasshopper" />
+              	<MenuItem mnemonicParsing="false" onAction="#onInputArm" text="Input Arm" />
               	<MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
               </Menu>
               <Menu mnemonicParsing="false" text="Vision">
