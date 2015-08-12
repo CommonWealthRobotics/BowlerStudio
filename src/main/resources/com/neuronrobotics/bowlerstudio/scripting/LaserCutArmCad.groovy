@@ -1,132 +1,511 @@
+import eu.mihosoft.vrl.v3d.Extrude;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
 import javafx.scene.paint.Color;
-
+import javax.vecmath.Matrix4d;
+import Jama.Matrix;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.jniloader.NativeResource;
+import com.neuronrobotics.nrconsole.plugin.BowlerCam.RGBSlider.ColorBox;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.gui.PosePanelNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.bowlerstudio.vitamins.IVitamin;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.STL;
+import eu.mihosoft.vrl.v3d.Sphere;
 import eu.mihosoft.vrl.v3d.Transform;
+import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.Vector3d;
+import javafx.scene.paint.Color;
+/**
+ * This cad script generates a 1:10 scale rendering of a robot made from flat cut pieces
+ * @author hephaestus
+ *
+ */
 
 return new ICadGenerator(){
+	double scaleOfRobot= 1.0/10.0;
+	double boardThickness = 18.0*scaleOfRobot;
+	
+	//CSG servoReference= new MicroServo().toCSG();
+	CSG servoReference=  Vitamins.get("smallservo.stl")
+	.transformed(new Transform().rotZ(-90))
+//	.transformed(new Transform().translateZ(12.0))
+//	.transformed(new Transform().translateX(5.4));
+	
+	//CSG horn=  STL.file(NativeResource.inJarLoad(IVitamin.class,"smallmotorhorn.stl").toPath())
+	CSG horn = new Cube(6,4,18).toCSG();
+	private double attachmentRodWidth=10;
+	private double attachmentBaseWidth=15;
+	private double printerTollerence =0.5;
+	
+	double cylandarRadius = 14;
+	
+	
+	private CSG makeKeepaway(CSG incoming){
+		
+		double x = Math.abs(incoming.getBounds().getMax().x )+ Math.abs(incoming.getBounds().getMin().x)
+		double y = Math.abs(incoming.getBounds().getMax().y) + Math.abs(incoming.getBounds().getMin().y)
+		
+		double z = Math.abs(incoming.getBounds().getMax().z )+ Math.abs(incoming.getBounds().getMin().z)
+		
+		double xtol=(x+printerTollerence)/x
+		double ytol= (y+printerTollerence)/y
+		double ztol=(z+printerTollerence)/z
+		
+		double xPer=-(Math.abs(incoming.getBounds().getMax().x)-Math.abs(incoming.getBounds().getMin().x))/x
+		double yPer=-(Math.abs(incoming.getBounds().getMax().y)-Math.abs(incoming.getBounds().getMin().y))/y
+		double zPer=-(Math.abs(incoming.getBounds().getMax().z)-Math.abs(incoming.getBounds().getMin().z))/z
+		
+		//println " Keep away x = "+y+" new = "+ytol
+		return 	incoming
+				.transformed(new Transform().scale(xtol,
+													ytol,
+													 ztol ))
+				.transformed(new Transform().translateX(printerTollerence * xPer))
+				.transformed(new Transform().translateY(printerTollerence*yPer))
+				.transformed(new Transform().translateZ(printerTollerence*zPer))
+				
+	}
+	
+	
+	private CSG getAppendageMount(){
+		CSG attachmentbase =makeKeepaway(getAttachment())
+		.union(new Cylinder(// The first part is the hole to put the screw in
+					100,
+					200,
+					 (int)20).toCSG()
+					 .toXMin()
+			.transformed(new Transform().translateX(-cylandarRadius*1.2))
+			.transformed(new Transform().translateZ(-100))
+		)
+		return attachmentbase;
+	}
+	
+	
+	private CSG getMountScrewKeepaway(){
+		CSG screw = new Cylinder(// The first part is the hole to put the screw in
+					7.5/2,
+					200,
+					 (int)20).toCSG()
+					 screw =screw.union(new Cylinder(// This the the tapper section in the fasening part
+						 4.1/2,
+						 7.5/2,
+						  3,
+						  (int)20).toCSG().toZMax()
+						  ).toZMin()
+		screw =screw.union(new Cylinder(// This the the hole in the fasening part
+					4.1/2,
+					 3,
+					 (int)20).toCSG().toZMax()
+					 ).toZMin()
+		screw =screw.union(new Cylinder(// This the the hole in the threaded part
+			2.6/2,
+			 30,
+			 (int)20).toCSG().toZMax()
+			 )
+		return screw;
+	}
+	
+	private CSG getAttachment(){
+		CSG attachmentbase = toZMin(new Cube(attachmentBaseWidth,attachmentBaseWidth,4).toCSG());
+		CSG post = toZMin(new Cube(	attachmentRodWidth,
+									attachmentRodWidth,
+									Math.abs(servoReference.getBounds().getMax().x)+5+attachmentRodWidth/2).toCSG());
+		attachmentbase = toZMax(attachmentbase.union(post))
+		.transformed(new Transform().translateZ( attachmentRodWidth/2));
+		CSG hornAttach =toZMin(toYMin(	toYMax( toZMax(horn).transformed(new Transform().translateZ( 4))) , 
+										post),
+									post
+									);
+		attachmentbase =attachmentbase.difference(hornAttach);
+		double pinMax = attachmentRodWidth/2;
+		double pinMin = 7.5/2;
+		CSG bearingPin =toYMax( new Cylinder(pinMax,pinMin, pinMax -pinMin ,(int)20).toCSG()
+			.transformed(new Transform().rotX(-90)),
+										post);
+		attachmentbase =attachmentbase.union(bearingPin);
+		return attachmentbase.transformed(new Transform().rot(-90, -90, 0));
+
+	}
+	
+	private CSG getFoot(){
+		CSG attach = getAttachment();
+		CSG foot = new Sphere(attachmentRodWidth).toCSG();
+		return  toXMax(attach.union(foot));
+	}
+	
+	Transform convertTransform(TransformNR incoming){
+		
+	}
+	
+	private CSG reverseDHValues(CSG incoming,DHLink dh ){
+		return incoming
+		.transformed(new Transform().rotX(-Math.toDegrees(dh.getAlpha())))
+		//.transformed(new Transform().rotZ(Math.toDegrees(dh.getTheta())))
+	}
+	
+	private CSG moveDHValues(CSG incoming,DHLink dh ){
+		return incoming.transformed(new Transform().translateZ(-dh.getD()))
+		.transformed(new Transform().rotZ(-Math.toDegrees(dh.getTheta())))
+		.transformed(new Transform().rotZ((90+Math.toDegrees(dh.getTheta()))))
+		.transformed(new Transform().translateX(-dh.getR()))
+		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
+		
+	}
+	ArrayList<CSG> generateBodyParts(MobileBase base ,boolean printing){
+		ArrayList<CSG> allCad=new ArrayList<>();
+		ArrayList<Vector3d> points=new ArrayList<>();
+		ArrayList<CSG> cutouts=new ArrayList<>();
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			TransformNR position = l.getRobotToFiducialTransform();
+			RotationNR rot = position.getRotation()
+			Matrix vals =position.getMatrixTransform();
+			double [] elemenents = [ 
+				vals.get(0, 0),
+				vals.get(0, 1),
+				vals.get(0, 2),
+				vals.get(0, 3),
+				
+				vals.get(1, 0),
+				vals.get(1, 1),
+				vals.get(1, 2),
+				vals.get(1, 3),
+				
+				vals.get(2, 0),
+				vals.get(2, 1),
+				vals.get(2, 2),
+				vals.get(2, 3),
+				
+				vals.get(3, 0),
+				vals.get(3, 1),
+				vals.get(3, 2),
+				vals.get(3, 3),
+				
+				 ] as double[];
+			
+			
+			Matrix4d rotation=	new Matrix4d(elemenents);
+			
+			cutouts.add(getAppendageMount()
+				.transformed(new Transform(rotation))
+				.union(getMountScrewKeepaway()
+					.transformed(new Transform().translateX(position.getX()))
+					)
+				);
+			
+			points.add(new Vector3d(position.getX(), position.getY()));
+			
+		}
+		
+		CSG upperBody = Extrude.points(	new Vector3d(0, 0, attachmentBaseWidth/2),
+               						points)
+						.transformed(new Transform().scale(1.2))
+		CSG lowerBody = Extrude.points(	new Vector3d(0, 0,attachmentBaseWidth/2),
+               						points
+		   						)
+						.transformed(new Transform().translateZ(-attachmentBaseWidth/2))
+						.transformed(new Transform().scale(1.2))
+		for(CSG c:cutouts){
+			upperBody= upperBody.difference(c);
+			lowerBody= lowerBody.difference(c);
+			//allCad.add(c)
+		}
+		if(!printing){			
+			upperBody.setColor(Color.CYAN);
+			lowerBody.setColor(Color.ALICEBLUE);
+			upperBody.setManipulator(base.getRootListener());
+			lowerBody.setManipulator(base.getRootListener());
+		}else{
+			upperBody=upperBody
+					.transformed(new Transform().rotX(180))
+					.toZMin()
+			lowerBody=	lowerBody
+				.toZMin()
+		}
+		allCad.addAll(upperBody,
+			lowerBody
+		)
+		
+		return allCad;
+	}
 	ArrayList<CSG> generateBody(MobileBase base ){
-		return null;
+		
+		ArrayList<CSG> allCad=new ArrayList<>();
+		//Start by generating the legs using the DH link based generator
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			for(CSG csg:generateCad(l.getChain().getLinks())){
+				allCad.add(csg);
+			}
+		}
+		try{
+			//now we genrate the base pieces
+			for(CSG csg:generateBodyParts( base ,false)){
+				allCad.add(csg);
+			}
+		}catch (Exception ex){
+			
+		}
+		return allCad;
 	}
 	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
-		return null;
+		ArrayList<File> allCadStl = new ArrayList<>();
+		int leg=0;
+		//Start by generating the legs using the DH link based generator
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			int link=0;
+			for(CSG csg:generateCad(l.getChain().getLinks(),true)){
+				File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/"+l.getScriptingName())
+				if(!dir.exists())
+					dir.mkdirs();
+				File stl = new File(dir.getAbsolutePath()+"/Leg_"+leg+"_part_"+link+".stl");
+				FileUtil.write(
+						Paths.get(stl.getAbsolutePath()),
+						csg.toStlString()
+				);
+				allCadStl.add(stl);
+				link++;
+			}
+			leg++;
+		}
+		int link=0;
+		//now we genrate the base pieces
+		for(CSG csg:generateBodyParts( base,true )){
+			File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/")
+			if(!dir.exists())
+				dir.mkdirs();
+			File stl = new File(dir.getAbsolutePath()+"/Body_part_"+link+".stl");
+			FileUtil.write(
+					Paths.get(stl.getAbsolutePath()),
+					csg.toStlString()
+			);
+			allCadStl.add(stl);
+			link++;
+		}
+		 
+		return allCadStl;
 	}
+	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
+		return generateCad(dhLinks ,false);
+	}
+	
+	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks,boolean printBed ){
+		
+		ArrayList<CSG> csg = new ArrayList<CSG>();
+
+		DHLink dh = dhLinks.get(0);
+		
+		CSG rootAttachment=getAttachment();
+		//CSG rootAttachment=getAppendageMount();
+		if(printBed){
 			
-				public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
-					
-					ArrayList<CSG> csg = new ArrayList<CSG>();
-					CSG previousServo=null;
-					CSG servoModel = null;
+			rootAttachment=rootAttachment 
+			.transformed(new Transform().rotY(90))
+			.toZMin()
+		}else{
+			rootAttachment.setManipulator(dh.getRootListener());
 
-					try {
-						servoModel = new MicroServo().toCSG();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (URISyntaxException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					if(dhLinks!=null){
-						for(int i=0;i<dhLinks.size();i++){
-							Log.warning("Adding Link Widget: "+i);
-							DHLink dh  =dhLinks.get(i);
-							double minLinWidth=18;
-							double radiusAddOn=40;
-							// Create an axis to represent the link
-							double y = dh.getD()>minLinWidth?dh.getD():minLinWidth;
-							double  x= dh.getRadius()>0?(dh.getRadius()+radiusAddOn):2;
-							double lasLinkOffset=30;
-							double lastServoOffset=0;
-							
-							if(dhLinks.size()>4){
-								lastServoOffset=dhLinks.get(4).getD()-lasLinkOffset;
-							}
-							CSG cube=null;
-							if(i<3){
-								cube = new Cube(x,y,2).toCSG();
-								cube=cube.transformed(new Transform().translateX((-x/2)+radiusAddOn-10));
-								
-							}else if(i==3 && dhLinks.size()>4){
-								
-								cube = new Cube(y,2,lastServoOffset+lasLinkOffset).toCSG();
-								cube=cube.transformed(new Transform().translateY(10));
-								cube=cube.transformed(new Transform().translateZ(lasLinkOffset));
-							}else{
-								//cube = new Cube(x,y,2).toCSG();
-							}
+		}
+		csg.add(rootAttachment);//This is the root that attaches to the base
+		rootAttachment.setColor(Color.GOLD);
+		CSG foot=getFoot();
 
-							CSG servo=null;
-							if(i< (dhLinks.size()-1) ){
-								servo=servoModel.clone();
-								if(i==3&&dhLinks.size()>4){
-									
-									servo=servo.transformed(new Transform().translateZ(lastServoOffset));
-								}
-								
-								if(cube!=null ){
-									cube=cube.difference(servo);
-								}
-								if(previousServo!=null){
-									CSG attach = servoModel.clone().transformed( new Transform().translateZ(-8.5));
-									if(i==3){
-										attach = servoModel.transformed( new Transform().rotX(90));
+		
+		CSG servoKeepaway = toXMin(toZMax(	new Cube(Math.abs(servoReference.getBounds().getMin().x) +
+			Math.abs(servoReference.getBounds().getMax().x),
+			Math.abs(servoReference.getBounds().getMin().y) +
+			Math.abs(servoReference.getBounds().getMax().y),
+			Math.abs(servoReference.getBounds().getMax().z)).toCSG(),
+		
+		)
+		)
+		servoKeepaway = servoKeepaway
+		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
+		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
 
-										attach = attach.transformed( new Transform().translateZ(0));
-										
-									}else
-										attach = attach.transformed( new Transform().translateX(-dhLinks.get(i).getR()));
-										
-									if(cube!=null && i!=3){
+		if(dhLinks!=null){
+			for(int i=0;i<dhLinks.size();i++){
+				dh = dhLinks.get(i);
+				CSG nextAttachment=getAttachment();
 
-										cube=cube.difference(attach);
-										cube=cube.difference(attach.transformed( new Transform().translateX(-6)));
-										cube=cube.difference(attach.transformed( new Transform().translateX(6)));
-										cube=cube.difference(attach.transformed( new Transform().translateY(-6)));
-										cube=cube.difference(attach.transformed( new Transform().translateY(6)));
-									}
-									if(cube!=null && i==3){
-										
-										cube=cube.difference(attach);
-										cube=cube.difference(attach.transformed( new Transform().translateZ(-6)));
-										cube=cube.difference(attach.transformed( new Transform().translateZ(6)));
-										cube=cube.difference(attach.transformed( new Transform().translateX(-6)));
-										cube=cube.difference(attach.transformed( new Transform().translateX(6)));
-									}
-									attach.setManipulator(dh.getListener());
-									//csg.add(attach);
-								}
-								previousServo=servo;
-							}
-							//add listner to axis
-							if(cube!=null){
-								cube.setManipulator(dh.getListener());
-								cube.setColor(Color.GOLD);
-								csg.add(cube);
-							}
-							if(servo!=null){
-								servo.setManipulator(dh.getListener());
-								//if(i>2)
-								
-								csg.add(servo);
-							}
-						}
-					}
-					return csg;
+				CSG servo=servoReference.transformed(new Transform().translateZ(-12.5))// allign to the horn
+				.union(servoKeepaway)
+				.transformed(new Transform().rotX(180))// allign to the horn
+				.transformed(new Transform().rotZ(-90))// allign to the horn
+				;
+				servo= makeKeepaway(servo)
+				
+				
+				double rOffsetForNextLink;
+				if(i==dhLinks.size()-1){
+						 rOffsetForNextLink = dh.getR()-
+					(	2.1+
+						Math.abs(foot.getBounds().getMin().x) 
+					)
+				}else{
+					rOffsetForNextLink = dh.getR()-
+					(	2.1+
+						Math.abs(nextAttachment.getBounds().getMin().x)
+					)
 				}
-			};
+				//println "Link # "+i+" offset = "+(dh.getR()-rOffsetForNextLink)
+				if(rOffsetForNextLink<attachmentBaseWidth){
+					rOffsetForNextLink=attachmentBaseWidth
+				}
+				double linkThickness = dh.getD();
+				if(linkThickness<attachmentBaseWidth/2)
+					linkThickness=attachmentBaseWidth/2
+				linkThickness +=3;
+				servo= moveDHValues(servo,dh);
+
+				double yScrewOffset = 2.5
+				CSG upperLink = toZMin(new Cylinder(cylandarRadius,linkThickness,(int)20).toCSG())
+				CSG upperScrews = getMountScrewKeepaway()
+					.transformed(new Transform().translateY(17+(attachmentBaseWidth+3)/2))
+					.transformed(new Transform().translateZ(upperLink.getBounds().getMax().z - linkThickness ))
+				if(dh.getR()>60){
+					upperScrews =upperScrews.union( getMountScrewKeepaway()
+						.transformed(new Transform().translateY(rOffsetForNextLink-5))
+						)
+				}
+				// adding the radius rod
+				CSG rod = toYMin(
+									toZMin(
+										new Cube( 
+											attachmentBaseWidth+3,
+											rOffsetForNextLink,
+											upperLink.getBounds().getMax().z
+											).toCSG()
+										)
+									)
+				CSG clip = toYMin(
+					toZMax(
+						new Cube(
+							attachmentBaseWidth+3,
+							9,
+							attachmentBaseWidth+3
+							).toCSG()
+						)
+					)
+					.transformed(new Transform().translateY(rOffsetForNextLink))// allign to the NEXT ATTACHMENT
+					.transformed(new Transform().translateZ(linkThickness))// allign to the NEXT ATTACHMENT
+				
+
+				upperLink=upperLink.union(rod,clip,upperScrews);
+				upperLink= upperLink.difference(upperScrews);
+				upperLink=upperLink.transformed(new Transform().translateZ(Math.abs(servoReference.getBounds().getMax().z-3)))
+				upperLink= moveDHValues(upperLink,dh).difference(servo);
+				if(i== dhLinks.size()-1)
+					upperLink= upperLink.difference(makeKeepaway(foot));
+				else
+					upperLink= upperLink.difference(makeKeepaway(nextAttachment));
+				double LowerLinkThickness = attachmentRodWidth/2-2
+				CSG lowerLink = toZMax(new Cylinder(
+					cylandarRadius,
+					 LowerLinkThickness,
+					 (int)20).toCSG()
+
+				)
+				
+				lowerLink=lowerLink.transformed(new Transform().translateZ(-attachmentRodWidth/2))
+				CSG lowerClip =
+						
+						new Cube(
+							attachmentBaseWidth+3,
+							rOffsetForNextLink,
+							LowerLinkThickness +linkThickness+6
+							).toCSG().toZMin().toYMin()
+					
+					
+					.transformed(new Transform().translateY(9))// allign to the NEXT ATTACHMENT
+					
+					.transformed(new Transform().translateZ(-attachmentRodWidth/2 -LowerLinkThickness ))
+
+				lowerLink=lowerLink.union(
+					lowerClip
+					);
+				//Remove the divit or the bearing
+				lowerLink= lowerLink.difference(makeKeepaway(nextAttachment),upperScrews.transformed(new Transform().translateZ(6)))// allign to the NEXT ATTACHMENT);
+				lowerLink= moveDHValues(lowerLink,dh);
+				//remove the next links connector and the upper link for mating surface
+				lowerLink= lowerLink.difference(upperLink,servo);
+				if(i== dhLinks.size()-1)
+					lowerLink= lowerLink.difference(makeKeepaway(foot));
+				else
+					lowerLink= lowerLink.difference(makeKeepaway(nextAttachment));
+				
+				if(dhLinks.size()>4){
+					if(i== dhLinks.size()-2){
+						nextAttachment=nextAttachment.transformed(new Transform().translateZ(dhLinks.get(dhLinks.size()-1).getD()/3));// allign to the horn
+					}
+					if(i== dhLinks.size()-1){
+						servo=servo.transformed(new Transform().translateY(-dhLinks.get(dhLinks.size()-1).getD()/3));// allign to the horn
+					}
+				}
+				if(printBed){
+					upperLink=reverseDHValues(upperLink,dh)
+					.transformed(new Transform().rotY(180))
+					.toZMin()
+					
+					lowerLink=reverseDHValues(lowerLink,dh)
+					.transformed(new Transform().rotY(0))
+					.toZMin()
+					
+					nextAttachment=nextAttachment
+					.transformed(new Transform().rotY(90))
+					.toZMin()
+					
+				}else{
+				
+					nextAttachment.setManipulator(dh.getListener());
+					nextAttachment.setColor(Color.CHOCOLATE);
+					servo.setManipulator(dh.getListener());
+					upperLink.setColor(Color.GREEN);
+					upperLink.setManipulator(dh.getListener());
+					
+					
+					lowerLink.setColor(Color.WHITE);
+					lowerLink.setManipulator(dh.getListener());
+					
+					//csg.add(servo);// view the servo
+					//csg.add(upperScrews);//view the screws
+				}
+				
+				if(i<dhLinks.size()-1)
+					csg.add(nextAttachment);//This is the root that attaches to the base
+				csg.add(upperLink);//This is the root that attaches to the base
+				csg.add(lowerLink);//White link forming the lower link
+
+					
+			}
+			if(printBed){
+				
+				foot=foot
+				.transformed(new Transform().rotY(90))
+				.toZMin()
+			}else{
+				foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
+				
+			}
+			foot.setColor(Color.GOLD);
+			csg.add(foot);//This is the root that attaches to the base
+
+		}
+		return csg;
+	}
+};
