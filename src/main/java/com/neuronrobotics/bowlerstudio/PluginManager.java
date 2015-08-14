@@ -4,61 +4,45 @@ package com.neuronrobotics.bowlerstudio;
 import java.util.ArrayList;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import com.neuronrobotics.bowlerstudio.creature.AdvancedKinematicsController;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.DhLab;
-import com.neuronrobotics.bowlerstudio.creature.JogKinematicsDevice;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.jniloader.AbstractImageProvider;
-import com.neuronrobotics.jniloader.SalientDetector;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
-import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.SchedulerGui;
-import com.neuronrobotics.nrconsole.plugin.DyIO.hexapod.HexapodController;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
-import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
-import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.namespace.bcs.pid.IExtendedPIDControl;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class PluginManager {
 	
@@ -74,7 +58,7 @@ public class PluginManager {
 		//DyIO
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOConsole.class));
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
-		addPlugin(new DeviceSupportPluginMap(DyIO.class, HexapodController.class));
+		
 		//Ipid
 		addPlugin(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
 		// Image s
