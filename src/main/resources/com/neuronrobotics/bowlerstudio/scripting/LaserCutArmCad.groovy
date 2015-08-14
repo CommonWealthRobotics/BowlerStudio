@@ -55,105 +55,7 @@ return new ICadGenerator(){
 	private double printerTollerence =0.5;
 	
 	double cylandarRadius = 14;
-	
-	
-	private CSG makeKeepaway(CSG incoming){
-		
-		double x = Math.abs(incoming.getBounds().getMax().x )+ Math.abs(incoming.getBounds().getMin().x)
-		double y = Math.abs(incoming.getBounds().getMax().y) + Math.abs(incoming.getBounds().getMin().y)
-		
-		double z = Math.abs(incoming.getBounds().getMax().z )+ Math.abs(incoming.getBounds().getMin().z)
-		
-		double xtol=(x+printerTollerence)/x
-		double ytol= (y+printerTollerence)/y
-		double ztol=(z+printerTollerence)/z
-		
-		double xPer=-(Math.abs(incoming.getBounds().getMax().x)-Math.abs(incoming.getBounds().getMin().x))/x
-		double yPer=-(Math.abs(incoming.getBounds().getMax().y)-Math.abs(incoming.getBounds().getMin().y))/y
-		double zPer=-(Math.abs(incoming.getBounds().getMax().z)-Math.abs(incoming.getBounds().getMin().z))/z
-		
-		//println " Keep away x = "+y+" new = "+ytol
-		return 	incoming
-				.transformed(new Transform().scale(xtol,
-													ytol,
-													 ztol ))
-				.transformed(new Transform().translateX(printerTollerence * xPer))
-				.transformed(new Transform().translateY(printerTollerence*yPer))
-				.transformed(new Transform().translateZ(printerTollerence*zPer))
-				
-	}
-	
-	
-	private CSG getAppendageMount(){
-		CSG attachmentbase =makeKeepaway(getAttachment())
-		.union(new Cylinder(// The first part is the hole to put the screw in
-					100,
-					200,
-					 (int)20).toCSG()
-					 .toXMin()
-			.transformed(new Transform().translateX(-cylandarRadius*1.2))
-			.transformed(new Transform().translateZ(-100))
-		)
-		return attachmentbase;
-	}
-	
-	
-	private CSG getMountScrewKeepaway(){
-		CSG screw = new Cylinder(// The first part is the hole to put the screw in
-					7.5/2,
-					200,
-					 (int)20).toCSG()
-					 screw =screw.union(new Cylinder(// This the the tapper section in the fasening part
-						 4.1/2,
-						 7.5/2,
-						  3,
-						  (int)20).toCSG().toZMax()
-						  ).toZMin()
-		screw =screw.union(new Cylinder(// This the the hole in the fasening part
-					4.1/2,
-					 3,
-					 (int)20).toCSG().toZMax()
-					 ).toZMin()
-		screw =screw.union(new Cylinder(// This the the hole in the threaded part
-			2.6/2,
-			 30,
-			 (int)20).toCSG().toZMax()
-			 )
-		return screw;
-	}
-	
-	private CSG getAttachment(){
-		CSG attachmentbase = toZMin(new Cube(attachmentBaseWidth,attachmentBaseWidth,4).toCSG());
-		CSG post = toZMin(new Cube(	attachmentRodWidth,
-									attachmentRodWidth,
-									Math.abs(servoReference.getBounds().getMax().x)+5+attachmentRodWidth/2).toCSG());
-		attachmentbase = toZMax(attachmentbase.union(post))
-		.transformed(new Transform().translateZ( attachmentRodWidth/2));
-		CSG hornAttach =toZMin(toYMin(	toYMax( toZMax(horn).transformed(new Transform().translateZ( 4))) , 
-										post),
-									post
-									);
-		attachmentbase =attachmentbase.difference(hornAttach);
-		double pinMax = attachmentRodWidth/2;
-		double pinMin = 7.5/2;
-		CSG bearingPin =toYMax( new Cylinder(pinMax,pinMin, pinMax -pinMin ,(int)20).toCSG()
-			.transformed(new Transform().rotX(-90)),
-										post);
-		attachmentbase =attachmentbase.union(bearingPin);
-		return attachmentbase.transformed(new Transform().rot(-90, -90, 0));
 
-	}
-	
-	private CSG getFoot(){
-		CSG attach = getAttachment();
-		CSG foot = new Sphere(attachmentRodWidth).toCSG();
-		return  toXMax(attach.union(foot));
-	}
-	
-	Transform convertTransform(TransformNR incoming){
-		
-	}
-	
 	private CSG reverseDHValues(CSG incoming,DHLink dh ){
 		return incoming
 		.transformed(new Transform().rotX(-Math.toDegrees(dh.getAlpha())))
@@ -166,8 +68,8 @@ return new ICadGenerator(){
 		.transformed(new Transform().rotZ((90+Math.toDegrees(dh.getTheta()))))
 		.transformed(new Transform().translateX(-dh.getR()))
 		.transformed(new Transform().rotX(Math.toDegrees(dh.getAlpha())));
-		
 	}
+	
 	ArrayList<CSG> generateBodyParts(MobileBase base ,boolean printing){
 		ArrayList<CSG> allCad=new ArrayList<>();
 		ArrayList<Vector3d> points=new ArrayList<>();
@@ -201,26 +103,17 @@ return new ICadGenerator(){
 			
 			
 			Matrix4d rotation=	new Matrix4d(elemenents);
-			
-			cutouts.add(getAppendageMount()
-				.transformed(new Transform(rotation))
-				.union(getMountScrewKeepaway()
-					.transformed(new Transform().translateX(position.getX()))
-					)
-				);
-			
+
 			points.add(new Vector3d(position.getX(), position.getY()));
 			
 		}
-		
+		double distance = 5
 		CSG upperBody = Extrude.points(	new Vector3d(0, 0, attachmentBaseWidth/2),
                						points)
-						.transformed(new Transform().scale(1.2))
 		CSG lowerBody = Extrude.points(	new Vector3d(0, 0,attachmentBaseWidth/2),
                						points
 		   						)
-						.transformed(new Transform().translateZ(-attachmentBaseWidth/2))
-						.transformed(new Transform().scale(1.2))
+						.movez(-attachmentBaseWidth/2)
 		for(CSG c:cutouts){
 			upperBody= upperBody.difference(c);
 			lowerBody= lowerBody.difference(c);
@@ -259,10 +152,11 @@ return new ICadGenerator(){
 				allCad.add(csg);
 			}
 		}catch (Exception ex){
-			
+			ex.printStackTrace();
 		}
 		return allCad;
 	}
+	
 	ArrayList<File> generateStls(MobileBase base , File baseDirForFiles ){
 		ArrayList<File> allCadStl = new ArrayList<>();
 		int leg=0;
@@ -308,204 +202,7 @@ return new ICadGenerator(){
 		
 		ArrayList<CSG> csg = new ArrayList<CSG>();
 
-		DHLink dh = dhLinks.get(0);
-		
-		CSG rootAttachment=getAttachment();
-		//CSG rootAttachment=getAppendageMount();
-		if(printBed){
-			
-			rootAttachment=rootAttachment 
-			.transformed(new Transform().rotY(90))
-			.toZMin()
-		}else{
-			rootAttachment.setManipulator(dh.getRootListener());
-
-		}
-		csg.add(rootAttachment);//This is the root that attaches to the base
-		rootAttachment.setColor(Color.GOLD);
-		CSG foot=getFoot();
-
-		
-		CSG servoKeepaway = toXMin(toZMax(	new Cube(Math.abs(servoReference.getBounds().getMin().x) +
-			Math.abs(servoReference.getBounds().getMax().x),
-			Math.abs(servoReference.getBounds().getMin().y) +
-			Math.abs(servoReference.getBounds().getMax().y),
-			Math.abs(servoReference.getBounds().getMax().z)).toCSG(),
-		
-		)
-		)
-		servoKeepaway = servoKeepaway
-		.transformed(new Transform().translateX(-Math.abs(servoReference.getBounds().getMin().x)))
-		.transformed(new Transform().translateZ(-Math.abs(servoReference.getBounds().getMax().z -Math.abs(servoReference.getBounds().getMin().z) )/2))
-
-		if(dhLinks!=null){
-			for(int i=0;i<dhLinks.size();i++){
-				dh = dhLinks.get(i);
-				CSG nextAttachment=getAttachment();
-
-				CSG servo=servoReference.transformed(new Transform().translateZ(-12.5))// allign to the horn
-				.union(servoKeepaway)
-				.transformed(new Transform().rotX(180))// allign to the horn
-				.transformed(new Transform().rotZ(-90))// allign to the horn
-				;
-				servo= makeKeepaway(servo)
-				
-				
-				double rOffsetForNextLink;
-				if(i==dhLinks.size()-1){
-						 rOffsetForNextLink = dh.getR()-
-					(	2.1+
-						Math.abs(foot.getBounds().getMin().x) 
-					)
-				}else{
-					rOffsetForNextLink = dh.getR()-
-					(	2.1+
-						Math.abs(nextAttachment.getBounds().getMin().x)
-					)
-				}
-				//println "Link # "+i+" offset = "+(dh.getR()-rOffsetForNextLink)
-				if(rOffsetForNextLink<attachmentBaseWidth){
-					rOffsetForNextLink=attachmentBaseWidth
-				}
-				double linkThickness = dh.getD();
-				if(linkThickness<attachmentBaseWidth/2)
-					linkThickness=attachmentBaseWidth/2
-				linkThickness +=3;
-				servo= moveDHValues(servo,dh);
-
-				double yScrewOffset = 2.5
-				CSG upperLink = toZMin(new Cylinder(cylandarRadius,linkThickness,(int)20).toCSG())
-				CSG upperScrews = getMountScrewKeepaway()
-					.transformed(new Transform().translateY(17+(attachmentBaseWidth+3)/2))
-					.transformed(new Transform().translateZ(upperLink.getBounds().getMax().z - linkThickness ))
-				if(dh.getR()>60){
-					upperScrews =upperScrews.union( getMountScrewKeepaway()
-						.transformed(new Transform().translateY(rOffsetForNextLink-5))
-						)
-				}
-				// adding the radius rod
-				CSG rod = toYMin(
-									toZMin(
-										new Cube( 
-											attachmentBaseWidth+3,
-											rOffsetForNextLink,
-											upperLink.getBounds().getMax().z
-											).toCSG()
-										)
-									)
-				CSG clip = toYMin(
-					toZMax(
-						new Cube(
-							attachmentBaseWidth+3,
-							9,
-							attachmentBaseWidth+3
-							).toCSG()
-						)
-					)
-					.transformed(new Transform().translateY(rOffsetForNextLink))// allign to the NEXT ATTACHMENT
-					.transformed(new Transform().translateZ(linkThickness))// allign to the NEXT ATTACHMENT
-				
-
-				upperLink=upperLink.union(rod,clip,upperScrews);
-				upperLink= upperLink.difference(upperScrews);
-				upperLink=upperLink.transformed(new Transform().translateZ(Math.abs(servoReference.getBounds().getMax().z-3)))
-				upperLink= moveDHValues(upperLink,dh).difference(servo);
-				if(i== dhLinks.size()-1)
-					upperLink= upperLink.difference(makeKeepaway(foot));
-				else
-					upperLink= upperLink.difference(makeKeepaway(nextAttachment));
-				double LowerLinkThickness = attachmentRodWidth/2-2
-				CSG lowerLink = toZMax(new Cylinder(
-					cylandarRadius,
-					 LowerLinkThickness,
-					 (int)20).toCSG()
-
-				)
-				
-				lowerLink=lowerLink.transformed(new Transform().translateZ(-attachmentRodWidth/2))
-				CSG lowerClip =
-						
-						new Cube(
-							attachmentBaseWidth+3,
-							rOffsetForNextLink,
-							LowerLinkThickness +linkThickness+6
-							).toCSG().toZMin().toYMin()
-					
-					
-					.transformed(new Transform().translateY(9))// allign to the NEXT ATTACHMENT
-					
-					.transformed(new Transform().translateZ(-attachmentRodWidth/2 -LowerLinkThickness ))
-
-				lowerLink=lowerLink.union(
-					lowerClip
-					);
-				//Remove the divit or the bearing
-				lowerLink= lowerLink.difference(makeKeepaway(nextAttachment),upperScrews.transformed(new Transform().translateZ(6)))// allign to the NEXT ATTACHMENT);
-				lowerLink= moveDHValues(lowerLink,dh);
-				//remove the next links connector and the upper link for mating surface
-				lowerLink= lowerLink.difference(upperLink,servo);
-				if(i== dhLinks.size()-1)
-					lowerLink= lowerLink.difference(makeKeepaway(foot));
-				else
-					lowerLink= lowerLink.difference(makeKeepaway(nextAttachment));
-				
-				if(dhLinks.size()>4){
-					if(i== dhLinks.size()-2){
-						nextAttachment=nextAttachment.transformed(new Transform().translateZ(dhLinks.get(dhLinks.size()-1).getD()/3));// allign to the horn
-					}
-					if(i== dhLinks.size()-1){
-						servo=servo.transformed(new Transform().translateY(-dhLinks.get(dhLinks.size()-1).getD()/3));// allign to the horn
-					}
-				}
-				if(printBed){
-					upperLink=reverseDHValues(upperLink,dh)
-					.transformed(new Transform().rotY(180))
-					.toZMin()
-					
-					lowerLink=reverseDHValues(lowerLink,dh)
-					.transformed(new Transform().rotY(0))
-					.toZMin()
-					
-					nextAttachment=nextAttachment
-					.transformed(new Transform().rotY(90))
-					.toZMin()
-					
-				}else{
-				
-					nextAttachment.setManipulator(dh.getListener());
-					nextAttachment.setColor(Color.CHOCOLATE);
-					servo.setManipulator(dh.getListener());
-					upperLink.setColor(Color.GREEN);
-					upperLink.setManipulator(dh.getListener());
-					
-					
-					lowerLink.setColor(Color.WHITE);
-					lowerLink.setManipulator(dh.getListener());
-					
-					//csg.add(servo);// view the servo
-					//csg.add(upperScrews);//view the screws
-				}
-				
-				if(i<dhLinks.size()-1)
-					csg.add(nextAttachment);//This is the root that attaches to the base
-				csg.add(upperLink);//This is the root that attaches to the base
-				csg.add(lowerLink);//White link forming the lower link
-
-					
-			}
-			if(printBed){
-				
-				foot=foot
-				.transformed(new Transform().rotY(90))
-				.toZMin()
-			}else{
-				foot.setManipulator(dhLinks.get(dhLinks.size()-1).getListener());
-				
-			}
-			foot.setColor(Color.GOLD);
-			csg.add(foot);//This is the root that attaches to the base
-
-		}
+	
 		return csg;
 	}
 };

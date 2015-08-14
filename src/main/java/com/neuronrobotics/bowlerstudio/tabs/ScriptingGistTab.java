@@ -305,6 +305,8 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 						finishedLoadingScriptingWidget=true;
 					});
 				}
+				else
+					finishedLoadingScriptingWidget=true;
 			});
 			
 		}catch(Exception ex){

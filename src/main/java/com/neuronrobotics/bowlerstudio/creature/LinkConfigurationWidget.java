@@ -57,11 +57,7 @@ public class LinkConfigurationWidget extends GridPane {
 		    		3, 
 		    		0);
 
-//		
-//	    TextField lbound = new TextField(CreatureLab.getFormatted(conf.getLowerLimit()));
-//	    lbound.setOnAction(event -> {
-//			conf.setLowerLimit(Double.parseDouble(lbound.getText()));
-//		});
+
 		lowerBound=new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
@@ -79,11 +75,7 @@ public class LinkConfigurationWidget extends GridPane {
 				activLink.flush(0);
 			}
 		}, 0, 255, conf.getLowerLimit(), 150, "device units", true);
-//	    
-//	    TextField ubound = new TextField(CreatureLab.getFormatted(conf.getUpperLimit()));
-//	    ubound.setOnAction(event -> {
-//			conf.setUpperLimit(Double.parseDouble(ubound.getText()));
-//		});
+
 		 upperBound=new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 				
 				@Override
@@ -101,11 +93,7 @@ public class LinkConfigurationWidget extends GridPane {
 					activLink.flush(0);
 				}
 			}, 0, 255, conf.getUpperLimit(), 150, "device units", true);
-//		TextField offset = new TextField(CreatureLab.getFormatted(conf.getStaticOffset()));
-//			offset.setOnAction(event -> {
-//			conf.setStaticOffset(Double.parseDouble(offset.getText()));
-//		});
-		 
+
 	    zero= new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
@@ -126,6 +114,22 @@ public class LinkConfigurationWidget extends GridPane {
 		}, 
 		conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
 
+		final ComboBox<String> channel = new ComboBox<String>();
+		for (int i=0;i<24;i++) {
+			channel.getItems().add(new Integer(i).toString());
+		}
+		channel.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				conf.setIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
+				congiuration.getFactory().refreshHardwareLayer(conf);
+				activLink = congiuration.getFactory().getLink(conf);
+				System.out.println("Link channel to "+conf.getType());
+			}
+		});
+		channel.getSelectionModel().select(conf.getHardwareIndex());
+		
 		final ComboBox<String> comboBox = new ComboBox<String>();
 		for (LinkType type : LinkType.values()) {
 			comboBox.getItems().add(type.getName());
@@ -139,6 +143,7 @@ public class LinkConfigurationWidget extends GridPane {
 			}
 		});
 		comboBox.getSelectionModel().select(conf.getType().toString());
+		
 	    add(	new Text("Zero Degrees Value"), 
 	    		0, 
 	    		1);
@@ -170,6 +175,12 @@ public class LinkConfigurationWidget extends GridPane {
 		add(	comboBox, 
 				1, 
 				4);
+		 add(	new Text("Link Hardware Index"), 
+		    		0, 
+		    		5);
+		add(	channel, 
+				1, 
+				5);
 		 
 	}
 
