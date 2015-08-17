@@ -430,9 +430,14 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 			public void run() {
 				if(type!= ScriptingWidgetType.CMDLINE)
 					setName("Bowler Script Runner " + currentFile.getName());
-
+				String name;
+				try{
+					name = currentFile.getName();
+				}catch (NullPointerException e){
+					name="";
+				}
 				try {
-					Object obj = inlineScriptRun(getCode(), null,setFilename(currentFile.getName()));
+					Object obj = inlineScriptRun(getCode(), null,setFilename(name));
 					for (IScriptEventListener l : listeners) {
 						l.onGroovyScriptFinished(obj, scriptResult);
 					}

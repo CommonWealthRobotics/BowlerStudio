@@ -70,10 +70,12 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	public DyIOPanel getDeviceDisplay() {
 		if(devicePanel == null)
 			devicePanel  = new DyIOPanel(dyio);
+		devicePanel.invalidate();
 		return devicePanel;
 	}
 	
 	public DyIOControlsPanel getDeviceControls() {
+		deviceControls.invalidate();
 		return deviceControls;
 	}
 	
@@ -155,7 +157,6 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		this.dyio = (DyIO)pm;
 		deviceControls = new DyIOControlsPanel();
 		channels = new ArrayList<ChannelManager>();
-		dyio.addConnectionEventListener(this);
 
 		DyIO.disableFWCheck();
 		try {
@@ -170,7 +171,7 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		}
 		DyIO.disableFWCheck();
 		
-		dyio.addDyIOEventListener(this);
+
 		dyio.setMuteResyncOnModeChange(true);
 		setupDyIO();
 		dyio.setMuteResyncOnModeChange(false);
@@ -196,7 +197,7 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
+		dyio.addDyIOEventListener(this);
 		dyio.addConnectionEventListener(this);
 		for(ChannelManager c : channels) {
 			c.addListener(this);
