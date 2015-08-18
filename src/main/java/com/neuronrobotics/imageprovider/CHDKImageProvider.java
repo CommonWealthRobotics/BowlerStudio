@@ -1,6 +1,7 @@
 package com.neuronrobotics.imageprovider;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import chdk.ptp.java.CameraFactory;
 import chdk.ptp.java.ICamera;
@@ -43,14 +44,27 @@ public class CHDKImageProvider extends AbstractImageProvider {
 		return false;
 	}
 
+
 	@Override
-	public void disconnect() {
+	public void disconnectDeviceImp() {
 		try {
 			cam.disconnect();
 		} catch (CameraConnectionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean connectDeviceImp() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getNamespacesImp() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -33,8 +34,22 @@ public class URLImageProvider extends AbstractImageProvider {
 	}
 
 	@Override
-	public void disconnect() {
-		//ignore
+	public void disconnectDeviceImp() {
+		// TODO Auto-generated method stub
+		
 	}
+
+	@Override
+	public boolean connectDeviceImp() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getNamespacesImp() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

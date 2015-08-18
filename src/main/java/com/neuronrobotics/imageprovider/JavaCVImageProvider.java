@@ -2,6 +2,8 @@ package com.neuronrobotics.imageprovider;
 
 import java.awt.image.BufferedImage;
 
+import java.util.ArrayList;
+
 //import org.bytedeco.javacpp.opencv_core.IplImage;
 //import org.bytedeco.javacv.Frame;
 //import org.bytedeco.javacv.FrameGrabber;
@@ -60,15 +62,23 @@ public class JavaCVImageProvider  extends AbstractImageProvider{
 		return true;
 	}
 
+
+
 	@Override
-	public void disconnect() {
-//		try {
-//			grabber.stop();
-//			grabber.release();
-//			grabber=null;
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			//e.printStackTrace();
-//		}
+	public void disconnectDeviceImp() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean connectDeviceImp() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getNamespacesImp() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -19,8 +19,9 @@ import javax.imageio.ImageIO;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
+import com.neuronrobotics.sdk.common.NonBowlerDevice;
 
-public abstract class AbstractImageProvider extends BowlerAbstractDevice {
+public abstract class AbstractImageProvider extends NonBowlerDevice {
 	private BufferedImage image = null;
 	/**
 	 * This method should capture a new image and load it into the Mat datatype
@@ -51,12 +52,7 @@ public abstract class AbstractImageProvider extends BowlerAbstractDevice {
 		return true;
 	}
 	
-	/**
-	 * This method tells the connection object to disconnect its pipes and close out the connection. Once this is called, it is safe to remove your device.
-	 */
-	@Override
-	public abstract void disconnect();
-	
+
 	public static void deepCopy(org.opencv.core.Mat src, BufferedImage dest) {
 		Graphics g = dest.createGraphics();
 		g.drawImage(matToBufferedImage(src), 0, 0, null);

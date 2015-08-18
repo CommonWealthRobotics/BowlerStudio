@@ -1,6 +1,7 @@
 package com.neuronrobotics.imageprovider;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javafx.application.Platform;
 
@@ -56,15 +57,6 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 		return true;
 	}
 
-	@Override
-	public void disconnect() {
-
-		if(vc!=null)
-			vc.release();
-		setVc(null);
-
-		
-	}
 
 	private VideoCapture getVc() {
 		return vc;
@@ -72,6 +64,26 @@ public class OpenCVImageProvider extends AbstractImageProvider{
 
 	private void setVc(VideoCapture vc) {
 		this.vc = vc;
+	}
+
+	@Override
+	public void disconnectDeviceImp() {
+		if(vc!=null)
+			vc.release();
+		setVc(null);
+
+	}
+
+	@Override
+	public boolean connectDeviceImp() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getNamespacesImp() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
