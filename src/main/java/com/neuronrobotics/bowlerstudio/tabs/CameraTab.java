@@ -6,11 +6,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
+
 import org.opencv.core.CvException;
-import com.neuronrobotics.jniloader.AbstractImageProvider;
-import com.neuronrobotics.jniloader.Detection;
-import com.neuronrobotics.jniloader.HaarDetector;
-import com.neuronrobotics.jniloader.IObjectDetector;
+
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.imageprovider.Detection;
+import com.neuronrobotics.imageprovider.HaarDetector;
+import com.neuronrobotics.imageprovider.IObjectDetector;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 

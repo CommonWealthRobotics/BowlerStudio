@@ -9,10 +9,10 @@ import java.util.Timer;
 
 import org.opencv.core.CvException;
 
-import com.neuronrobotics.jniloader.AbstractImageProvider;
-import com.neuronrobotics.jniloader.Detection;
-import com.neuronrobotics.jniloader.IObjectDetector;
-import com.neuronrobotics.jniloader.SalientDetector;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.imageprovider.Detection;
+import com.neuronrobotics.imageprovider.IObjectDetector;
+import com.neuronrobotics.imageprovider.SalientDetector;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 

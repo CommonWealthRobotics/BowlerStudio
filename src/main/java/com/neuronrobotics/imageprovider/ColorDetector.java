@@ -1,4 +1,4 @@
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -12,37 +12,37 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.features2d.KeyPoint;
+//import org.opencv.features2d.KeyPoint;
 import org.opencv.imgproc.Imgproc;
 
 //http://cell0907.blogspot.com/2013/07/tracking-ball-with-javaopencv.html
 
-public class RGBColorDetector implements IObjectDetector{
-	private Mat rgb_image = new Mat();
+public class ColorDetector implements IObjectDetector{
+	private Mat hsv_image = new Mat();
 	private Mat thresholded = new Mat();
 	private Mat thresholded2 = new Mat();
 
 	private Mat circles = new Mat(); // No need (and don't know how) to initialize it.
 	// The function later will do it... (to a 1*N*CV_32FC3)
-//	Scalar rgb_min = new Scalar(200, 200, 200, 0);
-//	Scalar rgb_max = new Scalar(255, 255, 255, 0);
-//	Scalar rgb_min2 = new Scalar(50, 50, 50, 0);
-//	Scalar rgb_max2 = new Scalar(255, 255, 255, 0);
+//	Scalar hsv_min = new Scalar(200, 200, 200, 0);
+//	Scalar hsv_max = new Scalar(255, 255, 255, 0);
+//	Scalar hsv_min2 = new Scalar(50, 50, 50, 0);
+//	Scalar hsv_max2 = new Scalar(255, 255, 255, 0);
 	private double[] data = new double[3];
-	private List<Mat> lrgb;
+	private List<Mat> lhsv;
 	private Mat array255 ;
 	private Mat distance;
-	private Scalar rgb_min;
-	private Scalar rgb_max;
-	private Scalar rgb_min2;
-	private Scalar rgb_max2;
+	private Scalar hsv_min;
+	private Scalar hsv_max;
+	private Scalar hsv_min2;
+	private Scalar hsv_max2;
 	
-	public RGBColorDetector(Mat matImage,Scalar rgb_min, Scalar rgb_max,Scalar rgb_min2 ,Scalar rgb_max2) {
-		this.rgb_min = rgb_min;
-		this.rgb_max = rgb_max;
-		this.rgb_min2 = rgb_min2;
-		this.rgb_max2 = rgb_max2;
-		lrgb = new ArrayList<Mat>(3);
+	public ColorDetector(Mat matImage,Scalar hsv_min, Scalar hsv_max,Scalar hsv_min2 ,Scalar hsv_max2) {
+		this.hsv_min = hsv_min;
+		this.hsv_max = hsv_max;
+		this.hsv_min2 = hsv_min2;
+		this.hsv_max2 = hsv_max2;
+		lhsv = new ArrayList<Mat>(3);
 		array255 = new Mat(matImage.height(), matImage.width(),
 				CvType.CV_8UC1);
 		array255.setTo(new Scalar(255));
@@ -51,13 +51,13 @@ public class RGBColorDetector implements IObjectDetector{
 		
 	}
 
-	public void setThreshhold(Scalar rgb_min, Scalar rgb_max){
-		this.rgb_min = rgb_min;
-		this.rgb_max = rgb_max;
+	public void setThreshhold(Scalar hsv_min, Scalar hsv_max){
+		this.hsv_min = hsv_min;
+		this.hsv_max = hsv_max;
 	}
-	public void setThreshhold2(Scalar rgb_min2 ,Scalar rgb_max2){
-		this.rgb_min2 = rgb_min2;
-		this.rgb_max2 = rgb_max2;
+	public void setThreshhold2(Scalar hsv_min2 ,Scalar hsv_max2){
+		this.hsv_min2 = hsv_min2;
+		this.hsv_max2 = hsv_max2;
 	}
 
 	public List<Detection> getObjects(BufferedImage in, BufferedImage disp){
@@ -65,9 +65,9 @@ public class RGBColorDetector implements IObjectDetector{
 		AbstractImageProvider.bufferedImageToMat(in,inputImage);
 		Mat displayImage = new Mat();
 		// One way to select a range of colors by Hue
-		Imgproc.cvtColor(inputImage, rgb_image, Imgproc.COLOR_BGR2HSV);
-		Core.inRange(rgb_image, rgb_min, rgb_max, thresholded);
-		Core.inRange(rgb_image, rgb_min2, rgb_max2, thresholded2);
+		Imgproc.cvtColor(inputImage, hsv_image, Imgproc.COLOR_BGR2HSV);
+		Core.inRange(hsv_image, hsv_min, hsv_max, thresholded);
+		Core.inRange(hsv_image, hsv_min2, hsv_max2, thresholded2);
 		Core.bitwise_or(thresholded, thresholded2, thresholded);
 		// Notice that the thresholds don't really work as a "distance"
 		// Ideally we would like to cut the image by hue and then pick just
@@ -77,9 +77,9 @@ public class RGBColorDetector implements IObjectDetector{
 		// But if we want to be "faster" we can do just (255-S)+(255-V)>Range
 		// Or otherwise 510-S-V>Range
 		// Anyhow, we do the following... Will see how fast it goes...
-		Core.split(rgb_image, lrgb); // We get 3 2D one channel Mats
-		Mat S = lrgb.get(1);
-		Mat V = lrgb.get(2);
+		Core.split(hsv_image, lhsv); // We get 3 2D one channel Mats
+		Mat S = lhsv.get(1);
+		Mat V = lhsv.get(2);
 		Core.subtract(array255, S, S);
 		Core.subtract(array255, V, V);
 		S.convertTo(S, CvType.CV_32F);
@@ -92,6 +92,7 @@ public class RGBColorDetector implements IObjectDetector{
 		Imgproc.HoughCircles(thresholded, circles, Imgproc.CV_HOUGH_GRADIENT,
 				2, thresholded.height() / 4, 500, 50, 0, 0);
 		
+
 		//Make the display image the thresholded image
 		thresholded.copyTo(displayImage);
 		
@@ -143,7 +144,7 @@ public class RGBColorDetector implements IObjectDetector{
 		}
 		
 		
-		AbstractImageProvider.matToBufferedImage(displayImage).copyData(disp.getRaster());
+		AbstractImageProvider.deepCopy(AbstractImageProvider.matToBufferedImage(displayImage),disp);
 		return myArray;
 	}
 }

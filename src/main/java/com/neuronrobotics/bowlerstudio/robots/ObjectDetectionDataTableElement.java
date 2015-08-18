@@ -2,8 +2,8 @@ package com.neuronrobotics.bowlerstudio.robots;
 
 import java.util.ArrayList;
 
-import com.neuronrobotics.jniloader.Detection;
-import com.neuronrobotics.jniloader.IObjectDetector;
+import com.neuronrobotics.imageprovider.Detection;
+import com.neuronrobotics.imageprovider.IObjectDetector;
 
 public class ObjectDetectionDataTableElement {
 

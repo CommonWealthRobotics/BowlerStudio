@@ -25,9 +25,9 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
-import com.neuronrobotics.jniloader.OpenCVImageProvider;
-import com.neuronrobotics.jniloader.StaticFileProvider;
-import com.neuronrobotics.jniloader.URLImageProvider;
+import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+import com.neuronrobotics.imageprovider.StaticFileProvider;
+import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;

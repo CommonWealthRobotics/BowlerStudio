@@ -1,4 +1,4 @@
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 import java.io.BufferedInputStream;
 import java.io.File;

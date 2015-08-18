@@ -1,4 +1,4 @@
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 

@@ -5,7 +5,7 @@
 
 //set microsoft life 3000 to approperiate settings or the low sat will cause havoc
 //v4l2-ctl --set-ctrl=contrast=10,saturation=200,white_balance_temperature_auto=0,brightness=30 -d/dev/video1
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

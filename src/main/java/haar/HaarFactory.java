@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.neuronrobotics.jniloader.NativeResource;
+import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 

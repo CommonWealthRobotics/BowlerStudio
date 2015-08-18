@@ -1,4 +1,4 @@
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 public class NativeResourceException extends RuntimeException {
 	/**

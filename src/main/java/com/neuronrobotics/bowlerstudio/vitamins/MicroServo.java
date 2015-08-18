@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
-import com.neuronrobotics.jniloader.NativeResource;
+import com.neuronrobotics.imageprovider.NativeResource;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.STL;

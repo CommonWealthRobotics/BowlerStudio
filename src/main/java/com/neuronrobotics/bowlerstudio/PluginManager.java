@@ -24,7 +24,7 @@ import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
-import com.neuronrobotics.jniloader.AbstractImageProvider;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;

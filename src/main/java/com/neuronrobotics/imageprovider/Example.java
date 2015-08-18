@@ -1,4 +1,4 @@
-package com.neuronrobotics.jniloader;
+package com.neuronrobotics.imageprovider;
 
 import java.awt.Graphics;  
 import java.awt.image.BufferedImage;  

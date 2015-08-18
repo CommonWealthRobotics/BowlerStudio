@@ -15,9 +15,12 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
+
 import javax.swing.UIManager;
+
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,14 +38,15 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
-import com.neuronrobotics.jniloader.CHDKImageProvider;
-import com.neuronrobotics.jniloader.NativeResource;
-import com.neuronrobotics.jniloader.OpenCVJNILoader;
+import com.neuronrobotics.imageprovider.CHDKImageProvider;
+import com.neuronrobotics.imageprovider.NativeResource;
+import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;

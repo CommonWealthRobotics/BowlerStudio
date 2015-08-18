@@ -17,6 +17,7 @@ import java.util.List;
 
 
 
+
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -38,10 +39,10 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
-import com.neuronrobotics.jniloader.AbstractImageProvider;
-import com.neuronrobotics.jniloader.Detection;
-import com.neuronrobotics.jniloader.HaarDetector;
-import com.neuronrobotics.jniloader.IObjectDetector;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.imageprovider.Detection;
+import com.neuronrobotics.imageprovider.HaarDetector;
+import com.neuronrobotics.imageprovider.IObjectDetector;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
