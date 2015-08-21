@@ -75,8 +75,8 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	    agridpane.getRowConstraints().add(new RowConstraints(50)); // 
 		agridpane.add(new Text("Theta"), 0, 0);
 		agridpane.add(theta, 1, 0);
-		agridpane.add(new Text("Alpha"), 0, 0);
-		agridpane.add(alpha, 1, 0);
+		agridpane.add(new Text("Alpha"), 0, 1);
+		agridpane.add(alpha, 1, 1);
 		
 		TitledPane rp =new TitledPane("Advance D-H ", agridpane);
 		advancedPanel.getPanes().add(rp);
