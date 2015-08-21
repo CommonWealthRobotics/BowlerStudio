@@ -10,7 +10,7 @@ import javax.vecmath.Matrix4d;
 import Jama.Matrix;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
-import com.neuronrobotics.jniloader.NativeResource;
+import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.RGBSlider.ColorBox;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;

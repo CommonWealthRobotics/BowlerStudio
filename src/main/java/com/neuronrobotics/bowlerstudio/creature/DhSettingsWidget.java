@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import javafx.scene.control.Accordion;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -23,11 +25,6 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	public DhSettingsWidget(DHLink dhLink,DHParameterKinematics device2,IOnEngineeringUnitsChange externalListener ){
 		this.dhLink = dhLink;
 		this.device2 = device2;
-//		delta = new TextField(CreatureLab.getFormatted(dhLink.getDelta()));
-//		delta.setOnAction(event -> {
-//			dhLink.setDelta(Double.parseDouble(delta.getText()));
-//			device2.getCurrentTaskSpaceTransform();
-//		});
 	
 		this.externalListener = externalListener;
 		
@@ -43,11 +40,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 				Math.toDegrees(dhLink.getTheta()),
 				180,"degrees");
 		
-//		radius = new TextField(CreatureLab.getFormatted(dhLink.getRadius()));
-//		radius.setOnAction(event -> {
-//			dhLink.setRadius(Double.parseDouble(radius.getText()));
-//			device2.getCurrentTaskSpaceTransform();
-//		});
+
 		
 		radius= new EngineeringUnitsSliderWidget(this,
 				60,
@@ -71,13 +64,24 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
 		gridpane.add(new Text("Delta (Height)"), 0, 0);
 		gridpane.add(delta, 1, 0);
-//		gridpane.add(new Text("Theta"), 0, 1);
-//		gridpane.add(theta, 1, 1);
-		gridpane.add(new Text("Radius (Length)"), 0, 2);
-		gridpane.add(radius, 1, 2);
+		gridpane.add(new Text("Radius (Length)"), 0, 1);
+		gridpane.add(radius, 1, 1);
+		Accordion advancedPanel = new Accordion();
+		GridPane agridpane = new GridPane();
+		agridpane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
+	    agridpane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
+	    agridpane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
+	    agridpane.getRowConstraints().add(new RowConstraints(50)); // 
+	    agridpane.getRowConstraints().add(new RowConstraints(50)); // 
+		agridpane.add(new Text("Theta"), 0, 0);
+		agridpane.add(theta, 1, 0);
+		agridpane.add(new Text("Alpha"), 0, 0);
+		agridpane.add(alpha, 1, 0);
 		
-//		gridpane.add(new Text("Alpha"), 0, 3);
-//		gridpane.add(alpha, 1, 3);
+		TitledPane rp =new TitledPane("Advance D-H ", agridpane);
+		advancedPanel.getPanes().add(rp);
+		
+		gridpane.add(advancedPanel, 1, 2);
 		
 		getChildren().add(gridpane);
 	}

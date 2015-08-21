@@ -169,17 +169,14 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 //			}
 //			JOptionPane.showMessageDialog(null, "DyIO Firmware mis-match Warning\n"+ex.getMessage(), "DyIO Warning", JOptionPane.WARNING_MESSAGE);
 		}
-		DyIO.disableFWCheck();
 		
-
-		dyio.setMuteResyncOnModeChange(true);
 		setupDyIO();
 		dyio.setMuteResyncOnModeChange(false);
-		dyio.getBatteryVoltage(true);
 		JPanel jp = new JPanel(new MigLayout());
 		jp.add(getDeviceDisplay(), "pos 5 5");
 		jp.add(getDeviceControls(), "pos 560 5");
 		jp.setBorder(BorderFactory.createLoweredBevelBorder());
+		onTabReOpening();
 		Platform.runLater(() -> {
 			wrapper = new SwingNode();
 			wrapper.setContent(jp);
@@ -187,7 +184,6 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		    s1.setContent(wrapper);
 		    setContent(s1);
 			setText(pm.getScriptingName()+" Console");
-			onTabReOpening();
 		});
 
 	}
@@ -202,6 +198,7 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 		for(ChannelManager c : channels) {
 			c.addListener(this);
 		}
+		dyio.getBatteryVoltage(true);
 	}
 
 

@@ -10,7 +10,8 @@ return new DhInverseSolver() {
 	
 	@Override
 	public double[] inverseKinematics(TransformNR target,
-			double[] jointSpaceVector, ArrayList<DHLink> links) {
+			double[] jointSpaceVector,DHChain chain ) {
+		ArrayList<DHLink> links = chain.getLinks();
 		int linkNum = jointSpaceVector.length;
 		double [] inv = new double[linkNum];
 		// this is an ad-hock kinematic model for d-h parameters and only works for specific configurations
@@ -25,9 +26,6 @@ return new DhInverseSolver() {
 		double angleRectangleAdjustedXY =Math.asin(d/lengthXYPlaneVect);
 		
 		double lengthRectangleAdjustedXY = lengthXYPlaneVect* Math.cos(angleRectangleAdjustedXY)-r;
-		
-		
-		
 		
 		
 		double orentation = angleXYPlaneVect-angleRectangleAdjustedXY;
