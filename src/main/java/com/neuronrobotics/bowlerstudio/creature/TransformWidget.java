@@ -17,13 +17,13 @@ import javafx.scene.text.Text;
 public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent> {
 	
 	private IOnTransformChange onChange;
-	EngineeringUnitsSliderWidget rw;
-	EngineeringUnitsSliderWidget rx;
-	EngineeringUnitsSliderWidget ry;
-	EngineeringUnitsSliderWidget rz;
-	EngineeringUnitsSliderWidget tx;
-	EngineeringUnitsSliderWidget ty;
-	EngineeringUnitsSliderWidget tz;
+	//EngineeringUnitsSliderWidget rw;
+	private EngineeringUnitsSliderWidget rx;
+	private EngineeringUnitsSliderWidget ry;
+	private EngineeringUnitsSliderWidget rz;
+	private EngineeringUnitsSliderWidget tx;
+	private EngineeringUnitsSliderWidget ty;
+	private EngineeringUnitsSliderWidget tz;
 //	private TextField tx;
 //	private TextField ty;
 //	private TextField tz;
@@ -43,14 +43,13 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
 		
 		RotationNR rot = initialState.getRotation();
-		rx = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationX()), 100,"degrees");
-		ry = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationY()), 100,"degrees");
-		rz = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationZ()), 100,"degrees");
-
+		rx = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
+		ry = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
+		rz = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
 		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(130)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
-	    getColumnConstraints().add(new ColumnConstraints(20)); // rotate text
+	    getColumnConstraints().add(new ColumnConstraints(40)); // rotate text
 	    setHgap(20);// gab between elements
 	    
 	    
@@ -66,7 +65,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		add(	tx, 
 				1,  1);
 	
-		 add(	new Text("(r)X"), 
+		 add(	new Text("Tilt"), 
 	    		3,  1);
 		 add(	rx, 
 	    		4,  1);
@@ -76,7 +75,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		add(	ty, 
 				1,  2);
 	
-		 add(	new Text("(r)Y"), 
+		 add(	new Text("Elevation"), 
 	    		3,  2);
 		 add(	ry, 
 				4,  2);
@@ -86,11 +85,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		add(	tz, 
 				1,  3);
 	
-		 add(	new Text("(r)Z"), 
+		 add(	new Text("Azimuth"), 
 	    		3,  3);
 		 add(	rz, 
 	    		4,  3);
-		
 	}
 	
 	private 	TransformNR getCurrent(){
@@ -101,7 +99,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				new RotationNR( 
 						rx.getValue(),
 						ry.getValue(), 
-						rz.getValue()));
+						rz.getValue()
+						
+						));
 
 		
 		return tmp;

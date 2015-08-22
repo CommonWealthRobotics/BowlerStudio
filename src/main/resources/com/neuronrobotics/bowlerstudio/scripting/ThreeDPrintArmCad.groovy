@@ -113,14 +113,15 @@ return new ICadGenerator(){
 	
 	
 	private CSG getAppendageMount(){
+		double cylindarKeepawayHeight = 80;
 		CSG attachmentbase =makeKeepaway(getAttachment())
 		.union(new Cylinder(// The first part is the hole to put the screw in
-					100,
-					200,
+					40,
+					cylindarKeepawayHeight,
 					 (int)20).toCSG()
 					 .toXMin()
 			.transformed(new Transform().translateX(-cylandarRadius*1.2))
-			.transformed(new Transform().translateZ(-100))
+			.transformed(new Transform().translateZ(-cylindarKeepawayHeight/2))
 		)
 		return attachmentbase;
 	}
@@ -229,11 +230,12 @@ return new ICadGenerator(){
 			
 			
 			Matrix4d rotation=	new Matrix4d(elemenents);
+			double xpos = position.getX();
 			
 			cutouts.add(getAppendageMount()
 				.transformed(new Transform(rotation))
 				.union(getMountScrewKeepaway()
-					.transformed(new Transform().translateX(position.getX()))
+					.transformed(new Transform().translateX(xpos))
 					)
 				);
 			
@@ -243,12 +245,12 @@ return new ICadGenerator(){
 		
 		CSG upperBody = Extrude.points(	new Vector3d(0, 0, attachmentBaseWidth/2),
                						points)
-						.transformed(new Transform().scale(1.2))
+						.transformed(new Transform().scale(1.4))
 		CSG lowerBody = Extrude.points(	new Vector3d(0, 0,attachmentBaseWidth/2),
                						points
 		   						)
 						.transformed(new Transform().translateZ(-attachmentBaseWidth/2))
-						.transformed(new Transform().scale(1.2))
+						.transformed(new Transform().scale(1.4))
 		for(CSG c:cutouts){
 			upperBody= upperBody.difference(c);
 			lowerBody= lowerBody.difference(c);
