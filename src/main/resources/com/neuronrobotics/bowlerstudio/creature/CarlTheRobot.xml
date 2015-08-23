@@ -94,10 +94,10 @@
 	<x>-42.0</x>
 	<y>-28.0</y>
 	<z>0.0</z>
-	<rotw>0.43145405354352406</rotw>
-	<rotx>-0.11965279868172705</rotx>
-	<roty>0.2389551368281796</roty>
-	<rotz>-0.861644387222431</rotz>
+	<rotw>0.43145405354352356</rotw>
+	<rotx>-0.11965279868172712</rotx>
+	<roty>0.23895513682817981</roty>
+	<rotz>-0.8616443872224318</rotz>
 </baseToZframe>
 
 </leg>
@@ -191,10 +191,10 @@
 	<x>0.0</x>
 	<y>-40.0</y>
 	<z>0.0</z>
-	<rotw>0.6813896280216823</rotw>
-	<rotx>-0.18896606791821652</rotx>
-	<roty>0.18896606791821652</roty>
-	<rotz>-0.6813896280216845</rotz>
+	<rotw>0.6813896280216822</rotw>
+	<rotx>-0.18896606791821655</rotx>
+	<roty>0.18896606791821655</roty>
+	<rotz>-0.6813896280216846</rotz>
 </baseToZframe>
 
 </leg>
@@ -207,7 +207,7 @@
 	<type>servo-rotory</type>
 	<index>6</index>
 	<scale>0.33</scale>
-	<upperLimit>255.0</upperLimit>
+	<upperLimit>194.1044776119403</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
@@ -235,7 +235,7 @@
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>143.2238805970149</staticOffset>
+	<staticOffset>112.77611940298506</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>91</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -305,7 +305,7 @@
 	<index>9</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
-	<lowerLimit>0.0</lowerLimit>
+	<lowerLimit>55.18656716417911</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>103.26119402985077</staticOffset>
@@ -482,10 +482,10 @@
 	<x>0.0</x>
 	<y>40.0</y>
 	<z>0.0</z>
-	<rotw>0.6813896280216823</rotw>
-	<rotx>0.18896606791821652</rotx>
-	<roty>0.18896606791821652</roty>
-	<rotz>0.6813896280216845</rotz>
+	<rotw>0.6813896280216822</rotw>
+	<rotx>0.18896606791821655</rotx>
+	<roty>0.18896606791821655</roty>
+	<rotz>0.6813896280216846</rotz>
 </baseToZframe>
 
 </leg>
@@ -579,10 +579,10 @@
 	<x>-42.0</x>
 	<y>28.0</y>
 	<z>0.0</z>
-	<rotw>0.43135287782391457</rotw>
-	<rotx>0.11962474017141636</rotx>
-	<roty>0.23896918459890387</roty>
-	<rotz>0.8616950418472207</rotz>
+	<rotw>0.4313528778239142</rotw>
+	<rotx>0.11962474017141643</rotx>
+	<roty>0.23896918459890407</roty>
+	<rotz>0.8616950418472215</rotz>
 </baseToZframe>
 
 </leg>

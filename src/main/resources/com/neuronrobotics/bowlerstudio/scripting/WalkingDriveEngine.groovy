@@ -14,9 +14,9 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 
 IDriveEngine engine =  new IDriveEngine (){
-	double stepOverHeight=10;
+	double stepOverHeight=20;
 	boolean takingStep = false;
-	private Double zLock=null;
+	private Double zLock=-85;
 	TransformNR previousGLobalState;
 	TransformNR target;
 
@@ -76,14 +76,14 @@ IDriveEngine engine =  new IDriveEngine (){
 				global.translateX(newPose.getX());
 				global.translateY(newPose.getY());
 				global.translateZ(newPose.getZ());
-				double rotz = -newPose.getRotation().getRotationZ() +global.getRotation().getRotationZ() ;
-				double rotx = newPose.getRotation().getRotationX() ;
-				double roty = newPose.getRotation().getRotationY() ;
-				RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
-													Math.toDegrees(roty),
-													Math.toDegrees(rotz));//RotationNR.getRotationZ(Math.toDegrees(rotz));
-
-				global.setRotation(neRot );
+//				double rotz = -newPose.getRotation().getRotationZ() +global.getRotation().getRotationZ() ;
+//				double rotx = newPose.getRotation().getRotationX() ;
+//				double roty = newPose.getRotation().getRotationY() ;
+//				RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
+//													Math.toDegrees(roty),
+//													Math.toDegrees(rotz));//RotationNR.getRotationZ(Math.toDegrees(rotz));
+//
+//				global.setRotation(neRot );
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				for(int i=0;i<numlegs;i++){
@@ -122,10 +122,10 @@ IDriveEngine engine =  new IDriveEngine (){
 							double time = 0.2
 							// lift leg above home
 							legs.get(i).setDesiredTaskSpaceTransform(home[i], 0);
-							ThreadUtil.wait((int)(time*1000.0));
+							ThreadUtil.wait(200);
 							//step to new target
 							legs.get(i).setDesiredTaskSpaceTransform(feetLocations[i], 0);
-							ThreadUtil.wait((int)(time*500.0));
+							ThreadUtil.wait(200);
 							//set new target for the coordinated motion step at the end
 							feetLocations[i].translateX(newPose.getX());
 							feetLocations[i].translateY(newPose.getY());
