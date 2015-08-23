@@ -4,7 +4,7 @@
 	<appendage>
 	<name>InputArm</name><!-- Name, used to regester the link with a specific location in the robot  -->
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>basePan</name><!-- Name, used to regester the link with a specific location in the robot  -->
 		<type>analog-rotory</type><!-- This is the actual type of the link as used by the kinematics to  -->
 		<index>14</index><!-- This is the hrdware index used to map the hardware iundex to this link -->
@@ -24,7 +24,7 @@
 		</DHParameters>			
 	</link>
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>baseTilt</name>
 		<type>analog-rotory</type>
 		<index>15</index>
@@ -45,7 +45,7 @@
 	</link>
 	
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>elbow</name>
 		<type>analog-rotory</type>
 		<index>8</index>
@@ -66,7 +66,7 @@
 	</link>
 	
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>wrist1</name>
 		<type>analog-rotory</type>
 		<index>9</index>
@@ -87,7 +87,7 @@
 	</link>
 	
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>wrist2</name>
 		<type>analog-rotory</type>
 		<index>10</index>
@@ -107,7 +107,7 @@
 		</DHParameters>			
 	</link>
 	<link>
-		<deviceName>dyio</deviceName>
+		<deviceName>dyio1</deviceName>
 		<name>wrist3</name>
 		<type>analog-rotory</type>
 		<index>11</index>
