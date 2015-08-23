@@ -40,8 +40,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button nz = new Button("-Z");
 	Button home = new Button("home");
 	Button game = new Button("Add Game Controller");
-	TextField increment=new TextField("10");
-	TextField sec=new TextField(".01");
+	TextField increment=new TextField("5");
+	TextField sec=new TextField(".03");
 	private TransformWidget transform;
 	BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
