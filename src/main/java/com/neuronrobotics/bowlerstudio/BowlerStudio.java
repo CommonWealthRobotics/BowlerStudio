@@ -28,6 +28,7 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.ui.ConnectionImageIconFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.speech.freetts.VoiceManager;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Application;
@@ -169,4 +170,19 @@ public class BowlerStudio extends Application {
 	public static void setPrimaryStage(Stage primaryStage) {
 		BowlerStudio.primaryStage = primaryStage;
 	}
+	
+	public static void speak(String msg){
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				VoiceManager voiceManager = VoiceManager.getInstance();
+				com.sun.speech.freetts.Voice voice = voiceManager
+						.getVoice("kevin16");
+				voice.allocate();
+				voice.speak(msg);
+				voice.deallocate();
+			}
+		});
+		t.run();
+	}
+		
 }

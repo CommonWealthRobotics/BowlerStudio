@@ -56,6 +56,7 @@ import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
+import com.sun.speech.freetts.VoiceManager;
 /**
  * FXML Controller class
  *
@@ -256,7 +257,7 @@ public class MainController implements Initializable {
     	
     	logView.getChildren().addAll(box);
 		
-
+        //BowlerStudio.speak("Welcome to Bowler Studio");
     }
     
     private void setToLoggedIn(final String name){

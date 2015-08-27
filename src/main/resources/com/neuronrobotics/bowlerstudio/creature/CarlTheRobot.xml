@@ -62,10 +62,10 @@
 	<index>2</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
-	<lowerLimit>78.0223880597015</lowerLimit>
+	<lowerLimit>15.223880597014928</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>88.33554243706838</staticOffset>
+	<staticOffset>87.01481398975272</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>145</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -94,10 +94,10 @@
 	<x>-42.0</x>
 	<y>-28.0</y>
 	<z>0.0</z>
-	<rotw>0.43145405354352356</rotw>
-	<rotx>-0.11965279868172712</rotx>
-	<roty>0.23895513682817981</roty>
-	<rotz>-0.8616443872224318</rotz>
+	<rotw>0.43145405354352245</rotw>
+	<rotx>-0.11965279868172733</rotx>
+	<roty>0.23895513682818023</roty>
+	<rotz>-0.8616443872224332</rotz>
 </baseToZframe>
 
 </leg>
@@ -191,10 +191,10 @@
 	<x>0.0</x>
 	<y>-40.0</y>
 	<z>0.0</z>
-	<rotw>0.6813896280216822</rotw>
-	<rotx>-0.18896606791821655</rotx>
-	<roty>0.18896606791821655</roty>
-	<rotz>-0.6813896280216846</rotz>
+	<rotw>0.6813896280216821</rotw>
+	<rotx>-0.18896606791821657</rotx>
+	<roty>0.18896606791821657</roty>
+	<rotz>-0.6813896280216847</rotz>
 </baseToZframe>
 
 </leg>
@@ -429,7 +429,7 @@
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>137.51492537313433</staticOffset>
+	<staticOffset>126.09701492537313</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -482,10 +482,10 @@
 	<x>0.0</x>
 	<y>40.0</y>
 	<z>0.0</z>
-	<rotw>0.6813896280216822</rotw>
-	<rotx>0.18896606791821655</rotx>
-	<roty>0.18896606791821655</roty>
-	<rotz>0.6813896280216846</rotz>
+	<rotw>0.6813896280216821</rotw>
+	<rotx>0.18896606791821657</rotx>
+	<roty>0.18896606791821657</roty>
+	<rotz>0.6813896280216847</rotz>
 </baseToZframe>
 
 </leg>
@@ -526,7 +526,7 @@
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>108.97014925373135</staticOffset>
+	<staticOffset>97.55223880597015</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>120</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -547,10 +547,10 @@
 	<index>17</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
-	<lowerLimit>64.70149253731344</lowerLimit>
+	<lowerLimit>58.992537313432834</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>129.05090220539097</staticOffset>
+	<staticOffset>124.79048785921142</staticOffset>
 	<isLatch>true</isLatch>
 	<indexLatch>141</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
@@ -579,10 +579,10 @@
 	<x>-42.0</x>
 	<y>28.0</y>
 	<z>0.0</z>
-	<rotw>0.4313528778239142</rotw>
-	<rotx>0.11962474017141643</rotx>
-	<roty>0.23896918459890407</roty>
-	<rotz>0.8616950418472215</rotz>
+	<rotw>0.43135287782391324</rotw>
+	<rotx>0.1196247401714166</rotx>
+	<roty>0.23896918459890443</roty>
+	<rotz>0.8616950418472228</rotz>
 </baseToZframe>
 
 </leg>

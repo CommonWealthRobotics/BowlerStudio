@@ -66,6 +66,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			"com.neuronrobotics.sdk.util",
 			"javafx.scene.control",
 			"com.neuronrobotics.bowlerstudio.scripting",
+			"com.neuronrobotics.bowlerstudio",
 			"com.neuronrobotics.imageprovider",
 			"com.neuronrobotics.bowlerstudio.tabs",
 			"javafx.scene.text", "javafx.scene",

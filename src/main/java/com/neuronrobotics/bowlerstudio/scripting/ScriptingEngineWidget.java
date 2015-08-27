@@ -257,6 +257,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
 		history.add("println dyio");
 		history.add("ThreadUtil.wait(10000)");
+		history.add("BowlerStudio.speak(\"I can speak!\")");
 		history.add("println 'Hello World Command line'");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
