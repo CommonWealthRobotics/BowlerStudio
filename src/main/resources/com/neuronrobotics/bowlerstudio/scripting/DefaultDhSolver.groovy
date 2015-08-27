@@ -13,7 +13,7 @@ return new DhInverseSolver() {
 			double[] jointSpaceVector,DHChain chain ) {
 		ArrayList<DHLink> links = chain.getLinks();
 		// THis is the jacobian for the given configuration
-		Matrix jacobian chain.getJacobian(jointSpaceVector);
+		Matrix jacobian =  chain.getJacobian(jointSpaceVector);
 		
 		int linkNum = jointSpaceVector.length;
 		double [] inv = new double[linkNum];
