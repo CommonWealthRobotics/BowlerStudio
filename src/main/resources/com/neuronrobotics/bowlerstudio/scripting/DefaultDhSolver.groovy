@@ -12,6 +12,9 @@ return new DhInverseSolver() {
 	public double[] inverseKinematics(TransformNR target,
 			double[] jointSpaceVector,DHChain chain ) {
 		ArrayList<DHLink> links = chain.getLinks();
+		// THis is the jacobian for the given configuration
+		Matrix jacobian chain.getJacobian(jointSpaceVector);
+		
 		int linkNum = jointSpaceVector.length;
 		double [] inv = new double[linkNum];
 		// this is an ad-hock kinematic model for d-h parameters and only works for specific configurations
