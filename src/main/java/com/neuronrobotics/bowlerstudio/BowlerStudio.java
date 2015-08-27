@@ -174,13 +174,22 @@ public class BowlerStudio extends Application {
 	public static void speak(String msg){
 		Thread t = new Thread(new Runnable() {
 			public void run() {
+				System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
 				VoiceManager voiceManager = VoiceManager.getInstance();
 				com.sun.speech.freetts.Voice voice = voiceManager
 						.getVoice("kevin16");
-				voice.setRate(200f);
-				voice.allocate();
-				voice.speak(msg);
-				voice.deallocate();
+				if(voice !=null){
+					voice.setRate(200f);
+					voice.allocate();
+					voice.speak(msg);
+					voice.deallocate();
+				}else{
+					System.out.println("All voices available:");
+					com.sun.speech.freetts.Voice[] voices=voiceManager.getVoices();
+					for (int i=0; i < voices.length; i++) {
+					  System.out.println("    " + voices[i].getName() + " ("+ voices[i].getDomain()+ " domain)");
+					}
+				}
 			}
 		});
 		t.run();
