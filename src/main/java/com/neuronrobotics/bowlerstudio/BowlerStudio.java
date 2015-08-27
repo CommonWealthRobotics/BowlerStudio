@@ -177,6 +177,7 @@ public class BowlerStudio extends Application {
 				VoiceManager voiceManager = VoiceManager.getInstance();
 				com.sun.speech.freetts.Voice voice = voiceManager
 						.getVoice("kevin16");
+				voice.setRate(200f);
 				voice.allocate();
 				voice.speak(msg);
 				voice.deallocate();
