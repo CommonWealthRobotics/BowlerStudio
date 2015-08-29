@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -131,7 +132,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 						if(openMobileBaseConfiguration==null)
 							openMobileBaseConfiguration=ScriptingEngineWidget.getLastFile();
 		    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
-		    					new XmlFilter());
+		    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 
 		    	        if (openMobileBaseConfiguration == null) {
 		    	            return;
@@ -156,7 +157,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 						if(getCadScript()==null)
 							setCadScript(ScriptingEngineWidget.getLastFile());
 		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript(),
-		    					new GroovyFilter()));
+		    	    			new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
 
 		    	        if (getCadScript() == null) {
 		    	            return;

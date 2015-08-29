@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+import javafx.stage.FileChooser.ExtensionFilter;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -114,7 +116,7 @@ public class SchedulerGui extends JPanel{
 	private void getFile() {
 		if(configFile==null)
 			configFile=ScriptingEngineWidget.getWorkspace();
-		configFile=FileSelectionFactory.GetFile(configFile, new XmlFilter());
+		configFile=FileSelectionFactory.GetFile(configFile, new ExtensionFilter("Sequence XML","*.xml","*.XML"));
 	}
 	
 	private DyIO get(){

@@ -18,6 +18,7 @@ import java.util.List;
 
 
 
+
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -33,6 +34,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -203,7 +205,7 @@ public class BowlerStudioController extends TabPane implements
 
 	public void open() {
 		File last = FileSelectionFactory.GetFile(
-				ScriptingEngineWidget.getWorkspace(), new GroovyFilter());
+				ScriptingEngineWidget.getWorkspace(), new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
 		if (last != null) {
 			createFileTab(last);
 		}

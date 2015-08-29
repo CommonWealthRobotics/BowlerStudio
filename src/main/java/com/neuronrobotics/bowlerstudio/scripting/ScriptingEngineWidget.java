@@ -65,6 +65,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -556,7 +557,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	private void updateFile() {
 		
 		File last = FileSelectionFactory.GetFile(currentFile==null?getWorkspace():new File(getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-				new GroovyFilter());
+				new ExtensionFilter("Save Script","*"));
 		if (last != null) {
 			setUpFile(last);
 		}

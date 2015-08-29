@@ -45,6 +45,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnectionEventListener{
 	private File currentFile=null;
@@ -113,7 +114,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 					if(getKinematicsFile()==null)
 						setKinematicsFile(ScriptingEngineWidget.getLastFile());
 					setKinematicsFile(FileSelectionFactory.GetFile(getKinematicsFile(),
-	    					new GroovyFilter()));
+							new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
 
 	    	        if (getKinematicsFile() == null) {
 	    	            return;
@@ -129,7 +130,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 					File last = FileSelectionFactory.GetFile(currentFile==null?
 										ScriptingEngine.getWorkspace():
 										new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-							new XmlFilter());
+										new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 					if (last != null) {
 						try {
 							Files.write(Paths.get(last.getAbsolutePath()),device.getXml().getBytes() );

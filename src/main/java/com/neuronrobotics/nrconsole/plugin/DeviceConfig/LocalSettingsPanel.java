@@ -3,6 +3,8 @@ package com.neuronrobotics.nrconsole.plugin.DeviceConfig;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javafx.stage.FileChooser.ExtensionFilter;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -75,7 +77,7 @@ public class LocalSettingsPanel extends SettingsPanel {
 		getTfSlic3rLocation().setText(prefs.getSlic3rLocation());
 	}
 	private void changeSlic3rLocation(){
-		slic3rPath = FileSelectionFactory.GetFile(null,"Location of slic3r-console.exe", "Select" , new Slic3rFilter()).getPath();
+		slic3rPath = FileSelectionFactory.GetFile(null, 	new ExtensionFilter("Slicer Executable","*")).getPath();
 		prefs.setSlic3rLocation(slic3rPath);
 		getTfSlic3rLocation().setText(prefs.getSlic3rLocation());
 	}

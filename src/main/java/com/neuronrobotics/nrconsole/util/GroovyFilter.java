@@ -11,11 +11,7 @@ public class GroovyFilter extends FileFilter {
 	}
 	
 	public boolean accept(File f) {
-		if(f.isDirectory()) {
-			return true;
-		}
-		
-		return f.getName().matches("([^\\s]+(\\.(?i)(groovy|java))$)");
+		return true;
 	}
 
 }

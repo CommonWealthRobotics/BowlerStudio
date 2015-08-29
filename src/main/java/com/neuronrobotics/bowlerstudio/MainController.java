@@ -36,6 +36,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -319,7 +320,7 @@ public class MainController implements Initializable {
     	new Thread(){
     		public void run(){
     	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
-    					new GroovyFilter());
+    					new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
 
     	        if (openFile == null) {
     	            return;
@@ -498,7 +499,7 @@ public class MainController implements Initializable {
     	new Thread(){
     		public void run(){
     	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
-    					new XmlFilter());
+    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 
     	        if (openFile == null) {
     	            return;

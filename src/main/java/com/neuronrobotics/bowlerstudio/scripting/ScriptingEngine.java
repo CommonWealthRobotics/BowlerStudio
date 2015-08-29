@@ -408,7 +408,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
 		GroovyShell shell = new GroovyShell(ConnectionManager.class
 				.getClassLoader(), binding, cc);
-		System.out.println(code + "\n\nStart\n\n");
+		//System.out.println(code + "\n\nStart\n\n");
 		Script script = shell.parse(code);
 
 		return script.run();
@@ -425,7 +425,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		for (String s : imports) {
 
 			// s = "import "+s;
-			System.err.println(s);
+			//System.err.println(s);
 			if(!s.contains("mihosoft")&&
 					!s.contains("haar")&&
 					!s.contains("com.neuronrobotics.sdk.addons.kinematics")

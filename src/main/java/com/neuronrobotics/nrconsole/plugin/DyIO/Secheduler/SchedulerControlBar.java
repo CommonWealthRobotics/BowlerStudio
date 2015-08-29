@@ -6,6 +6,8 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import javafx.stage.FileChooser.ExtensionFilter;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -192,7 +194,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	
 	private void getFile() {
-        setAudioFile(FileSelectionFactory.GetFile(mp3File==null?ScriptingEngineWidget.getWorkspace():mp3File, new GroovyFilter()));
+        setAudioFile(FileSelectionFactory.GetFile(mp3File==null?ScriptingEngineWidget.getWorkspace():mp3File, new ExtensionFilter("WAV file","*.wav","*.WAV")));
 	}
 	public void setAudioFile(File f) {
 		cs.setAudioFile(f);
