@@ -119,40 +119,35 @@ public class MainController implements Initializable {
 	}
 	
 	private static void updateLog(){
+		if(logViewRef!=null){
+			String current;
+			String finalStr;
+			if(out.size()==0){
+				newString=null;
+			}else{
+				newString = out.toString();
+				out.reset();
+			}
+			if(newString!=null){
+				current = logViewRef.getText()+newString;
+				try{
+					finalStr =new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
+				}catch (StringIndexOutOfBoundsException ex){
+					finalStr =current;
+				}
+
+				logViewRef.setText(finalStr);
+				FxTimer.runLater(
+						Duration.ofMillis(10) ,() -> {
+							logViewRef.setScrollTop(Double.MAX_VALUE);
+						});
+	
+			}
+			
+		}	
 		FxTimer.runLater(
 				Duration.ofMillis(200) ,() -> {
-					if(logViewRef!=null){
-						new Thread(){
-							private String current;
-							private String finalStr;
 
-							public void run(){
-								if(out.size()==0){
-									newString=null;
-								}else{
-									newString = out.toString();
-									out.reset();
-								}
-								if(newString!=null){
-									current = logViewRef.getText()+newString;
-									try{
-										finalStr =new String(current.substring(current.getBytes().length-sizeOfTextBuffer));
-									}catch (StringIndexOutOfBoundsException ex){
-										finalStr =current;
-									}
-									Platform.runLater(() -> {	
-
-										logViewRef.setText(finalStr);
-
-										FxTimer.runLater(
-												Duration.ofMillis(10) ,() -> {
-													logViewRef.setScrollTop(Double.MAX_VALUE);
-												});
-									});
-								}
-							}
-						}.start();
-					}	
 					updateLog();					
 		});
 	}
@@ -207,6 +202,7 @@ public class MainController implements Initializable {
         System.out.println("Welcome to BowlerStudio!");
 		new Thread(){
 			public void run(){
+				setName("Load Haar Thread");
 				try{
 					HaarFactory.getStream(null);
 				}catch (Exception ex){}
@@ -319,6 +315,7 @@ public class MainController implements Initializable {
     private void onLoadFile(ActionEvent e) {
     	new Thread(){
     		public void run(){
+    			setName("Load File Thread");
     	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
     					new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
 
@@ -334,7 +331,7 @@ public class MainController implements Initializable {
     private void onConnect(ActionEvent e) {
     	new Thread(){
     		public void run(){
-
+    			setName("Load BowlerDevice Dialog Thread");
     	    	ConnectionManager.addConnection();
     		}
     	}.start();
@@ -438,6 +435,7 @@ public class MainController implements Initializable {
 	@FXML public void onLogin() {
     	new Thread(){
     		public void run(){
+    			setName("Login Gist Thread");
     			try {
     				ScriptingEngineWidget.login();
     			} catch (IOException e) {
@@ -498,6 +496,7 @@ public class MainController implements Initializable {
 	@FXML public void onMobileBaseFromFile() {
     	new Thread(){
     		public void run(){
+    			setName("Load Mobile Base Thread");
     	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
     	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 

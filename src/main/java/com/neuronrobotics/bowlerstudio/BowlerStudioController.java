@@ -95,7 +95,6 @@ public class BowlerStudioController extends TabPane implements
 				dialog.setTitle(file.getName());
 				Scene scene = new Scene(t);
 				dialog.setScene(scene);
-
 				dialog.setHeight(600);
 				dialog.setWidth(800);
 				dialog.show();
@@ -361,6 +360,7 @@ public class BowlerStudioController extends TabPane implements
 					});
 			new Thread() {
 				public void run() {
+					setName("Load Camera Thread");
 					IObjectDetector detector = new HaarDetector(
 							"lbpcascade_frontalface.xml");
 					double xSize = 320;

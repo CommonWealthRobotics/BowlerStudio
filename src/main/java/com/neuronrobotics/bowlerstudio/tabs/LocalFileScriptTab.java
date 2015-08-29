@@ -25,6 +25,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -39,11 +41,13 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -51,27 +55,35 @@ import javafx.stage.WindowEvent;
 public class LocalFileScriptTab extends Group implements IScriptEventListener, EventHandler<WindowEvent> {
 	
 	private ScriptingEngineWidget scripting;
-    private static final String[] KEYWORDS = new String[]{
-        "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
-        "case", "catch", "char", "class", "const",
-        "continue", "default", "do", "double", "else",
-        "enum", "extends", "final", "finally", "float",
-        "for", "goto", "if", "implements", "import",
-        "instanceof", "int", "interface", "long", "native",
-        "new", "package", "private", "protected", "public",
-        "return", "short", "static", "strictfp", "super",
-        "switch", "synchronized", "this", "throw", "throws",
-        "transient", "try", "void", "volatile", "while"
-    };
+//    private static final String[] KEYWORDS = new String[]{
+//        "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
+//        "case", "catch", "char", "class", "const",
+//        "continue", "default", "do", "double", "else",
+//        "enum", "extends", "final", "finally", "float",
+//        "for", "goto", "if", "implements", "import",
+//        "instanceof", "int", "interface", "long", "native",
+//        "new", "package", "private", "protected", "public",
+//        "return", "short", "static", "strictfp", "super",
+//        "switch", "synchronized", "this", "throw", "throws",
+//        "transient", "try", "void", "volatile", "while"
+//    };
     IScriptEventListener l=null;
 
-    private static final Pattern KEYWORD_PATTERN
-            = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
-    
+//    private static final Pattern KEYWORD_PATTERN
+//            = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+//    
     
     //private final CodeArea codeArea = new CodeArea();
 	private VBox vBox;
 	private RSyntaxTextArea textArea;
+	private SwingNode sn;
+	
+	private class SwingNodeWrapper extends SwingNode{
+		@Override
+		 public boolean isResizable(){
+			 return false;
+		 }
+	}
 
     
 	public LocalFileScriptTab( File file) throws IOException {
@@ -82,7 +94,7 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 
 		scripting.addIScriptEventListener(l);
 		
-		textArea = new RSyntaxTextArea(20, 60);
+		textArea = new RSyntaxTextArea(200, 200);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		textArea.setCodeFoldingEnabled(true);
 		textArea.setText(scripting.getCode());
@@ -106,7 +118,9 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	        }
 	    });
 		RTextScrollPane sp = new RTextScrollPane(textArea);
-		SwingNode sn = new SwingNode();
+		
+		sn = new SwingNode();
+		
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -114,16 +128,51 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
             	
             }
         });
+		
 
 		HBox hBox = new HBox(5);
-		hBox.getChildren().setAll(sn);
-		HBox.setHgrow(sn, Priority.ALWAYS);
-
+		hBox.getChildren().setAll(new ScrollPane(sn));
+		scripting.setFocusTraversable(false);
+		
 		vBox = new VBox(5);
-		vBox.getChildren().setAll(hBox, scripting);
-		VBox.setVgrow(sn, Priority.ALWAYS);
+		vBox.getChildren().setAll(scripting,hBox);
 		getChildren().add(vBox);
-	      
+		
+		sn.focusedProperty().addListener(new ChangeListener<Boolean>() {
+			 
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue.booleanValue()) {
+                    System.err.println("Focus gained");
+                } else {
+                	System.err.println("Focus lost");
+                }
+            }
+        });
+		
+		sn.setOnMouseEntered(mouseEvent -> {
+			sn.requestFocus();
+			SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	            	textArea.requestFocusInWindow();
+	            }
+	        });
+		});
+
+		
+
+		ThreadUtil.wait(500);
+		if(!textArea.isFocusOwner()){
+			System.err.println("Attempting to focus text field");
+			SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	            	textArea.requestFocusInWindow();
+	            }
+	        });
+		}
+
 	}
 	
 	
@@ -132,6 +181,12 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	@Override
 	public void onGroovyScriptFinished(	Object result,Object previous) {
 		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            	textArea.requestFocusInWindow();
+            }
+        });
 		
 	}
 
@@ -151,6 +206,12 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	@Override
 	public void onGroovyScriptError(Exception except) {
 		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            	textArea.requestFocusInWindow();
+            }
+        });
 		
 	}
 

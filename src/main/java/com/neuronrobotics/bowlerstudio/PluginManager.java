@@ -252,6 +252,7 @@ public class PluginManager {
 					
 					new Thread(){
 						public void run(){
+							setName("load plugins");
 							try {
 								AbstractBowlerStudioTab t = generateTab(c);
 
