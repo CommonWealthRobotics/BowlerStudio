@@ -77,6 +77,8 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	private VBox vBox;
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
+	private Stage stage;
+	private RTextScrollPane sp;
 	
 	private class SwingNodeWrapper extends SwingNode{
 		@Override
@@ -86,7 +88,8 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	}
 
     
-	public LocalFileScriptTab( File file) throws IOException {
+	public LocalFileScriptTab( File file, Stage stage) throws IOException {
+		this.stage = stage;
 		scripting = new ScriptingEngineWidget( file );
 
 		l=this;
@@ -94,7 +97,7 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 
 		scripting.addIScriptEventListener(l);
 		
-		textArea = new RSyntaxTextArea(200, 200);
+		textArea = new RSyntaxTextArea(200, 150);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		textArea.setCodeFoldingEnabled(true);
 		textArea.setText(scripting.getCode());
@@ -117,7 +120,7 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
             	scripting.addIScriptEventListener(l);
 	        }
 	    });
-		RTextScrollPane sp = new RTextScrollPane(textArea);
+		sp = new RTextScrollPane(textArea);
 		
 		sn = new SwingNode();
 		
@@ -138,17 +141,6 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 		vBox.getChildren().setAll(scripting,hBox);
 		getChildren().add(vBox);
 		
-		sn.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			 
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue.booleanValue()) {
-                    System.err.println("Focus gained");
-                } else {
-                	System.err.println("Focus lost");
-                }
-            }
-        });
 		
 		sn.setOnMouseEntered(mouseEvent -> {
 			sn.requestFocus();
@@ -162,20 +154,48 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 
 		
 
-		ThreadUtil.wait(500);
-		if(!textArea.isFocusOwner()){
-			System.err.println("Attempting to focus text field");
-			SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	            	textArea.requestFocusInWindow();
-	            }
-	        });
-		}
+		// create a listener
+		final ChangeListener<Number> listener = new ChangeListener<Number>()
+		{
+		  @Override
+		  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+		  {
+			  System.err.println("Resized to ");
+		  }
+		};
+		
+		stage.widthProperty().addListener(new ChangeListener<Number>()
+				{
+			  @Override
+			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+			  {
+				  System.err.println("Resized Widtrh to "+newValue);
+				  resize();
+			  }
+			});
+		stage.heightProperty().addListener(new ChangeListener<Number>()
+				{
+			  @Override
+			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+			  {
+				  System.err.println("Resized Height to "+newValue);
+				  resize();
+			  }
+			});
+
 
 	}
 	
-	
+	private void resize(){
+		SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            	textArea.setSize((int)stage.getWidth()-10, (int)stage.getHeight()-80);
+            	sp.setSize((int)stage.getWidth()-10, (int)stage.getHeight()-80);
+            }
+        });
+		
+	}
 
 
 	@Override

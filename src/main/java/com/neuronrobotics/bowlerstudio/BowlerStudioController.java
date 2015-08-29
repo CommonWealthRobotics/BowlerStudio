@@ -73,7 +73,7 @@ public class BowlerStudioController extends TabPane implements
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudio=null;
-
+	private Stage dialog = new Stage();
 	public BowlerStudioController(Jfx3dManager jfx3dmanager,
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
@@ -88,9 +88,9 @@ public class BowlerStudioController extends TabPane implements
 	public void createFileTab(File file) {
 
 		try {
-			LocalFileScriptTab t =new LocalFileScriptTab( file);
+			LocalFileScriptTab t =new LocalFileScriptTab( file,dialog);
 			Platform.runLater(() -> {
-				Stage dialog = new Stage();
+
 				dialog.setOnCloseRequest(t);
 				dialog.setTitle(file.getName());
 				Scene scene = new Scene(t);
