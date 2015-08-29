@@ -153,23 +153,11 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 		});
 
 		
-
-		// create a listener
-		final ChangeListener<Number> listener = new ChangeListener<Number>()
-		{
-		  @Override
-		  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
-		  {
-			  System.err.println("Resized to ");
-		  }
-		};
-		
 		stage.widthProperty().addListener(new ChangeListener<Number>()
 				{
 			  @Override
 			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
 			  {
-				  System.err.println("Resized Widtrh to "+newValue);
 				  resize();
 			  }
 			});
@@ -178,7 +166,6 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 			  @Override
 			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
 			  {
-				  System.err.println("Resized Height to "+newValue);
 				  resize();
 			  }
 			});
