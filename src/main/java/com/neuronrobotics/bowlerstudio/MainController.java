@@ -72,6 +72,7 @@ public class MainController implements Initializable {
     private MenuBar menuBar;
     @FXML
     private MenuItem logoutGithub;
+    
 	static{
         System.setOut(new PrintStream(out));
         updateLog();

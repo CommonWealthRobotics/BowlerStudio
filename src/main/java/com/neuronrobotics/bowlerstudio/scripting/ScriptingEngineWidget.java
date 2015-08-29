@@ -135,6 +135,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	private Button runfx = new Button("Run");;
 	private Button runsave = new Button("Save");
+	private Button runsaveAs = new Button("Save As..");
 	private TextField cmdLineInterface = new TextField ();
 	private WebEngine engine;
 
@@ -179,8 +180,16 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		runsave.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-	    			if(type!= ScriptingWidgetType.FILE)
-	    				updateFile();
+	    			save();
+	    		}
+	    	}.start();
+
+		});
+		
+		runsaveAs.setOnAction(e -> {
+	    	new Thread(){
+	    		public void run(){
+	    			updateFile();
 	    			save();
 	    		}
 	    	}.start();
@@ -276,6 +285,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		controlPane.getChildren().add(runfx);
 		if(type !=ScriptingWidgetType.CMDLINE ){
 			controlPane.getChildren().add(runsave);
+			controlPane.getChildren().add(runsaveAs);
 			controlPane.getChildren().add(fileLabel);
 		}
 		
@@ -511,8 +521,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		try {
 			if (loadGist)
 				loadCodeFromGist(addr, engine);
-			else
-				save();
+
 			scriptRunner.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
