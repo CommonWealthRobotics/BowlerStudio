@@ -28,7 +28,12 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.ui.ConnectionImageIconFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.speech.freetts.FeatureProcessor;
+import com.sun.speech.freetts.Item;
+import com.sun.speech.freetts.ItemContents;
+import com.sun.speech.freetts.ProcessException;
 import com.sun.speech.freetts.VoiceManager;
+import com.sun.speech.freetts.en.us.FeatureProcessors.WordNumSyls;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Application;
@@ -171,13 +176,16 @@ public class BowlerStudio extends Application {
 		BowlerStudio.primaryStage = primaryStage;
 	}
 	
-	public static void speak(String msg){
-		Thread t = new Thread(new Runnable() {
+	public static int speak(String msg){
+		System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+		VoiceManager voiceManager = VoiceManager.getInstance();
+		com.sun.speech.freetts.Voice voice = voiceManager
+				.getVoice("kevin16");
+		Thread t = new Thread() {
 			public void run() {
-				System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-				VoiceManager voiceManager = VoiceManager.getInstance();
-				com.sun.speech.freetts.Voice voice = voiceManager
-						.getVoice("kevin16");
+				setName("Speaking Thread");
+
+				
 				if(voice !=null){
 					voice.setRate(200f);
 					voice.allocate();
@@ -191,8 +199,19 @@ public class BowlerStudio extends Application {
 					}
 				}
 			}
-		});
-		t.run();
+		};
+		t.start();
+		WordNumSyls feature = (WordNumSyls)voice.getFeatureProcessor("word_numsyls");
+		if(feature!=null)
+		try {
+			
+			System.out.println("Syllables# = "+feature.process(null));
+		} catch (ProcessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 		
 }
