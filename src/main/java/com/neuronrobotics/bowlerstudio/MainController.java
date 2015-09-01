@@ -255,7 +255,7 @@ public class MainController implements Initializable {
     	
     	logView.getChildren().addAll(box);
 		
-        BowlerStudio.speak("Welcome to Bowler Studio");
+        //BowlerStudio.speak("Welcome to Bowler Studio");
     }
     
     private void setToLoggedIn(final String name){

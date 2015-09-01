@@ -46,6 +46,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
 	private boolean stop=true;
+	private boolean controlThreadRunning=false;
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
@@ -309,7 +310,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					double rxl=0;
 					double ryl=inc*slider;
 					double rzl=inc/4*rz;
-					TransformNR current = new TransformNR(0,0,0,new RotationNR(rxl, ryl, rzl, 0));
+					TransformNR current = new TransformNR(0,0,0,new RotationNR(rxl, ryl, rzl));
 					current.translateX(inc*x);
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
@@ -320,18 +321,39 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							current.translateX(inc*x);
 							current.translateY(inc*y);
 							current.translateZ(inc*slider);
-							getKin().setDesiredTaskSpaceTransform(current,  seconds);
+							TransformNR toSet = current.copy();
+							double toSeconds=seconds;
+							if(!controlThreadRunning){
+								new Thread(){
+									public void run(){
+										controlThreadRunning=true;
+										setName("Jog Widget Set Drive Arc Command");
+										try {
+											getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										controlThreadRunning=false;
+									}
+								}.start();
+							}
+							
 						}else{
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
-							new Thread(){
-								public void run(){
-									setName("Jog Widget Set Drive Arc Command");
-									toSet.setZ(0);
-									
-									getMobilebase().DriveArc(toSet, toSeconds);
-								}
-							}.start();
+							if(!controlThreadRunning){
+								new Thread(){
+									public void run(){
+										controlThreadRunning=true;
+										setName("Jog Widget Set Drive Arc Command");
+										toSet.setZ(0);
+										
+										getMobilebase().DriveArc(toSet, toSeconds);
+										controlThreadRunning=false;
+									}
+								}.start();
+							}
 						}
 							
 					} catch (Exception e) {
@@ -347,7 +369,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				sec.setText(".01");
 			}
 			FxTimer.runLater(
-					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
+					Duration.ofMillis((int)(seconds*1100.0)) ,() -> {
 						controllerLoop();
 					});
 		}

@@ -115,7 +115,6 @@ return new DhInverseSolver() {
 		for(;i<inv.length && i<jointSpaceVector.length ;i++){
 			inv[i]=jointSpaceVector[i];
 		}
-		println inv
 		return inv;
 	}
 };
