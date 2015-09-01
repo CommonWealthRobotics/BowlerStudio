@@ -307,10 +307,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						});
 						inc=10;
 					}
-					double rxl=0;
+					//double rxl=0;
 					double ryl=inc*slider;
 					double rzl=inc/4*rz;
-					TransformNR current = new TransformNR(0,0,0,new RotationNR(rxl, ryl, rzl));
+					TransformNR current = new TransformNR(0,0,0,new RotationNR( 0,0, rzl));
 					current.translateX(inc*x);
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
@@ -383,18 +383,18 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(comp.getName().toLowerCase().contentEquals("y"))
 			x=value;
 		if(comp.getName().toLowerCase().contentEquals("x"))
-			y=-value;
+			y=value;
 		if(comp.getName().toLowerCase().contentEquals("rz"))
-			rz=value;
+			rz=-value;
 		if(comp.getName().toLowerCase().contentEquals("slider"))
 			slider=-value;
-		if(Math.abs(x)<.1)
+		if(Math.abs(x)<.01)
 			x=0;
-		if(Math.abs(y)<.1)
+		if(Math.abs(y)<.01)
 			y=0;
-		if(Math.abs(rz)<.1)
+		if(Math.abs(rz)<.01)
 			rz=0;
-		if(Math.abs(slider)<.1)
+		if(Math.abs(slider)<.01)
 			slider=0;
 		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
 			//System.out.println("Stoping on="+comp.getName());

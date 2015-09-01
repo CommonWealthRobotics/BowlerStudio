@@ -20,30 +20,6 @@ IDriveEngine engine =  new IDriveEngine (){
 	TransformNR previousGLobalState;
 	TransformNR target;
 	RotationNR rot;
-	private void interopolate(double iteration,double end,double time,MobileBase source){
-		FxTimer.runLater(
-				Duration.ofMillis((int)(time*1000.0)/end) ,new Runnable() {
-					@Override
-					public void run() {
-
-						previousGLobalState.translateX(target.getX()/end);
-						previousGLobalState.translateY(target.getY()/end);
-						previousGLobalState.translateZ(target.getZ()/end);
-						double rotz = -target.getRotation().getRotationZ()/end +previousGLobalState.getRotation().getRotationZ() ;
-						double rotx = target.getRotation().getRotationX() ;
-						double roty = target.getRotation().getRotationY();
-						RotationNR neRot = new RotationNR(	Math.toDegrees(rotx),
-															Math.toDegrees(roty),
-															Math.toDegrees(rotz));//RotationNR.getRotationZ(Math.toDegrees(rotz));
-		
-						previousGLobalState.setRotation(neRot );
-						// New target calculated appliaed to global offset
-						source.setGlobalToFiducialTransform(previousGLobalState);
-						if(iteration<end)
-							interopolate(iteration+1, end, time,source);
-					}
-				});
-	}
 	@Override
 	public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
 		
@@ -76,13 +52,18 @@ IDriveEngine engine =  new IDriveEngine (){
 				double ti = newPose.getRotation().getRotationTilt() ;
 				TransformNR global= source.getFiducialToGlobalTransform().times(newPose);
 
-				println "Current rotation = "+global.getRotation().getRotationAzimuth()
-			
-				RotationNR neRot = new RotationNR(	Math.toDegrees(ti),
-													Math.toDegrees(el),
-													Math.toDegrees(global.getRotation().getRotationAzimuth()));
-
-				global.setRotation(neRot );
+//				println "Target rotation = "+Math.toDegrees(newPose.getRotation().getRotationAzimuth())
+//				println "Current rotation = "+Math.toDegrees(previousGLobalState.getRotation().getRotationAzimuth())
+////				RotationNR neRot = new RotationNR(	Math.toDegrees(
+////														previousGLobalState.getRotation().getRotationAzimuth()-
+////														newPose.getRotation().getRotationAzimuth()
+////														),
+////													Math.toDegrees(ti),
+////													Math.toDegrees(el)
+////													);
+////
+////				global.setRotation(neRot );
+//				println "FInal rotation = "+Math.toDegrees(global.getRotation().getRotationAzimuth())
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				for(int i=0;i<numlegs;i++){
