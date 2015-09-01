@@ -72,17 +72,15 @@ IDriveEngine engine =  new IDriveEngine (){
 				previousGLobalState = source.getFiducialToGlobalTransform().copy();
 				target= newPose.copy();
 				//Apply transform to each dimention of current pose
-				TransformNR global= source.getFiducialToGlobalTransform();
-				global.translateX(newPose.getX());
-				global.translateY(newPose.getY());
-				global.translateZ(newPose.getZ());
-				println "Current rotation = "+global.getRotation().getRotationAzimuth()
-				double az = -newPose.getRotation().getRotationAzimuth() +global.getRotation().getRotationAzimuth() ;
 				double el = newPose.getRotation().getRotationElevation() ;
 				double ti = newPose.getRotation().getRotationTilt() ;
+				TransformNR global= source.getFiducialToGlobalTransform().times(newPose);
+
+				println "Current rotation = "+global.getRotation().getRotationAzimuth()
+			
 				RotationNR neRot = new RotationNR(	Math.toDegrees(ti),
 													Math.toDegrees(el),
-													Math.toDegrees(az));
+													Math.toDegrees(global.getRotation().getRotationAzimuth()));
 
 				global.setRotation(neRot );
 				// New target calculated appliaed to global offset

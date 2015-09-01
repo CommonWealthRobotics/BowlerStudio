@@ -380,9 +380,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onEvent(Component comp, net.java.games.input.Event event,
 			float value, String eventString) {
 
-		if(comp.getName().toLowerCase().contentEquals("x"))
-			x=value;
 		if(comp.getName().toLowerCase().contentEquals("y"))
+			x=value;
+		if(comp.getName().toLowerCase().contentEquals("x"))
 			y=-value;
 		if(comp.getName().toLowerCase().contentEquals("rz"))
 			rz=value;
