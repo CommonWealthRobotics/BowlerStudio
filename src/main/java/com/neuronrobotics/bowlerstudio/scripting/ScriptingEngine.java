@@ -401,8 +401,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.err.println("Device " + bad.getScriptingName() + " is "
-					+ bad);
+//			System.err.println("Device " + bad.getScriptingName() + " is "
+//					+ bad);
 		}
 		binding.setVariable("args", args);
 

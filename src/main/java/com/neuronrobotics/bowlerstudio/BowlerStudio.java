@@ -126,7 +126,7 @@ public class BowlerStudio extends Application {
 		});
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
-        //Log.enableDebugPrint();
+        Log.enableDebugPrint();
 		//new MicroServo().toCSG();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }

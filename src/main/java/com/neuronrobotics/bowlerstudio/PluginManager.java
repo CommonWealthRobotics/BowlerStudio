@@ -242,11 +242,10 @@ public class PluginManager {
 					}else{
 						Log.warning("Not autoloading "+c);
 					}
-				} catch (IllegalArgumentException | IllegalAccessException
-						 | SecurityException
-						| ClassNotFoundException | InstantiationException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					
 				}
 				launcher.setOnAction(b ->{
 					
