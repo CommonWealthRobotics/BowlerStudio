@@ -38,6 +38,7 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Transform;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -175,7 +176,10 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 					Log.debug("Limb to base"+newTrans.toString());
 					device.setRobotToFiducialTransform(newTrans);
 					device.getCurrentTaskSpaceTransform();
-	
+					//this calls the render update function attachec as the on jointspace update	
+					double[] joint=device2.getCurrentJointSpaceVector();
+					dhdevice.getChain().getChain(joint);
+					Platform.runLater(()->dhdevice.onJointSpaceUpdate(dhdevice, joint));
 				}
 			}
 			));

@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import javafx.application.Platform;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -8,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 
@@ -93,9 +95,13 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 		dhLink.setAlpha(Math.toRadians(alpha.getValue()));
 		dhLink.setRadius(radius.getValue());
 		dhLink.setDelta(delta.getValue());
-		device2.getCurrentTaskSpaceTransform();
+
 		if(externalListener!=null)
 			externalListener.onSliderMoving(source, newAngleDegrees);
+		//this calls the render update function attachec as the on jointspace update	
+		double[] joint=device2.getCurrentJointSpaceVector();
+		device2.getChain().getChain(joint);
+		Platform.runLater(()->device2.onJointSpaceUpdate(device2, joint));
 	}
 
 	@Override

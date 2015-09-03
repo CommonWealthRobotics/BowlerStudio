@@ -228,14 +228,21 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	}
 
 	private void setDefaultLinkLevelCadEngine() throws Exception {
+		String [] cad =null;
+		if(MobileBase.class.isInstance(pm)) {
+			cad = ((MobileBase)pm).getCadEngine();
+		}else if(DHParameterKinematics.class.isInstance(pm)){
+			DHParameterKinematics device=(DHParameterKinematics)pm;
+			cad = device.getCadEngine();
+		}
 		if(cadEngine==null){
-			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","ThreeDPrintCad.groovy")[0];
+			String code = ScriptingEngineWidget.codeFromGistID(cad[0],cad[1])[0];
 			cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 	}
 	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
 		if(defaultDHSolver==null){
-			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","DefaultDhSolver.groovy")[0];
+			String code = ScriptingEngineWidget.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
 			defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 		device.setInverseSolver(defaultDHSolver);
@@ -243,7 +250,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
 		if(defaultDriveEngine==null){
-			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","WalkingDriveEngine.groovy")[0];
+			String code = ScriptingEngineWidget.codeFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1])[0];
 			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 		device.setWalkingDriveEngine( defaultDriveEngine);

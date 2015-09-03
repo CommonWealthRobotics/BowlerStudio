@@ -4,93 +4,72 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerstudio.MainController">
-   <children>
-      <MenuBar   minHeight="-Infinity">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onLoadFile" text="Load File" />
-                  <MenuItem mnemonicParsing="false" onAction="#onPrint" text="Print..." />
-              <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Add Device">
-            <items>
-              <Menu mnemonicParsing="false" text="Bowler Device">
-              	<MenuItem mnemonicParsing="false" onAction="#onConnect" text="Bowler Device using Connection Dialog" />
-              	<MenuItem mnemonicParsing="false" onAction="#onConnectVirtual" text="Virtual PID Device" />
-              	<MenuItem mnemonicParsing="false" onAction="#onConnectPidSim" text="Virtual Torque Controller" />
-              </Menu>
-              <Menu mnemonicParsing="false" text="Creatures">
-              	<MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
-              	<MenuItem mnemonicParsing="false" onAction="#onHexapod" text="Six Leg Walker" />
-              	<MenuItem mnemonicParsing="false" onAction="#onGrasshopper" text="Grasshopper" />
-              	<MenuItem mnemonicParsing="false" onAction="#onInputArm" text="Input Arm" />
-              	<MenuItem mnemonicParsing="false" onAction="#onAddElephant" text="Elephant" />
-              	<MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
-              </Menu>
-              <Menu mnemonicParsing="false" text="Vision">
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="OpenCV camera" />
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="CHDK camera" />
-	              <!--<MenuItem mnemonicParsing="false" onAction="#onConnectJavaCVCamera" text="Add a new JavaCV camera" />-->
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectFileSourceCamera" text="Image File" />
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectURLSourceCamera" text="WebCam URL" />
-              </Menu>
-              <Menu mnemonicParsing="false" text="3d Scanner">
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectHokuyoURG" text="Hokuyo URG LIDAR" />
-              </Menu>
-              <Menu mnemonicParsing="false" text="Game Controller">
-	              <MenuItem mnemonicParsing="false" onAction="#onConnectGamePad" text="GamePad JInput " />
-              </Menu>
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="CAD">
-            <items>
-              <CheckMenuItem  selected="false" fx:id="AddDefaultRightArm" text="Add Default Right Arm" />
-              <CheckMenuItem  selected="false" fx:id="AddVRCamera" text="Add Camera VR" />
-            </items>
-          </Menu>
-           <Menu mnemonicParsing="false" text="GitHub">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
-              <MenuItem fx:id="logoutGithub" mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-    <SplitPane dividerPositions="0.774247491638796" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="1024.0" VBox.vgrow="ALWAYS">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="656.0" prefWidth="1129.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.neuronrobotics.bowlerstudio.MainController">
+  <children>
+    <MenuBar fx:id="BowlerStudioMenue" minHeight="-Infinity">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#onLoadFile" text="Load File" />
+            <MenuItem mnemonicParsing="false" onAction="#onPrint" text="Print..." />
+            <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Add Device">
+          <items>
+            <Menu mnemonicParsing="false" text="Bowler Device">
+              <MenuItem mnemonicParsing="false" onAction="#onConnect" text="Bowler Device using Connection Dialog" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnectVirtual" text="Virtual PID Device" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnectPidSim" text="Virtual Torque Controller" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="Creatures">
+              <MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
+              <MenuItem mnemonicParsing="false" onAction="#onHexapod" text="Six Leg Walker" />
+              <MenuItem mnemonicParsing="false" onAction="#onGrasshopper" text="Grasshopper" />
+              <MenuItem mnemonicParsing="false" onAction="#onInputArm" text="Input Arm" />
+              <MenuItem mnemonicParsing="false" onAction="#onAddElephant" text="Elephant" />
+              <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
+            </Menu>
+            <Menu mnemonicParsing="false" text="Vision">
+              <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="OpenCV camera" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnectCHDKCamera" text="CHDK camera" />
+              <!--<MenuItem mnemonicParsing="false" onAction="#onConnectJavaCVCamera" text="Add a new JavaCV camera" />-->
+              <MenuItem mnemonicParsing="false" onAction="#onConnectFileSourceCamera" text="Image File" />
+              <MenuItem mnemonicParsing="false" onAction="#onConnectURLSourceCamera" text="WebCam URL" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="3d Scanner">
+              <MenuItem mnemonicParsing="false" onAction="#onConnectHokuyoURG" text="Hokuyo URG LIDAR" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="Game Controller">
+              <MenuItem mnemonicParsing="false" onAction="#onConnectGamePad" text="GamePad JInput " />
+            </Menu>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="CAD">
+          <items>
+            <CheckMenuItem selected="false" text="Add Default Right Arm" fx:id="AddDefaultRightArm" />
+            <CheckMenuItem selected="false" text="Add Camera VR" fx:id="AddVRCamera" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="GitHub">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
+            <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />
+      </menus>
+    </MenuBar>
+    <SplitPane dividerPositions="0.49778172138420584" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="637.0" prefWidth="975.0" VBox.vgrow="ALWAYS">
       <items>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-<children>
-                    <ScrollPane fx:id="editorContainer" fitToHeight="true" fitToWidth="true" prefHeight="458.0" prefWidth="381.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <content>
-                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-                      </content>
-                    </ScrollPane>
-</children>
-            </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
-          <children>
-            <SplitPane dividerPositions="0.51" focusTraversable="true" prefHeight="460.0" prefWidth="1022.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-				<AnchorPane fx:id="logView" 
-		             minHeight="0.0" minWidth="0.0"
-	                 prefHeight="320.0" 
-	                 prefWidth="100.0"  />
-				                
-                <AnchorPane fx:id="viewContainer" 
-                	 minHeight="0.0" minWidth="0.0"
-	                 prefHeight="320.0" 
-	                 prefWidth="100.0" 
-	                 style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" 
-	                 />
-              </items>
-            </SplitPane>
-          </children>
-        </AnchorPane>
-
+        <SplitPane dividerPositions="0.5302547770700637" focusTraversable="true" orientation="VERTICAL" prefHeight="635.0" prefWidth="553.0">
+          <items>
+            <ScrollPane fx:id="editorContainer" content="$null" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="357.0" prefWidth="551.0" vbarPolicy="ALWAYS" />
+            <AnchorPane fx:id="logView" minHeight="0.0" minWidth="0.0" prefHeight="148.0" prefWidth="471.0" />
+          </items>
+        </SplitPane>
+        <AnchorPane fx:id="viewContainer" minHeight="0.0" minWidth="0.0" prefHeight="635.0" prefWidth="492.9999000000025" style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" />
       </items>
     </SplitPane>
-   </children>
+  </children>
 </VBox>
