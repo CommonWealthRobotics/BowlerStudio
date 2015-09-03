@@ -94,7 +94,6 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
-		panel.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 100 wide
 		
 		
 		panel.add(	del, 
@@ -110,8 +109,8 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 				3, 
 				0);
 		panel.add(	accordion, 
-				4, 
-				0);
+				2, 
+				1);
 
 		getChildren().add(panel);
 	}

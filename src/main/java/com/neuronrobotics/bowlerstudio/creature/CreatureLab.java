@@ -175,12 +175,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			});
 			
 			
-			MenuItem menuItem = new MenuItem("Set Cad Script");
+			MenuItem menuItem = new MenuItem("Set Cad Generation Script");
 			
 			menuItem.setOnAction(event -> {
 		    	new Thread(){
 
 					public void run(){
+						setName("Cad generation thread");
 						if(getCadScript()==null)
 							setCadScript(ScriptingEngineWidget.getLastFile());
 		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript(),
