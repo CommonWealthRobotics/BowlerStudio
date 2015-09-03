@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
+import org.apache.commons.io.IOUtils;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
 
@@ -482,7 +483,9 @@ public class MainController implements Initializable {
 	@FXML public void onHexapod() {
 		Platform.runLater(()->{
 			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("CarlTheRobot.xml"));
+				String xmlContent = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","CarlTheRobot.xml")[0];
+				//MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("CarlTheRobot.xml"));
+				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

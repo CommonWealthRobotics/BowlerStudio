@@ -69,29 +69,9 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		device.addConnectionEventListener(this);
 		if(DHParameterKinematics.class.isInstance(device2)){
 			dhdevice=(DHParameterKinematics)device2;
-        	try {
-				dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineUrlScriptRun(
-						ScriptingEngine.class.getResource("DefaultDhSolver.groovy"),
-						null));
-			} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
-			}
 		}
 		if(MobileBase.class.isInstance(device2)){
 			mbase=(MobileBase)device2;
-			try {
-				mbase.setWalkingDriveEngine( (IDriveEngine) ScriptingEngine.inlineUrlScriptRun(
-						ScriptingEngine.class.getResource("WalkingDriveEngine.groovy"),
-						null));
-			} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
-			}
 		}
 		links = new VBox(20);
 		controls = new VBox(10);

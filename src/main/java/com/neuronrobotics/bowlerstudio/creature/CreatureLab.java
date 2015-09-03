@@ -32,6 +32,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.DirectoryFilter;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
@@ -40,7 +41,9 @@ import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
+import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -59,6 +62,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private File openMobileBaseConfiguration;
 	private File cadScript;
 	private FileChangeWatcher watcher;
+	private IDriveEngine defaultDriveEngine;
+	private DhInverseSolver defaultDHSolver;
 
 	@Override
 	public void onTabClosing() {
@@ -83,12 +88,25 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		GridPane dhlabTopLevel=new GridPane();
 		
 		
+
+
 		if(DHParameterKinematics.class.isInstance(pm)){
 			DHParameterKinematics device=(DHParameterKinematics)pm;
+        	try {
+        		setDefaultDhParameterKinematics(device);
+        		
+			} catch (Exception e) {
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
 			Log.debug("Loading xml: "+device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
+
 			Button refresh = new Button("Generate Printable CAD");
+			
 			refresh.setOnAction(event -> {
 				File defaultStlDir =new File(System.getProperty("user.home")+"/bowler-workspace/STL/");
 				if(!defaultStlDir.exists()){
@@ -125,6 +143,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			Button save = new Button("Save Configuration");
 			Button script = new Button("Set Cad Script");
 			MobileBase device=(MobileBase)pm;
+			
+			try {
+				setDefaultWalkingEngine(device);
+			} catch (Exception e) {
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
 			save.setOnAction(event -> {
 		    	new Thread(){
 
@@ -199,6 +226,31 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		setContent(new ScrollPane(dhlabTopLevel));
 		
 	}
+
+	private void setDefaultLinkLevelCadEngine() throws Exception {
+		if(cadEngine==null){
+			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","ThreeDPrintCad.groovy")[0];
+			cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		}
+	}
+	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
+		if(defaultDHSolver==null){
+			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","DefaultDhSolver.groovy")[0];
+			defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		}
+		device.setInverseSolver(defaultDHSolver);
+	}
+
+	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
+		if(defaultDriveEngine==null){
+			String code = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","WalkingDriveEngine.groovy")[0];
+			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		}
+		device.setWalkingDriveEngine( defaultDriveEngine);
+		for(DHParameterKinematics dh : device.getAllDHChains()){
+			setDefaultDhParameterKinematics(dh);
+		}
+	}
 	
 	private void addAppendagePanel(ArrayList<DHParameterKinematics> apps,String title,Accordion advancedPanel){
 		if(apps.size()>0){
@@ -220,7 +272,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 					MobileBase device=(MobileBase)pm;
 					if (getCadScript() != null) {
 						try{
-						cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+							cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
 						}catch(Exception e){
 						      StringWriter sw = new StringWriter();
 						      PrintWriter pw = new PrintWriter(sw);
@@ -230,7 +282,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			        }
 					if(cadEngine==null){
 						try {
-							cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("ThreeDPrintArmCad.groovy"),null);
+							setDefaultLinkLevelCadEngine();
 						} catch (Exception e) {
 							  StringWriter sw = new StringWriter();
 						      PrintWriter pw = new PrintWriter(sw);
@@ -255,8 +307,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				}
 				BowlerStudioController.setCsg(allCad);
 			}
+
+
 		}.start();
 	}
+	
+	
+
 //	private void generateCad(){
 //		Log.warning("Generating cad");
 //		//new Exception().printStackTrace();
@@ -301,8 +358,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
         }
 		if(cadEngine==null){
 			try {
-				cadEngine = (ICadGenerator) ScriptingEngine.inlineUrlScriptRun(ScriptingEngine.class.getResource("ThreeDPrintArmCad.groovy"),null);
-			} catch (Exception e) {
+				setDefaultLinkLevelCadEngine();
+				} catch (Exception e) {
 				  StringWriter sw = new StringWriter();
 			      PrintWriter pw = new PrintWriter(sw);
 			      e.printStackTrace(pw);
