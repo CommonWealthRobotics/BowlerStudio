@@ -57,7 +57,7 @@
             <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />
+        <Menu disable="true" mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />
       </menus>
     </MenuBar>
     <SplitPane dividerPositions="0.49778172138420584" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="637.0" prefWidth="975.0" VBox.vgrow="ALWAYS">

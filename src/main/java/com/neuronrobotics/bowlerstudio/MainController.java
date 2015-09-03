@@ -59,6 +59,7 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 import com.sun.speech.freetts.VoiceManager;
+import javafx.scene.control.Menu;
 /**
  * FXML Controller class
  *
@@ -179,6 +180,7 @@ public class MainController implements Initializable {
     @FXML
     private CheckMenuItem AddVRCamera;
 	private ScriptingEngineWidget cmdLine;
+	@FXML Menu CreatureLabMenue;
 	
     /**
      * Initializes the controller class.
@@ -556,6 +558,14 @@ public class MainController implements Initializable {
 			}
 		});
 		
+	}
+
+	public Menu getCreatureLabMenue() {
+		return CreatureLabMenue;
+	}
+
+	public void setCreatureLabMenue(Menu creatureLabMenue) {
+		CreatureLabMenue = creatureLabMenue;
 	}
 	
 

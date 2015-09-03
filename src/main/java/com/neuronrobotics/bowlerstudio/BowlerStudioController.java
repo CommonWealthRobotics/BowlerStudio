@@ -232,6 +232,7 @@ public class BowlerStudioController extends TabPane implements
 	public static void setCsg(List<CSG> toadd){
 		Platform.runLater(() -> {
 			getBowlerStudio().jfx3dmanager.removeObjects();
+			if(toadd!=null)
 			for(CSG c:toadd){
 				MeshView current = c.getMesh();
 				getBowlerStudio().jfx3dmanager.addObject(current);

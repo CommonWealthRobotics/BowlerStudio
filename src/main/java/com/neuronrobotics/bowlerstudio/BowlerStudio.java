@@ -43,6 +43,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -167,6 +168,10 @@ public class BowlerStudio extends Application {
         
         return log;
     }
+    
+	public static Menu getCreatureLabMenue() {
+		return controller.getCreatureLabMenue();
+	}
 
 	public static Stage getPrimaryStage() {
 		return primaryStage;

@@ -18,6 +18,8 @@ import javafx.application.Platform;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
@@ -46,6 +48,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
@@ -64,6 +67,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private FileChangeWatcher watcher;
 	private IDriveEngine defaultDriveEngine;
 	private DhInverseSolver defaultDHSolver;
+	private Menu localMenue;
 
 	@Override
 	public void onTabClosing() {
@@ -83,7 +87,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	public void initializeUI(BowlerAbstractDevice pm) {
 		this.pm = pm;
 		// TODO Auto-generated method stub
-		setText("Creature Lab");
+		setText(pm.getScriptingName());
 
 		GridPane dhlabTopLevel=new GridPane();
 		
@@ -104,10 +108,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			Log.debug("Loading xml: "+device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
 		}else if(MobileBase.class.isInstance(pm)) {
-
-			Button refresh = new Button("Generate Printable CAD");
-			
-			refresh.setOnAction(event -> {
+			MobileBase device=(MobileBase)pm;
+			Menu CreaturLabMenue =BowlerStudio.getCreatureLabMenue();
+			localMenue = new Menu(pm.getScriptingName());
+			MenuItem printable = new MenuItem("Generate Printable CAD");
+			printable.setOnAction(event -> {
 				File defaultStlDir =new File(System.getProperty("user.home")+"/bowler-workspace/STL/");
 				if(!defaultStlDir.exists()){
 					defaultStlDir.mkdirs();
@@ -140,19 +145,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    	}.start();
 				generateCad();
 			});
-			Button save = new Button("Save Configuration");
-			Button script = new Button("Set Cad Script");
-			MobileBase device=(MobileBase)pm;
 			
-			try {
-				setDefaultWalkingEngine(device);
-			} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
-			}
-			save.setOnAction(event -> {
+			
+			MenuItem saveConfig = new MenuItem("Save Configuration");
+			saveConfig.setOnAction(event -> {
 		    	new Thread(){
 
 					public void run(){
@@ -177,7 +173,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    		}
 		    	}.start();
 			});
-			script.setOnAction(event -> {
+			
+			
+			MenuItem menuItem = new MenuItem("Set Cad Script");
+			
+			menuItem.setOnAction(event -> {
 		    	new Thread(){
 
 					public void run(){
@@ -194,12 +194,40 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    		}
 		    	}.start();
 			});
-			GridPane mobileBaseControls=new GridPane();
-			mobileBaseControls.add(save, 0, 0);
-			mobileBaseControls.add(refresh, 1, 0);
-			mobileBaseControls.add(script, 2, 0);
-			dhlabTopLevel.add(mobileBaseControls, 0, 0);
+			localMenue.getItems().addAll(printable, saveConfig, menuItem);
 			
+			
+			CreaturLabMenue.getItems().add(localMenue);
+			CreaturLabMenue.setDisable(false);
+			pm.addConnectionEventListener(new IDeviceConnectionEventListener() {
+				@Override
+				public void onDisconnect(BowlerAbstractDevice source) {
+					// cleanup menues after add
+					CreaturLabMenue.getItems().remove(localMenue);
+					if(CreaturLabMenue.getItems().size()==0)
+						CreaturLabMenue.setDisable(true);
+					BowlerStudioController.setCsg(null);
+				}
+				
+				@Override
+				public void onConnect(BowlerAbstractDevice source) {}
+			});
+			
+	
+			//Button save = new Button("Save Configuration");
+			
+			
+			try {
+				setDefaultWalkingEngine(device);
+			} catch (Exception e) {
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
+			
+			GridPane mobileBaseControls=new GridPane();
+			dhlabTopLevel.add(mobileBaseControls, 0, 0);
 			
 			Accordion advancedPanel = new Accordion();
 			TitledPane rp =new TitledPane("Multi-Appendage Cordinated Motion", new DhChainWidget(device, this));
