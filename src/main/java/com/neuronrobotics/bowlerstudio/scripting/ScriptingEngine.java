@@ -315,7 +315,10 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+gistcode);
 			for (final File fileEntry : gistDir.listFiles()) {
 				if(!fileEntry.getName().endsWith(".git"))
-					f.add(fileEntry.getName());
+					if(extnetion==null)
+						f.add(fileEntry.getName());
+					else if(fileEntry.getName().endsWith(extnetion))
+						f.add(fileEntry.getName());
 		    }
 			return f;
 		} catch (InterruptedIOException e) {
