@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
@@ -30,10 +33,12 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -59,6 +64,7 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
 import com.sun.speech.freetts.VoiceManager;
+
 import javafx.scene.control.Menu;
 /**
  * FXML Controller class
@@ -212,14 +218,14 @@ public class MainController implements Initializable {
 			}
 		}.start();
 		
-		getAddDefaultRightArm().setOnAction(event -> {
-			
-			application.onAddDefaultRightArm(event);
-		});
-		getAddVRCamera().setOnAction(event -> {
-			if(AddVRCamera.isSelected())
-				application.onAddVRCamera(event);
-		});
+//		getAddDefaultRightArm().setOnAction(event -> {
+//			
+//			application.onAddDefaultRightArm(event);
+//		});
+//		getAddVRCamera().setOnAction(event -> {
+//			if(AddVRCamera.isSelected())
+//				application.onAddVRCamera(event);
+//		});
 		
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
@@ -360,6 +366,11 @@ public class MainController implements Initializable {
 		jfx3dmanager.disconnect();
 		application.disconnect();
 	}
+	
+	public void openUrlInNewTab(URL url){
+		application.openUrlInNewTab(url);
+	}
+	
 
 
 	@FXML public void onConnectCHDKCamera(ActionEvent event) {
@@ -415,24 +426,24 @@ public class MainController implements Initializable {
 	}
 
 
-	public CheckMenuItem getAddVRCamera() {
-		return AddVRCamera;
-	}
-
-
-	public void setAddVRCamera(CheckMenuItem addVRCamera) {
-		AddVRCamera = addVRCamera;
-	}
-
-
-	public CheckMenuItem getAddDefaultRightArm() {
-		return AddDefaultRightArm;
-	}
-
-
-	public void setAddDefaultRightArm(CheckMenuItem addDefaultRightArm) {
-		AddDefaultRightArm = addDefaultRightArm;
-	}
+//	public CheckMenuItem getAddVRCamera() {
+//		return AddVRCamera;
+//	}
+//
+//
+//	public void setAddVRCamera(CheckMenuItem addVRCamera) {
+//		AddVRCamera = addVRCamera;
+//	}
+//
+//
+//	public CheckMenuItem getAddDefaultRightArm() {
+//		return AddDefaultRightArm;
+//	}
+//
+//
+//	public void setAddDefaultRightArm(CheckMenuItem addDefaultRightArm) {
+//		AddDefaultRightArm = addDefaultRightArm;
+//	}
 
 
 	@FXML public void onLogin() {
@@ -462,17 +473,7 @@ public class MainController implements Initializable {
 		ConnectionManager.addConnection(eng,"engine");
 	}
 
-	@FXML public void onRobotArm(ActionEvent event) {
-		Platform.runLater(()->{
-			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("TrobotLinks.xml"));
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-	}
+
 
 	@FXML public void onPrint(ActionEvent event) {
 		NRPrinter printer =(NRPrinter) ConnectionManager.pickConnectedDevice(NRPrinter.class);
@@ -482,21 +483,7 @@ public class MainController implements Initializable {
 		
 	}
 
-	@FXML public void onHexapod() {
-		Platform.runLater(()->{
-			try {
-				String xmlContent = ScriptingEngineWidget.codeFromGistID("bcb4760a449190206170","CarlTheRobot.xml")[0];
-				//MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("CarlTheRobot.xml"));
-				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		
 
-	}
 
 	@FXML public void onMobileBaseFromFile() {
     	new Thread(){
@@ -521,45 +508,23 @@ public class MainController implements Initializable {
     	}.start();
 		
 	}
-
+	
+	@FXML public void onRobotArm(ActionEvent event) {
+		loadMobilebaseFromGist("2b0cff20ccee085c9c36","TrobotLinks.xml");
+	}
+	@FXML public void onHexapod() {
+		loadMobilebaseFromGist("bcb4760a449190206170","CarlTheRobot.xml");
+	}
 	@FXML public void onGrasshopper() {
-		Platform.runLater(()->{
-			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("GrassHoppper.xml"));
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		
+		loadMobilebaseFromGist("a6cbefc11693162cf9d4","GrassHopper.xml");
 	}
 
 	@FXML public void onInputArm() {
-		Platform.runLater(()->{
-			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("TrobotMaster.xml"));
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		loadMobilebaseFromGist("98892e87253005adbe4a","TrobotMaster.xml");
 	}
 
 	@FXML public void onAddElephant() {
-		Platform.runLater(()->{
-			try {
-				String xmlContent = ScriptingEngineWidget.codeFromGistID("aef13d65093951d13235","Elephant.xml")[0];
-				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		
+		loadMobilebaseFromGist("aef13d65093951d13235","Elephant.xml");
 	}
 
 	public Menu getCreatureLabMenue() {
@@ -568,6 +533,66 @@ public class MainController implements Initializable {
 
 	public void setCreatureLabMenue(Menu creatureLabMenue) {
 		CreatureLabMenue = creatureLabMenue;
+	}
+	
+	private void loadMobilebaseFromGist(String id,String file){
+		Platform.runLater(()->{
+			try {
+				BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+id));
+				String xmlContent = ScriptingEngineWidget.codeFromGistID(id,file)[0];
+				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+				ConnectionManager.addConnection(mb,mb.getScriptingName());
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+	}
+
+	@FXML public void onMobileBaseFromGist() {
+		TextInputDialog dialog = new TextInputDialog("https://gist.github.com/madhephaestus/bcb4760a449190206170");
+		dialog.setTitle("Select a Creature From a Gist");
+		dialog.setHeaderText("Enter the URL (Link from the browser)");
+		dialog.setContentText("Link to Gist: ");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+		   
+		    String gistcode = ScriptingEngineWidget.urlToGist(result.get());
+		    System.out.println("Creature Gist " + gistcode);
+		    ArrayList<String> choices =ScriptingEngineWidget.filesInGist(gistcode,".xml");
+		    String suggestedChoice="";
+		    int numXml=0;
+		    for(int i=0;i<choices.size();i++){
+		    	String s = choices.get(i);
+		    	if(s.toLowerCase().endsWith(".xml")){
+		    		suggestedChoice=s;
+		    		numXml++;
+		    	}
+		    }
+		    
+		    if(numXml ==1){
+		    	System.out.println("Found just one file at  " + suggestedChoice);
+		    	//loadMobilebaseFromGist(gistcode,suggestedChoice);
+		    	//return;
+		    	
+		    }
+
+		    ChoiceDialog<String> d = new ChoiceDialog<>(suggestedChoice, choices);
+		    d.setTitle("Choose a file in the gist");
+		    d.setHeaderText("Select from the files in the gist to pick the Creature File");
+		    d.setContentText("Choose A Creature:");
+
+		    // Traditional way to get the response value.
+		    Optional<String> r = d.showAndWait();
+		    if (r.isPresent()){
+		        System.out.println("Your choice: " + r.get());
+		        loadMobilebaseFromGist(gistcode,r.get());
+		    }
+		}
+	
 	}
 	
 

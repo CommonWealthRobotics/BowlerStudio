@@ -19,6 +19,7 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -83,7 +84,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
 	private static File creds=null;
 
-	private static GHGist gist;
+	//private static GHGist gist;
 	protected File currentFile = null;
 	
 	private static File workspace;
@@ -205,64 +206,113 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
         loginID=null;
 	}
 
+	private static void waitForLogin() throws IOException{
+		if(github == null){
+
+			if (getCreds().exists()){
+				try{
+					github = GitHub.connect();
+				}catch(IOException ex){
+					
+				}
+			}else{
+				getCreds().createNewFile();
+			}
+			
+			if(github==null){
+				Platform.runLater(() -> {
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("GitHub Login Missing");
+					alert.setHeaderText("To use BowlerStudio at full speed login with github");
+					alert.setContentText("What would you like to do?");
+	
+					ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
+					ButtonType buttonTypeTwo = new ButtonType("Login");
+					
+					alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+					Optional<ButtonType> result = alert.showAndWait();
+					new Thread(){
+						public void run(){
+							if (result.get() == buttonTypeOne){
+								try {
+									github = GitHub.connectAnonymously();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else  {
+								logout();
+								try {
+									login();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} 
+						}
+					}.start();
+
+				});
+
+			}
+			
+		}
+		while(github==null){
+			ThreadUtil.wait(100);
+		}
+	}
+	
+
+	public static ArrayList<String> filesInGist(String gistcode, String extnetion) {
+		ArrayList<String> f=new ArrayList<>();
+		try {
+			
+			waitForLogin();
+			
+			Log.debug("Loading Gist: " + gistcode);
+			GHGist gist;
+			try{
+				gist = github.getGist(gistcode);
+			}catch(IOException ex){
+				//ex.printStackTrace();
+				
+				return null;
+			}
+			Map<String, GHGistFile> files = gist.getFiles();
+					
+			
+			for (Entry<String, GHGistFile> entry : files.entrySet()) {
+				if(extnetion==null)
+					f.add(entry.getKey());
+				else{
+					if(entry.getKey().toLowerCase().endsWith(extnetion.toLowerCase()))
+						f.add(entry.getKey());
+				}
+			}
+			return f;
+		} catch (InterruptedIOException e) {
+			System.out.println("Gist Rate limited");
+		} catch (MalformedURLException ex) {
+			// ex.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	public static ArrayList<String> filesInGist(String id){
+		return filesInGist(id, null);
+	}
 
 	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
 		try {
-			if(github == null){
-
-				if (getCreds().exists()){
-					try{
-						github = GitHub.connect();
-					}catch(IOException ex){
-						
-					}
-				}else{
-					getCreds().createNewFile();
-				}
-				
-				if(github==null){
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.CONFIRMATION);
-						alert.setTitle("GitHub Login Missing");
-						alert.setHeaderText("To use BowlerStudio at full speed login with github");
-						alert.setContentText("What would you like to do?");
-		
-						ButtonType buttonTypeOne = new ButtonType("Use Anonymously");
-						ButtonType buttonTypeTwo = new ButtonType("Login");
-						
-						alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-						Optional<ButtonType> result = alert.showAndWait();
-						new Thread(){
-							public void run(){
-								if (result.get() == buttonTypeOne){
-									try {
-										github = GitHub.connectAnonymously();
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								} else  {
-									logout();
-									try {
-										login();
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								} 
-							}
-						}.start();
-
-					});
-
-				}
-				
-			}
-			while(github==null){
-				ThreadUtil.wait(100);
-			}
+			
+			waitForLogin();
 			
 			Log.debug("Loading Gist: " + id);
+			GHGist gist;
 			try{
 				gist = github.getGist(id);
 			}catch(IOException ex){

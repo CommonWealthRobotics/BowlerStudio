@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -179,6 +180,10 @@ public class BowlerStudio extends Application {
 
 	public static void setPrimaryStage(Stage primaryStage) {
 		BowlerStudio.primaryStage = primaryStage;
+	}
+	
+	public static void openUrlInNewTab(URL url){
+		controller.openUrlInNewTab(url);
 	}
 	
 	public static int speak(String msg){

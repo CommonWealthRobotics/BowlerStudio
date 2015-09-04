@@ -118,17 +118,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	Label fileLabel = new Label();
 	private Object scriptResult;
-	private String codeText = "println(dyio)\n"
-			+ "while(true){\n"
-			+ "\tThreadUtil.wait(100)                     // Spcae out the loop\n\n"
-			+ "\tlong start = System.currentTimeMillis()  //capture the starting value \n\n"
-			+ "\tint value = dyio.getValue(15)            //grab the value of pin 15\n"
-			+ "\tint scaled = value/4                     //scale the analog voltage to match the range of the servos\n"
-			+ "\tdyio.setValue(0,scaled)                  // set the new value to the servo\n\n"
-			+ "\t//Print out this loops values\n"
-			+ "\tprint(\" Loop took = \"+(System.currentTimeMillis()-start))\n"
-			+ "\tprint(\"ms Value= \"+value)\n"
-			+ "\tprintln(\" Scaled= \"+scaled)\n" + "}";
+	private String codeText="";
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
 	private ArrayList<String> history = new ArrayList<>();
@@ -375,7 +365,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	}
 
-	public String urlToGist(String in) {
+	public static String urlToGist(String in) {
 		String domain = in.split("//")[1];
 		String[] tokens = domain.split("/");
 		if (tokens[0].toLowerCase().contains("gist.github.com")
