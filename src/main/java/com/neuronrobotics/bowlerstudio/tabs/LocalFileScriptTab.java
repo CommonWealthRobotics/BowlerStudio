@@ -26,7 +26,6 @@ import javax.swing.event.DocumentListener;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -52,7 +51,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class LocalFileScriptTab extends Group implements IScriptEventListener, EventHandler<WindowEvent> {
+public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
 	
 	private ScriptingEngineWidget scripting;
 //    private static final String[] KEYWORDS = new String[]{
@@ -74,7 +73,7 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 //    
     
     //private final CodeArea codeArea = new CodeArea();
-	private VBox vBox;
+
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
 	private RTextScrollPane sp;
@@ -90,13 +89,13 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	public LocalFileScriptTab( File file) throws IOException {
 		
 		setScripting(new ScriptingEngineWidget( file ));
-
+		setSpacing(5);
 		l=this;
 
 
 		getScripting().addIScriptEventListener(l);
 		
-		textArea = new RSyntaxTextArea(200, 150);
+		textArea = new RSyntaxTextArea(100, 150);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		textArea.setCodeFoldingEnabled(true);
 		textArea.setText(getScripting().getCode());
@@ -122,7 +121,6 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 		sp = new RTextScrollPane(textArea);
 		
 		sn = new SwingNode();
-		
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -131,16 +129,18 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
             }
         });
 		
-
-		HBox hBox = new HBox(5);
-		hBox.getChildren().setAll(new ScrollPane(sn));
 		getScripting().setFocusTraversable(false);
 		
-		vBox = new VBox(5);
-		vBox.getChildren().setAll(getScripting(),hBox);
-		getChildren().add(vBox);
-		
-		
+		getChildren().setAll(getScripting(),sn);
+		widthProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+			// TODO Auto-generated method stub
+			System.err.println(" V box Width changed to "+newValue);
+		});
+		heightProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+			// TODO Auto-generated method stub
+			System.err.println("V box Height changed to "+newValue);
+		});
+
 		sn.setOnMouseEntered(mouseEvent -> {
 			sn.requestFocus();
 			SwingUtilities.invokeLater(new Runnable() {
