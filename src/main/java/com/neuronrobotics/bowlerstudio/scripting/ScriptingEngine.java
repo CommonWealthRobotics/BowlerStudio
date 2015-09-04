@@ -299,6 +299,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	    Git git = new Git(localRepo);
 	    try{
 	    	git.pull();// updates to the latest version
+	    	git.commit().setMessage("Updates any changes").call();
+	    	//git.push().call();
 	    }catch(Exception ex){
 	    	ex.printStackTrace();
 	    }
@@ -312,7 +314,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			waitForLogin(gistcode);
 			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+gistcode);
 			for (final File fileEntry : gistDir.listFiles()) {
-		        f.add(fileEntry.getName());
+				if(!fileEntry.getName().endsWith(".git"))
+					f.add(fileEntry.getName());
 		    }
 			return f;
 		} catch (InterruptedIOException e) {

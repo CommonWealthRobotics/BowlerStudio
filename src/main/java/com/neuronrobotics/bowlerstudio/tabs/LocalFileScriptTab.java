@@ -132,14 +132,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		getScripting().setFocusTraversable(false);
 		
 		getChildren().setAll(getScripting(),sn);
-		widthProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
-			// TODO Auto-generated method stub
-			System.err.println(" V box Width changed to "+newValue);
-		});
-		heightProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
-			// TODO Auto-generated method stub
-			System.err.println("V box Height changed to "+newValue);
-		});
+//		widthProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+//			// TODO Auto-generated method stub
+//			System.err.println(" V box Width changed to "+newValue);
+//		});
+//		heightProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+//			// TODO Auto-generated method stub
+//			System.err.println("V box Height changed to "+newValue);
+//		});
 
 		sn.setOnMouseEntered(mouseEvent -> {
 			sn.requestFocus();
