@@ -77,7 +77,6 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	private VBox vBox;
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
-	private Stage stage;
 	private RTextScrollPane sp;
 	
 	private class SwingNodeWrapper extends SwingNode{
@@ -88,19 +87,19 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	}
 
     
-	public LocalFileScriptTab( File file, Stage stage) throws IOException {
-		this.stage = stage;
-		scripting = new ScriptingEngineWidget( file );
+	public LocalFileScriptTab( File file) throws IOException {
+		
+		setScripting(new ScriptingEngineWidget( file ));
 
 		l=this;
 
 
-		scripting.addIScriptEventListener(l);
+		getScripting().addIScriptEventListener(l);
 		
 		textArea = new RSyntaxTextArea(200, 150);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		textArea.setCodeFoldingEnabled(true);
-		textArea.setText(scripting.getCode());
+		textArea.setText(getScripting().getCode());
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
 	        @Override
@@ -115,9 +114,9 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 
 	        @Override
 	        public void changedUpdate(DocumentEvent arg0) {
-            	scripting.removeIScriptEventListener(l);
-            	scripting.setCode(textArea.getText());
-            	scripting.addIScriptEventListener(l);
+            	getScripting().removeIScriptEventListener(l);
+            	getScripting().setCode(textArea.getText());
+            	getScripting().addIScriptEventListener(l);
 	        }
 	    });
 		sp = new RTextScrollPane(textArea);
@@ -135,10 +134,10 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 
 		HBox hBox = new HBox(5);
 		hBox.getChildren().setAll(new ScrollPane(sn));
-		scripting.setFocusTraversable(false);
+		getScripting().setFocusTraversable(false);
 		
 		vBox = new VBox(5);
-		vBox.getChildren().setAll(scripting,hBox);
+		vBox.getChildren().setAll(getScripting(),hBox);
 		getChildren().add(vBox);
 		
 		
@@ -153,36 +152,11 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 		});
 
 		
-		stage.widthProperty().addListener(new ChangeListener<Number>()
-				{
-			  @Override
-			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
-			  {
-				  resize();
-			  }
-			});
-		stage.heightProperty().addListener(new ChangeListener<Number>()
-				{
-			  @Override
-			  public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
-			  {
-				  resize();
-			  }
-			});
+
 
 
 	}
-	
-	private void resize(){
-		SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	textArea.setSize((int)stage.getWidth()-10, (int)stage.getHeight()-80);
-            	sp.setSize((int)stage.getWidth()-10, (int)stage.getHeight()-80);
-            }
-        });
-		
-	}
+
 
 
 	@Override
@@ -225,6 +199,18 @@ public class LocalFileScriptTab extends Group implements IScriptEventListener, E
 	@Override
 	public void handle(WindowEvent event) {
 		// TODO Auto-generated method stub
-		scripting.stop();
+		getScripting().stop();
+	}
+
+
+
+	public ScriptingEngineWidget getScripting() {
+		return scripting;
+	}
+
+
+
+	public void setScripting(ScriptingEngineWidget scripting) {
+		this.scripting = scripting;
 	}
 }

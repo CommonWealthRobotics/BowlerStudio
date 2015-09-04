@@ -32,6 +32,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ShellType;
@@ -182,9 +183,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 					public void run(){
 						setName("Cad generation thread");
-						if(getCadScript()==null)
-							setCadScript(ScriptingEngineWidget.getLastFile());
-		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript(),
+					
+		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript()!=null?getCadScript():ScriptingEngineWidget.getLastFile(),
 		    	    			new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
 
 		    	        if (getCadScript() == null) {
@@ -471,7 +471,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				try{
 					generateCad();
 				}catch(Exception ex){
-					
+					 StringWriter sw = new StringWriter();
+				      PrintWriter pw = new PrintWriter(sw);
+				      ex.printStackTrace(pw);
+				      System.out.println(sw.toString());
 				}
 				
 			}
@@ -482,7 +485,28 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		 e.printStackTrace();
 		 }
 		this.cadScript = cadScript;
-		
+		ScriptingEngineWidget scripting = BowlerStudio.createFileTab(cadScript);
+		scripting.addIScriptEventListener(new IScriptEventListener() {
+			
+			@Override
+			public void onGroovyScriptFinished(Object result, Object pervious) {
+				// TODO Auto-generated method stub
+				cadEngine = (ICadGenerator)result;
+				generateCad();
+			}
+			
+			@Override
+			public void onGroovyScriptError(Exception except) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onGroovyScriptChanged(String previous, String current) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	@Override

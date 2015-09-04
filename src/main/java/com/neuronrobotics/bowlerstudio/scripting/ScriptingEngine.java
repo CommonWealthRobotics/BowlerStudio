@@ -30,6 +30,9 @@ import java.util.Map.Entry;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.github.GHGist;
@@ -211,14 +214,14 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
         loginID=null;
 	}
 
-	private static void waitForLogin() throws IOException{
+	private static void waitForLogin(String id) throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		if(github == null){
 
 			if (getCreds().exists()){
 				try{
 					github = GitHub.connect();
 				}catch(IOException ex){
-					
+					ex.printStackTrace();
 				}
 			}else{
 				getCreds().createNewFile();
@@ -262,9 +265,43 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			}
 			
 		}
+		
 		while(github==null){
 			ThreadUtil.wait(100);
 		}
+		
+		GHGist gist;
+		try{
+			gist = github.getGist(id);
+		}catch(IOException ex){
+			//ex.printStackTrace();
+			
+			return;
+		}
+		
+		File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+		if(!gistDir.exists()){
+			gistDir.mkdir();
+		}
+		
+		
+		String localPath=gistDir.getAbsolutePath();
+		String remotePath = gist.getGitPullUrl();
+		File gitRepoFile = new File(localPath + "/.git");
+		if(!gitRepoFile.exists()){
+			System.out.println("Cloning files to: "+localPath);
+			 //Clone the repo
+		    Git.cloneRepository().setURI(remotePath).setDirectory(new File(localPath)).call();
+		}else{
+			//System.out.println("Loading from cache: "+localPath);
+		}
+	    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
+	    Git git = new Git(localRepo);
+	    try{
+	    	git.pull();// updates to the latest version
+	    }catch(Exception ex){
+	    	ex.printStackTrace();
+	    }
 	}
 	
 
@@ -272,34 +309,26 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		ArrayList<String> f=new ArrayList<>();
 		try {
 			
-			waitForLogin();
-			
-			Log.debug("Loading Gist: " + gistcode);
-			GHGist gist;
-			try{
-				gist = github.getGist(gistcode);
-			}catch(IOException ex){
-				//ex.printStackTrace();
-				
-				return null;
-			}
-			Map<String, GHGistFile> files = gist.getFiles();
-					
-			
-			for (Entry<String, GHGistFile> entry : files.entrySet()) {
-				if(extnetion==null)
-					f.add(entry.getKey());
-				else{
-					if(entry.getKey().toLowerCase().endsWith(extnetion.toLowerCase()))
-						f.add(entry.getKey());
-				}
-			}
+			waitForLogin(gistcode);
+			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+gistcode);
+			for (final File fileEntry : gistDir.listFiles()) {
+		        f.add(fileEntry.getName());
+		    }
 			return f;
 		} catch (InterruptedIOException e) {
 			System.out.println("Gist Rate limited");
 		} catch (MalformedURLException ex) {
 			// ex.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -313,7 +342,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	
 	public static void pushCodeToGistID(String id, String FileName, String content )  throws Exception{
 		try {	
-			waitForLogin();	
+			waitForLogin(id);	
 			Log.debug("Loading Gist: " + id);
 			GHGist gist;
 			try{
@@ -342,43 +371,10 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	
 
 	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
-		try {
-			
-			waitForLogin();
-			
-			Log.debug("Loading Gist: " + id);
-			GHGist gist;
-			try{
-				gist = github.getGist(id);
-			}catch(IOException ex){
-				//ex.printStackTrace();
-				
-				return null;
-			}
-			
+		try {		
+			waitForLogin(id);
 			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
-			if(!gistDir.exists()){
-				gistDir.mkdir();
-			}
-			
-			
-			String localPath=gistDir.getAbsolutePath();
-			String remotePath = gist.getGitPullUrl();
-			File gitRepoFile = new File(localPath + "/.git");
-			if(!gitRepoFile.exists()){
-				System.out.println("Cloning files to: "+localPath);
-				 //Clone the repo
-			    Git.cloneRepository().setURI(remotePath).setDirectory(new File(localPath)).call();
-			}else{
-				//System.out.println("Loading from cache: "+localPath);
-			}
-		    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
-		    Git git = new Git(localRepo);
-		    try{
-		    	git.pull();// updates to the latest version
-		    }catch(Exception ex){
-		    	ex.printStackTrace();
-		    }
+
 		    if(FileName==null||FileName.length()<1){
 		    	if(gistDir.listFiles().length>0){
 		    		FileName=gistDir.listFiles()[0].getAbsolutePath();

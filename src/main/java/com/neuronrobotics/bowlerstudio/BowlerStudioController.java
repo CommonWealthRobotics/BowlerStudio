@@ -87,26 +87,20 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	// Custom function for creation of New Tabs.
-	public void createFileTab(File file) {
-
+	public ScriptingEngineWidget createFileTab(File file) {
+		Tab fileTab =new Tab(file.getName());
+		
 		try {
-			LocalFileScriptTab t =new LocalFileScriptTab( file,dialog);
-			Platform.runLater(() -> {
-
-				dialog.setOnCloseRequest(t);
-				dialog.setTitle(file.getName());
-				Scene scene = new Scene(t);
-				dialog.setScene(scene);
-				dialog.setHeight(600);
-				dialog.setWidth(800);
-				dialog.show();
-			});
-
-
+			Log.warning("Loading local file from: "+file.getAbsolutePath());
+			LocalFileScriptTab t  =new LocalFileScriptTab( file);
+			fileTab.setContent(t);
+			addTab(fileTab, true);
+			return t.getScripting();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	// Custom function for creation of New Tabs.

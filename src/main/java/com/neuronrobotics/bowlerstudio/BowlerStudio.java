@@ -223,5 +223,8 @@ public class BowlerStudio extends Application {
 		
 		return 0;
 	}
-		
+	
+	public static ScriptingEngineWidget createFileTab(File file){
+		return controller.createFileTab(file);
+	}
 }

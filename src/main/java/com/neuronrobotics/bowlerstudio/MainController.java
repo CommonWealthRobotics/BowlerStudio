@@ -595,6 +595,9 @@ public class MainController implements Initializable {
 	
 	}
 	
+	public ScriptingEngineWidget createFileTab(File file){
+		return application.createFileTab(file);
+	}
 
 
 }
