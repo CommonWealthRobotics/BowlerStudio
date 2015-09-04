@@ -38,6 +38,7 @@ import java.util.Properties;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -47,6 +48,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -110,13 +112,13 @@ import eu.mihosoft.vrl.v3d.samples.*;
 
 @SuppressWarnings("unused")
 public class ScriptingEngineWidget extends ScriptingEngine implements
-		IFileChangeListener {
+		IFileChangeListener, ChangeListener {
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
 	private FileChangeWatcher watcher;
 	private Dimension codeDimentions = new Dimension(1168, 768);
-	Label fileLabel = new Label();
+	//Label fileLabel = new Label();
 	private Object scriptResult;
 	private String codeText="";
 
@@ -134,6 +136,8 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	boolean loadGist = false;
 
 	private ScriptingWidgetType type;
+	
+	final ComboBox fileListBox = new ComboBox();
 
 	public ScriptingEngineWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
@@ -201,7 +205,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 //				fileLabel.setText(currentFile.getName());
 //			});
 //		});
-		fileLabel.setTextFill(Color.GREEN);
+
 		cmdLineInterface.setOnAction(event -> {
 			String text = cmdLineInterface.getText();
 			text+="\r\n";
@@ -277,7 +281,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		if(type !=ScriptingWidgetType.CMDLINE ){
 			controlPane.getChildren().add(runsave);
 			controlPane.getChildren().add(runsaveAs);
-			controlPane.getChildren().add(fileLabel);
+			controlPane.getChildren().add(fileListBox);
 		}
 		
 		// put the flowpane in the top area of the BorderPane
@@ -339,21 +343,17 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		setUpFile(currentFile);
 		setCode(new String(Files.readAllBytes(currentFile.toPath())));
 	}
-
-	public void loadCodeFromGist(String addr, WebEngine engine)
-			throws IOException, InterruptedException {
-		this.addr = addr;
-		this.engine = engine;
-		loadGist = true;
-		String currentGist = getCurrentGist(addr, engine);
+	
+	private void loadGistLocal(String id, String file){
+		System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = codeFromGistID(currentGist,"");
+			code = codeFromGistID(id,file);
 			if (code != null) {
 				setCode(code[0]);
-				Platform.runLater(() -> fileLabel.setText(code[1]));
 				
-				currentFile = new File(code[1]);
+				
+				currentFile = new File(code[2]);
 			}
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();
@@ -361,8 +361,28 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		      e.printStackTrace(pw);
 		      System.out.println(sw.toString());
 		}
-		
+	}
 
+	@SuppressWarnings("unchecked")
+	public void loadCodeFromGist(String addr, WebEngine engine)
+			throws IOException, InterruptedException {
+		this.addr = addr;
+		this.engine = engine;
+		loadGist = true;
+		currentGist = getCurrentGist(addr, engine);
+		
+		ArrayList<String> fileList = ScriptingEngineWidget.filesInGist(currentGist);
+		
+		if(fileList.size()==1)
+			loadGistLocal(currentGist, fileList.get(0));
+		Platform.runLater(()->{
+			fileListBox.getItems().clear();
+			for(String s:fileList){
+				fileListBox.getItems().add(s);
+			}
+			fileListBox.setValue(fileList.get(0));
+			fileListBox.valueProperty().addListener(this);
+		});
 	}
 
 	public static String urlToGist(String in) {
@@ -430,14 +450,15 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		scriptRunner = new Thread() {
 
 			public void run() {
-				if(type!= ScriptingWidgetType.CMDLINE)
-					setName("Bowler Script Runner " + currentFile.getName());
 				String name;
 				try{
 					name = currentFile.getName();
 				}catch (NullPointerException e){
 					name="";
 				}
+				if(type!= ScriptingWidgetType.CMDLINE)
+					setName("Bowler Script Runner " + name);
+	
 				try {
 					Object obj = inlineScriptRun(getCode(), null,setFilename(name));
 					for (IScriptEventListener l : listeners) {
@@ -529,7 +550,10 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		currentFile = f;
 		setLastFile(f);
 		Platform.runLater(() -> {
-			fileLabel.setText(f.getName());
+			fileListBox.valueProperty().removeListener(this);
+			fileListBox.getItems().clear();
+			fileListBox.getItems().add(f.getName());
+			fileListBox.setValue(f.getName());
 		});
 		if (watcher != null) {
 			watcher.close();
@@ -594,11 +618,6 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 						setCode(new String(Files.readAllBytes(Paths
 								.get(fileThatChanged.getAbsolutePath())),
 								"UTF-8"));
-						fileLabel.setTextFill(Color.RED);
-						FxTimer.runLater(
-								Duration.ofMillis(750) ,() -> {
-							fileLabel.setTextFill(Color.GREEN);
-						});
 					} catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -637,6 +656,13 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 
 	private HBox controlPane;
+	private String currentGist;
+
+	@Override
+	public void changed(ObservableValue observable, Object oldValue,
+			Object newValue) {
+		loadGistLocal(currentGist, (String)newValue);
+	}
 
 
 

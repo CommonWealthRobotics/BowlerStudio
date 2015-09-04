@@ -17,7 +17,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,9 @@ import java.util.Map.Entry;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
@@ -101,9 +106,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		if(!workspace.exists()){
 			workspace.mkdir();
 		}
-		if(scriptingDir.exists()){
-			workspace=scriptingDir;
-		}
+//		if(scriptingDir.exists()){
+//			workspace=scriptingDir;
+//		}
 		if(loginID == null && getCreds().exists()){
 			try {
 				String line;
@@ -138,7 +143,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
  	}
  	
 	public static File getWorkspace() {
-		System.err.println("Workspace: "+workspace.getAbsolutePath());
+		//System.err.println("Workspace: "+workspace.getAbsolutePath());
 		return workspace;
 	}
 
@@ -305,6 +310,36 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	public static ArrayList<String> filesInGist(String id){
 		return filesInGist(id, null);
 	}
+	
+	public static void pushCodeToGistID(String id, String FileName, String content )  throws Exception{
+		try {	
+			waitForLogin();	
+			Log.debug("Loading Gist: " + id);
+			GHGist gist;
+			try{
+				gist = github.getGist(id);
+			}catch(IOException ex){
+				//ex.printStackTrace();
+				
+				return;
+			}
+			String localPath, remotePath;
+		    Repository localRepo;
+		    Git git;
+			
+
+		} catch (InterruptedIOException e) {
+			System.out.println("Gist Rate limited");
+		} catch (MalformedURLException ex) {
+			// ex.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ;
+	}
+	
+	
 
 	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
 		try {
@@ -320,24 +355,44 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				
 				return null;
 			}
-			Map<String, GHGistFile> files = gist.getFiles();
-					
 			
-			for (Entry<String, GHGistFile> entry : files.entrySet()) {
-				if (((entry.getKey().endsWith(".py")
-						|| entry.getKey().endsWith(".jy")
-						|| entry.getKey().endsWith(".java")
-						|| entry.getKey().endsWith(".groovy"))&&(FileName.length()==0))
-						||entry.getKey().contains(FileName)) {
-
-					GHGistFile ghfile = entry.getValue();
-					Log.debug("Key = " + entry.getKey());
-					String code = ghfile.getContent();
-					String fileName = entry.getKey().toString();
-					if(setFilename(fileName)!=ShellType.NONE || entry.getKey().contains(FileName))
-						return new String[] { code, fileName };
-				}
+			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+			if(!gistDir.exists()){
+				gistDir.mkdir();
 			}
+			
+			
+			String localPath=gistDir.getAbsolutePath();
+			String remotePath = gist.getGitPullUrl();
+			File gitRepoFile = new File(localPath + "/.git");
+			if(!gitRepoFile.exists()){
+				System.out.println("Cloning files to: "+localPath);
+				 //Clone the repo
+			    Git.cloneRepository().setURI(remotePath).setDirectory(new File(localPath)).call();
+			}else{
+				//System.out.println("Loading from cache: "+localPath);
+			}
+		    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
+		    Git git = new Git(localRepo);
+		    try{
+		    	git.pull();// updates to the latest version
+		    }catch(Exception ex){
+		    	ex.printStackTrace();
+		    }
+		    if(FileName==null||FileName.length()<1){
+		    	if(gistDir.listFiles().length>0){
+		    		FileName=gistDir.listFiles()[0].getAbsolutePath();
+		    	}
+		    }
+		    
+		    File targetFile = new File(gistDir.getAbsolutePath()+"/"+FileName);
+			if(targetFile.exists()){
+				System.err.println("Loading file: "+targetFile.getAbsoluteFile());
+				//Target file is ready to go
+				 String text = new String(Files.readAllBytes(Paths.get(targetFile.getAbsolutePath())), StandardCharsets.UTF_8);
+				 return new String[] { text, FileName , targetFile.getAbsolutePath()};
+			}
+
 		} catch (InterruptedIOException e) {
 			System.out.println("Gist Rate limited");
 		} catch (MalformedURLException ex) {
