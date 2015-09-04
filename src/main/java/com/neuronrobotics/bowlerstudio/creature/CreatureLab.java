@@ -313,7 +313,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private void addAppendagePanel(ArrayList<DHParameterKinematics> apps,String title,Accordion advancedPanel){
 		if(apps.size()>0){
 			for(DHParameterKinematics l:apps){
-				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(), new DhChainWidget(l, this));
+				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(),new DhChainWidget(l, this));
+				rp.setMaxWidth(200);
+				rp.setMaxHeight(200);
 				advancedPanel.getPanes().add(rp);
 				advancedPanel.setExpandedPane(rp);
 			}
