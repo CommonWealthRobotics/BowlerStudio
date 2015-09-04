@@ -2,31 +2,47 @@
 <mobilebase>
 
 <driveType>walking</driveType>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<driveEngine>
+		<gist>aef13d65093951d13235</gist>
+		<file>WalkingDriveEngine.groovy</file>
+	</driveEngine>
 
-<name>ATAT</name>
+<name>Elephant</name>
 <leg>
 
-<name>ATAT_One</name>
+<name>Hex_One</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
 	<type>servo-rotory</type>
 	<index>0</index>
 	<scale>0.33</scale>
-	<upperLimit>255.0</upperLimit>
+	<upperLimit>165.5597014925373</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
-	<staticOffset>128.0</staticOffset>
+	<staticOffset>150.48507462686567</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>150</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>40.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -43,14 +59,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
-		<Theta>110.0</Theta>
-		<Radius>142.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
 
@@ -67,14 +83,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
-		<Theta>0.0</Theta>
-		<Radius>137.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>0.0</Alpha>
 	</DHParameters>
 
@@ -91,19 +107,27 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>-200.0</x>
-	<y>-100.0</y>
-	<z>0.0</z>
-	<rotw>0.0</rotw>
-	<rotx>NaN</rotx>
-	<roty>NaN</roty>
-	<rotz>-Infinity</rotz>
+	<x>-560.0</x>
+	<y>-80.95238095238095</y>
+	<z>376.0</z>
+	<rotw>0.8841153935046098</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.46726862827306204</roty>
+	<rotz>0.0</rotz>
 </baseToZframe>
 
 </leg>
 <leg>
 
-<name>ATAT_Two</name>
+<name>Hex_Two</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -111,19 +135,19 @@
 	<index>3</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
-	<lowerLimit>0.0</lowerLimit>
+	<lowerLimit>100.85820895522387</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>40.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -140,14 +164,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
-		<Theta>110.0</Theta>
-		<Radius>142.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>160.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
 
@@ -164,14 +188,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
-		<Theta>0.0</Theta>
-		<Radius>137.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>0.0</Alpha>
 	</DHParameters>
 
@@ -188,39 +212,47 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>200.0</x>
+	<x>-200.0</x>
 	<y>-100.0</y>
-	<z>0.0</z>
-	<rotw>1.0</rotw>
-	<rotx>0.0</rotx>
-	<roty>0.0</roty>
-	<rotz>0.0</rotz>
+	<z>326.0</z>
+	<rotw>0.0033982352138770718</rotw>
+	<rotx>-0.3126512534878871</rotx>
+	<roty>0.03824208690874858</roty>
+	<rotz>0.9490917941516058</rotz>
 </baseToZframe>
 
 </leg>
 <leg>
 
-<name>ATAT_Three</name>
+<name>Hex_Three</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
 	<type>servo-rotory</type>
 	<index>6</index>
 	<scale>0.33</scale>
-	<upperLimit>255.0</upperLimit>
+	<upperLimit>167.46268656716418</upperLimit>
 	<lowerLimit>0.0</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>40.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -237,14 +269,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
-		<Theta>70.24390243902435</Theta>
-		<Radius>142.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>160.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
 
@@ -261,14 +293,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
-		<Theta>0.0</Theta>
-		<Radius>137.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>0.0</Alpha>
 	</DHParameters>
 
@@ -287,17 +319,25 @@
 <baseToZframe>
 	<x>-200.0</x>
 	<y>100.0</y>
-	<z>0.0</z>
-	<rotw>0.0</rotw>
-	<rotx>NaN</rotx>
-	<roty>NaN</roty>
-	<rotz>Infinity</rotz>
+	<z>326.0</z>
+	<rotw>0.008062184150420468</rotw>
+	<rotx>0.3826688612226966</rotx>
+	<roty>-0.0033395005595337622</roty>
+	<rotz>-0.9238443546617011</rotz>
 </baseToZframe>
 
 </leg>
 <leg>
 
-<name>ATAT_Four</name>
+<name>Hex_Four</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -305,19 +345,19 @@
 	<index>9</index>
 	<scale>0.33</scale>
 	<upperLimit>255.0</upperLimit>
-	<lowerLimit>0.0</lowerLimit>
+	<lowerLimit>91.34328358208954</lowerLimit>
 	<upperVelocity>1.0E8</upperVelocity>
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>13.0</Delta>
+		<Delta>0.0</Delta>
 		<Theta>0.0</Theta>
-		<Radius>32.0</Radius>
+		<Radius>40.0</Radius>
 		<Alpha>-90.0</Alpha>
 	</DHParameters>
 
@@ -334,14 +374,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>25.0</Delta>
-		<Theta>70.24390243902435</Theta>
-		<Radius>142.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>180.0</Alpha>
 	</DHParameters>
 
@@ -358,14 +398,14 @@
 	<lowerVelocity>-1.0E8</lowerVelocity>
 	<staticOffset>128.0</staticOffset>
 	<isLatch>true</isLatch>
-	<indexLatch>0</indexLatch>
+	<indexLatch>128</indexLatch>
 	<isStopOnLatch>false</isStopOnLatch>
 	<homingTPS>10000000</homingTPS>
 
 	<DHParameters>
-		<Delta>11.0</Delta>
-		<Theta>0.0</Theta>
-		<Radius>137.0</Radius>
+		<Delta>0.0</Delta>
+		<Theta>-90.0</Theta>
+		<Radius>230.0</Radius>
 		<Alpha>0.0</Alpha>
 	</DHParameters>
 
@@ -382,12 +422,12 @@
 </ZframeToRAS>
 
 <baseToZframe>
-	<x>200.0</x>
+	<x>-560.0</x>
 	<y>100.0</y>
-	<z>0.0</z>
-	<rotw>1.0</rotw>
+	<z>376.0</z>
+	<rotw>0.9238795325112867</rotw>
 	<rotx>0.0</rotx>
-	<roty>0.0</roty>
+	<roty>0.3826834323650897</roty>
 	<rotz>0.0</rotz>
 </baseToZframe>
 

@@ -175,9 +175,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			});
 			
 			
-			MenuItem menuItem = new MenuItem("Set Cad Generation Script");
+			MenuItem setCadScript = new MenuItem("Set Cad Generation Script");
 			
-			menuItem.setOnAction(event -> {
+			setCadScript.setOnAction(event -> {
 		    	new Thread(){
 
 					public void run(){
@@ -195,7 +195,30 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    		}
 		    	}.start();
 			});
-			localMenue.getItems().addAll(printable, saveConfig, menuItem);
+			MenuItem updateRobotScripts = new MenuItem("Pull Scripts from Server");
+			updateRobotScripts.setOnAction(event -> {
+		    	new Thread(){
+
+					public void run(){
+						setName("Cad generation thread");
+						cadEngine=null;
+						defaultDriveEngine=null;
+						try {
+							setDefaultLinkLevelCadEngine();
+							setDefaultWalkingEngine(device);
+			    	        generateCad();
+						} catch (Exception e) {
+							  StringWriter sw = new StringWriter();
+						      PrintWriter pw = new PrintWriter(sw);
+						      e.printStackTrace(pw);
+						      System.out.println(sw.toString());
+						}
+						
+		    	        
+		    		}
+		    	}.start();
+			});
+			localMenue.getItems().addAll(printable, saveConfig, setCadScript, updateRobotScripts);
 			
 			
 			CreaturLabMenue.getItems().add(localMenue);
@@ -270,10 +293,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		}
 	}
 	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
-		if(defaultDHSolver==null){
-			String code = ScriptingEngineWidget.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
-			defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
-		}
+		String code = ScriptingEngineWidget.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
+		defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		
 		device.setInverseSolver(defaultDHSolver);
 	}
 

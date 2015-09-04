@@ -2,11 +2,27 @@
 <mobilebase>
 
 <driveType>walking</driveType>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<driveEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>WalkingDriveEngine.groovy</file>
+	</driveEngine>
 
 <name>GrassHopper</name>
 <leg>
 
 <name>Hex_One</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -104,6 +120,14 @@
 <leg>
 
 <name>Hex_Two</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -201,6 +225,14 @@
 <leg>
 
 <name>Hex_Three</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -298,6 +330,14 @@
 <leg>
 
 <name>Hex_Four</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -395,6 +435,14 @@
 <leg>
 
 <name>Hex_Five</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>
@@ -492,6 +540,14 @@
 <leg>
 
 <name>Hex_Six</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>

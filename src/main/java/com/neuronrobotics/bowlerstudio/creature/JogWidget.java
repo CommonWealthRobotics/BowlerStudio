@@ -308,7 +308,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						inc=10;
 					}
 					//double rxl=0;
-					double ryl=inc*slider;
+					double ryl=inc/4*slider;
 					double rzl=inc/4*rz;
 					TransformNR current = new TransformNR(0,0,0,new RotationNR( 0,0, rzl));
 					current.translateX(inc*x);

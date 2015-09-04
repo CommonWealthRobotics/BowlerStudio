@@ -1,10 +1,28 @@
 <root>
 <mobilebase>
 
+<driveType>none</driveType>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<driveEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>WalkingDriveEngine.groovy</file>
+	</driveEngine>
+
 <name>BasicArmWorkspace</name>
 <appendage>
 
 <name>RobotArm</name>
+	<cadEngine>
+		<gist>bcb4760a449190206170</gist>
+		<file>ThreeDPrintCad.groovy</file>
+	</cadEngine>
+	<kinematics>
+		<gist>bcb4760a449190206170</gist>
+		<file>DefaultDhSolver.groovy</file>
+	</kinematics>
 <link>
 	<name>basePan</name>
 	<deviceName>dyio</deviceName>

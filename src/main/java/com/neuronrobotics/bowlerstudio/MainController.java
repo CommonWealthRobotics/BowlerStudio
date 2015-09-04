@@ -550,8 +550,10 @@ public class MainController implements Initializable {
 	@FXML public void onAddElephant() {
 		Platform.runLater(()->{
 			try {
-				MobileBase mb = new MobileBase(CreatureLab.class.getResourceAsStream("Elephant.xml"));
+				String xmlContent = ScriptingEngineWidget.codeFromGistID("aef13d65093951d13235","Elephant.xml")[0];
+				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
