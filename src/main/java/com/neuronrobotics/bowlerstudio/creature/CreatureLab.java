@@ -153,23 +153,44 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    	new Thread(){
 
 					public void run(){
-						if(openMobileBaseConfiguration==null)
-							openMobileBaseConfiguration=ScriptingEngineWidget.getLastFile();
-		    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
-		    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
+						if(device.getSelfSource()[0]==null ||device.getSelfSource()[1]==null ){
+							// this was loaded form a file not a gist
+							if(openMobileBaseConfiguration==null)
+								openMobileBaseConfiguration=ScriptingEngineWidget.getLastFile();
+			    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
+			    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 
-		    	        if (openMobileBaseConfiguration == null) {
-		    	            return;
-		    	        }
-		    	        try {
-							PrintWriter out = new PrintWriter(openMobileBaseConfiguration.getAbsoluteFile());
-							out.println(device.getXml());
-							out.flush();
-							out.close();
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+			    	        if (openMobileBaseConfiguration == null) {
+			    	            return;
+			    	        }
+			    	        try {
+								PrintWriter out = new PrintWriter(openMobileBaseConfiguration.getAbsoluteFile());
+								out.println(device.getXml());
+								out.flush();
+								out.close();
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}else{
+							String owner = ScriptingEngine.getUserIdOfGist(device.getSelfSource()[0]);
+							String currentLoggedIn =  ScriptingEngine.getLoginID();
+							Log.warning("Gist owned by "+owner+" logged in as "+currentLoggedIn);
+							if(currentLoggedIn!=null && owner!=null){
+								if(currentLoggedIn.toLowerCase().contentEquals(owner.toLowerCase())){
+									try {
+										ScriptingEngine.pushCodeToGistID( 
+												device.getSelfSource()[0], 
+												device.getSelfSource()[1],
+												device.getXml());
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							}
 						}
+
 		    	        
 		    		}
 		    	}.start();

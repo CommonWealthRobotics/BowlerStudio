@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.eclipse.jgit.api.Git;
@@ -35,6 +36,9 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
@@ -98,10 +102,11 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static File workspace;
 	private static File lastFile;
 	private static String loginID=null;
+	private static String pw =null;
+	private static CredentialsProvider cp;// = new UsernamePasswordCredentialsProvider(name, password);
 	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
 
 
-	private static String pw;
 	
  	static{
  		File scriptingDir = new File(System.getProperty("user.home")+"/git/BowlerStudio/src/main/resources/com/neuronrobotics/bowlerstudio/");
@@ -123,6 +128,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				    while ((line = br.readLine()) != null) {
 				        if(line.contains("login")){
 				        	loginID = line.split("=")[1];
+				        }
+				        if(line.contains("password")){
+				        	pw = line.split("=")[1];
 				        }
 				    }
 				}
@@ -192,6 +200,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
         out.flush();
         out.close();
         github = GitHub.connect();
+        
         for(IGithubLoginListener l:loginListeners){
         	l.onLogin(loginID);
         }
@@ -269,6 +278,10 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		while(github==null){
 			ThreadUtil.wait(100);
 		}
+		if(cp == null){
+			cp = new UsernamePasswordCredentialsProvider(loginID, pw);
+
+		}
 		
 		GHGist gist;
 		try{
@@ -298,9 +311,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
 	    Git git = new Git(localRepo);
 	    try{
-	    	git.pull();// updates to the latest version
-	    	git.commit().setMessage("Updates any changes").call();
-	    	//git.push().call();
+	    	git.pull().setCredentialsProvider(cp).call();// updates to the latest version
+	    	//git.commit().setMessage("Updates any changes").call();
+	    	//git.push().setCredentialsProvider(cp).call();
 	    }catch(Exception ex){
 	    	ex.printStackTrace();
 	    }
@@ -346,6 +359,25 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		return filesInGist(id, null);
 	}
 	
+	public static String getUserIdOfGist(String id){
+		try {
+			waitForLogin(id);
+			Log.debug("Loading Gist: " + id);
+			GHGist gist;
+			try{
+				gist = github.getGist(id);
+				return gist.getOwner().getLogin();
+			}catch(IOException ex){
+				ex.printStackTrace();
+			}
+		} catch (IOException | GitAPIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		return null;
+		
+	}
+	
 	public static void pushCodeToGistID(String id, String FileName, String content )  throws Exception{
 		try {	
 			waitForLogin(id);	
@@ -358,11 +390,36 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				
 				return;
 			}
-			String localPath, remotePath;
-		    Repository localRepo;
-		    Git git;
+			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+			if(!gistDir.exists()){
+				gistDir.mkdir();
+			}
 			
-
+			
+			String localPath=gistDir.getAbsolutePath();
+			String remotePath = gist.getGitPullUrl();
+			File gitRepoFile = new File(localPath + "/.git");
+			if(!gitRepoFile.exists()){
+				System.out.println("Cloning files to: "+localPath);
+				 //Clone the repo
+			    Git.cloneRepository().setURI(remotePath).setDirectory(new File(localPath)).call();
+			}
+		    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
+		    Git git = new Git(localRepo);
+		    try{
+		    	git.pull().setCredentialsProvider(cp).call();// updates to the latest version
+		    	
+		    	File desired = new File(gistDir.getAbsoluteFile()+"/"+FileName);
+		    	if(!desired.exists()){
+		    		desired.createNewFile();
+		    		git.add().addFilepattern(FileName).call();
+		    	}
+		    	FileUtils.writeStringToFile(desired, content);
+		    	git.commit().setAll(true).setMessage("Updates any changes").call();
+		    	git.push().setCredentialsProvider(cp).call();
+		    }catch(Exception ex){
+		    	ex.printStackTrace();
+		    }
 		} catch (InterruptedIOException e) {
 			System.out.println("Gist Rate limited");
 		} catch (MalformedURLException ex) {
