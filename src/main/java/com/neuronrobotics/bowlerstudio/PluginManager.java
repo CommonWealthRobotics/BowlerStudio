@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOControl;
 import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
@@ -56,7 +57,7 @@ public class PluginManager {
 	// tabs list for objects of that type
 	static{
 		//DyIO
-		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOConsole.class));
+		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOControl.class));
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
 		
 		//Ipid
@@ -230,7 +231,7 @@ public class PluginManager {
 			if(c.getDevice().isInstance(dev)){
 				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName());
 				try {// These tabs are the select few to autoload when a device of theis type is connected
-					if( 	DyIOConsole.class ==c.getPlugin() ||
+					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
 							CreatureLab.class ==c.getPlugin()
 							){

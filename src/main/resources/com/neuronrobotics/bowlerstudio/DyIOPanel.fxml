@@ -7,6 +7,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 
 <SplitPane dividerPositions="0.8014861995753716" focusTraversable="true" prefHeight="771.0" prefWidth="944.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.neuronrobotics.bowlerstudio.tabs.DyIOPanel">
   <items>
@@ -23,62 +24,62 @@
               <children>
                 <GridPane gridLinesVisible="false" prefHeight="190.9998779296875" prefWidth="167.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                   <children>
-                    <ImageView id="challelButton" fx:id="chanButton23" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <ImageView fx:id="chanButton23" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="0">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton22" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <ImageView fx:id="chanButton22" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton21" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <ImageView fx:id="chanButton21" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton20" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                    <ImageView fx:id="chanButton20" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton19" fitHeight="25.92587900161743" fitWidth="69.99987242598435" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                    <ImageView fx:id="chanButton19" fitHeight="25.92587900161743" fitWidth="69.99987242598435" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="4">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton18" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                    <ImageView fx:id="chanButton18" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="5">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton17" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                    <ImageView fx:id="chanButton17" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="6">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton16" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                    <ImageView fx:id="chanButton16" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="7">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton15" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                    <ImageView fx:id="chanButton15" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="8">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton14" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                    <ImageView fx:id="chanButton14" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="9">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton13" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="10">
+                    <ImageView fx:id="chanButton13" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="10">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ImageView id="challelButton" fx:id="chanButton12" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="11">
+                    <ImageView fx:id="chanButton12" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="11">
                       <image>
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
@@ -95,7 +96,7 @@
                     <Label text="14" GridPane.columnIndex="0" GridPane.rowIndex="9" />
                     <Label text="13" GridPane.columnIndex="0" GridPane.rowIndex="10" />
                     <Label text="12" GridPane.columnIndex="0" GridPane.rowIndex="11" />
-                    <ComboBox fx:id="channelType22" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <ComboBox fx:id="channelType22" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -104,7 +105,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType21" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <ComboBox fx:id="channelType21" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -113,7 +114,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType20" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <ComboBox fx:id="channelType20" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -122,7 +123,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType19" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <ComboBox fx:id="channelType19" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -131,7 +132,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType18" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <ComboBox fx:id="channelType18" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -140,7 +141,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType17" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <ComboBox fx:id="channelType17" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -149,7 +150,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType16" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <ComboBox fx:id="channelType16" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -158,7 +159,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType15" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                    <ComboBox fx:id="channelType15" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -167,7 +168,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType14" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                    <ComboBox fx:id="channelType14" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -176,7 +177,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType13" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                    <ComboBox fx:id="channelType13" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -185,7 +186,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType12" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
+                    <ComboBox fx:id="channelType12" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -194,7 +195,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType23" onAction="#onChannelSelect" opacity="0.54" prefHeight="25.462860107421875" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <ComboBox fx:id="channelType23" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -206,9 +207,9 @@
                   </children>
                   <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="83.0" minWidth="6.0" prefWidth="29.0" />
-                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="159.0" />
-                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="132.0" minWidth="10.0" prefWidth="70.0" />
-                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="107.0" minWidth="0.0" prefWidth="107.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="10.0" prefWidth="190.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="132.0" minWidth="10.0" prefWidth="84.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="107.0" minWidth="0.0" prefWidth="62.0" />
                   </columnConstraints>
                   <rowConstraints>
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -223,6 +224,223 @@
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                </GridPane>
+                <GridPane gridLinesVisible="false" prefHeight="190.9998779296875" prefWidth="167.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <children>
+                    <Label text="0" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                    <Label text="1" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                    <Label text="2" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                    <Label text="3" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                    <Label text="4" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                    <Label text="5" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                    <Label text="6" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                    <Label text="7" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                    <Label text="8" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+                    <Label text="9" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+                    <Label text="10" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                    <Label text="11" GridPane.columnIndex="3" GridPane.rowIndex="11" />
+                    <ImageView fx:id="chanButton11" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="11">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType11" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="11">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton10" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType10" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton9" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType9" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton8" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType8" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton7" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType7" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton6" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType6" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton5" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType5" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton4" fitHeight="25.92587900161743" fitWidth="69.99987242598435" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType4" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton3" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType3" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton2" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType2" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton1" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType1" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                    <ImageView fx:id="chanButton0" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                      <image>
+                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                      </image>
+                    </ImageView>
+                    <ComboBox fx:id="channelType0" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList">
+                          <String fx:value="Item 1" />
+                          <String fx:value="Item 2" />
+                          <String fx:value="Item 3" />
+                        </FXCollections>
+                      </items>
+                    </ComboBox>
+                  </children>
+                  <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="6.0" prefWidth="77.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="72.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="203.0" minWidth="10.0" prefWidth="199.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="107.0" minWidth="0.0" prefWidth="24.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                </GridPane>
+                <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <children>
+                    <Circle fx:id="centerled" fill="DODGERBLUE" radius="8.5" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                  </children>
+                  <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                    <RowConstraints maxHeight="259.0" minHeight="10.0" prefHeight="258.0" vgrow="SOMETIMES" />
+                    <RowConstraints maxHeight="156.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                    <RowConstraints maxHeight="177.0" minHeight="10.0" prefHeight="177.0" vgrow="SOMETIMES" />
                   </rowConstraints>
                 </GridPane>
               </children>

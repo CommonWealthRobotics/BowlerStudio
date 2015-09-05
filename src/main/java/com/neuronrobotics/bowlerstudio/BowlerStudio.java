@@ -106,7 +106,7 @@ public class BowlerStudio extends Application {
         setPrimaryStage(primaryStage);
 		Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1024, 700,true);
+        Scene scene = new Scene(main, 1285, 1024,true);
 
         scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
@@ -117,8 +117,6 @@ public class BowlerStudio extends Application {
 
         primaryStage.setTitle("Bowler Studio");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(1024);
-        primaryStage.setMinHeight(700);
         primaryStage.show();
         primaryStage.setOnCloseRequest(arg0 -> {
         	
