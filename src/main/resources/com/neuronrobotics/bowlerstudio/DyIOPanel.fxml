@@ -96,7 +96,7 @@
                     <Label text="14" GridPane.columnIndex="0" GridPane.rowIndex="9" />
                     <Label text="13" GridPane.columnIndex="0" GridPane.rowIndex="10" />
                     <Label text="12" GridPane.columnIndex="0" GridPane.rowIndex="11" />
-                    <ComboBox fx:id="channelType22" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <ComboBox fx:id="channelType22" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -105,7 +105,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType21" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <ComboBox fx:id="channelType21" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -114,7 +114,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType20" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <ComboBox fx:id="channelType20" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -123,7 +123,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType19" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <ComboBox fx:id="channelType19" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -132,7 +132,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType18" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <ComboBox fx:id="channelType18" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -141,7 +141,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType17" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <ComboBox fx:id="channelType17" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -150,7 +150,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType16" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <ComboBox fx:id="channelType16" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -159,7 +159,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType15" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                    <ComboBox fx:id="channelType15" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -168,7 +168,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType14" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                    <ComboBox fx:id="channelType14" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -177,7 +177,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType13" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                    <ComboBox fx:id="channelType13" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -186,7 +186,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType12" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
+                    <ComboBox fx:id="channelType12" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -195,7 +195,7 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <ComboBox fx:id="channelType23" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <ComboBox fx:id="channelType23" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -245,7 +245,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType11" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="11">
+                    <ComboBox fx:id="channelType11" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="11">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -259,7 +259,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType10" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
+                    <ComboBox fx:id="channelType10" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -273,7 +273,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType9" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                    <ComboBox fx:id="channelType9" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -287,7 +287,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType8" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                    <ComboBox fx:id="channelType8" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -301,7 +301,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType7" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                    <ComboBox fx:id="channelType7" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -315,7 +315,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType6" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                    <ComboBox fx:id="channelType6" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -329,7 +329,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType5" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                    <ComboBox fx:id="channelType5" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -343,7 +343,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType4" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                    <ComboBox fx:id="channelType4" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -357,7 +357,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType3" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                    <ComboBox fx:id="channelType3" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -371,7 +371,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType2" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <ComboBox fx:id="channelType2" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -385,7 +385,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType1" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <ComboBox fx:id="channelType1" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />
@@ -399,7 +399,7 @@
                         <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
                       </image>
                     </ImageView>
-                    <ComboBox fx:id="channelType0" onAction="#onChannelSelect" opacity="0.54" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <ComboBox fx:id="channelType0" onAction="#onChannelSelect" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
                       <items>
                         <FXCollections fx:factory="observableArrayList">
                           <String fx:value="Item 1" />

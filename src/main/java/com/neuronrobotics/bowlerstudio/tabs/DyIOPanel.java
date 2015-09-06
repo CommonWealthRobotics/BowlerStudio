@@ -14,6 +14,7 @@ import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.image.Image;
@@ -21,8 +22,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,6 +37,8 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.util.Callback;
 
 public class DyIOPanel  implements Initializable {
 
@@ -59,33 +68,33 @@ public class DyIOPanel  implements Initializable {
 	@FXML ImageView chanButton1;
 	@FXML ImageView chanButton0;
 	
-	@FXML ComboBox<Label> channelType23;
-	@FXML ComboBox<Label> channelType22;
-	@FXML ComboBox<Label> channelType21;
-	@FXML ComboBox<Label> channelType20;
-	@FXML ComboBox<Label> channelType19;
-	@FXML ComboBox<Label> channelType18;
-	@FXML ComboBox<Label> channelType17;
-	@FXML ComboBox<Label> channelType16;
-	@FXML ComboBox<Label> channelType15;
-	@FXML ComboBox<Label> channelType14;
-	@FXML ComboBox<Label> channelType13;
-	@FXML ComboBox<Label> channelType12;
-	@FXML ComboBox<Label> channelType11;
-	@FXML ComboBox<Label> channelType10;
-	@FXML ComboBox<Label> channelType9;
-	@FXML ComboBox<Label> channelType8;
+	@FXML ComboBox<String> channelType23;
+	@FXML ComboBox<String> channelType22;
+	@FXML ComboBox<String> channelType21;
+	@FXML ComboBox<String> channelType20;
+	@FXML ComboBox<String> channelType19;
+	@FXML ComboBox<String> channelType18;
+	@FXML ComboBox<String> channelType17;
+	@FXML ComboBox<String> channelType16;
+	@FXML ComboBox<String> channelType15;
+	@FXML ComboBox<String> channelType14;
+	@FXML ComboBox<String> channelType13;
+	@FXML ComboBox<String> channelType12;
+	@FXML ComboBox<String> channelType11;
+	@FXML ComboBox<String> channelType10;
+	@FXML ComboBox<String> channelType9;
+	@FXML ComboBox<String> channelType8;
 	
-	@FXML ComboBox<Label> channelType7;
-	@FXML ComboBox<Label> channelType6;
-	@FXML ComboBox<Label> channelType5;
-	@FXML ComboBox<Label> channelType4;
-	@FXML ComboBox<Label> channelType3;
-	@FXML ComboBox<Label> channelType2;
-	@FXML ComboBox<Label> channelType1;
-	@FXML ComboBox<Label> channelType0;
+	@FXML ComboBox<String> channelType7;
+	@FXML ComboBox<String> channelType6;
+	@FXML ComboBox<String> channelType5;
+	@FXML ComboBox<String> channelType4;
+	@FXML ComboBox<String> channelType3;
+	@FXML ComboBox<String> channelType2;
+	@FXML ComboBox<String> channelType1;
+	@FXML ComboBox<String> channelType0;
 	
-	private ArrayList<ComboBox<Label>> channelTypeSelectors = new ArrayList<>() ;
+	private ArrayList<ComboBox<String>> channelTypeSelectors = new ArrayList<>() ;
 	private ArrayList<ImageView> channelButtonSelectors = new ArrayList<>() ;
 	private DyIO dyio;
 	private boolean initialized=false;
@@ -145,13 +154,73 @@ public class DyIOPanel  implements Initializable {
 		
 		
 		this.dyio = d;
-		for(int i=0;i<24;i++){
-			int index=i;
+		for (int i = 0; i < 24; i++) {
+			int index = i;
+			ObservableList<String> items = FXCollections.observableArrayList();
+			DyIOChannel chan = dyio.getChannel(index);
+			Label current = null;
+			ComboBox<String> selector = channelTypeSelectors.get(index);
+			ArrayList<DyIOChannelMode> modesAvailible = dyio
+					.getAvailibleChannelModes(index);
+			for (DyIOChannelMode m : modesAvailible) {
 
-			setChannelModeList( index);
+				items.add(m.toSlug());
+			}
+			Callback<ListView<String>, ListCell<String>> callback =new Callback<ListView<String>, ListCell<String>>() {
+				@Override
+				public ListCell<String> call(ListView<String> p) {
+					return new ListCell<String>() {
+			            Label name = new Label();
+			            Label icon = new Label();
+			            private final HBox cell;
+			            { 
+			                setContentDisplay(ContentDisplay.GRAPHIC_ONLY); 
+			                cell = new HBox(5);
+
+			                //HERE, ADD YOUR PRE-MADE HBOX CODE
+			                name.setTextFill(Color.BLACK);
+			                cell.getChildren().add(icon);
+			                cell.getChildren().add(name);
+			            }
+
+			            @Override protected void updateItem(String item, boolean empty) {
+			                super.updateItem(item, empty);
+
+			                if (item == null || empty) {
+			                    setGraphic(null);
+			                } else {
+								Image image;
+								//
+								try {
+									image = new Image(
+											DyIOConsole.class
+													.getResourceAsStream("images/icon-"
+															+ item+ ".png"));
+								} catch (NullPointerException e) {
+									image = new Image(
+											DyIOConsole.class
+													.getResourceAsStream("images/icon-off.png"));
+								}
+
+			                    name.setText(item);
+			                    icon.setGraphic(new ImageView(image));
+			                    setGraphic(cell);
+			                    //HERE IS WHERE YOU GET THE LABEL AND NAME
+			                }
+			           }
+			      };
+					
+				}
+			};
+
+			selector.setButtonCell(callback.call(null));
+			selector.setCellFactory(callback);
+			selector.setItems(items);
+			setChannelModeList(index);
 			dyio.getChannel(index).addChannelModeChangeListener(newMode -> {
-					setChannelModeList( index);
+				setChannelModeList(index);
 			});
+
 		}
 		
 		initialized=true;
@@ -182,31 +251,17 @@ public class DyIOPanel  implements Initializable {
 	}
 	
 	private void setChannelModeList(int index){
-		ComboBox<Label> selector = channelTypeSelectors.get(index);
-		ArrayList<DyIOChannelMode> modesAvailible = dyio.getAvailibleChannelModes(index);
+		ComboBox<String> selector = channelTypeSelectors.get(index);
 		Platform.runLater(()->{
-			ObservableList<Label> items = FXCollections.observableArrayList();
+
 			DyIOChannel chan =dyio.getChannel(index);
-			Label current =null;
-			for(DyIOChannelMode m:modesAvailible){
-				Image image;
-				//
-				try {
-					image = new Image(DyIOConsole.class.getResourceAsStream("images/icon-" + m.toSlug() + ".png"));
-				}catch (NullPointerException e) {
-					image = new Image(DyIOConsole.class.getResourceAsStream("images/icon-off.png"));
-				}
-				//
-				Label lbl = new Label(m.toSlug());
-				lbl.setTextFill(Color.BLACK);
-				lbl.setGraphic(new ImageView(image));
-				items.add(lbl);
-				if(chan.getMode() == m){
-					current=lbl;
+			String current =null;
+			for(String m:selector.getItems()){
+				if(chan.getMode().toSlug().contentEquals(m)){
+					current=m;
 				}
 			}
-			selector.setItems(items);
-			Label tmp =current;
+			String tmp =current;
 			Platform.runLater(()->{
 				selector.setValue(tmp);
 			});
@@ -214,25 +269,7 @@ public class DyIOPanel  implements Initializable {
 
 	}
 	
-//	private void setSelectorType( int channel,DyIOChannelMode newMode ){
-//		
-//		ObservableList<Label> items = channelTypeSelectors.get(channel).getItems();
-//		for(int i=0;i<items.size();i++){
-//			Label l=items.get(i);
-//			if(l.getText().contentEquals(newMode.toSlug())){
-//				Platform.runLater(()->{
-//					channelTypeSelectors.get(channel).setValue(l);
-//				});
-//				return;
-//			}
-//		}
-//		
-////		channelButtonSelectors.get(channel).setImage(
-////				getChannelImage(
-////						new Image(DyIOConsole.class.getResourceAsStream("images/channel-default.png")), 
-////						newMode)
-////						);
-//	}
+
 	
 	private Image getChannelImage(Image image, DyIOChannelMode newMode ){
 		Image mode;
@@ -277,12 +314,12 @@ public class DyIOPanel  implements Initializable {
 		int index =getIndex( event);
 		Platform.runLater(()->{
 			
-			ComboBox<Label> comboBox = channelTypeSelectors.get(index);
-			Label v = comboBox.getValue();
+			ComboBox<String> comboBox = channelTypeSelectors.get(index);
+			String v = comboBox.getValue();
 			if(v==null)
 				return;
-			String text = v.getText();
-			DyIOChannelMode value = DyIOChannelMode.getFromSlug(text);
+
+			DyIOChannelMode value = DyIOChannelMode.getFromSlug(v);
 			
 			if(!initialized)
 				return;
