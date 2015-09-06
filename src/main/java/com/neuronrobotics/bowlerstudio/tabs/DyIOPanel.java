@@ -96,10 +96,34 @@ public class DyIOPanel  implements Initializable {
 	
 	private ArrayList<ComboBox<String>> channelTypeSelectors = new ArrayList<>() ;
 	private ArrayList<ImageView> channelButtonSelectors = new ArrayList<>() ;
+	private ArrayList<Label> channelValue = new ArrayList<>() ;
 	private DyIO dyio;
 	private boolean initialized=false;
 	@FXML Circle centerled;
-	@SuppressWarnings("unchecked")
+	@FXML Label channelValue0;
+	@FXML Label channelValue1;
+	@FXML Label channelValue2;
+	@FXML Label channelValue3;
+	@FXML Label channelValue4;
+	@FXML Label channelValue5;
+	@FXML Label channelValue6;
+	@FXML Label channelValue7;
+	@FXML Label channelValue8;
+	@FXML Label channelValue9;
+	@FXML Label channelValue10;
+	@FXML Label channelValue11;
+	@FXML Label channelValue12;
+	@FXML Label channelValue13;
+	@FXML Label channelValue14;
+	@FXML Label channelValue15;
+	@FXML Label channelValue16;
+	@FXML Label channelValue17;
+	@FXML Label channelValue18;
+	@FXML Label channelValue19;
+	@FXML Label channelValue20;
+	@FXML Label channelValue21;
+	@FXML Label channelValue22;
+	@FXML Label channelValue23;
 	public void setDyIO(DyIO d, Parent p){
 		
 		channelTypeSelectors.add( channelType0);
@@ -152,13 +176,42 @@ public class DyIOPanel  implements Initializable {
 		channelButtonSelectors.add(  chanButton22);
 		channelButtonSelectors.add(  chanButton23);
 		
+		//Values
+		channelValue.add(  channelValue0);
+		channelValue.add(  channelValue1);
+		channelValue.add(  channelValue2);
+		channelValue.add(  channelValue3);
+		channelValue.add(  channelValue4);
+		channelValue.add(  channelValue5);
+		channelValue.add(  channelValue6);
+		channelValue.add(  channelValue7);
+		channelValue.add(  channelValue8);
+		channelValue.add(  channelValue9);
+		channelValue.add(  channelValue10);
+		channelValue.add(  channelValue11);
+		channelValue.add(  channelValue12);
+		channelValue.add(  channelValue13);
+		channelValue.add(  channelValue14);
+		channelValue.add(  channelValue15);
+		channelValue.add(  channelValue16);
+		channelValue.add(  channelValue17);
+		channelValue.add(  channelValue18);
+		channelValue.add(  channelValue19);
+		channelValue.add(  channelValue20);
+		channelValue.add(  channelValue21);
+		channelValue.add(  channelValue22);
+		channelValue.add(  channelValue23);
 		
 		this.dyio = d;
 		for (int i = 0; i < 24; i++) {
 			int index = i;
 			ObservableList<String> items = FXCollections.observableArrayList();
 			DyIOChannel chan = dyio.getChannel(index);
-			Label current = null;
+			channelValue.get(i).setText(new Integer(chan.getValue()).toString());
+			chan.addChannelEventListener(e -> {
+				// set the value label text
+				Platform.runLater(()->channelValue.get(index).setText(new Integer(e.getValue()).toString()));
+			});
 			ComboBox<String> selector = channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
 					.getAvailibleChannelModes(index);

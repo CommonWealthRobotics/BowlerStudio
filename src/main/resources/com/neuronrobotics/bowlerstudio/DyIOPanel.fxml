@@ -204,6 +204,18 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
+                    <Label fx:id="channelValue23" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                    <Label fx:id="channelValue22" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                    <Label fx:id="channelValue21" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                    <Label fx:id="channelValue20" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                    <Label fx:id="channelValue19" prefHeight="16.9998779296875" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                    <Label fx:id="channelValue18" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                    <Label fx:id="channelValue17" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                    <Label fx:id="channelValue16" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                    <Label fx:id="channelValue15" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+                    <Label fx:id="channelValue14" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+                    <Label fx:id="channelValue13" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                    <Label fx:id="channelValue12" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="11" />
                   </children>
                   <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="83.0" minWidth="6.0" prefWidth="29.0" />
@@ -408,6 +420,18 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
+                    <Label fx:id="channelValue0" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" />
+                    <Label fx:id="channelValue1" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                    <Label fx:id="channelValue2" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                    <Label fx:id="channelValue3" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                    <Label fx:id="channelValue4" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                    <Label fx:id="channelValue5" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+                    <Label fx:id="channelValue6" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                    <Label fx:id="channelValue7" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+                    <Label fx:id="channelValue8" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+                    <Label fx:id="channelValue9" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+                    <Label fx:id="channelValue10" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+                    <Label fx:id="channelValue11" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="62.0" text="Label" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="11" />
                   </children>
                   <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="6.0" prefWidth="77.0" />
