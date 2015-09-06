@@ -3,13 +3,19 @@ package com.neuronrobotics.bowlerstudio.tabs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+
+
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ShellType;
@@ -19,6 +25,8 @@ import com.neuronrobotics.sdk.dyio.DyIOChannelEvent;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.IChannelEventListener;
 import com.neuronrobotics.sdk.dyio.peripherals.ServoChannel;
+
+
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -33,7 +41,9 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
@@ -79,14 +89,13 @@ public class DyIOchannelWidget {
 	
 	public void setChannel(DyIOChannel chan){
 		this.channel = chan;
-
 		startTime=System.currentTimeMillis();
 		setMode( chan.getMode());
 		deviceNumber.setText(new Integer(chan.getChannelNumber()).toString());
 		chanValue.setText(new Integer(chan.getValue()).toString());
 		secondsLabel.setText(String.format("%.2f", 0.0));
 		positionSlider.setValue(chan.getValue());
-		
+	
 		positionSlider.valueProperty().addListener(imp);
 		
 		positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
@@ -116,12 +125,20 @@ public class DyIOchannelWidget {
 					positionSlider.valueProperty().removeListener(imp);
 					positionSlider.setValue(dyioEvent.getValue());
 					positionSlider.valueProperty().addListener(imp);
-			        //populating the series with data
-			        //series.getData().add(new XYChart.Data<Integer, Integer>(1, 23));
+					if(series.getData().size()>200){
+						series.getData().remove(0);
+					}
+			        series.getData().add(new XYChart.Data<Integer, Integer>(
+			        		(int) (System.currentTimeMillis()-startTime),
+			        		dyioEvent.getValue())
+			        		);
+			   
 				});
 				
 			}
 		});
+		channelGraph.getData().add(series);
+
 		setUpListenerPanel();
 		setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		
@@ -231,7 +248,7 @@ public class DyIOchannelWidget {
 		textArea.setText("return new IChannelEventListener() { \n"+
 			"\tpublic \n"
 			+ "\tvoid onChannelEvent(DyIOChannelEvent dyioEvent){\n"+
-			"\t\tprintln \"From Listener=\"dyioEvent.getValue();\n"+
+			"\t\tprintln \"From Listener=\"+dyioEvent.getValue();\n"+
 			"\t}\n"+
 		"}"
 			);

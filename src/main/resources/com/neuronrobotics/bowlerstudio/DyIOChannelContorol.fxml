@@ -55,13 +55,12 @@
     </GridPane>
     <LineChart fx:id="channelGraph" minWidth="170.0" prefHeight="395.0000999999975" prefWidth="170.0">
       <xAxis>
-        <CategoryAxis id="channelGraph" cache="true" cacheHint="SPEED" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
+        <NumberAxis id="channelGraph" autoRanging="true" cache="false" cacheHint="SPEED" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
       </xAxis>
       <yAxis>
         <NumberAxis minorTickCount="2" minorTickLength="2.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1024.0" visible="false" />
       </yAxis>
     </LineChart>
-    
     <GridPane prefHeight="62.0" prefWidth="184.00009999999747">
       <children>
         <Button fx:id="setListenerButton" mnemonicParsing="false" onAction="#onListenerButtonClicked" text="Set Listener" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
