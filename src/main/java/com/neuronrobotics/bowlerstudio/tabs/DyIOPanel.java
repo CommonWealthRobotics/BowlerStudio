@@ -1,11 +1,14 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javax.management.RuntimeErrorException;
 import javax.swing.ImageIcon;
+
+import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -210,7 +213,32 @@ public class DyIOPanel  implements Initializable {
 			channelValue.get(i).setText(new Integer(chan.getValue()).toString());
 			chan.addChannelEventListener(e -> {
 				// set the value label text
-				Platform.runLater(()->channelValue.get(index).setText(new Integer(e.getValue()).toString()));
+				Platform.runLater(()->{
+					channelValue.get(index).setText(new Integer(e.getValue()).toString());
+					channelButtonSelectors.get(index).setImage(
+							new Image(
+									DyIOConsole.class
+													.getResourceAsStream("images/channel-update.png")));
+					FxTimer.runLater(
+							Duration.ofMillis(200) ,() -> {
+								channelButtonSelectors.get(index).setImage(
+										new Image(
+												DyIOConsole.class
+																.getResourceAsStream("images/channel-default.png")));
+							});
+				});
+			});
+			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
+				channelButtonSelectors.get(index).setImage(
+						new Image(
+								DyIOConsole.class
+												.getResourceAsStream("images/channel-highlight.png")));
+			});
+			channelButtonSelectors.get(index).setOnMouseExited(event -> {
+				channelButtonSelectors.get(index).setImage(
+						new Image(
+								DyIOConsole.class
+												.getResourceAsStream("images/channel-default.png")));
 			});
 			ComboBox<String> selector = channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
@@ -321,47 +349,7 @@ public class DyIOPanel  implements Initializable {
 		});
 
 	}
-	
 
-	
-	private Image getChannelImage(Image image, DyIOChannelMode newMode ){
-		Image mode;
-		try {
-			mode = new Image(DyIOConsole.class.getResourceAsStream("images/icon-" + newMode.toSlug() + ".png"));
-		}catch (NullPointerException e) {
-			mode = new Image(DyIOConsole.class.getResourceAsStream("images/icon-off.png"));
-		}
-		 // Obtain PixelReader
-        PixelReader pixelReader = image.getPixelReader();
-        
-        // Create WritableImage
-         WritableImage wImage = new WritableImage(
-                 (int)image.getWidth(),
-                 (int)image.getHeight());
-         PixelWriter pixelWriter = wImage.getPixelWriter();
-       
-        // Determine the color of each pixel in a specified row
-        for(int readY=0;readY<image.getHeight();readY++){
-            for(int readX=0; readX<image.getWidth();readX++){
-                Color color = pixelReader.getColor(readX,readY);               
-                // Now write a brighter color to the PixelWriter.
-                color = color.brighter();
-                pixelWriter.setColor(readX,readY,color);
-            }
-        }
-        pixelReader = mode.getPixelReader();
-     // Determine the color of each pixel in a specified row
-        for(int readY=0;readY<image.getHeight();readY++){
-            for(int readX=0; readX<image.getWidth();readX++){
-                Color color = pixelReader.getColor(readX,readY);               
-                // Now write a brighter color to the PixelWriter.
-                color = color.brighter();
-                pixelWriter.setColor(readX,readY,color);
-            }
-        }
-		
-		return wImage;
-	}
 
 	@FXML public void onChannelSelect(ActionEvent event) {
 		int index =getIndex( event);
