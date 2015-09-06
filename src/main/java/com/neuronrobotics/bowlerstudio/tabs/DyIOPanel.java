@@ -392,6 +392,8 @@ public class DyIOPanel  implements Initializable {
 			if(!initialized)
 				return;
 			dyio.setMode(index, value);
+			controlWidgetPanel.getChildren().clear();
+			controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
 		});
 	
 	}
