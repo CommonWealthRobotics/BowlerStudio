@@ -21,23 +21,26 @@
         <Label id="DeviceType" fx:id="deviceType" text="Type" GridPane.columnIndex="2" GridPane.rowIndex="0" />
         <Label fx:id="chanValue" text="0000" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         <Label prefHeight="17.0" prefWidth="71.0" text="Value:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label text="Seconds" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label fx:id="secondsLabel" text="0.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       </children>
       <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="81.0" minWidth="10.0" prefWidth="44.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="72.0" minWidth="10.0" prefWidth="54.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="81.0" minWidth="10.0" prefWidth="38.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="72.0" minWidth="10.0" prefWidth="60.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="106.0" minWidth="10.0" prefWidth="59.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="46.0" minWidth="10.0" prefWidth="27.0" />
       </columnConstraints>
       <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
     <GridPane prefHeight="83.0">
       <children>
-        <Slider fx:id="positionSlider" prefWidth="172.5" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Slider fx:id="positionSlider" blockIncrement="1.0" majorTickUnit="32.0" max="255.0" minorTickCount="1" prefWidth="172.5" showTickLabels="false" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
         <Label alignment="CENTER" text="Set" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-        <Slider fx:id="timeSlider" prefWidth="172.5" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Slider fx:id="timeSlider" max="5.0" prefWidth="172.5" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label text="Time" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" />
       </children>
       <columnConstraints>
@@ -46,12 +49,11 @@
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="61.0" minWidth="10.0" prefWidth="22.0" />
       </columnConstraints>
       <rowConstraints>
-        <RowConstraints maxHeight="23.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="47.0" minHeight="10.0" prefHeight="18.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="23.0" minHeight="1.0" prefHeight="8.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="23.0" minHeight="5.0" prefHeight="21.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="47.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <LineChart id="LineChart" fx:id="channelGraph" minWidth="170.0" prefHeight="395.0000999999975" prefWidth="170.0">
+    <LineChart fx:id="channelGraph" minWidth="170.0" prefHeight="395.0000999999975" prefWidth="170.0">
       <xAxis>
         <CategoryAxis id="channelGraph" cache="true" cacheHint="SPEED" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
       </xAxis>
@@ -59,7 +61,7 @@
         <NumberAxis minorTickCount="2" minorTickLength="2.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1024.0" visible="false" />
       </yAxis>
     </LineChart>
-    <AnchorPane fx:id="listenerCodeBox" prefHeight="260.0" prefWidth="184.0" />
+    
     <GridPane prefHeight="62.0" prefWidth="184.00009999999747">
       <children>
         <Button fx:id="setListenerButton" mnemonicParsing="false" onAction="#onListenerButtonClicked" text="Set Listener" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
@@ -75,5 +77,6 @@
         <RowConstraints maxHeight="19.0" minHeight="8.0" prefHeight="9.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
+    <AnchorPane fx:id="listenerCodeBox" prefHeight="260.0" prefWidth="184.0" />
   </children>
 </VBox>
