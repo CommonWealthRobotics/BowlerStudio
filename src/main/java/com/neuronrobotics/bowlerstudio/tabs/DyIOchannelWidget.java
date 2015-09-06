@@ -18,6 +18,7 @@ import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelEvent;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.IChannelEventListener;
+import com.neuronrobotics.sdk.dyio.peripherals.ServoChannel;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -41,6 +42,20 @@ import javafx.scene.image.ImageView;
 
 public class DyIOchannelWidget {
 
+	private final class ChangeListenerImplementation implements
+			ChangeListener<Number> {
+		public void changed(ObservableValue<? extends Number> ov,
+				Number old_val, Number new_val) {
+			int newVal = new_val.intValue();
+			chanValue.setText(new Integer(newVal).toString());
+			if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
+				//servo should only set on release when time is defined
+				return;
+			}
+			channel.setValue(newVal);
+		}
+	}
+
 	@FXML Button setListenerButton;
 	@FXML AnchorPane listenerCodeBox;
 	@FXML LineChart<Integer,Integer> channelGraph;
@@ -58,6 +73,9 @@ public class DyIOchannelWidget {
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
 	private RTextScrollPane sp;
+	private ServoChannel srv= null;
+	private DyIOChannelMode currentMode;
+	private ChangeListenerImplementation imp = new ChangeListenerImplementation();
 	
 	public void setChannel(DyIOChannel chan){
 		this.channel = chan;
@@ -69,15 +87,16 @@ public class DyIOchannelWidget {
 		secondsLabel.setText(String.format("%.2f", 0.0));
 		positionSlider.setValue(chan.getValue());
 		
-		positionSlider.valueProperty().addListener(
-				new ChangeListener<Number>() {
-					public void changed(ObservableValue<? extends Number> ov,
-							Number old_val, Number new_val) {
-						int newVal = new_val.intValue();
-						chanValue.setText(new Integer(newVal).toString());
+		positionSlider.valueProperty().addListener(imp);
+		
+		positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 
-					}
-				});
+			chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
+			if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
+				srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+			}
+			
+		});
 		timeSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
@@ -94,7 +113,9 @@ public class DyIOchannelWidget {
 			public void onChannelEvent(DyIOChannelEvent dyioEvent) {
 				Platform.runLater(()->{
 					chanValue.setText(new Integer(dyioEvent.getValue()).toString());
+					positionSlider.valueProperty().removeListener(imp);
 					positionSlider.setValue(dyioEvent.getValue());
+					positionSlider.valueProperty().addListener(imp);
 			        //populating the series with data
 			        //series.getData().add(new XYChart.Data<Integer, Integer>(1, 23));
 				});
@@ -108,21 +129,22 @@ public class DyIOchannelWidget {
 	
 	private void setMode(DyIOChannelMode newMode){
 		Image image;
+		currentMode = newMode;
 		try {
 			image = new Image(
 					DyIOConsole.class
 							.getResourceAsStream("images/icon-"
-									+ newMode.toSlug()+ ".png"));
+									+ currentMode.toSlug()+ ".png"));
 		} catch (NullPointerException e) {
 			image = new Image(
 					DyIOConsole.class
 							.getResourceAsStream("images/icon-off.png"));
 		}
 		deviceModeIcon.setImage(image);	
-		series.setName(newMode.toSlug()+" values");
-		deviceType.setText(newMode.toSlug());
+		series.setName(currentMode.toSlug()+" values");
+		deviceType.setText(currentMode.toSlug());
 		//set slider bounds
-		switch(newMode){
+		switch(currentMode){
 		case ANALOG_IN:
 			positionSlider.setMin(0);
 			positionSlider.setMax(1024);
@@ -153,7 +175,7 @@ public class DyIOchannelWidget {
 		
 		}
 		// allow slider to be disabled for inputs
-		switch(newMode){
+		switch(currentMode){
 		case ANALOG_IN:
 		case COUNT_IN_DIR:
 		case COUNT_IN_HOME:
@@ -169,6 +191,11 @@ public class DyIOchannelWidget {
 			break;
 		
 		}
+		
+		if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
+			srv = new ServoChannel(channel);
+		}
+		
 	}
 
 	@FXML public void onListenerButtonClicked(ActionEvent event) {
@@ -198,13 +225,13 @@ public class DyIOchannelWidget {
 	}
 	
 	private void setUpListenerPanel(){
-		textArea = new RSyntaxTextArea(15, 100);
+		textArea = new RSyntaxTextArea(15, 80);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		textArea.setCodeFoldingEnabled(true);
 		textArea.setText("return new IChannelEventListener() { \n"+
-			"\t@Override\n"+
-			"\tpublic void onChannelEvent(DyIOChannelEvent dyioEvent) {\n"+
-			"\t\tprintln dyioEvent.getValue()\n"+
+			"\tpublic \n"
+			+ "\tvoid onChannelEvent(DyIOChannelEvent dyioEvent){\n"+
+			"\t\tprintln \"From Listener=\"dyioEvent.getValue();\n"+
 			"\t}\n"+
 		"}"
 			);
@@ -215,7 +242,6 @@ public class DyIOchannelWidget {
             @Override
             public void run() {
             	sn.setContent(sp);
-            	
             }
         });
 		
