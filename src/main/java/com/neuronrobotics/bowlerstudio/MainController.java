@@ -145,16 +145,12 @@ public class MainController implements Initializable {
 				}
 
 				logViewRef.setText(finalStr);
-				FxTimer.runLater(
-						Duration.ofMillis(10) ,() -> {
-							logViewRef.setScrollTop(Double.MAX_VALUE);
-						});
-	
+				logViewRef.setScrollTop(Double.MAX_VALUE);
 			}
 			
 		}	
 		FxTimer.runLater(
-				Duration.ofMillis(200) ,() -> {
+				Duration.ofMillis(50) ,() -> {
 
 					updateLog();					
 		});
