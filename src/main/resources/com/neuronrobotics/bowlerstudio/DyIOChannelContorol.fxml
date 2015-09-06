@@ -58,7 +58,7 @@
         <NumberAxis id="channelGraph" autoRanging="true" cache="false" cacheHint="SPEED" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
       </xAxis>
       <yAxis>
-        <NumberAxis minorTickCount="2" minorTickLength="2.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1024.0" visible="false" />
+        <NumberAxis minorTickCount="2" minorTickLength="2.0" side="LEFT" tickLabelsVisible="true" tickMarkVisible="false" upperBound="1024.0" visible="false" />
       </yAxis>
     </LineChart>
     <GridPane prefHeight="62.0" prefWidth="184.00009999999747">
