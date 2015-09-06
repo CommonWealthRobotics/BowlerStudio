@@ -483,6 +483,6 @@
         </StackPane>
       </children>
     </AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0000999999975" prefWidth="489.0" />
+    <AnchorPane fx:id="controlWidgetPanel" minHeight="0.0" minWidth="0.0" prefHeight="620.0000999999975" prefWidth="489.0" />
   </items>
 </SplitPane>

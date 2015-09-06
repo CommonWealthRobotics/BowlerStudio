@@ -43,7 +43,7 @@ public class DyIOControl extends AbstractBowlerStudioTab {
         }
         Parent root = fxmlLoader.getRoot();
         controller = fxmlLoader.getController();
-        controller.setDyIO(dyio,root);
+        controller.setDyIO(dyio);
         setContent(root);
 	}
 	

@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -10,12 +11,14 @@ import javax.swing.ImageIcon;
 
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -42,8 +45,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Callback;
+import javafx.scene.layout.AnchorPane;
 
 public class DyIOPanel  implements Initializable {
+	
+	private ArrayList<ComboBox<String>> channelTypeSelectors = new ArrayList<>() ;
+	private ArrayList<ImageView> channelButtonSelectors = new ArrayList<>() ;
+	private ArrayList<Label> channelValue = new ArrayList<>() ;
+	private ArrayList<Parent> controlWidgets = new ArrayList<>() ;
+	
+	private DyIO dyio;
+	private boolean initialized=false;
 
 	@FXML ImageView chanButton23;
 	@FXML ImageView chanButton22;
@@ -97,11 +109,7 @@ public class DyIOPanel  implements Initializable {
 	@FXML ComboBox<String> channelType1;
 	@FXML ComboBox<String> channelType0;
 	
-	private ArrayList<ComboBox<String>> channelTypeSelectors = new ArrayList<>() ;
-	private ArrayList<ImageView> channelButtonSelectors = new ArrayList<>() ;
-	private ArrayList<Label> channelValue = new ArrayList<>() ;
-	private DyIO dyio;
-	private boolean initialized=false;
+
 	@FXML Circle centerled;
 	@FXML Label channelValue0;
 	@FXML Label channelValue1;
@@ -127,7 +135,11 @@ public class DyIOPanel  implements Initializable {
 	@FXML Label channelValue21;
 	@FXML Label channelValue22;
 	@FXML Label channelValue23;
-	public void setDyIO(DyIO d, Parent p){
+	@FXML AnchorPane controlWidgetPanel;
+	
+	
+	
+	public void setDyIO(DyIO d){
 		
 		channelTypeSelectors.add( channelType0);
 		channelTypeSelectors.add(  channelType1);
@@ -301,6 +313,19 @@ public class DyIOPanel  implements Initializable {
 			dyio.getChannel(index).addChannelModeChangeListener(newMode -> {
 				setChannelModeList(index);
 			});
+			
+			// generate the control widgets
+			FXMLLoader fxmlLoader = new FXMLLoader(
+	                BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
+	        try {
+	            fxmlLoader.load();
+	        } catch (IOException ex) {
+	            throw new RuntimeException(ex);
+	        }
+	        Parent root = fxmlLoader.getRoot();
+	        DyIOchannelWidget controller = fxmlLoader.getController();
+	        controller.setChannel(chan);
+			controlWidgets.add(root);
 
 		}
 		
@@ -311,6 +336,8 @@ public class DyIOPanel  implements Initializable {
 		System.err.println("Channel was clicked: "+getIndex( event));
 		if(!initialized)
 			return;
+		controlWidgetPanel.getChildren().clear();
+		controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
 	}
 	
 	private int getIndex(Event event){
