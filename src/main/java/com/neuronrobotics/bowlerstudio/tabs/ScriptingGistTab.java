@@ -120,8 +120,9 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 							setName("Start finalizing components");
 		    				finishLoadingComponents();
 	    				}
-
-
+	    				
+	    				if(scripting==null)
+	    					finishLoadingComponents();
 	    				try {
 							scripting.loadCodeFromGist(Current_URL, webEngine);
 						} catch (IOException e) {
@@ -152,7 +153,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			@Override
 			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
 				
-						System.out.println("Location Changed: "+newValue);
+						//System.out.println("Location Changed: "+newValue);
 						Platform.runLater(() -> {
 							urlField.setText(newValue);
 						});

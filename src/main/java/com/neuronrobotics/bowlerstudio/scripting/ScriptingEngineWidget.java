@@ -345,7 +345,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 	}
 	
 	private void loadGistLocal(String id, String file){
-		System.out.println("Loading "+file+" from "+id);
+		//System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
 			code = codeFromGistID(id,file);

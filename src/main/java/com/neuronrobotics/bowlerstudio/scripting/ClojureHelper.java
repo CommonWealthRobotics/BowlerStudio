@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
 
+import java.util.ArrayList;
+
 import clojure.lang.RT;
 import clojure.lang.Symbol;
 import clojure.lang.Var;
@@ -11,7 +13,7 @@ import clojure.lang.Var;
  * @author Mike https://github.com/mikera/clojure-utils/blob/master/src/main/java/mikera/cljutils/Clojure.java
  *
  */
-public class ClojureHelper {
+public class ClojureHelper extends AbstractScriptingLanguage{
 	public static final Var REQUIRE=var("clojure.core", "require");
 	public static final Var META=var("clojure.core", "meta");
 	public static final Var EVAL=var("clojure.core", "eval");
@@ -65,6 +67,27 @@ public class ClojureHelper {
 	 */
 	public static Object eval(String string) {
 		return EVAL.invoke(readString(string));
+	}
+
+	@Override
+	public Object inlineScriptRun(String code, ArrayList<Object> args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ShellType getShellType() {
+		return ShellType.CLOJURE;
+	}
+
+	@Override
+	public boolean isSupportedFileExtenetion(String filename) {
+		if (filename.toLowerCase().endsWith(".clj")
+				|| filename.toLowerCase().endsWith(".cljs")
+				|| filename.toLowerCase().endsWith(".cljc")) {
+			return true;
+		}		
+		return false;
 	}
 	
 }

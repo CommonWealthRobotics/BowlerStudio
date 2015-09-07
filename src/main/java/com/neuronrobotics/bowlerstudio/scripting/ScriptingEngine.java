@@ -108,7 +108,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static CredentialsProvider cp;// = new UsernamePasswordCredentialsProvider(name, password);
 	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
 
-
+	private static ArrayList<AbstractScriptingLanguage> langauges=new ArrayList<>();
 	
  	static{
  		File scriptingDir = new File(System.getProperty("user.home")+"/git/BowlerStudio/src/main/resources/com/neuronrobotics/bowlerstudio/");
@@ -142,7 +142,15 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				e.printStackTrace();
 			}
 		}
+		addScriptingLanguage(new ClojureHelper());
+		addScriptingLanguage(new GroovyHelper());
+		addScriptingLanguage(new JythonHelper());
 	}
+ 	
+ 	
+ 	public static void addScriptingLanguage(AbstractScriptingLanguage lang){
+ 		langauges.add(lang);
+ 	}
  	
  	public static void addIGithubLoginListener(IGithubLoginListener l){
  		if(!loginListeners.contains(l)){
@@ -169,6 +177,12 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		if (name.toString().toLowerCase().endsWith(".py")
 				|| name.toString().toLowerCase().endsWith(".jy")) {
 			return ShellType.JYTHON;
+			//System.out.println("Setting up Python Shell");
+		}
+		if (name.toString().toLowerCase().endsWith(".clj")
+				|| name.toString().toLowerCase().endsWith(".cljs")
+				|| name.toString().toLowerCase().endsWith(".cljc")) {
+			return ShellType.CLOJURE;
 			//System.out.println("Setting up Python Shell");
 		}
 		return ShellType.NONE;
@@ -307,8 +321,6 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			System.out.println("Cloning files to: "+localPath);
 			 //Clone the repo
 		    Git.cloneRepository().setURI(remotePath).setDirectory(new File(localPath)).call();
-		}else{
-			//System.out.println("Loading from cache: "+localPath);
 		}
 	    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
 	    Git git = new Git(localRepo);
@@ -448,7 +460,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		    
 		    File targetFile = new File(gistDir.getAbsolutePath()+"/"+FileName);
 			if(targetFile.exists()){
-				System.err.println("Loading file: "+targetFile.getAbsoluteFile());
+				//System.err.println("Loading file: "+targetFile.getAbsoluteFile());
 				//Target file is ready to go
 				 String text = new String(Files.readAllBytes(Paths.get(targetFile.getAbsolutePath())), StandardCharsets.UTF_8);
 				 return new String[] { text, FileName , targetFile.getAbsolutePath()};
