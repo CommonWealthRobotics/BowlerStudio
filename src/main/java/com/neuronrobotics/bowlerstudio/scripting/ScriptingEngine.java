@@ -71,7 +71,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	
 
 	
-	static final String[] imports = new String[] { "haar",
+	private static final String[] imports = new String[] { "haar",
 			"java.awt",
 			"eu.mihosoft.vrl.v3d",
 			"eu.mihosoft.vrl.v3d.samples",
@@ -108,7 +108,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static CredentialsProvider cp;// = new UsernamePasswordCredentialsProvider(name, password);
 	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
 
-	private static ArrayList<AbstractScriptingLanguage> langauges=new ArrayList<>();
+	private static ArrayList<IScriptingLanguage> langauges=new ArrayList<>();
 	
  	static{
  		File scriptingDir = new File(System.getProperty("user.home")+"/git/BowlerStudio/src/main/resources/com/neuronrobotics/bowlerstudio/");
@@ -148,7 +148,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
  	
  	
- 	public static void addScriptingLanguage(AbstractScriptingLanguage lang){
+ 	public static void addScriptingLanguage(IScriptingLanguage lang){
  		langauges.add(lang);
  	}
  	
@@ -169,22 +169,11 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 
 	public static ShellType setFilename(String name) {
-		if (name.toString().toLowerCase().endsWith(".java")
-				|| name.toString().toLowerCase().endsWith(".groovy")) {
-			return ShellType.GROOVY;
-			//System.out.println("Setting up Groovy Shell");
+		for (IScriptingLanguage l:langauges){
+			if(l.isSupportedFileExtenetion(name))
+				return l.getShellType();
 		}
-		if (name.toString().toLowerCase().endsWith(".py")
-				|| name.toString().toLowerCase().endsWith(".jy")) {
-			return ShellType.JYTHON;
-			//System.out.println("Setting up Python Shell");
-		}
-		if (name.toString().toLowerCase().endsWith(".clj")
-				|| name.toString().toLowerCase().endsWith(".cljs")
-				|| name.toString().toLowerCase().endsWith(".cljc")) {
-			return ShellType.CLOJURE;
-			//System.out.println("Setting up Python Shell");
-		}
+
 		return ShellType.NONE;
 	}
 	
@@ -515,17 +504,18 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
         return response.toString();
     }
-
-	public static Object inlineUrlScriptRun(URL gistID,
-			ArrayList<Object> args) throws Exception {
-		
-		return inlineUrlScriptRun(gistID, args,ShellType.GROOVY);
-	}
-	public static Object inlineUrlScriptRun(URL gistID,
-			ArrayList<Object> args, ShellType type) throws Exception {
-		
-		return inlineScriptRun(getText(gistID), args,type);
-	}
+//	@Deprecated
+//	public static Object inlineUrlScriptRun(URL gistID,
+//			ArrayList<Object> args) throws Exception {
+//		
+//		return inlineUrlScriptRun(gistID, args,ShellType.GROOVY);
+//	}
+//	@Deprecated //Filename should be specified
+//	public static Object inlineUrlScriptRun(URL gistID,
+//			ArrayList<Object> args, ShellType type) throws Exception {
+//		
+//		return inlineScriptRun(getText(gistID), args,type);
+//	}
 	
 	public static File getLastFile() {
 		if(lastFile==null)
@@ -548,128 +538,17 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 	
 	public static Object inlineScriptRun(String code, ArrayList<Object> args,ShellType activeType) {
-		switch (activeType) {
-		case JYTHON:
-			return runJython(code, args);
-		case GROOVY:
-			return runGroovy(code, args);
-		case CLOJURE:
-			return runClojure( code,  args);
-		case NONE:
-			break;
+		
+		for (IScriptingLanguage l:langauges){
+			if(l.getShellType() == activeType){
+				return l.inlineScriptRun(code, args);
+			}
 		}
 		return null;
 	}
-	
-	private static Object runClojure(String code, ArrayList<Object> args){
-		
-		return ClojureHelper.eval(code);
-	}
-	private static Object runGroovy(String code, ArrayList<Object> args) {
-		CompilerConfiguration cc = new CompilerConfiguration();
-		cc.addCompilationCustomizers(new ImportCustomizer()
-				.addStarImports(imports)
-				.addStaticStars(
-						"com.neuronrobotics.sdk.util.ThreadUtil",
-						"com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget",
-						"eu.mihosoft.vrl.v3d.Transform"));
 
-		Binding binding = new Binding();
-		for (String pm : DeviceManager.listConnectedDevice(null)) {
-			BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
-			try {
-				// groovy needs the objects cas to thier actual type befor
-				// passing into the scipt
-				
-				binding.setVariable(bad.getScriptingName(),
-						Class.forName(bad.getClass().getName())
-								.cast(bad));
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			System.err.println("Device " + bad.getScriptingName() + " is "
-//					+ bad);
-		}
-		binding.setVariable("args", args);
-
-		GroovyShell shell = new GroovyShell(ConnectionManager.class
-				.getClassLoader(), binding, cc);
-		//System.out.println(code + "\n\nStart\n\n");
-		Script script = shell.parse(code);
-
-		return script.run();
-	}
-
-	private static Object runJython(String code, ArrayList<Object> args) {
-
-		Properties props = new Properties();
-		PythonInterpreter.initialize(System.getProperties(), props,
-				new String[] { "" });
-		PythonInterpreter interp = new PythonInterpreter();
-
-		interp.exec("import sys");
-		for (String s : imports) {
-
-			// s = "import "+s;
-			//System.err.println(s);
-			if(!s.contains("mihosoft")&&
-					!s.contains("haar")&&
-					!s.contains("com.neuronrobotics.sdk.addons.kinematics")
-					) {
-				interp.exec("import "+s);
-			} else {
-				//from http://stevegilham.blogspot.com/2007/03/standalone-jython-importerror-no-module.html
-				try {
-					String[] names = s.split("\\.");
-					String packname = (names.length>0?names[names.length-1]:s);
-					Log.error("Forcing "+s+" as "+packname);
-					interp.exec("sys.packageManager.makeJavaPackage(" + s
-							+ ", " +packname + ", None)");
-
-					interp.exec("import "+packname);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-
-		for (String pm : DeviceManager.listConnectedDevice(null)) {
-			BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
-				// passing into the scipt
-			try{
-				interp.set(bad.getScriptingName(),
-						Class.forName(bad.getClass().getName())
-								.cast(bad));
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.err.println("Device " + bad.getScriptingName() + " is "
-					+ bad);
-		}
-		interp.set("args", args);
-
-		interp.exec(code);
-		ArrayList<Object> results = new ArrayList<>();
-		try{
-			results.add(interp.get("csg",CSG.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		try{
-			results.add(interp.get("tab",Tab.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		try{
-			results.add(interp.get("device",BowlerAbstractDevice.class));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		Log.debug("Jython return = "+results);
-		return results;
+	public static String[] getImports() {
+		return imports;
 	}
 
 

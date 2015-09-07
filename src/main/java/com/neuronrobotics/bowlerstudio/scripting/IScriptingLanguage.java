@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.util.ArrayList;
 
-public abstract class AbstractScriptingLanguage {
+public interface IScriptingLanguage {
 	/**
 	 * This interface is for adding additional language support. 
 	 * @param code the text content of the code to be executed

@@ -13,7 +13,7 @@ import clojure.lang.Var;
  * @author Mike https://github.com/mikera/clojure-utils/blob/master/src/main/java/mikera/cljutils/Clojure.java
  *
  */
-public class ClojureHelper extends AbstractScriptingLanguage{
+public class ClojureHelper implements IScriptingLanguage{
 	public static final Var REQUIRE=var("clojure.core", "require");
 	public static final Var META=var("clojure.core", "meta");
 	public static final Var EVAL=var("clojure.core", "eval");
@@ -71,8 +71,8 @@ public class ClojureHelper extends AbstractScriptingLanguage{
 
 	@Override
 	public Object inlineScriptRun(String code, ArrayList<Object> args) {
-		// TODO Auto-generated method stub
-		return null;
+
+		return ClojureHelper.eval(code);
 	}
 
 	@Override
