@@ -1,7 +1,17 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.util.ArrayList;
-
+/**
+ * Adding additional language support to bowler studio
+ * THis interface is for adding new scripting languages
+ * Add the new langauge in the Static declaration of ScriptingEngine 
+ * or dynamically via:
+ * 
+ * ScriptingEngine.addScriptingLanguage(new IScriptingLanguage());
+ * 
+ * @author hephaestus
+ *
+ */
 public interface IScriptingLanguage {
 	/**
 	 * This interface is for adding additional language support. 
