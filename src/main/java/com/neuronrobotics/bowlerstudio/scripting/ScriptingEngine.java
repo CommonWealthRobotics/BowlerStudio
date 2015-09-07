@@ -57,6 +57,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
+import clojure.java.api.Clojure;
+import clojure.lang.Symbol;
+import clojure.lang.Var;
+import clojure.lang.RT;
 
 
 public class ScriptingEngine extends BorderPane{// this subclasses boarder pane for the widgets sake, because multiple inheritance is TOO hard for java...
@@ -91,8 +95,6 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			"com.neuronrobotics.bowlerstudio.vitamins.Vitamins"};
 
 	private static GitHub github;
-
-
 
 	private static File creds=null;
 
@@ -538,9 +540,18 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		case JYTHON:
 			return runJython(code, args);
 		case GROOVY:
-		default:
 			return runGroovy(code, args);
+		case CLOJURE:
+			return runClojure( code,  args);
+		case NONE:
+			break;
 		}
+		return null;
+	}
+	
+	private static Object runClojure(String code, ArrayList<Object> args){
+		
+		return ClojureHelper.eval(code);
 	}
 	private static Object runGroovy(String code, ArrayList<Object> args) {
 		CompilerConfiguration cc = new CompilerConfiguration();

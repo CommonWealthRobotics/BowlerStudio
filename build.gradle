@@ -108,6 +108,10 @@ dependencies {
 	compile 'commons-io:commons-io:2.4'
 	compile group:'org.python',name:'jython',version:'2.5.3'
 	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
+	compile 'org.clojure:clojure:1.7.0'
+	compile 'org.clojure:tools.nrepl:0.2.10'
+
+
 			
 	compile project(':JCSG')
 	compile project(':CHDK-PTP-Java')

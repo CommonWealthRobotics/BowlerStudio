@@ -61,8 +61,10 @@ import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
+import com.sun.crypto.provider.DHParameterGenerator;
 import com.sun.speech.freetts.VoiceManager;
 
 import javafx.scene.control.Menu;
@@ -537,6 +539,7 @@ public class MainController implements Initializable {
 				BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+id));
 				String xmlContent = ScriptingEngineWidget.codeFromGistID(id,file)[0];
 				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+				
 				mb.setSelfSource(new String[]{id,file});
 				ConnectionManager.addConnection(mb,mb.getScriptingName());
 				
