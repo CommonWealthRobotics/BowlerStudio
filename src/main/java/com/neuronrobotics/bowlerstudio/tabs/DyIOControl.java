@@ -32,6 +32,8 @@ public class DyIOControl extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		this.dyio = (DyIO)pm;
+		DyIOImageFactory.load();
+		
 		setText(dyio.getScriptingName());
 		FXMLLoader fxmlLoader = new FXMLLoader(
                 BowlerStudio.class.getResource("DyIOPanel.fxml"));

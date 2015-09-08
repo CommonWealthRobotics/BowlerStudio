@@ -5,15 +5,18 @@ import java.io.StringWriter;
 
 
 
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
 
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+
 
 
 
@@ -25,6 +28,7 @@ import com.neuronrobotics.sdk.dyio.DyIOChannelEvent;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.IChannelEventListener;
 import com.neuronrobotics.sdk.dyio.peripherals.ServoChannel;
+
 
 
 
@@ -146,22 +150,11 @@ public class DyIOchannelWidget {
 	}
 	
 	private void setMode(DyIOChannelMode newMode){
-		Image image;
 		currentMode = newMode;
-		try {
-			image = new Image(
-					DyIOConsole.class
-							.getResourceAsStream("images/icon-"
-									+ currentMode.toSlug()+ ".png"));
-		} catch (NullPointerException e) {
-			image = new Image(
-					DyIOConsole.class
-							.getResourceAsStream("images/icon-off.png"));
-		}
-		Image i = image;
+
 		Platform.runLater(()->{
 
-			deviceModeIcon.setImage(i);	
+			deviceModeIcon.setImage(DyIOImageFactory.getModeImage(newMode));	
 			series.setName(currentMode.toSlug()+" values");
 			deviceType.setText(currentMode.toSlug());
 			//set slider bounds
@@ -221,34 +214,40 @@ public class DyIOchannelWidget {
 	}
 
 	@FXML public void onListenerButtonClicked(ActionEvent event) {
-		try{
-			if(myLocalListener==null){
-				Platform.runLater(()->{
-					sn.setDisable(true);
-					textArea.setEditable(false);
-				});
-				myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptRun(textArea.getText(), null, ShellType.GROOVY);
-				channel.addChannelEventListener(myLocalListener);
-				Platform.runLater(()->{
-					setListenerButton.setText("Kill Listener");
-					setListenerButton.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-				});
-			}else{
-				Platform.runLater(()->{
-					sn.setDisable(false);
-					textArea.setEditable(true);
-					channel.removeChannelEventListener(myLocalListener);
-					myLocalListener=null;
-					setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-					setListenerButton.setText("Set Listener");
-				});
+		new Thread(){
+			public void run(){
+				setName("compiling listener");
+				try{
+					if(myLocalListener==null){
+						Platform.runLater(()->{
+							sn.setDisable(true);
+							textArea.setEditable(false);
+						});
+						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptRun(textArea.getText(), null, ShellType.GROOVY);
+						channel.addChannelEventListener(myLocalListener);
+						Platform.runLater(()->{
+							setListenerButton.setText("Kill Listener");
+							setListenerButton.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+						});
+					}else{
+						Platform.runLater(()->{
+							sn.setDisable(false);
+							textArea.setEditable(true);
+							channel.removeChannelEventListener(myLocalListener);
+							myLocalListener=null;
+							setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+							setListenerButton.setText("Set Listener");
+						});
+					}
+				}catch(Exception e){
+					  StringWriter sw = new StringWriter();
+				      PrintWriter pw = new PrintWriter(sw);
+				      e.printStackTrace(pw);
+				      System.out.println(sw.toString());
+				}
 			}
-		}catch(Exception e){
-			  StringWriter sw = new StringWriter();
-		      PrintWriter pw = new PrintWriter(sw);
-		      e.printStackTrace(pw);
-		      System.out.println(sw.toString());
-		}
+		}.start();
+
 		
 	}
 	

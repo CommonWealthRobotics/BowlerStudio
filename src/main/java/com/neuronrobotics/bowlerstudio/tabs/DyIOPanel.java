@@ -23,7 +23,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -226,34 +225,22 @@ public class DyIOPanel  implements Initializable {
 			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
 			chan.addChannelEventListener(e -> {
 				// set the value label text
-				Image im =new Image(
-						DyIOConsole.class
-						.getResourceAsStream("images/channel-update.png"));
 				Platform.runLater(()->{
 					channelValue.get(index).setText(new Integer(e.getValue()).toString());
-					channelButtonSelectors.get(index).setImage(im);
+					channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanUpdate());
 					FxTimer.runLater(
 							Duration.ofMillis(200) ,() -> {
-								channelButtonSelectors.get(index).setImage(
-										new Image(
-												DyIOConsole.class
-																.getResourceAsStream("images/channel-default.png")));
+								channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanDefault());
 							});
 				});
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(
-						new Image(
-								DyIOConsole.class
-												.getResourceAsStream("images/channel-highlight.png"))));
+				channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanHighlight()));
 			});
 			channelButtonSelectors.get(index).setOnMouseExited(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(
-						new Image(
-								DyIOConsole.class
-												.getResourceAsStream("images/channel-default.png"))));
+				channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanDefault()));
 			});
 			ComboBox<String> selector = channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
@@ -285,21 +272,9 @@ public class DyIOPanel  implements Initializable {
 			                if (item == null || empty) {
 			                    setGraphic(null);
 			                } else {
-								Image image;
-								//
-								try {
-									image = new Image(
-											DyIOConsole.class
-													.getResourceAsStream("images/icon-"
-															+ item+ ".png"));
-								} catch (NullPointerException e) {
-									image = new Image(
-											DyIOConsole.class
-													.getResourceAsStream("images/icon-off.png"));
-								}
 
 			                    name.setText(item);
-			                    icon.setGraphic(new ImageView(image));
+			                    icon.setGraphic(new ImageView(DyIOImageFactory.getModeImage(DyIOChannelMode.getFromSlug(item))));
 			                    setGraphic(cell);
 			                    //HERE IS WHERE YOU GET THE LABEL AND NAME
 			                }
