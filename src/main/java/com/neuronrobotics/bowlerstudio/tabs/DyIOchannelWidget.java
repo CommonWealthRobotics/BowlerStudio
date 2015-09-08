@@ -66,7 +66,13 @@ public class DyIOchannelWidget {
 				//servo should only set on release when time is defined
 				return;
 			}
-			channel.setValue(newVal);
+			new Thread(){
+				public void run(){
+					setName("Setting channel value");
+					channel.setValue(newVal);
+				}
+			}.start();
+			
 		}
 	}
 
@@ -91,15 +97,15 @@ public class DyIOchannelWidget {
 	private DyIOChannelMode currentMode;
 	private ChangeListenerImplementation imp = new ChangeListenerImplementation();
 	
-	public void setChannel(DyIOChannel chan){
+	public void setChannel(DyIOChannel c){
 		Platform.runLater(()->{
-			this.channel = chan;
+			this.channel = c;
 			startTime=System.currentTimeMillis();
-			setMode( chan.getMode());
-			deviceNumber.setText(new Integer(chan.getChannelNumber()).toString());
-			chanValue.setText(new Integer(chan.getValue()).toString());
+			setMode( channel.getMode());
+			deviceNumber.setText(new Integer(channel.getChannelNumber()).toString());
+			chanValue.setText(new Integer(channel.getValue()).toString());
 			secondsLabel.setText(String.format("%.2f", 0.0));
-			positionSlider.setValue(chan.getValue());
+			positionSlider.setValue(channel.getValue());
 		
 			positionSlider.valueProperty().addListener(imp);
 			
@@ -107,7 +113,13 @@ public class DyIOchannelWidget {
 	
 				chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
 				if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
-					srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+					new Thread(){
+						public void run(){
+							setName("Setting servo Pos");
+							srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+						}
+					}.start();
+					
 				}
 				
 			});
@@ -207,7 +219,12 @@ public class DyIOchannelWidget {
 			}
 			
 			if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
-				srv = new ServoChannel(channel);
+				new Thread(){
+					public void run(){
+						setName("Connectiong servo object");
+						srv = new ServoChannel(channel);	
+					}
+				}.start();
 			}
 		});
 		
