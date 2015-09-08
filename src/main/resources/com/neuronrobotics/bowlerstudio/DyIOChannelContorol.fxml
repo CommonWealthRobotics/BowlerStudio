@@ -55,7 +55,7 @@
     </GridPane>
     <LineChart fx:id="channelGraph" minWidth="170.0" prefHeight="395.0000999999975" prefWidth="170.0">
       <xAxis>
-        <NumberAxis id="channelGraph" autoRanging="true" cache="false" cacheHint="SPEED" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
+        <NumberAxis animated="false" autoRanging="true" cache="false" cacheHint="SPEED" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
       </xAxis>
       <yAxis>
         <NumberAxis animated="false" forceZeroInRange="false" minorTickCount="2" minorTickLength="2.0" side="LEFT" tickLabelsVisible="true" tickMarkVisible="false" upperBound="1024.0" visible="false" />

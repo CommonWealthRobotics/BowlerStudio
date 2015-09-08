@@ -480,9 +480,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		return null;
 	}
 
-	public static Object inlineGistScriptRun(String gistID,
-			ArrayList<Object> args)  throws Exception{
-		String[] gistData = codeFromGistID(gistID,"");
+	public static Object inlineGistScriptRun(String gistID, String Filename ,ArrayList<Object> args)  throws Exception{
+		String[] gistData = codeFromGistID(gistID,Filename);
 		return inlineScriptRun(gistData[0], args,setFilename(gistData[1]));
 	}
 	

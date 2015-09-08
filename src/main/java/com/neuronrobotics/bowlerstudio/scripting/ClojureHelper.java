@@ -14,10 +14,10 @@ import clojure.lang.Var;
  *
  */
 public class ClojureHelper implements IScriptingLanguage{
-	public static final Var REQUIRE=var("clojure.core", "require");
-	public static final Var META=var("clojure.core", "meta");
-	public static final Var EVAL=var("clojure.core", "eval");
-	public static final Var READ_STRING=var("clojure.core", "read-string");
+	public static Var REQUIRE=var("clojure.core", "require");
+	public static Var META=var("clojure.core", "meta");
+	public static Var EVAL=var("clojure.core", "eval");
+	public static Var READ_STRING=var("clojure.core", "load-string");
 	
 	/**
 	 * Require a namespace by name, loading it if necessary.
@@ -71,8 +71,9 @@ public class ClojureHelper implements IScriptingLanguage{
 
 	@Override
 	public Object inlineScriptRun(String code, ArrayList<Object> args) {
-
-		return ClojureHelper.eval(code);
+		Object ret = ClojureHelper.eval(code);
+		System.out.println("Clojure returned of type="+ret.getClass()+" value="+ret);
+		return ret;
 	}
 
 	@Override
