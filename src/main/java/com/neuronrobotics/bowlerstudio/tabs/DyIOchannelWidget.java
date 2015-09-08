@@ -92,61 +92,61 @@ public class DyIOchannelWidget {
 	private ChangeListenerImplementation imp = new ChangeListenerImplementation();
 	
 	public void setChannel(DyIOChannel chan){
-		this.channel = chan;
-		startTime=System.currentTimeMillis();
-		setMode( chan.getMode());
-		deviceNumber.setText(new Integer(chan.getChannelNumber()).toString());
-		chanValue.setText(new Integer(chan.getValue()).toString());
-		secondsLabel.setText(String.format("%.2f", 0.0));
-		positionSlider.setValue(chan.getValue());
-	
-		positionSlider.valueProperty().addListener(imp);
+		Platform.runLater(()->{
+			this.channel = chan;
+			startTime=System.currentTimeMillis();
+			setMode( chan.getMode());
+			deviceNumber.setText(new Integer(chan.getChannelNumber()).toString());
+			chanValue.setText(new Integer(chan.getValue()).toString());
+			secondsLabel.setText(String.format("%.2f", 0.0));
+			positionSlider.setValue(chan.getValue());
 		
-		positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-
-			chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
-			if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
-				srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
-			}
+			positionSlider.valueProperty().addListener(imp);
 			
-		});
-		timeSlider.valueProperty().addListener(new ChangeListener<Number>() {
-			public void changed(ObservableValue<? extends Number> ov,
-					Number old_val, Number new_val) {
-				secondsLabel.setText(String.format("%.2f", new_val));
-			}
-		});
-		channel.addChannelModeChangeListener(newMode -> {
-			setMode( newMode);
-		});
-		
-		
-		channel.addChannelEventListener(new IChannelEventListener() {
-			@Override
-			public void onChannelEvent(DyIOChannelEvent dyioEvent) {
-				Platform.runLater(()->{
-					chanValue.setText(new Integer(dyioEvent.getValue()).toString());
-					positionSlider.valueProperty().removeListener(imp);
-					positionSlider.setValue(dyioEvent.getValue());
-					positionSlider.valueProperty().addListener(imp);
-					if(series.getData().size()>200){
-						series.getData().remove(0);
-					}
-			        series.getData().add(new XYChart.Data<Integer, Integer>(
-			        		(int) (System.currentTimeMillis()-startTime),
-			        		dyioEvent.getValue())
-			        		);
-			   
-				});
+			positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+	
+				chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
+				if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
+					srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+				}
 				
-			}
+			});
+			timeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+				public void changed(ObservableValue<? extends Number> ov,
+						Number old_val, Number new_val) {
+					secondsLabel.setText(String.format("%.2f", new_val));
+				}
+			});
+			channel.addChannelModeChangeListener(newMode -> {
+				setMode( newMode);
+			});
+			
+			
+			channel.addChannelEventListener(new IChannelEventListener() {
+				@Override
+				public void onChannelEvent(DyIOChannelEvent dyioEvent) {
+					Platform.runLater(()->{
+						chanValue.setText(new Integer(dyioEvent.getValue()).toString());
+						positionSlider.valueProperty().removeListener(imp);
+						positionSlider.setValue(dyioEvent.getValue());
+						positionSlider.valueProperty().addListener(imp);
+						if(series.getData().size()>200){
+							series.getData().remove(0);
+						}
+				        series.getData().add(new XYChart.Data<Integer, Integer>(
+				        		(int) (System.currentTimeMillis()-startTime),
+				        		dyioEvent.getValue())
+				        		);
+				   
+					});
+					
+				}
+			});
+			Platform.runLater(()->channelGraph.getData().add(series));
+	
+			setUpListenerPanel();
+			Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));
 		});
-		Platform.runLater(()->
-		channelGraph.getData().add(series));
-
-		setUpListenerPanel();
-		Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));
-		
 	}
 	
 	private void setMode(DyIOChannelMode newMode){

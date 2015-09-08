@@ -242,7 +242,7 @@ public class DyIOPanel  implements Initializable {
 				Platform.runLater(()->
 				channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanDefault()));
 			});
-			ComboBox<String> selector = channelTypeSelectors.get(index);
+			channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
 					.getAvailibleChannelModes(index);
 			for (DyIOChannelMode m : modesAvailible) {
@@ -283,10 +283,11 @@ public class DyIOPanel  implements Initializable {
 					
 				}
 			};
-
-			selector.setButtonCell(callback.call(null));
-			selector.setCellFactory(callback);
-			selector.setItems(items);
+			Platform.runLater(()->{
+				channelTypeSelectors.get(index).setButtonCell(callback.call(null));
+				channelTypeSelectors.get(index).setCellFactory(callback);
+				channelTypeSelectors.get(index).setItems(items);
+			});
 			setChannelModeList(index);
 			dyio.getChannel(index).addChannelModeChangeListener(newMode -> {
 				setChannelModeList(index);
@@ -341,10 +342,10 @@ public class DyIOPanel  implements Initializable {
 	}
 	
 	private void setChannelModeList(int index){
-		ComboBox<String> selector = channelTypeSelectors.get(index);
+		DyIOChannel chan =dyio.getChannel(index);
 		Platform.runLater(()->{
-
-			DyIOChannel chan =dyio.getChannel(index);
+			ComboBox<String> selector = channelTypeSelectors.get(index);
+			
 			String current =null;
 			for(String m:selector.getItems()){
 				if(chan.getMode().toSlug().contentEquals(m)){
@@ -352,9 +353,7 @@ public class DyIOPanel  implements Initializable {
 				}
 			}
 			String tmp =current;
-			Platform.runLater(()->{
-				selector.setValue(tmp);
-			});
+			selector.setValue(tmp);
 		});
 
 	}
