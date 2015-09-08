@@ -73,6 +73,8 @@ repositories {
 	mavenCentral()
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'http://repo.jenkins-ci.org/public/' }
+	maven { url 'http://clojars.org/repo' }
+	
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
@@ -110,6 +112,7 @@ dependencies {
 	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
 	compile 'org.clojure:clojure:1.7.0'
 	compile 'org.clojure:tools.nrepl:0.2.10'
+	compile "overtone:overtone:0.9.1"
 
 
 			
