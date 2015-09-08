@@ -6,16 +6,20 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+
 import javax.management.RuntimeErrorException;
 import javax.swing.ImageIcon;
 
+
 import org.reactfx.util.FxTimer;
+
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
+
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -365,7 +369,13 @@ public class DyIOPanel  implements Initializable {
 			
 			if(!initialized)
 				return;
-			dyio.setMode(index, value);
+			new Thread(){
+				public void run(){
+					setName("Running the set mode thread");
+					dyio.setMode(index, value);
+				}
+			}.start();
+			
 			controlWidgetPanel.getChildren().clear();
 			controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
 		});
