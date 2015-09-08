@@ -226,12 +226,12 @@ public class DyIOPanel  implements Initializable {
 			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
 			chan.addChannelEventListener(e -> {
 				// set the value label text
+				Image im =new Image(
+						DyIOConsole.class
+						.getResourceAsStream("images/channel-update.png"));
 				Platform.runLater(()->{
 					channelValue.get(index).setText(new Integer(e.getValue()).toString());
-					channelButtonSelectors.get(index).setImage(
-							new Image(
-									DyIOConsole.class
-													.getResourceAsStream("images/channel-update.png")));
+					channelButtonSelectors.get(index).setImage(im);
 					FxTimer.runLater(
 							Duration.ofMillis(200) ,() -> {
 								channelButtonSelectors.get(index).setImage(

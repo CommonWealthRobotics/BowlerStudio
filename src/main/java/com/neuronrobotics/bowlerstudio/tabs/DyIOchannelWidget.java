@@ -146,20 +146,22 @@ public class DyIOchannelWidget {
 	}
 	
 	private void setMode(DyIOChannelMode newMode){
+		Image image;
+		currentMode = newMode;
+		try {
+			image = new Image(
+					DyIOConsole.class
+							.getResourceAsStream("images/icon-"
+									+ currentMode.toSlug()+ ".png"));
+		} catch (NullPointerException e) {
+			image = new Image(
+					DyIOConsole.class
+							.getResourceAsStream("images/icon-off.png"));
+		}
+		Image i = image;
 		Platform.runLater(()->{
-			Image image;
-			currentMode = newMode;
-			try {
-				image = new Image(
-						DyIOConsole.class
-								.getResourceAsStream("images/icon-"
-										+ currentMode.toSlug()+ ".png"));
-			} catch (NullPointerException e) {
-				image = new Image(
-						DyIOConsole.class
-								.getResourceAsStream("images/icon-off.png"));
-			}
-			deviceModeIcon.setImage(image);	
+
+			deviceModeIcon.setImage(i);	
 			series.setName(currentMode.toSlug()+" values");
 			deviceType.setText(currentMode.toSlug());
 			//set slider bounds
