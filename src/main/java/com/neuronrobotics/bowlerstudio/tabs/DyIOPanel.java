@@ -222,7 +222,8 @@ public class DyIOPanel  implements Initializable {
 			int index = i;
 			ObservableList<String> items = FXCollections.observableArrayList();
 			DyIOChannel chan = dyio.getChannel(index);
-			channelValue.get(i).setText(new Integer(chan.getValue()).toString());
+			
+			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
 			chan.addChannelEventListener(e -> {
 				// set the value label text
 				Platform.runLater(()->{
@@ -241,16 +242,18 @@ public class DyIOPanel  implements Initializable {
 				});
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
+				Platform.runLater(()->
 				channelButtonSelectors.get(index).setImage(
 						new Image(
 								DyIOConsole.class
-												.getResourceAsStream("images/channel-highlight.png")));
+												.getResourceAsStream("images/channel-highlight.png"))));
 			});
 			channelButtonSelectors.get(index).setOnMouseExited(event -> {
+				Platform.runLater(()->
 				channelButtonSelectors.get(index).setImage(
 						new Image(
 								DyIOConsole.class
-												.getResourceAsStream("images/channel-default.png")));
+												.getResourceAsStream("images/channel-default.png"))));
 			});
 			ComboBox<String> selector = channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
@@ -314,18 +317,20 @@ public class DyIOPanel  implements Initializable {
 				setChannelModeList(index);
 			});
 			
-			// generate the control widgets
-			FXMLLoader fxmlLoader = new FXMLLoader(
-	                BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
-	        try {
-	            fxmlLoader.load();
-	        } catch (IOException ex) {
-	            throw new RuntimeException(ex);
-	        }
-	        Parent root = fxmlLoader.getRoot();
-	        DyIOchannelWidget controller = fxmlLoader.getController();
-	        controller.setChannel(chan);
-			controlWidgets.add(root);
+			Platform.runLater(()->{
+				// generate the control widgets
+				FXMLLoader fxmlLoader = new FXMLLoader(
+		                BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
+		        try {
+		            fxmlLoader.load();
+		        } catch (IOException ex) {
+		            throw new RuntimeException(ex);
+		        }
+		        Parent root = fxmlLoader.getRoot();
+		        DyIOchannelWidget controller = fxmlLoader.getController();
+		        controller.setChannel(chan);
+				controlWidgets.add(root);
+			});
 
 		}
 		
@@ -336,8 +341,10 @@ public class DyIOPanel  implements Initializable {
 		System.err.println("Channel was clicked: "+getIndex( event));
 		if(!initialized)
 			return;
-		controlWidgetPanel.getChildren().clear();
-		controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
+		Platform.runLater(()->{
+			controlWidgetPanel.getChildren().clear();
+			controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
+		});
 	}
 	
 	private int getIndex(Event event){

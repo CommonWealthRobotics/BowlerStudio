@@ -137,100 +137,109 @@ public class DyIOchannelWidget {
 				
 			}
 		});
-		channelGraph.getData().add(series);
+		Platform.runLater(()->
+		channelGraph.getData().add(series));
 
 		setUpListenerPanel();
-		setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+		Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));
 		
 	}
 	
 	private void setMode(DyIOChannelMode newMode){
-		Image image;
-		currentMode = newMode;
-		try {
-			image = new Image(
-					DyIOConsole.class
-							.getResourceAsStream("images/icon-"
-									+ currentMode.toSlug()+ ".png"));
-		} catch (NullPointerException e) {
-			image = new Image(
-					DyIOConsole.class
-							.getResourceAsStream("images/icon-off.png"));
-		}
-		deviceModeIcon.setImage(image);	
-		series.setName(currentMode.toSlug()+" values");
-		deviceType.setText(currentMode.toSlug());
-		//set slider bounds
-		switch(currentMode){
-		case ANALOG_IN:
-			positionSlider.setMin(0);
-			positionSlider.setMax(1024);
-			break;
-		case COUNT_IN_DIR:
-		case COUNT_IN_HOME:
-		case COUNT_IN_INT:
-		case COUNT_OUT_DIR:
-		case COUNT_OUT_HOME:
-		case COUNT_OUT_INT:
-			positionSlider.setMin(-5000);
-			positionSlider.setMax(-5000);
-			break;
-		case DC_MOTOR_DIR:			
-		case DC_MOTOR_VEL:
-		case PWM_OUT:
-		case SERVO_OUT:
-			positionSlider.setMin(0);
-			positionSlider.setMax(255);
-			break;
-		case DIGITAL_IN:
-		case DIGITAL_OUT:
-			positionSlider.setMin(0);
-			positionSlider.setMax(1);
-			break;
-		default:
-			break;
-		
-		}
-		// allow slider to be disabled for inputs
-		switch(currentMode){
-		case ANALOG_IN:
-		case COUNT_IN_DIR:
-		case COUNT_IN_HOME:
-		case COUNT_IN_INT:
-		case DIGITAL_IN:
-			timeSlider.setDisable(true);
-			positionSlider.setDisable(true);
-			break;
-
-		default:
-			timeSlider.setDisable(false);
-			positionSlider.setDisable(false);
-			break;
-		
-		}
-		
-		if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
-			srv = new ServoChannel(channel);
-		}
+		Platform.runLater(()->{
+			Image image;
+			currentMode = newMode;
+			try {
+				image = new Image(
+						DyIOConsole.class
+								.getResourceAsStream("images/icon-"
+										+ currentMode.toSlug()+ ".png"));
+			} catch (NullPointerException e) {
+				image = new Image(
+						DyIOConsole.class
+								.getResourceAsStream("images/icon-off.png"));
+			}
+			deviceModeIcon.setImage(image);	
+			series.setName(currentMode.toSlug()+" values");
+			deviceType.setText(currentMode.toSlug());
+			//set slider bounds
+			switch(currentMode){
+			case ANALOG_IN:
+				positionSlider.setMin(0);
+				positionSlider.setMax(1024);
+				break;
+			case COUNT_IN_DIR:
+			case COUNT_IN_HOME:
+			case COUNT_IN_INT:
+			case COUNT_OUT_DIR:
+			case COUNT_OUT_HOME:
+			case COUNT_OUT_INT:
+				positionSlider.setMin(-5000);
+				positionSlider.setMax(-5000);
+				break;
+			case DC_MOTOR_DIR:			
+			case DC_MOTOR_VEL:
+			case PWM_OUT:
+			case SERVO_OUT:
+				positionSlider.setMin(0);
+				positionSlider.setMax(255);
+				break;
+			case DIGITAL_IN:
+			case DIGITAL_OUT:
+				positionSlider.setMin(0);
+				positionSlider.setMax(1);
+				break;
+			default:
+				break;
+			
+			}
+			// allow slider to be disabled for inputs
+			switch(currentMode){
+			case ANALOG_IN:
+			case COUNT_IN_DIR:
+			case COUNT_IN_HOME:
+			case COUNT_IN_INT:
+			case DIGITAL_IN:
+				timeSlider.setDisable(true);
+				positionSlider.setDisable(true);
+				break;
+	
+			default:
+				timeSlider.setDisable(false);
+				positionSlider.setDisable(false);
+				break;
+			
+			}
+			
+			if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
+				srv = new ServoChannel(channel);
+			}
+		});
 		
 	}
 
 	@FXML public void onListenerButtonClicked(ActionEvent event) {
 		try{
 			if(myLocalListener==null){
-				sn.setDisable(true);
-				textArea.setEditable(false);
+				Platform.runLater(()->{
+					sn.setDisable(true);
+					textArea.setEditable(false);
+				});
 				myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptRun(textArea.getText(), null, ShellType.GROOVY);
 				channel.addChannelEventListener(myLocalListener);
-				setListenerButton.setText("Kill Listener");
-				setListenerButton.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+				Platform.runLater(()->{
+					setListenerButton.setText("Kill Listener");
+					setListenerButton.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+				});
 			}else{
-				sn.setDisable(false);
-				textArea.setEditable(true);
-				channel.removeChannelEventListener(myLocalListener);
-				myLocalListener=null;
-				setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-				setListenerButton.setText("Set Listener");
+				Platform.runLater(()->{
+					sn.setDisable(false);
+					textArea.setEditable(true);
+					channel.removeChannelEventListener(myLocalListener);
+					myLocalListener=null;
+					setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+					setListenerButton.setText("Set Listener");
+				});
 			}
 		}catch(Exception e){
 			  StringWriter sw = new StringWriter();
@@ -242,37 +251,38 @@ public class DyIOchannelWidget {
 	}
 	
 	private void setUpListenerPanel(){
-		textArea = new RSyntaxTextArea(15, 80);
-		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
-		textArea.setCodeFoldingEnabled(true);
-		textArea.setText("return new IChannelEventListener() { \n"+
-			"\tpublic \n"
-			+ "\tvoid onChannelEvent(DyIOChannelEvent dyioEvent){\n"+
-			"\t\tprintln \"From Listener=\"+dyioEvent.getValue();\n"+
-			"\t}\n"+
-		"}"
-			);
-		sp = new RTextScrollPane(textArea);
-		
-		sn = new SwingNode();
-		SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	sn.setContent(sp);
-            }
-        });
-		
-		listenerCodeBox.getChildren().setAll(sn);
-		sn.setOnMouseEntered(mouseEvent -> {
-			sn.requestFocus();
+		Platform.runLater(()->{
+			textArea = new RSyntaxTextArea(15, 80);
+			textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
+			textArea.setCodeFoldingEnabled(true);
+			textArea.setText("return new IChannelEventListener() { \n"+
+				"\tpublic \n"
+				+ "\tvoid onChannelEvent(DyIOChannelEvent dyioEvent){\n"+
+				"\t\tprintln \"From Listener=\"+dyioEvent.getValue();\n"+
+				"\t}\n"+
+			"}"
+				);
+			sp = new RTextScrollPane(textArea);
+			
+			sn = new SwingNode();
 			SwingUtilities.invokeLater(new Runnable() {
 	            @Override
 	            public void run() {
-	            	textArea.requestFocusInWindow();
+	            	sn.setContent(sp);
 	            }
 	        });
+			
+			listenerCodeBox.getChildren().setAll(sn);
+			sn.setOnMouseEntered(mouseEvent -> {
+				sn.requestFocus();
+				SwingUtilities.invokeLater(new Runnable() {
+		            @Override
+		            public void run() {
+		            	textArea.requestFocusInWindow();
+		            }
+		        });
+			});
 		});
-		
 	}
 
 }
