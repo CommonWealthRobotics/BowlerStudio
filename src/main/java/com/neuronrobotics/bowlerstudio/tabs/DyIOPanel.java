@@ -227,20 +227,20 @@ public class DyIOPanel  implements Initializable {
 				// set the value label text
 				Platform.runLater(()->{
 					channelValue.get(index).setText(new Integer(e.getValue()).toString());
-					channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanUpdate());
+					channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanUpdate());
 					FxTimer.runLater(
 							Duration.ofMillis(200) ,() -> {
-								channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanDefault());
+								channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault());
 							});
 				});
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanHighlight()));
+				channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanHighlight()));
 			});
 			channelButtonSelectors.get(index).setOnMouseExited(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(DyIOImageFactory.getChanDefault()));
+				channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault()));
 			});
 			channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
@@ -274,7 +274,7 @@ public class DyIOPanel  implements Initializable {
 			                } else {
 
 			                    name.setText(item);
-			                    icon.setGraphic(new ImageView(DyIOImageFactory.getModeImage(DyIOChannelMode.getFromSlug(item))));
+			                    icon.setGraphic(new ImageView(DyIOResourceFactory.getModeImage(DyIOChannelMode.getFromSlug(item))));
 			                    setGraphic(cell);
 			                    //HERE IS WHERE YOU GET THE LABEL AND NAME
 			                }
@@ -294,14 +294,7 @@ public class DyIOPanel  implements Initializable {
 			});
 			
 			Platform.runLater(()->{
-				// generate the control widgets
-				FXMLLoader fxmlLoader = new FXMLLoader(
-		                BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
-		        try {
-		            fxmlLoader.load();
-		        } catch (IOException ex) {
-		            throw new RuntimeException(ex);
-		        }
+				FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(index);
 		        Parent root = fxmlLoader.getRoot();
 		        DyIOchannelWidget controller = fxmlLoader.getController();
 		        controller.setChannel(chan);

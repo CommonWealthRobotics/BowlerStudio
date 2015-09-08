@@ -1,20 +1,37 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 
-public class DyIOImageFactory {
+public class DyIOResourceFactory {
 	private static final Map<DyIOChannelMode,Image> lookup = new HashMap<DyIOChannelMode,Image>();
 	private static Image chanHighlight;
 	private static Image chanUpdate;
 	private static Image chanDefault;
+	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<FXMLLoader>();
+	
 	static {
+		for(int i=0;i<24;i++){
+			// generate the control widgets
+			FXMLLoader fxmlLoader = new FXMLLoader(
+		            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
+	        try {
+	            fxmlLoader.load();
+	        } catch (IOException ex) {
+	            throw new RuntimeException(ex);
+	        }
+			fxmlLoaders.add(fxmlLoader);
+		}
 		for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
 			Image image;
 			//
@@ -41,6 +58,10 @@ public class DyIOImageFactory {
 						.getResourceAsStream("images/channel-update.png")));
 	}
 	
+	public static FXMLLoader getLoader(int channelIndex){
+		return fxmlLoaders.get(channelIndex);
+	}
+	
 	public static void load(){}//stub to force a load from the static in a specific thread
 	
 	public static Image getModeImage(DyIOChannelMode mode){
@@ -52,7 +73,7 @@ public class DyIOImageFactory {
 	}
 
 	public static void setChanHighlight(Image chanHighlight) {
-		DyIOImageFactory.chanHighlight = chanHighlight;
+		DyIOResourceFactory.chanHighlight = chanHighlight;
 	}
 
 	public static Image getChanUpdate() {
@@ -60,7 +81,7 @@ public class DyIOImageFactory {
 	}
 
 	public static void setChanUpdate(Image chanUpdate) {
-		DyIOImageFactory.chanUpdate = chanUpdate;
+		DyIOResourceFactory.chanUpdate = chanUpdate;
 	}
 
 	public static Image getChanDefault() {
@@ -68,7 +89,7 @@ public class DyIOImageFactory {
 	}
 
 	public static void setChanDefault(Image chanDefault) {
-		DyIOImageFactory.chanDefault = chanDefault;
+		DyIOResourceFactory.chanDefault = chanDefault;
 	}
 
 }
