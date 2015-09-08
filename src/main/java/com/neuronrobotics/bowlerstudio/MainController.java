@@ -51,6 +51,7 @@ import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOResourceFactory;
 import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
@@ -125,6 +126,7 @@ public class MainController implements Initializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DyIOResourceFactory.load();
 
 	}
 	

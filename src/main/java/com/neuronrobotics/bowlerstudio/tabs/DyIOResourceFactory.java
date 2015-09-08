@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
@@ -19,7 +21,9 @@ public class DyIOResourceFactory {
 	private static Image chanUpdate;
 	private static Image chanDefault;
 	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<FXMLLoader>();
-	
+	private static FXMLLoader mainPanel = new FXMLLoader(
+            BowlerStudio.class.getResource("DyIOPanel.fxml"));
+    
 	static {
 		for(int i=0;i<24;i++){
 			// generate the control widgets
@@ -32,6 +36,13 @@ public class DyIOResourceFactory {
 	        }
 			fxmlLoaders.add(fxmlLoader);
 		}
+		try {
+			getMainPanel().load();
+	    } catch (IOException ex) {
+	        Logger.getLogger(BowlerStudio.class.getName()).
+	                log(Level.SEVERE, null, ex);
+	    }
+		
 		for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
 			Image image;
 			//
@@ -90,6 +101,14 @@ public class DyIOResourceFactory {
 
 	public static void setChanDefault(Image chanDefault) {
 		DyIOResourceFactory.chanDefault = chanDefault;
+	}
+
+	public static FXMLLoader getMainPanel() {
+		return mainPanel;
+	}
+
+	public static void setMainPanel(FXMLLoader mainPanel) {
+		DyIOResourceFactory.mainPanel = mainPanel;
 	}
 
 }
