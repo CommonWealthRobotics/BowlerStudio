@@ -92,9 +92,13 @@ public class PluginManager {
 	public static void addPlugin(DeviceSupportPluginMap newMap){
 
 		for(int i=0;i<deviceSupport.size();i++){
-			if(		deviceSupport.get(i).getDevice() == newMap.getDevice() && 
-					deviceSupport.get(i).getPlugin() == newMap.getPlugin() ){
-				System.out.println("Removing duplicate plugin: "+deviceSupport.remove(i));
+			try{
+				if(		deviceSupport.get(i).getDevice() == newMap.getDevice() && 
+						deviceSupport.get(i).getPlugin() == newMap.getPlugin() ){
+					System.out.println("Removing duplicate plugin: "+deviceSupport.remove(i));
+				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 		Log.debug("Adding Plugin "+newMap);
@@ -237,6 +241,7 @@ public class PluginManager {
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
+							Log.warning("Attempting Autoloading "+c);
 							//launcher.setDisable(true);
 							getBowlerStudioController().addTab(generateTab(c), true);
 						}

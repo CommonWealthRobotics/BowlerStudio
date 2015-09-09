@@ -294,19 +294,23 @@ public class DyIOPanel  implements Initializable {
 				setChannelModeList(index);
 			});
 			
-			Platform.runLater(()->{
-				FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(index);
-		        Parent root = fxmlLoader.getRoot();
-		        DyIOchannelWidget controller = fxmlLoader.getController();
-		        controller.setChannel(chan);
-		        controller.setVisable(false);
-				controlWidgets.add(root);
-			});
+
 
 		}
 		new Thread(){
 			public void run(){
 				setName("DyIOchannelWidget Setting channel value channel ");
+				for (int index = 0; index < 24; index++) {
+					int i=index;
+					Platform.runLater(()->{
+						FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(i);
+				        Parent root = fxmlLoader.getRoot();
+				        DyIOchannelWidget controller = fxmlLoader.getController();
+				        //controller.setChannel(dyio.getChannel(i));
+				        controller.setVisable(false);
+						controlWidgets.add(root);
+					});
+				}
 				while(dyio.isAvailable()){
 					for(int i=0;i<24;i++){
 						 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
