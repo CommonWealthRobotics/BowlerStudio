@@ -118,7 +118,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		try {                                                                                                                                                                                                                                 
 	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
 	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
-	        conn.connect();                                                                                                                                                                                                                   
+	        conn.connect();    
+	        conn.getInputStream();                                                                                                                                                                                                               
 	        hasnetwork= true;                                                                                                                                                                                                                      
 	    } catch (Exception e) {                                                                                                                                                                                                             
 	        // we assuming we have no access to the server and run off of the chached gists.    
@@ -193,7 +194,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				return l.getShellType();
 		}
 
-		return ShellType.NONE;
+		return ShellType.GROOVY;
 	}
 	
 	public static String getLoginID(){
@@ -253,7 +254,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		try {                                                                                                                                                                                                                                 
 	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
 	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
-	        conn.connect();                                                                                                                                                                                                                   
+	        conn.connect();   
+	        conn.getInputStream();
 	        hasnetwork= true;                                                                                                                                                                                                                      
 	    } catch (Exception e) {                                                                                                                                                                                                             
 	        // we assuming we have no access to the server and run off of the chached gists.    
