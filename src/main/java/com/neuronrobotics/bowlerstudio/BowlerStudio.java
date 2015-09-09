@@ -106,7 +106,7 @@ public class BowlerStudio extends Application {
         setPrimaryStage(primaryStage);
 		Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1285, 1024,true);
+        Scene scene = new Scene(main, 1024, 768,true);
 
         scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
@@ -126,7 +126,7 @@ public class BowlerStudio extends Application {
 		});
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
-        Log.enableDebugPrint();
+        //Log.enableDebugPrint();
 		//new MicroServo().toCSG();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
     }

@@ -536,20 +536,22 @@ public class MainController implements Initializable {
 	}
 	
 	private void loadMobilebaseFromGist(String id,String file){
-		Platform.runLater(()->{
-			try {
-				BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+id));
-				String xmlContent = ScriptingEngineWidget.codeFromGistID(id,file)[0];
-				MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-				
-				mb.setSelfSource(new String[]{id,file});
-				ConnectionManager.addConnection(mb,mb.getScriptingName());
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		new Thread(){
+    		public void run(){
+				try {
+					BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+id));
+					String xmlContent = ScriptingEngineWidget.codeFromGistID(id,file)[0];
+					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+					
+					mb.setSelfSource(new String[]{id,file});
+					ConnectionManager.addConnection(mb,mb.getScriptingName());
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
 	}
 
 	@FXML public void onMobileBaseFromGist() {

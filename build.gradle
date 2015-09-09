@@ -112,7 +112,7 @@ dependencies {
 	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
 	compile 'org.clojure:clojure:1.7.0'
 	compile 'org.clojure:tools.nrepl:0.2.10'
-	compile "overtone:overtone:0.9.1"
+	//compile "overtone:overtone:0.9.1"
 
 
 			

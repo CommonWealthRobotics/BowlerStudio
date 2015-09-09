@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,7 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
@@ -56,6 +58,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import clojure.java.api.Clojure;
 import clojure.lang.Symbol;
@@ -68,8 +71,9 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+	private static final Map<String,Long> fileLastLoaded = new HashMap<String,Long>();
 
+	private static boolean hasnetwork=false;
 	
 	private static final String[] imports = new String[] { "haar",
 			"java.awt",
@@ -109,8 +113,17 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<IGithubLoginListener>();
 
 	private static ArrayList<IScriptingLanguage> langauges=new ArrayList<>();
-	
  	static{
+ 		
+		try {                                                                                                                                                                                                                                 
+	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
+	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
+	        conn.connect();                                                                                                                                                                                                                   
+	        hasnetwork= true;                                                                                                                                                                                                                      
+	    } catch (Exception e) {                                                                                                                                                                                                             
+	        // we assuming we have no access to the server and run off of the chached gists.    
+	    	hasnetwork= false;                                                                                                                                                                                                                              
+	    }  
  		File scriptingDir = new File(System.getProperty("user.home")+"/git/BowlerStudio/src/main/resources/com/neuronrobotics/bowlerstudio/");
 		workspace = new File(System.getProperty("user.home")+"/bowler-workspace/");
 		if(!workspace.exists()){
@@ -119,33 +132,39 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 //		if(scriptingDir.exists()){
 //			workspace=scriptingDir;
 //		}
-		if(loginID == null && getCreds().exists()){
+		loadLoginData();
+		addScriptingLanguage(new ClojureHelper());
+		addScriptingLanguage(new GroovyHelper());
+		addScriptingLanguage(new JythonHelper());
+
+	}
+ 	
+ 	private static void loadLoginData(){
+ 		if(loginID == null && getCreds().exists() && hasnetwork){
 			try {
 				String line;
-				try (
-				    InputStream fis = new FileInputStream(getCreds().getAbsolutePath());
-				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				    BufferedReader br = new BufferedReader(isr);
-				) {
-				    while ((line = br.readLine()) != null) {
-				        if(line.contains("login")){
-				        	loginID = line.split("=")[1];
-				        }
-				        if(line.contains("password")){
-				        	pw = line.split("=")[1];
-				        }
-				    }
-				}
+			
+			    InputStream fis = new FileInputStream(getCreds().getAbsolutePath());
+			    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+			    @SuppressWarnings("resource")
+				BufferedReader br = new BufferedReader(isr);
+			
+			    while ((line = br.readLine()) != null) {
+			        if(line.contains("login")){
+			        	loginID = line.split("=")[1];
+			        }
+			        if(line.contains("password")){
+			        	pw = line.split("=")[1];
+			        }
+			    }
+				
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		addScriptingLanguage(new ClojureHelper());
-		addScriptingLanguage(new GroovyHelper());
-		addScriptingLanguage(new JythonHelper());
-	}
+ 	}
  	
  	
  	public static void addScriptingLanguage(IScriptingLanguage lang){
@@ -184,6 +203,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 	
 	public static void login() throws IOException{
+		if(! hasnetwork)
+			return;
 		loginID=null;
 
 		Platform.runLater(() -> {
@@ -229,6 +250,17 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 
 	private static void waitForLogin(String id) throws IOException, InvalidRemoteException, TransportException, GitAPIException{
+		try {                                                                                                                                                                                                                                 
+	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
+	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
+	        conn.connect();                                                                                                                                                                                                                   
+	        hasnetwork= true;                                                                                                                                                                                                                      
+	    } catch (Exception e) {                                                                                                                                                                                                             
+	        // we assuming we have no access to the server and run off of the chached gists.    
+	    	hasnetwork= false;                                                                                                                                                                                                                              
+	    }  
+		if(!hasnetwork)
+			return;
 		if(github == null){
 
 			if (getCreds().exists()){
@@ -283,10 +315,18 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		while(github==null){
 			ThreadUtil.wait(100);
 		}
+		loadLoginData();
 		if(cp == null){
 			cp = new UsernamePasswordCredentialsProvider(loginID, pw);
 
 		}
+		File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+		if(!gistDir.exists()){
+			gistDir.mkdir();
+		}
+		
+		
+
 		
 		GHGist gist;
 		try{
@@ -296,16 +336,11 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 			
 			return;
 		}
-		
-		File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
-		if(!gistDir.exists()){
-			gistDir.mkdir();
-		}
-		
-		
 		String localPath=gistDir.getAbsolutePath();
 		String remotePath = gist.getGitPullUrl();
 		File gitRepoFile = new File(localPath + "/.git");
+		
+	
 		if(!gitRepoFile.exists()){
 			System.out.println("Cloning files to: "+localPath);
 			 //Clone the repo
@@ -382,6 +417,15 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	}
 	
 	public static void pushCodeToGistID(String id, String FileName, String content )  throws Exception{
+		File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+		File desired = new File(gistDir.getAbsoluteFile()+"/"+FileName);
+		if(!gistDir.exists()){
+			gistDir.mkdir();
+		}
+		FileUtils.writeStringToFile(desired, content);
+		if(!hasnetwork){
+			return;
+		}
 		try {	
 			waitForLogin(id);	
 			Log.debug("Loading Gist: " + id);
@@ -393,10 +437,8 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 				
 				return;
 			}
-			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
-			if(!gistDir.exists()){
-				gistDir.mkdir();
-			}
+			
+			
 			
 			
 			String localPath=gistDir.getAbsolutePath();
@@ -411,8 +453,6 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		    Git git = new Git(localRepo);
 		    try{
 		    	git.pull().setCredentialsProvider(cp).call();// updates to the latest version
-		    	
-		    	File desired = new File(gistDir.getAbsoluteFile()+"/"+FileName);
 		    	if(!desired.exists()){
 		    		desired.createNewFile();
 		    		git.add().addFilepattern(FileName).call();
@@ -437,8 +477,13 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	
 
 	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
-		try {		
-			waitForLogin(id);
+		try {	
+			if(fileLastLoaded.get(id) ==null ){
+				fileLastLoaded.put(id, System.currentTimeMillis());
+			}
+			long lastTime =fileLastLoaded.get(id);
+			if(System.currentTimeMillis()>lastTime+2000)// wait 2 seconds before re-downloading the file
+				waitForLogin(id);
 			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
 
 		    if(FileName==null||FileName.length()<1){
@@ -503,18 +548,6 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 
         return response.toString();
     }
-//	@Deprecated
-//	public static Object inlineUrlScriptRun(URL gistID,
-//			ArrayList<Object> args) throws Exception {
-//		
-//		return inlineUrlScriptRun(gistID, args,ShellType.GROOVY);
-//	}
-//	@Deprecated //Filename should be specified
-//	public static Object inlineUrlScriptRun(URL gistID,
-//			ArrayList<Object> args, ShellType type) throws Exception {
-//		
-//		return inlineScriptRun(getText(gistID), args,type);
-//	}
 	
 	public static File getLastFile() {
 		if(lastFile==null)
