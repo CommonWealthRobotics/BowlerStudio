@@ -6,6 +6,7 @@ import java.io.StringWriter;
 
 
 
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -13,9 +14,11 @@ import javax.swing.event.DocumentListener;
 
 
 
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+
 
 
 
@@ -31,6 +34,8 @@ import com.neuronrobotics.sdk.dyio.peripherals.ServoChannel;
 
 
 
+
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -55,7 +60,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class DyIOchannelWidget {
-
+	
+	boolean fireValue=false;
+	int latestValue=0;
+	private boolean isVisable=false;
 	private final class ChangeListenerImplementation implements
 			ChangeListener<Number> {
 		public void changed(ObservableValue<? extends Number> ov,
@@ -66,6 +74,8 @@ public class DyIOchannelWidget {
 				//servo should only set on release when time is defined
 				return;
 			}
+			latestValue=newVal;
+			fireValue=true;
 			new Thread(){
 				public void run(){
 					setName("Setting channel value");
@@ -100,6 +110,17 @@ public class DyIOchannelWidget {
 	@FXML NumberAxis graphTimeAxis;
 	
 	public void setChannel(DyIOChannel c){
+		new Thread(){
+			public void run(){
+				setName("DyIOchannelWidget Setting channel value channel #"+c.getChannelNumber());
+				while(c.getDevice().isAvailable()){
+					if(fireValue)
+						channel.setValue(latestValue);
+					else
+						ThreadUtil.wait(30);
+				}
+			}
+		}.start();
 		Platform.runLater(()->{
 			this.channel = c;
 			startTime=System.currentTimeMillis();
@@ -139,20 +160,21 @@ public class DyIOchannelWidget {
 			channel.addChannelEventListener(new IChannelEventListener() {
 				@Override
 				public void onChannelEvent(DyIOChannelEvent dyioEvent) {
-					Platform.runLater(()->{
-						chanValue.setText(new Integer(dyioEvent.getValue()).toString());
-						positionSlider.valueProperty().removeListener(imp);
-						positionSlider.setValue(dyioEvent.getValue());
-						positionSlider.valueProperty().addListener(imp);
-						while(series.getData().size()>200){
-							series.getData().remove(0);
-						}
-				        series.getData().add(new XYChart.Data<Integer, Integer>(
-				        		(int) (startTime-System.currentTimeMillis()),
-				        		dyioEvent.getValue())
-				        		);
-				   
-					});
+					if(isVisable())
+						Platform.runLater(()->{
+							chanValue.setText(new Integer(dyioEvent.getValue()).toString());
+							positionSlider.valueProperty().removeListener(imp);
+							positionSlider.setValue(dyioEvent.getValue());
+							positionSlider.valueProperty().addListener(imp);
+							while(series.getData().size()>200){
+								series.getData().remove(0);
+							}
+					        series.getData().add(new XYChart.Data<Integer, Integer>(
+					        		(int) (startTime-System.currentTimeMillis()),
+					        		dyioEvent.getValue())
+					        		);
+					   
+						});
 					
 				}
 			});
@@ -219,7 +241,7 @@ public class DyIOchannelWidget {
 				break;
 			
 			}
-			
+			latestValue= channel.getValue();
 			if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
 				new Thread(){
 					public void run(){
@@ -303,6 +325,14 @@ public class DyIOchannelWidget {
 		        });
 			});
 		});
+	}
+
+	public boolean isVisable() {
+		return isVisable;
+	}
+
+	public void setVisable(boolean isVisable) {
+		this.isVisable = isVisable;
 	}
 
 }

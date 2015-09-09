@@ -302,6 +302,7 @@ public class DyIOPanel  implements Initializable {
 		        Parent root = fxmlLoader.getRoot();
 		        DyIOchannelWidget controller = fxmlLoader.getController();
 		        controller.setChannel(chan);
+		        controller.setVisable(false);
 				controlWidgets.add(root);
 			});
 
@@ -311,13 +312,12 @@ public class DyIOPanel  implements Initializable {
 	}
 	
 	@FXML public void channelClicked(MouseEvent event) {
-		System.err.println("Channel was clicked: "+getIndex( event));
+		int index=getIndex( event);
+		System.err.println("Channel was clicked: "+index);
 		if(!initialized)
 			return;
-		Platform.runLater(()->{
-			controlWidgetPanel.getChildren().clear();
-			controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
-		});
+
+		setControlWidget( index);
 	}
 	
 	private int getIndex(Event event){
@@ -355,6 +355,17 @@ public class DyIOPanel  implements Initializable {
 
 	}
 
+	private void setControlWidget(int index){
+		Platform.runLater(()->{
+			for(int i=0;i<24;i++){
+				 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+				 controller.setVisable(false);
+			}
+			controlWidgetPanel.getChildren().clear();
+			controlWidgetPanel.getChildren().add(controlWidgets.get(index));
+			((DyIOchannelWidget) DyIOResourceFactory.getLoader(index).getController()).setVisable(true);
+		});
+	}
 
 	@FXML public void onChannelSelect(ActionEvent event) {
 		int index =getIndex( event);
@@ -376,8 +387,7 @@ public class DyIOPanel  implements Initializable {
 				}
 			}.start();
 			
-			controlWidgetPanel.getChildren().clear();
-			controlWidgetPanel.getChildren().add(controlWidgets.get(getIndex( event)));
+			setControlWidget( index);
 		});
 	
 	}
