@@ -302,14 +302,14 @@ public class DyIOPanel  implements Initializable {
 				setName("DyIOchannelWidget Setting channel value channel ");
 				for (int index = 0; index < 24; index++) {
 					int i=index;
-					Platform.runLater(()->{
-						FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(i);
-				        Parent root = fxmlLoader.getRoot();
-				        DyIOchannelWidget controller = fxmlLoader.getController();
-				        //controller.setChannel(dyio.getChannel(i));
-				        controller.setVisable(false);
-						controlWidgets.add(root);
-					});
+					
+					FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(i);
+			        Parent root = fxmlLoader.getRoot();
+			        DyIOchannelWidget controller = fxmlLoader.getController();
+			        controller.setChannel(dyio.getChannel(i));
+			        controller.setVisable(false);
+					controlWidgets.add(root);
+					
 				}
 				while(dyio.isAvailable()){
 					for(int i=0;i<24;i++){

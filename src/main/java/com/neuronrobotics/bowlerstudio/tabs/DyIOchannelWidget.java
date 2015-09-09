@@ -105,16 +105,15 @@ public class DyIOchannelWidget {
 	
 	public void setChannel(DyIOChannel c){
 
-		Platform.runLater(()->{
 			this.channel = c;
 			startTime=System.currentTimeMillis();
 			setMode( channel.getMode());
-			deviceNumber.setText(new Integer(channel.getChannelNumber()).toString());
-			chanValue.setText(new Integer(channel.getValue()).toString());
-			secondsLabel.setText(String.format("%.2f", 0.0));
-			positionSlider.setValue(channel.getValue());
+			Platform.runLater(()->deviceNumber.setText(new Integer(channel.getChannelNumber()).toString()));
+			Platform.runLater(()->chanValue.setText(new Integer(channel.getValue()).toString()));
+			Platform.runLater(()->secondsLabel.setText(String.format("%.2f", 0.0)));
+			Platform.runLater(()->positionSlider.setValue(channel.getValue()));
 		
-			positionSlider.valueProperty().addListener(imp);
+			Platform.runLater(()->positionSlider.valueProperty().addListener(imp));
 			
 			positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 	
@@ -145,7 +144,7 @@ public class DyIOchannelWidget {
 				@Override
 				public void onChannelEvent(DyIOChannelEvent dyioEvent) {
 					if(isVisable())
-						Platform.runLater(()->{
+						//Platform.runLater(()->{
 							chanValue.setText(new Integer(dyioEvent.getValue()).toString());
 							positionSlider.valueProperty().removeListener(imp);
 							positionSlider.setValue(dyioEvent.getValue());
@@ -158,15 +157,15 @@ public class DyIOchannelWidget {
 					        		dyioEvent.getValue())
 					        		);
 					   
-						});
+						//});
 					
 				}
 			});
-			channelGraph.getData().add(series);
+			Platform.runLater(()->channelGraph.getData().add(series));
 	
 			setUpListenerPanel();
-			setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-		});
+			Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));
+		
 	}
 	
 	private void setMode(DyIOChannelMode newMode){
@@ -286,7 +285,7 @@ public class DyIOchannelWidget {
 	}
 	
 	private void setUpListenerPanel(){
-		Platform.runLater(()->{
+		//Platform.runLater(()->{
 			textArea = new RSyntaxTextArea(15, 80);
 			textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 			textArea.setCodeFoldingEnabled(true);
@@ -317,7 +316,7 @@ public class DyIOchannelWidget {
 		            }
 		        });
 			});
-		});
+		//});
 	}
 
 	public boolean isVisable() {
