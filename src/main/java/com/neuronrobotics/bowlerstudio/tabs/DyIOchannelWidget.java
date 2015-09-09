@@ -96,6 +96,8 @@ public class DyIOchannelWidget {
 	private ServoChannel srv= null;
 	private DyIOChannelMode currentMode;
 	private ChangeListenerImplementation imp = new ChangeListenerImplementation();
+	@FXML NumberAxis graphValueAxis;
+	@FXML NumberAxis graphTimeAxis;
 	
 	public void setChannel(DyIOChannel c){
 		Platform.runLater(()->{
@@ -142,11 +144,11 @@ public class DyIOchannelWidget {
 						positionSlider.valueProperty().removeListener(imp);
 						positionSlider.setValue(dyioEvent.getValue());
 						positionSlider.valueProperty().addListener(imp);
-						if(series.getData().size()>200){
+						while(series.getData().size()>200){
 							series.getData().remove(0);
 						}
 				        series.getData().add(new XYChart.Data<Integer, Integer>(
-				        		(int) (System.currentTimeMillis()-startTime),
+				        		(int) (startTime-System.currentTimeMillis()),
 				        		dyioEvent.getValue())
 				        		);
 				   
