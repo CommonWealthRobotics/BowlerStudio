@@ -61,8 +61,8 @@ import javafx.scene.image.ImageView;
 
 public class DyIOchannelWidget {
 	
-	boolean fireValue=false;
-	int latestValue=0;
+	private boolean fireValue=false;
+	private int latestValue=0;
 	private boolean isVisable=false;
 	private final class ChangeListenerImplementation implements
 			ChangeListener<Number> {
@@ -74,15 +74,9 @@ public class DyIOchannelWidget {
 				//servo should only set on release when time is defined
 				return;
 			}
+			setLatestValue(newVal);
+			setFireValue(true);
 			latestValue=newVal;
-			fireValue=true;
-			new Thread(){
-				public void run(){
-					setName("Setting channel value");
-					channel.setValue(newVal);
-				}
-			}.start();
-			
 		}
 	}
 
@@ -110,17 +104,7 @@ public class DyIOchannelWidget {
 	@FXML NumberAxis graphTimeAxis;
 	
 	public void setChannel(DyIOChannel c){
-		new Thread(){
-			public void run(){
-				setName("DyIOchannelWidget Setting channel value channel #"+c.getChannelNumber());
-				while(c.getDevice().isAvailable()){
-					if(fireValue)
-						channel.setValue(latestValue);
-					else
-						ThreadUtil.wait(30);
-				}
-			}
-		}.start();
+
 		Platform.runLater(()->{
 			this.channel = c;
 			startTime=System.currentTimeMillis();
@@ -166,7 +150,7 @@ public class DyIOchannelWidget {
 							positionSlider.valueProperty().removeListener(imp);
 							positionSlider.setValue(dyioEvent.getValue());
 							positionSlider.valueProperty().addListener(imp);
-							while(series.getData().size()>200){
+							while(series.getData().size()>75){
 								series.getData().remove(0);
 							}
 					        series.getData().add(new XYChart.Data<Integer, Integer>(
@@ -187,17 +171,20 @@ public class DyIOchannelWidget {
 	
 	private void setMode(DyIOChannelMode newMode){
 		currentMode = newMode;
-
 		Platform.runLater(()->{
 
 			deviceModeIcon.setImage(DyIOResourceFactory.getModeImage(newMode));	
 			series.setName(currentMode.toSlug()+" values");
 			deviceType.setText(currentMode.toSlug());
 			//set slider bounds
+			graphValueAxis.setAutoRanging(false);
 			switch(currentMode){
 			case ANALOG_IN:
 				positionSlider.setMin(0);
 				positionSlider.setMax(1024);
+				graphValueAxis.setLowerBound(0);
+				graphValueAxis.setUpperBound(1024);
+
 				break;
 			case COUNT_IN_DIR:
 			case COUNT_IN_HOME:
@@ -206,7 +193,9 @@ public class DyIOchannelWidget {
 			case COUNT_OUT_HOME:
 			case COUNT_OUT_INT:
 				positionSlider.setMin(-5000);
-				positionSlider.setMax(-5000);
+				positionSlider.setMax(5000);
+				graphValueAxis.setLowerBound(-5000);
+				graphValueAxis.setUpperBound(5000);
 				break;
 			case DC_MOTOR_DIR:			
 			case DC_MOTOR_VEL:
@@ -214,11 +203,15 @@ public class DyIOchannelWidget {
 			case SERVO_OUT:
 				positionSlider.setMin(0);
 				positionSlider.setMax(255);
+				graphValueAxis.setLowerBound(0);
+				graphValueAxis.setUpperBound(255);
 				break;
 			case DIGITAL_IN:
 			case DIGITAL_OUT:
 				positionSlider.setMin(0);
 				positionSlider.setMax(1);
+				graphValueAxis.setLowerBound(0);
+				graphValueAxis.setUpperBound(1);
 				break;
 			default:
 				break;
@@ -241,7 +234,7 @@ public class DyIOchannelWidget {
 				break;
 			
 			}
-			latestValue= channel.getValue();
+			setLatestValue(channel.getValue());
 			if(currentMode==DyIOChannelMode.SERVO_OUT && srv==null){
 				new Thread(){
 					public void run(){
@@ -271,10 +264,10 @@ public class DyIOchannelWidget {
 							setListenerButton.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 						});
 					}else{
+						channel.removeChannelEventListener(myLocalListener);
 						Platform.runLater(()->{
 							sn.setDisable(false);
 							textArea.setEditable(true);
-							channel.removeChannelEventListener(myLocalListener);
 							myLocalListener=null;
 							setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 							setListenerButton.setText("Set Listener");
@@ -332,7 +325,24 @@ public class DyIOchannelWidget {
 	}
 
 	public void setVisable(boolean isVisable) {
+		series.getData().clear();
 		this.isVisable = isVisable;
+	}
+
+	public boolean isFireValue() {
+		return fireValue;
+	}
+
+	public void setFireValue(boolean fireValue) {
+		this.fireValue = fireValue;
+	}
+
+	public int getLatestValue() {
+		return latestValue;
+	}
+
+	public void setLatestValue(int latestValue) {
+		this.latestValue = latestValue;
 	}
 
 }

@@ -6,20 +6,17 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-
 import javax.management.RuntimeErrorException;
 import javax.swing.ImageIcon;
 
-
 import org.reactfx.util.FxTimer;
-
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
-
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -307,7 +304,23 @@ public class DyIOPanel  implements Initializable {
 			});
 
 		}
-		
+		new Thread(){
+			public void run(){
+				setName("DyIOchannelWidget Setting channel value channel ");
+				while(dyio.isAvailable()){
+					for(int i=0;i<24;i++){
+						 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+							if(controller.isFireValue()){
+								controller.setFireValue(false);
+								dyio.setValue(i,controller.getLatestValue());
+							}
+							
+					}
+					ThreadUtil.wait(30);
+
+				}
+			}
+		}.start();
 		initialized=true;
 	}
 	
