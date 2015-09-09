@@ -143,21 +143,23 @@ public class DyIOchannelWidget {
 			channel.addChannelEventListener(new IChannelEventListener() {
 				@Override
 				public void onChannelEvent(DyIOChannelEvent dyioEvent) {
-					if(isVisable())
-						//Platform.runLater(()->{
-							chanValue.setText(new Integer(dyioEvent.getValue()).toString());
-							positionSlider.valueProperty().removeListener(imp);
-							positionSlider.setValue(dyioEvent.getValue());
-							positionSlider.valueProperty().addListener(imp);
-							while(series.getData().size()>75){
-								series.getData().remove(0);
-							}
-					        series.getData().add(new XYChart.Data<Integer, Integer>(
-					        		(int) (startTime-System.currentTimeMillis()),
-					        		dyioEvent.getValue())
-					        		);
-					   
-						//});
+					if(isVisable()){	
+						Integer value =new Integer(dyioEvent.getValue());
+							Platform.runLater(()->{
+								
+								chanValue.setText(value.toString());
+								positionSlider.valueProperty().removeListener(imp);
+								positionSlider.setValue(value);
+								positionSlider.valueProperty().addListener(imp);
+								if(series.getData().size()>75){
+									series.getData().remove(0);
+								}
+						        series.getData().add(new XYChart.Data<Integer, Integer>(
+						        		(int) (startTime-System.currentTimeMillis()),
+						        		dyioEvent.getValue())
+						        		);
+							});
+					}
 					
 				}
 			});
