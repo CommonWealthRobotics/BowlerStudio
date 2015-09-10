@@ -373,39 +373,37 @@ public class DyIOPanel  implements Initializable {
 	}
 
 	private void setControlWidget(int index){
+		for(int i=0;i<24;i++){
+			 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+			 controller.setVisable(false);
+		}
+		DyIOchannelWidget mine =  DyIOResourceFactory.getLoader(index).getController();
 		Platform.runLater(()->{
-			for(int i=0;i<24;i++){
-				 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
-				 controller.setVisable(false);
-			}
 			controlWidgetPanel.getChildren().clear();
 			controlWidgetPanel.getChildren().add(controlWidgets.get(index));
-			((DyIOchannelWidget) DyIOResourceFactory.getLoader(index).getController()).setVisable(true);
+			mine.setVisable(true);
 		});
 	}
 
 	@FXML public void onChannelSelect(ActionEvent event) {
 		int index =getIndex( event);
-		Platform.runLater(()->{
-			
-			ComboBox<String> comboBox = channelTypeSelectors.get(index);
-			String v = comboBox.getValue();
-			if(v==null)
-				return;
+		ComboBox<String> comboBox = channelTypeSelectors.get(index);
+		String v = comboBox.getValue();
+		if(v==null)
+			return;
 
-			DyIOChannelMode value = DyIOChannelMode.getFromSlug(v);
-			
-			if(!initialized)
-				return;
-			new Thread(){
-				public void run(){
-					setName("Running the set mode thread");
-					dyio.setMode(index, value);
-				}
-			}.start();
-			
-			setControlWidget( index);
-		});
+		DyIOChannelMode value = DyIOChannelMode.getFromSlug(v);
+		
+		if(!initialized)
+			return;
+		new Thread(){
+			public void run(){
+				setName("Running the set mode thread");
+				dyio.setMode(index, value);
+				setControlWidget( index);
+			}
+		}.start();
+
 	
 	}
 
