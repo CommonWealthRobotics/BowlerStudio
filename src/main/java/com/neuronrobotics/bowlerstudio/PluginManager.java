@@ -242,8 +242,7 @@ public class PluginManager {
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
 							Log.warning("Attempting Autoloading "+c);
-							//launcher.setDisable(true);
-							getBowlerStudioController().addTab(generateTab(c), true);
+							launchTab( c,launcher);					
 						}
 					}else{
 						Log.warning("Not autoloading "+c);
@@ -254,36 +253,7 @@ public class PluginManager {
 					
 				}
 				launcher.setOnAction(b ->{
-					
-					new Thread(){
-						public void run(){
-							setName("load plugins");
-							try {
-								AbstractBowlerStudioTab t = generateTab(c);
-
-								// allow the threads to finish before adding
-								//ThreadUtil.wait(50);
-								getBowlerStudioController().addTab(t, true);
-								
-								t.setOnCloseRequest(arg0 -> {
-									System.out.println("PM is Closing "+t.getText());
-									t.onTabClosing();
-									Platform.runLater(()->launcher.setDisable(false));
-								});
-								Platform.runLater(()->{
-									launcher.setDisable(true);
-								});
-								
-								System.out.println("Launching "+c.getPlugin().getSimpleName());
-					        	
-							} catch (Exception e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					}.start();
-	
-		        	
+					launchTab( c,launcher);
 		        });
 					
 				pluginLauncher.getChildren().add(launcher);
@@ -295,6 +265,35 @@ public class PluginManager {
 			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBrowser()));
 		plugins.add(new TitledPane("Plugins",  pluginLauncher));
 		return plugins;
+	}
+	
+	private void launchTab(DeviceSupportPluginMap c,Button launcher){
+		new Thread(){
+			public void run(){
+				setName("Launching "+c.getPlugin().getSimpleName());
+				try {
+					AbstractBowlerStudioTab t = generateTab(c);
+
+					// allow the threads to finish before adding
+					//ThreadUtil.wait(50);
+					getBowlerStudioController().addTab(t, true);
+					
+					t.setOnCloseRequest(arg0 -> {
+						System.out.println("PM is Closing "+t.getText());
+						t.onTabClosing();
+						Platform.runLater(()->launcher.setDisable(false));
+					});
+					Platform.runLater(()->{
+						launcher.setDisable(true);
+					});	
+					System.out.println("Launching "+c.getPlugin().getSimpleName());
+		        	
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 }
