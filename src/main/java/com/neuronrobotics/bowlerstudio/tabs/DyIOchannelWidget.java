@@ -7,6 +7,7 @@ import java.io.StringWriter;
 
 
 
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -15,9 +16,11 @@ import javax.swing.event.DocumentListener;
 
 
 
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+
 
 
 
@@ -54,6 +57,7 @@ import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -164,6 +168,9 @@ public class DyIOchannelWidget {
 		
 		if(getValue()!=null){
 			int current = getValue();
+			Data<Integer, Integer> newChart = new XYChart.Data<Integer, Integer>(
+	        		(int) (startTime-System.currentTimeMillis()),
+	        		current);
 			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
 				positionSlider.valueProperty().removeListener(imp);
 				Platform.runLater(()->{
@@ -176,10 +183,7 @@ public class DyIOchannelWidget {
 					}
 					
 					Platform.runLater(()->{
-				        series.getData().add(new XYChart.Data<Integer, Integer>(
-				        		(int) (startTime-System.currentTimeMillis()),
-				        		current)
-				        		);
+				        series.getData().add(newChart);
 				        value=null;
 			        });
 		        });
