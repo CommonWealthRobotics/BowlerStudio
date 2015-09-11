@@ -299,7 +299,7 @@ public class DyIOPanel  implements Initializable {
 		}
 		new Thread(){
 			public void run(){
-				setName("DyIOchannelWidget Setting channel value channel ");
+				setName("DyIOchannelWidget Setting channel value ");
 				for (int index = 0; index < 24; index++) {
 					int i=index;
 					
@@ -398,7 +398,7 @@ public class DyIOPanel  implements Initializable {
 			return;
 		new Thread(){
 			public void run(){
-				setName("Running the set mode thread");
+				setName("Running set mode thread");
 				dyio.setMode(index, value);
 				setControlWidget( index);
 			}
