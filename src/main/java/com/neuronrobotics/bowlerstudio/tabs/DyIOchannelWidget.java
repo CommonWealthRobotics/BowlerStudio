@@ -102,6 +102,7 @@ public class DyIOchannelWidget {
 	private ChangeListenerImplementation imp = new ChangeListenerImplementation();
 	@FXML NumberAxis graphValueAxis;
 	@FXML NumberAxis graphTimeAxis;
+	private Integer value=null;
 	
 	public void setChannel(DyIOChannel c){
 
@@ -112,7 +113,8 @@ public class DyIOchannelWidget {
 			Platform.runLater(()->chanValue.setText(new Integer(channel.getValue()).toString()));
 			Platform.runLater(()->secondsLabel.setText(String.format("%.2f", 0.0)));
 			Platform.runLater(()->positionSlider.setValue(channel.getValue()));
-		
+			Platform.runLater(()->graphValueAxis.setAnimated(false));
+			Platform.runLater(()->graphTimeAxis.setAnimated(false));
 			Platform.runLater(()->positionSlider.valueProperty().addListener(imp));
 			
 			positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
@@ -141,24 +143,12 @@ public class DyIOchannelWidget {
 			
 			
 			channel.addChannelEventListener(new IChannelEventListener() {
+				
+
 				@Override
 				public void onChannelEvent(DyIOChannelEvent dyioEvent) {
 					if(isVisable()){	
-						Integer value =new Integer(dyioEvent.getValue());
-							Platform.runLater(()->{
-								
-								chanValue.setText(value.toString());
-								positionSlider.valueProperty().removeListener(imp);
-								positionSlider.setValue(value);
-								positionSlider.valueProperty().addListener(imp);
-								if(series.getData().size()>75){
-									series.getData().remove(0);
-								}
-						        series.getData().add(new XYChart.Data<Integer, Integer>(
-						        		(int) (startTime-System.currentTimeMillis()),
-						        		dyioEvent.getValue())
-						        		);
-							});
+						setValue(new Integer(dyioEvent.getValue()));
 					}
 					
 				}
@@ -168,6 +158,32 @@ public class DyIOchannelWidget {
 			setUpListenerPanel();
 			Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));
 		
+	}
+	
+	public void updateValue(){
+		
+		if(getValue()!=null){
+			int current = getValue();
+			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
+				positionSlider.valueProperty().removeListener(imp);
+				Platform.runLater(()->{
+					positionSlider.setValue(current);
+					positionSlider.valueProperty().addListener(imp);
+				});
+				Platform.runLater(()->{
+					if(series.getData().size()>25){// if you keep many more points in the graph it will lag the rendering realy badly
+						series.getData().remove(0);
+					}
+					
+					Platform.runLater(()->{
+				        series.getData().add(new XYChart.Data<Integer, Integer>(
+				        		(int) (startTime-System.currentTimeMillis()),
+				        		current)
+				        		);
+				        value=null;
+			        });
+		        });
+		}
 	}
 	
 	private void setMode(DyIOChannelMode newMode){
@@ -344,6 +360,14 @@ public class DyIOchannelWidget {
 
 	public void setLatestValue(int latestValue) {
 		this.latestValue = latestValue;
+	}
+
+	public Integer getValue() {
+		return value;
+	}
+
+	public void setValue(Integer value) {
+		this.value = value;
 	}
 
 }

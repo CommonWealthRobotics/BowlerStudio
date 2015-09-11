@@ -36,6 +36,7 @@ import com.sun.speech.freetts.ProcessException;
 import com.sun.speech.freetts.VoiceManager;
 import com.sun.speech.freetts.en.us.FeatureProcessors.WordNumSyls;
 
+import edu.cmu.sphinx.api.Configuration;
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -126,6 +127,15 @@ public class BowlerStudio extends Application {
 		});
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
+        Configuration configuration = new Configuration();
+        
+	     // Set path to acoustic model.
+	     configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
+	     // Set path to dictionary.
+	     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
+	     // Set language model.
+	     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+     
         //Log.enableDebugPrint();
 		//new MicroServo().toCSG();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");

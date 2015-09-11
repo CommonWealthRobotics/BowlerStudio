@@ -313,14 +313,14 @@ public class DyIOPanel  implements Initializable {
 				}
 				while(dyio.isAvailable()){
 					for(int i=0;i<24;i++){
-						 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
-							if(controller.isFireValue()){
-								controller.setFireValue(false);
-								dyio.setValue(i,controller.getLatestValue());
-							}
-							
+						DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+						if(controller.isFireValue()){
+							controller.setFireValue(false);
+							dyio.setValue(i,controller.getLatestValue());
+						}
+						controller.updateValue();
 					}
-					ThreadUtil.wait(30);
+					ThreadUtil.wait(50);
 
 				}
 			}
