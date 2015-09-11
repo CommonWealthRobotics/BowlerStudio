@@ -342,7 +342,7 @@ public class DyIOchannelWidget {
 	}
 
 	public void setVisable(boolean isVisable) {
-		series.getData().clear();
+		Platform.runLater(()->series.getData().clear());
 		this.isVisable = isVisable;
 	}
 
