@@ -67,6 +67,7 @@ import clojure.lang.RT;
 
 
 public class ScriptingEngine extends BorderPane{// this subclasses boarder pane for the widgets sake, because multiple inheritance is TOO hard for java...
+	private static final int TIME_TO_WAIT_BETWEEN_GIT_PULL = 2000;
 	/**
 	 * 
 	 */
@@ -481,12 +482,14 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 	public static String[] codeFromGistID(String id, String FileName)  throws Exception{
 		try {	
 			if(fileLastLoaded.get(id) ==null ){
-				fileLastLoaded.put(id, System.currentTimeMillis());
+				// forces the first time the files is accessed by the application tou pull an update
+				fileLastLoaded.put(id, System.currentTimeMillis()-TIME_TO_WAIT_BETWEEN_GIT_PULL);
 			}
 			long lastTime =fileLastLoaded.get(id);
-			if(System.currentTimeMillis()>lastTime+2000)// wait 2 seconds before re-downloading the file
-				waitForLogin(id);
 			File gistDir=new File(getWorkspace().getAbsolutePath()+"/gistcache/"+id);
+			if(System.currentTimeMillis()>lastTime+TIME_TO_WAIT_BETWEEN_GIT_PULL || !gistDir.exists())// wait 2 seconds before re-downloading the file
+				waitForLogin(id);
+			
 
 		    if(FileName==null||FileName.length()<1){
 		    	if(gistDir.listFiles().length>0){

@@ -263,6 +263,9 @@ public class MainController implements Initializable {
     	box.prefWidthProperty().bind( logView.widthProperty().subtract(10));
     	
     	logView.getChildren().addAll(box);
+    	
+
+    	
 		
         //BowlerStudio.speak("Welcome to Bowler Studio");
     }

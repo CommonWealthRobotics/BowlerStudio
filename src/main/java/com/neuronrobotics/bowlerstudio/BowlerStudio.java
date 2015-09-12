@@ -22,6 +22,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -139,6 +140,17 @@ public class BowlerStudio extends Application {
         //Log.enableDebugPrint();
 		//new MicroServo().toCSG();
         //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
+	     
+//    	String xmlContent;
+//		try {
+//			xmlContent = ScriptingEngineWidget.codeFromGistID("2b0cff20ccee085c9c36","TrobotLinks.xml")[0];
+//			MobileBase base = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+//	    	DHParameterKinematics model = base.getAppendages().get(0); 
+//	    	DeviceManager.addConnection(base, "baseTest");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
     }
 
     public static Parent loadFromFXML() {

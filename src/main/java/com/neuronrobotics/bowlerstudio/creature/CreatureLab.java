@@ -298,6 +298,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		
 		setContent(new ScrollPane(dhlabTopLevel));
 		
+		
 	}
 
 	private void setDefaultLinkLevelCadEngine() throws Exception {
