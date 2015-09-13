@@ -53,6 +53,7 @@ public class DyIOPanel  implements Initializable {
 	private ArrayList<ImageView> channelButtonSelectors = new ArrayList<>() ;
 	private ArrayList<Label> channelValue = new ArrayList<>() ;
 	private ArrayList<Parent> controlWidgets = new ArrayList<>() ;
+	private ArrayList<Boolean> displayFlash = new ArrayList<>() ;
 	
 	private DyIO dyio;
 	private boolean initialized=false;
@@ -222,18 +223,23 @@ public class DyIOPanel  implements Initializable {
 			int index = i;
 			ObservableList<String> items = FXCollections.observableArrayList();
 			DyIOChannel chan = dyio.getChannel(index);
-			
+			displayFlash.add(new Boolean(true));
 			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
 			chan.addChannelEventListener(e -> {
 				// set the value label text
-				Platform.runLater(()->{
-					channelValue.get(index).setText(new Integer(e.getValue()).toString());
-					channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanUpdate());
-					FxTimer.runLater(
-							Duration.ofMillis(200) ,() -> {
-								channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault());
-							});
-				});
+				if(displayFlash.get(index)){
+					displayFlash.set(index, false);
+					Platform.runLater(()->{
+							channelValue.get(index).setText(new Integer(e.getValue()).toString());
+							channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanUpdate());
+							FxTimer.runLater(
+									Duration.ofMillis(200) ,() -> {
+										channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault());
+										displayFlash.set(index, true);
+									});
+						
+					});
+				}
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
