@@ -309,7 +309,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void onConnectURLSourceCamera() {
-		TextInputDialog dialog = new TextInputDialog("http://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png");
+		TextInputDialog dialog = new TextInputDialog("http://neuronrobotics.com/img/AndrewHarrington/2014-09-15-86.jpg");
 		dialog.setTitle("URL Image Source");
 		dialog.setHeaderText("This url will be loaded each capture.");
 		dialog.setContentText("URL ");
