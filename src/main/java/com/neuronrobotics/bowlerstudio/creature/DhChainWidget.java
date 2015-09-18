@@ -267,33 +267,6 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		if(cadEngine!=null)
 			return cadEngine.generateCad(dhLinks);
 		ArrayList<CSG> csg = new ArrayList<CSG>();
-		if(dhLinks!=null){
-			for(int i=0;i<dhLinks.size();i++){
-				Log.warning("Adding Link Widget: "+i);
-				DHLink dh  =dhLinks.get(i);
-				// Create an axis to represent the link
-				double y = dh.getD()>0?dh.getD():2;
-				double  x= dh.getRadius()>0?dh.getRadius():2;
-	
-				CSG cube = new Cube(x,y,2).toCSG();
-				try {
-					cube.intersect(STL.file(new File("/home/hephaestus/bowler-workspace/hxt900-servo.stl").toPath()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				cube=cube.transformed(new Transform().translateX(-x/2));
-				cube=cube.transformed(new Transform().translateY(y/2));
-
-				//add listner to axis
-				cube.setManipulator(dh.getListener());
-				cube.setColor(Color.GOLD);
-				// add ax to list of objects to be returned
-				csg.add(cube);
-			}
-			BowlerStudioController.setCsg(csg);
-		}
-		
 		return csg;
 	}
 	public ICadGenerator getCadEngine() {
