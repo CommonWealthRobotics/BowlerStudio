@@ -48,7 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnectionEventListener{
+public class DhChainWidget extends Group implements  IDeviceConnectionEventListener{
 	private File currentFile=null;
 	private VBox links;
 	private VBox controls;
@@ -57,7 +57,6 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice=null;
 	private MobileBase mbase=null;
-	private ICadGenerator cadEngine =null;
 	private File kinematicsFile;
 
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
@@ -208,7 +207,7 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		}
 	}
 	
-	public ArrayList<CSG> onTabReOpening() {
+	public void onTabReOpening() {
 		for(DHLinkWidget wid:widgets){
 			device.removeJointSpaceUpdateListener(wid);
 		}
@@ -259,22 +258,9 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		}
 		//BowlerStudioController.setCsg(csg);
 		jog.home();
-		
-		return generateCad(dhLinks);
+
 	}
 	
-	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
-		if(cadEngine!=null)
-			return cadEngine.generateCad(dhLinks);
-		ArrayList<CSG> csg = new ArrayList<CSG>();
-		return csg;
-	}
-	public ICadGenerator getCadEngine() {
-		return cadEngine;
-	}
-	public void setCadEngine(ICadGenerator cadEngine) {
-		this.cadEngine = cadEngine;
-	}
 
 	public File getKinematicsFile() {
 		return kinematicsFile;
@@ -324,17 +310,4 @@ public class DhChainWidget extends Group implements ICadGenerator, IDeviceConnec
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public ArrayList<CSG> generateBody(MobileBase base) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

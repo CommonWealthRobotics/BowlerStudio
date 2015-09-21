@@ -200,7 +200,6 @@ public class BowlerStudioController extends TabPane implements
 			tabs.add(index, tab);
 			setSelectedTab(tab);
 
-
 		});
 
 		// Function to add and display new tabs with default URL display.

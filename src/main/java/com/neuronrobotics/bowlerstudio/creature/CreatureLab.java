@@ -144,7 +144,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    	        });
 		    		}
 		    	}.start();
-				generateCad();
 			});
 			
 			
@@ -347,7 +346,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private void generateCad(){
 		new Thread(){
 			public void run(){
-				Log.warning("Generating cad");
+				System.out.print("\r\nGenerating cad...");
 				//new Exception().printStackTrace();
 				ArrayList<CSG> allCad=new ArrayList<>();
 				if(MobileBase.class.isInstance(pm)) {
@@ -384,10 +383,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				}else if(DHParameterKinematics.class.isInstance(pm)){
 					for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
 						allCad.add(csg);
-						
 					}
 				}
+				System.out.print("Done!\r\n");
 				BowlerStudioController.setCsg(allCad);
+				
 			}
 
 
