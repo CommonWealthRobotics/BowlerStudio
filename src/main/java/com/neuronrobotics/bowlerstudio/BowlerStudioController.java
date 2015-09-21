@@ -21,6 +21,8 @@ import java.util.List;
 
 
 
+
+
 import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
@@ -176,10 +178,30 @@ public class BowlerStudioController extends TabPane implements
 		// Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 
+		Tab t=new Tab();
+		try {
+			t = new ScriptingGistTab("Tutorial",getHomeUrl(), true);
+		} catch (IOException | InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Tab tab =t;
+		Platform.runLater(() -> {
+			final ObservableList<Tab> tabs = getTabs();
+			ConnectionManager.getConnectionManager().setClosable(false);
+			int index = tabs.size() - 1;
+			//new RuntimeException().printStackTrace();
+			tabs.add(index, ConnectionManager.getConnectionManager());
+			setSelectedTab(ConnectionManager.getConnectionManager());
 
-		addTab(ConnectionManager.getConnectionManager(), false);
+			tab.setClosable(false);
+			index = tabs.size() - 1;
+			//new RuntimeException().printStackTrace();
+			tabs.add(index, tab);
+			setSelectedTab(tab);
 
-		createAndSelectNewTab(this, "Tutorial");
+
+		});
 
 		// Function to add and display new tabs with default URL display.
 		getSelectionModel().selectedItemProperty().addListener(
