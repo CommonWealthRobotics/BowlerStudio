@@ -157,7 +157,11 @@ public class DyIOchannelWidget {
 					
 				}
 			});
-			Platform.runLater(()->channelGraph.getData().add(series));
+			Platform.runLater(()->{
+				channelGraph.getData().clear();
+				channelGraph.getData().add(series);
+				
+			});
 	
 			setUpListenerPanel();
 			Platform.runLater(()->setListenerButton.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY))));

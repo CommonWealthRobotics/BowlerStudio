@@ -385,8 +385,9 @@ public class DyIOPanel  implements Initializable {
 		}
 		DyIOchannelWidget mine =  DyIOResourceFactory.getLoader(index).getController();
 		Platform.runLater(()->{
-			controlWidgetPanel.getChildren().clear();
-			controlWidgetPanel.getChildren().add(controlWidgets.get(index));
+			synchronized (controlWidgetPanel) {
+				controlWidgetPanel.getChildren().add(controlWidgets.get(index));
+			}
 			mine.setVisable(true);
 		});
 	}
