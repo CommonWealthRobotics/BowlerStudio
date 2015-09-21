@@ -11,23 +11,37 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.python.core.exceptions;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -270,20 +284,41 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			      System.out.println(sw.toString());
 			}
 			
-			GridPane mobileBaseControls=new GridPane();
-			dhlabTopLevel.add(mobileBaseControls, 0, 0);
 			
 			Accordion advancedPanel = new Accordion();
-			TitledPane rp =new TitledPane("Multi-Appendage Cordinated Motion", new DhChainWidget(device, this));
+			TitledPane rp =new TitledPane("Walking Engine", new JogWidget(device));
 			advancedPanel.getPanes().add(rp);
 
-
-			addAppendagePanel(device.getLegs(),"Legs",advancedPanel);
-			addAppendagePanel(device.getAppendages(),"Appandges",advancedPanel);
-			addAppendagePanel(device.getSteerable(),"Steerable",advancedPanel);
-			addAppendagePanel(device.getDrivable(),"Drivable",advancedPanel);
+			TreeItem<String> rootItem = new TreeItem<String>("Body "+device.getScriptingName());
+			rootItem.setExpanded(true);
+			HashMap<TreeItem, Runnable> callbackMapForTreeitems = new HashMap<>();
+			HashMap<TreeItem, Group> widgetMapForTreeitems = new HashMap<>();
 			
-			dhlabTopLevel.add(advancedPanel, 0, 2);
+			MobleBaseFactory.load(device,rootItem,callbackMapForTreeitems,widgetMapForTreeitems);
+
+			TreeView<String> tree = new TreeView<String>(rootItem);
+			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+	        tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+	            
+	            @Override
+	            public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+	                TreeItem<?> treeItem = (TreeItem<?>)newValue;
+	                if(callbackMapForTreeitems.get(newValue)!=null){
+	                	callbackMapForTreeitems.get(newValue).run();
+	                }
+	                if(widgetMapForTreeitems.get(newValue)!=null){
+	                	callbackMapForTreeitems.get(newValue);
+	                }
+	            }     
+	        });
+//			addAppendagePanel(device.getLegs(),"Legs",advancedPanel);
+//			addAppendagePanel(device.getAppendages(),"Appandges",advancedPanel);
+//			addAppendagePanel(device.getSteerable(),"Steerable",advancedPanel);
+//			addAppendagePanel(device.getDrivable(),"Drivable",advancedPanel);
+			
+			dhlabTopLevel.add(advancedPanel, 0, 0);
+			dhlabTopLevel.add(tree, 0, 1);
+			
 			
 			if(device.getDriveType() != DrivingType.NONE){
 				advancedPanel.setExpandedPane(rp);
@@ -480,6 +515,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	}
 
 	public void setCadScript(File cadScript) {
+		if(cadScript==null)
+			return;
 		if (watcher != null) {
 		
 			watcher.close();

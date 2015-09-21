@@ -150,7 +150,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				0);
 		transform = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
 		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Exact Positioning", transform));
+		advancedPanel.getPanes().add(new TitledPane("Current Position", transform));
 		add(	advancedPanel, 
 				0, 
 				1);

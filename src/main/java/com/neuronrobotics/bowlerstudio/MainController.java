@@ -538,7 +538,7 @@ public class MainController implements Initializable {
 		CreatureLabMenue = creatureLabMenue;
 	}
 	
-	private void loadMobilebaseFromGist(String id,String file){
+	public void loadMobilebaseFromGist(String id,String file){
 		new Thread(){
     		public void run(){
 				try {
