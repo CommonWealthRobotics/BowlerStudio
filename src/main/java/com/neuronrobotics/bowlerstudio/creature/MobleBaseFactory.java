@@ -26,9 +26,9 @@ public class MobleBaseFactory {
 	public static void load(MobileBase device, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
-		TreeItem<String> legs =loadLimbs(device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
+		TreeItem<String> legs =loadLimbs(device,device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems,creatureLab);
-		TreeItem<String> arms =loadLimbs(device.getAppendages(), "Arms", rootItem,
+		TreeItem<String> arms =loadLimbs(device,device.getAppendages(), "Arms", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 //		TreeItem<String> steer =loadLimb(device.getSteerable(), "Steerable", rootItem,
 //				callbackMapForTreeitems, widgetMapForTreeitems);
@@ -50,7 +50,7 @@ public class MobleBaseFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				BowlerStudioController.setCsg(creatureLab.generateBody(device));
+				creatureLab.generateCad();
 			});
 		TreeItem<String> regnerate = new TreeItem<String>("Generate Cad");
 
@@ -73,10 +73,10 @@ public class MobleBaseFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				BowlerStudioController.setCsg(creatureLab.generateBody(device));
+				creatureLab.generateCad();
 				
 			});
-		rootItem.getChildren().addAll(item, addleg,regnerate);
+		rootItem.getChildren().addAll(regnerate,item, addleg);
 	}
 	
 	private static void getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
@@ -132,11 +132,12 @@ public class MobleBaseFactory {
 		}
 		
 		rootItem.setExpanded(true);
-		loadSingleLimb(newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+		loadSingleLimb(base,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 		
 	}
 
-	private static TreeItem<String> loadLimbs(ArrayList<DHParameterKinematics> drivable,
+	private static TreeItem<String> loadLimbs(MobileBase base,
+			ArrayList<DHParameterKinematics> drivable,
 			String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
@@ -147,19 +148,39 @@ public class MobleBaseFactory {
 		if (drivable.size() == 0)
 			return apps;
 		for (DHParameterKinematics dh : drivable) {
-			loadSingleLimb(dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+			loadSingleLimb(base,dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 		}
 		
 		return apps;
 	}
 	
-	private static void loadSingleLimb(DHParameterKinematics dh,
+	private static void loadSingleLimb(MobileBase base,
+			DHParameterKinematics dh,
 			TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
 		
 		TreeItem<String> dhItem = new TreeItem<String>(
 				dh.getScriptingName());
+		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
+		
+		callbackMapForTreeitems.put(remove, ()->{
+			rootItem.getChildren().remove(dhItem);
+			if(base.getLegs().contains(dh)){
+				base.getLegs().remove(dh);
+			}
+			if(base.getAppendages().contains(dh)){
+				base.getAppendages().remove(dh);
+			}
+			if(base.getSteerable().contains(dh)){
+				base.getSteerable().remove(dh);
+			}
+			if(base.getDrivable().contains(dh)){
+				base.getDrivable().remove(dh);
+			}
+			creatureLab.generateCad();
+			
+		});
 		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration");
 		
 		callbackMapForTreeitems.put(advanced, ()->{
@@ -169,8 +190,7 @@ public class MobleBaseFactory {
 			}
 			
 		});
-		
-		dhItem.getChildren().add(advanced);
+		dhItem.getChildren().addAll(advanced,remove);
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();
 		for(int i=0;i<vect.length;i++){
