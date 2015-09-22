@@ -122,7 +122,7 @@ public class LinkConfigurationWidget extends GridPane {
 			
 			@Override
 			public void handle(ActionEvent event) {
-				conf.setIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
+				conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
 				congiuration.getFactory().refreshHardwareLayer(conf);
 				activLink = congiuration.getFactory().getLink(conf);
 				System.out.println("Link channel to "+conf.getType());

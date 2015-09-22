@@ -133,7 +133,7 @@ private SettingsListItem setScale;
 	public void writeSettings(){
 		thisLink.setName(setLinkName.getStringValue());
 		thisLink.setType(LinkType.fromString(setLinkType.getStringValue()));
-		thisLink.setIndex(setHardwareIndex.getIntValue());
+		thisLink.setHardwareIndex(setHardwareIndex.getIntValue());
 		thisLink.setHomingTicksPerSecond(setHomingTicksPerSecond.getIntValue());
 		thisLink.setIndexLatch(setIndexLatch.getIntValue());
 		thisLink.setKP(setKP.getDoubleValue());

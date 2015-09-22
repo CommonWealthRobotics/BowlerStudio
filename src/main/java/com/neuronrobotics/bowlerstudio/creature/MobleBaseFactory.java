@@ -14,7 +14,9 @@ import javafx.scene.input.MouseEvent;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.DeviceManager;
 
@@ -43,7 +45,7 @@ public class MobleBaseFactory {
 					xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Leg has "+newLeg.getNumberOfLinks()+" links");
-					addAppendage(device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -66,7 +68,7 @@ public class MobleBaseFactory {
 					String xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Arm has "+newArm.getNumberOfLinks()+" links");
-					addAppendage(device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -77,9 +79,36 @@ public class MobleBaseFactory {
 		rootItem.getChildren().addAll(item, addleg,regnerate);
 	}
 	
+	private static int getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
+		HashMap<String,HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
+		
+		
+		for(DHParameterKinematics dh: base.getAllDHChains()){
+			for( LinkConfiguration conf :dh.getLinkConfigurations()){
+				HashMap<Integer,Boolean> channelMap;
+				if(deviceMap.get(conf.getDeviceScriptingName()) == null){
+					deviceMap.put(conf.getDeviceScriptingName(), new HashMap<Integer, Boolean>());
+				}
+				channelMap= deviceMap.get(conf.getDeviceScriptingName());
+				channelMap.put(conf.getHardwareIndex(), true);
+			}
+		}
+		for(String key:  deviceMap.keySet()){
+			HashMap<Integer, Boolean> chans = deviceMap.get(key);
+			for(int i=0;i<24;i++){
+				
+				if(chans.get(i)==null){
+					System.err.println("Channel free: "+i+" on device "+key);
+					confOfChannel.setDeviceScriptingName(key);
+					confOfChannel.setHardwareIndex(i);
+				}
+			}
+		}
+		
+		throw new RuntimeException("No channels are availible on given devices");
+	}
 	
-	
-	private static void addAppendage(
+	private static void addAppendage(MobileBase base,
 			ArrayList<DHParameterKinematics> deviceList,
 			DHParameterKinematics newDevice, 
 			TreeItem<String> rootItem,
@@ -88,6 +117,16 @@ public class MobleBaseFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
 		DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
 		deviceList.add(newDevice);
+		for( LinkConfiguration conf :newDevice.getLinkConfigurations()){
+			try{
+				getNextChannel(base, conf);
+			}catch(RuntimeException exc){
+				System.err.println("Adding new device to provide new channels");
+				conf.setDeviceScriptingName(conf.getDeviceScriptingName()+"_new");
+				getNextChannel(base, conf);
+			}
+			newDevice.getFactory().refreshHardwareLayer(conf);
+		}
 		
 		rootItem.setExpanded(true);
 		loadSingleLimb(newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
