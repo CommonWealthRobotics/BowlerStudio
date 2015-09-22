@@ -27,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TitledPane;
@@ -36,6 +37,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
@@ -83,6 +85,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private IDriveEngine defaultDriveEngine;
 	private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
+	private ProgressIndicator pi;
 
 	@Override
 	public void onTabClosing() {
@@ -145,7 +148,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 					public void run(){
 						
-		    	        generateCad();
 		    	        ArrayList<File> files = cadEngine.generateStls((MobileBase) pm, baseDirForFiles);
 		    	        Platform.runLater(()->{
 		    				Alert alert = new Alert(AlertType.INFORMATION);
@@ -284,17 +286,17 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			      System.out.println(sw.toString());
 			}
 			
-			
+			Group controls = new Group();
 			Accordion advancedPanel = new Accordion();
 			TitledPane rp =new TitledPane("Walking Engine", new JogWidget(device));
 			advancedPanel.getPanes().add(rp);
 
 			TreeItem<String> rootItem = new TreeItem<String>("Body "+device.getScriptingName());
 			rootItem.setExpanded(true);
-			HashMap<TreeItem, Runnable> callbackMapForTreeitems = new HashMap<>();
-			HashMap<TreeItem, Group> widgetMapForTreeitems = new HashMap<>();
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
 			
-			MobleBaseFactory.load(device,rootItem,callbackMapForTreeitems,widgetMapForTreeitems);
+			MobleBaseFactory.load(device,rootItem,callbackMapForTreeitems,widgetMapForTreeitems, this);
 
 			TreeView<String> tree = new TreeView<String>(rootItem);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -302,23 +304,42 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	            
 	            @Override
 	            public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-	                TreeItem<?> treeItem = (TreeItem<?>)newValue;
-	                if(callbackMapForTreeitems.get(newValue)!=null){
-	                	callbackMapForTreeitems.get(newValue).run();
-	                }
-	                if(widgetMapForTreeitems.get(newValue)!=null){
-	                	callbackMapForTreeitems.get(newValue);
-	                }
+	                @SuppressWarnings("unchecked")
+					TreeItem<String> treeItem = (TreeItem<String>)newValue;
+	                new Thread(){
+	                	public void run(){
+	    	                if(callbackMapForTreeitems.get(treeItem)!=null){
+	    	                	callbackMapForTreeitems.get(treeItem).run();
+	    	                }
+	    	                if(widgetMapForTreeitems.get(treeItem)!=null){
+	    	                	
+	    	                	Platform.runLater(()->{
+	    	                		controls.getChildren().clear();
+	    	                		controls.getChildren().add(widgetMapForTreeitems.get(treeItem));
+	    	                	});
+	    	                }else{
+	    	                	Platform.runLater(()->{
+	    	                		controls.getChildren().clear();
+	    	                	});
+	    	                }
+	                	}
+	                }.start();
+
 	            }     
 	        });
 //			addAppendagePanel(device.getLegs(),"Legs",advancedPanel);
 //			addAppendagePanel(device.getAppendages(),"Appandges",advancedPanel);
 //			addAppendagePanel(device.getSteerable(),"Steerable",advancedPanel);
 //			addAppendagePanel(device.getDrivable(),"Drivable",advancedPanel);
-			
+			HBox progress = new HBox(10);
+			pi = new ProgressIndicator(0);
+			progress.getChildren().addAll(new Label("Cad Progress:"),pi);
 			dhlabTopLevel.add(advancedPanel, 0, 0);
-			dhlabTopLevel.add(tree, 0, 1);
+	        dhlabTopLevel.add(progress, 0, 1);
+	        
+			dhlabTopLevel.add(tree, 0, 2);
 			
+			dhlabTopLevel.add(controls, 0, 3);
 			
 			if(device.getDriveType() != DrivingType.NONE){
 				advancedPanel.setExpandedPane(rp);
@@ -378,7 +399,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		}
 		
 	}
-	private void generateCad(){
+	void generateCad(){
 		new Thread(){
 			public void run(){
 				System.out.print("\r\nGenerating cad...");
@@ -386,39 +407,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				ArrayList<CSG> allCad=new ArrayList<>();
 				if(MobileBase.class.isInstance(pm)) {
 					MobileBase device=(MobileBase)pm;
-					if (getCadScript() != null) {
-						try{
-							cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-						}catch(Exception e){
-						      StringWriter sw = new StringWriter();
-						      PrintWriter pw = new PrintWriter(sw);
-						      e.printStackTrace(pw);
-						      System.out.println(sw.toString());
-						}
-			        }
-					if(cadEngine==null){
-						try {
-							setDefaultLinkLevelCadEngine();
-						} catch (Exception e) {
-							  StringWriter sw = new StringWriter();
-						      PrintWriter pw = new PrintWriter(sw);
-						      e.printStackTrace(pw);
-						      System.out.println(sw.toString());
-						}
-					}
-					try {
-						allCad= cadEngine.generateBody(device);
-					} catch (Exception e) {
-						  StringWriter sw = new StringWriter();
-					      PrintWriter pw = new PrintWriter(sw);
-					      e.printStackTrace(pw);
-					      System.out.println(sw.toString());
-					}
+					allCad=generateBody(device);
 					
 				}else if(DHParameterKinematics.class.isInstance(pm)){
-					for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
-						allCad.add(csg);
-					}
+
+					allCad=generateCad(((DHParameterKinematics)pm).getChain().getLinks() );
 				}
 				System.out.print("Done!\r\n");
 				BowlerStudioController.setCsg(allCad);
@@ -428,40 +421,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 		}.start();
 	}
-	
-	
 
-//	private void generateCad(){
-//		Log.warning("Generating cad");
-//		//new Exception().printStackTrace();
-//		ArrayList<CSG> allCad=new ArrayList<>();
-//		if(MobileBase.class.isInstance(pm)) {
-//			MobileBase device=(MobileBase)pm;
-//			for(DHParameterKinematics l:device.getAllDHChains()){
-//				for(CSG csg:generateCad(l.getChain().getLinks())){
-//					allCad.add(csg);
-//				}
-//			}
-//			
-//		}else if(DHParameterKinematics.class.isInstance(pm)){
-//			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
-//				allCad.add(csg);
-////				new Thread(){
-////					public void run(){
-////						BowlerStudioController.setCsg(allCad);
-////					}
-////				}.start();
-//				
-//			}
-//		}
-//		new Thread(){
-//			public void run(){
-//				
-//				BowlerStudioController.setCsg(allCad);
-//			}
-//		}.start();
-//	}
-	
 	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
 		if (getCadScript() != null) {
 			try{
@@ -570,14 +530,53 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 	@Override
 	public ArrayList<CSG> generateBody(MobileBase base) {
-		// TODO Auto-generated method stub
-		return null;
+		pi.setProgress(0);
+		ArrayList<CSG> allCad=new ArrayList<>();
+		if(MobileBase.class.isInstance(pm)) {
+			MobileBase device=(MobileBase)pm;
+			if (getCadScript() != null) {
+				try{
+					cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+				}catch(Exception e){
+				      StringWriter sw = new StringWriter();
+				      PrintWriter pw = new PrintWriter(sw);
+				      e.printStackTrace(pw);
+				      System.out.println(sw.toString());
+				}
+	        }
+			if(cadEngine==null){
+				try {
+					setDefaultLinkLevelCadEngine();
+				} catch (Exception e) {
+					  StringWriter sw = new StringWriter();
+				      PrintWriter pw = new PrintWriter(sw);
+				      e.printStackTrace(pw);
+				      System.out.println(sw.toString());
+				}
+			}
+			pi.setProgress(0.5);
+			try {
+				allCad= cadEngine.generateBody(device);
+			} catch (Exception e) {
+				  StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      e.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
+			
+		}else if(DHParameterKinematics.class.isInstance(pm)){
+			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
+				allCad.add(csg);
+			}
+		}
+		pi.setProgress(1);
+		return allCad;
 	}
 
 	@Override
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
 		// TODO Auto-generated method stub
-		return null;
+		return  cadEngine.generateStls(base, baseDirForFiles);
 	}
 
 	@Override
