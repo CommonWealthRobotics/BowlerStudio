@@ -30,6 +30,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TreeCell;
@@ -569,6 +570,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				allCad.add(csg);
 			}
 		}
+		BowlerStudio.setSelectedTab(this);
 		pi.setProgress(1);
 		return allCad;
 	}

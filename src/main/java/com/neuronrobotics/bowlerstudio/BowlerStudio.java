@@ -47,6 +47,7 @@ import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -102,6 +103,9 @@ public class BowlerStudio extends Application {
     	}
     }
    
+	public static void setSelectedTab(Tab tab) {
+		controller.getApplication().setSelectedTab(tab);
+	}
 
     @Override
     public void start(Stage primaryStage) throws Exception {

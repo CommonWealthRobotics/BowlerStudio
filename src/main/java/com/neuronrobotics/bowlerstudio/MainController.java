@@ -198,8 +198,8 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
     	jfx3dmanager = new Jfx3dManager();
-        application = new BowlerStudioController(jfx3dmanager, this);
-        editorContainer.setContent(application);
+        setApplication(new BowlerStudioController(jfx3dmanager, this));
+        editorContainer.setContent(getApplication());
         
         
         subScene = jfx3dmanager.getSubScene();
@@ -334,7 +334,7 @@ public class MainController implements Initializable {
     	        if (openFile == null) {
     	            return;
     	        }
-    	        application.createFileTab(openFile);
+    	        getApplication().createFileTab(openFile);
     		}
     	}.start();
     }
@@ -367,11 +367,11 @@ public class MainController implements Initializable {
 
 	public void disconnect() {
 		jfx3dmanager.disconnect();
-		application.disconnect();
+		getApplication().disconnect();
 	}
 	
 	public void openUrlInNewTab(URL url){
-		application.openUrlInNewTab(url);
+		getApplication().openUrlInNewTab(url);
 	}
 	
 
@@ -603,7 +603,15 @@ public class MainController implements Initializable {
 	}
 	
 	public ScriptingEngineWidget createFileTab(File file){
-		return application.createFileTab(file);
+		return getApplication().createFileTab(file);
+	}
+
+	public BowlerStudioController getApplication() {
+		return application;
+	}
+
+	public void setApplication(BowlerStudioController application) {
+		this.application = application;
 	}
 
 
