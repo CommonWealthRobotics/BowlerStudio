@@ -79,7 +79,7 @@ public class MobleBaseFactory {
 		rootItem.getChildren().addAll(item, addleg,regnerate);
 	}
 	
-	private static int getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
+	private static void getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
 		HashMap<String,HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
 		
 		
@@ -101,6 +101,7 @@ public class MobleBaseFactory {
 					System.err.println("Channel free: "+i+" on device "+key);
 					confOfChannel.setDeviceScriptingName(key);
 					confOfChannel.setHardwareIndex(i);
+					return;
 				}
 			}
 		}
@@ -121,11 +122,13 @@ public class MobleBaseFactory {
 			try{
 				getNextChannel(base, conf);
 			}catch(RuntimeException exc){
-				System.err.println("Adding new device to provide new channels");
-				conf.setDeviceScriptingName(conf.getDeviceScriptingName()+"_new");
+				String newname =conf.getDeviceScriptingName()+"_new";
+				System.err.println("Adding new device to provide new channels: "+newname);
+				conf.setDeviceScriptingName(newname);
 				getNextChannel(base, conf);
 			}
 			newDevice.getFactory().refreshHardwareLayer(conf);
+			
 		}
 		
 		rootItem.setExpanded(true);
