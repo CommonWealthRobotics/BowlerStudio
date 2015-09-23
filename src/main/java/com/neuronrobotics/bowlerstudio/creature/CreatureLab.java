@@ -297,9 +297,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
 			
-			MobleBaseFactory.load(device,rootItem,callbackMapForTreeitems,widgetMapForTreeitems, this);
-
 			TreeView<String> tree = new TreeView<String>(rootItem);
+			MobleBaseFactory.load(device,tree,rootItem,callbackMapForTreeitems,widgetMapForTreeitems, this);
+
+			
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 	        tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 	            

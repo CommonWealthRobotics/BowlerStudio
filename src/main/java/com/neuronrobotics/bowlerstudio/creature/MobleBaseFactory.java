@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -23,12 +24,12 @@ import com.neuronrobotics.sdk.common.DeviceManager;
 public class MobleBaseFactory {
 
 	@SuppressWarnings("unchecked")
-	public static void load(MobileBase device, TreeItem<String> rootItem,
+	public static void load(MobileBase device,TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
-		TreeItem<String> legs =loadLimbs(device,device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
+		TreeItem<String> legs =loadLimbs(device,view,device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems,creatureLab);
-		TreeItem<String> arms =loadLimbs(device,device.getAppendages(), "Arms", rootItem,
+		TreeItem<String> arms =loadLimbs(device,view,device.getAppendages(), "Arms", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 //		TreeItem<String> steer =loadLimb(device.getSteerable(), "Steerable", rootItem,
 //				callbackMapForTreeitems, widgetMapForTreeitems);
@@ -45,7 +46,7 @@ public class MobleBaseFactory {
 					xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Leg has "+newLeg.getNumberOfLinks()+" links");
-					addAppendage(device,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,view,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -68,7 +69,7 @@ public class MobleBaseFactory {
 					String xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Arm has "+newArm.getNumberOfLinks()+" links");
-					addAppendage(device,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,view,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,6 +111,7 @@ public class MobleBaseFactory {
 	}
 	
 	private static void addAppendage(MobileBase base,
+			TreeView<String> view,
 			ArrayList<DHParameterKinematics> deviceList,
 			DHParameterKinematics newDevice, 
 			TreeItem<String> rootItem,
@@ -132,11 +134,12 @@ public class MobleBaseFactory {
 		}
 		
 		rootItem.setExpanded(true);
-		loadSingleLimb(base,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+		loadSingleLimb(base, view,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 		
 	}
 
 	private static TreeItem<String> loadLimbs(MobileBase base,
+			TreeView<String> view,
 			ArrayList<DHParameterKinematics> drivable,
 			String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -148,13 +151,14 @@ public class MobleBaseFactory {
 		if (drivable.size() == 0)
 			return apps;
 		for (DHParameterKinematics dh : drivable) {
-			loadSingleLimb(base,dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+			loadSingleLimb(base, view,dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
 		}
 		
 		return apps;
 	}
 	
 	private static void loadSingleLimb(MobileBase base,
+			TreeView<String> view,
 			DHParameterKinematics dh,
 			TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -165,6 +169,7 @@ public class MobleBaseFactory {
 		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(remove, ()->{
+			view.getSelectionModel().select(rootItem);
 			rootItem.getChildren().remove(dhItem);
 			if(base.getLegs().contains(dh)){
 				base.getLegs().remove(dh);
