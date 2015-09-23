@@ -134,6 +134,7 @@ public class MobleBaseFactory {
 			// Traditional way to get the response value.
 			Optional<String> result = dialog.showAndWait();
 			if (result.isPresent()){
+				view.getSelectionModel().select(rootItem);
 				new Thread(){
 					public void run(){
 					    System.out.println("Your new limb: " + result.get());
