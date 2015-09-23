@@ -2,12 +2,18 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
@@ -51,7 +57,7 @@ public class MobleBaseFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				creatureLab.generateCad();
+				
 			});
 		TreeItem<String> regnerate = new TreeItem<String>("Generate Cad");
 
@@ -74,7 +80,7 @@ public class MobleBaseFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				creatureLab.generateCad();
+				
 				
 			});
 		rootItem.getChildren().addAll(regnerate,item, addleg);
@@ -118,23 +124,45 @@ public class MobleBaseFactory {
 			TreeItem<String> topLevel,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
-		DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
-		deviceList.add(newDevice);
-		for( LinkConfiguration conf :newDevice.getLinkConfigurations()){
-			try{
-				getNextChannel(base, conf);
-			}catch(RuntimeException exc){
-				String newname =conf.getDeviceScriptingName()+"_new";
-				System.err.println("Adding new device to provide new channels: "+newname);
-				conf.setDeviceScriptingName(newname);
-				getNextChannel(base, conf);
-			}
-			newDevice.getFactory().refreshHardwareLayer(conf);
-			
-		}
 		
-		rootItem.setExpanded(true);
-		loadSingleLimb(base, view,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+		Platform.runLater(()->{
+			TextInputDialog dialog = new TextInputDialog(newDevice.getScriptingName());
+			dialog.setTitle("Add a new limb of");
+			dialog.setHeaderText("Set the scripting name for this limb");
+			dialog.setContentText("Please the name of the new limb:");
+
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			if (result.isPresent()){
+				new Thread(){
+					public void run(){
+					    System.out.println("Your new limb: " + result.get());
+					    newDevice.setScriptingName(result.get());
+						DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
+						deviceList.add(newDevice);
+						for( LinkConfiguration conf :newDevice.getLinkConfigurations()){
+							try{
+								getNextChannel(base, conf);
+							}catch(RuntimeException exc){
+								String newname =conf.getDeviceScriptingName()+"_new";
+								System.err.println("Adding new device to provide new channels: "+newname);
+								conf.setDeviceScriptingName(newname);
+								getNextChannel(base, conf);
+							}
+							newDevice.getFactory().refreshHardwareLayer(conf);
+							
+						}
+						
+						rootItem.setExpanded(true);
+						loadSingleLimb(base, view,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+						creatureLab.generateCad();
+					}
+				}.start();
+			}
+		});
+
+
+
 		
 	}
 
@@ -169,21 +197,31 @@ public class MobleBaseFactory {
 		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(remove, ()->{
-			view.getSelectionModel().select(rootItem);
-			rootItem.getChildren().remove(dhItem);
-			if(base.getLegs().contains(dh)){
-				base.getLegs().remove(dh);
-			}
-			if(base.getAppendages().contains(dh)){
-				base.getAppendages().remove(dh);
-			}
-			if(base.getSteerable().contains(dh)){
-				base.getSteerable().remove(dh);
-			}
-			if(base.getDrivable().contains(dh)){
-				base.getDrivable().remove(dh);
-			}
-			creatureLab.generateCad();
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Confirm removing limb");
+				alert.setHeaderText("This will remove " +dh.getScriptingName() );
+				alert.setContentText("Are sure you wish to remove this limb?");
+	
+				Optional<ButtonType> result = alert.showAndWait();
+				if (result.get() == ButtonType.OK){
+					view.getSelectionModel().select(rootItem);
+					rootItem.getChildren().remove(dhItem);
+					if(base.getLegs().contains(dh)){
+						base.getLegs().remove(dh);
+					}
+					if(base.getAppendages().contains(dh)){
+						base.getAppendages().remove(dh);
+					}
+					if(base.getSteerable().contains(dh)){
+						base.getSteerable().remove(dh);
+					}
+					if(base.getDrivable().contains(dh)){
+						base.getDrivable().remove(dh);
+					}
+					creatureLab.generateCad();
+				} 
+			});
 			
 		});
 		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration");
