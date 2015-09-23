@@ -205,8 +205,9 @@ public class MobleBaseFactory {
 				alert.setContentText("Are sure you wish to remove this limb?");
 	
 				Optional<ButtonType> result = alert.showAndWait();
+				view.getSelectionModel().select(rootItem);
 				if (result.get() == ButtonType.OK){
-					view.getSelectionModel().select(rootItem);
+					
 					rootItem.getChildren().remove(dhItem);
 					if(base.getLegs().contains(dh)){
 						base.getLegs().remove(dh);
