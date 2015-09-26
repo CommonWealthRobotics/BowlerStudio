@@ -18,7 +18,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,12 +353,20 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		}
 	    Repository localRepo = new FileRepository(gitRepoFile.getAbsoluteFile());
 	    Git git = new Git(localRepo);
-	    try{
-	    	git.pull().setCredentialsProvider(cp).call();// updates to the latest version
-	    	//git.commit().setMessage("Updates any changes").call();
-	    	//git.push().setCredentialsProvider(cp).call();
-	    }catch(Exception ex){
-	    	ex.printStackTrace();
+	    for(int i=0;i<10;i++){
+		    try{
+		    	git.pull().setCredentialsProvider(cp).call();// updates to the latest version
+		    	//git.commit().setMessage("Updates any changes").call();
+		    	//git.push().setCredentialsProvider(cp).call();
+		    	return;
+		    }catch(Exception ex){
+		    	try {
+		    	    Files.delete(gitRepoFile.toPath());
+		    	} catch (Exception x) {
+		    		x.printStackTrace();
+		    	} 
+		    	ex.printStackTrace();
+		    }
 	    }
 	}
 	
