@@ -38,7 +38,7 @@
     </GridPane>
     <GridPane prefHeight="83.0">
       <children>
-        <Slider fx:id="positionSlider" blockIncrement="1.0" majorTickUnit="32.0" max="255.0" minorTickCount="1" prefWidth="172.5" showTickLabels="false" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Slider fx:id="positionSlider" blockIncrement="1.0" majorTickUnit="32.0" max="255.0" minorTickCount="1" prefWidth="172.5" showTickLabels="false" showTickMarks="true" snapToTicks="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
         <Label alignment="CENTER" text="Set" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
         <Slider fx:id="timeSlider" max="5.0" prefWidth="172.5" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label text="Time" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" />
