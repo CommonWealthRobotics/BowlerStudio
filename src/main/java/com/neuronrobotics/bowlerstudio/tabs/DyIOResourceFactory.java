@@ -25,23 +25,7 @@ public class DyIOResourceFactory {
             BowlerStudio.class.getResource("DyIOPanel.fxml"));
     
 	static {
-		for(int i=0;i<24;i++){
-			// generate the control widgets
-			FXMLLoader fxmlLoader = new FXMLLoader(
-		            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
-	        try {
-	            fxmlLoader.load();
-	        } catch (IOException ex) {
-	            throw new RuntimeException(ex);
-	        }
-			fxmlLoaders.add(fxmlLoader);
-		}
-		try {
-			getMainPanel().load();
-	    } catch (IOException ex) {
-	        Logger.getLogger(BowlerStudio.class.getName()).
-	                log(Level.SEVERE, null, ex);
-	    }
+
 		
 		for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
 			Image image;
@@ -67,6 +51,24 @@ public class DyIOResourceFactory {
 		setChanUpdate(new Image(
 						DyIOConsole.class
 						.getResourceAsStream("images/channel-update.png")));
+		
+		for(int i=0;i<24;i++){
+			// generate the control widgets
+			FXMLLoader fxmlLoader = new FXMLLoader(
+		            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
+	        try {
+	            fxmlLoader.load();
+	        } catch (IOException ex) {
+	            throw new RuntimeException(ex);
+	        }
+			fxmlLoaders.add(fxmlLoader);
+		}
+		try {
+			getMainPanel().load();
+	    } catch (IOException ex) {
+	        Logger.getLogger(BowlerStudio.class.getName()).
+	                log(Level.SEVERE, null, ex);
+	    }
 	}
 	
 	public static FXMLLoader getLoader(int channelIndex){

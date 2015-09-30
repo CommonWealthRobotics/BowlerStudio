@@ -386,7 +386,7 @@ public class ScriptingEngine extends BorderPane{// this subclasses boarder pane 
 		    }
 			return f;
 		} catch (InterruptedIOException e) {
-			System.out.println("Gist Rate limited");
+			System.out.println("Gist Rate limited, you realy should login to github");
 		} catch (MalformedURLException ex) {
 			// ex.printStackTrace();
 		} catch (IOException e) {
