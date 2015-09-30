@@ -54,7 +54,9 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setMaxWidth(width);
 		setpoint.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			double val =Double.parseDouble(setpointValue.getText());
-			getListener().onSliderDoneMoving(this,val);
+			System.err.println("Slider done moving = "+newValue);
+			if(!newValue)
+				getListener().onSliderDoneMoving(this,val);
 		});
 		setpoint.valueProperty().addListener(this);
 		
