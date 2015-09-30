@@ -43,9 +43,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
 		
 		RotationNR rot = initialState.getRotation();
-		rx = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
-		ry = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
-		rz = new EngineeringUnitsSliderWidget(this, -180, 180, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
+		rx = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
+		ry = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
+		rz = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
 		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(130)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
