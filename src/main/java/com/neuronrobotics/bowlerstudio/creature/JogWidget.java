@@ -16,6 +16,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -46,7 +47,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
 	private boolean stop=true;
-	private boolean controlThreadRunning=false;
+	private jogThread jogTHreadHandle;
+	
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
@@ -154,6 +156,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		add(	advancedPanel, 
 				0, 
 				1);
+		jogTHreadHandle = new jogThread();
+		jogTHreadHandle.start();
 		controllerLoop();
 	}
 	
@@ -323,37 +327,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							current.translateZ(inc*slider);
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
-							if(!controlThreadRunning){
-								new Thread(){
-									public void run(){
-										controlThreadRunning=true;
-										setName("Jog Widget Set Drive Arc Command");
-										try {
-											getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
-										} catch (Exception e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-										controlThreadRunning=false;
-									}
-								}.start();
-							}
+							jogTHreadHandle.setToSet(toSet, toSeconds);
 							
 						}else{
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
-							if(!controlThreadRunning){
-								new Thread(){
-									public void run(){
-										controlThreadRunning=true;
-										setName("Jog Widget Set Drive Arc Command");
-										toSet.setZ(0);
-										
-										getMobilebase().DriveArc(toSet, toSeconds);
-										controlThreadRunning=false;
-									}
-								}.start();
-							}
+							jogTHreadHandle.setToSet(toSet, toSeconds);
 						}
 							
 					} catch (Exception e) {
@@ -369,10 +348,44 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				sec.setText(".01");
 			}
 			FxTimer.runLater(
-					Duration.ofMillis((int)(seconds*1100.0)) ,() -> {
+					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
 						controllerLoop();
 					});
 		}
+	}
+	
+	private class jogThread extends Thread{
+		private boolean controlThreadRunning=false;
+		private TransformNR toSet;
+		private double toSeconds=.016;
+		public void run(){
+			setName("Jog Widget Set Drive Arc Command");
+			while(kin.isAvailable()){
+				if(controlThreadRunning){
+					if(getMobilebase()==null){
+						try {
+							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}else{
+						toSet.setZ(0);
+						
+						getMobilebase().DriveArc(toSet, toSeconds);
+					}
+					controlThreadRunning=false;
+				}
+				ThreadUtil.wait((int) (toSeconds*1000));
+			}
+		}
+
+		public void setToSet(TransformNR toSet,double toSeconds) {
+			this.toSet = toSet;
+			this.toSeconds = toSeconds;
+			controlThreadRunning=true;
+		}
+		
 	}
 	
 
