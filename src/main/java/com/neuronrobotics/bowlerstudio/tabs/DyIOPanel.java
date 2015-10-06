@@ -317,6 +317,7 @@ public class DyIOPanel  implements Initializable {
 					controlWidgets.add(root);
 					
 				}
+				initialized=true;
 				while(dyio.isAvailable()){
 					for(int i=0;i<24;i++){
 						DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
@@ -327,11 +328,10 @@ public class DyIOPanel  implements Initializable {
 						controller.updateValue();
 					}
 					ThreadUtil.wait(50);
-
 				}
 			}
 		}.start();
-		initialized=true;
+		
 	}
 	
 	@FXML public void channelClicked(MouseEvent event) {
@@ -385,6 +385,8 @@ public class DyIOPanel  implements Initializable {
 		}
 		DyIOchannelWidget mine =  DyIOResourceFactory.getLoader(index).getController();
 		Platform.runLater(()->{
+			if(!initialized)
+				return;
 			synchronized (controlWidgetPanel) {
 				controlWidgetPanel.getChildren().clear();
 				controlWidgetPanel.getChildren().add(controlWidgets.get(index));

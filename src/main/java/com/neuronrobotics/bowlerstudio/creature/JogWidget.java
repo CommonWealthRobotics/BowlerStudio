@@ -52,6 +52,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
 		
+		if(MobileBase.class.isInstance(kinimatics)){
+			py = new Button("rZ");
+			ny = new Button("-rZ");
+			
+		}
+
 
 		getKin().addPoseUpdateListener(this);
 
@@ -137,13 +143,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	new Label("seconds"), 
 				3, 
 				3);
-		
-		buttons.add(	pz, 
-				3, 
-				0);
-		buttons.add(	nz, 
-				3, 
-				1);
+		if(!MobileBase.class.isInstance(kinimatics)){
+			buttons.add(	pz, 
+					3, 
+					0);
+			buttons.add(	nz, 
+					3, 
+					1);
+		}
 		buttons.add(	game, 
 				4, 
 				0);
@@ -175,11 +182,20 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			if(button == nx){
 				x=0;
 			}
-			if(button == py){
-				y=0;
-			}
-			if(button == ny){
-				y=0;
+			if(mobilebase==null){
+				if(button == py){
+					y=0;
+				}
+				if(button == ny){
+					y=0;
+				}
+			}else{
+				if(button == py){
+					rz=0;
+				}
+				if(button == ny){
+					rz=0;
+				}
 			}
 			if(button == pz){
 				slider=0;
@@ -198,11 +214,20 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(button == nx){
 			x=-1;
 		}
-		if(button == py){
-			y=1;
-		}
-		if(button == ny){
-			y=-1;
+		if(mobilebase==null){
+			if(button == py){
+				y=1;
+			}
+			if(button == ny){
+				y=-1;
+			}
+		}else{
+			if(button == py){
+				rz=1;
+			}
+			if(button == ny){
+				rz=-1;
+			}
 		}
 		if(button == pz){
 			slider=1;
@@ -399,9 +424,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 
 		if(comp.getName().toLowerCase().contentEquals("y"))
 			x=value;
-		if(comp.getName().toLowerCase().contentEquals("x"))
-			y=value;
 		if(comp.getName().toLowerCase().contentEquals("rz"))
+			y=value;
+		if(comp.getName().toLowerCase().contentEquals("x"))
 			rz=-value;
 		if(comp.getName().toLowerCase().contentEquals("slider"))
 			slider=-value;
