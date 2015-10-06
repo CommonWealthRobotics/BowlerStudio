@@ -86,7 +86,9 @@ public class MainController implements Initializable {
     private MenuItem logoutGithub;
     
 	static{
-        System.setOut(new PrintStream(out));
+		PrintStream ps = new PrintStream(out);
+		System.setErr(ps);
+        System.setOut(ps);
         updateLog();
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)

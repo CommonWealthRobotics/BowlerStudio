@@ -110,7 +110,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
-		    	System.err.println("Just finished! "+webEngine.getLocation());
+		    	//System.err.println("Just finished! "+webEngine.getLocation());
 		    	
 	    		new Thread(){
 	    			public void run(){
@@ -134,7 +134,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 						}
 	    	    			
 	        			
-	        			System.err.println("Done Loading to: "+webEngine.getLocation());
+	        			//System.err.println("Done Loading to: "+webEngine.getLocation());
 	    			}
     			}.start();
 		    	
@@ -145,7 +145,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
 		            //splash.update();
 		    	}
-		    	System.err.println("Not Done Loading to: "+webEngine.getLocation());
+		    	//System.err.println("Not Done Loading to: "+webEngine.getLocation());
 		    }
 		}));
 		urlField = new TextField(Current_URL);
@@ -275,7 +275,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	
 	private void finishLoadingComponents(){
-		System.err.println("Finalizing: "+webEngine.getLocation());
+		//System.err.println("Finalizing: "+webEngine.getLocation());
 		try{
 			if(splashGraphics!=null && splash.isVisible()){
 	    		splash.close();
