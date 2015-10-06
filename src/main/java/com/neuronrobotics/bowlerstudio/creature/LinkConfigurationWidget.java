@@ -45,6 +45,16 @@ public class LinkConfigurationWidget extends GridPane {
 	    TextField scale = new TextField(CreatureLab.getFormatted(conf.getScale()));
 	    scale.setOnAction(event -> {
 			conf.setScale(Double.parseDouble(scale.getText()));
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		});
+	    
+	    TextField deviceName = new TextField(CreatureLab.getFormatted(conf.getScale()));
+	    deviceName.setOnAction(event -> {
+			conf.setDeviceScriptingName(deviceName.getText());
+			congiuration.getFactory().refreshHardwareLayer(conf);
+			activLink = congiuration.getFactory().getLink(conf);
+			System.out.println("Link device to "+conf.getDeviceScriptingName());
 		});
 	    
 	    add(	new Text("Scale To Degrees "), 
@@ -181,6 +191,13 @@ public class LinkConfigurationWidget extends GridPane {
 		add(	channel, 
 				1, 
 				5);
+		
+		add(	new Text("Device Scripting Name"), 
+	    		0, 
+	    		6);
+		add(	deviceName, 
+				1, 
+				6);
 		 
 	}
 
