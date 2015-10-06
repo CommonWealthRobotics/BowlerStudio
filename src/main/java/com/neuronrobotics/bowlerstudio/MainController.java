@@ -527,6 +527,10 @@ public class MainController implements Initializable {
 	@FXML public void onInputArm() {
 		loadMobilebaseFromGist("98892e87253005adbe4a","TrobotMaster.xml");
 	}
+	
+	@FXML public void onHumanoid() {
+		loadMobilebaseFromGist("a991ca954460c1ba9860","humanoid.xml");
+	}
 
 	@FXML public void onAddElephant() {
 		loadMobilebaseFromGist("aef13d65093951d13235","Elephant.xml");
@@ -615,6 +619,8 @@ public class MainController implements Initializable {
 	public void setApplication(BowlerStudioController application) {
 		this.application = application;
 	}
+
+
 
 
 }
