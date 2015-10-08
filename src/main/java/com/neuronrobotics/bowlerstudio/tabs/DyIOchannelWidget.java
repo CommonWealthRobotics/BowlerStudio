@@ -80,7 +80,6 @@ public class DyIOchannelWidget {
 			}
 			setLatestValue(newVal);
 			setFireValue(true);
-			latestValue=newVal;
 		}
 	}
 
@@ -180,11 +179,13 @@ public class DyIOchannelWidget {
 					positionSlider.valueProperty().removeListener(imp);
 					Platform.runLater(()->{
 						positionSlider.setValue(current);
+						setLatestValue(current);
+						setFireValue(false);
 						positionSlider.valueProperty().addListener(imp);
 					});
 				}
 				Platform.runLater(()->{
-					if(series.getData().size()>25){// if you keep many more points in the graph it will lag the rendering realy badly
+					if(series.getData().size()>10){// if you keep many more points in the graph it will lag the rendering realy badly
 						series.getData().remove(0);
 					}
 					
