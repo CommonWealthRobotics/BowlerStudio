@@ -176,11 +176,13 @@ public class DyIOchannelWidget {
 	        		(int) (startTime-System.currentTimeMillis()),
 	        		current);
 			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
-				positionSlider.valueProperty().removeListener(imp);
-				Platform.runLater(()->{
-					positionSlider.setValue(current);
-					positionSlider.valueProperty().addListener(imp);
-				});
+				if(!positionSlider.isValueChanging()){// only updae the slider position if the user is not sliding it
+					positionSlider.valueProperty().removeListener(imp);
+					Platform.runLater(()->{
+						positionSlider.setValue(current);
+						positionSlider.valueProperty().addListener(imp);
+					});
+				}
 				Platform.runLater(()->{
 					if(series.getData().size()>25){// if you keep many more points in the graph it will lag the rendering realy badly
 						series.getData().remove(0);
