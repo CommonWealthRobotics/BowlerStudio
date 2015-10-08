@@ -259,10 +259,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		}
 		try {
 			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 	}
 
 	@Override
@@ -307,10 +304,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		this.kin = kin;
 		try {
 			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 	}
 	
 	
@@ -386,17 +380,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						try {
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 					}else{
 						toSet.setZ(0);
 						try {
 							getMobilebase().DriveArc(toSet, toSeconds);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						} catch (Exception e) {}
 					}
 					controlThreadRunning=false;
 				}
