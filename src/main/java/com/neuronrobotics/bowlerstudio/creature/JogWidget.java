@@ -239,26 +239,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			home();
 			stop=true;
 			return;
-		}else{
-			try {
-				double seconds =Double.parseDouble(sec.getText());
-				
-				FxTimer.runLater(
-						Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
-							Log.warning(button.getText()+" Completion handler");
-							if(button.isPressed()){
-								handle( button);
-								return;
-							}
-							Log.warning(button.getText()+" Still pressed");
-						});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-		controllerLoop();
 		stop=false;
+		controllerLoop();
 	}
 	
 	public void home(){
@@ -273,6 +256,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		try {
+			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -316,6 +305,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(MobileBase.class.isInstance(kin))
 			setMobilebase((MobileBase)kin);
 		this.kin = kin;
+		try {
+			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -346,7 +341,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					
 					try {
 						if(getMobilebase()==null){
-							current = getKin().getCurrentTaskSpaceTransform();
+							current = getKin().getCurrentPoseTarget();
 							current.translateX(inc*x);
 							current.translateY(inc*y);
 							current.translateZ(inc*slider);
