@@ -112,7 +112,7 @@ public class BowlerStudio extends Application {
         setPrimaryStage(primaryStage);
 		Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1024, 768,true);
+        Scene scene = new Scene(main, 1224, 768,true);
 
         scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());

@@ -74,7 +74,10 @@ public class LinkConfigurationWidget extends GridPane {
 			public void onSliderMoving(EngineeringUnitsSliderWidget source,
 					double newAngleDegrees) {
 				conf.setLowerLimit(newAngleDegrees);
-				activLink.setTargetEngineeringUnits(activLink.getMinEngineeringUnits());
+				if(conf.getScale()>0)
+					activLink.setTargetEngineeringUnits(activLink.getMinEngineeringUnits());
+				else
+					activLink.setTargetEngineeringUnits(activLink.getMaxEngineeringUnits());
 				activLink.flush(0);
 			}
 			
@@ -92,7 +95,10 @@ public class LinkConfigurationWidget extends GridPane {
 				public void onSliderMoving(EngineeringUnitsSliderWidget source,
 						double newAngleDegrees) {
 					conf.setUpperLimit(newAngleDegrees);
-					activLink.setTargetEngineeringUnits(activLink.getMaxEngineeringUnits());
+					if(conf.getScale()>0)
+						activLink.setTargetEngineeringUnits(activLink.getMaxEngineeringUnits());
+					else
+						activLink.setTargetEngineeringUnits(activLink.getMinEngineeringUnits());
 					activLink.flush(0);
 				}
 				
