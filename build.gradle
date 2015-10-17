@@ -118,7 +118,7 @@ dependencies {
 			
 	compile project(':JCSG')
 	compile project(':CHDK-PTP-Java')
-	compile project(':java-bowler')
+	//compile project(':java-bowler')
 	compile project(':WalnutiQ')
 	
 	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
