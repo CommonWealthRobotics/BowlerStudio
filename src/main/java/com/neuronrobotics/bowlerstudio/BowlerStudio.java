@@ -68,38 +68,7 @@ public class BowlerStudio extends Application {
     	if(args.length==0)
     		launch(args);
     	else{
-            new JFXPanel(); // initializes JavaFX environment
-            OpenCVJNILoader.load();              // Loads the OpenCV JNI (java native interface)
-    		boolean startLoadingScripts=false;
-    		for(String s :args){
-    			if(startLoadingScripts){
-    				try{
-    					ScriptingEngine.inlineFileScriptRun(new File(s), null);
-    				}catch(Error e)
-    				{
-    					e.printStackTrace();
-    				}
-    			}
-    			if(s.contains("scripts")){
-    				startLoadingScripts=true;
-    			}
-    		}
-    		startLoadingScripts=false;
-    		Object ret=null;
-    		for(String s :args){
-
-    			if(startLoadingScripts){
-    				try{
-    					ret=ScriptingEngine.inlineFileScriptRun(new File(s), (ArrayList<Object>)ret);
-    				}catch(Error e)
-    				{
-    					e.printStackTrace();
-    				}
-    			}
-    			if(s.contains("pipe")){
-    				startLoadingScripts=true;
-    			}
-    		}
+           BowlerKernel.main(args);
     	}
     }
    
