@@ -211,41 +211,8 @@ public class BowlerStudio extends Application {
 	}
 	
 	public static int speak(String msg){
-		System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-		VoiceManager voiceManager = VoiceManager.getInstance();
-		com.sun.speech.freetts.Voice voice = voiceManager
-				.getVoice("kevin16");
-		Thread t = new Thread() {
-			public void run() {
-				setName("Speaking Thread");
-
-				
-				if(voice !=null){
-					voice.setRate(200f);
-					voice.allocate();
-					voice.speak(msg);
-					voice.deallocate();
-				}else{
-					System.out.println("All voices available:");
-					com.sun.speech.freetts.Voice[] voices=voiceManager.getVoices();
-					for (int i=0; i < voices.length; i++) {
-					  System.out.println("    " + voices[i].getName() + " ("+ voices[i].getDomain()+ " domain)");
-					}
-				}
-			}
-		};
-		t.start();
-		WordNumSyls feature = (WordNumSyls)voice.getFeatureProcessor("word_numsyls");
-		if(feature!=null)
-		try {
-			
-			System.out.println("Syllables# = "+feature.process(null));
-		} catch (ProcessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		return 0;
+		return BowlerKernel.speak(msg);
 	}
 	
 	public static ScriptingEngineWidget createFileTab(File file){
