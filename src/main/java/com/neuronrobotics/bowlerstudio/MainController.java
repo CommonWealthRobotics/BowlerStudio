@@ -231,8 +231,8 @@ public class MainController implements Initializable {
 		
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
-					if(ScriptingEngineWidget.getLoginID()!=null){
-						setToLoggedIn(ScriptingEngineWidget.getLoginID());
+					if(ScriptingEngine.getLoginID()!=null){
+						setToLoggedIn(ScriptingEngine.getLoginID());
 					}else{
 						setToLoggedOut();
 					}
@@ -330,7 +330,7 @@ public class MainController implements Initializable {
     	new Thread(){
     		public void run(){
     			setName("Load File Thread");
-    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
+    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
     					new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
 
     	        if (openFile == null) {
@@ -456,7 +456,7 @@ public class MainController implements Initializable {
     		public void run(){
     			setName("Login Gist Thread");
     			try {
-    				ScriptingEngineWidget.login();
+    				ScriptingEngine.login();
     			} catch (IOException e) {
     				// TODO Auto-generated catch block
     				e.printStackTrace();
@@ -468,7 +468,7 @@ public class MainController implements Initializable {
 
 
 	@FXML public void onLogout() {
-		ScriptingEngineWidget.logout();
+		ScriptingEngine.logout();
 	}
 
 
@@ -494,7 +494,7 @@ public class MainController implements Initializable {
     	new Thread(){
     		public void run(){
     			setName("Load Mobile Base Thread");
-    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngineWidget.getLastFile(),
+    	    	openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
     	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 
     	        if (openFile == null) {
@@ -549,7 +549,7 @@ public class MainController implements Initializable {
     		public void run(){
 				try {
 					BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+id));
-					String xmlContent = ScriptingEngineWidget.codeFromGistID(id,file)[0];
+					String xmlContent = ScriptingEngine.codeFromGistID(id,file)[0];
 					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 					
 					mb.setSelfSource(new String[]{id,file});
@@ -573,9 +573,9 @@ public class MainController implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()){
 		   
-		    String gistcode = ScriptingEngineWidget.urlToGist(result.get());
+		    String gistcode = ScriptingEngine.urlToGist(result.get());
 		    System.out.println("Creature Gist " + gistcode);
-		    ArrayList<String> choices =ScriptingEngineWidget.filesInGist(gistcode,".xml");
+		    ArrayList<String> choices =ScriptingEngine.filesInGist(gistcode,".xml");
 		    String suggestedChoice="";
 		    int numXml=0;
 		    for(int i=0;i<choices.size();i++){

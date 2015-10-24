@@ -154,6 +154,7 @@ dependencies {
 	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
 	
 	compile fileTree (dir: 'libs', includes: ['*.jar'])
+	compile fileTree (dir: '../bowler-script-kernel/build/libs/', includes: ['*.jar'])
 }
 
 // create a fat-jar (class files plus dependencies

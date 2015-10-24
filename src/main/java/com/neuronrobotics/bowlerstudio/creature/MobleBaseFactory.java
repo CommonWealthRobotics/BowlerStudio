@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -49,7 +50,7 @@ public class MobleBaseFactory {
 				System.out.println("Adding Leg");
 				String xmlContent;
 				try {
-					xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultleg.xml")[0];
+					xmlContent = ScriptingEngine.codeFromGistID("b5b9450f869dd0d2ea30","defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Leg has "+newLeg.getNumberOfLinks()+" links");
 					addAppendage(device,view,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
@@ -72,7 +73,7 @@ public class MobleBaseFactory {
 			// TODO Auto-generated method stub
 				System.out.println("Adding Arm");
 				try {
-					String xmlContent = ScriptingEngineWidget.codeFromGistID("b5b9450f869dd0d2ea30","defaultarm.xml")[0];
+					String xmlContent = ScriptingEngine.codeFromGistID("b5b9450f869dd0d2ea30","defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Arm has "+newArm.getNumberOfLinks()+" links");
 					addAppendage(device,view,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);

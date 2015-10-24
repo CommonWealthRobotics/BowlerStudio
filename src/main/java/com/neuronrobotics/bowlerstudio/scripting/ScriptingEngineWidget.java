@@ -111,8 +111,8 @@ import eu.mihosoft.vrl.v3d.*;
 import eu.mihosoft.vrl.v3d.samples.*;
 
 @SuppressWarnings("unused")
-public class ScriptingEngineWidget extends ScriptingEngine implements
-		IFileChangeListener, ChangeListener {
+public class ScriptingEngineWidget extends BorderPane implements
+		IFileChangeListener, ChangeListener<Object> {
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
@@ -137,8 +137,8 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	private ScriptingWidgetType type;
 	
-	final ComboBox fileListBox = new ComboBox();
-
+	final ComboBox<String> fileListBox = new ComboBox<String>();
+	private File currentFile = null;
 	public ScriptingEngineWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
@@ -261,7 +261,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
 		history.add("println dyio");
 		history.add("ThreadUtil.wait(10000)");
-		history.add("BowlerStudio.speak(\"I can speak!\")");
+		history.add("BowlerKernel.speak(\"I can speak!\")");
 		history.add("println 'Hello World Command line'");
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -348,7 +348,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		//System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = codeFromGistID(id,file);
+			code = ScriptingEngine.codeFromGistID(id,file);
 			if (code != null) {
 				setCode(code[0]);
 				
@@ -363,15 +363,14 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void loadCodeFromGist(String addr, WebEngine engine)
 			throws IOException, InterruptedException {
 		this.addr = addr;
 		this.engine = engine;
 		loadGist = true;
-		currentGist = getCurrentGist(addr, engine);
+		currentGist = ScriptingEngine.getCurrentGist(addr, engine);
 		
-		ArrayList<String> fileList = ScriptingEngineWidget.filesInGist(currentGist);
+		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
 		
 		if(fileList.size()==1)
 			loadGistLocal(currentGist, fileList.get(0));
@@ -385,56 +384,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 		});
 	}
 
-	public static String urlToGist(String in) {
-		String domain = in.split("//")[1];
-		String[] tokens = domain.split("/");
-		if (tokens[0].toLowerCase().contains("gist.github.com")
-				&& tokens.length >= 2) {
-			try{
-				String id = tokens[2].split("#")[0];
-				Log.debug("Gist URL Detected " + id);
-				return id;
-			}catch(ArrayIndexOutOfBoundsException e){
-				return "d4312a0787456ec27a2a";
-			}
-		}
 
-		return null;
-	}
-
-	private String returnFirstGist(String html) {
-		// Log.debug(html);
-		String slug = html.split("//gist.github.com/")[1];
-		String js = slug.split(".js")[0];
-		String id = js.split("/")[1];
-
-		return id;
-	}
-
-	public String getCurrentGist(String addr, WebEngine engine) {
-		String gist = urlToGist(addr);
-		if (gist == null) {
-			try {
-				Log.debug("Non Gist URL Detected");
-				String html;
-				TransformerFactory tf = TransformerFactory.newInstance();
-				Transformer t = tf.newTransformer();
-				StringWriter sw = new StringWriter();
-				t.transform(new DOMSource(engine.getDocument()),
-						new StreamResult(sw));
-				html = sw.getBuffer().toString();
-				return returnFirstGist(html);
-			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransformerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		return gist;
-	}
 
 	private void start() {
 
@@ -460,7 +410,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 					setName("Bowler Script Runner " + name);
 	
 				try {
-					Object obj = inlineScriptRun(getCode(), null,setFilename(name));
+					Object obj = ScriptingEngine.inlineScriptRun(getCode(), null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
 						l.onGroovyScriptFinished(obj, scriptResult);
 					}
@@ -548,7 +498,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	private void setUpFile(File f) {
 		currentFile = f;
-		setLastFile(f);
+		ScriptingEngine.setLastFile(f);
 		Platform.runLater(() -> {
 			fileListBox.valueProperty().removeListener(this);
 			fileListBox.getItems().clear();
@@ -570,7 +520,7 @@ public class ScriptingEngineWidget extends ScriptingEngine implements
 
 	private void updateFile() {
 		
-		File last = FileSelectionFactory.GetFile(currentFile==null?getWorkspace():new File(getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
+		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
 				new ExtensionFilter("Save Script","*"));
 		if (last != null) {
 			setUpFile(last);

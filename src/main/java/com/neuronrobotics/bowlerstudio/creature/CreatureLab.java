@@ -173,7 +173,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 						if(device.getSelfSource()[0]==null ||device.getSelfSource()[1]==null ){
 							// this was loaded form a file not a gist
 							if(openMobileBaseConfiguration==null)
-								openMobileBaseConfiguration=ScriptingEngineWidget.getLastFile();
+								openMobileBaseConfiguration=ScriptingEngine.getLastFile();
 			    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
 			    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
 
@@ -222,7 +222,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 					public void run(){
 						setName("Cad generation thread");
 					
-		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript()!=null?getCadScript():ScriptingEngineWidget.getLastFile(),
+		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript()!=null?getCadScript():ScriptingEngine.getLastFile(),
 		    	    			new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
 
 		    	        if (getCadScript() == null) {
@@ -368,12 +368,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			cad = device.getCadEngine();
 		}
 		if(cadEngine==null){
-			String code = ScriptingEngineWidget.codeFromGistID(cad[0],cad[1])[0];
+			String code = ScriptingEngine.codeFromGistID(cad[0],cad[1])[0];
 			cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 	}
 	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
-		String code = ScriptingEngineWidget.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
+		String code = ScriptingEngine.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
 		defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		
 		device.setInverseSolver(defaultDHSolver);
@@ -381,7 +381,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
 		if(defaultDriveEngine==null){
-			String code = ScriptingEngineWidget.codeFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1])[0];
+			String code = ScriptingEngine.codeFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1])[0];
 			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 		device.setWalkingDriveEngine( defaultDriveEngine);

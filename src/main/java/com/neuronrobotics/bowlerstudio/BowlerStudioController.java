@@ -234,7 +234,7 @@ public class BowlerStudioController extends TabPane implements
 
 	public void open() {
 		File last = FileSelectionFactory.GetFile(
-				ScriptingEngineWidget.getWorkspace(), new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
+				ScriptingEngine.getWorkspace(), new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
 		if (last != null) {
 			createFileTab(last);
 		}

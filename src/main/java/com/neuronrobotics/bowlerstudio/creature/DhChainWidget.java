@@ -92,7 +92,7 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 
 				public void run(){
 					if(getKinematicsFile()==null)
-						setKinematicsFile(ScriptingEngineWidget.getLastFile());
+						setKinematicsFile(ScriptingEngine.getLastFile());
 					setKinematicsFile(FileSelectionFactory.GetFile(getKinematicsFile(),
 							new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
 
