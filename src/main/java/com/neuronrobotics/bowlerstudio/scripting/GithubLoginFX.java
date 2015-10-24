@@ -41,8 +41,13 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 
 	@FXML public void anonMode() {
 		setCreds(null);
-		done=true;
+	
+		finish();
+	}
+	private void finish(){
 		stage.close();
+		stage.hide();
+		done=true;
 	}
 
 	@FXML public void login() {
@@ -53,9 +58,8 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 		}else if(getCreds()[0].equals("")||getCreds()[1].equals("")){
 			setCreds(null);
 		}
-		done=true;
-		stage.close();
-
+		
+		finish();
 	}
 
 	@FXML public void focusOnPw() {

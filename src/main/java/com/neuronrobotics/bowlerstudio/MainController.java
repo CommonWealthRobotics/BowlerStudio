@@ -48,6 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
@@ -93,8 +94,8 @@ public class MainController implements Initializable {
     
 	static{
 		PrintStream ps = new PrintStream(out);
-//		System.setErr(ps);
-//        System.setOut(ps);
+		System.setErr(ps);
+        System.setOut(ps);
         updateLog();
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)
@@ -248,24 +249,28 @@ public class MainController implements Initializable {
 			
 			@Override
 			public String[] prompt() {
+				//new RuntimeException().printStackTrace();
 				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
 				Parent root = fxmlLoader.getRoot();
 				GithubLoginFX controller = fxmlLoader.getController();
 				Platform.runLater(()->{
 					controller.reset();
-					Stage stage = new Stage();  
+					Stage stage = new Stage(); 
 					stage.setTitle("GitHub Login");
-					//stage.initModality(Modality.APPLICATION_MODAL);  
-					stage.show();
+					stage.initModality(Modality.APPLICATION_MODAL);  
 					controller.setStage(stage, root);
+					stage.centerOnScreen();
+					stage.show();
+					
 				});
 				
 		        //setContent(root);
 				while(!controller.isDone()){
 					ThreadUtil.wait(1);
 				}
-				
-				return controller.getCreds();
+				String[] creds = controller.getCreds();
+				controller.reset();
+				return creds;
 			}
 		});
 		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
