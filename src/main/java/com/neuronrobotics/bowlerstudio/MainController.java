@@ -28,7 +28,10 @@ import org.reactfx.util.FxTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -47,6 +50,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
+import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -63,6 +67,7 @@ import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.gui.*;
@@ -88,8 +93,8 @@ public class MainController implements Initializable {
     
 	static{
 		PrintStream ps = new PrintStream(out);
-		System.setErr(ps);
-        System.setOut(ps);
+//		System.setErr(ps);
+//        System.setOut(ps);
         updateLog();
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)
@@ -243,8 +248,24 @@ public class MainController implements Initializable {
 			
 			@Override
 			public String[] prompt() {
+				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+				Parent root = fxmlLoader.getRoot();
+				GithubLoginFX controller = fxmlLoader.getController();
+				Platform.runLater(()->{
+					controller.reset();
+					Stage stage = new Stage();  
+					stage.setTitle("GitHub Login");
+					//stage.initModality(Modality.APPLICATION_MODAL);  
+					stage.show();
+					controller.setStage(stage, root);
+				});
 				
-				return null;
+		        //setContent(root);
+				while(!controller.isDone()){
+					ThreadUtil.wait(1);
+				}
+				
+				return controller.getCreds();
 			}
 		});
 		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {

@@ -31,13 +31,18 @@ public class StudioBuildInfo {
 	}
 
 	public static int[] getBuildInfo() {
-		String s = getVersion();
-		String[] splits = s.split("[.]+");
-		int[] rev = new int[3];
-		for (int i = 0; i < 3; i++) {
-			rev[i] = new Integer(splits[i]);
+		try{
+			String s = getVersion();
+			String[] splits = s.split("[.]+");
+			int[] rev = new int[3];
+			for (int i = 0; i < 3; i++) {
+				rev[i] = new Integer(splits[i]);
+			}
+			return rev;
+		}catch(NumberFormatException  e){
+			return new int[]{0,0,0};
 		}
-		return rev;
+		
 	}
 
 	private static String getTag(String target) {

@@ -65,14 +65,14 @@ public class BowlerStudioResourceFactory {
 			fxmlLoaders.add(fxmlLoader);
 		}
 		try {
-			getMainPanel().load();
+			mainPanel.load();
 	    } catch (IOException ex) {
 	        Logger.getLogger(BowlerStudio.class.getName()).
 	                log(Level.SEVERE, null, ex);
 	    }
 		
 		try {
-			getGithubLogin().load();
+			githubLogin.load();
 		} catch (IOException e) {
 			Logger.getLogger(BowlerStudio.class.getName()).
             log(Level.SEVERE, null, e);

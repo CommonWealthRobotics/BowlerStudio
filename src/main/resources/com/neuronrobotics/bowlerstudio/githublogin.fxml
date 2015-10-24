@@ -6,16 +6,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="384.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="384.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX">
   <children>
     <GridPane layoutX="0.0" layoutY="0.0" prefHeight="200.00009999999747" prefWidth="384.0">
       <children>
-        <Button mnemonicParsing="false" text="Anonymous Mode" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-        <Button mnemonicParsing="false" text="Login" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+        <Button mnemonicParsing="false" onAction="#anonMode" text="Anonymous Mode" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+        <Button mnemonicParsing="false" onAction="#login" text="Login" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
         <Label prefHeight="22.0" prefWidth="192.0" text="GitHub Username (not email)" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
         <Label text="GitHub Password" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-        <PasswordField prefWidth="200.0" promptText="Password" text="" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-        <TextField prefWidth="200.0" promptText="Username" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+ 		<TextField fx:id="username" onAction="#focusOnPw" prefWidth="200.0" promptText="Username" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+        <PasswordField fx:id="password" onAction="#login" prefWidth="200.0" promptText="Password" text="" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
         <Label text="Github is used as a code repository for the application and an account is needed for accessing sample code at full speed." textOverrun="ELLIPSIS" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
       </children>
       <columnConstraints>
