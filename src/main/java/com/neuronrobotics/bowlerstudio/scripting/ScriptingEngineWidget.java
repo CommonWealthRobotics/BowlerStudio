@@ -139,6 +139,10 @@ public class ScriptingEngineWidget extends BorderPane implements
 	
 	final ComboBox<String> fileListBox = new ComboBox<String>();
 	private File currentFile = null;
+	static{
+		
+	}
+	
 	public ScriptingEngineWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);

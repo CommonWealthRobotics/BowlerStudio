@@ -15,7 +15,7 @@ import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 
-public class DyIOResourceFactory {
+public class BowlerStudioResourceFactory {
 	private static final Map<DyIOChannelMode,Image> lookup = new HashMap<DyIOChannelMode,Image>();
 	private static Image chanHighlight;
 	private static Image chanUpdate;
@@ -23,7 +23,8 @@ public class DyIOResourceFactory {
 	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<FXMLLoader>();
 	private static FXMLLoader mainPanel = new FXMLLoader(
             BowlerStudio.class.getResource("DyIOPanel.fxml"));
-    
+	private static FXMLLoader githubLogin = new FXMLLoader(
+            BowlerStudio.class.getResource("githublogin.fxml"));
 	static {
 
 		
@@ -69,6 +70,14 @@ public class DyIOResourceFactory {
 	        Logger.getLogger(BowlerStudio.class.getName()).
 	                log(Level.SEVERE, null, ex);
 	    }
+		
+		try {
+			getGithubLogin().load();
+		} catch (IOException e) {
+			Logger.getLogger(BowlerStudio.class.getName()).
+            log(Level.SEVERE, null, e);
+		}
+		
 	}
 	
 	public static FXMLLoader getLoader(int channelIndex){
@@ -86,7 +95,7 @@ public class DyIOResourceFactory {
 	}
 
 	public static void setChanHighlight(Image chanHighlight) {
-		DyIOResourceFactory.chanHighlight = chanHighlight;
+		BowlerStudioResourceFactory.chanHighlight = chanHighlight;
 	}
 
 	public static Image getChanUpdate() {
@@ -94,7 +103,7 @@ public class DyIOResourceFactory {
 	}
 
 	public static void setChanUpdate(Image chanUpdate) {
-		DyIOResourceFactory.chanUpdate = chanUpdate;
+		BowlerStudioResourceFactory.chanUpdate = chanUpdate;
 	}
 
 	public static Image getChanDefault() {
@@ -102,7 +111,7 @@ public class DyIOResourceFactory {
 	}
 
 	public static void setChanDefault(Image chanDefault) {
-		DyIOResourceFactory.chanDefault = chanDefault;
+		BowlerStudioResourceFactory.chanDefault = chanDefault;
 	}
 
 	public static FXMLLoader getMainPanel() {
@@ -110,7 +119,15 @@ public class DyIOResourceFactory {
 	}
 
 	public static void setMainPanel(FXMLLoader mainPanel) {
-		DyIOResourceFactory.mainPanel = mainPanel;
+		BowlerStudioResourceFactory.mainPanel = mainPanel;
+	}
+
+	public static FXMLLoader getGithubLogin() {
+		return githubLogin;
+	}
+
+	public static void setGithubLogin(FXMLLoader githubLogin) {
+		BowlerStudioResourceFactory.githubLogin = githubLogin;
 	}
 
 }

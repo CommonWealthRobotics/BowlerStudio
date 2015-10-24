@@ -201,7 +201,7 @@ public class DyIOchannelWidget {
 		currentMode = newMode;
 		Platform.runLater(()->{
 
-			deviceModeIcon.setImage(DyIOResourceFactory.getModeImage(newMode));	
+			deviceModeIcon.setImage(BowlerStudioResourceFactory.getModeImage(newMode));	
 			series.setName(currentMode.toSlug()+" values");
 			deviceType.setText(currentMode.toSlug());
 			//set slider bounds

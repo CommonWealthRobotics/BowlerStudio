@@ -231,10 +231,10 @@ public class DyIOPanel  implements Initializable {
 					displayFlash.set(index, false);
 					Platform.runLater(()->{
 							channelValue.get(index).setText(new Integer(e.getValue()).toString());
-							channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanUpdate());
+							channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
 							FxTimer.runLater(
 									Duration.ofMillis(200) ,() -> {
-										channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault());
+										channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
 										displayFlash.set(index, true);
 									});
 						
@@ -243,11 +243,11 @@ public class DyIOPanel  implements Initializable {
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanHighlight()));
+				channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanHighlight()));
 			});
 			channelButtonSelectors.get(index).setOnMouseExited(event -> {
 				Platform.runLater(()->
-				channelButtonSelectors.get(index).setImage(DyIOResourceFactory.getChanDefault()));
+				channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault()));
 			});
 			channelTypeSelectors.get(index);
 			ArrayList<DyIOChannelMode> modesAvailible = dyio
@@ -281,7 +281,7 @@ public class DyIOPanel  implements Initializable {
 			                } else {
 
 			                    name.setText(item);
-			                    icon.setGraphic(new ImageView(DyIOResourceFactory.getModeImage(DyIOChannelMode.getFromSlug(item))));
+			                    icon.setGraphic(new ImageView(BowlerStudioResourceFactory.getModeImage(DyIOChannelMode.getFromSlug(item))));
 			                    setGraphic(cell);
 			                    //HERE IS WHERE YOU GET THE LABEL AND NAME
 			                }
@@ -309,7 +309,7 @@ public class DyIOPanel  implements Initializable {
 				for (int index = 0; index < 24; index++) {
 					int i=index;
 					
-					FXMLLoader fxmlLoader=  DyIOResourceFactory.getLoader(i);
+					FXMLLoader fxmlLoader=  BowlerStudioResourceFactory.getLoader(i);
 			        Parent root = fxmlLoader.getRoot();
 			        DyIOchannelWidget controller = fxmlLoader.getController();
 			        controller.setChannel(dyio.getChannel(i));
@@ -320,7 +320,7 @@ public class DyIOPanel  implements Initializable {
 				initialized=true;
 				while(dyio.isAvailable()){
 					for(int i=0;i<24;i++){
-						DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+						DyIOchannelWidget controller =BowlerStudioResourceFactory.getLoader(i).getController();
 						if(controller.isFireValue()){
 							controller.setFireValue(false);
 							dyio.setValue(i,controller.getLatestValue());
@@ -380,10 +380,10 @@ public class DyIOPanel  implements Initializable {
 
 	private void setControlWidget(int index){
 		for(int i=0;i<24;i++){
-			 DyIOchannelWidget controller =DyIOResourceFactory.getLoader(i).getController();
+			 DyIOchannelWidget controller =BowlerStudioResourceFactory.getLoader(i).getController();
 			 controller.setVisable(false);
 		}
-		DyIOchannelWidget mine =  DyIOResourceFactory.getLoader(index).getController();
+		DyIOchannelWidget mine =  BowlerStudioResourceFactory.getLoader(index).getController();
 		Platform.runLater(()->{
 			if(!initialized)
 				return;
