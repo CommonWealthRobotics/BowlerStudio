@@ -94,8 +94,8 @@ public class MainController implements Initializable {
     
 	static{
 		PrintStream ps = new PrintStream(out);
-		System.setErr(ps);
-        System.setOut(ps);
+//		System.setErr(ps);
+//        System.setOut(ps);
         updateLog();
 		try{
 			OpenCVJNILoader.load();              // Loads the JNI (java native interface)

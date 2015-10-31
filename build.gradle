@@ -71,10 +71,11 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 repositories {
 	mavenCentral()
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'http://repo.jenkins-ci.org/public/' }
 	maven { url 'http://clojars.org/repo' }
-	
+	maven { url 'https://oss.sonatype.org/service/local/repositories/comneuronrobotics-1005/content/'  }
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
@@ -153,8 +154,10 @@ dependencies {
 	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
 	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
 	
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.25"
+	
 	compile fileTree (dir: 'libs', includes: ['*.jar'])
-	compile fileTree (dir: '../bowler-script-kernel/build/libs/', includes: ['*.jar'])
+	
 }
 
 // create a fat-jar (class files plus dependencies
