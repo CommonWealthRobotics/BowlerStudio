@@ -75,7 +75,6 @@ repositories {
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'http://repo.jenkins-ci.org/public/' }
 	maven { url 'http://clojars.org/repo' }
-	maven { url 'https://oss.sonatype.org/service/local/repositories/comneuronrobotics-1005/content/'  }
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
