@@ -14,6 +14,10 @@ if (!hasProperty('mainClass')) {
 }
 File buildDir = file(".");
 
+configurations.all {
+	exclude module: 'slf4j-log4j12'
+}
+
 Properties props = new Properties()
 props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/com/neuronrobotics/bowlerstudio/build.properties"))
 
@@ -152,7 +156,7 @@ dependencies {
 	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
 	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
 	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.25"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.26"
 	
 	compile fileTree (dir: 'libs', includes: ['*.jar'])
 	
@@ -161,7 +165,7 @@ dependencies {
 // create a fat-jar (class files plus dependencies
 // excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
 jar {
-	zip64 true
+	//zip64 true
 	jar.baseName= "BowlerStudio";
 	doFirst {
 		
@@ -177,7 +181,7 @@ jar {
 	}
 
 	// project class files compiled from source
-	from files(sourceSets.main.output.classesDir)
+	//from files(sourceSets.main.output.classesDir)
 
 	manifest {  
 	    attributes(	
