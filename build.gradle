@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply plugin: 'signing'
+apply plugin: 'maven'
+apply plugin: 'application'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -83,8 +86,6 @@ repositories {
 	maven { url 'http://repo.jenkins-ci.org/public/' }
 	maven { url 'http://clojars.org/repo' }
 }
-
-task wrapper(type: Wrapper) { gradleVersion = '2.1' }
 
 dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.10'
