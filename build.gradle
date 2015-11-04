@@ -161,7 +161,7 @@ dependencies {
 	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
 	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
 	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.27"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.28"
 	
 	compile fileTree (dir: 'libs', includes: ['*.jar'])
 	
