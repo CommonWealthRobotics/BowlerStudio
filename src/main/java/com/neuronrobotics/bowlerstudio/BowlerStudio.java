@@ -124,6 +124,7 @@ public class BowlerStudio extends Application {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
     }
 
     public static Parent loadFromFXML() {
