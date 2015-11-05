@@ -655,6 +655,10 @@ public class MainController implements Initializable {
 		this.application = application;
 	}
 
+	@FXML public void onAddCNC() {
+		loadMobilebaseFromGist("51a9e0bc4ee095b03979","CNC.xml");
+	}
+
 
 
 
