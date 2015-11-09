@@ -174,7 +174,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			// button released
 			Log.warning(button.getText()+" Button released ");
 			try {
-				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
+				TransformNR t = getKin().getCurrentTaskSpaceTransform();
+				getKin().setDesiredTaskSpaceTransform(t,  0);
 			} catch (Exception e) {}
 			if(button == px){
 				x=0;
@@ -328,7 +329,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					//double rxl=0;
 					double ryl=inc/20*slider;
 					double rzl=inc/2*rz;
-					TransformNR current = new TransformNR(0,0,0,new RotationNR( 0,ryl, rzl));
+					TransformNR current = new TransformNR(0,0,0,new RotationNR( 0,0, rzl));
 					current.translateX(inc*x);
 					current.translateY(inc*y);
 					current.translateZ(inc*slider);
@@ -339,6 +340,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							current.translateX(inc*x);
 							current.translateY(inc*y);
 							current.translateZ(inc*slider);
+							current.setRotation(new RotationNR());
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
 							jogTHreadHandle.setToSet(toSet, toSeconds);
@@ -378,14 +380,19 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				if(controlThreadRunning){
 					if(getMobilebase()==null){
 						try {
+							Log.enableDebugPrint();
+							System.out.println("Jogging to: "+toSet);
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}else{
 						toSet.setZ(0);
 						try {
 							getMobilebase().DriveArc(toSet, toSeconds);
-						} catch (Exception e) {}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 					controlThreadRunning=false;
 				}
@@ -394,7 +401,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		}
 
 		public void setToSet(TransformNR toSet,double toSeconds) {
-			this.toSet = toSet;
+			this.toSet = toSet.copy();
 			this.toSeconds = toSeconds;
 			controlThreadRunning=true;
 		}

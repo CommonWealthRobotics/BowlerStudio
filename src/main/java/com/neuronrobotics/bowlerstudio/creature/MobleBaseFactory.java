@@ -13,6 +13,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -22,9 +23,11 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.DeviceManager;
 
@@ -33,7 +36,8 @@ public class MobleBaseFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device,TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
+			CreatureLab creatureLab) {
 		TreeItem<String> legs =loadLimbs(device,view,device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems,creatureLab);
 		TreeItem<String> arms =loadLimbs(device,view,device.getAppendages(), "Arms", rootItem,
@@ -124,7 +128,8 @@ public class MobleBaseFactory {
 			TreeItem<String> rootItem,
 			TreeItem<String> topLevel,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
+			CreatureLab creatureLab){
 		
 		Platform.runLater(()->{
 			TextInputDialog dialog = new TextInputDialog(newDevice.getScriptingName());
@@ -173,7 +178,8 @@ public class MobleBaseFactory {
 			ArrayList<DHParameterKinematics> drivable,
 			String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
+			CreatureLab creatureLab) {
 
 	
 		TreeItem<String> apps = new TreeItem<String>(label);
@@ -187,6 +193,79 @@ public class MobleBaseFactory {
 		return apps;
 	}
 	
+	private static void loadSingleLink(int linkIndex,
+			MobileBase base,
+			TreeView<String> view,
+			LinkConfiguration conf,
+			DHParameterKinematics dh,
+			TreeItem<String> rootItem,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
+			CreatureLab creatureLab){
+		
+		
+		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
+		
+		
+		TreeItem<String> link = new TreeItem<String>(conf.getName());
+		callbackMapForTreeitems.put(link, ()->{
+			if(widgetMapForTreeitems.get(link)==null){
+				//create the widget for the leg when looking at it for the first time
+				widgetMapForTreeitems.put(link, new LinkSliderWidget(linkIndex, dhLink, dh));
+			}
+			//activate controller
+		});
+		
+		TreeItem<String> hwConf = new TreeItem<String>("Hardware Config "+conf.getName());
+		callbackMapForTreeitems.put(hwConf, ()->{
+			if(widgetMapForTreeitems.get(hwConf)==null){
+				//create the widget for the leg when looking at it for the first time
+				widgetMapForTreeitems.put(hwConf,new Group( new LinkConfigurationWidget(linkIndex, dh)));
+			}
+		});
+		
+		TreeItem<String> remove = new TreeItem<String>("Remove "+conf.getName());
+		callbackMapForTreeitems.put(remove, ()->{
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Confirm removing link");
+				alert.setHeaderText("This will remove " +conf.getName() );
+				alert.setContentText("Are sure you wish to remove this link?");
+	
+				Optional<ButtonType> result = alert.showAndWait();
+				view.getSelectionModel().select(rootItem);
+				if (result.get() == ButtonType.OK){
+					
+					rootItem.getChildren().remove(link);
+					LinkFactory factory  =dh.getFactory();
+					//remove the link listener while the number of links could chnage
+					factory.removeLinkListener(dh);
+					DHChain chain = dh.getDhChain() ;
+					chain.getLinks().remove(linkIndex);
+					factory.deleteLink(linkIndex);
+					//set the modified kinematics chain
+					dh.setChain(chain);
+					//once the new link configuration is set up, re add the listener
+					factory.addLinkListener(dh);
+					creatureLab.generateCad();
+				} 
+			});
+			
+		});
+		
+		TreeItem<String> design = new TreeItem<String>("Design "+conf.getName());
+		callbackMapForTreeitems.put(design, ()->{
+			if(widgetMapForTreeitems.get(design)==null){
+				//create the widget for the leg when looking at it for the first time
+				widgetMapForTreeitems.put(design, new DhSettingsWidget(dhLink, dh, null));
+			}
+		});
+		
+		link.getChildren().addAll(design,hwConf,remove);
+		rootItem.getChildren().add(link);
+		
+	}
+	
 	private static void loadSingleLimb(MobileBase base,
 			TreeView<String> view,
 			DHParameterKinematics dh,
@@ -195,7 +274,7 @@ public class MobleBaseFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
 		
 		TreeItem<String> dhItem = new TreeItem<String>(
-				dh.getScriptingName());
+				"Move "+dh.getScriptingName());
 		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(remove, ()->{
@@ -227,6 +306,12 @@ public class MobleBaseFactory {
 			});
 			
 		});
+		int j=0;
+		for(LinkConfiguration conf:dh.getFactory().getLinkConfigurations()){
+			loadSingleLink(j++,base, view, conf, dh, dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab);
+		}
+		
+		
 		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration");
 		
 		callbackMapForTreeitems.put(advanced, ()->{
@@ -235,7 +320,7 @@ public class MobleBaseFactory {
 				widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
 			}
 			
-		});
+		});		
 		dhItem.getChildren().addAll(advanced,remove);
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();

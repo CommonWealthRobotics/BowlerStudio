@@ -28,25 +28,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
-public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR {
+public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListenerNR {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
 	private int linkIndex;
 	private EngineeringUnitsSliderWidget setpoint;
-	private Button del;
 
 	
 	
 	
-	public DHLinkWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2, Button del,IOnEngineeringUnitsChange externalListener ) {
+	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2) {
 
 		this.linkIndex = linkIndex;
 		this.device = device2;
 		if(DHParameterKinematics.class.isInstance(device2)){
 			dhdevice=(DHParameterKinematics)device2;
 		}
-		this.del = del;
+
 		AbstractLink abstractLink  = device2.getAbstractLink(linkIndex);
 		
 		
@@ -83,13 +82,6 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		180,dhlink.getLinkType()==DhLinkType.ROTORY?"degrees":"mm");
 		
 		
-		
-		final Accordion accordion = new Accordion();
-
-		if(dhdevice!=null)
-			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice,externalListener)));
-		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device2)));
-		
 		GridPane panel = new GridPane();
 		
 		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
@@ -97,21 +89,16 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
 		
 		
-		panel.add(	del, 
+
+		panel.add(	new Text("#"+linkIndex), 
 				0, 
 				0);
-		panel.add(	new Text("#"+linkIndex), 
+		panel.add(	name, 
 				1, 
 				0);
-		panel.add(	name, 
-				2, 
-				0);
 		panel.add(	setpoint, 
-				3, 
-				0);
-		panel.add(	accordion, 
 				2, 
-				1);
+				0);
 
 		getChildren().add(panel);
 	}
