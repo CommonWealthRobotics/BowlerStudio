@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 
 import javafx.beans.InvalidationListener;
@@ -25,18 +26,18 @@ import javafx.scene.text.Text;
 
 public class LinkConfigurationWidget extends GridPane {
 	
-	private int index;
+//	private int index;
 	private AbstractKinematicsNR congiuration;
 	private LinkConfiguration conf;
 	private EngineeringUnitsSliderWidget zero;
 	private EngineeringUnitsSliderWidget lowerBound;
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
-	public LinkConfigurationWidget(int index, AbstractKinematicsNR congiuration){
-		this.index = index;
-		this.congiuration = congiuration;
-		conf = congiuration.getLinkConfiguration(index);
-		activLink = congiuration.getFactory().getLink(conf);
+	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory){
+//		this.index = index;
+//		this.congiuration = congiuration;
+		conf = congiuration;
+		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
 	    getColumnConstraints().add(new ColumnConstraints(200)); // column 2 is 300 wide
 	    getColumnConstraints().add(new ColumnConstraints(10)); // column 2 is 300 wide
@@ -52,8 +53,8 @@ public class LinkConfigurationWidget extends GridPane {
 	    TextField deviceName = new TextField(CreatureLab.getFormatted(conf.getScale()));
 	    deviceName.setOnAction(event -> {
 			conf.setDeviceScriptingName(deviceName.getText());
-			congiuration.getFactory().refreshHardwareLayer(conf);
-			activLink = congiuration.getFactory().getLink(conf);
+			factory.refreshHardwareLayer(conf);
+			activLink = factory.getLink(conf);
 			System.out.println("Link device to "+conf.getDeviceScriptingName());
 		});
 	    
@@ -139,8 +140,8 @@ public class LinkConfigurationWidget extends GridPane {
 			@Override
 			public void handle(ActionEvent event) {
 				conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
-				congiuration.getFactory().refreshHardwareLayer(conf);
-				activLink = congiuration.getFactory().getLink(conf);
+				factory.refreshHardwareLayer(conf);
+				activLink = factory.getLink(conf);
 				System.out.println("Link channel to "+conf.getType());
 			}
 		});

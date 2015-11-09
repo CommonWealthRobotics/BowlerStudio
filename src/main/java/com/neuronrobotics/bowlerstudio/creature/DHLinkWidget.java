@@ -88,7 +88,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 
 		if(dhdevice!=null)
 			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice,externalListener)));
-		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(linkIndex, device2)));
+		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(abstractLink.getLinkConfiguration(), device2.getFactory())));
 		
 		GridPane panel = new GridPane();
 		

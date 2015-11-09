@@ -103,6 +103,14 @@ public class MobleBaseFactory {
 				}
 				channelMap= deviceMap.get(conf.getDeviceScriptingName());
 				channelMap.put(conf.getHardwareIndex(), true);
+				for(LinkConfiguration sl:conf.getSlaveLinks()){
+					HashMap<Integer,Boolean> slavechannelMap;
+					if(deviceMap.get(sl.getDeviceScriptingName()) == null){
+						deviceMap.put(sl.getDeviceScriptingName(), new HashMap<Integer, Boolean>());
+					}
+					slavechannelMap= deviceMap.get(sl.getDeviceScriptingName());
+					slavechannelMap.put(sl.getHardwareIndex(), true);
+				}
 			}
 		}
 		for(String key:  deviceMap.keySet()){
@@ -193,6 +201,23 @@ public class MobleBaseFactory {
 		return apps;
 	}
 	
+	private static void setHardwareConfig(
+			LinkConfiguration conf,
+			LinkFactory factory,
+			TreeItem<String> rootItem,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems){
+		
+		TreeItem<String> hwConf = new TreeItem<String>("Hardware Config "+conf.getName());
+		callbackMapForTreeitems.put(hwConf, ()->{
+			if(widgetMapForTreeitems.get(hwConf)==null){
+				//create the widget for the leg when looking at it for the first time
+				widgetMapForTreeitems.put(hwConf,new Group( new LinkConfigurationWidget(conf, factory)));
+			}
+		});
+		rootItem.getChildren().add(hwConf);
+	}
+	
 	private static void loadSingleLink(int linkIndex,
 			MobileBase base,
 			TreeView<String> view,
@@ -205,8 +230,7 @@ public class MobleBaseFactory {
 		
 		
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
-		
-		
+				
 		TreeItem<String> link = new TreeItem<String>(conf.getName());
 		callbackMapForTreeitems.put(link, ()->{
 			if(widgetMapForTreeitems.get(link)==null){
@@ -216,14 +240,47 @@ public class MobleBaseFactory {
 			//activate controller
 		});
 		
-		TreeItem<String> hwConf = new TreeItem<String>("Hardware Config "+conf.getName());
-		callbackMapForTreeitems.put(hwConf, ()->{
-			if(widgetMapForTreeitems.get(hwConf)==null){
-				//create the widget for the leg when looking at it for the first time
-				widgetMapForTreeitems.put(hwConf,new Group( new LinkConfigurationWidget(linkIndex, dh)));
-			}
+		TreeItem<String> slaves = new TreeItem<String>("Slaves to "+conf.getName());
+		LinkFactory slaveFactory  =dh.getFactory().getLink(conf).getSlaveFactory();
+		for(LinkConfiguration co:conf.getSlaveLinks()){
+			
+			setHardwareConfig(co,  slaveFactory , slaves, callbackMapForTreeitems, widgetMapForTreeitems);
+		}
+		
+		TreeItem<String> addSlaves = new TreeItem<String>("Add Slave to "+conf.getName());
+		
+		callbackMapForTreeitems.put(addSlaves, ()->{
+//			if(widgetMapForTreeitems.get(advanced)==null){
+//				//create the widget for the leg when looking at it for the first time
+//				widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+//			}
+			Platform.runLater(()->{
+				TextInputDialog dialog = new TextInputDialog(conf.getName()+"_SLAVE_"+conf.getSlaveLinks().size());
+				dialog.setTitle("Add a new Slave link of");
+				dialog.setHeaderText("Set the scripting name for this Slave link");
+				dialog.setContentText("Please the name of the new Slave link:");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()){
+					view.getSelectionModel().select(rootItem);
+					new Thread(){
+						public void run(){
+						    System.out.println("Your new link: " + result.get());
+							LinkConfiguration newLink = new LinkConfiguration();
+							newLink.setType(conf.getType());
+							getNextChannel(base,newLink);
+							newLink.setName(result.get());
+							conf.getSlaveLinks().add(newLink);
+							slaveFactory.getLink(newLink);
+							setHardwareConfig(newLink,  slaveFactory , slaves, callbackMapForTreeitems, widgetMapForTreeitems);
+						}
+					}.start();
+				}
+			});
 		});
 		
+		slaves.getChildren().add(addSlaves);
 		TreeItem<String> remove = new TreeItem<String>("Remove "+conf.getName());
 		callbackMapForTreeitems.put(remove, ()->{
 			Platform.runLater(()->{
@@ -254,14 +311,33 @@ public class MobleBaseFactory {
 		});
 		
 		TreeItem<String> design = new TreeItem<String>("Design "+conf.getName());
+		
 		callbackMapForTreeitems.put(design, ()->{
 			if(widgetMapForTreeitems.get(design)==null){
 				//create the widget for the leg when looking at it for the first time
-				widgetMapForTreeitems.put(design, new DhSettingsWidget(dhLink, dh, null));
+				widgetMapForTreeitems.put(design, new DhSettingsWidget(dhLink, dh, new IOnEngineeringUnitsChange() {
+					
+					@Override
+					public void onSliderMoving(EngineeringUnitsSliderWidget source,
+							double newAngleDegrees) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+							double newAngleDegrees) {
+						creatureLab.generateCad();
+					}
+				}));
 			}
 		});
 		
-		link.getChildren().addAll(design,hwConf,remove);
+		link.getChildren().addAll(design);
+		
+		setHardwareConfig(conf,  dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		
+		link.getChildren().addAll(slaves,remove);
 		rootItem.getChildren().add(link);
 		
 	}
@@ -312,6 +388,41 @@ public class MobleBaseFactory {
 		}
 		
 		
+		TreeItem<String> addLink = new TreeItem<String>("Add Link");
+		
+		callbackMapForTreeitems.put(addLink, ()->{
+//			if(widgetMapForTreeitems.get(advanced)==null){
+//				//create the widget for the leg when looking at it for the first time
+//				widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+//			}
+			Platform.runLater(()->{
+				TextInputDialog dialog = new TextInputDialog("Link_"+dh.getLinkConfigurations().size());
+				dialog.setTitle("Add a new link of");
+				dialog.setHeaderText("Set the scripting name for this link");
+				dialog.setContentText("Please the name of the new link:");
+	
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()){
+					view.getSelectionModel().select(rootItem);
+					new Thread(){
+						public void run(){
+						    System.out.println("Your new link: " + result.get());
+							LinkConfiguration newLink = new LinkConfiguration();
+							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getType());
+							getNextChannel(base,newLink);
+							newLink.setName(result.get());
+							if(dh!=null)
+								dh.addNewLink(newLink,new DHLink(0, 0, 0, 0));
+							
+							loadSingleLink(dh.getLinkConfigurations().size()-1,base, view, newLink, dh, dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab);
+							creatureLab.generateCad();
+						}
+					}.start();
+				}
+			});
+		});		
+		
 		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration");
 		
 		callbackMapForTreeitems.put(advanced, ()->{
@@ -320,8 +431,8 @@ public class MobleBaseFactory {
 				widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
 			}
 			
-		});		
-		dhItem.getChildren().addAll(advanced,remove);
+		});	
+		dhItem.getChildren().addAll(addLink,advanced,remove);
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();
 		for(int i=0;i<vect.length;i++){

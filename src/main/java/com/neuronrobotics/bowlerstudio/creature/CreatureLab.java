@@ -342,7 +342,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	        
 			dhlabTopLevel.add(tree, 0, 2);
 			
-			dhlabTopLevel.add(controls, 0, 3);
+			dhlabTopLevel.add(controls, 1, 2);
 			
 			if(device.getDriveType() != DrivingType.NONE){
 				advancedPanel.setExpandedPane(rp);

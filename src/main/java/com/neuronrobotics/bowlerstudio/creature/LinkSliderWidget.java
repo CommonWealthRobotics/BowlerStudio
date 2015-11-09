@@ -84,8 +84,8 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 		
 		GridPane panel = new GridPane();
 		
-		panel.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
+		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
 		panel.getColumnConstraints().add(new ColumnConstraints(120)); // column 2 is 300 wide
 		
 		
