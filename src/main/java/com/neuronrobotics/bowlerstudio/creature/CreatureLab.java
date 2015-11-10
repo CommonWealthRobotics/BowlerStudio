@@ -88,6 +88,92 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
 	private ProgressIndicator pi;
+	private AbstractGameController gameController = new AbstractGameController() {
+		
+		@Override
+		public double getNavUp() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getNavRight() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getNavLeft() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getNavDown() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls3Plus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls3Minus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls2Plus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls2Minus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls1Plus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls1Minus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls0Plus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getControls0Minus() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getActionRight() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public double getActionLeft() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	};
 
 	@Override
 	public void onTabClosing() {
@@ -595,6 +681,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 			double newAngleDegrees) {
 		generateCad();
+	}
+
+	public AbstractGameController getController() {
+
+		return gameController;
 	}
 
 }

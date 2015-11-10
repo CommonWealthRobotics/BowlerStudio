@@ -353,6 +353,7 @@ public class MobleBaseFactory {
 		
 		TreeItem<String> dhItem = new TreeItem<String>(
 				"Move "+dh.getScriptingName());
+		
 		callbackMapForTreeitems.put(dhItem, ()->{
 			if(widgetMapForTreeitems.get(dhItem)==null){
 				//create the widget for the leg when looking at it for the first time
@@ -361,7 +362,20 @@ public class MobleBaseFactory {
 				jog.getChildren().add(new JogWidget(dh));
 				widgetMapForTreeitems.put(dhItem, new Group( new JogWidget(dh)));
 			}
+			AbstractGameController controller = creatureLab.getController();
+			controller.clearIGameControllerUpdateListener();
+			controller.addIGameControllerUpdateListener(new IGameControllerUpdateListener() {
+				@Override
+				public void onControllerUpdate(AbstractGameController source) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 		});
+		
+
+		
+		
 		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(remove, ()->{
