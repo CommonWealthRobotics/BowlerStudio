@@ -13,11 +13,13 @@ import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -280,7 +282,7 @@ public class MobleBaseFactory {
 			});
 		});
 		
-		slaves.getChildren().add(addSlaves);
+		slaves.getChildren().add(0,addSlaves);
 		TreeItem<String> remove = new TreeItem<String>("Remove "+conf.getName());
 		callbackMapForTreeitems.put(remove, ()->{
 			Platform.runLater(()->{
@@ -338,7 +340,7 @@ public class MobleBaseFactory {
 		setHardwareConfig(conf,  dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		
 		link.getChildren().addAll(slaves,remove);
-		rootItem.getChildren().add(link);
+		rootItem.getChildren().add(0,link);
 		
 	}
 	
@@ -351,6 +353,15 @@ public class MobleBaseFactory {
 		
 		TreeItem<String> dhItem = new TreeItem<String>(
 				"Move "+dh.getScriptingName());
+		callbackMapForTreeitems.put(dhItem, ()->{
+			if(widgetMapForTreeitems.get(dhItem)==null){
+				//create the widget for the leg when looking at it for the first time
+				VBox jog = new VBox(10);
+				jog.getChildren().add(new Label("Jog Limb"));
+				jog.getChildren().add(new JogWidget(dh));
+				widgetMapForTreeitems.put(dhItem, new Group( new JogWidget(dh)));
+			}
+		});
 		TreeItem<String> remove = new TreeItem<String>("Remove "+dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(remove, ()->{

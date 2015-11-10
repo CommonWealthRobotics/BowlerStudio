@@ -290,10 +290,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			
 			Group controls = new Group();
 			Accordion advancedPanel = new Accordion();
-			TitledPane rp =new TitledPane("Walking Engine", new JogWidget(device));
-			advancedPanel.getPanes().add(rp);
+			if(device.getDriveType() ==DrivingType.WALKING){
+				TitledPane rp =new TitledPane("Walking Engine", new JogWidget(device));
+				advancedPanel.getPanes().add(rp);
+				advancedPanel.setExpandedPane(rp);
+			}
 
-			TreeItem<String> rootItem = new TreeItem<String>("Body "+device.getScriptingName());
+			TreeItem<String> rootItem = new TreeItem<String>("Move Group "+device.getScriptingName());
 			rootItem.setExpanded(true);
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
@@ -323,6 +326,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	    	                }else{
 	    	                	Platform.runLater(()->{
 	    	                		controls.getChildren().clear();
+	    	                		controls.getChildren().add(advancedPanel);
 	    	                	});
 	    	                }
 	                	}
@@ -337,16 +341,14 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			HBox progress = new HBox(10);
 			pi = new ProgressIndicator(0);
 			progress.getChildren().addAll(new Label("Cad Progress:"),pi);
-			dhlabTopLevel.add(advancedPanel, 0, 0);
-	        dhlabTopLevel.add(progress, 0, 1);
+			//dhlabTopLevel.add(advancedPanel, 0, 0);
+	        dhlabTopLevel.add(progress, 0, 0);
 	        
-			dhlabTopLevel.add(tree, 0, 2);
+			dhlabTopLevel.add(tree, 0, 1);
 			
-			dhlabTopLevel.add(controls, 1, 2);
+			dhlabTopLevel.add(controls, 1, 1);
 			
-			if(device.getDriveType() != DrivingType.NONE){
-				advancedPanel.setExpandedPane(rp);
-			}
+
 			
 		}else if(AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device=(AbstractKinematicsNR)pm;
