@@ -14,7 +14,8 @@ import javafx.stage.Stage;
 
 public class GithubLoginFX implements javafx.fxml.Initializable {
 
-	@FXML TextField username;
+	@FXML
+	private TextField username;
 	@FXML PasswordField password;
 	
 	private boolean done=false;
@@ -34,7 +35,7 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 		done=false;
 		setCreds(new String[]{"",""});
 		password.clear();
-		username.clear();
+		getUsername().clear();
 		
 
 	}
@@ -51,7 +52,7 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 	}
 
 	@FXML public void login() {
-		getCreds()[0]= username.getText();
+		getCreds()[0]= getUsername().getText();
 		getCreds()[1]= password.getText();
 		if(getCreds()[0]==null||getCreds()[1]==null){
 			setCreds(null);
@@ -89,6 +90,14 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 			scene=  new Scene(root);
 		}
 		stage.setScene(scene);  
+	}
+
+	public TextField getUsername() {
+		return username;
+	}
+
+	public void setUsername(TextField username) {
+		this.username = username;
 	}
 
 

@@ -248,13 +248,14 @@ public class MainController implements Initializable {
 		ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
 			
 			@Override
-			public String[] prompt() {
+			public String[] prompt(String username) {
 				//new RuntimeException().printStackTrace();
 				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
 				Parent root = fxmlLoader.getRoot();
 				GithubLoginFX controller = fxmlLoader.getController();
 				Platform.runLater(()->{
 					controller.reset();
+					controller.getUsername().setText(username);
 					Stage stage = new Stage(); 
 					stage.setTitle("GitHub Login");
 					stage.initModality(Modality.APPLICATION_MODAL);  
