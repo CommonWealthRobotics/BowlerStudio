@@ -90,80 +90,9 @@ repositories {
 dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6', classifier: 'sources'
-
-	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
-	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT', classifier: 'sources'
-
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
-
-	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
-	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
-	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-	compile group: 'org.kohsuke.stapler', name: 'stapler-jetty', version: '1.1'
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.5.0"
 	
-	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.0.1.201506240215-r'
-	
-	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
-	compile group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
-	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
-	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
-	compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
-	compile 'com.miglayout:miglayout-swing:4.2'
-	compile 'commons-io:commons-io:2.4'
-	compile group:'org.python',name:'jython',version:'2.5.3'
-	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
-	compile 'org.clojure:clojure:1.7.0'
-	compile 'org.clojure:tools.nrepl:0.2.10'
-	compile "overtone:overtone:0.9.1"
-	compile "edu.cmu.sphinx:sphinx4-core:1.0-SNAPSHOT"
-	compile "edu.cmu.sphinx:sphinx4-data:1.0-SNAPSHOT"
-
-	
-	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
-	println("OPENCV_DIR="+basedir);
-	if(isWindows()){
-
-		compile files(basedir)
-	}
-	if(isOSX()){
-		if(System.getenv("OPENCV_DIR")!=null)
-			compile files(basedir)
-		else
-			//If you set your OPENCV_DIR environment variable, then we wouldnt have to do hacky things
-			compile files('/Volumes/Snow Leopard/Applications/BowlerStudio.app/Contents/MacOS/opencv249build/bin/opencv-249.jar')
-	}
-	if(isLinux()){
-		//compile files('/usr/share/java/opencv-249.jar')
-		compile fileTree (dir: '/usr/share/java/', includes: ['*opencv-24*.jar'])
-	}
-	
-//	compile group: 'org.bytedeco', name: 'javacv', version: '0.9';
-//	compile group: 'org.bytedeco', name: 'javacpp', version: '0.9';
-//	 //found at https://github.com/bytedeco/javacv/issues/122
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86";		
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86_64";	
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "macosx-x86_64";	
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86";		
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86_64";
-	
-	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
-	compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
-	compile group:'com.github.ellzord', name:'JALSE', version:'1.0.9'
-	
-	compile group:'de.huxhorn.sulky', name:'de.huxhorn.sulky.3rdparty.jlayer', version:'1.0'
-	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
-	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
-	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.4.28"
-	
-	compile fileTree (dir: 'libs', includes: ['*.jar'])
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.5.0.jar'])
 	
 }
 
