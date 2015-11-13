@@ -58,6 +58,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.bowlerstudio.tabs.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.threed.Jfx3dManager;
 import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
