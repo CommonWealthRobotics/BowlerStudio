@@ -313,7 +313,8 @@ public class Jfx3dManager extends JFXPanel {
 
 		camera.setNearClip(.1);
 		camera.setFarClip(100000.0);
-		camera.setTranslateZ(-cameraDistance);
+//		camera.setRotationAxis(Rotate.X_AXIS);
+//		camera.setRotate(90);
 	}
 	
 	/**
@@ -404,9 +405,11 @@ public class Jfx3dManager extends JFXPanel {
 					if (me.isPrimaryButtonDown()) {
 						getFlyingCamera()
 						.DriveArc(new TransformNR(0,0,0,
-								new RotationNR(mouseDeltaX * modifierFactor * modifier * 2.0,
-										0, 
-										mouseDeltaY * modifierFactor * modifier * 2.0))
+								new RotationNR(
+										mouseDeltaY * modifierFactor * modifier * 2.,
+										-mouseDeltaX * modifierFactor * modifier * 2.0,
+										0
+										))
 								, 0);
 					} 
 				} 
@@ -429,11 +432,11 @@ public class Jfx3dManager extends JFXPanel {
 			public void handle(ScrollEvent t) {
 				if (ScrollEvent.SCROLL == (t).getEventType()) {
 
-					double zoomFactor = (t.getDeltaY());
-
-					double z = camera.getTranslateY();
-					double newZ = z + zoomFactor;
-					camera.setTranslateY(newZ);
+//					double zoomFactor = (t.getDeltaY());
+//
+//					double z = camera.getTranslateY();
+//					double newZ = z + zoomFactor;
+//					camera.setTranslateY(newZ);
 					// System.out.println("Z = "+newZ);
 				}
 				t.consume();
@@ -452,7 +455,7 @@ public class Jfx3dManager extends JFXPanel {
 		//final boolean moveCamera = true;
 		System.out.println("Adding keyboard listeners");
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			double modifier = 100.0;
+			double modifier = 5.0;
 			double modifierFactor = 0.1;
 
 			@Override
@@ -460,30 +463,34 @@ public class Jfx3dManager extends JFXPanel {
 				
 				//Duration currentTime;
 				switch (event.getCode()) {
-//				case W:
-//				case UP:
-//					//System.out.println("UP");
-//					cameraXform.t.setX(cameraXform.t.getX()+
-//							 modifierFactor * modifier * 1); // -
-//					break;
-//				case S:
-//				case DOWN:
-//					//System.out.println("Down");
-//					cameraXform.t.setX(cameraXform.t.getX()-
-//							 modifierFactor * modifier * 1); // -
-//					break;
-//				case D:
-//				case RIGHT:
-//					//System.out.println("Right");
-//					cameraXform.t.setY(cameraXform.t.getY()+
-//							 modifierFactor * modifier * 1); // 
-//					break;
-//				case A:
-//				case LEFT:
-//					//System.out.println("Left");
-//					cameraXform.t.setY(cameraXform.t.getY()-
-//							 modifierFactor * modifier * 1); // 
-//					break;
+				case W:
+				case UP:
+					getFlyingCamera()
+					.DriveArc(new TransformNR(0,0,modifier,
+							new RotationNR())
+							, 0);
+					break;
+				case S:
+				case DOWN:
+					getFlyingCamera()
+					.DriveArc(new TransformNR(0,0,-modifier,
+							new RotationNR())
+							, 0);
+					break;
+				case D:
+				case RIGHT:
+					getFlyingCamera()
+					.DriveArc(new TransformNR(modifier,0,0,
+							new RotationNR())
+							, 0);
+					break;
+				case A:
+				case LEFT:
+					getFlyingCamera()
+					.DriveArc(new TransformNR(-modifier,0,0,
+							new RotationNR())
+							, 0);
+					break;
 				default:
 					break;
 				}
