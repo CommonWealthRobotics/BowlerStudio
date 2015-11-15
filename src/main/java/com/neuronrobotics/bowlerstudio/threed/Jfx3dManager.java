@@ -39,10 +39,15 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
+import com.neuronrobotics.imageprovider.VirtualCameraFactory;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -114,27 +119,13 @@ public class Jfx3dManager extends JFXPanel {
 	
 	/** The camera. */
 	final PerspectiveCamera camera = new PerspectiveCamera(true);
-	
-	/** The camera xform. */
-	final Xform cameraXform = new Xform();
-	
-	/** The camera xform2. */
-	final Xform cameraXform2 = new Xform();
-	
-	/** The camera xform3. */
-	final Xform cameraXform3 = new Xform();
+
 	
 	/** The camera distance. */
 	final double cameraDistance = 3000;
 	
 	/** The molecule group. */
 	final Xform moleculeGroup = new Xform();
-	
-	/** The timeline. */
-	private Timeline timeline;
-	
-	/** The timeline playing. */
-	boolean timelinePlaying = false;
 	
 	/** The one frame. */
 	double ONE_FRAME = 1.0 / 24.0;
@@ -174,37 +165,19 @@ public class Jfx3dManager extends JFXPanel {
 	
 	/** The look group. */
 	private final Group lookGroup = new Group();
-
-	/** The box size. */
-	private int boxSize = 50;
-	// private Box myBox = new Box(1, 1,boxSize);
-
-	/** The model. */
-	private DHParameterKinematics model;
-	
-	/** The master. */
-	private DyIO master;
-
-	/** The button pressed. */
-	private boolean buttonPressed = false;
 	
 	/** The scene. */
 	private SubScene scene;
 	
-	/** The selected object. */
-	private MeshView selectedObject = null;
-	
-	/** The selsected affine. */
-	private Affine selsectedAffine = new Affine();
-	
-	/** The robot base. */
-	private Affine robotBase = new Affine();
-	
-	/** The camera vr. */
-	private Affine cameraVR = new Affine();
 	
 	/** The ground. */
 	private Group ground;
+	
+	private boolean captureMouse = false;
+
+	private VirtualCameraDevice virtualcam;
+
+	private VirtualCameraMobileBase flyingCamera;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -217,12 +190,27 @@ public class Jfx3dManager extends JFXPanel {
 		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
 		Stop[] stops = null;
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-		
-		handleKeyboard(getSubScene(), world);
-		handleMouse(getSubScene(), world);
+		Scene s = new Scene(new Group(getSubScene()));
+		handleKeyboard(s);
+		handleMouse(getSubScene());
 		getSubScene().setCamera(camera);
+		setVirtualcam(new VirtualCameraDevice(camera));
+		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
+			@Override
+			public AbstractImageProvider getVirtualCamera() {
+				// TODO Auto-generated method stub
+				return getVirtualcam();
+			}
+		});
+		
+		try {
+			setFlyingCamera(new VirtualCameraMobileBase());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		setScene(new Scene(new Group(getSubScene())));
+		setScene(s);
 
 	}
 	
@@ -308,170 +296,6 @@ public class Jfx3dManager extends JFXPanel {
 		}
 	}
 
-	/**
-	 * Attach arm.
-	 *
-	 * @param model the model
-	 */
-	public void attachArm(final DHParameterKinematics model) {
-		master = model.getFactory().getDyio();
-		if (master != null)
-		new DigitalInputChannel(master, 23)
-				.addDigitalInputListener(new IDigitalInputListener() {
-					@Override
-					public void onDigitalValueChange(
-							DigitalInputChannel source, final boolean isHigh) {
-						//System.err.println("Button pressed");
-						Platform.runLater(new Runnable() {
-							
-							@Override
-							public void run() {
-								if (!isHigh) {
-
-									ObservableList<Node> cadBits = lookGroup
-											.getChildren();
-									for (Node n : cadBits) {
-										double x = n.getTranslateX();
-										double y = n.getTranslateY();
-										double z = n.getTranslateZ();
-										//if (threedBoundCheck(x, y, z,/selsectedAffine, 10)) {
-											if (MeshView.class.isInstance(n)) {
-												System.out
-														.println("Selecting Object");
-												selectedObject = (MeshView) n;
-											}else{
-												System.out.println("Not Touching "+n.getClass());
-											}
-										//}
-									}
-									if (selectedObject != null) {
-										System.out
-										.println("Grabbing Object ");
-										selectedObject.getTransforms().clear();
-										selectedObject.getTransforms().addAll(
-												robotBase,
-												selsectedAffine
-												);
-									}
-									
-								} else {
-									// button released, look for devices
-									if (selectedObject != null) {
-										// freeze it in place
-										selectedObject.getTransforms().clear();
-										selectedObject.getTransforms().addAll(
-												robotBase,
-												selsectedAffine.clone());
-										selectedObject = null;
-									}
-								}
-							}
-						});
-	
-					}
-				});
-
-		Platform.runLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				ArrayList<DHLink> links = model.getDhChain().getLinks();
-				for(DHLink dh : links) {
-					final Axis a = new Axis(15);
-					a.getChildren().add(new Sphere(5));
-					a.getTransforms().add(dh.getListener());
-					manipulator.getChildren().add(a);
-					if(master!=null)
-						master.addConnectionEventListener(new IDeviceConnectionEventListener() {
-							
-							@Override
-							public void onDisconnect(BowlerAbstractDevice source) {
-								// TODO Auto-generated method stub
-								manipulator.getChildren().remove(a);
-								a.getTransforms().clear();
-							}
-							
-							@Override
-							public void onConnect(BowlerAbstractDevice source) {
-								// TODO Auto-generated method stub
-								
-							}
-						});
-				}
-				//get the affine of the tip of the chain
-				selsectedAffine =  links.get(links.size()-1).getListener();
-
-				robotBase.setTx(100);
-				robotBase.setTy(100);
-				robotBase.setTz(-5);
-				manipulator.getTransforms().add(robotBase);
-				world.getChildren().addAll(manipulator);
-			}
-		});
-
-	}
-
-	/**
-	 * One d bound.
-	 *
-	 * @param location the location
-	 * @param target the target
-	 * @param bound the bound
-	 * @return true, if successful
-	 */
-	private boolean oneDBound(double location, double target, double bound) {
-		if (location > (target + bound))
-			return false;
-		if (location < (target - bound))
-			return false;
-		return true;
-	}
-
-	/**
-	 * Threed bound check.
-	 *
-	 * @param x the x
-	 * @param y the y
-	 * @param z the z
-	 * @param a the a
-	 * @param distance the distance
-	 * @return true, if successful
-	 */
-	private boolean threedBoundCheck(double x, double y, double z, Affine a,
-			double distance) {
-//		if (oneDBound(x, a.getTx(), distance))
-//			return false;
-//		if (oneDBound(y, a.getTy(), distance))
-//			return false;
-//		if (oneDBound(z, a.getTz(), distance))
-//			return false;
-		return true;
-	}
-
-	/**
-	 * Attach arm.
-	 *
-	 * @param master the master
-	 * @param xml the xml
-	 */
-	public void attachArm(DyIO master, String xml) {
-		for (int i = 0; i < master.getPIDChannelCount(); i++) {
-			// disable PID controller, default PID and dypid configurations are
-			// disabled.
-			master.ConfigureDynamicPIDChannels(new DyPIDConfiguration(i));
-			master.ConfigurePIDController(new PIDConfiguration());
-		}
-		attachArm(new DHParameterKinematics(master, xml));
-	}
-
-	/**
-	 * Disconnect.
-	 */
-	public void disconnect() {
-		if (master != null) {
-			master.disconnect();
-		}
-	}
 
 	/**
 	 * Builds the scene.
@@ -486,19 +310,10 @@ public class Jfx3dManager extends JFXPanel {
 	 * Builds the camera.
 	 */
 	private void buildCamera() {
-		getRoot().getChildren().add(cameraXform);
-		cameraXform.getChildren().add(cameraXform2);
-		cameraXform2.getChildren().add(cameraXform3);
-		cameraXform3.getChildren().add(camera);
-		cameraXform3.setRotateZ(180.0);
 
 		camera.setNearClip(.1);
 		camera.setFarClip(100000.0);
 		camera.setTranslateZ(-cameraDistance);
-		camera.getTransforms().add(getCameraVR());
-		cameraXform.ry.setAngle(320.0);
-		cameraXform.rx.setAngle(40);
-		
 	}
 	
 	/**
@@ -548,7 +363,7 @@ public class Jfx3dManager extends JFXPanel {
 	 * @param scene the scene
 	 * @param root the root
 	 */
-	private void handleMouse(SubScene scene, final Node root) {
+	private void handleMouse(SubScene scene) {
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
@@ -556,6 +371,10 @@ public class Jfx3dManager extends JFXPanel {
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
 				mouseOldY = me.getSceneY();
+				if(me.isPrimaryButtonDown())
+					captureMouse=true;
+				else
+					captureMouse=false;
 			}
 		});
 		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -578,20 +397,30 @@ public class Jfx3dManager extends JFXPanel {
 					modifier = 10.0;
 				}
 				if (me.isPrimaryButtonDown()) {
-					cameraXform.ry.setAngle(cameraXform.ry.getAngle()
-							- mouseDeltaX * modifierFactor * modifier * 2.0); // +
-					cameraXform.rx.setAngle(cameraXform.rx.getAngle()
-							+ mouseDeltaY * modifierFactor * modifier * 2.0); // -
-				} else if (me.isSecondaryButtonDown()) {
+//					cameraXform.ry.setAngle(cameraXform.ry.getAngle()
+//							- mouseDeltaX * modifierFactor * modifier * 2.0); // +
+//					cameraXform.rx.setAngle(cameraXform.rx.getAngle()
+//							+ mouseDeltaY * modifierFactor * modifier * 2.0); // -
+					if (me.isPrimaryButtonDown()) {
+						getFlyingCamera()
+						.DriveArc(new TransformNR(0,0,0,
+								new RotationNR(mouseDeltaX * modifierFactor * modifier * 2.0,
+										0, 
+										mouseDeltaY * modifierFactor * modifier * 2.0))
+								, 0);
+					} 
+				} 
+				else if (me.isMiddleButtonDown()) {
 					double z = camera.getTranslateZ();
 					double newZ = z + mouseDeltaX * modifierFactor * modifier;
 					camera.setTranslateZ(newZ);
-				} else if (me.isMiddleButtonDown()) {
-					cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX
-							* modifierFactor * modifier * 0.3); // -
-					cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY
-							* modifierFactor * modifier * 0.3); // -
-				}
+				} 
+//				else if (me.isSecondaryButtonDown()) {
+//					cameraXform.t.setX(cameraXform.t.getX() + mouseDeltaX
+//							* modifierFactor * modifier * 1); // -
+//					cameraXform.t.setY(cameraXform.t.getY() + mouseDeltaY
+//							* modifierFactor * modifier * 1); // -
+//				}
 			}
 		});
 		scene.addEventHandler(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
@@ -602,9 +431,9 @@ public class Jfx3dManager extends JFXPanel {
 
 					double zoomFactor = (t.getDeltaY());
 
-					double z = camera.getTranslateZ();
+					double z = camera.getTranslateY();
 					double newZ = z + zoomFactor;
-					camera.setTranslateZ(newZ);
+					camera.setTranslateY(newZ);
 					// System.out.println("Z = "+newZ);
 				}
 				t.consume();
@@ -619,116 +448,43 @@ public class Jfx3dManager extends JFXPanel {
 	 * @param scene the scene
 	 * @param root the root
 	 */
-	private void handleKeyboard(SubScene scene, final Node root) {
-		final boolean moveCamera = true;
+	private void handleKeyboard(Scene scene) {
+		//final boolean moveCamera = true;
+		System.out.println("Adding keyboard listeners");
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			double modifier = 100.0;
+			double modifierFactor = 0.1;
+
 			@Override
 			public void handle(KeyEvent event) {
-				Duration currentTime;
+				
+				//Duration currentTime;
 				switch (event.getCode()) {
-				case Z:
-					if (event.isShiftDown()) {
-						cameraXform.ry.setAngle(0.0);
-						cameraXform.rx.setAngle(0.0);
-						camera.setTranslateZ(-1000.0);
-					}
-					cameraXform2.t.setX(0.0);
-					cameraXform2.t.setY(0.0);
-					break;
-				case X:
-					if (event.isControlDown()) {
-						if (axisGroup.isVisible()) {
-							axisGroup.setVisible(false);
-						} else {
-							axisGroup.setVisible(true);
-						}
-					}
-					break;
-				case S:
-					if (event.isControlDown()) {
-						if (moleculeGroup.isVisible()) {
-							moleculeGroup.setVisible(false);
-						} else {
-							moleculeGroup.setVisible(true);
-						}
-					}
-					break;
-				case SPACE:
-					if (timelinePlaying) {
-						timeline.pause();
-						timelinePlaying = false;
-					} else {
-						timeline.play();
-						timelinePlaying = true;
-					}
-					break;
-				case UP:
-					if (event.isControlDown() && event.isShiftDown()) {
-						cameraXform2.t.setY(cameraXform2.t.getY() - 10.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown() && event.isShiftDown()) {
-						cameraXform.rx.setAngle(cameraXform.rx.getAngle()
-								- 10.0 * ALT_MULTIPLIER);
-					} else if (event.isControlDown()) {
-						cameraXform2.t.setY(cameraXform2.t.getY() - 1.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown()) {
-						cameraXform.rx.setAngle(cameraXform.rx.getAngle() - 2.0
-								* ALT_MULTIPLIER);
-					} else if (event.isShiftDown()) {
-						double z = camera.getTranslateZ();
-						double newZ = z + 5.0 * SHIFT_MULTIPLIER;
-						camera.setTranslateZ(newZ);
-					}
-					break;
-				case DOWN:
-					if (event.isControlDown() && event.isShiftDown()) {
-						cameraXform2.t.setY(cameraXform2.t.getY() + 10.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown() && event.isShiftDown()) {
-						cameraXform.rx.setAngle(cameraXform.rx.getAngle()
-								+ 10.0 * ALT_MULTIPLIER);
-					} else if (event.isControlDown()) {
-						cameraXform2.t.setY(cameraXform2.t.getY() + 1.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown()) {
-						cameraXform.rx.setAngle(cameraXform.rx.getAngle() + 2.0
-								* ALT_MULTIPLIER);
-					} else if (event.isShiftDown()) {
-						double z = camera.getTranslateZ();
-						double newZ = z - 5.0 * SHIFT_MULTIPLIER;
-						camera.setTranslateZ(newZ);
-					}
-					break;
-				case RIGHT:
-					if (event.isControlDown() && event.isShiftDown()) {
-						cameraXform2.t.setX(cameraXform2.t.getX() + 10.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown() && event.isShiftDown()) {
-						cameraXform.ry.setAngle(cameraXform.ry.getAngle()
-								- 10.0 * ALT_MULTIPLIER);
-					} else if (event.isControlDown()) {
-						cameraXform2.t.setX(cameraXform2.t.getX() + 1.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown()) {
-						cameraXform.ry.setAngle(cameraXform.ry.getAngle() - 2.0
-								* ALT_MULTIPLIER);
-					}
-					break;
-				case LEFT:
-					if (event.isControlDown() && event.isShiftDown()) {
-						cameraXform2.t.setX(cameraXform2.t.getX() - 10.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown() && event.isShiftDown()) {
-						cameraXform.ry.setAngle(cameraXform.ry.getAngle()
-								+ 10.0 * ALT_MULTIPLIER); // -
-					} else if (event.isControlDown()) {
-						cameraXform2.t.setX(cameraXform2.t.getX() - 1.0
-								* CONTROL_MULTIPLIER);
-					} else if (event.isAltDown()) {
-						cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0
-								* ALT_MULTIPLIER); // -
-					}
+//				case W:
+//				case UP:
+//					//System.out.println("UP");
+//					cameraXform.t.setX(cameraXform.t.getX()+
+//							 modifierFactor * modifier * 1); // -
+//					break;
+//				case S:
+//				case DOWN:
+//					//System.out.println("Down");
+//					cameraXform.t.setX(cameraXform.t.getX()-
+//							 modifierFactor * modifier * 1); // -
+//					break;
+//				case D:
+//				case RIGHT:
+//					//System.out.println("Right");
+//					cameraXform.t.setY(cameraXform.t.getY()+
+//							 modifierFactor * modifier * 1); // 
+//					break;
+//				case A:
+//				case LEFT:
+//					//System.out.println("Left");
+//					cameraXform.t.setY(cameraXform.t.getY()-
+//							 modifierFactor * modifier * 1); // 
+//					break;
+				default:
 					break;
 				}
 			}
@@ -790,27 +546,25 @@ public class Jfx3dManager extends JFXPanel {
 	}
 	
 	/**
-	 * Gets the camera vr.
-	 *
-	 * @return the camera vr
-	 */
-	public Affine getCameraVR() {
-		return cameraVR;
-	}
-	
-	/**
-	 * Sets the camera vr.
-	 *
-	 * @param cameraVR the new camera vr
-	 */
-	public void setCameraVR(Affine cameraVR) {
-		this.cameraVR = cameraVR;
-	}
-	
-	/**
 	 * Removes the arm.
 	 */
 	public void removeArm() {
 		world.getChildren().remove(manipulator);
+	}
+
+	public VirtualCameraDevice getVirtualcam() {
+		return virtualcam;
+	}
+
+	public void setVirtualcam(VirtualCameraDevice virtualcam) {
+		this.virtualcam = virtualcam;
+	}
+
+	public VirtualCameraMobileBase getFlyingCamera() {
+		return flyingCamera;
+	}
+
+	public void setFlyingCamera(VirtualCameraMobileBase flyingCamera) {
+		this.flyingCamera = flyingCamera;
 	}
 }
