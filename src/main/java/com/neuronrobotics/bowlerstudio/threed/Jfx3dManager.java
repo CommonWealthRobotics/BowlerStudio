@@ -59,6 +59,8 @@ import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
 import com.neuronrobotics.sdk.dyio.peripherals.DigitalInputChannel;
 import com.neuronrobotics.sdk.dyio.peripherals.IDigitalInputListener;
 import com.neuronrobotics.sdk.pid.PIDConfiguration;
+import com.sun.javafx.geom.transform.Affine3D;
+import com.sun.javafx.geom.transform.BaseTransform;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -83,6 +85,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
@@ -194,6 +197,10 @@ public class Jfx3dManager extends JFXPanel {
 		handleKeyboard(s);
 		handleMouse(getSubScene());
 		getSubScene().setCamera(camera);
+		camera.setRotationAxis(Rotate.Z_AXIS);
+		camera.setRotate(180);
+		camera.getTransforms().add(new Translate(0, -200, -600));
+	
 		setVirtualcam(new VirtualCameraDevice(camera));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override

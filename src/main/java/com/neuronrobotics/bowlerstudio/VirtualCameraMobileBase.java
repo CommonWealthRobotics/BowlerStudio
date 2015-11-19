@@ -46,7 +46,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 				source.setGlobalToFiducialTransform(global);
 				int debug = Log.getMinimumPrintLevel();
 				Log.enableWarningPrint();
-				Log.warning(this.getClass().getSimpleName()+"Setting camera to: "+global);
+				System.out.println(this.getClass().getSimpleName()+"Setting camera to: "+global);
 				Log.setMinimumPrintLevel(debug);
 			}
 		});
