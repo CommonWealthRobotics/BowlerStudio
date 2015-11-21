@@ -181,7 +181,7 @@ public class Jfx3dManager extends JFXPanel {
 	private VirtualCameraDevice virtualcam;
 
 	private VirtualCameraMobileBase flyingCamera;
-
+	private Group hand = new Axis();
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -199,9 +199,9 @@ public class Jfx3dManager extends JFXPanel {
 		getSubScene().setCamera(camera);
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
-		camera.getTransforms().add(new Translate(0, -200, -600));
+
 	
-		setVirtualcam(new VirtualCameraDevice(camera));
+		setVirtualcam(new VirtualCameraDevice(camera,hand));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
@@ -359,7 +359,7 @@ public class Jfx3dManager extends JFXPanel {
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(new Axis(),ground);
+		axisGroup.getChildren().addAll(new Axis(),ground,hand);
 		world.getChildren().addAll(axisGroup, lookGroup);
 	}
 	
@@ -421,16 +421,18 @@ public class Jfx3dManager extends JFXPanel {
 					} 
 				} 
 				else if (me.isMiddleButtonDown()) {
-					double z = camera.getTranslateZ();
-					double newZ = z + mouseDeltaX * modifierFactor * modifier;
-					camera.setTranslateZ(newZ);
+
 				} 
-//				else if (me.isSecondaryButtonDown()) {
-//					cameraXform.t.setX(cameraXform.t.getX() + mouseDeltaX
-//							* modifierFactor * modifier * 1); // -
-//					cameraXform.t.setY(cameraXform.t.getY() + mouseDeltaY
-//							* modifierFactor * modifier * 1); // -
-//				}
+				else if (me.isSecondaryButtonDown()) {
+					getFlyingCamera()
+					.DriveArc(new TransformNR(mouseDeltaX
+							* modifierFactor * modifier * -10,
+							mouseDeltaY
+							* modifierFactor * modifier * -10,
+							0,
+							new RotationNR())
+							, 0);
+				}
 			}
 		});
 		scene.addEventHandler(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
@@ -445,6 +447,12 @@ public class Jfx3dManager extends JFXPanel {
 //					double newZ = z + zoomFactor;
 //					camera.setTranslateY(newZ);
 					// System.out.println("Z = "+newZ);
+					getFlyingCamera()
+					.DriveArc(new TransformNR(0,
+							0,
+							t.getDeltaY(),
+							new RotationNR())
+							, 0);
 				}
 				t.consume();
 			}

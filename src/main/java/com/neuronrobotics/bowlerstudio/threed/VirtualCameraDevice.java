@@ -5,14 +5,18 @@ import java.util.ArrayList;
 
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 
+import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Translate;
 
 public class VirtualCameraDevice extends AbstractImageProvider {
 
 	private PerspectiveCamera camera;
+	private Group hand;
 
-	public VirtualCameraDevice(PerspectiveCamera camera){
+	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
+		this.hand = hand;
 		this.setCamera(camera);
 		setScriptingName("virtualCameraDevice");
 		
@@ -22,6 +26,8 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
 		camera.getTransforms().add(affine);
+		hand.getTransforms().add(affine);
+		camera.getTransforms().add(new Translate(-200, -200, -200));
 	}
 	
 	@Override
