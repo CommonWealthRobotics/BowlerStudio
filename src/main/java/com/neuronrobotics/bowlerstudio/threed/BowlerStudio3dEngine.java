@@ -62,6 +62,8 @@ import com.neuronrobotics.sdk.pid.PIDConfiguration;
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
 
+import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cylinder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -78,7 +80,6 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
-import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Affine;
@@ -181,41 +182,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private VirtualCameraDevice virtualcam;
 
 	private VirtualCameraMobileBase flyingCamera;
-	private Group hand = new Group(new Sphere(4));
+	private Group hand;
+	double upDown=0;
+	double leftRight=0;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
 	public BowlerStudio3dEngine() {
+		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
 		buildScene();
 		buildCamera();
 		buildAxes();
 
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
 		Stop[] stops = null;
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		Scene s = new Scene(new Group(getSubScene()));
 		handleKeyboard(s);
 		handleMouse(getSubScene());
-		getSubScene().setCamera(camera);
-		camera.setRotationAxis(Rotate.Z_AXIS);
-		camera.setRotate(180);
-
-	
-		setVirtualcam(new VirtualCameraDevice(camera,hand));
-		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
-			@Override
-			public AbstractImageProvider getVirtualCamera() {
-				// TODO Auto-generated method stub
-				return getVirtualcam();
-			}
-		});
-		
-		try {
-			setFlyingCamera(new VirtualCameraMobileBase());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		setScene(s);
 
@@ -318,10 +301,40 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	private void buildCamera() {
 
+		CSG cylinder = new Cylinder(	0, // Radius at the top
+  				5, // Radius at the bottom
+  				20, // Height
+  			         (int)20 //resolution
+  			         ).toCSG()
+				.roty(90)
+				.setColor(Color.BLACK);
+	
+		
+		hand = new Group(cylinder.getMesh());
+
 		camera.setNearClip(.1);
 		camera.setFarClip(100000.0);
-//		camera.setRotationAxis(Rotate.X_AXIS);
-//		camera.setRotate(90);
+		getSubScene().setCamera(camera);
+		camera.setRotationAxis(Rotate.Z_AXIS);
+		camera.setRotate(180);
+
+	
+		setVirtualcam(new VirtualCameraDevice(camera,hand));
+		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
+			@Override
+			public AbstractImageProvider getVirtualCamera() {
+				// TODO Auto-generated method stub
+				return getVirtualcam();
+			}
+		});
+		
+		try {
+			setFlyingCamera(new VirtualCameraMobileBase());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	/**
@@ -359,9 +372,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(new Axis(),ground);
-		lookGroup.getChildren().add(hand);
+		axisGroup.getChildren().addAll(new Axis(),ground, getVirtualcam().getCameraFrame());
 		world.getChildren().addAll(axisGroup, lookGroup);
+		
 	}
 	
 	
@@ -415,8 +428,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						.DriveArc(new TransformNR(0,0,0,
 								new RotationNR(
 										mouseDeltaY * modifierFactor * modifier * 2.,
-										-mouseDeltaX * modifierFactor * modifier * 2.0,
-										0
+										0,
+										-mouseDeltaX * modifierFactor * modifier * 2.0
 										))
 								, 0);
 					} 
@@ -470,47 +483,76 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void handleKeyboard(Scene scene) {
 		//final boolean moveCamera = true;
 		//System.out.println("Adding keyboard listeners");
+		
+		double modifier = 5.0;		
+		
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			double modifier = 5.0;
-			double modifierFactor = 0.1;
 			
 			@Override
 			public void handle(KeyEvent event) {
 				//System.err.println(event);
 				//Duration currentTime;
+				
 				switch (event.getCode()) {
 				case W:
 				case UP:
-					getFlyingCamera()
-					.DriveArc(new TransformNR(0,0,modifier,
-							new RotationNR())
-							, 0);
+					upDown=modifier;
 					break;
 				case S:
 				case DOWN:
-					getFlyingCamera()
-					.DriveArc(new TransformNR(0,0,-modifier,
-							new RotationNR())
-							, 0);
+					upDown=-modifier;
 					break;
 				case D:
 				case RIGHT:
-					getFlyingCamera()
-					.DriveArc(new TransformNR(modifier,0,0,
-							new RotationNR())
-							, 0);
+					leftRight=-modifier;
 					break;
 				case A:
 				case LEFT:
-					getFlyingCamera()
-					.DriveArc(new TransformNR(-modifier,0,0,
-							new RotationNR())
-							, 0);
+					leftRight=modifier;
 					break;
-				default:
-					break;
+				default:// do not consume events associated with the navigation
+					return;
 				}
+				getFlyingCamera()
+				.DriveArc(new TransformNR(leftRight,upDown,0,
+						new RotationNR())
+						, 0);
+				
+				event.consume();
 			}
+			
+		});
+		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			
+			@Override
+			public void handle(KeyEvent event) {
+				//System.err.println(event);
+				//Duration currentTime;
+				
+				switch (event.getCode()) {
+				case W:
+				case UP:
+				case S:
+				case DOWN:
+					upDown=0;
+					break;
+				case D:
+				case RIGHT:
+				case A:
+				case LEFT:
+					leftRight=0;
+					break;
+				default:// do not consume events associated with the navigation
+					return;
+				}
+				getFlyingCamera()
+				.DriveArc(new TransformNR(leftRight,upDown,0,
+						new RotationNR())
+						, 0);
+				
+				event.consume();
+			}
+			
 		});
 	}
 

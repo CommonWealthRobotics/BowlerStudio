@@ -226,16 +226,16 @@ public class MainController implements Initializable {
         
         
         subScene.setOnMouseEntered(mouseEvent -> {
-        	//System.err.println("3d window requesting focus");
-        	Scene topScene = BowlerStudio.getScene();
-            normalKeyPessHandle = topScene.getOnKeyPressed();
-        	jfx3dmanager.handleKeyboard(topScene);
+			//System.err.println("3d window requesting focus");
+			Scene topScene = BowlerStudio.getScene();
+			normalKeyPessHandle = topScene.getOnKeyPressed();
+			jfx3dmanager.handleKeyboard(topScene);
 		});
         
         subScene.setOnMouseExited(mouseEvent -> {
-        	//System.err.println("3d window dropping focus");
-        	Scene topScene = BowlerStudio.getScene();
-        	topScene.setOnKeyPressed(normalKeyPessHandle);
+			//System.err.println("3d window dropping focus");
+			Scene topScene = BowlerStudio.getScene();
+			topScene.setOnKeyPressed(normalKeyPessHandle);
 		});
         
         subScene.widthProperty().bind(viewContainer.widthProperty());

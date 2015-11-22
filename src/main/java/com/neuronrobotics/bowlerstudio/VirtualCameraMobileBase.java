@@ -41,7 +41,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 				global = new TransformNR(global.getX(),
 						global.getY(),
 						global.getZ(),
-						new RotationNR(tl, az, 0));
+						new RotationNR(tl, 0, el));
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				int debug = Log.getMinimumPrintLevel();

@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.sdk.addons.kinematics.TransformFactory;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -27,11 +30,23 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
 		
-		cameraFrame.getTransforms().add(new Translate(0, -200, -1000));
-		cameraFrame.getTransforms().add(affine);
-		hand.getTransforms().add(affine);
-		hand.getTransforms().add(new Translate(0, 200, 1000));
+		camera.getTransforms().add(TransformFactory.getTransform(
+				new TransformNR(0,
+						0, 
+						-1000, 
+						new RotationNR(0,0,0)
+						)));
+		getCameraFrame().getTransforms().add(affine);
+		TransformFactory.getTransform(
+				new TransformNR(0,
+						0, 
+						0, 
+						new RotationNR(135,0,45)
+						),
+				affine
+				);
 		
+		getCameraFrame().getChildren().addAll(camera, hand);
 		
 	}
 	
@@ -58,11 +73,17 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		return camera;
 	}
 	public Group getCameraGroup() {
-		return cameraFrame;
+		return getCameraFrame();
 	}
 
 	private void setCamera(PerspectiveCamera camera) {
 		this.camera = camera;
+	}
+	public Group getCameraFrame() {
+		return cameraFrame;
+	}
+	public void setCameraFrame(Group cameraFrame) {
+		this.cameraFrame = cameraFrame;
 	}
 
 }
