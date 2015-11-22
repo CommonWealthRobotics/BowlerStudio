@@ -181,7 +181,7 @@ public class Jfx3dManager extends JFXPanel {
 	private VirtualCameraDevice virtualcam;
 
 	private VirtualCameraMobileBase flyingCamera;
-	private Group hand = new Axis();
+	private Group hand = new Group(new Sphere(4));
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -359,7 +359,8 @@ public class Jfx3dManager extends JFXPanel {
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(new Axis(),ground,hand);
+		axisGroup.getChildren().addAll(new Axis(),ground);
+		lookGroup.getChildren().add(hand);
 		world.getChildren().addAll(axisGroup, lookGroup);
 	}
 	

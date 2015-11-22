@@ -14,6 +14,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 
 	private PerspectiveCamera camera;
 	private Group hand;
+	private Group cameraFrame = new Group();
 
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
 		this.hand = hand;
@@ -25,9 +26,13 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public void setGlobalPositionListener(Affine affine) {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
-		camera.getTransforms().add(affine);
+		
+		cameraFrame.getTransforms().add(new Translate(0, -200, -1000));
+		cameraFrame.getTransforms().add(affine);
 		hand.getTransforms().add(affine);
-		camera.getTransforms().add(new Translate(-200, -200, -200));
+		hand.getTransforms().add(new Translate(0, 200, 1000));
+		
+		
 	}
 	
 	@Override
@@ -52,8 +57,11 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public PerspectiveCamera getCamera() {
 		return camera;
 	}
+	public Group getCameraGroup() {
+		return cameraFrame;
+	}
 
-	public void setCamera(PerspectiveCamera camera) {
+	private void setCamera(PerspectiveCamera camera) {
 		this.camera = camera;
 	}
 

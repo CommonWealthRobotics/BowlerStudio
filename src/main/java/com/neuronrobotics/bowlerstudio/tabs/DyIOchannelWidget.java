@@ -336,6 +336,9 @@ public class DyIOchannelWidget {
 	        });
 			
 			listenerCodeBox.getChildren().setAll(sn);
+			
+			listenerCodeBox.setFocusTraversable(false);
+			
 			sn.setOnMouseEntered(mouseEvent -> {
 				sn.requestFocus();
 				SwingUtilities.invokeLater(new Runnable() {

@@ -95,8 +95,8 @@ public class MainController implements Initializable {
     
 	static{
 		PrintStream ps = new PrintStream(out);
-//		System.setErr(ps);
-//        System.setOut(ps);
+		System.setErr(ps);
+		System.setOut(ps);
 		new Thread(){
 			public void run(){
 			       updateLog();

@@ -77,13 +77,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
 	private RTextScrollPane sp;
-	
-	private class SwingNodeWrapper extends SwingNode{
-		@Override
-		 public boolean isResizable(){
-			 return false;
-		 }
-	}
 
     
 	public LocalFileScriptTab( File file) throws IOException {

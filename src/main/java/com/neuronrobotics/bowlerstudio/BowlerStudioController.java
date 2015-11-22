@@ -459,6 +459,7 @@ public class BowlerStudioController extends TabPane implements
 
 	public void setSelectedTab(Tab tab) {
 		Platform.runLater(() -> {
+			System.out.println("Selecting "+tab.getText());
 			getSelectionModel().select(tab);
 		});
 	}
