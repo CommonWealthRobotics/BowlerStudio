@@ -45,7 +45,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
-import com.neuronrobotics.bowlerstudio.threed.Jfx3dManager;
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.Detection;
 import com.neuronrobotics.imageprovider.HaarDetector;
@@ -73,12 +73,12 @@ public class BowlerStudioController extends TabPane implements
 	 */
 	private static final long serialVersionUID = -2686618188618431477L;
 	private ConnectionManager connectionManager;
-	private Jfx3dManager jfx3dmanager;
+	private BowlerStudio3dEngine jfx3dmanager;
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudio=null;
 	private Stage dialog = new Stage();
-	public BowlerStudioController(Jfx3dManager jfx3dmanager,
+	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager,
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");

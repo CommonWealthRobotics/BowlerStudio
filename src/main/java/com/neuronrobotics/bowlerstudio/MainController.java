@@ -27,6 +27,7 @@ import org.reactfx.util.FxTimer;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -42,6 +43,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -58,7 +60,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.bowlerstudio.tabs.BowlerStudioResourceFactory;
-import com.neuronrobotics.bowlerstudio.threed.Jfx3dManager;
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
@@ -92,10 +94,34 @@ public class MainController implements Initializable {
     private MenuBar menuBar;
     @FXML
     private MenuItem logoutGithub;
+    @FXML
+    private Pane logView;
+
+    @FXML
+    private ScrollPane editorContainer;
+
+    @FXML
+    private Pane viewContainer;
+
+    private SubScene subScene;
+    private BowlerStudio3dEngine jfx3dmanager ;
+
+	private File openFile;
+
+	private BowlerStudioController application;
+	private Stage primaryStage;
+	
+    @FXML
+    private CheckMenuItem AddDefaultRightArm;
+    @FXML
+    private CheckMenuItem AddVRCamera;
+	private ScriptingEngineWidget cmdLine;
+	@FXML Menu CreatureLabMenue;
+	private EventHandler<? super KeyEvent> normalKeyPessHandle;
     
 	static{
 		PrintStream ps = new PrintStream(out);
-		System.setErr(ps);
+		//System.setErr(ps);
 		System.setOut(ps);
 		new Thread(){
 			public void run(){
@@ -177,29 +203,7 @@ public class MainController implements Initializable {
     //private final CodeArea codeArea = new CodeArea();
 
 
-    @FXML
-    private Pane logView;
 
-    @FXML
-    private ScrollPane editorContainer;
-
-    @FXML
-    private Pane viewContainer;
-
-    private SubScene subScene;
-    private Jfx3dManager jfx3dmanager ;
-
-	private File openFile;
-
-	private BowlerStudioController application;
-	private Stage primaryStage;
-	
-    @FXML
-    private CheckMenuItem AddDefaultRightArm;
-    @FXML
-    private CheckMenuItem AddVRCamera;
-	private ScriptingEngineWidget cmdLine;
-	@FXML Menu CreatureLabMenue;
 	
     /**
      * Initializes the controller class.
@@ -210,12 +214,30 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-    	jfx3dmanager = new Jfx3dManager();
+    	jfx3dmanager = new BowlerStudio3dEngine();
+    	
+
         setApplication(new BowlerStudioController(jfx3dmanager, this));
         editorContainer.setContent(getApplication());
         
         
         subScene = jfx3dmanager.getSubScene();
+        subScene.setFocusTraversable(false);
+        
+        
+        subScene.setOnMouseEntered(mouseEvent -> {
+        	//System.err.println("3d window requesting focus");
+        	Scene topScene = BowlerStudio.getScene();
+            normalKeyPessHandle = topScene.getOnKeyPressed();
+        	jfx3dmanager.handleKeyboard(topScene);
+		});
+        
+        subScene.setOnMouseExited(mouseEvent -> {
+        	//System.err.println("3d window dropping focus");
+        	Scene topScene = BowlerStudio.getScene();
+        	topScene.setOnKeyPressed(normalKeyPessHandle);
+		});
+        
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());
 

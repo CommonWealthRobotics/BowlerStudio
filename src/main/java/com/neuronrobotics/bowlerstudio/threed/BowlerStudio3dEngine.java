@@ -104,7 +104,7 @@ import javafx.scene.Node;
 /**
  * MoleculeSampleApp.
  */
-public class Jfx3dManager extends JFXPanel {
+public class BowlerStudio3dEngine extends JFXPanel {
 
 	/**
 	 * 
@@ -185,7 +185,7 @@ public class Jfx3dManager extends JFXPanel {
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
-	public Jfx3dManager() {
+	public BowlerStudio3dEngine() {
 		buildScene();
 		buildCamera();
 		buildAxes();
@@ -467,16 +467,16 @@ public class Jfx3dManager extends JFXPanel {
 	 * @param scene the scene
 	 * @param root the root
 	 */
-	private void handleKeyboard(Scene scene) {
+	public void handleKeyboard(Scene scene) {
 		//final boolean moveCamera = true;
-		System.out.println("Adding keyboard listeners");
+		//System.out.println("Adding keyboard listeners");
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			double modifier = 5.0;
 			double modifierFactor = 0.1;
-
+			
 			@Override
 			public void handle(KeyEvent event) {
-				
+				//System.err.println(event);
 				//Duration currentTime;
 				switch (event.getCode()) {
 				case W:
@@ -533,7 +533,7 @@ public class Jfx3dManager extends JFXPanel {
 		System.setProperty("prism.dirtyopts", "false");
 
 		JFrame frame = new JFrame();
-		frame.setContentPane(new Jfx3dManager());
+		frame.setContentPane(new BowlerStudio3dEngine());
 
 		frame.setSize(1024, 1024);
 		frame.setVisible(true);

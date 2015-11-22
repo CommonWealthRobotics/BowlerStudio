@@ -57,6 +57,7 @@ public class BowlerStudio extends Application {
     private static TextArea log;
     private static MainController controller;
 	private static Stage primaryStage;
+	private static Scene scene;
 
     /**
      * @param args the command line arguments
@@ -81,17 +82,17 @@ public class BowlerStudio extends Application {
         setPrimaryStage(primaryStage);
 		Parent main = loadFromFXML();
 
-        Scene scene = new Scene(main, 1224, 768,true);
+        setScene(new Scene(main, 1224, 768,true));
 
-        scene.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
+        getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
                 toExternalForm());
         
         PerspectiveCamera camera = new PerspectiveCamera();
         
-        scene.setCamera(camera);
+        getScene().setCamera(camera);
 
         primaryStage.setTitle("Bowler Studio");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(getScene());
         primaryStage.show();
         primaryStage.setOnCloseRequest(arg0 -> {
         	
@@ -187,5 +188,13 @@ public class BowlerStudio extends Application {
 	
 	public static ScriptingEngineWidget createFileTab(File file){
 		return controller.createFileTab(file);
+	}
+
+	public static Scene getScene() {
+		return scene;
+	}
+
+	public static void setScene(Scene s) {
+		scene = s;
 	}
 }
