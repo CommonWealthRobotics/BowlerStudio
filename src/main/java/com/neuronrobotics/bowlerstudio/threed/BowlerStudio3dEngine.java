@@ -334,6 +334,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		getFlyingCamera()
+		.DriveArc(
+				new TransformNR(0,
+						0, 
+						0, 
+						new RotationNR(24,-127,0)
+						),0);
 
 	}
 	
@@ -428,8 +436,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						.DriveArc(new TransformNR(0,0,0,
 								new RotationNR(
 										mouseDeltaY * modifierFactor * modifier * 2.,
-										0,
-										-mouseDeltaX * modifierFactor * modifier * 2.0
+										-mouseDeltaX * modifierFactor * modifier * 2.0,
+										0//
 										))
 								, 0);
 					} 

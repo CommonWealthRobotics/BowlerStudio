@@ -29,24 +29,25 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public void setGlobalPositionListener(Affine affine) {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
-		
+		Group manipulationFrame = new Group();
 		camera.getTransforms().add(TransformFactory.getTransform(
-				new TransformNR(0,
+				new TransformNR(-0,
 						0, 
 						-1000, 
 						new RotationNR(0,0,0)
 						)));
-		getCameraFrame().getTransforms().add(affine);
-		TransformFactory.getTransform(
+		
+		getCameraFrame().getTransforms().add(TransformFactory.getTransform(
 				new TransformNR(0,
 						0, 
 						0, 
-						new RotationNR(135,0,45)
-						),
-				affine
-				);
+						new RotationNR(0,90,90)
+						)));
+		manipulationFrame.getTransforms().add(affine);
+
 		
-		getCameraFrame().getChildren().addAll(camera, hand);
+		manipulationFrame.getChildren().addAll(camera, hand);
+		getCameraFrame().getChildren().add(manipulationFrame);
 		
 	}
 	

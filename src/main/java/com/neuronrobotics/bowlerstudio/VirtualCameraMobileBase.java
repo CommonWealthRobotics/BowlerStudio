@@ -5,6 +5,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
@@ -14,6 +15,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 	public  VirtualCameraMobileBase() throws Exception{
 		super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
 		setDriveType(DrivingType.WALKING);
+		
 		setWalkingDriveEngine(new IDriveEngine() {
 			
 			@Override
@@ -41,7 +43,10 @@ public class VirtualCameraMobileBase extends MobileBase {
 				global = new TransformNR(global.getX(),
 						global.getY(),
 						global.getZ(),
-						new RotationNR(tl, 0, el));
+						new RotationNR(	tl,
+										az, 
+										0//el
+										));
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 				int debug = Log.getMinimumPrintLevel();
