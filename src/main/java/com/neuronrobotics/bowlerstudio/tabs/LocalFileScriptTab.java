@@ -124,7 +124,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		
 		getScripting().setFocusTraversable(false);
 		
-		getChildren().setAll(getScripting(),sn);
+		getChildren().setAll(sn,getScripting());
 		sn.setOnMouseEntered(mouseEvent -> {
 			sn.requestFocus();
 			SwingUtilities.invokeLater(new Runnable() {

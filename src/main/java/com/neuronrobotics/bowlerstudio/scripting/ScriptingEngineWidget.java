@@ -123,13 +123,10 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private String codeText="";
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
-	private ArrayList<String> history = new ArrayList<>();
-	private int historyIndex=0;
 
 	private Button runfx = new Button("Run");;
 	private Button runsave = new Button("Save");
 	private Button runsaveAs = new Button("Save As..");
-	private TextField cmdLineInterface = new TextField ();
 	private WebEngine engine;
 
 	private String addr;
@@ -139,6 +136,10 @@ public class ScriptingEngineWidget extends BorderPane implements
 	
 	final ComboBox<String> fileListBox = new ComboBox<String>();
 	private File currentFile = null;
+
+	private HBox controlPane;
+	private String currentGist;
+
 	
 	public ScriptingEngineWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
@@ -207,83 +208,19 @@ public class ScriptingEngineWidget extends BorderPane implements
 //			});
 //		});
 
-		cmdLineInterface.setOnAction(event -> {
-			String text = cmdLineInterface.getText();
-			text+="\r\n";
-			Platform.runLater(() -> {
-				cmdLineInterface.setText("");
-			});
-			System.out.println(text);
-			history.add(text);
-			historyIndex=0;
-			setCode(text);
-			startStopAction();
-		});
-		cmdLineInterface.setPrefWidth(80*4);
-		cmdLineInterface.addEventFilter( KeyEvent.KEY_PRESSED, event -> {
-			//Platform.runLater(() -> {
-			    if( (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) ) {
-			    	System.err.println("Key pressed "+event.getCode()+" history index = "+historyIndex+" history size= "+history.size());
-			    	if(historyIndex==0){
-					       String text = cmdLineInterface.getText();
-					       if(text.length()>0){
-					    	   // store what was in the box into he history
-					    	   history.add(text);
-					       }
-			    	}
-			       
-			       if(event.getCode() == KeyCode.UP)
-			    	   historyIndex++;
-			       else
-			    	   historyIndex--;
-			       if(history.size()>0){
-				       if(historyIndex>history.size()){
-				    	   historyIndex =  history.size();
-				       }
-				       if(historyIndex<0)
-				    	   historyIndex=0;
-				       //History index established
-				       if(historyIndex>0)
-					       Platform.runLater(() -> {
-								cmdLineInterface.setText(history.get(history.size()-historyIndex));
-					       });
-				       else
-				    	   Platform.runLater(() -> {
-								cmdLineInterface.setText("");
-					       }); 
-			       }
-			       event.consume();
-			    } 
-			//});
-		});
-		history.add("println dyio");
-		history.add("dyio.setValue(0,1)//sets the value of channel 0 to 1");
-		history.add("dyio.setValue(0,0)//sets the value of channel 0 to 0");
-		history.add("dyio.setValue(0,dyio.getValue(1))//sets the value of channel 0 to the value of channel 1");
-		history.add("println dyio");
-		history.add("ThreadUtil.wait(10000)");
-		history.add("BowlerKernel.speak(\"I can speak!\")");
-		history.add("println 'Hello World Command line'");
+
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
 		// BorderLayout layout manager
 		setPadding(new Insets(1, 0, 3, 10));
-		
-		
-		
-		if(type ==ScriptingWidgetType.CMDLINE ){
-			controlPane = new HBox(10);
-			controlPane.getChildren().add(new Label("Bowler CMD:"));
-			controlPane.getChildren().add(cmdLineInterface);
-		}else{
-			controlPane = new HBox(20);
-		}
+
+		controlPane = new HBox(20);
+
 		controlPane.getChildren().add(runfx);
-		if(type !=ScriptingWidgetType.CMDLINE ){
-			controlPane.getChildren().add(runsave);
-			controlPane.getChildren().add(runsaveAs);
-			controlPane.getChildren().add(fileListBox);
-		}
+		controlPane.getChildren().add(runsave);
+		controlPane.getChildren().add(runsaveAs);
+		controlPane.getChildren().add(fileListBox);
+		
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -295,13 +232,9 @@ public class ScriptingEngineWidget extends BorderPane implements
 	private void reset() {
 		running = false;
 		Platform.runLater(() -> {
-			if(type ==ScriptingWidgetType.CMDLINE ){
-				runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-				runfx.setText("Go");
-			}else{
-				runfx.setText("Run");
-				runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-			}
+			runfx.setText("Run");
+			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+			
 		});
 
 	}
@@ -369,7 +302,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 		this.addr = addr;
 		this.engine = engine;
 		loadGist = true;
-		currentGist = ScriptingEngine.getCurrentGist(addr, engine);
+		currentGist = ScriptingEngine.getCurrentGist(addr, engine).get(0);
 		
 		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
 		
@@ -391,10 +324,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 
 		running = true;
 		Platform.runLater(()->{
-			if(type ==ScriptingWidgetType.CMDLINE )
-				runfx.setText("Kill");
-			else
-				runfx.setText("Stop");
+			runfx.setText("Stop");
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -407,9 +337,6 @@ public class ScriptingEngineWidget extends BorderPane implements
 				}catch (NullPointerException e){
 					name="";
 				}
-				if(type!= ScriptingWidgetType.CMDLINE)
-					setName("Bowler Script Runner " + name);
-	
 				try {
 					Object obj = ScriptingEngine.inlineScriptRun(getCode(), null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
@@ -605,9 +532,6 @@ public class ScriptingEngineWidget extends BorderPane implements
 	}
 
 
-
-	private HBox controlPane;
-	private String currentGist;
 
 	@Override
 	public void changed(ObservableValue observable, Object oldValue,

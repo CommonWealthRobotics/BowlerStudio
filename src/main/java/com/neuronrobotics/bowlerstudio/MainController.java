@@ -53,6 +53,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
+import com.neuronrobotics.bowlerstudio.scripting.CommandLineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
@@ -115,7 +116,7 @@ public class MainController implements Initializable {
     private CheckMenuItem AddDefaultRightArm;
     @FXML
     private CheckMenuItem AddVRCamera;
-	private ScriptingEngineWidget cmdLine;
+	private CommandLineWidget cmdLine;
 	@FXML Menu CreatureLabMenue;
 	private EventHandler<? super KeyEvent> normalKeyPessHandle;
     
@@ -319,7 +320,7 @@ public class MainController implements Initializable {
     	logViewRef.prefHeightProperty().bind( logView.heightProperty().subtract(40));
     	
     	
-    	cmdLine = new ScriptingEngineWidget(ScriptingWidgetType.CMDLINE);
+    	cmdLine = new CommandLineWidget();
     	VBox box = new VBox();
     	box.getChildren().add(logViewRef);
     	box.getChildren().add(cmdLine);
@@ -334,7 +335,7 @@ public class MainController implements Initializable {
         //BowlerStudio.speak("Welcome to Bowler Studio");
     }
     
-    private void setToLoggedIn(final String name){
+    private void setToLoggedIn(final String name){			
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
 			logoutGithub.disableProperty().set(false);
