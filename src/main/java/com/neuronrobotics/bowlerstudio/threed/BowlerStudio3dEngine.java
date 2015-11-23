@@ -366,7 +366,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		for(int i=-gridSize;i<gridSize;i++){
 			for(int j=-gridSize;j<gridSize;j++){
 				if(i%gridDensity==0 &&j%gridDensity==0){
-					Sphere s = new Sphere(3);
+					Sphere s = new Sphere(1);
 					Affine sp=new Affine();
 					sp.setTy(i);
 					sp.setTx(j);
@@ -448,9 +448,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				else if (me.isSecondaryButtonDown()) {
 					getFlyingCamera()
 					.DriveArc(new TransformNR(mouseDeltaX
-							* modifierFactor * modifier * -10,
+							* modifierFactor * modifier * 10,
 							mouseDeltaY
-							* modifierFactor * modifier * -10,
+							* modifierFactor * modifier * 10,
 							0,
 							new RotationNR())
 							, 0);
@@ -469,12 +469,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 //					double newZ = z + zoomFactor;
 //					camera.setTranslateY(newZ);
 					// System.out.println("Z = "+newZ);
-					getFlyingCamera()
-					.DriveArc(new TransformNR(0,
-							0,
-							t.getDeltaY(),
-							new RotationNR())
-							, 0);
+					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth()+t.getDeltaY());
 				}
 				t.consume();
 			}

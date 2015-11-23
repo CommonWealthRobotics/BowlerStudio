@@ -39,7 +39,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 				double az = Math.toDegrees(newPose.getRotation().getRotationAzimuth()+global.getRotation().getRotationAzimuth());
 				double el = Math.toDegrees(newPose.getRotation().getRotationElevation()+global.getRotation().getRotationElevation());
 				double tl = Math.toDegrees(newPose.getRotation().getRotationTilt()+global.getRotation().getRotationTilt());
-				System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
+				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
 				global = new TransformNR(global.getX(),
 						global.getY(),
 						global.getZ(),
@@ -51,7 +51,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 				source.setGlobalToFiducialTransform(global);
 				int debug = Log.getMinimumPrintLevel();
 				Log.enableWarningPrint();
-				System.out.println(this.getClass().getSimpleName()+"Setting camera to: "+global);
+				//System.out.println(this.getClass().getSimpleName()+"Setting camera to: "+global);
 				Log.setMinimumPrintLevel(debug);
 			}
 		});

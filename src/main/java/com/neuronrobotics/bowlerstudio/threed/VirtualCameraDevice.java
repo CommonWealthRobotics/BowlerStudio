@@ -18,6 +18,9 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	private PerspectiveCamera camera;
 	private Group hand;
 	private Group cameraFrame = new Group();
+	
+	private double zoomDepth = -1000;
+	private Affine zoomAffine = new Affine();
 
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
 		this.hand = hand;
@@ -30,12 +33,8 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
 		Group manipulationFrame = new Group();
-		camera.getTransforms().add(TransformFactory.getTransform(
-				new TransformNR(-0,
-						0, 
-						-1000, 
-						new RotationNR(0,0,0)
-						)));
+		camera.getTransforms().add(zoomAffine);
+		zoomAffine.setTz(getZoomDepth());
 		
 		getCameraFrame().getTransforms().add(TransformFactory.getTransform(
 				new TransformNR(0,
@@ -85,6 +84,17 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	}
 	public void setCameraFrame(Group cameraFrame) {
 		this.cameraFrame = cameraFrame;
+	}
+	public double getZoomDepth() {
+		return zoomDepth;
+	}
+	public void setZoomDepth(double zoomDepth) {
+		if(zoomDepth>-2)
+			zoomDepth=-2;
+		if(zoomDepth<-3000)
+			zoomDepth=-3000;
+		this.zoomDepth = zoomDepth;
+		zoomAffine.setTz(getZoomDepth());
 	}
 
 }
