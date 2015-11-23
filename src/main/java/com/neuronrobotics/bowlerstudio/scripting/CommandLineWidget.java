@@ -199,7 +199,11 @@ public class CommandLineWidget  extends BorderPane{
 		});
 		System.out.println(text);
 		history.add(text);
-		historyIndex=0;
+		BowlerKernel.writeHistory(history);
+		if(historyIndex!=0)
+			historyIndex--;
+		else
+			historyIndex=0;
 		setCode(text);
 		Platform.runLater(()->runfx.setDisable(true));
 		if (running)
