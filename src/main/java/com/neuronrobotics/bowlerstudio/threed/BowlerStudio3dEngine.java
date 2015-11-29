@@ -572,14 +572,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		getFlyingCamera()
 		.DriveArc(newPose, seconds);
 		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
-			Bounds locBounds = bits.getValue().getBoundsInLocal();
-			TransformNR t = getFlyingCamera().getFiducialToGlobalTransform();
+			Bounds locBounds = bits.getValue().getBoundsInParent();
+			TransformNR t = new TransformNR(0,0,0,
+											new RotationNR(0, 90, 90))
+							.times(getFlyingCamera().getFiducialToGlobalTransform());
 			if(locBounds.contains(	t.getX(),
 									t.getY(), 
 									t.getZ())){
-				System.err.println("Object in screen bounded by: "+locBounds);
-				System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
-				bits.getKey().getCreationEventStackTrace().printStackTrace();
+				//System.err.println("Object in screen bounded by: "+locBounds);
+				//System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
+				//bits.getKey().getCreationEventStackTrace().printStackTrace();
+		        final StackTraceElement[] stackTrace = bits.getKey().getCreationEventStackTrace().getStackTrace();
+		        for(StackTraceElement trace:stackTrace){
+		        	if(trace.getFileName()!=null)
+			        	if(trace.getFileName().endsWith(".groovy"))
+			        		System.err.println("File: "+trace.getFileName()+" at line "+trace.getLineNumber());
+		        	
+		        }
 			}
 		}
 	}
