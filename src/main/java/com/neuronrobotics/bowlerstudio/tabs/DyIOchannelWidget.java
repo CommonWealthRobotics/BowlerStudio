@@ -285,7 +285,7 @@ public class DyIOchannelWidget {
 							sn.setDisable(true);
 							textArea.setEditable(false);
 						});
-						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptRun(textArea.getText(), null, ShellType.GROOVY);
+						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptStringRun(textArea.getText(), null, ShellType.GROOVY);
 						channel.addChannelEventListener(myLocalListener);
 						Platform.runLater(()->{
 							setListenerButton.setText("Kill Listener");

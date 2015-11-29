@@ -134,7 +134,7 @@ public class CommandLineWidget  extends BorderPane{
 				String name;
 	
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(getCode(), null,ShellType.GROOVY);
+					Object obj = ScriptingEngine.inlineScriptStringRun(getCode(), null,ShellType.GROOVY);
 					reset();
 				} 
 				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){

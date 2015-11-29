@@ -35,6 +35,8 @@ package com.neuronrobotics.bowlerstudio.threed;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -93,6 +95,8 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+
 import static javafx.scene.input.KeyCode.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
@@ -183,8 +187,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private VirtualCameraMobileBase flyingCamera;
 	private Group hand;
-	double upDown=0;
-	double leftRight=0;
+	private double upDown=0;
+	private double leftRight=0;
+	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -209,6 +214,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public void removeObjects(){
 		lookGroup.getChildren().clear();
+		csgMap.clear();
 	}
 
 	/**
@@ -216,10 +222,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *
 	 * @param previous the previous
 	 */
-	public void removeObject(MeshView previous) {
+	public void removeObject(CSG previousCsg) {
+		
+		MeshView previous  = csgMap.get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
 		}
+		csgMap.remove(previousCsg);
 
 	}
 
@@ -229,7 +238,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param current the current
 	 * @return the mesh view
 	 */
-	public MeshView addObject(MeshView current) {
+	public MeshView addObject(CSG currentCsg) {
+		
+		csgMap.put(currentCsg, currentCsg.getMesh());
+		
+		MeshView current = csgMap.get(currentCsg);
+		
 		Group og = new Group();
 		og.getChildren().add(current);
 		Axis a = new Axis();
@@ -335,8 +349,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			e.printStackTrace();
 		}
 		
-		getFlyingCamera()
-		.DriveArc(
+		moveCamera(
 				new TransformNR(0,
 						0, 
 						0, 
@@ -432,8 +445,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 //					cameraXform.rx.setAngle(cameraXform.rx.getAngle()
 //							+ mouseDeltaY * modifierFactor * modifier * 2.0); // -
 					if (me.isPrimaryButtonDown()) {
-						getFlyingCamera()
-						.DriveArc(new TransformNR(0,0,0,
+						moveCamera(new TransformNR(0,0,0,
 								new RotationNR(
 										mouseDeltaY * modifierFactor * modifier * 2.,
 										-mouseDeltaX * modifierFactor * modifier * 2.0,
@@ -446,8 +458,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 				} 
 				else if (me.isSecondaryButtonDown()) {
-					getFlyingCamera()
-					.DriveArc(new TransformNR(mouseDeltaX
+					moveCamera(new TransformNR(mouseDeltaX
 							* modifierFactor * modifier * 10,
 							mouseDeltaY
 							* modifierFactor * modifier * 10,
@@ -516,8 +527,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				default:// do not consume events associated with the navigation
 					return;
 				}
-				getFlyingCamera()
-				.DriveArc(new TransformNR(leftRight,upDown,0,
+				moveCamera(new TransformNR(leftRight,upDown,0,
 						new RotationNR())
 						, 0);
 				
@@ -548,8 +558,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				default:// do not consume events associated with the navigation
 					return;
 				}
-				getFlyingCamera()
-				.DriveArc(new TransformNR(leftRight,upDown,0,
+				moveCamera(new TransformNR(leftRight,upDown,0,
 						new RotationNR())
 						, 0);
 				
@@ -557,6 +566,22 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 			
 		});
+	}
+	
+	private void moveCamera( TransformNR newPose, double seconds){
+		getFlyingCamera()
+		.DriveArc(newPose, seconds);
+		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
+			Bounds locBounds = bits.getValue().getBoundsInLocal();
+			TransformNR t = getFlyingCamera().getFiducialToGlobalTransform();
+			if(locBounds.contains(	t.getX(),
+									t.getY(), 
+									t.getZ())){
+				System.err.println("Object in screen bounded by: "+locBounds);
+				System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
+				bits.getKey().getCreationEventStackTrace().printStackTrace();
+			}
+		}
 	}
 
 	// @Override

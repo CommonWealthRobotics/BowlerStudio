@@ -456,12 +456,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			cad = device.getCadEngine();
 		}
 		if(cadEngine==null){
-			String code = ScriptingEngine.codeFromGistID(cad[0],cad[1])[0];
+			File code = ScriptingEngine.fileFromGistID(cad[0],cad[1]);
 			cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 	}
 	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
-		String code = ScriptingEngine.codeFromGistID(device.getDhEngine()[0],device.getDhEngine()[1])[0];
+		File code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0],device.getDhEngine()[1]);
 		defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		
 		device.setInverseSolver(defaultDHSolver);
@@ -469,7 +469,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
 		if(defaultDriveEngine==null){
-			String code = ScriptingEngine.codeFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1])[0];
+			File code = ScriptingEngine.fileFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1]);
 			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 		device.setWalkingDriveEngine( defaultDriveEngine);

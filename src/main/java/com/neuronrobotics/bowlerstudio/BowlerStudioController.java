@@ -264,8 +264,7 @@ public class BowlerStudioController extends TabPane implements
 			getBowlerStudio().jfx3dmanager.removeObjects();
 			if(toadd!=null)
 			for(CSG c:toadd){
-				MeshView current = c.getMesh();
-				getBowlerStudio().jfx3dmanager.addObject(current);
+				getBowlerStudio().jfx3dmanager.addObject(c);
 			}
 		});
 	}
@@ -273,21 +272,15 @@ public class BowlerStudioController extends TabPane implements
 	private void addObject(Object o) {
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
-			MeshView current = csg.getMesh();
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
-				jfx3dmanager.addObject(current);
+				jfx3dmanager.addObject(csg);
 			});
 		} else if (Tab.class.isInstance(o)) {
 
 			addTab((Tab) o, true);
 
-		} else if (MeshView.class.isInstance(o)) {
-			Platform.runLater(() -> {
-				// new RuntimeException().printStackTrace();
-				jfx3dmanager.addObject((MeshView) o);
-			});
-		} else if (BowlerAbstractDevice.class.isInstance(o)) {
+		}if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
 			ConnectionManager.addConnection((BowlerAbstractDevice) o,
 					bad.getScriptingName());

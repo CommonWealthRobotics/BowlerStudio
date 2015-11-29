@@ -338,7 +338,7 @@ public class ScriptingEngineWidget extends BorderPane implements
 					name="";
 				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(getCode(), null,ScriptingEngine.setFilename(name));
+					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
 						l.onGroovyScriptFinished(obj, scriptResult);
 					}
