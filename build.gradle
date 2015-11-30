@@ -90,7 +90,7 @@ repositories {
 dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.5.0"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.6.2"
 	
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.5.0.jar'])
 	
