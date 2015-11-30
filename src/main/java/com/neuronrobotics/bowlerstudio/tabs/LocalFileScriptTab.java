@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -23,6 +24,10 @@ import java.util.regex.Matcher;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -54,29 +59,16 @@ import javafx.stage.WindowEvent;
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
 	
 	private ScriptingEngineWidget scripting;
-//    private static final String[] KEYWORDS = new String[]{
-//        "def", "in", "as", "abstract", "assert", "boolean", "break", "byte",
-//        "case", "catch", "char", "class", "const",
-//        "continue", "default", "do", "double", "else",
-//        "enum", "extends", "final", "finally", "float",
-//        "for", "goto", "if", "implements", "import",
-//        "instanceof", "int", "interface", "long", "native",
-//        "new", "package", "private", "protected", "public",
-//        "return", "short", "static", "strictfp", "super",
-//        "switch", "synchronized", "this", "throw", "throws",
-//        "transient", "try", "void", "volatile", "while"
-//    };
+
     IScriptEventListener l=null;
-
-//    private static final Pattern KEYWORD_PATTERN
-//            = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
-//    
-    
-    //private final CodeArea codeArea = new CodeArea();
-
 	private RSyntaxTextArea textArea;
 	private SwingNode sn;
 	private RTextScrollPane sp;
+
+	private Highlighter highlighter;
+
+	private HighlightPainter painter;
+
 
     
 	public LocalFileScriptTab( File file) throws IOException {
@@ -135,9 +127,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	        });
 		});
 
+		highlighter = textArea.getHighlighter();
+		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 		
-
-
+		highlighter.removeAllHighlights();
 
 	}
 
@@ -196,5 +189,17 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	public void setScripting(ScriptingEngineWidget scripting) {
 		this.scripting = scripting;
+	}
+
+	public void setHighlight(int lineNumber) throws BadLocationException {
+		int startIndex = textArea.getLineStartOffset(lineNumber-1);
+        int endIndex = textArea.getLineEndOffset(lineNumber-1);
+        textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+        textArea.moveCaretPosition(startIndex);
+	}
+
+
+	public void clearHighlits() {
+		highlighter.removeAllHighlights();
 	}
 }

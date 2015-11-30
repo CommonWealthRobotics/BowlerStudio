@@ -41,7 +41,10 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -190,6 +193,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private double upDown=0;
 	private double leftRight=0;
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
+	private String lastFileSelected="";
+	private int lastFileLine=0;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -243,6 +248,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgMap.put(currentCsg, currentCsg.getMesh());
 		
 		MeshView current = csgMap.get(currentCsg);
+
+		current.setOnMouseClicked(event -> {
+			
+	        selectObjectsSourceFile(currentCsg);
+		});
 		
 		Group og = new Group();
 		og.getChildren().add(current);
@@ -571,26 +581,45 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void moveCamera( TransformNR newPose, double seconds){
 		getFlyingCamera()
 		.DriveArc(newPose, seconds);
-		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
-			Bounds locBounds = bits.getValue().getBoundsInParent();
-			TransformNR t = new TransformNR(0,0,0,
-											new RotationNR(0, 90, 90))
-							.times(getFlyingCamera().getFiducialToGlobalTransform());
-			if(locBounds.contains(	t.getX(),
-									t.getY(), 
-									t.getZ())){
-				//System.err.println("Object in screen bounded by: "+locBounds);
-				//System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
-				//bits.getKey().getCreationEventStackTrace().printStackTrace();
-		        final StackTraceElement[] stackTrace = bits.getKey().getCreationEventStackTrace().getStackTrace();
-		        for(StackTraceElement trace:stackTrace){
-		        	if(trace.getFileName()!=null)
-			        	if(trace.getFileName().endsWith(".groovy"))
-			        		System.err.println("File: "+trace.getFileName()+" at line "+trace.getLineNumber());
-		        	
-		        }
-			}
-		}
+		// Selection of a part fro the cameras focal point
+//		TransformNR t = new TransformNR(0,0,0,
+//				new RotationNR(0, 90, 90))// re-orent the frame of reference for the gobal camera. 
+//				.times(getFlyingCamera().getFiducialToGlobalTransform());
+//		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
+//			Bounds locBounds = bits.getValue().getBoundsInParent();
+//			if(locBounds.contains(	t.getX(),
+//									t.getY(), 
+//									t.getZ())){
+//				//System.err.println("Object in screen bounded by: "+locBounds);
+//				//System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
+//				//bits.getKey().getCreationEventStackTrace().printStackTrace();
+//		        selectObjectsSourceFile(bits.getKey());
+//			}
+//		}
+	}
+	
+	private void selectObjectsSourceFile(CSG source ){
+		BowlerStudioController.getBowlerStudio().clearHighlits();
+		
+		final StackTraceElement[] stackTrace = source.getCreationEventStackTrace().getStackTrace();
+	    for(StackTraceElement trace:stackTrace)
+	    	if(trace.getFileName()!=null)
+	        	if(trace.getFileName().endsWith(".groovy") )
+	        		if(trace.getLineNumber()>0)
+		        		if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
+		        			lastFileSelected=trace.getFileName();
+		        			lastFileLine=trace.getLineNumber();
+		        			
+		        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber());
+							System.err.println("File: "+ScriptingEngine.getFileEngineRunByName(trace.getFileName()).getAbsolutePath()
+							+" at line "+trace.getLineNumber()
+							+" class= "+trace.getClassName()
+							+" method= "+trace.getMethodName()
+					    		);
+		        		}
+	    	
+		
+	    
 	}
 
 	// @Override

@@ -8,7 +8,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
+import javax.swing.text.BadLocationException;
 
 //import org.bytedeco.javacpp.DoublePointer;
 
@@ -82,21 +86,34 @@ public class BowlerStudioController extends TabPane implements
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
-		setBowlerStudio(this);
+		bowlerStudio=this;
 		this.jfx3dmanager = jfx3dmanager;
 		this.mainController = mainController;
 		createScene();
 	}
-
+	private HashMap<File,Tab> openFiles = new HashMap<>();
+	private HashMap<File,LocalFileScriptTab> widgets = new HashMap<>();
+	
 	// Custom function for creation of New Tabs.
 	public ScriptingEngineWidget createFileTab(File file) {
+		if(openFiles.get(file)!=null){
+			setSelectedTab(openFiles.get(file));
+			return widgets.get(file).getScripting();
+		}
+
 		Tab fileTab =new Tab(file.getName());
-		
+		openFiles.put(file, fileTab);
 		try {
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
+			
 			fileTab.setContent(t);
 			addTab(fileTab, true);
+			widgets.put(file,  t);
+			fileTab.setOnCloseRequest(event->{
+				widgets.remove(file);
+				openFiles.remove(file);
+			});
 			return t.getScripting();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -104,6 +121,24 @@ public class BowlerStudioController extends TabPane implements
 		}
 		return null;
 	}
+	
+	public void clearHighlits(){
+		for(Entry<File, LocalFileScriptTab> set: widgets.entrySet()){
+			set.getValue().clearHighlits();
+		}
+	}
+	
+	public void setHighlight(File fileEngineRunByName, int lineNumber) {
+		if(openFiles.get(fileEngineRunByName)==null){
+			createFileTab(fileEngineRunByName);
+		}
+		try {
+			widgets.get(fileEngineRunByName).setHighlight(lineNumber);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	// Custom function for creation of New Tabs.
 	private void createAndSelectNewTab(final BowlerStudioController tabPane,
@@ -469,13 +504,12 @@ public class BowlerStudioController extends TabPane implements
 		return bowlerStudio;
 	}
 
-	private static void setBowlerStudio(BowlerStudioController bowlerStudio) {
-		BowlerStudioController.bowlerStudio = bowlerStudio;
-	}
 
 	public static void setup() {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 
 }
