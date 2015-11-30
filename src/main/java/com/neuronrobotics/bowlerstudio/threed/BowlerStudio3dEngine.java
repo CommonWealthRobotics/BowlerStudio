@@ -195,6 +195,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
+	private static final TransformNR offsetForVisualization = new TransformNR(0,0,0,
+			new RotationNR(0, 90, 90));
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -582,8 +584,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		getFlyingCamera()
 		.DriveArc(newPose, seconds);
 		// Selection of a part fro the cameras focal point
-//		TransformNR t = new TransformNR(0,0,0,
-//				new RotationNR(0, 90, 90))// re-orent the frame of reference for the gobal camera. 
+//		TransformNR t = offsetForVisualization// re-orent the frame of reference for the gobal camera. 
 //				.times(getFlyingCamera().getFiducialToGlobalTransform());
 //		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
 //			Bounds locBounds = bits.getValue().getBoundsInParent();
@@ -697,5 +698,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public void setFlyingCamera(VirtualCameraMobileBase flyingCamera) {
 		this.flyingCamera = flyingCamera;
+	}
+
+	public static TransformNR getOffsetforvisualization() {
+		return offsetForVisualization;
 	}
 }

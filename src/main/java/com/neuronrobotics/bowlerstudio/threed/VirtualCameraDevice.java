@@ -37,11 +37,8 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		zoomAffine.setTz(getZoomDepth());
 		
 		getCameraFrame().getTransforms().add(TransformFactory.getTransform(
-				new TransformNR(0,
-						0, 
-						0, 
-						new RotationNR(0,90,90)
-						)));
+				BowlerStudio3dEngine.getOffsetforvisualization()
+						));
 		manipulationFrame.getTransforms().add(affine);
 
 		

@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import Jama.Matrix;
 
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
@@ -18,9 +19,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	
 	private IOnTransformChange onChange;
 	//EngineeringUnitsSliderWidget rw;
-	private EngineeringUnitsSliderWidget rx;
-	private EngineeringUnitsSliderWidget ry;
-	private EngineeringUnitsSliderWidget rz;
+	private EngineeringUnitsSliderWidget tilt;
+	private EngineeringUnitsSliderWidget elevation;
+	private EngineeringUnitsSliderWidget azimeth;
 	private EngineeringUnitsSliderWidget tx;
 	private EngineeringUnitsSliderWidget ty;
 	private EngineeringUnitsSliderWidget tz;
@@ -28,9 +29,11 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField ty;
 //	private TextField tz;
 	private TransformNR initialState;
+	private TransformNR offset =BowlerStudio3dEngine.getOffsetforvisualization().inverse();
+	
 
-	public TransformWidget(String title, TransformNR initialState, IOnTransformChange onChange){
-		this.initialState = initialState;
+	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
+		this.initialState = offset.times(is);
 		this.onChange = onChange;
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
@@ -43,9 +46,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
 		
 		RotationNR rot = initialState.getRotation();
-		rx = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
-		ry = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
-		rz = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
+		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
+		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
 		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(130)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
@@ -67,7 +70,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	
 		 add(	new Text("Tilt"), 
 	    		3,  1);
-		 add(	rx, 
+		 add(	tilt, 
 	    		4,  1);
 	    //Y line
 	    add(	new Text("Y"), 
@@ -77,7 +80,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	
 		 add(	new Text("Elevation"), 
 	    		3,  2);
-		 add(	ry, 
+		 add(	elevation, 
 				4,  2);
 	    //Z line
 	    add(	new Text("Z"), 
@@ -87,7 +90,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	
 		 add(	new Text("Azimuth"), 
 	    		3,  3);
-		 add(	rz, 
+		 add(	azimeth, 
 	    		4,  3);
 	}
 	
@@ -97,14 +100,13 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				ty.getValue(),
 				tz.getValue(),
 				new RotationNR( 
-						rx.getValue(),
-						ry.getValue(), 
-						rz.getValue()
-						
+						tilt.getValue(),
+						azimeth.getValue(),
+						elevation.getValue()
 						));
 
 		
-		return tmp;
+		return offset.inverse().times(tmp);
 	}
 
 	@Override
@@ -124,17 +126,18 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		onChange.onTransformFinished(getCurrent());
 	}
 
-	public void updatePose(TransformNR pose) {
-		//Log.debug("Transform widget is updating to: "+pose);
+	public void updatePose(TransformNR p) {
+		TransformNR pose = offset.times(p);
+		
 		Platform.runLater(() -> {
 			tx.setValue(pose.getX());
 			ty.setValue(pose.getY());
 			tz.setValue(pose.getZ());
 		});
 		RotationNR rot = pose.getRotation();
-		rx.setValue(Math.toDegrees(rot.getRotationX()));
-		ry .setValue(Math.toDegrees(rot.getRotationY()));
-		rz .setValue(Math.toDegrees(rot.getRotationZ()));
+		tilt.setValue(Math.toDegrees(rot.getRotationTilt()));
+		elevation .setValue(Math.toDegrees(rot.getRotationElevation()));
+		azimeth .setValue(Math.toDegrees(rot.getRotationAzimuth()));
 	}
 
 }
