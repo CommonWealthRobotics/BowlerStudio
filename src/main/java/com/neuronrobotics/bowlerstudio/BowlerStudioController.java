@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -128,12 +129,13 @@ public class BowlerStudioController extends TabPane implements
 		}
 	}
 	
-	public void setHighlight(File fileEngineRunByName, int lineNumber) {
+	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
 		if(openFiles.get(fileEngineRunByName)==null){
 			createFileTab(fileEngineRunByName);
 		}
+		System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 		try {
-			widgets.get(fileEngineRunByName).setHighlight(lineNumber);
+			widgets.get(fileEngineRunByName).setHighlight(lineNumber,color);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}

@@ -197,8 +197,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
+
+	private TransformNR defautcameraView;
 	private static final TransformNR offsetForVisualization = new TransformNR(0,0,0,
 			new RotationNR(0, 90, 90));
+
+	private Button back;
+
+	private Button fwd;
+
+	private Button home;
+	private int debuggerIndex=0;
+	private ArrayList<StackTraceElement> debuggerList=new ArrayList<>();
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -218,10 +228,55 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 	}
 	
+	private void highlightDebugIndex(int index, java.awt.Color c){
+		StackTraceElement trace = debuggerList.get(index);
+		BowlerStudioController
+		.getBowlerStudio()
+		.setHighlight(
+				ScriptingEngine
+					.getFileEngineRunByName(trace.getFileName()),
+				trace.getLineNumber(),
+				c
+						);
+	}
+	
 	public Group getControlsBox(){
 		HBox controls = new HBox(10);
-		controls.getChildren().add(new Button("Back"));
-		controls.getChildren().add(new Button("Forward"));
+		
+		back = new Button("Back");
+		fwd = new Button("Forward");
+		
+		fwd.setOnAction(event ->{
+			BowlerStudioController.getBowlerStudio().clearHighlits();
+			highlightDebugIndex(debuggerIndex, java.awt.Color.PINK);
+			debuggerIndex--;
+			if(debuggerIndex==0){
+				fwd.disableProperty().set(true);
+			}
+			back.disableProperty().set(false);
+			highlightDebugIndex(debuggerIndex, java.awt.Color.GREEN);
+		});
+		
+		back.setOnAction(event ->{
+			BowlerStudioController.getBowlerStudio().clearHighlits();
+			highlightDebugIndex(debuggerIndex, java.awt.Color.PINK);
+			debuggerIndex++;
+			if(debuggerIndex>=debuggerList.size()){
+				back.disableProperty().set(true);
+				debuggerIndex--;
+			}
+			if(debuggerIndex>0)
+				fwd.disableProperty().set(false);
+			highlightDebugIndex(debuggerIndex, java.awt.Color.GREEN);
+		});
+		
+		
+		fwd.disableProperty().set(true);
+		back.disableProperty().set(true);
+		
+		home = new Button("Home Camera");
+		
+		controls.getChildren().addAll(back,fwd,home);
 		return new Group(controls);
 	}
 	
@@ -376,7 +431,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						0, 
 						new RotationNR(24,-127,0)
 						),0);
-
+		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
 	}
 	
 	/**
@@ -610,25 +665,30 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	private void selectObjectsSourceFile(CSG source ){
 		BowlerStudioController.getBowlerStudio().clearHighlits();
-		
+		debuggerList.clear();
 		for(Exception ex: source.getCreationEventStackTraceList()){
 			final StackTraceElement[] stackTrace = ex.getStackTrace();
 		    for(StackTraceElement trace:stackTrace)
 		    	if(trace.getFileName()!=null)
 		        	if(trace.getFileName().endsWith(".groovy") )
-		        		if(trace.getLineNumber()>0)
-			        		if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
+		        		if(trace.getLineNumber()>0){
+		        			fwd.disableProperty().set(true);
+		        			back.disableProperty().set(false);
+		        			debuggerList.add(0,trace);
+		        			debuggerIndex=0;
+		        			
+			        		//if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
 			        			lastFileSelected=trace.getFileName();
 			        			lastFileLine=trace.getLineNumber();
 			        			
-			        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber());
+			        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber(),java.awt.Color.PINK);
 			        			
 //								System.err.println("File: "+ScriptingEngine.getFileEngineRunByName(trace.getFileName()).getAbsolutePath()
 //								+" at line "+trace.getLineNumber()
 //								+" class= "+trace.getClassName()
 //								+" method= "+trace.getMethodName()
 //						    		);
-			        		}
+		        		}
 		    	
 		}
 	    

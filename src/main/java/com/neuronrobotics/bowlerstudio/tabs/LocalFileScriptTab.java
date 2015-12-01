@@ -191,7 +191,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		this.scripting = scripting;
 	}
 
-	public void setHighlight(int lineNumber) throws BadLocationException {
+	public void setHighlight(int lineNumber, Color color) throws BadLocationException {
+		painter = new DefaultHighlighter.DefaultHighlightPainter(color);
 		int startIndex = textArea.getLineStartOffset(lineNumber-1);
         int endIndex = textArea.getLineEndOffset(lineNumber-1);
         textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
