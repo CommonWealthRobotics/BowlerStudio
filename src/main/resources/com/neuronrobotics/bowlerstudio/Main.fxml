@@ -65,15 +65,22 @@
         <Menu disable="true" mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />
       </menus>
     </MenuBar>
-    <SplitPane dividerPositions="0.8675496688741722" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1000.0" prefWidth="1411.0" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.7996688741721855" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1000.0" prefWidth="1411.0" VBox.vgrow="ALWAYS">
       <items>
-        <SplitPane dividerPositions="0.7747336377473364" focusTraversable="true" orientation="VERTICAL" prefHeight="635.0" prefWidth="553.0">
+        <SplitPane dividerPositions="0.8493150684931506" focusTraversable="true" orientation="VERTICAL" prefHeight="659.0" prefWidth="766.0">
           <items>
             <ScrollPane fx:id="editorContainer" content="$null" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="771.0" prefWidth="944.0" vbarPolicy="ALWAYS" />
-            <AnchorPane fx:id="logView" minHeight="0.0" minWidth="0.0" prefHeight="148.0" prefWidth="471.0" />
+            <AnchorPane fx:id="logView" minHeight="0.0" minWidth="0.0" prefHeight="123.99990000000253" prefWidth="961.0" />
           </items>
         </SplitPane>
-        <AnchorPane fx:id="viewContainer" minHeight="0.0" minWidth="0.0" prefHeight="635.0" prefWidth="492.9999000000025" style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" />
+        <BorderPane prefHeight="200.0" prefWidth="200.0">
+          <bottom>
+            <AnchorPane fx:id="jfx3dControls" prefHeight="57.0" prefWidth="239.0" />
+          </bottom>
+          <center>
+            <AnchorPane fx:id="viewContainer" minHeight="0.0" minWidth="0.0" prefHeight="559.0" prefWidth="239.0" style="-fx-background-color: radial-gradient(center 50% 50%,        radius 75%,        rgba(92,92,92,0.9) 0%,        rgba(32,32,32,0.9) 100%);" />
+          </center>
+        </BorderPane>
       </items>
     </SplitPane>
   </children>
