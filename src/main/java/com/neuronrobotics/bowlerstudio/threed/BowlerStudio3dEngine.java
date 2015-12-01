@@ -76,6 +76,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -105,6 +106,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
 
@@ -213,7 +215,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		handleMouse(getSubScene());
 
 		setScene(s);
-
+		
+	}
+	
+	public Group getControlsBox(){
+		HBox controls = new HBox(10);
+		controls.getChildren().add(new Button("Back"));
+		controls.getChildren().add(new Button("Forward"));
+		return new Group(controls);
 	}
 	
 	/**

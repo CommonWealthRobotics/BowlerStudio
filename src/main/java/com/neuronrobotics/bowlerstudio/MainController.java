@@ -31,6 +31,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
@@ -103,7 +104,9 @@ public class MainController implements Initializable {
 
     @FXML
     private Pane viewContainer;
-
+    @FXML
+    private Pane jfx3dControls;
+    
     private SubScene subScene;
     private BowlerStudio3dEngine jfx3dmanager ;
 
@@ -241,7 +244,7 @@ public class MainController implements Initializable {
         
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());
-
+        jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
         viewContainer.getChildren().add(subScene);
 
         System.out.println("Welcome to BowlerStudio!");
