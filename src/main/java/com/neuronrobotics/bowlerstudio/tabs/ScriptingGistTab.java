@@ -312,6 +312,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
+			finishedLoadingScriptingWidget=true;
 		}
 		
 		while(!finishedLoadingScriptingWidget){

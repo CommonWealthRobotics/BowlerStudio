@@ -278,7 +278,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		home.setOnAction(event ->{
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-
+			getFlyingCamera().updatePositions();
 		});
 		
 		controls.getChildren().addAll(back,fwd,home);
@@ -671,17 +671,28 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void selectObjectsSourceFile(CSG source ){
 		BowlerStudioController.getBowlerStudio().clearHighlits();
 		debuggerList.clear();
+		debuggerIndex=0;
+		Platform.runLater(()->{
+			fwd.disableProperty().set(true);
+			back.disableProperty().set(false);
+		});
 		for(Exception ex: source.getCreationEventStackTraceList()){
 			final StackTraceElement[] stackTrace = ex.getStackTrace();
 		    for(StackTraceElement trace:stackTrace)
 		    	if(trace.getFileName()!=null)
 		        	if(trace.getFileName().endsWith(".groovy") )
 		        		if(trace.getLineNumber()>0){
-		        			fwd.disableProperty().set(true);
-		        			back.disableProperty().set(false);
-		        			debuggerList.add(0,trace);
-		        			debuggerIndex=0;
-		        			
+
+		        			boolean duplicate=false;
+		        			for(StackTraceElement have:debuggerList){
+		        				if(		   have.getFileName().contentEquals(trace.getFileName())
+		        						&& have.getLineNumber() == trace.getLineNumber()
+		        						)
+		        					duplicate=true;
+		        			}
+		        			if(!duplicate)
+		        				debuggerList.add(0,trace);
+
 			        		//if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
 			        			lastFileSelected=trace.getFileName();
 			        			lastFileLine=trace.getLineNumber();
