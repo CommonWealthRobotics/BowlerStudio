@@ -602,24 +602,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void selectObjectsSourceFile(CSG source ){
 		BowlerStudioController.getBowlerStudio().clearHighlits();
 		
-		final StackTraceElement[] stackTrace = source.getCreationEventStackTrace().getStackTrace();
-	    for(StackTraceElement trace:stackTrace)
-	    	if(trace.getFileName()!=null)
-	        	if(trace.getFileName().endsWith(".groovy") )
-	        		if(trace.getLineNumber()>0)
-		        		if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
-		        			lastFileSelected=trace.getFileName();
-		        			lastFileLine=trace.getLineNumber();
-		        			
-		        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber());
-							System.err.println("File: "+ScriptingEngine.getFileEngineRunByName(trace.getFileName()).getAbsolutePath()
-							+" at line "+trace.getLineNumber()
-							+" class= "+trace.getClassName()
-							+" method= "+trace.getMethodName()
-					    		);
-		        		}
-	    	
-		
+		for(Exception ex: source.getCreationEventStackTraceList()){
+			final StackTraceElement[] stackTrace = ex.getStackTrace();
+		    for(StackTraceElement trace:stackTrace)
+		    	if(trace.getFileName()!=null)
+		        	if(trace.getFileName().endsWith(".groovy") )
+		        		if(trace.getLineNumber()>0)
+			        		if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
+			        			lastFileSelected=trace.getFileName();
+			        			lastFileLine=trace.getLineNumber();
+			        			
+			        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber());
+			        			
+//								System.err.println("File: "+ScriptingEngine.getFileEngineRunByName(trace.getFileName()).getAbsolutePath()
+//								+" at line "+trace.getLineNumber()
+//								+" class= "+trace.getClassName()
+//								+" method= "+trace.getMethodName()
+//						    		);
+			        		}
+		    	
+		}
 	    
 	}
 
