@@ -133,7 +133,8 @@ public class BowlerStudioController extends TabPane implements
 		if(openFiles.get(fileEngineRunByName)==null){
 			createFileTab(fileEngineRunByName);
 		}
-		System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
+		setSelectedTab(openFiles.get(fileEngineRunByName));
+		//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 		try {
 			widgets.get(fileEngineRunByName).setHighlight(lineNumber,color);
 		} catch (BadLocationException e) {

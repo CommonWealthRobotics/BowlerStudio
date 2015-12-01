@@ -276,6 +276,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		home = new Button("Home Camera");
 		
+		home.setOnAction(event ->{
+			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
+
+		});
+		
 		controls.getChildren().addAll(back,fwd,home);
 		return new Group(controls);
 	}
