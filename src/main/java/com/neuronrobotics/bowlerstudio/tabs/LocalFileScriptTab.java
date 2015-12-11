@@ -196,7 +196,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		int startIndex = textArea.getLineStartOffset(lineNumber-1);
         int endIndex = textArea.getLineEndOffset(lineNumber-1);
         textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
-        textArea.moveCaretPosition(startIndex);
+        try{
+        	textArea.moveCaretPosition(startIndex);
+        }catch (Exception ex){
+        	ex.printStackTrace();
+        }
 	}
 
 

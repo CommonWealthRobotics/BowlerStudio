@@ -209,6 +209,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private Button home;
 	private int debuggerIndex=0;
 	private ArrayList<StackTraceElement> debuggerList=new ArrayList<>();
+	private CSG selectedCsg=null;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -321,7 +322,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		MeshView current = csgMap.get(currentCsg);
 
 		current.setOnMouseClicked(event -> {
-			
+			if(selectedCsg == currentCsg)
+				return;
+			selectedCsg= currentCsg;
 	        selectObjectsSourceFile(currentCsg);
 		});
 		
@@ -672,10 +675,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		BowlerStudioController.getBowlerStudio().clearHighlits();
 		debuggerList.clear();
 		debuggerIndex=0;
-		Platform.runLater(()->{
-			fwd.disableProperty().set(true);
-			back.disableProperty().set(false);
-		});
+
 		for(Exception ex: source.getCreationEventStackTraceList()){
 			final StackTraceElement[] stackTrace = ex.getStackTrace();
 		    for(StackTraceElement trace:stackTrace)
@@ -707,6 +707,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		        		}
 		    	
 		}
+		debuggerIndex = debuggerList.size()-1;
+		Platform.runLater(()->{
+			fwd.disableProperty().set(false);
+			back.disableProperty().set(true);
+		});
 	    
 	}
 
