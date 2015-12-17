@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
@@ -27,56 +28,7 @@ public class BowlerStudioResourceFactory {
             BowlerStudio.class.getResource("githublogin.fxml"));
 	static {
 
-		
-		for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
-			Image image;
-			//
-			try {
-				image = new Image(
-						DyIOConsole.class
-								.getResourceAsStream("images/icon-"
-										+ cm.toSlug()+ ".png"));
-			} catch (NullPointerException e) {
-				image = new Image(
-						DyIOConsole.class
-								.getResourceAsStream("images/icon-off.png"));
-			}
-			lookup.put( cm, image);
-		}
-		setChanHighlight(new Image(
-				DyIOConsole.class
-				.getResourceAsStream("images/channel-highlight.png")));
-		setChanDefault(new Image(
-												DyIOConsole.class
-																.getResourceAsStream("images/channel-default.png")));
-		setChanUpdate(new Image(
-						DyIOConsole.class
-						.getResourceAsStream("images/channel-update.png")));
-		
-		for(int i=0;i<24;i++){
-			// generate the control widgets
-			FXMLLoader fxmlLoader = new FXMLLoader(
-		            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
-	        try {
-	            fxmlLoader.load();
-	        } catch (IOException ex) {
-	            throw new RuntimeException(ex);
-	        }
-			fxmlLoaders.add(fxmlLoader);
-		}
-		try {
-			mainPanel.load();
-	    } catch (IOException ex) {
-	        Logger.getLogger(BowlerStudio.class.getName()).
-	                log(Level.SEVERE, null, ex);
-	    }
-		
-		try {
-			githubLogin.load();
-		} catch (IOException e) {
-			Logger.getLogger(BowlerStudio.class.getName()).
-            log(Level.SEVERE, null, e);
-		}
+
 		
 	}
 	
@@ -84,7 +36,59 @@ public class BowlerStudioResourceFactory {
 		return fxmlLoaders.get(channelIndex);
 	}
 	
-	public static void load(){}//stub to force a load from the static in a specific thread
+	public static void load(){
+
+				for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
+					Image image;
+					//
+					try {
+						image = new Image(
+								DyIOConsole.class
+										.getResourceAsStream("images/icon-"
+												+ cm.toSlug()+ ".png"));
+					} catch (NullPointerException e) {
+						image = new Image(
+								DyIOConsole.class
+										.getResourceAsStream("images/icon-off.png"));
+					}
+					lookup.put( cm, image);
+				}
+				setChanHighlight(new Image(
+						DyIOConsole.class
+						.getResourceAsStream("images/channel-highlight.png")));
+				setChanDefault(new Image(
+														DyIOConsole.class
+																		.getResourceAsStream("images/channel-default.png")));
+				setChanUpdate(new Image(
+								DyIOConsole.class
+								.getResourceAsStream("images/channel-update.png")));
+				
+				for(int i=0;i<24;i++){
+					// generate the control widgets
+					FXMLLoader fxmlLoader = new FXMLLoader(
+				            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
+			        try {
+			            fxmlLoader.load();
+			        } catch (IOException ex) {
+			            throw new RuntimeException(ex);
+			        }
+					fxmlLoaders.add(fxmlLoader);
+				}
+				try {
+					mainPanel.load();
+			    } catch (IOException ex) {
+			        Logger.getLogger(BowlerStudio.class.getName()).
+			                log(Level.SEVERE, null, ex);
+			    }
+				
+				try {
+					githubLogin.load();
+				} catch (IOException e) {
+					Logger.getLogger(BowlerStudio.class.getName()).
+		            log(Level.SEVERE, null, e);
+				}
+			
+	}//stub to force a load from the static in a specific thread
 	
 	public static Image getModeImage(DyIOChannelMode mode){
 		return lookup.get(mode);

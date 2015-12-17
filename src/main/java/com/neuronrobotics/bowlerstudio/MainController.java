@@ -168,7 +168,7 @@ public class MainController implements Initializable {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					BowlerStudioResourceFactory.load();
+					
 			}
 		}.start();
 	}
