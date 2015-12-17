@@ -66,9 +66,10 @@ public class BowlerStudio extends Application {
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
     	
-    	if(args.length==0)
+    	if(args.length==0){
+    		
     		launch(args);
-    	else{
+    	}else{
            BowlerKernel.main(args);
     	}
     }

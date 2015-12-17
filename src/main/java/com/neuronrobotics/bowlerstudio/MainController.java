@@ -217,6 +217,36 @@ public class MainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+		ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
+			
+			@Override
+			public String[] prompt(String username) {
+				System.err.println("Calling login from BowlerStudio");
+				//new RuntimeException().printStackTrace();
+				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+				Parent root = fxmlLoader.getRoot();
+				GithubLoginFX controller = fxmlLoader.getController();
+				Platform.runLater(()->{
+					controller.reset();
+					controller.getUsername().setText(username);
+					Stage stage = new Stage(); 
+					stage.setTitle("GitHub Login");
+					stage.initModality(Modality.APPLICATION_MODAL);  
+					controller.setStage(stage, root);
+					stage.centerOnScreen();
+					stage.show();
+					
+				});
+				
+		        //setContent(root);
+				while(!controller.isDone()){
+					ThreadUtil.wait(1);
+				}
+				String[] creds = controller.getCreds();
+				controller.reset();
+				return creds;
+			}
+		});
 
     	jfx3dmanager = new BowlerStudio3dEngine();
     	
@@ -275,35 +305,7 @@ public class MainController implements Initializable {
 					}
 												
 		});
-		ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
-			
-			@Override
-			public String[] prompt(String username) {
-				//new RuntimeException().printStackTrace();
-				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-				Parent root = fxmlLoader.getRoot();
-				GithubLoginFX controller = fxmlLoader.getController();
-				Platform.runLater(()->{
-					controller.reset();
-					controller.getUsername().setText(username);
-					Stage stage = new Stage(); 
-					stage.setTitle("GitHub Login");
-					stage.initModality(Modality.APPLICATION_MODAL);  
-					controller.setStage(stage, root);
-					stage.centerOnScreen();
-					stage.show();
-					
-				});
-				
-		        //setContent(root);
-				while(!controller.isDone()){
-					ThreadUtil.wait(1);
-				}
-				String[] creds = controller.getCreds();
-				controller.reset();
-				return creds;
-			}
-		});
+
 		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
 			
 			@Override
