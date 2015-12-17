@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.tabs.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 import com.neuronrobotics.imageprovider.HaarDetector;
 import com.neuronrobotics.imageprovider.IObjectDetector;
@@ -66,9 +67,11 @@ public class BowlerStudio extends Application {
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
     	
-    	if(args.length==0)
+    	if(args.length==0){
+    		BowlerStudioResourceFactory.load();
+    		ThreadUtil.wait(2000);
     		launch(args);
-    	else{
+    	}else{
            BowlerKernel.main(args);
     	}
     }
