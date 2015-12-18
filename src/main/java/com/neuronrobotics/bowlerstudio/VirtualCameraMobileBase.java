@@ -13,7 +13,9 @@ import com.neuronrobotics.sdk.common.Log;
 public class VirtualCameraMobileBase extends MobileBase {
 	
 	public  VirtualCameraMobileBase() throws Exception{
-		super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
+		//super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
+		super (BowlerStudio.class
+				.getResourceAsStream("flyingCamera.xml"));
 		setDriveType(DrivingType.WALKING);
 		
 		setWalkingDriveEngine(new IDriveEngine() {

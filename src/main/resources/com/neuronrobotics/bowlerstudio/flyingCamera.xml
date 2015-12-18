@@ -1,0 +1,77 @@
+<root>
+<mobilebase>
+<driveType>none</driveType>
+<name>FlyingCamera</name>
+<appendage>
+<name>BoomArm</name>
+<link>
+	<name>boom</name>
+	<deviceName>virtualCameraDevice</deviceName>
+	<type>camera</type>
+	<index>0</index>
+	
+	<scale>1</scale>
+	<upperLimit>255.0</upperLimit>
+	<lowerLimit>0.0</lowerLimit>
+	<upperVelocity>1.0E8</upperVelocity>
+	<lowerVelocity>-1.0E8</lowerVelocity>
+	<staticOffset>0</staticOffset>
+	<isLatch>false</isLatch>
+	<indexLatch>0</indexLatch>
+	<isStopOnLatch>false</isStopOnLatch>
+	<homingTPS>10000000</homingTPS>
+	
+	<DHParameters>
+		<Delta>0</Delta>
+		<Theta>0.0</Theta>
+		<Radius>0</Radius>
+		<Alpha>0</Alpha>
+	</DHParameters>
+
+</link>
+
+<ZframeToRAS>	
+<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</ZframeToRAS>
+
+<baseToZframe>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</baseToZframe>
+
+</appendage>
+
+<ZframeToRAS>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</ZframeToRAS>
+
+<baseToZframe>
+	<x>0.0</x>
+	<y>0.0</y>
+	<z>0.0</z>
+	<rotw>1.0</rotw>
+	<rotx>0.0</rotx>
+	<roty>0.0</roty>
+	<rotz>0.0</rotz>
+</baseToZframe>
+
+</mobilebase>
+
+</root>

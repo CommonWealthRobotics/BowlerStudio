@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
-import com.neuronrobotics.bowlerstudio.tabs.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
 import com.neuronrobotics.imageprovider.HaarDetector;
 import com.neuronrobotics.imageprovider.IObjectDetector;
