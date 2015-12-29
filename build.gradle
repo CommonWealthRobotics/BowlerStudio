@@ -89,7 +89,7 @@ repositories {
 
 dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.10'
-	
+/*	
 		compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
 	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
@@ -172,10 +172,11 @@ dependencies {
 	compile "com.neuronrobotics:nrjavaserial:3.11.0"
 	compile fileTree (dir: '../java-bowler/libs', includes: ['*.jar'])
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
+	*/
 	
-	//compile "com.neuronrobotics:BowlerScriptingKernel:0.6.3"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.6.5"
 	
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.5.0.jar'])
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.6.5.jar'])
 	
 }
 
