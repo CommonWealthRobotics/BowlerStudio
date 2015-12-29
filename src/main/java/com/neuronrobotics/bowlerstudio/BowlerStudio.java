@@ -1,48 +1,20 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.IOUtils;
-
-import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
-import com.neuronrobotics.bowlerstudio.vitamins.MicroServo;
-import com.neuronrobotics.imageprovider.HaarDetector;
-import com.neuronrobotics.imageprovider.IObjectDetector;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
-import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
-import com.neuronrobotics.sdk.ui.ConnectionImageIconFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.speech.freetts.FeatureProcessor;
-import com.sun.speech.freetts.Item;
-import com.sun.speech.freetts.ItemContents;
-import com.sun.speech.freetts.ProcessException;
-import com.sun.speech.freetts.VoiceManager;
-import com.sun.speech.freetts.en.us.FeatureProcessors.WordNumSyls;
-
 import edu.cmu.sphinx.api.Configuration;
-import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
@@ -129,6 +101,8 @@ public class BowlerStudio extends Application {
 //			e.printStackTrace();
 //		}
 	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
+	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
+	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
     }
 
     public static Parent loadFromFXML() {
