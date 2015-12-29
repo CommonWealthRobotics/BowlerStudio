@@ -199,7 +199,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
         try{
         	textArea.moveCaretPosition(startIndex);
         }catch (Exception ex){
-        	ex.printStackTrace();
+        	//ex.printStackTrace();
         }
 	}
 

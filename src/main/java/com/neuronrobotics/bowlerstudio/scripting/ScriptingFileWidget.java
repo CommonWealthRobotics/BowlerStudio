@@ -42,11 +42,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
@@ -55,6 +57,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -67,6 +71,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 import javax.xml.transform.Transformer;
@@ -81,6 +86,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.control.action.Action;
+import org.eclipse.jgit.api.Git;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHRelease;
@@ -107,12 +113,11 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.addons.kinematics.xml.*;
 
-import eu.mihosoft.vrl.v3d.*;
-import eu.mihosoft.vrl.v3d.samples.*;
+
 
 @SuppressWarnings("unused")
 public class ScriptingFileWidget extends BorderPane implements
-		IFileChangeListener, ChangeListener<Object> {
+		IFileChangeListener {
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
@@ -124,29 +129,21 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
 
-	private Button runfx = new Button("Run");;
-	private Button runsave = new Button("Save");
-	private Button runsaveAs = new Button("Save As..");
-	private WebEngine engine;
+	private Button runfx = new Button("Run");
+	private Button publish = new Button("Publish");
 
 	private String addr;
 	boolean loadGist = false;
 
 	private ScriptingWidgetType type;
 	
-	final ComboBox<String> fileListBox = new ComboBox<String>();
+	final Label fileListBox = new Label();
 	private File currentFile = null;
 
 	private HBox controlPane;
 	private String currentGist;
 
 	
-	public ScriptingFileWidget(File currentFile, String currentGist,
-			WebEngine engine) throws IOException, InterruptedException {
-		this(ScriptingWidgetType.GIST);
-		this.currentFile = currentFile;
-		loadCodeFromGist(currentGist, engine);
-	}
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE);
@@ -163,35 +160,101 @@ public class ScriptingFileWidget extends BorderPane implements
 		runfx.setDisable(false);
 	}
 
-	public ScriptingFileWidget(ScriptingWidgetType type) {
+	private ScriptingFileWidget(ScriptingWidgetType type) {
 		this.type = type;
 
 		runfx.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-
+	    			save();
 	    			startStopAction();
 	    		}
 	    	}.start();
 		});
-		runsave.setOnAction(e -> {
-	    	new Thread(){
-	    		public void run(){
-	    			save();
-	    		}
-	    	}.start();
+		publish.setOnAction(e -> {
+			// Create the custom dialog.
+			Dialog<Pair<String, String>> dialog = new Dialog<>();
+			dialog.setTitle("Commit message Dialog");
+			dialog.setHeaderText("Enter a commit message to publish changes");
+
+
+			// Set the button types.
+			ButtonType loginButtonType = new ButtonType("Publish", ButtonData.OK_DONE);
+			dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+			// Create the username and password labels and fields.
+			GridPane grid = new GridPane();
+			grid.setHgap(10);
+			grid.setVgap(10);
+			grid.setPadding(new Insets(20, 150, 10, 10));
+
+			TextField username = new TextField();
+			username.setPromptText("60 characters");
+			TextArea password = new TextArea();
+			password.setPrefRowCount(5);
+			password.setPrefColumnCount(80);
+			password.setPromptText("Full Sentences describing explanation");
+
+			grid.add(new Label("What did you change?"), 0, 0);
+			grid.add(username, 1, 0);
+			grid.add(new Label("Why did you change it?"), 0, 1);
+			grid.add(password, 1, 1);
+
+			// Enable/Disable login button depending on whether a username was entered.
+			Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+			loginButton.setDisable(true);
+
+			// Do some validation (using the Java 8 lambda syntax).
+			username.textProperty().addListener((observable, oldValue, newValue) -> {
+			    loginButton.setDisable(newValue.trim().isEmpty());
+			});
+
+			dialog.getDialogPane().setContent(grid);
+
+			// Request focus on the username field by default.
+			Platform.runLater(() -> username.requestFocus());
+
+			// Convert the result to a username-password-pair when the login button is clicked.
+			dialog.setResultConverter(dialogButton -> {
+			    if (dialogButton == loginButtonType) {
+			        return new Pair<>(username.getText(), password.getText());
+			    }
+			    return null;
+			});
+
+			Optional<Pair<String, String>> result = dialog.showAndWait();
+
+			result.ifPresent(usernamePassword -> {
+			    new Thread(){
+			    	public void run(){
+					    String message = usernamePassword.getKey()+"/n/n"+usernamePassword.getValue();
+					    save();
+					    Git git;
+						try {
+							git = ScriptingEngine.locateGit(currentFile);
+							String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
+							String relativePath = ScriptingEngine.findLocalPath(currentFile,git);
+						    ScriptingEngine.pushCodeToGit(remote,"master", relativePath, getCode(), message);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			    	}
+			    }.start();
+			});
 
 		});
 		
-		runsaveAs.setOnAction(e -> {
-	    	new Thread(){
-	    		public void run(){
-	    			updateFile();
-	    			save();
-	    		}
-	    	}.start();
-
-		});
+		
+//		runsaveAs.setOnAction(e -> {
+//	    	new Thread(){
+//	    		public void run(){
+//	    			updateFile();
+//	    			save();
+//	    		}
+//	    	}.start();
+//
+//		});
 
 		// String ctrlSave = "CTRL Save";
 //		fileLabel.setOnMouseEntered(e -> {
@@ -217,10 +280,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		controlPane = new HBox(20);
 
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(runsave);
-		controlPane.getChildren().add(runsaveAs);
 		controlPane.getChildren().add(fileListBox);
-		
+		controlPane.getChildren().add(publish);
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -276,47 +337,9 @@ public class ScriptingFileWidget extends BorderPane implements
 		}
 		setUpFile(currentFile);
 		setCode(new String(Files.readAllBytes(currentFile.toPath())));
+
 	}
 	
-	private void loadGistLocal(String id, String file){
-		//System.out.println("Loading "+file+" from "+id);
-		String[] code;
-		try {
-			code = ScriptingEngine.codeFromGistID(id,file);
-			if (code != null) {
-				setCode(code[0]);
-				
-				
-				currentFile = new File(code[2]);
-			}
-		} catch (Exception e) {
-			  StringWriter sw = new StringWriter();
-		      PrintWriter pw = new PrintWriter(sw);
-		      e.printStackTrace(pw);
-		      System.out.println(sw.toString());
-		}
-	}
-
-	public void loadCodeFromGist(String addr, WebEngine engine)
-			throws IOException, InterruptedException {
-		this.addr = addr;
-		this.engine = engine;
-		loadGist = true;
-		currentGist = ScriptingEngine.getCurrentGist(addr, engine).get(0);
-		
-		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
-		
-		if(fileList.size()==1)
-			loadGistLocal(currentGist, fileList.get(0));
-		Platform.runLater(()->{
-			fileListBox.getItems().clear();
-			for(String s:fileList){
-				fileListBox.getItems().add(s);
-			}
-			fileListBox.setValue(fileList.get(0));
-			fileListBox.valueProperty().addListener(this);
-		});
-	}
 
 
 
@@ -409,8 +432,6 @@ public class ScriptingFileWidget extends BorderPane implements
 		};
 
 		try {
-			if (loadGist)
-				loadCodeFromGist(addr, engine);
 
 			scriptRunner.start();
 		} catch (Exception e) {
@@ -427,22 +448,29 @@ public class ScriptingFileWidget extends BorderPane implements
 	private void setUpFile(File f) {
 		currentFile = f;
 		ScriptingEngine.setLastFile(f);
-		Platform.runLater(() -> {
-			fileListBox.valueProperty().removeListener(this);
-			fileListBox.getItems().clear();
-			fileListBox.getItems().add(f.getName());
-			fileListBox.setValue(f.getName());
-		});
+		Git git;
+		try {
+			git = ScriptingEngine.locateGit(currentFile);
+			String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
+			Platform.runLater(() -> {
+				fileListBox.setText(remote);
+				git.close();
+			});
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		if (watcher != null) {
 			watcher.close();
 		}
 		 try {
-		 watcher = new FileChangeWatcher(currentFile);
-		 watcher.addIFileChangeListener(this);
-		 watcher.start();
+			 watcher = new FileChangeWatcher(currentFile);
+			 watcher.addIFileChangeListener(this);
+			 watcher.start();
 		 } catch (IOException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
+			 // TODO Auto-generated catch block
+			 e.printStackTrace();
 		 }
 	}
 
@@ -484,31 +512,32 @@ public class ScriptingFileWidget extends BorderPane implements
 	@Override
 	public void onFileChange(File fileThatChanged,
 			@SuppressWarnings("rawtypes") WatchEvent event) {
+		
 		// TODO Auto-generated method stub
 		if (fileThatChanged.getAbsolutePath().contains(
 				currentFile.getAbsolutePath())) {
 			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
 					+ " changed");
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						setCode(new String(Files.readAllBytes(Paths
-								.get(fileThatChanged.getAbsolutePath())),
-								"UTF-8"));
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			Platform.runLater(() -> {
+				watcher.removeIFileChangeListener(this);
+				try {
+					setCode(new String(Files.readAllBytes(Paths
+							.get(fileThatChanged.getAbsolutePath())),
+							"UTF-8"));
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
+				watcher.addIFileChangeListener(this);
 			});
 
 		} else {
 			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
 		}
+		
 	}
 
 	public String getCode() {
@@ -530,17 +559,5 @@ public class ScriptingFileWidget extends BorderPane implements
 		else
 			return "Web";
 	}
-
-
-
-	@Override
-	public void changed(ObservableValue observable, Object oldValue,
-			Object newValue) {
-		loadGistLocal(currentGist, (String)newValue);
-	}
-
-
-
-
 
 }
