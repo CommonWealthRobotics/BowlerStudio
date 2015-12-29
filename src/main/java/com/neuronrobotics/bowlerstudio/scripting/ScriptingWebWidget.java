@@ -111,12 +111,11 @@ import eu.mihosoft.vrl.v3d.*;
 import eu.mihosoft.vrl.v3d.samples.*;
 
 @SuppressWarnings("unused")
-public class ScriptingWebWidget extends BorderPane implements
-		IFileChangeListener, ChangeListener<Object>{
+public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object>{
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
-	private FileChangeWatcher watcher;
+	
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	//Label fileLabel = new Label();
 	private Object scriptResult;
@@ -147,11 +146,6 @@ public class ScriptingWebWidget extends BorderPane implements
 		loadCodeFromGist(currentGist, engine);
 	}
 
-	public ScriptingWebWidget(File currentFile) throws IOException {
-		this(ScriptingWidgetType.FILE);
-		this.currentFile = currentFile;
-		loadCodeFromFile(currentFile);
-	}
 	
 	private void startStopAction(){
 		runfx.setDisable(true);
@@ -260,13 +254,13 @@ public class ScriptingWebWidget extends BorderPane implements
 
 	}
 
-	public void loadCodeFromFile(File currentFile) throws IOException {
-		if (!currentFile.exists()) {
-			currentFile.createNewFile();
-		}
-		setUpFile(currentFile);
-		setCode(new String(Files.readAllBytes(currentFile.toPath())));
-	}
+//	public void loadCodeFromFile(File currentFile) throws IOException {
+//		if (!currentFile.exists()) {
+//			currentFile.createNewFile();
+//		}
+//		setUpFile(currentFile);
+//		setCode(new String(Files.readAllBytes(currentFile.toPath())));
+//	}
 	
 	private void loadGistLocal(String id, String file){
 		//System.out.println("Loading "+file+" from "+id);
@@ -275,8 +269,6 @@ public class ScriptingWebWidget extends BorderPane implements
 			code = ScriptingEngine.codeFromGistID(id,file);
 			if (code != null) {
 				setCode(code[0]);
-				
-				
 				currentFile = new File(code[2]);
 			}
 		} catch (Exception e) {
@@ -414,82 +406,82 @@ public class ScriptingWebWidget extends BorderPane implements
 		System.out.println(s);
 	}
 
-	private void setUpFile(File f) {
-		currentFile = f;
-		ScriptingEngine.setLastFile(f);
-		Platform.runLater(() -> {
-			fileListBox.valueProperty().removeListener(this);
-			fileListBox.getItems().clear();
-			fileListBox.getItems().add(f.getName());
-			fileListBox.setValue(f.getName());
-		});
-		if (watcher != null) {
-			watcher.close();
-		}
-		 try {
-		 watcher = new FileChangeWatcher(currentFile);
-		 watcher.addIFileChangeListener(this);
-		 watcher.start();
-		 } catch (IOException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
-	}
+//	private void setUpFile(File f) {
+//		currentFile = f;
+//		ScriptingEngine.setLastFile(f);
+//		Platform.runLater(() -> {
+//			fileListBox.valueProperty().removeListener(this);
+//			fileListBox.getItems().clear();
+//			fileListBox.getItems().add(f.getName());
+//			fileListBox.setValue(f.getName());
+//		});
+//		if (watcher != null) {
+//			watcher.close();
+//		}
+//		 try {
+//		 watcher = new FileChangeWatcher(currentFile);
+//		 watcher.addIFileChangeListener(this);
+//		 watcher.start();
+//		 } catch (IOException e) {
+//		 // TODO Auto-generated catch block
+//		 e.printStackTrace();
+//		 }
+//	}
 
-	private void updateFile() {
-		
-		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-				new ExtensionFilter("Save Script","*"));
-		if (last != null) {
-			setUpFile(last);
-		}
-
-	}
-
-
-
-	public void open() {
-
-		updateFile();
-		try {
-			setCode(new String(Files.readAllBytes(currentFile.toPath())));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-		}
-	}
+//	private void updateFile() {
+//		
+//		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
+//				new ExtensionFilter("Save Script","*"));
+//		if (last != null) {
+//			setUpFile(last);
+//		}
+//
+//	}
 
 
+//
+//	public void open() {
+//
+//		updateFile();
+//		try {
+//			setCode(new String(Files.readAllBytes(currentFile.toPath())));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			// e.printStackTrace();
+//		}
+//	}
 
-	@Override
-	public void onFileChange(File fileThatChanged,
-			@SuppressWarnings("rawtypes") WatchEvent event) {
-		// TODO Auto-generated method stub
-		if (fileThatChanged.getAbsolutePath().contains(
-				currentFile.getAbsolutePath())) {
-			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
-					+ " changed");
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						setCode(new String(Files.readAllBytes(Paths
-								.get(fileThatChanged.getAbsolutePath())),
-								"UTF-8"));
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
 
-		} else {
-			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-		}
-	}
+
+//	@Override
+//	public void onFileChange(File fileThatChanged,
+//			@SuppressWarnings("rawtypes") WatchEvent event) {
+//		// TODO Auto-generated method stub
+//		if (fileThatChanged.getAbsolutePath().contains(
+//				currentFile.getAbsolutePath())) {
+//			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
+//					+ " changed");
+//			Platform.runLater(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//						setCode(new String(Files.readAllBytes(Paths
+//								.get(fileThatChanged.getAbsolutePath())),
+//								"UTF-8"));
+//					} catch (UnsupportedEncodingException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			});
+//
+//		} else {
+//			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+//		}
+//	}
 
 	public String getCode() {
 		return codeText;
