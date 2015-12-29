@@ -192,7 +192,7 @@ public class ScriptingFileWidget extends BorderPane implements
 			username.setPromptText("60 characters");
 			TextArea password = new TextArea();
 			password.setPrefRowCount(5);
-			password.setPrefColumnCount(80);
+			password.setPrefColumnCount(60);
 			password.setPromptText("Full Sentences describing explanation");
 
 			grid.add(new Label("What did you change?"), 0, 0);

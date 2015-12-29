@@ -125,8 +125,7 @@ public class ScriptingWebWidget extends BorderPane implements
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
 
 	private Button runfx = new Button("Run");;
-	private Button runsave = new Button("Save");
-	private Button runsaveAs = new Button("Save As..");
+	private Button edit = new Button("Edit...");
 	private WebEngine engine;
 
 	private String addr;
@@ -174,24 +173,16 @@ public class ScriptingWebWidget extends BorderPane implements
 	    		}
 	    	}.start();
 		});
-		runsave.setOnAction(e -> {
+		edit.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-	    			save();
+	    			BowlerStudio.createFileTab(currentFile);
 	    		}
 	    	}.start();
 
 		});
 		
-		runsaveAs.setOnAction(e -> {
-	    	new Thread(){
-	    		public void run(){
-	    			updateFile();
-	    			save();
-	    		}
-	    	}.start();
 
-		});
 
 		// String ctrlSave = "CTRL Save";
 //		fileLabel.setOnMouseEntered(e -> {
@@ -217,8 +208,7 @@ public class ScriptingWebWidget extends BorderPane implements
 		controlPane = new HBox(20);
 
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(runsave);
-		controlPane.getChildren().add(runsaveAs);
+		controlPane.getChildren().add(edit);
 		controlPane.getChildren().add(fileListBox);
 		
 		
@@ -469,17 +459,7 @@ public class ScriptingWebWidget extends BorderPane implements
 		}
 	}
 
-	public void save() {
-		// TODO Auto-generated method stub
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(
-					currentFile));
-			writer.write(getCode());
-			writer.close();
-		} catch (Exception ex) {
-			// ex.printStackTrace();
-		}
-	}
+
 
 	@Override
 	public void onFileChange(File fileThatChanged,
