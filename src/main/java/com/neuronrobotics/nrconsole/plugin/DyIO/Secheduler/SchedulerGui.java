@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.IntegerComboBox;
 import com.neuronrobotics.nrconsole.util.XmlFilter;

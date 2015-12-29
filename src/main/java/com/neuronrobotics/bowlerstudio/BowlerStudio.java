@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
@@ -163,7 +163,7 @@ public class BowlerStudio extends Application {
 		return BowlerKernel.speak(msg);
 	}
 	
-	public static ScriptingEngineWidget createFileTab(File file){
+	public static ScriptingFileWidget createFileTab(File file){
 		return controller.createFileTab(file);
 	}
 

@@ -49,7 +49,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -58,7 +58,7 @@ import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
 	
-	private ScriptingEngineWidget scripting;
+	private ScriptingFileWidget scripting;
 
     IScriptEventListener l=null;
 	private RSyntaxTextArea textArea;
@@ -73,7 +73,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
     
 	public LocalFileScriptTab( File file) throws IOException {
 		
-		setScripting(new ScriptingEngineWidget( file ));
+		setScripting(new ScriptingFileWidget( file ));
 		setSpacing(5);
 		l=this;
 
@@ -181,13 +181,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 
 
-	public ScriptingEngineWidget getScripting() {
+	public ScriptingFileWidget getScripting() {
 		return scripting;
 	}
 
 
 
-	public void setScripting(ScriptingEngineWidget scripting) {
+	public void setScripting(ScriptingFileWidget scripting) {
 		this.scripting = scripting;
 	}
 

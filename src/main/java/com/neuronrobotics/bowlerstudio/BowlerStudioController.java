@@ -47,7 +47,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
@@ -96,7 +96,7 @@ public class BowlerStudioController extends TabPane implements
 	private HashMap<File,LocalFileScriptTab> widgets = new HashMap<>();
 	
 	// Custom function for creation of New Tabs.
-	public ScriptingEngineWidget createFileTab(File file) {
+	public ScriptingFileWidget createFileTab(File file) {
 		if(openFiles.get(file)!=null){
 			setSelectedTab(openFiles.get(file));
 			return widgets.get(file).getScripting();
@@ -489,10 +489,12 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public void setSelectedTab(Tab tab) {
-		Platform.runLater(() -> {
-			System.out.println("Selecting "+tab.getText());
-			getSelectionModel().select(tab);
-		});
+		if(getSelectionModel().getSelectedItem()!=tab){
+			Platform.runLater(() -> {
+				System.out.println("Selecting "+tab.getText());
+				getSelectionModel().select(tab);
+			});
+		}
 	}
 
 	public AbstractImageProvider getVrCamera() {

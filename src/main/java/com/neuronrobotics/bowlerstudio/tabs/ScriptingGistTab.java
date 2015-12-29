@@ -24,7 +24,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
@@ -69,7 +69,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	
 	private TextField urlField;
 	//private String currentAddress;
-	private ScriptingEngineWidget scripting;
+	private ScriptingWebWidget scripting;
     final static SplashScreen splash = SplashScreen.getSplashScreen();
     private Graphics2D splashGraphics;
     private static boolean firstBoot=true;
@@ -123,6 +123,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 	    				
 	    				if(scripting==null)
 	    					finishLoadingComponents();
+	    				System.out.println("Loading code from "+Current_URL);
 	    				try {
 							scripting.loadCodeFromGist(Current_URL, webEngine);
 						} catch (IOException e) {
@@ -290,7 +291,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}
 		finishedLoadingScriptingWidget=false;
 		try{
-			scripting = new ScriptingEngineWidget( null ,Current_URL, webEngine);
+			scripting = new ScriptingWebWidget( null ,Current_URL, webEngine);
 			Platform.runLater(() -> {
 				vBox.getChildren().add(scripting);
 				if(!isTutorialTab){

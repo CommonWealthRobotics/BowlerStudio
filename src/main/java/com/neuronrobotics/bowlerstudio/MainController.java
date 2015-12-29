@@ -59,7 +59,7 @@ import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -676,7 +676,7 @@ public class MainController implements Initializable {
 	
 	}
 	
-	public ScriptingEngineWidget createFileTab(File file){
+	public ScriptingFileWidget createFileTab(File file){
 		return getApplication().createFileTab(file);
 	}
 

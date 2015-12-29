@@ -52,7 +52,8 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.nrconsole.util.DirectoryFilter;
@@ -285,7 +286,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 										ScriptingEngine.pushCodeToGistID( 
 												device.getSelfSource()[0], 
 												device.getSelfSource()[1],
-												device.getXml());
+												device.getXml(), "Updated from "+this.getClass());
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -595,7 +596,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		 e.printStackTrace();
 		 }
 		this.cadScript = cadScript;
-		ScriptingEngineWidget scripting = BowlerStudio.createFileTab(cadScript);
+		ScriptingFileWidget scripting = BowlerStudio.createFileTab(cadScript);
 		scripting.addIScriptEventListener(new IScriptEventListener() {
 			
 			@Override
