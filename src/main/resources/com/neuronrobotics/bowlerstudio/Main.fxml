@@ -60,6 +60,7 @@
           <items>
             <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
             <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
+            <Menu mnemonicParsing="false" text="My Gists" fx:id="myGists" />
           </items>
         </Menu>
         <Menu disable="true" mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />

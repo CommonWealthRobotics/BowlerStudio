@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ import java.util.ResourceBundle;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 import org.opencv.core.Core;
 import org.reactfx.util.FxTimer;
 
@@ -96,6 +102,10 @@ public class MainController implements Initializable {
     private MenuBar menuBar;
     @FXML
     private MenuItem logoutGithub;
+    
+    @FXML
+    private Menu myGists;
+    
     @FXML
     private Pane logView;
 
@@ -316,6 +326,7 @@ public class MainController implements Initializable {
 			@Override
 			public void onLogin(String newUsername) {
 				setToLoggedIn(newUsername);
+				
 			}
 		});
 		//logView.resize(250, 300);
@@ -340,16 +351,53 @@ public class MainController implements Initializable {
         //BowlerStudio.speak("Welcome to Bowler Studio");
     }
     
-    private void setToLoggedIn(final String name){			
+    private void setToLoggedIn(final String name){	
+    	//new Exception().printStackTrace();
 		FxTimer.runLater(
 				Duration.ofMillis(100) ,() -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out "+name);
+			new Thread(){
+				public void run(){
+					
+					GitHub github = ScriptingEngine.getGithub();
+					while(github==null){
+						github = ScriptingEngine.getGithub();
+						ThreadUtil.wait(20);
+					}
+					try {
+						GHMyself myself = github.getMyself();
+						PagedIterable<GHGist> gists = myself.listGists();
+						for(GHGist gist:gists){
+							MenuItem tmp =new MenuItem(gist.getDescription());
+							tmp.setOnAction(event->{
+								String webURL = gist.getHtmlUrl();
+			    				try {
+									BowlerStudio.openUrlInNewTab(new URL(webURL));
+								} catch (MalformedURLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			    			
+							});
+							Platform.runLater(()->{
+								myGists.getItems().add(tmp);
+							});
+							
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
 		});
     }
     
     private void setToLoggedOut(){
 		Platform.runLater(() -> {
+			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
 		});

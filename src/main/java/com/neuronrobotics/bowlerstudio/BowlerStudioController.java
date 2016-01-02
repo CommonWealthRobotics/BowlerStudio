@@ -164,6 +164,7 @@ public class BowlerStudioController extends TabPane implements
 	
 	public void openUrlInNewTab(URL url){
 		String urlstr=url.toExternalForm();
+		
 		if(webTabs.get(urlstr)!=null){
 			setSelectedTab(webTabs.get(urlstr));
 		}else
@@ -171,6 +172,9 @@ public class BowlerStudioController extends TabPane implements
 				try {
 					if(ScriptingEngine.getLoginID() != null){
 						ScriptingGistTab newTab = new ScriptingGistTab("Web",url.toExternalForm(), false);
+						newTab.setOnCloseRequest(event -> {
+							webTabs.remove(urlstr );
+						});
 						webTabs.put(urlstr,newTab );
 						addTab(newTab, true);
 					}
@@ -367,123 +371,6 @@ public class BowlerStudioController extends TabPane implements
 		// TODO Auto-generated method stub
 
 	}
-//
-//	public void onAddDefaultRightArm(ActionEvent event) {
-//		if (mainController.getAddDefaultRightArm().isSelected()) {
-//			// TODO Auto-generated method stub
-//			BowlerAbstractDevice dev = ConnectionManager
-//					.pickConnectedDevice(DHParameterKinematics.class);
-//			IDeviceConnectionEventListener l = new IDeviceConnectionEventListener() {
-//				@Override
-//				public void onDisconnect(BowlerAbstractDevice source) {
-//					jfx3dmanager.removeArm();
-//					mainController.getAddDefaultRightArm().selectedProperty()
-//							.set(false);
-//				}
-//
-//				@Override
-//				public void onConnect(BowlerAbstractDevice source) {
-//				}
-//			};
-//			if (dev == null) {
-//				DyIO tmp = (DyIO) ConnectionManager.pickConnectedDevice(
-//						DyIO.class);
-//				if (tmp != null) {
-//					tmp.addConnectionEventListener(l);
-//					dev = new DHParameterKinematics(tmp, "TrobotMaster.xml");
-//					ConnectionManager.addConnection(dev, "DHArm");
-//				}
-//			}
-//			if (dev != null) {
-//				jfx3dmanager.attachArm((DHParameterKinematics) dev);
-//				dev.addConnectionEventListener(l);
-//			} else {
-//				mainController.getAddDefaultRightArm().selectedProperty()
-//						.set(false);
-//			}
-//		} else {
-//			jfx3dmanager.removeArm();
-//		}
-//	}
-
-//	public void onAddVRCamera(ActionEvent event) {
-//		// TODO Auto-generated method stub
-//
-//		setVrCamera((AbstractImageProvider) ConnectionManager
-//				.pickConnectedDevice(AbstractImageProvider.class));
-//		if (getVrCamera() == null)
-//			setVrCamera(ConnectionManager.onConnectCVCamera());
-//		if (getVrCamera() != null) {
-//			getVrCamera().addConnectionEventListener(
-//					new IDeviceConnectionEventListener() {
-//						@Override
-//						public void onDisconnect(BowlerAbstractDevice source) {
-//							mainController.getAddVRCamera().selectedProperty()
-//									.set(false);
-//						}
-//
-//						@Override
-//						public void onConnect(BowlerAbstractDevice source) {
-//						}
-//					});
-//			new Thread() {
-//				public void run() {
-//					setName("Load Camera Thread");
-//					IObjectDetector detector = new HaarDetector(
-//							"lbpcascade_frontalface.xml");
-//					double xSize = 320;
-//					double ySize = 240;
-//					// Create the input and display images. The display is where
-//					// the detector writes its detections overlay on the input
-//					// image
-//					BufferedImage inputImage = AbstractImageProvider
-//							.newBufferImage((int) xSize, (int) ySize);
-//					BufferedImage displayImage = AbstractImageProvider
-//							.newBufferImage((int) xSize, (int) ySize);
-//					System.out.println("Camera VR Started");
-//					DoubleProperty view = jfx3dmanager
-//							.getCameraFieldOfViewProperty();
-//					Affine carmermanipulation = jfx3dmanager.getCameraVR();
-//					RollingAverageFilter rollingSize = new RollingAverageFilter(
-//							10, 0);
-//					RollingAverageFilter rollingX = new RollingAverageFilter(
-//							10, 0);
-//					RollingAverageFilter rollingY = new RollingAverageFilter(
-//							10, 0);
-//					while (mainController.getAddVRCamera().isSelected()) {
-//						getVrCamera().getLatestImage(inputImage, displayImage); // capture
-//																				// image
-//						List<Detection> data = detector.getObjects(inputImage,
-//								displayImage);
-//						if (data.size() > 0) {
-//
-//							double xWarp = (((xSize / 2) - data.get(0).getX()) / (xSize / 2)) - .5;
-//							double yWarp = (((ySize / 2) - data.get(0).getY()) / (ySize / 2)) - .5;
-//							double sizeWarp = (((ySize / 2) - data.get(0)
-//									.getSize()) / (ySize / 2));
-//
-//							rollingX.add(xWarp);
-//							rollingY.add(yWarp);
-//							rollingSize.add(sizeWarp);
-//
-//							Platform.runLater(() -> {
-//								carmermanipulation.setTx(100 * rollingX
-//										.getValue());
-//								carmermanipulation.setTy(-100
-//										* rollingY.getValue());
-//								carmermanipulation.setTz(-500
-//										* rollingSize.getValue());
-//								view.set(30.0 + (-5.0 * rollingSize.getValue()));
-//							});
-//
-//						}
-//					}
-//					// bail out when the checkbox is unchecked
-//					System.out.println("Camera VR disabled");
-//				}
-//			}.start();
-//		}
-//	}
 
 	public void disconnect() {
 		ConnectionManager.disconnectAll();
