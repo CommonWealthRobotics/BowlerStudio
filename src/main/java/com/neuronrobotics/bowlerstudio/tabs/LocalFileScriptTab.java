@@ -49,6 +49,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 
 import javafx.scene.control.ScrollPane;
@@ -79,9 +80,21 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 
 		getScripting().addIScriptEventListener(l);
+		String type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
+		switch(ScriptingEngine.setFilename(file.getName())){
+			case CLOJURE:
+				type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
+				break;
+			case GROOVY:
+				type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
+				break;
+			case JYTHON:
+				type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
+				break;
 		
+		}
 		textArea = new RSyntaxTextArea(100, 150);
-		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
+		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
 		textArea.setText(getScripting().getCode());
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
