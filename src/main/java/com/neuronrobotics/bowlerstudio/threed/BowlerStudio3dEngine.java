@@ -333,7 +333,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			if(selectedCsg == currentCsg)
 				return;
 			selectedCsg= currentCsg;
-	        selectObjectsSourceFile(currentCsg);
+			new Thread(){
+				public void run(){
+			        selectObjectsSourceFile(currentCsg);
+				}
+			}.start();
 		});
 		
 		Group og = new Group();
