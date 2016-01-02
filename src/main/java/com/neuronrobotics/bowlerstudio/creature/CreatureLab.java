@@ -85,6 +85,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private File openMobileBaseConfiguration;
 	private File cadScript;
 	private FileChangeWatcher watcher;
+	private FileChangeWatcher driveEngineWitcher;
 	private IDriveEngine defaultDriveEngine;
 	private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
@@ -175,6 +176,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			return 0;
 		}
 	};
+	private ArrayList<CSG> allCad;
 
 	@Override
 	public void onTabClosing() {
@@ -471,6 +473,27 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
 		if(defaultDriveEngine==null){
 			File code = ScriptingEngine.fileFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1]);
+			if(driveEngineWitcher!=null)
+				driveEngineWitcher.close();
+			
+			driveEngineWitcher = new FileChangeWatcher(code);
+			driveEngineWitcher.addIFileChangeListener(new IFileChangeListener() {
+				
+				@Override
+				public void onFileChange(File fileThatChanged, WatchEvent event) {
+					try{
+						defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(fileThatChanged, null,ShellType.GROOVY);
+						device.setWalkingDriveEngine( defaultDriveEngine);
+					}catch(Exception ex){
+						 StringWriter sw = new StringWriter();
+					      PrintWriter pw = new PrintWriter(sw);
+					      ex.printStackTrace(pw);
+					      System.out.println(sw.toString());
+					}
+					
+				}
+			 });
+			driveEngineWitcher.start();
 			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		}
 		device.setWalkingDriveEngine( defaultDriveEngine);
@@ -623,7 +646,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	@Override
 	public ArrayList<CSG> generateBody(MobileBase base) {
 		pi.setProgress(0);
-		ArrayList<CSG> allCad=new ArrayList<>();
+		allCad = new ArrayList<>();
 		if(MobileBase.class.isInstance(pm)) {
 			MobileBase device=(MobileBase)pm;
 			if (getCadScript() != null) {
@@ -649,6 +672,24 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			pi.setProgress(0.5);
 			try {
 				allCad= cadEngine.generateBody(device);
+				for(CSG csg:allCad){
+					BowlerStudioController.addCsg(csg);
+				}
+				ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+				double numLimbs = limbs.size();
+				double i=0;
+				for(DHParameterKinematics l:limbs){
+					
+					for(CSG csg:generateCad(l.getChain().getLinks())){
+						allCad.add(csg);
+						BowlerStudioController.addCsg(csg);
+					}
+					
+					i+=1;
+					double progress = (1.0-((numLimbs-i)/numLimbs))/2;
+					System.out.println(progress);
+					pi.setProgress(0.5+progress);
+				}
 			} catch (Exception e) {
 				  StringWriter sw = new StringWriter();
 			      PrintWriter pw = new PrintWriter(sw);

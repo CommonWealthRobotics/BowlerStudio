@@ -312,11 +312,17 @@ public class BowlerStudioController extends TabPane implements
 			getBowlerStudio().jfx3dmanager.removeObjects();
 			if(toadd!=null)
 			for(CSG c:toadd){
-				getBowlerStudio().jfx3dmanager.addObject(c);
+				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(c));
 			}
 		});
 	}
-
+	public static void addCsg(CSG toadd){
+		Platform.runLater(() -> {
+			if(toadd!=null)
+				getBowlerStudio().jfx3dmanager.addObject(toadd);
+			
+		});
+	}
 	private void addObject(Object o) {
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
