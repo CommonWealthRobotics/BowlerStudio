@@ -99,7 +99,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 			public void run(){
 				try{
 					done=true;// startup passes the frame update check
-					while (open) {
+					while (open && provider.isAvailable()) {
 	
 						try {
 							long spacing=System.currentTimeMillis()-session[3];
