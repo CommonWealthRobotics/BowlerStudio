@@ -291,10 +291,13 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				currentFile = new File(code[2]);
 			}
 			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
-			if(isOwnedByLoggedInUser){
-				edit.setText("Edit...");
-			}else
-				edit.setText("Make Copy");
+			Platform.runLater(() -> {
+				if(isOwnedByLoggedInUser){
+					edit.setText("Edit...");
+				}else
+					edit.setText("Make Copy");
+			});
+
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();
 		      PrintWriter pw = new PrintWriter(sw);
@@ -429,83 +432,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private void append(String s) {
 		System.out.println(s);
 	}
-
-//	private void setUpFile(File f) {
-//		currentFile = f;
-//		ScriptingEngine.setLastFile(f);
-//		Platform.runLater(() -> {
-//			fileListBox.valueProperty().removeListener(this);
-//			fileListBox.getItems().clear();
-//			fileListBox.getItems().add(f.getName());
-//			fileListBox.setValue(f.getName());
-//		});
-//		if (watcher != null) {
-//			watcher.close();
-//		}
-//		 try {
-//		 watcher = new FileChangeWatcher(currentFile);
-//		 watcher.addIFileChangeListener(this);
-//		 watcher.start();
-//		 } catch (IOException e) {
-//		 // TODO Auto-generated catch block
-//		 e.printStackTrace();
-//		 }
-//	}
-
-//	private void updateFile() {
-//		
-//		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-//				new ExtensionFilter("Save Script","*"));
-//		if (last != null) {
-//			setUpFile(last);
-//		}
-//
-//	}
-
-
-//
-//	public void open() {
-//
-//		updateFile();
-//		try {
-//			setCode(new String(Files.readAllBytes(currentFile.toPath())));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			// e.printStackTrace();
-//		}
-//	}
-
-
-
-//	@Override
-//	public void onFileChange(File fileThatChanged,
-//			@SuppressWarnings("rawtypes") WatchEvent event) {
-//		// TODO Auto-generated method stub
-//		if (fileThatChanged.getAbsolutePath().contains(
-//				currentFile.getAbsolutePath())) {
-//			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
-//					+ " changed");
-//			Platform.runLater(new Runnable() {
-//				@Override
-//				public void run() {
-//					try {
-//						setCode(new String(Files.readAllBytes(Paths
-//								.get(fileThatChanged.getAbsolutePath())),
-//								"UTF-8"));
-//					} catch (UnsupportedEncodingException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			});
-//
-//		} else {
-//			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-//		}
-//	}
 
 	public String getCode() {
 		return codeText;
