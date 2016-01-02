@@ -91,6 +91,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			case JYTHON:
 				type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
 				break;
+			case NONE:
+				break;
+			case ROBOT:
+				type = SyntaxConstants.SYNTAX_STYLE_XML;
+				break;
 		
 		}
 		textArea = new RSyntaxTextArea(100, 150);

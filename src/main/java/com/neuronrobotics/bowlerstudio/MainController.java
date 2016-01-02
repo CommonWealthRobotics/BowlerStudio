@@ -368,8 +368,16 @@ public class MainController implements Initializable {
 					try {
 						GHMyself myself = github.getMyself();
 						PagedIterable<GHGist> gists = myself.listGists();
+						Platform.runLater(()->{
+							myGists.getItems().clear();
+						});
+						
 						for(GHGist gist:gists){
-							MenuItem tmp =new MenuItem(gist.getDescription());
+							String desc = gist.getDescription();
+							if(desc==null || desc .length()==0){
+								desc = gist.getFiles().keySet().toArray()[0].toString();
+							}
+							MenuItem tmp =new MenuItem(desc);
 							tmp.setOnAction(event->{
 								String webURL = gist.getHtmlUrl();
 			    				try {
