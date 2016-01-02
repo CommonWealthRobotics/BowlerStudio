@@ -208,7 +208,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private Button home;
 	private int debuggerIndex=0;
-	private ArrayList<StackTraceElement> debuggerList=new ArrayList<>();
+	private ArrayList<String> debuggerList=new ArrayList<>();
 	private CSG selectedCsg=null;
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -230,17 +230,25 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 	
 	private void highlightDebugIndex(int index, java.awt.Color c){
-		StackTraceElement trace = debuggerList.get(index);
+		String trace = debuggerList.get(index);
 		BowlerStudioController
 		.getBowlerStudio()
 		.setHighlight(
 				ScriptingEngine
-					.getFileEngineRunByName(trace.getFileName()),
-				trace.getLineNumber(),
+					.getFileEngineRunByName(getFilenameFromTrace(trace)),
+					getLineNumbereFromTrace(trace),
 				c
 						);
 	}
 	
+	private String getFilenameFromTrace(String trace){
+		String[] parts =trace.split(":");
+		return parts[0];
+	}
+	private int getLineNumbereFromTrace(String trace){
+		String[] parts =trace.split(":");
+		return Integer.parseInt(parts[1]);
+	}
 	public Group getControlsBox(){
 		HBox controls = new HBox(10);
 		
@@ -676,35 +684,27 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		debuggerList.clear();
 		debuggerIndex=0;
 
-		for(Exception ex: source.getCreationEventStackTraceList()){
-			final StackTraceElement[] stackTrace = ex.getStackTrace();
-		    for(StackTraceElement trace:stackTrace)
-		    	if(trace.getFileName()!=null)
-		        	if(trace.getFileName().endsWith(".groovy") )
-		        		if(trace.getLineNumber()>0){
+		for(String ex: source.getCreationEventStackTraceList()){
+			
+			String fileName = getFilenameFromTrace(ex);
+			int linNum = getLineNumbereFromTrace(ex);
 
-		        			boolean duplicate=false;
-		        			for(StackTraceElement have:debuggerList){
-		        				if(		   have.getFileName().contentEquals(trace.getFileName())
-		        						&& have.getLineNumber() == trace.getLineNumber()
-		        						)
-		        					duplicate=true;
-		        			}
-		        			if(!duplicate)
-		        				debuggerList.add(0,trace);
+			boolean duplicate=false;
+			for(String have:debuggerList){
+				if(		   getFilenameFromTrace(have).contentEquals(fileName)
+						&& getLineNumbereFromTrace(have) == linNum
+						)
+					duplicate=true;
+			}
+			if(!duplicate)
+				debuggerList.add(0,ex);
 
-			        		//if(!lastFileSelected.contentEquals(trace.getFileName()) || lastFileLine !=trace.getLineNumber()){
-			        			lastFileSelected=trace.getFileName();
-			        			lastFileLine=trace.getLineNumber();
-			        			
-			        			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(trace.getFileName()),trace.getLineNumber(),java.awt.Color.PINK);
-			        			
-//								System.err.println("File: "+ScriptingEngine.getFileEngineRunByName(trace.getFileName()).getAbsolutePath()
-//								+" at line "+trace.getLineNumber()
-//								+" class= "+trace.getClassName()
-//								+" method= "+trace.getMethodName()
-//						    		);
-		        		}
+			lastFileSelected=fileName;
+			lastFileLine=linNum;
+			
+			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(fileName),linNum,java.awt.Color.PINK);
+
+		        		
 		    	
 		}
 		debuggerIndex = debuggerList.size()-1;
