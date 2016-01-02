@@ -150,6 +150,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		this(ScriptingWidgetType.FILE);
 		this.currentFile = currentFile;
 		loadCodeFromFile(currentFile);
+		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
+		publish.setDisable(!isOwnedByLoggedInUser);
 	}
 	
 	private void startStopAction(){
@@ -172,6 +174,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	    		}
 	    	}.start();
 		});
+		
 		publish.setOnAction(e -> {
 			save();
 			CommitWidget.commit(currentFile, getCode());
