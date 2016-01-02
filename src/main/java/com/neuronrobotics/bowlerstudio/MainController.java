@@ -399,7 +399,10 @@ public class MainController implements Initializable {
     		public void run(){
     			setName("Load File Thread");
     	    	openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
-    					new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
+    					new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"),
+    					new ExtensionFilter("Clojure","*.cloj","*.clj","*.txt","*.clojure"),
+    					new ExtensionFilter("Python","*.py","*.python","*.txt"),
+    					new ExtensionFilter("All","*.*"));
 
     	        if (openFile == null) {
     	            return;

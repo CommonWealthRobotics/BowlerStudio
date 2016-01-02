@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,6 +93,7 @@ import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -137,6 +139,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private HBox controlPane;
 	private String currentGist;
+	private boolean isOwnedByLoggedInUser;
 
 	
 	public ScriptingWebWidget(File currentFile, String currentGist,
@@ -144,6 +147,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		this(ScriptingWidgetType.GIST);
 		this.currentFile = currentFile;
 		loadCodeFromGist(currentGist, engine);
+		
+		
 	}
 
 	
@@ -170,7 +175,21 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		edit.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-	    			BowlerStudio.createFileTab(currentFile);
+	    			if(isOwnedByLoggedInUser)
+	    				BowlerStudio.createFileTab(currentFile);
+	    			else{
+	    				// todo fork git repo
+	    				System.out.println("Making Fork...");
+	    				GHGist newGist = ScriptingEngine.fork(currentGist);
+	    				String webURL = newGist.getHtmlUrl();
+	    				try {
+							BowlerStudio.openUrlInNewTab(new URL(webURL));
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    			}
+	    					
 	    		}
 	    	}.start();
 
@@ -271,6 +290,11 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				setCode(code[0]);
 				currentFile = new File(code[2]);
 			}
+			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
+			if(isOwnedByLoggedInUser){
+				edit.setText("Edit...");
+			}else
+				edit.setText("Make Copy");
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();
 		      PrintWriter pw = new PrintWriter(sw);

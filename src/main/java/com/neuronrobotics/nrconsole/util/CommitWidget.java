@@ -38,10 +38,10 @@ public class CommitWidget {
 		grid.setPadding(new Insets(20, 150, 10, 10));
 
 		TextField username = new TextField();
-		username.setPromptText("60 characters");
+		username.setPromptText("60 character description");
 		TextArea password = new TextArea();
 		password.setPrefRowCount(5);
-		password.setPrefColumnCount(60);
+		password.setPrefColumnCount(40);
 		password.setPromptText("Full Sentences describing explanation");
 
 		grid.add(new Label("What did you change?"), 0, 0);
@@ -55,7 +55,7 @@ public class CommitWidget {
 
 		// Do some validation (using the Java 8 lambda syntax).
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
-		    loginButton.setDisable(newValue.trim().isEmpty());
+		    loginButton.setDisable(newValue.trim().length()<5);
 		});
 
 		dialog.getDialogPane().setContent(grid);
@@ -84,6 +84,7 @@ public class CommitWidget {
 						String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
 						String relativePath = ScriptingEngine.findLocalPath(currentFile,git);
 					    ScriptingEngine.pushCodeToGit(remote,"master", relativePath, code, message);
+					    git.close();
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

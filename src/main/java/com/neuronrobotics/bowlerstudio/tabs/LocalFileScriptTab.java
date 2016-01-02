@@ -211,7 +211,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
         textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
         try{
         	textArea.moveCaretPosition(startIndex);
-        }catch (Exception ex){
+        }catch (Error ex){
         	//ex.printStackTrace();
         }
 	}

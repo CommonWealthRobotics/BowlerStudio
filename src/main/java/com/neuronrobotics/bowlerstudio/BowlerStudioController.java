@@ -94,7 +94,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 	private HashMap<File,Tab> openFiles = new HashMap<>();
 	private HashMap<File,LocalFileScriptTab> widgets = new HashMap<>();
-	
+	private HashMap<String,ScriptingGistTab> webTabs = new HashMap<>();
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
 		if(openFiles.get(file)!=null){
@@ -163,16 +163,22 @@ public class BowlerStudioController extends TabPane implements
 	}
 	
 	public void openUrlInNewTab(URL url){
-		Platform.runLater(() -> {
-			try {
-				if(ScriptingEngine.getLoginID() != null)
-					
-					addTab(new ScriptingGistTab("Web",url.toExternalForm(), false), true);
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		String urlstr=url.toExternalForm();
+		if(webTabs.get(urlstr)!=null){
+			setSelectedTab(webTabs.get(urlstr));
+		}else
+			Platform.runLater(() -> {
+				try {
+					if(ScriptingEngine.getLoginID() != null){
+						ScriptingGistTab newTab = new ScriptingGistTab("Web",url.toExternalForm(), false);
+						webTabs.put(urlstr,newTab );
+						addTab(newTab, true);
+					}
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 	}
 
 	private Tab createTab() throws IOException, InterruptedException {
