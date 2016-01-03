@@ -254,53 +254,53 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			});
 			
 			
-			MenuItem saveConfig = new MenuItem("Save Configuration");
-			saveConfig.setOnAction(event -> {
-		    	new Thread(){
-
-					public void run(){
-						if(device.getSelfSource()[0]==null ||device.getSelfSource()[1]==null ){
-							// this was loaded form a file not a gist
-							if(openMobileBaseConfiguration==null)
-								openMobileBaseConfiguration=ScriptingEngine.getLastFile();
-			    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
-			    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
-
-			    	        if (openMobileBaseConfiguration == null) {
-			    	            return;
-			    	        }
-			    	        try {
-								PrintWriter out = new PrintWriter(openMobileBaseConfiguration.getAbsoluteFile());
-								out.println(device.getXml());
-								out.flush();
-								out.close();
-							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}else{
-							String owner = ScriptingEngine.getUserIdOfGist(device.getSelfSource()[0]);
-							String currentLoggedIn =  ScriptingEngine.getLoginID();
-							Log.warning("Gist owned by "+owner+" logged in as "+currentLoggedIn);
-							if(currentLoggedIn!=null && owner!=null){
-								if(currentLoggedIn.toLowerCase().contentEquals(owner.toLowerCase())){
-									try {
-										ScriptingEngine.pushCodeToGistID( 
-												device.getSelfSource()[0], 
-												device.getSelfSource()[1],
-												device.getXml(), "Updated from "+this.getClass());
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-							}
-						}
-
-		    	        
-		    		}
-		    	}.start();
-			});
+//			MenuItem saveConfig = new MenuItem("Save Configuration");
+//			saveConfig.setOnAction(event -> {
+//		    	new Thread(){
+//
+//					public void run(){
+//						if(device.getSelfSource()[0]==null ||device.getSelfSource()[1]==null ){
+//							// this was loaded form a file not a gist
+//							if(openMobileBaseConfiguration==null)
+//								openMobileBaseConfiguration=ScriptingEngine.getLastFile();
+//			    	    	openMobileBaseConfiguration = FileSelectionFactory.GetFile(openMobileBaseConfiguration,
+//			    	    			new ExtensionFilter("MobileBase XML","*.xml","*.XML"));
+//
+//			    	        if (openMobileBaseConfiguration == null) {
+//			    	            return;
+//			    	        }
+//			    	        try {
+//								PrintWriter out = new PrintWriter(openMobileBaseConfiguration.getAbsoluteFile());
+//								out.println(device.getXml());
+//								out.flush();
+//								out.close();
+//							} catch (FileNotFoundException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//						}else{
+//							String owner = ScriptingEngine.getUserIdOfGist(device.getSelfSource()[0]);
+//							String currentLoggedIn =  ScriptingEngine.getLoginID();
+//							Log.warning("Gist owned by "+owner+" logged in as "+currentLoggedIn);
+//							if(currentLoggedIn!=null && owner!=null){
+//								if(currentLoggedIn.toLowerCase().contentEquals(owner.toLowerCase())){
+//									try {
+//										ScriptingEngine.pushCodeToGistID( 
+//												device.getSelfSource()[0], 
+//												device.getSelfSource()[1],
+//												device.getXml(), "Updated from "+this.getClass());
+//									} catch (Exception e) {
+//										// TODO Auto-generated catch block
+//										e.printStackTrace();
+//									}
+//								}
+//							}
+//						}
+//
+//		    	        
+//		    		}
+//		    	}.start();
+//			});
 			
 			
 			MenuItem setCadScript = new MenuItem("Set Cad Generation Script");
@@ -345,7 +345,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    		}
 		    	}.start();
 			});
-			localMenue.getItems().addAll(printable, saveConfig, setCadScript, updateRobotScripts);
+			localMenue.getItems().addAll(printable,  setCadScript, updateRobotScripts);
 			
 			
 			CreaturLabMenue.getItems().add(localMenue);

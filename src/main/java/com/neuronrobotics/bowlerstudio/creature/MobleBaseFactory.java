@@ -9,6 +9,9 @@ import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.jfree.util.Log;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
@@ -40,6 +43,7 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class MobleBaseFactory {
 
@@ -48,17 +52,37 @@ public class MobleBaseFactory {
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
 			CreatureLab creatureLab) {
+		
+		boolean creatureIsOwnedByUser=false;
+		TreeItem<String> publish = new TreeItem<String>("Publish");
+
+
+		
+		if(!(device.getSelfSource()[0]==null || device.getSelfSource()[1]==null)){
+			try {
+				 File source = ScriptingEngine.fileFromGistID(device.getSelfSource()[0], device.getSelfSource()[1]);
+				 creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
+				 callbackMapForTreeitems.put(publish, () -> {
+			
+							CommitWidget.commit(source, device.getXml());
+									
+				});
+			} catch (Exception e) {
+				Log.error(device.getSelfSource()[0]+" "+device.getSelfSource()[1]+" failed to load");
+				e.printStackTrace();
+			}
+		}
 		TreeItem<String> legs =loadLimbs(device,view,device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
-				widgetMapForTreeitems,creatureLab);
+				widgetMapForTreeitems,creatureLab,creatureIsOwnedByUser);
 		TreeItem<String> arms =loadLimbs(device,view,device.getAppendages(), "Arms", rootItem,
-				callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+				callbackMapForTreeitems, widgetMapForTreeitems,creatureLab,creatureIsOwnedByUser);
 //		TreeItem<String> steer =loadLimb(device.getSteerable(), "Steerable", rootItem,
 //				callbackMapForTreeitems, widgetMapForTreeitems);
 //		TreeItem<String> drive =loadLimb(device.getDrivable(), "Drivable", rootItem,
 //				callbackMapForTreeitems, widgetMapForTreeitems);
 		
 		TreeItem<String> addleg = new TreeItem<String>("Add Leg");
-
+		boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
 		callbackMapForTreeitems.put(addleg, () -> {
 			// TODO Auto-generated method stub
 				System.out.println("Adding Leg");
@@ -67,7 +91,7 @@ public class MobleBaseFactory {
 					xmlContent = ScriptingEngine.codeFromGistID("b5b9450f869dd0d2ea30","defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Leg has "+newLeg.getNumberOfLinks()+" links");
-					addAppendage(device,view,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,view,device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab, creatureIsOwnedByUserTmp);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -81,31 +105,13 @@ public class MobleBaseFactory {
 				
 			});
 		
-		File selfSourceFile=null;
-		TreeItem<String> publish = new TreeItem<String>("Publish");
 
-
-		
-		if(!(device.getSelfSource()[0]==null || device.getSelfSource()[1]==null)){
-			try {
-				 File source = ScriptingEngine.fileFromGistID(device.getSelfSource()[0], device.getSelfSource()[1]);
-				 selfSourceFile = source;
-				 callbackMapForTreeitems.put(publish, () -> {
-			
-							CommitWidget.commit(source, device.getXml());
-									
-				});
-			} catch (GitAPIException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		TreeItem<String> makeCopy = new TreeItem<String>("Make Copy of Creature");
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(()->{
 				String oldname  =device.getScriptingName();
-				TextInputDialog dialog = new TextInputDialog(oldname);
+				TextInputDialog dialog = new TextInputDialog(oldname+"_copy");
 				dialog.setTitle("Making a copy of "+oldname);
 				dialog.setHeaderText("Set the scripting name for this creature");
 				dialog.setContentText("Please the name of the new creature:");
@@ -119,22 +125,42 @@ public class MobleBaseFactory {
 						    System.out.println("Your new creature: " + result.get());
 						    String newName=result.get();
 						    device.setScriptingName(newName);
+						    device.setWalkingEngine(ScriptingEngine.forkGistFile(device.getWalkingEngine()));
+						    device.setCadEngine(ScriptingEngine.forkGistFile(device.getCadEngine()));
+						    for(DHParameterKinematics dh:device.getAllDHChains()){
+						    	dh.setCadEngine(ScriptingEngine.forkGistFile(dh.getCadEngine()));
+						    	dh.setDhEngine(ScriptingEngine.forkGistFile(dh.getDhEngine()));
+						    }
+						    
 						    String xml = device.getXml();
 						    device.disconnect();
 						    GitHub github = ScriptingEngine.getGithub();
 						    GHGistBuilder builder = github.createGist();
-						    builder.description(result.get());
-						    builder.file(newName+".xml", xml);
+						    builder.description(newName+" copy of "+oldname);
+						    String filename =newName+".xml";
+						    builder.file(filename, xml);
 						    builder.public_(true);
 						    GHGist gist;
 							try {
 								gist = builder.create();
-								String gistID = ScriptingEngine.urlToGist(gist.getGitPullUrl());
+								String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
+								BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
+								System.out.println("Creating repo");
+								while(true){
+									try {
+										ScriptingEngine.fileFromGistID(gistID, filename);
+										break;
+									} catch (Exception e) {
+										
+									}
+									ThreadUtil.wait(500);
+									Log.warn(gist+" not built yet");
+								}
 								System.out.println("Creating gist at: "+gistID);
 								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
 								
 								mb.setSelfSource(new String[]{gistID,newName+".xml"});
-								BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+gistID));
+								
 								ConnectionManager.addConnection(mb,mb.getScriptingName());
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
@@ -149,6 +175,16 @@ public class MobleBaseFactory {
 				}
 			});
 		});
+		TreeItem<String> editWalking = new TreeItem<String>("Edit Walking Engine...");
+		callbackMapForTreeitems.put(editWalking, () -> {
+			try {
+				File code = ScriptingEngine.fileFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1]);
+				BowlerStudio.createFileTab(code);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		TreeItem<String> item = new TreeItem<String>("Add Arm");
 
 		callbackMapForTreeitems.put(item, () -> {
@@ -158,7 +194,7 @@ public class MobleBaseFactory {
 					String xmlContent = ScriptingEngine.codeFromGistID("b5b9450f869dd0d2ea30","defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,IOUtils.toInputStream(xmlContent, "UTF-8"));
 					System.out.println("Arm has "+newArm.getNumberOfLinks()+" links");
-					addAppendage(device,view,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+					addAppendage(device,view,device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,creatureLab, creatureIsOwnedByUserTmp);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -166,12 +202,16 @@ public class MobleBaseFactory {
 				
 				
 			});
+		
 		rootItem.getChildren().addAll(regnerate,item, addleg,makeCopy);
-		if(selfSourceFile!=null)
-			if(ScriptingEngine.checkOwner(selfSourceFile)){
-				rootItem.getChildren().add(publish);
-			}
+		
+		if(creatureIsOwnedByUser){
+			rootItem.getChildren().addAll(publish,editWalking);
+		}
 	}
+	
+	
+
 	
 	private static void getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
 		HashMap<String,HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
@@ -219,7 +259,7 @@ public class MobleBaseFactory {
 			TreeItem<String> topLevel,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
-			CreatureLab creatureLab){
+			CreatureLab creatureLab, boolean creatureIsOwnedByUser){
 		
 		Platform.runLater(()->{
 			TextInputDialog dialog = new TextInputDialog(newDevice.getScriptingName());
@@ -251,7 +291,7 @@ public class MobleBaseFactory {
 						}
 						
 						rootItem.setExpanded(true);
-						loadSingleLimb(base, view,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+						loadSingleLimb(base, view,newDevice,rootItem,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab,  creatureIsOwnedByUser);
 						creatureLab.generateCad();
 					}
 				}.start();
@@ -269,7 +309,7 @@ public class MobleBaseFactory {
 			String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, 
-			CreatureLab creatureLab) {
+			CreatureLab creatureLab, boolean creatureIsOwnedByUser) {
 
 	
 		TreeItem<String> apps = new TreeItem<String>(label);
@@ -277,7 +317,7 @@ public class MobleBaseFactory {
 		if (drivable.size() == 0)
 			return apps;
 		for (DHParameterKinematics dh : drivable) {
-			loadSingleLimb(base, view,dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab);
+			loadSingleLimb(base, view,dh,apps,callbackMapForTreeitems, widgetMapForTreeitems,creatureLab,creatureIsOwnedByUser);
 		}
 		
 		return apps;
@@ -429,10 +469,10 @@ public class MobleBaseFactory {
 			DHParameterKinematics dh,
 			TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab){
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean creatureIsOwnedByUser){
 		
 		TreeItem<String> dhItem = new TreeItem<String>(
-				"Move "+dh.getScriptingName());
+				dh.getScriptingName());
 		
 		callbackMapForTreeitems.put(dhItem, ()->{
 			if(widgetMapForTreeitems.get(dhItem)==null){
@@ -538,6 +578,19 @@ public class MobleBaseFactory {
 			
 		});	
 		dhItem.getChildren().addAll(addLink,advanced,remove);
+		if(creatureIsOwnedByUser){
+			TreeItem<String> editWalking = new TreeItem<String>("Edit Kinematics Engine...");
+			callbackMapForTreeitems.put(editWalking, () -> {
+				try {
+					File code = ScriptingEngine.fileFromGistID(dh.getDhEngine()[0],dh.getDhEngine()[1]);
+					BowlerStudio.createFileTab(code);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+			dhItem.getChildren().add(editWalking);
+		}
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();
 		for(int i=0;i<vect.length;i++){
