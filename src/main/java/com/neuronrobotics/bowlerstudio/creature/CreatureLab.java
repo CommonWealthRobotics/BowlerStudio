@@ -687,7 +687,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 					
 					i+=1;
 					double progress = (1.0-((numLimbs-i)/numLimbs))/2;
-					System.out.println(progress);
+					//System.out.println(progress);
 					pi.setProgress(0.5+progress);
 				}
 			} catch (Exception e) {

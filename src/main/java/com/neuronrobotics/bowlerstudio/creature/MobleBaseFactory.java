@@ -1,10 +1,17 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistBuilder;
+import org.kohsuke.github.GitHub;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -23,7 +30,9 @@ import javafx.scene.layout.VBox;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -72,6 +81,74 @@ public class MobleBaseFactory {
 				
 			});
 		
+		File selfSourceFile=null;
+		TreeItem<String> publish = new TreeItem<String>("Publish");
+
+
+		
+		if(!(device.getSelfSource()[0]==null || device.getSelfSource()[1]==null)){
+			try {
+				 File source = ScriptingEngine.fileFromGistID(device.getSelfSource()[0], device.getSelfSource()[1]);
+				 selfSourceFile = source;
+				 callbackMapForTreeitems.put(publish, () -> {
+			
+							CommitWidget.commit(source, device.getXml());
+									
+				});
+			} catch (GitAPIException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		TreeItem<String> makeCopy = new TreeItem<String>("Make Copy of Creature");
+		callbackMapForTreeitems.put(makeCopy, () -> {
+			Platform.runLater(()->{
+				String oldname  =device.getScriptingName();
+				TextInputDialog dialog = new TextInputDialog(oldname);
+				dialog.setTitle("Making a copy of "+oldname);
+				dialog.setHeaderText("Set the scripting name for this creature");
+				dialog.setContentText("Please the name of the new creature:");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()){
+					view.getSelectionModel().select(rootItem);
+					new Thread(){
+						public void run(){
+						    System.out.println("Your new creature: " + result.get());
+						    String newName=result.get();
+						    device.setScriptingName(newName);
+						    String xml = device.getXml();
+						    device.disconnect();
+						    GitHub github = ScriptingEngine.getGithub();
+						    GHGistBuilder builder = github.createGist();
+						    builder.description(result.get());
+						    builder.file(newName+".xml", xml);
+						    builder.public_(true);
+						    GHGist gist;
+							try {
+								gist = builder.create();
+								String gistID = ScriptingEngine.urlToGist(gist.getGitPullUrl());
+								System.out.println("Creating gist at: "+gistID);
+								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
+								
+								mb.setSelfSource(new String[]{gistID,newName+".xml"});
+								BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/"+gistID));
+								ConnectionManager.addConnection(mb,mb.getScriptingName());
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						    
+						    
+						    
+							//DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
+						}
+					}.start();
+				}
+			});
+		});
 		TreeItem<String> item = new TreeItem<String>("Add Arm");
 
 		callbackMapForTreeitems.put(item, () -> {
@@ -89,7 +166,11 @@ public class MobleBaseFactory {
 				
 				
 			});
-		rootItem.getChildren().addAll(regnerate,item, addleg);
+		rootItem.getChildren().addAll(regnerate,item, addleg,makeCopy);
+		if(selfSourceFile!=null)
+			if(ScriptingEngine.checkOwner(selfSourceFile)){
+				rootItem.getChildren().add(publish);
+			}
 	}
 	
 	private static void getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
