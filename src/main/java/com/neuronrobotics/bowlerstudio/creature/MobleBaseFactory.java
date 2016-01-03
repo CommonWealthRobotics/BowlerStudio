@@ -175,6 +175,12 @@ public class MobleBaseFactory {
 				}
 			});
 		});
+		
+		TreeItem<String> owner = new TreeItem<String>("Owner");
+		TreeItem<String> resetWalking = new TreeItem<String>("Set Walking Engine...");
+		callbackMapForTreeitems.put(resetWalking, () -> {
+			
+		});
 		TreeItem<String> editWalking = new TreeItem<String>("Edit Walking Engine...");
 		callbackMapForTreeitems.put(editWalking, () -> {
 			try {
@@ -185,6 +191,7 @@ public class MobleBaseFactory {
 				e.printStackTrace();
 			}
 		});
+		
 		TreeItem<String> item = new TreeItem<String>("Add Arm");
 
 		callbackMapForTreeitems.put(item, () -> {
@@ -206,10 +213,19 @@ public class MobleBaseFactory {
 		rootItem.getChildren().addAll(regnerate,item, addleg,makeCopy);
 		
 		if(creatureIsOwnedByUser){
-			rootItem.getChildren().addAll(publish,editWalking);
+			owner.getChildren().addAll(publish,editWalking,resetWalking);
+			rootItem.getChildren().add(owner);
 		}
 	}
 	
+	private static String [] promptForGist(){
+		String [] code = null;
+		
+		while(code == null){
+			ThreadUtil.wait(10);
+		}
+		return code;
+	}
 	
 
 	
@@ -579,6 +595,7 @@ public class MobleBaseFactory {
 		});	
 		dhItem.getChildren().addAll(addLink,advanced,remove);
 		if(creatureIsOwnedByUser){
+			TreeItem<String> owner = new TreeItem<String>("Owner");
 			TreeItem<String> editWalking = new TreeItem<String>("Edit Kinematics Engine...");
 			callbackMapForTreeitems.put(editWalking, () -> {
 				try {
@@ -589,7 +606,9 @@ public class MobleBaseFactory {
 					e.printStackTrace();
 				}
 			});
-			dhItem.getChildren().add(editWalking);
+			owner.getChildren().add(editWalking);
+			
+			dhItem.getChildren().add(owner);
 		}
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();
