@@ -98,6 +98,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 	//private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
 	private ProgressIndicator pi;
+	private boolean cadGenerating = false;
 	private AbstractGameController gameController = new AbstractGameController() {
 		
 		@Override
@@ -560,8 +561,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 
 		
 	}
-	void generateCad(){
-		new RuntimeException().printStackTrace();
+	public synchronized void generateCad(){
+		if(cadGenerating)
+			return;
+		cadGenerating=true;
+		//new RuntimeException().printStackTrace();
 		new Thread(){
 			public void run(){
 				System.out.print("\r\nGenerating cad...");
@@ -577,7 +581,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 				}
 				System.out.print("Done!\r\n");
 				BowlerStudioController.setCsg(allCad);
-				
+				cadGenerating=false;
 			}
 
 
@@ -799,6 +803,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 			try{
 				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 				dhCadGen.put(dh, d);
+				generateCad();
 			}catch(Exception ex){
 				BowlerStudioController.highlightException(code, ex);
 			}

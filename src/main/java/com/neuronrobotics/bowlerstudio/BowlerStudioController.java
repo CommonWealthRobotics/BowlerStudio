@@ -163,19 +163,29 @@ public class BowlerStudioController extends TabPane implements
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
-				}else{
-					System.err.println(el.getFileName()+" is not "+fileEngineRunByName.getName());
 				}
 			}
-			if(org.codehaus.groovy.control.MultipleCompilationErrorsException.class.isInstance(ex)){
-				System.out.println(ex.getMessage());
-			}
+			
 			
 		}
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
-		System.out.println(sw.toString());
+		if(org.codehaus.groovy.control.MultipleCompilationErrorsException.class.isInstance(ex)){
+			String message = ex.getMessage();
+			System.out.println(message);
+			if(message.contentEquals(fileEngineRunByName.getName())){
+				int linNum =  Integer.parseInt(message.split(":")[1]);
+				try {
+					widgets.get(fileEngineRunByName).setHighlight(linNum,Color.RED);
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}else{
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			System.out.println(sw.toString());
+		}
 	}
 	
 
