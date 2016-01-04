@@ -143,7 +143,7 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private HBox controlPane;
 	private String currentGist;
-
+	private boolean updateneeded = false;
 	
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
@@ -447,31 +447,38 @@ public class ScriptingFileWidget extends BorderPane implements
 	@Override
 	public void onFileChange(File fileThatChanged,
 			@SuppressWarnings("rawtypes") WatchEvent event) {
-		
-		// TODO Auto-generated method stub
-		if (fileThatChanged.getAbsolutePath().contains(
-				currentFile.getAbsolutePath())) {
-			System.out.println("Code in " + fileThatChanged.getAbsolutePath()
-					+ " changed");
-			Platform.runLater(() -> {
-				watcher.removeIFileChangeListener(this);
-				try {
-					setCode(new String(Files.readAllBytes(Paths
-							.get(fileThatChanged.getAbsolutePath())),
-							"UTF-8"));
-				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				watcher.addIFileChangeListener(this);
-			});
+		if(updateneeded)
+			return;
+		updateneeded=true;
+		FxTimer.runLater(
+				Duration.ofMillis(500) ,() -> {
+					updateneeded=false;
+					// TODO Auto-generated method stub
+					if (fileThatChanged.getAbsolutePath().contains(
+							currentFile.getAbsolutePath())) {
+						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
+								+ " changed");
+						Platform.runLater(() -> {
+							watcher.removeIFileChangeListener(this);
+							try {
+								setCode(new String(Files.readAllBytes(Paths
+										.get(fileThatChanged.getAbsolutePath())),
+										"UTF-8"));
+							} catch (UnsupportedEncodingException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							}
+							watcher.addIFileChangeListener(this);
+						});
 
-		} else {
-			// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-		}
+					} else {
+						// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+					}
+		});
+
 		
 	}
 

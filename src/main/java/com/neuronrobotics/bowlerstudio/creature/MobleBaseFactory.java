@@ -23,6 +23,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
@@ -36,6 +37,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
+import com.neuronrobotics.nrconsole.util.PromptForGist;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -177,9 +179,43 @@ public class MobleBaseFactory {
 		});
 		
 		TreeItem<String> owner = new TreeItem<String>("Owner");
+		TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
+		callbackMapForTreeitems.put(setCAD, () -> {
+			PromptForGist.prompt("Select a CAD Engine From a Gist",device.getCadEngine()[0],(gitsId, file) -> {
+				Log.warn("Loading cad engine");
+				try {
+					creatureLab.setCadEngine(gitsId, file,device);
+					File code = ScriptingEngine.fileFromGistID(gitsId,file);
+					BowlerStudio.createFileTab(code);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+		});
+		TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...");
+		callbackMapForTreeitems.put(editCAD, () -> {
+			try {
+				File code = ScriptingEngine.fileFromGistID(device.getCadEngine()[0],device.getCadEngine()[1]);
+				BowlerStudio.createFileTab(code);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		TreeItem<String> resetWalking = new TreeItem<String>("Set Walking Engine...");
 		callbackMapForTreeitems.put(resetWalking, () -> {
-			
+			PromptForGist.prompt("Select a Walking Engine From a Gist",device.getWalkingEngine()[0],(gitsId, file) -> {
+				Log.warn("Loading walking engine");
+				try {
+					creatureLab.setWalkingEngine(gitsId, file,device);
+					File code = ScriptingEngine.fileFromGistID(gitsId,file);
+					BowlerStudio.createFileTab(code);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 		});
 		TreeItem<String> editWalking = new TreeItem<String>("Edit Walking Engine...");
 		callbackMapForTreeitems.put(editWalking, () -> {
@@ -191,6 +227,7 @@ public class MobleBaseFactory {
 				e.printStackTrace();
 			}
 		});
+		
 		
 		TreeItem<String> item = new TreeItem<String>("Add Arm");
 
@@ -213,20 +250,12 @@ public class MobleBaseFactory {
 		rootItem.getChildren().addAll(regnerate,item, addleg,makeCopy);
 		
 		if(creatureIsOwnedByUser){
-			owner.getChildren().addAll(publish,editWalking,resetWalking);
+			owner.getChildren().addAll(publish,editWalking,editCAD,resetWalking,setCAD);
 			rootItem.getChildren().add(owner);
 		}
 	}
 	
-	private static String [] promptForGist(){
-		String [] code = null;
-		
-		while(code == null){
-			ThreadUtil.wait(10);
-		}
-		return code;
-	}
-	
+
 
 	
 	private static void getNextChannel(MobileBase base,LinkConfiguration confOfChannel ){
@@ -480,6 +509,7 @@ public class MobleBaseFactory {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static void loadSingleLimb(MobileBase base,
 			TreeView<String> view,
 			DHParameterKinematics dh,
@@ -596,6 +626,44 @@ public class MobleBaseFactory {
 		dhItem.getChildren().addAll(addLink,advanced,remove);
 		if(creatureIsOwnedByUser){
 			TreeItem<String> owner = new TreeItem<String>("Owner");
+			TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
+			callbackMapForTreeitems.put(setCAD, () -> {
+				PromptForGist.prompt("Select a CAD Engine From a Gist",dh.getCadEngine()[0],(gitsId, file) -> {
+					Log.warn("Loading cad engine");
+					try {
+						creatureLab.setCadEngine(gitsId, file,dh);
+						File code = ScriptingEngine.fileFromGistID(gitsId,file);
+						BowlerStudio.createFileTab(code);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			});
+			TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...");
+			callbackMapForTreeitems.put(editCAD, () -> {
+				try {
+					File code = ScriptingEngine.fileFromGistID(dh.getCadEngine()[0],dh.getCadEngine()[1]);
+					BowlerStudio.createFileTab(code);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+			TreeItem<String> resetWalking = new TreeItem<String>("Set Dh Kinematics Engine...");
+			callbackMapForTreeitems.put(resetWalking, () -> {
+				PromptForGist.prompt("Select a Walking Engine From a Gist",dh.getDhEngine()[0],(gitsId, file) -> {
+					Log.warn("Loading walking engine");
+					try {
+						creatureLab.setDhEngine(gitsId, file,dh);
+						File code = ScriptingEngine.fileFromGistID(gitsId,file);
+						BowlerStudio.createFileTab(code);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			});
 			TreeItem<String> editWalking = new TreeItem<String>("Edit Kinematics Engine...");
 			callbackMapForTreeitems.put(editWalking, () -> {
 				try {
@@ -606,7 +674,7 @@ public class MobleBaseFactory {
 					e.printStackTrace();
 				}
 			});
-			owner.getChildren().add(editWalking);
+			owner.getChildren().addAll(editWalking,editCAD,resetWalking,setCAD);
 			
 			dhItem.getChildren().add(owner);
 		}

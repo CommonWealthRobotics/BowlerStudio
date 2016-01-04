@@ -693,7 +693,7 @@ public class MainController implements Initializable {
 
 	@FXML public void onMobileBaseFromGist() {
 
-		PromptForGist.prompt((gitsId, file) -> {
+		PromptForGist.prompt("Select a Creature From a Gist","bcb4760a449190206170",(gitsId, file) -> {
 			loadMobilebaseFromGist(gitsId,file);
 		});
 	}

@@ -11,10 +11,10 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 
 public class PromptForGist {
-	public static void prompt(IGistPromptCompletionListener listener){
+	public static void prompt(String purpose,String defaultID, IGistPromptCompletionListener listener){
 		Platform.runLater(() -> {
-			TextInputDialog dialog = new TextInputDialog("https://gist.github.com/madhephaestus/bcb4760a449190206170");
-			dialog.setTitle("Select a Creature From a Gist");
+			TextInputDialog dialog = new TextInputDialog("https://gist.github.com/"+defaultID);
+			dialog.setTitle(purpose);
 			dialog.setHeaderText("Enter the URL (Link from the browser)");
 			dialog.setContentText("Link to Gist: ");
 
@@ -24,19 +24,18 @@ public class PromptForGist {
 			   
 			    String gistcode = ScriptingEngine.urlToGist(result.get());
 			    System.out.println("Creature Gist " + gistcode);
-			    ArrayList<String> choices =ScriptingEngine.filesInGist(gistcode,".xml");
+			    ArrayList<String> choices =ScriptingEngine.filesInGist(gistcode,null);
 			    String suggestedChoice="";
 			    int numXml=0;
 			    for(int i=0;i<choices.size();i++){
 			    	String s = choices.get(i);
-			    	if(s.toLowerCase().endsWith(".xml")){
-			    		suggestedChoice=s;
-			    		numXml++;
-			    	}
+		    		suggestedChoice=s;
+		    		numXml++;
+			    	
 			    }
 			    
 			    if(numXml ==1){
-			    	System.out.println("Found just one file at  " + suggestedChoice);
+			    	//System.out.println("Found just one file at  " + suggestedChoice);
 			    	//loadMobilebaseFromGist(gistcode,suggestedChoice);
 			    	//return;
 			    	

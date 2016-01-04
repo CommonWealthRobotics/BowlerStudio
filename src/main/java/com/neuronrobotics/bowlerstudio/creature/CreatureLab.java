@@ -14,6 +14,9 @@ import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.python.core.exceptions;
 
 import javafx.application.Platform;
@@ -75,10 +78,11 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Transform;
 
-public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerator, IOnEngineeringUnitsChange {
+public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineeringUnitsChange {
 
 	private ICadGenerator cadEngine;
 	private BowlerAbstractDevice pm;
@@ -86,8 +90,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 	private File cadScript;
 	private FileChangeWatcher watcher;
 	private FileChangeWatcher driveEngineWitcher;
+	private HashMap<DHParameterKinematics,FileChangeWatcher> dhKinematicsFileWatchers = new HashMap<>();
+	private HashMap<DHParameterKinematics,FileChangeWatcher> dhCadWatchers = new HashMap<>();
+	private HashMap<DHParameterKinematics,ICadGenerator> dhCadGen = new HashMap<>();
 	private IDriveEngine defaultDriveEngine;
-	private DhInverseSolver defaultDHSolver;
+	//private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
 	private ProgressIndicator pi;
 	private AbstractGameController gameController = new AbstractGameController() {
@@ -239,16 +246,23 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 					public void run(){
 						
-		    	        ArrayList<File> files = cadEngine.generateStls((MobileBase) pm, baseDirForFiles);
-		    	        Platform.runLater(()->{
-		    				Alert alert = new Alert(AlertType.INFORMATION);
-		    				alert.setTitle("Stl Export Success!");
-		    				alert.setHeaderText("Stl Export Success");
-		    				alert.setContentText("All SLT's for the Creature Generated at\n"+files.get(0).getAbsolutePath());
-		    				alert.setWidth(500);
-		    				alert .initModality(Modality.APPLICATION_MODAL);
-		    				alert.show();
-		    	        });
+		    	        ArrayList<File> files;
+						try {
+							files = generateStls((MobileBase) pm, baseDirForFiles);
+							 Platform.runLater(()->{
+				    				Alert alert = new Alert(AlertType.INFORMATION);
+				    				alert.setTitle("Stl Export Success!");
+				    				alert.setHeaderText("Stl Export Success");
+				    				alert.setContentText("All SLT's for the Creature Generated at\n"+files.get(0).getAbsolutePath());
+				    				alert.setWidth(500);
+				    				alert .initModality(Modality.APPLICATION_MODAL);
+				    				alert.show();
+				    	        });
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		    	       
 		    		}
 		    	}.start();
 			});
@@ -303,25 +317,25 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 //			});
 			
 			
-			MenuItem setCadScript = new MenuItem("Set Cad Generation Script");
-			
-			setCadScript.setOnAction(event -> {
-		    	new Thread(){
-
-					public void run(){
-						setName("Cad generation thread");
-					
-		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript()!=null?getCadScript():ScriptingEngine.getLastFile(),
-		    	    			new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
-
-		    	        if (getCadScript() == null) {
-		    	            return;
-		    	        }
-		    	        generateCad();
-		    	        
-		    		}
-		    	}.start();
-			});
+//			MenuItem setCadScript = new MenuItem("Set Cad Generation Script");
+//			
+//			setCadScript.setOnAction(event -> {
+//		    	new Thread(){
+//
+//					public void run(){
+//						setName("Cad generation thread");
+//					
+//		    	    	setCadScript(FileSelectionFactory.GetFile(getCadScript()!=null?getCadScript():ScriptingEngine.getLastFile(),
+//		    	    			new ExtensionFilter("Kinematics Script","*.groovy","*.java","*.txt")));
+//
+//		    	        if (getCadScript() == null) {
+//		    	            return;
+//		    	        }
+//		    	        generateCad();
+//		    	        
+//		    		}
+//		    	}.start();
+//			});
 			MenuItem updateRobotScripts = new MenuItem("Pull Scripts from Server");
 			updateRobotScripts.setOnAction(event -> {
 		    	new Thread(){
@@ -345,7 +359,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		    		}
 		    	}.start();
 			});
-			localMenue.getItems().addAll(printable,  setCadScript, updateRobotScripts);
+			localMenue.getItems().addAll(printable);
 			
 			
 			CreaturLabMenue.getItems().add(localMenue);
@@ -459,59 +473,73 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			cad = device.getCadEngine();
 		}
 		if(cadEngine==null){
-			File code = ScriptingEngine.fileFromGistID(cad[0],cad[1]);
-			cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+			setCadEngine(cad[0],cad[1],(MobileBase)pm);
 		}
 	}
 	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
 		File code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0],device.getDhEngine()[1]);
-		defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 		
+		if(dhKinematicsFileWatchers.get(device)!=null){
+			dhKinematicsFileWatchers.get(device).close();
+		}
+		FileChangeWatcher w = new FileChangeWatcher(code);
+		dhKinematicsFileWatchers.put(device, w);
+		w.addIFileChangeListener((fileThatChanged, event) -> {
+			try{
+				DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+				device.setInverseSolver(d);
+			}catch(Exception ex){
+				 StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      ex.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
+		});
+		w.start();
 		device.setInverseSolver(defaultDHSolver);
 	}
 
 	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
 		if(defaultDriveEngine==null){
-			File code = ScriptingEngine.fileFromGistID(device.getWalkingEngine()[0],device.getWalkingEngine()[1]);
-			if(driveEngineWitcher!=null)
-				driveEngineWitcher.close();
-			
-			driveEngineWitcher = new FileChangeWatcher(code);
-			driveEngineWitcher.addIFileChangeListener(new IFileChangeListener() {
-				
-				@Override
-				public void onFileChange(File fileThatChanged, WatchEvent event) {
-					try{
-						defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(fileThatChanged, null,ShellType.GROOVY);
-						device.setWalkingDriveEngine( defaultDriveEngine);
-					}catch(Exception ex){
-						 StringWriter sw = new StringWriter();
-					      PrintWriter pw = new PrintWriter(sw);
-					      ex.printStackTrace(pw);
-					      System.out.println(sw.toString());
-					}
-					
-				}
-			 });
-			driveEngineWitcher.start();
-			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+			setWalkingEngine(device.getWalkingEngine()[0],device.getWalkingEngine()[1],device);
 		}
-		device.setWalkingDriveEngine( defaultDriveEngine);
 		for(DHParameterKinematics dh : device.getAllDHChains()){
 			setDefaultDhParameterKinematics(dh);
 		}
 	}
 	
-	private void addAppendagePanel(ArrayList<DHParameterKinematics> apps,String title,Accordion advancedPanel){
-		if(apps.size()>0){
-			for(DHParameterKinematics l:apps){
-				TitledPane rp =new TitledPane(title+" - "+l.getScriptingName(),new DhChainWidget(l, this));
-				rp.setMaxWidth(200);
-				rp.setMaxHeight(200);
-				advancedPanel.getPanes().add(rp);
-				advancedPanel.setExpandedPane(rp);
+	public void setWalkingEngine(String gistID,String file,MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+		
+		
+		device.setWalkingEngine(new String[]{gistID,file});
+		File code = ScriptingEngine.fileFromGistID(gistID,file);
+		
+		if(driveEngineWitcher!=null)
+			driveEngineWitcher.close();
+		
+		driveEngineWitcher = new FileChangeWatcher(code);
+		driveEngineWitcher.addIFileChangeListener((fileThatChanged, event) -> {
+			try{
+
+				defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+				device.setWalkingDriveEngine( defaultDriveEngine);
+			}catch(Exception ex){
+				 StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      ex.printStackTrace(pw);
+			      System.out.println(sw.toString());
 			}
-		}
+			
+		});
+		driveEngineWitcher.start();
+		defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		device.setWalkingDriveEngine( defaultDriveEngine);
+	}
+	
+	public void setCadEngine(String gitsId, String file, MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		setCadScript(ScriptingEngine.fileFromGistID(gitsId,file));
+		cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(getCadScript(), null,ShellType.GROOVY);
 		
 	}
 	void generateCad(){
@@ -522,11 +550,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				ArrayList<CSG> allCad=new ArrayList<>();
 				if(MobileBase.class.isInstance(pm)) {
 					MobileBase device=(MobileBase)pm;
-					allCad=generateBody(device);
+					allCad=generateBody(device,false);
 					
 				}else if(DHParameterKinematics.class.isInstance(pm)){
 
-					allCad=generateCad(((DHParameterKinematics)pm).getChain().getLinks() );
+					allCad=generateCad(((DHParameterKinematics)pm),false );
 				}
 				System.out.print("Done!\r\n");
 				BowlerStudioController.setCsg(allCad);
@@ -537,10 +565,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		}.start();
 	}
 
-	public ArrayList<CSG> generateCad(ArrayList<DHLink> dhLinks ){
+	public ArrayList<CSG> generateCad(DHParameterKinematics dh, boolean b ){
+		ArrayList<DHLink> dhLinks=dh.getChain().getLinks();
 		if (getCadScript() != null) {
 			try{
-			cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
 			}catch(Exception e){
 			      StringWriter sw = new StringWriter();
 			      PrintWriter pw = new PrintWriter(sw);
@@ -559,7 +588,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			}
 		}
 		try {
-			return cadEngine.generateCad(dhLinks);
+			if(dhCadGen.get(dh)!=null){
+				return dhCadGen.get(dh).generateCad(dh,false);
+			}
+			
+			return cadEngine.generateCad(dh,false);
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();
 		      PrintWriter pw = new PrintWriter(sw);
@@ -619,32 +652,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		 e.printStackTrace();
 		 }
 		this.cadScript = cadScript;
-		ScriptingFileWidget scripting = BowlerStudio.createFileTab(cadScript);
-		scripting.addIScriptEventListener(new IScriptEventListener() {
-			
-			@Override
-			public void onGroovyScriptFinished(Object result, Object pervious) {
-				// TODO Auto-generated method stub
-				cadEngine = (ICadGenerator)result;
-				generateCad();
-			}
-			
-			@Override
-			public void onGroovyScriptError(Exception except) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onGroovyScriptChanged(String previous, String current) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		//BowlerStudio.createFileTab(cadScript);
+		
 	}
 
-	@Override
-	public ArrayList<CSG> generateBody(MobileBase base) {
+
+	public ArrayList<CSG> generateBody(MobileBase base, boolean b) {
 		pi.setProgress(0);
 		allCad = new ArrayList<>();
 		if(MobileBase.class.isInstance(pm)) {
@@ -669,18 +682,19 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 				      System.out.println(sw.toString());
 				}
 			}
-			pi.setProgress(0.5);
+			pi.setProgress(0.3);
 			try {
-				allCad= cadEngine.generateBody(device);
-				for(CSG csg:allCad){
-					BowlerStudioController.addCsg(csg);
-				}
+				allCad= cadEngine.generateBody(device,b);
+				//clears old robot and places base
+				BowlerStudioController.setCsg(allCad);
+				
+				pi.setProgress(0.4);
 				ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 				double numLimbs = limbs.size();
 				double i=0;
 				for(DHParameterKinematics l:limbs){
 					
-					for(CSG csg:generateCad(l.getChain().getLinks())){
+					for(CSG csg:generateCad(l,b)){
 						allCad.add(csg);
 						BowlerStudioController.addCsg(csg);
 					}
@@ -698,7 +712,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 			}
 			
 		}else if(DHParameterKinematics.class.isInstance(pm)){
-			for(CSG csg:generateCad(((DHParameterKinematics)pm).getChain().getLinks())){
+			for(CSG csg:generateCad(((DHParameterKinematics)pm),b)){
 				allCad.add(csg);
 			}
 		}
@@ -707,10 +721,42 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 		return allCad;
 	}
 
-	@Override
-	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) {
-		// TODO Auto-generated method stub
-		return  cadEngine.generateStls(base, baseDirForFiles);
+	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
+		ArrayList<File> allCadStl = new ArrayList<>();
+		int leg=0;
+		//Start by generating the legs using the DH link based generator
+		for(DHParameterKinematics l:base.getAllDHChains()){
+			int link=0;
+			for(CSG csg:generateCad(l,true)){
+				File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/"+l.getScriptingName());
+				if(!dir.exists())
+					dir.mkdirs();
+				File stl = new File(dir.getAbsolutePath()+"/Leg_"+leg+"_part_"+link+".stl");
+				FileUtil.write(
+						Paths.get(stl.getAbsolutePath()),
+						csg.toStlString()
+				);
+				allCadStl.add(stl);
+				link++;
+			}
+			leg++;
+		}
+		int link=0;
+		//now we genrate the base pieces
+		for(CSG csg:generateBody( base,true )){
+			File dir = new File(baseDirForFiles.getAbsolutePath()+"/"+base.getScriptingName()+"/");
+			if(!dir.exists())
+				dir.mkdirs();
+			File stl = new File(dir.getAbsolutePath()+"/Body_part_"+link+".stl");
+			FileUtil.write(
+					Paths.get(stl.getAbsolutePath()),
+					csg.toStlString()
+			);
+			allCadStl.add(stl);
+			link++;
+		}
+		 
+		return allCadStl;
 	}
 
 	@Override
@@ -729,5 +775,42 @@ public class CreatureLab extends AbstractBowlerStudioTab implements ICadGenerato
 
 		return gameController;
 	}
+
+	public void setDhEngine(String gitsId, String file, DHParameterKinematics dh) {
+		dh.setDhEngine(new String[]{gitsId,file});
+		try {
+			setDefaultDhParameterKinematics(dh);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setCadEngine(String gitsId, String file, DHParameterKinematics dh) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		
+		File code = ScriptingEngine.fileFromGistID(gitsId,file);
+		ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		
+		if(dhCadWatchers.get(dh)!=null){
+			dhCadWatchers.get(dh).close();
+		}
+		FileChangeWatcher w = new FileChangeWatcher(code);
+		dhCadWatchers.put(dh, w);
+		w.addIFileChangeListener((fileThatChanged, event) -> {
+			try{
+				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+				dhCadGen.put(dh, d);
+			}catch(Exception ex){
+				 StringWriter sw = new StringWriter();
+			      PrintWriter pw = new PrintWriter(sw);
+			      ex.printStackTrace(pw);
+			      System.out.println(sw.toString());
+			}
+		});
+		w.start();
+		dhCadGen.put(dh, defaultDHSolver);
+	}
+
+	
 
 }
