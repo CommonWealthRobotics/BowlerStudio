@@ -311,6 +311,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		this.addr = addr;
 		this.engine = engine;
 		loadGist = true;
+		fileListBox.valueProperty().removeListener(this);
+		Platform.runLater(()->runfx.setDisable(true));
+		Platform.runLater(()->edit.setDisable(true));
+		Platform.runLater(()->fileListBox.getItems().clear());
 		currentGist = ScriptingEngine.getCurrentGist(addr, engine).get(0);
 		
 		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
@@ -318,12 +322,14 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		if(fileList.size()==1)
 			loadGistLocal(currentGist, fileList.get(0));
 		Platform.runLater(()->{
-			fileListBox.getItems().clear();
+			
 			for(String s:fileList){
 				fileListBox.getItems().add(s);
 			}
 			fileListBox.setValue(fileList.get(0));
 			fileListBox.valueProperty().addListener(this);
+			Platform.runLater(()->runfx.setDisable(false));
+			Platform.runLater(()->edit.setDisable(false));
 		});
 	}
 

@@ -121,21 +121,14 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		    				finishLoadingComponents();
 	    				}
 	    				
-	    				if(scripting==null)
-	    					finishLoadingComponents();
-	    				System.out.println("Loading code from "+Current_URL);
-	    				try {
-							scripting.loadCodeFromGist(Current_URL, webEngine);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	    	    			
-	        			
-	        			//System.err.println("Done Loading to: "+webEngine.getLocation());
+	    				else{
+	    					try {
+	    						scripting.loadCodeFromGist(Current_URL, webEngine);
+	    					} catch (Exception e) {
+	    						// TODO Auto-generated catch block
+	    						//e.printStackTrace();
+	    					} 
+	    				}
 	    			}
     			}.start();
 		    	
@@ -289,53 +282,66 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 		}catch(Exception E){
 			E.printStackTrace();
 		}
-		finishedLoadingScriptingWidget=false;
-		try{
-			scripting = new ScriptingWebWidget( null ,Current_URL, webEngine);
-			Platform.runLater(() -> {
-				vBox.getChildren().add(scripting);
-				if(!isTutorialTab){
-					Platform.runLater(()->{
-						try{
-							
-							myTab.setText(scripting.getFileName());
-						}catch(java.lang.NullPointerException ex){
-							// web page contains no gist
-							ex.printStackTrace();
-							myTab.setText("Web");
+		new Thread() {
+			public void run() {
+				finishedLoadingScriptingWidget=false;
+				try{
+					scripting = new ScriptingWebWidget( null ,Current_URL, webEngine);
+					Platform.runLater(() -> {
+						vBox.getChildren().add(scripting);
+						if(!isTutorialTab){
+							Platform.runLater(()->{
+								try{
+									
+									myTab.setText(scripting.getFileName());
+								}catch(java.lang.NullPointerException ex){
+									// web page contains no gist
+									ex.printStackTrace();
+									myTab.setText("Web");
+								}
+								finishedLoadingScriptingWidget=true;
+							});
 						}
-						finishedLoadingScriptingWidget=true;
+						else
+							finishedLoadingScriptingWidget=true;
 					});
-				}
-				else
+					
+				}catch(Exception ex){
+					ex.printStackTrace();
 					finishedLoadingScriptingWidget=true;
-			});
-			
-		}catch(Exception ex){
-			ex.printStackTrace();
-			finishedLoadingScriptingWidget=true;
-		}
-		
-		while(!finishedLoadingScriptingWidget){
-			ThreadUtil.wait(10);
-		}
-
-		if(firstBoot){
-			firstBoot=false;
-			//now that the application is totally loaded check for connections to add
-
-			new Thread() {
-				public void run() {
-					setName("Get First Connection");
-					List<String> devs = SerialConnection.getAvailableSerialPorts();
-					if (devs.size() == 0) {
-						return;
-					} else {
-						DeviceManager.addConnection();
-					}
 				}
-			}.start();
-		}
+				
+				while(!finishedLoadingScriptingWidget){
+					ThreadUtil.wait(10);
+				}
+				System.out.println("Loading code from "+Current_URL);
+				try {
+					scripting.loadCodeFromGist(Current_URL, webEngine);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(firstBoot){
+					firstBoot=false;
+					//now that the application is totally loaded check for connections to add
+		
+					new Thread() {
+						public void run() {
+							setName("Get First Connection");
+							List<String> devs = SerialConnection.getAvailableSerialPorts();
+							if (devs.size() == 0) {
+								return;
+							} else {
+								DeviceManager.addConnection();
+							}
+						}
+					}.start();
+				}
+			}
+		}.start();
 	}
 	
     public String goBack()
