@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -140,6 +142,40 @@ public class BowlerStudioController extends TabPane implements
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void highlightException(File fileEngineRunByName, Exception ex){
+		bowlerStudio.highlightExceptionLocal(fileEngineRunByName, ex);
+	}
+	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
+		
+		if(fileEngineRunByName!=null){
+			if(openFiles.get(fileEngineRunByName)==null){
+				createFileTab(fileEngineRunByName);
+			}
+			setSelectedTab(openFiles.get(fileEngineRunByName));
+			widgets.get(fileEngineRunByName).clearHighlits();
+			//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
+			for(StackTraceElement el:ex.getStackTrace()){
+				if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
+					try {
+						widgets.get(fileEngineRunByName).setHighlight(el.getLineNumber(),Color.RED);
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+				}else{
+					System.err.println(el.getFileName()+" is not "+fileEngineRunByName.getName());
+				}
+			}
+			if(org.codehaus.groovy.control.MultipleCompilationErrorsException.class.isInstance(ex)){
+				System.out.println(ex.getMessage());
+			}
+			
+		}
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		ex.printStackTrace(pw);
+		System.out.println(sw.toString());
 	}
 	
 

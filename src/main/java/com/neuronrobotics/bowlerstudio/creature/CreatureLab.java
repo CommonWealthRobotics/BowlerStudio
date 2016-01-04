@@ -14,6 +14,7 @@ import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -382,15 +383,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 			//Button save = new Button("Save Configuration");
 			
 			
-			try {
-				setDefaultWalkingEngine(device);
-			} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
-			}
 			
+			setDefaultWalkingEngine(device);
+	
 			Group controls = new Group();
 			Accordion advancedPanel = new Accordion();
 			if(device.getDriveType() ==DrivingType.WALKING){
@@ -476,31 +471,41 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 			setCadEngine(cad[0],cad[1],(MobileBase)pm);
 		}
 	}
-	private void setDefaultDhParameterKinematics(DHParameterKinematics device) throws Exception {
-		File code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0],device.getDhEngine()[1]);
-		DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
-		
-		if(dhKinematicsFileWatchers.get(device)!=null){
-			dhKinematicsFileWatchers.get(device).close();
-		}
-		FileChangeWatcher w = new FileChangeWatcher(code);
-		dhKinematicsFileWatchers.put(device, w);
-		w.addIFileChangeListener((fileThatChanged, event) -> {
-			try{
-				DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
-				device.setInverseSolver(d);
-			}catch(Exception ex){
-				 StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      ex.printStackTrace(pw);
-			      System.out.println(sw.toString());
+	private void setDefaultDhParameterKinematics(DHParameterKinematics device) {
+		File code=null;
+		try {
+			code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0],device.getDhEngine()[1]);
+			DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+			
+			if(dhKinematicsFileWatchers.get(device)!=null){
+				dhKinematicsFileWatchers.get(device).close();
 			}
-		});
-		w.start();
-		device.setInverseSolver(defaultDHSolver);
+			FileChangeWatcher w;
+			try {
+				w = new FileChangeWatcher(code);
+				dhKinematicsFileWatchers.put(device, w);
+				File c=code;
+				w.addIFileChangeListener((fileThatChanged, event) -> {
+					try{
+						DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineScriptRun(c, null,ShellType.GROOVY);
+						device.setInverseSolver(d);
+					}catch(Exception ex){
+						BowlerStudioController.highlightException(c, ex);
+					}
+				});
+				w.start();
+			} catch (IOException e) {
+				BowlerStudioController.highlightException(code, e);
+			}
+			
+			device.setInverseSolver(defaultDHSolver);
+		} catch (Exception e1) {
+			BowlerStudioController.highlightException(code, e1);
+		}
+
 	}
 
-	private void setDefaultWalkingEngine(MobileBase device) throws Exception {
+	private void setDefaultWalkingEngine(MobileBase device){
 		if(defaultDriveEngine==null){
 			setWalkingEngine(device.getWalkingEngine()[0],device.getWalkingEngine()[1],device);
 		}
@@ -509,40 +514,54 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 		}
 	}
 	
-	public void setWalkingEngine(String gistID,String file,MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+	public void setWalkingEngine(String gistID,String file,MobileBase device){
 		
 		
 		device.setWalkingEngine(new String[]{gistID,file});
-		File code = ScriptingEngine.fileFromGistID(gistID,file);
+		File code=null;
+		try {
+			code = ScriptingEngine.fileFromGistID(gistID,file);
+		} catch (GitAPIException | IOException e) {
+			BowlerStudioController.highlightException(code, e);
+		}
 		
 		if(driveEngineWitcher!=null)
 			driveEngineWitcher.close();
 		
-		driveEngineWitcher = new FileChangeWatcher(code);
+		try {
+			driveEngineWitcher = new FileChangeWatcher(code);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		File c=code;
 		driveEngineWitcher.addIFileChangeListener((fileThatChanged, event) -> {
+			
 			try{
 
-				defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+				defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(c, null,ShellType.GROOVY);
 				device.setWalkingDriveEngine( defaultDriveEngine);
 			}catch(Exception ex){
-				 StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      ex.printStackTrace(pw);
-			      System.out.println(sw.toString());
+				BowlerStudioController.highlightException(c, ex);
 			}
 			
 		});
 		driveEngineWitcher.start();
-		defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
-		device.setWalkingDriveEngine( defaultDriveEngine);
+		try{
+			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(c, null,ShellType.GROOVY);
+			device.setWalkingDriveEngine( defaultDriveEngine);
+		}catch(Exception ex){
+			BowlerStudioController.highlightException(c, ex);
+		}
 	}
 	
 	public void setCadEngine(String gitsId, String file, MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		setCadScript(ScriptingEngine.fileFromGistID(gitsId,file));
-		cadEngine = (ICadGenerator) ScriptingEngine.inlineScriptRun(getCadScript(), null,ShellType.GROOVY);
+
 		
 	}
 	void generateCad(){
+		new RuntimeException().printStackTrace();
 		new Thread(){
 			public void run(){
 				System.out.print("\r\nGenerating cad...");
@@ -571,33 +590,28 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 			try{
 				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
 			}catch(Exception e){
-			      StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
+				BowlerStudioController.highlightException(getCadScript(), e);
 			}
         }
 		if(cadEngine==null){
 			try {
 				setDefaultLinkLevelCadEngine();
-				} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
+			} catch (Exception e) {
+				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 		}
 		try {
 			if(dhCadGen.get(dh)!=null){
-				return dhCadGen.get(dh).generateCad(dh,false);
+				try {
+					return dhCadGen.get(dh).generateCad(dh,false);
+				} catch (Exception e) {
+					BowlerStudioController.highlightException(dhCadWatchers.get(dh).getFileToWatch(), e);
+				}
 			}
 			
 			return cadEngine.generateCad(dh,false);
 		} catch (Exception e) {
-			  StringWriter sw = new StringWriter();
-		      PrintWriter pw = new PrintWriter(sw);
-		      e.printStackTrace(pw);
-		      System.out.println(sw.toString());
+			BowlerStudioController.highlightException(getCadScript(), e);
 		}
 		return null;
 		
@@ -635,15 +649,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 			
 			@Override
 			public void onFileChange(File fileThatChanged, WatchEvent event) {
-				try{
 					generateCad();
-				}catch(Exception ex){
-					 StringWriter sw = new StringWriter();
-				      PrintWriter pw = new PrintWriter(sw);
-				      ex.printStackTrace(pw);
-				      System.out.println(sw.toString());
-				}
-				
 			}
 		});
 		 watcher.start();
@@ -651,9 +657,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 		 // TODO Auto-generated catch block
 		 e.printStackTrace();
 		 }
-		this.cadScript = cadScript;
-		//BowlerStudio.createFileTab(cadScript);
-		
+		this.cadScript = cadScript;		
 	}
 
 
@@ -662,53 +666,46 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 		allCad = new ArrayList<>();
 		if(MobileBase.class.isInstance(pm)) {
 			MobileBase device=(MobileBase)pm;
-			if (getCadScript() != null) {
-				try{
-					cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-				}catch(Exception e){
-				      StringWriter sw = new StringWriter();
-				      PrintWriter pw = new PrintWriter(sw);
-				      e.printStackTrace(pw);
-				      System.out.println(sw.toString());
-				}
-	        }
+
 			if(cadEngine==null){
 				try {
 					setDefaultLinkLevelCadEngine();
 				} catch (Exception e) {
-					  StringWriter sw = new StringWriter();
-				      PrintWriter pw = new PrintWriter(sw);
-				      e.printStackTrace(pw);
-				      System.out.println(sw.toString());
+					BowlerStudioController.highlightException(null, e);
 				}
+				if (getCadScript() != null) {
+					try{
+						cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+					}catch(Exception e){
+						BowlerStudioController.highlightException(getCadScript(), e);
+					}
+		        }
 			}
 			pi.setProgress(0.3);
 			try {
 				allCad= cadEngine.generateBody(device,b);
-				//clears old robot and places base
-				BowlerStudioController.setCsg(allCad);
-				
-				pi.setProgress(0.4);
-				ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
-				double numLimbs = limbs.size();
-				double i=0;
-				for(DHParameterKinematics l:limbs){
-					
-					for(CSG csg:generateCad(l,b)){
-						allCad.add(csg);
-						BowlerStudioController.addCsg(csg);
-					}
-					
-					i+=1;
-					double progress = (1.0-((numLimbs-i)/numLimbs))/2;
-					//System.out.println(progress);
-					pi.setProgress(0.5+progress);
-				}
+
 			} catch (Exception e) {
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
+				BowlerStudioController.highlightException(getCadScript(), e);
+			}
+			//clears old robot and places base
+			BowlerStudioController.setCsg(allCad);
+			
+			pi.setProgress(0.4);
+			ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+			double numLimbs = limbs.size();
+			double i=0;
+			for(DHParameterKinematics l:limbs){
+				
+				for(CSG csg:generateCad(l,b)){
+					allCad.add(csg);
+					BowlerStudioController.addCsg(csg);
+				}
+				
+				i+=1;
+				double progress = (1.0-((numLimbs-i)/numLimbs))/2;
+				//System.out.println(progress);
+				pi.setProgress(0.5+progress);
 			}
 			
 		}else if(DHParameterKinematics.class.isInstance(pm)){
@@ -778,18 +775,20 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 
 	public void setDhEngine(String gitsId, String file, DHParameterKinematics dh) {
 		dh.setDhEngine(new String[]{gitsId,file});
-		try {
-			setDefaultDhParameterKinematics(dh);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		setDefaultDhParameterKinematics(dh);
+		
 	}
 
 	public void setCadEngine(String gitsId, String file, DHParameterKinematics dh) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		
 		File code = ScriptingEngine.fileFromGistID(gitsId,file);
-		ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+		try{
+			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
+			dhCadGen.put(dh, defaultDHSolver);
+		}catch(Exception e){
+			BowlerStudioController.highlightException(code, e);
+		}
 		
 		if(dhCadWatchers.get(dh)!=null){
 			dhCadWatchers.get(dh).close();
@@ -801,14 +800,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements  IOnEngineer
 				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,ShellType.GROOVY);
 				dhCadGen.put(dh, d);
 			}catch(Exception ex){
-				 StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      ex.printStackTrace(pw);
-			      System.out.println(sw.toString());
+				BowlerStudioController.highlightException(code, ex);
 			}
 		});
 		w.start();
-		dhCadGen.put(dh, defaultDHSolver);
+		
 	}
 
 	
