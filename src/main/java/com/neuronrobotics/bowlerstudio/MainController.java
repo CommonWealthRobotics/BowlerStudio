@@ -201,14 +201,14 @@ public class MainController implements Initializable {
 				}catch (StringIndexOutOfBoundsException ex){
 					finalStr =current;
 				}
-
+				int strlen = finalStr.length()-1;
 				logViewRef.setText(finalStr);
-				logViewRef.setScrollTop(Double.MAX_VALUE);
+				Platform.runLater(()->logViewRef.positionCaret(strlen));
 			}
 			
 		}	
 		FxTimer.runLater(
-				Duration.ofMillis(50) ,() -> {
+				Duration.ofMillis(100) ,() -> {
 
 					updateLog();					
 		});

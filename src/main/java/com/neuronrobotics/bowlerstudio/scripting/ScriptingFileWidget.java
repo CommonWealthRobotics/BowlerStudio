@@ -310,13 +310,10 @@ public class ScriptingFileWidget extends BorderPane implements
 				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Device missing error");
-						String message = "This script needs a device connected: ";
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
-						d.printStackTrace(pw);
-						
-						String stackTrace = sw.toString();
+						alert.setTitle("Variable missing error");
+						String message = "This script needs a variable defined before you use it: ";
+					
+						String stackTrace = d.getMessage();
 						
 						if(stackTrace.contains("dyio"))
 							message+="dyio";
@@ -327,7 +324,6 @@ public class ScriptingFileWidget extends BorderPane implements
 						else
 							message+=stackTrace;
 						alert.setHeaderText(message);
-						alert.setContentText("You need to connect it before running again");
 						alert.showAndWait();
 						if(stackTrace.contains("dyio"))
 							ConnectionManager.addConnection();
@@ -337,7 +333,7 @@ public class ScriptingFileWidget extends BorderPane implements
 							ConnectionManager.onConnectGamePad("gamepad");
 						reset();
 					});
-					
+					BowlerStudioController.highlightException(currentFile, d);
 				}
 				catch (Exception ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
@@ -346,13 +342,11 @@ public class ScriptingFileWidget extends BorderPane implements
 							if (ex.getMessage().contains("sleep interrupted")) {
 								append("\n" + currentFile + " Interupted\n");
 							} else{
+								BowlerStudioController.highlightException(currentFile, ex);
 								throw new RuntimeException(ex);
 							}
 						}catch(Exception e){
-							StringWriter sw = new StringWriter();
-							PrintWriter pw = new PrintWriter(sw);
-							ex.printStackTrace(pw);
-							append("\n" + currentFile + " \n" + sw + "\n");
+							BowlerStudioController.highlightException(currentFile, ex);
 						}
 
 						reset();
