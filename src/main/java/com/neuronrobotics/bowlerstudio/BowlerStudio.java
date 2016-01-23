@@ -53,6 +53,7 @@ public class BowlerStudio extends Application {
 	public static void main(String[] args) throws Exception {
     	
     	if(args.length==0){
+    		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
     		fxmlLoader = new FXMLLoader(
                     BowlerStudio.class.getResource("Main.fxml"));
     		BowlerStudioResourceFactory.load();
@@ -179,8 +180,10 @@ public class BowlerStudio extends Application {
         try {
             fxmlLoader.load();
         } catch (IOException ex) {
+        	ex.printStackTrace();
             Logger.getLogger(BowlerStudio.class.getName()).
                     log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
 
         Parent root = fxmlLoader.getRoot();
