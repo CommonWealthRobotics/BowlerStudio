@@ -23,14 +23,18 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import edu.cmu.sphinx.api.Configuration;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class BowlerStudio extends Application {
@@ -62,15 +66,15 @@ public class BowlerStudio extends Application {
 			}catch(Exception e){
 				//e.printStackTrace();
 				//opencvOk=false;
-//    						Platform.runLater(()->{
-//    							Alert alert = new Alert(AlertType.INFORMATION);
-//    							alert.setTitle("OpenCV missing");
-//    							alert.setHeaderText("Opencv library is missing");
-//    							alert.setContentText(e.getMessage());
-//    							alert .initModality(Modality.APPLICATION_MODAL);
-//    							alert.show();
-//    							e.printStackTrace();
-//    						});
+    						Platform.runLater(()->{
+    							Alert alert = new Alert(AlertType.INFORMATION);
+    							alert.setTitle("OpenCV missing");
+    							alert.setHeaderText("Opencv library is missing");
+    							alert.setContentText(e.getMessage());
+    							alert .initModality(Modality.APPLICATION_MODAL);
+    							alert.show();
+    							e.printStackTrace();
+    						});
 
 			}
 			if(NativeResource.isLinux()){
