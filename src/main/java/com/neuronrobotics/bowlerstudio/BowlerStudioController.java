@@ -84,7 +84,7 @@ public class BowlerStudioController extends TabPane implements
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudio=null;
-	private Stage dialog = new Stage();
+	//private Stage dialog = new Stage();
 	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager,
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
@@ -272,15 +272,16 @@ public class BowlerStudioController extends TabPane implements
 		// Addition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 
-		Tab t=new Tab();
-		try {
-			t = new ScriptingGistTab("Tutorial",getHomeUrl(), true);
-		} catch (IOException | InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Tab tab =t;
+		
 		Platform.runLater(() -> {
+			Tab t=new Tab();
+			try {
+				t = new ScriptingGistTab("Tutorial",getHomeUrl(), true);
+			} catch (IOException | InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Tab tab =t;
 			final ObservableList<Tab> tabs = getTabs();
 			ConnectionManager.getConnectionManager().setClosable(false);
 			int index = tabs.size() - 1;

@@ -236,8 +236,11 @@ public class MainController implements Initializable {
         
         subScene.widthProperty().bind(viewContainer.widthProperty());
         subScene.heightProperty().bind(viewContainer.heightProperty());
-        jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-        viewContainer.getChildren().add(subScene);
+        Platform.runLater(()->{
+        	 jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
+             viewContainer.getChildren().add(subScene);
+        });
+       
 
         System.out.println("Welcome to BowlerStudio!");
 		new Thread(){

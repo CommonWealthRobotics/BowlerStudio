@@ -55,19 +55,27 @@ public class BowlerStudio extends Application {
     	if(args.length==0){
     		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
     		
+    		System.out.println("Loading assets ");
+
     		BowlerStudioResourceFactory.load();
-    		Platform.runLater(()->{
-        		fxmlLoader = new FXMLLoader(
-                        BowlerStudio.class.getResource("Main.fxml"));
+    		System.out.println("Done loading assets ");
+    		fxmlLoader = new FXMLLoader(
+                    BowlerStudio.class.getResource("Main.fxml"));
+    		//Platform.runLater(()->{
+    			System.out.println("Loading the main fxml ");
                 try {
                     fxmlLoader.load();
+            		System.out.println("Done loading main ");
+
                 } catch (IOException ex) {
                 	ex.printStackTrace();
                     Logger.getLogger(BowlerStudio.class.getName()).
                             log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
-    		});
+    		//});
+    	
+
 
     		PrintStream ps = new PrintStream(MainController.getOut());
     		//System.setErr(ps);
