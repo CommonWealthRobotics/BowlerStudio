@@ -146,13 +146,16 @@ public class MainController implements Initializable {
 					}catch(Exception e){
 						//e.printStackTrace();
 						opencvOk=false;
-						Alert alert = new Alert(AlertType.INFORMATION);
-						alert.setTitle("OpenCV missing");
-						alert.setHeaderText("Opencv library is missing");
-						alert.setContentText(e.getMessage());
-						alert .initModality(Modality.APPLICATION_MODAL);
-						alert.show();
-						e.printStackTrace();
+						Platform.runLater(()->{
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("OpenCV missing");
+							alert.setHeaderText("Opencv library is missing");
+							alert.setContentText(e.getMessage());
+							alert .initModality(Modality.APPLICATION_MODAL);
+							alert.show();
+							e.printStackTrace();
+						});
+
 					}
 					if(NativeResource.isLinux()){
 						String [] possibleLocals = new String[]{
