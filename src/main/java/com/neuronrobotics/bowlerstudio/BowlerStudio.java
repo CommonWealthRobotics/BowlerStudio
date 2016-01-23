@@ -2,14 +2,22 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.UIManager;
+
+import org.opencv.core.Core;
+
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.imageprovider.NativeResource;
+import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
+import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -31,6 +39,7 @@ public class BowlerStudio extends Application {
     private static MainController controller;
 	private static Stage primaryStage;
 	private static Scene scene;
+	private static FXMLLoader fxmlLoader;
 
     /**
      * @param args the command line arguments
@@ -40,7 +49,59 @@ public class BowlerStudio extends Application {
 	public static void main(String[] args) throws Exception {
     	
     	if(args.length==0){
+    		fxmlLoader = new FXMLLoader(
+                    BowlerStudio.class.getResource("Main.fxml"));
     		BowlerStudioResourceFactory.load();
+    		PrintStream ps = new PrintStream(MainController.getOut());
+    		//System.setErr(ps);
+    		System.setOut(ps);
+    		new Thread(){
+    			public void run(){
+    				MainController.updateLog();
+    					try{
+    						OpenCVJNILoader.load();              // Loads the JNI (java native interface)
+    					}catch(Exception e){
+    						//e.printStackTrace();
+    						//opencvOk=false;
+//    						Platform.runLater(()->{
+//    							Alert alert = new Alert(AlertType.INFORMATION);
+//    							alert.setTitle("OpenCV missing");
+//    							alert.setHeaderText("Opencv library is missing");
+//    							alert.setContentText(e.getMessage());
+//    							alert .initModality(Modality.APPLICATION_MODAL);
+//    							alert.show();
+//    							e.printStackTrace();
+//    						});
+
+    					}
+    					if(NativeResource.isLinux()){
+    						String [] possibleLocals = new String[]{
+    								"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
+    								"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
+    						};
+    						Slic3r.setExecutableLocation("/usr/bin/slic3r");
+    						
+    					}else if(NativeResource.isWindows()){
+    						String basedir =System.getenv("OPENCV_DIR");
+    						if(basedir == null)
+    							throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+    						System.err.println("OPENCV_DIR found at "+ basedir);
+    						basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+    						Slic3r.setExecutableLocation(basedir);
+    						
+    					}
+    					try {
+    						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    						// This is a workaround for #8 and is only relavent on osx
+    						// it causes the SwingNodes not to load if not called way ahead of time
+    						javafx.scene.text.Font.getFamilies();
+    					} catch (Exception e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+    					
+    			}
+    		}.start();
     		ThreadUtil.wait(2000);
     		launch(args);
     	}else{
@@ -111,8 +172,7 @@ public class BowlerStudio extends Application {
             throw new IllegalStateException("UI already loaded");
         }
         
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                BowlerStudio.class.getResource("Main.fxml"));
+        
         try {
             fxmlLoader.load();
         } catch (IOException ex) {

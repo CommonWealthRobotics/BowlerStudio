@@ -95,7 +95,7 @@ import javafx.scene.control.Menu;
  */
 public class MainController implements Initializable {
     private static int sizeOfTextBuffer = 40000;
-	static ByteArrayOutputStream out = new ByteArrayOutputStream();
+	private static ByteArrayOutputStream out=null;
 	static boolean opencvOk=true;
     private static TextArea logViewRef=null;
     private static String newString=null;
@@ -134,68 +134,16 @@ public class MainController implements Initializable {
 	@FXML Menu CreatureLabMenue;
 	private EventHandler<? super KeyEvent> normalKeyPessHandle;
     
-	static{
-		PrintStream ps = new PrintStream(out);
-		//System.setErr(ps);
-		System.setOut(ps);
-		new Thread(){
-			public void run(){
-			       updateLog();
-					try{
-						OpenCVJNILoader.load();              // Loads the JNI (java native interface)
-					}catch(Exception e){
-						//e.printStackTrace();
-						opencvOk=false;
-						Platform.runLater(()->{
-							Alert alert = new Alert(AlertType.INFORMATION);
-							alert.setTitle("OpenCV missing");
-							alert.setHeaderText("Opencv library is missing");
-							alert.setContentText(e.getMessage());
-							alert .initModality(Modality.APPLICATION_MODAL);
-							alert.show();
-							e.printStackTrace();
-						});
-
-					}
-					if(NativeResource.isLinux()){
-						String [] possibleLocals = new String[]{
-								"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
-								"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
-						};
-						Slic3r.setExecutableLocation("/usr/bin/slic3r");
-						
-					}else if(NativeResource.isWindows()){
-						String basedir =System.getenv("OPENCV_DIR");
-						if(basedir == null)
-							throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-						System.err.println("OPENCV_DIR found at "+ basedir);
-						basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
-						Slic3r.setExecutableLocation(basedir);
-						
-					}
-					try {
-						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-						// This is a workaround for #8 and is only relavent on osx
-						// it causes the SwingNodes not to load if not called way ahead of time
-						javafx.scene.text.Font.getFamilies();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-			}
-		}.start();
-	}
 	
-	private static void updateLog(){
+	public static void updateLog(){
 		if(logViewRef!=null){
 			String current;
 			String finalStr;
-			if(out.size()==0){
+			if(getOut().size()==0){
 				newString=null;
 			}else{
-				newString = out.toString();
-				out.reset();
+				newString = getOut().toString();
+				getOut().reset();
 			}
 			if(newString!=null){
 				current = logViewRef.getText()+newString;
@@ -716,6 +664,14 @@ public class MainController implements Initializable {
 	@FXML public void onAddCNC() {
 		loadMobilebaseFromGist("51a9e0bc4ee095b03979","CNC.xml");
 	}
+
+
+	public static ByteArrayOutputStream getOut() {
+		if(out == null)
+			out = new ByteArrayOutputStream();
+		return out;
+	}
+
 
 
 
