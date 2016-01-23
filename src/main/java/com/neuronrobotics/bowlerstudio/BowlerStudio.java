@@ -55,14 +55,13 @@ public class BowlerStudio extends Application {
     		PrintStream ps = new PrintStream(MainController.getOut());
     		//System.setErr(ps);
     		System.setOut(ps);
-    		new Thread(){
-    			public void run(){
-    				MainController.updateLog();
-    					try{
-    						OpenCVJNILoader.load();              // Loads the JNI (java native interface)
-    					}catch(Exception e){
-    						//e.printStackTrace();
-    						//opencvOk=false;
+
+    		MainController.updateLog();
+			try{
+				OpenCVJNILoader.load();              // Loads the JNI (java native interface)
+			}catch(Exception e){
+				//e.printStackTrace();
+				//opencvOk=false;
 //    						Platform.runLater(()->{
 //    							Alert alert = new Alert(AlertType.INFORMATION);
 //    							alert.setTitle("OpenCV missing");
@@ -73,35 +72,35 @@ public class BowlerStudio extends Application {
 //    							e.printStackTrace();
 //    						});
 
-    					}
-    					if(NativeResource.isLinux()){
-    						String [] possibleLocals = new String[]{
-    								"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
-    								"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
-    						};
-    						Slic3r.setExecutableLocation("/usr/bin/slic3r");
-    						
-    					}else if(NativeResource.isWindows()){
-    						String basedir =System.getenv("OPENCV_DIR");
-    						if(basedir == null)
-    							throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-    						System.err.println("OPENCV_DIR found at "+ basedir);
-    						basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
-    						Slic3r.setExecutableLocation(basedir);
-    						
-    					}
-    					try {
-    						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    						// This is a workaround for #8 and is only relavent on osx
-    						// it causes the SwingNodes not to load if not called way ahead of time
-    						javafx.scene.text.Font.getFamilies();
-    					} catch (Exception e) {
-    						// TODO Auto-generated catch block
-    						e.printStackTrace();
-    					}
+			}
+			if(NativeResource.isLinux()){
+				String [] possibleLocals = new String[]{
+						"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
+						"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
+				};
+				Slic3r.setExecutableLocation("/usr/bin/slic3r");
+				
+			}else if(NativeResource.isWindows()){
+				String basedir =System.getenv("OPENCV_DIR");
+				if(basedir == null)
+					throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+				System.err.println("OPENCV_DIR found at "+ basedir);
+				basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+				Slic3r.setExecutableLocation(basedir);
+				
+			}
+			try {
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+				// This is a workaround for #8 and is only relavent on osx
+				// it causes the SwingNodes not to load if not called way ahead of time
+				javafx.scene.text.Font.getFamilies();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     					
-    			}
-    		}.start();
+    			
+
     		ThreadUtil.wait(2000);
     		launch(args);
     	}else{
