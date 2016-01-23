@@ -54,9 +54,21 @@ public class BowlerStudio extends Application {
     	
     	if(args.length==0){
     		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
-    		fxmlLoader = new FXMLLoader(
-                    BowlerStudio.class.getResource("Main.fxml"));
+    		
     		BowlerStudioResourceFactory.load();
+    		Platform.runLater(()->{
+        		fxmlLoader = new FXMLLoader(
+                        BowlerStudio.class.getResource("Main.fxml"));
+                try {
+                    fxmlLoader.load();
+                } catch (IOException ex) {
+                	ex.printStackTrace();
+                    Logger.getLogger(BowlerStudio.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
+    		});
+
     		PrintStream ps = new PrintStream(MainController.getOut());
     		//System.setErr(ps);
     		System.setOut(ps);
@@ -177,26 +189,14 @@ public class BowlerStudio extends Application {
         }
         
         
-        try {
-            fxmlLoader.load();
-        } catch (IOException ex) {
-        	ex.printStackTrace();
-            Logger.getLogger(BowlerStudio.class.getName()).
-                    log(Level.SEVERE, null, ex);
-            System.exit(1);
-        }
 
-        Parent root = fxmlLoader.getRoot();
-        
-        root.getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
-                toExternalForm());
 
         controller = fxmlLoader.getController();
         
         log = controller.getLogView();
         
 
-        return root;
+        return fxmlLoader.getRoot();
     }
     
     public static TextArea getLogView() {
