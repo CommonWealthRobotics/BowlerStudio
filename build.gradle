@@ -174,9 +174,8 @@ dependencies {
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
 	*/
 	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.6.8"
-	compile 'com.google.code.gson:gson:2.5'
-	compile 'org.apache.httpcomponents:httpclient:4.5.1'
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.7.0"
+
 	
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.6.5.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
