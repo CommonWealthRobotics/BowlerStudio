@@ -133,6 +133,8 @@ public class MainController implements Initializable {
 	private CommandLineWidget cmdLine;
 	@FXML Menu CreatureLabMenue;
 	private EventHandler<? super KeyEvent> normalKeyPessHandle;
+	@FXML MenuItem createNewGist;
+	@FXML MenuItem addFileToGist;
     
 	
 	public static void updateLog(){
@@ -326,7 +328,7 @@ public class MainController implements Initializable {
 						Platform.runLater(()->{
 							myGists.getItems().clear();
 						});
-						
+						ThreadUtil.wait(20);
 						for(GHGist gist:gists){
 							String desc = gist.getDescription();
 							if(desc==null || desc .length()==0){
@@ -673,6 +675,16 @@ public class MainController implements Initializable {
 		if(out == null)
 			out = new ByteArrayOutputStream();
 		return out;
+	}
+
+
+	@FXML public void onCreatenewGist() {
+		
+	}
+
+
+	@FXML public void onAddFileToGist() {
+		
 	}
 
 
