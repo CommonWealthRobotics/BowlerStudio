@@ -337,8 +337,8 @@ public class MainController implements Initializable {
 							if(desc==null || desc .length()==0){
 								desc = gist.getFiles().keySet().toArray()[0].toString();
 							}
-							MenuItem tmp =new MenuItem(desc);
-							tmp.setOnAction(event->{
+							Menu tmpGist =new Menu(desc);
+							tmpGist.setOnAction(event->{
 								String webURL = gist.getHtmlUrl();
 			    				try {
 									BowlerStudio.openUrlInNewTab(new URL(webURL));
@@ -349,8 +349,25 @@ public class MainController implements Initializable {
 			    			
 							});
 							Platform.runLater(()->{
-								myGists.getItems().add(tmp);
+								myGists.getItems().add(tmpGist);
 							});
+							//for(ScriptingEngine.)
+							ArrayList<String> listofFiles = ScriptingEngine.filesInGit(gist.getGitPushUrl(),"master",  null);
+							for(String s:listofFiles){
+								MenuItem tmp =new MenuItem(s);
+								tmp.setOnAction(event->{
+									try {
+										File fileSelected = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), s);
+										BowlerStudio.createFileTab(fileSelected);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}				    			
+								});
+								Platform.runLater(()->{
+									tmpGist.getItems().add(tmp);
+								});
+							}
 							
 						}
 					} catch (Exception e) {

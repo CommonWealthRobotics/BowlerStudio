@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -21,6 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
+import javax.swing.AbstractAction;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -138,10 +143,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		sn.setOnMouseEntered(mouseEvent -> {
 			sn.requestFocus();
 			SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	            	textArea.requestFocusInWindow();
-	            }
+				@Override
+				public void run() {
+					textArea.requestFocusInWindow();
+					KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
+					textArea.getInputMap().put(keystroke, "f");
+					textArea.getActionMap().put("f", new AbstractAction() {
+						public void actionPerformed(ActionEvent e) {
+							System.out.println("Got ctrl f");
+						}
+					});
+				}
+
 	        });
 		});
 

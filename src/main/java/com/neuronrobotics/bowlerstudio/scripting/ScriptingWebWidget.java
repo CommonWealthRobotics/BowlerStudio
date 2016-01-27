@@ -319,8 +319,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		
 		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
 		
-		if(fileList.size()==1)
-			loadGistLocal(currentGist, fileList.get(0));
+		loadGistLocal(currentGist, fileList.get(0));
 		Platform.runLater(()->{
 			
 			for(String s:fileList){
