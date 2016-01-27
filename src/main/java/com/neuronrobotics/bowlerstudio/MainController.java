@@ -217,15 +217,16 @@ public class MainController implements Initializable {
     	
 
         setApplication(new BowlerStudioController(jfx3dmanager, this));
-        editorContainer.getChildren().add(getApplication());
-        AnchorPane.setTopAnchor(getApplication(), 0.0);
-        AnchorPane.setRightAnchor(getApplication(), 0.0);
-        AnchorPane.setLeftAnchor(getApplication(), 0.0);
-        AnchorPane.setBottomAnchor(getApplication(), 0.0);
-        
-        subScene = jfx3dmanager.getSubScene();
-        subScene.setFocusTraversable(false);
-        
+        Platform.runLater(()->{
+	        editorContainer.getChildren().add(getApplication());
+	        AnchorPane.setTopAnchor(getApplication(), 0.0);
+	        AnchorPane.setRightAnchor(getApplication(), 0.0);
+	        AnchorPane.setLeftAnchor(getApplication(), 0.0);
+	        AnchorPane.setBottomAnchor(getApplication(), 0.0);
+	        
+	        subScene = jfx3dmanager.getSubScene();
+	        subScene.setFocusTraversable(false);
+        });
         
         subScene.setOnMouseEntered(mouseEvent -> {
 			//System.err.println("3d window requesting focus");
@@ -290,26 +291,23 @@ public class MainController implements Initializable {
 				
 			}
 		});
-		//logView.resize(250, 300);
-		// after connection manager set up, add scripting widget
-    	logViewRef=new TextArea();
-    	logViewRef.prefWidthProperty().bind( logView.widthProperty().divide(2));
-    	logViewRef.prefHeightProperty().bind( logView.heightProperty().subtract(40));
-    	
-    	
-    	cmdLine = new CommandLineWidget();
-    	VBox box = new VBox();
-    	box.getChildren().add(logViewRef);
-    	box.getChildren().add(cmdLine);
-    	VBox.setVgrow(logViewRef, Priority.ALWAYS);
-    	box.prefWidthProperty().bind( logView.widthProperty().subtract(10));
-    	
-    	logView.getChildren().addAll(box);
-    	
-
-    	
 		
-        //BowlerStudio.speak("Welcome to Bowler Studio");
+		cmdLine = new CommandLineWidget();
+		
+		Platform.runLater(()->{
+			//logView.resize(250, 300);
+			// after connection manager set up, add scripting widget
+	    	logViewRef=new TextArea();
+	    	logViewRef.prefWidthProperty().bind( logView.widthProperty().divide(2));
+	    	logViewRef.prefHeightProperty().bind( logView.heightProperty().subtract(40));
+	    	VBox box = new VBox();
+	    	box.getChildren().add(logViewRef);
+	    	box.getChildren().add(cmdLine);
+	    	VBox.setVgrow(logViewRef, Priority.ALWAYS);
+	    	box.prefWidthProperty().bind( logView.widthProperty().subtract(10));
+	    	
+	    	logView.getChildren().addAll(box);
+		});
     }
     
     private void setToLoggedIn(final String name){	
