@@ -47,10 +47,11 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+//import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -111,7 +112,7 @@ public class MainController implements Initializable {
     private Pane logView;
 
     @FXML
-    private ScrollPane editorContainer;
+    private AnchorPane editorContainer;
 
     @FXML
     private Pane viewContainer;
@@ -216,8 +217,11 @@ public class MainController implements Initializable {
     	
 
         setApplication(new BowlerStudioController(jfx3dmanager, this));
-        editorContainer.setContent(getApplication());
-        
+        editorContainer.getChildren().add(getApplication());
+        AnchorPane.setTopAnchor(getApplication(), 0.0);
+        AnchorPane.setRightAnchor(getApplication(), 0.0);
+        AnchorPane.setLeftAnchor(getApplication(), 0.0);
+        AnchorPane.setBottomAnchor(getApplication(), 0.0);
         
         subScene = jfx3dmanager.getSubScene();
         subScene.setFocusTraversable(false);

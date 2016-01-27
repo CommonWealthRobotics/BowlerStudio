@@ -72,7 +72,7 @@
       <items>
         <SplitPane dividerPositions="0.8493150684931506" focusTraversable="true" orientation="VERTICAL" prefHeight="659.0" prefWidth="766.0">
           <items>
-            <ScrollPane fx:id="editorContainer" content="$null" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="771.0" prefWidth="944.0" vbarPolicy="ALWAYS" />
+            <AnchorPane fx:id="editorContainer"  prefHeight="771.0" prefWidth="944.0" />
             <AnchorPane fx:id="logView" minHeight="0.0" minWidth="0.0" prefHeight="123.99990000000253" prefWidth="961.0" />
           </items>
         </SplitPane>
