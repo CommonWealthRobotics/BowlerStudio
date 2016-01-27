@@ -347,7 +347,11 @@ public class MainController implements Initializable {
 							});
 							MenuItem addFile = new MenuItem("Add file to Gist...");
 							addFile.setOnAction(event -> {
-
+								new Thread() {
+									public void run() {
+										
+									}
+								}.start();
 							});
 							Platform.runLater(() -> {
 								tmpGist.getItems().addAll(addFile, loadWebGist);
