@@ -226,23 +226,24 @@ public class MainController implements Initializable {
 	        
 	        subScene = jfx3dmanager.getSubScene();
 	        subScene.setFocusTraversable(false);
+	        subScene.setOnMouseEntered(mouseEvent -> {
+				//System.err.println("3d window requesting focus");
+				Scene topScene = BowlerStudio.getScene();
+				normalKeyPessHandle = topScene.getOnKeyPressed();
+				jfx3dmanager.handleKeyboard(topScene);
+			});
+	        
+	        subScene.setOnMouseExited(mouseEvent -> {
+				//System.err.println("3d window dropping focus");
+				Scene topScene = BowlerStudio.getScene();
+				topScene.setOnKeyPressed(normalKeyPessHandle);
+			});
+	        
+	        subScene.widthProperty().bind(viewContainer.widthProperty());
+	        subScene.heightProperty().bind(viewContainer.heightProperty());
         });
         
-        subScene.setOnMouseEntered(mouseEvent -> {
-			//System.err.println("3d window requesting focus");
-			Scene topScene = BowlerStudio.getScene();
-			normalKeyPessHandle = topScene.getOnKeyPressed();
-			jfx3dmanager.handleKeyboard(topScene);
-		});
-        
-        subScene.setOnMouseExited(mouseEvent -> {
-			//System.err.println("3d window dropping focus");
-			Scene topScene = BowlerStudio.getScene();
-			topScene.setOnKeyPressed(normalKeyPessHandle);
-		});
-        
-        subScene.widthProperty().bind(viewContainer.widthProperty());
-        subScene.heightProperty().bind(viewContainer.heightProperty());
+
         Platform.runLater(()->{
         	 jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
              viewContainer.getChildren().add(subScene);
