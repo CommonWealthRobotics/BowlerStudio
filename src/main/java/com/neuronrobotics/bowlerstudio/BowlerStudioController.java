@@ -99,7 +99,7 @@ public class BowlerStudioController extends TabPane implements
 	private HashMap<String,ScriptingGistTab> webTabs = new HashMap<>();
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
-		if(openFiles.get(file.getAbsolutePath())!=null){
+		if(openFiles.get(file.getAbsolutePath())!=null && widgets.get(file.getAbsolutePath())!=null){
 			setSelectedTab(openFiles.get(file.getAbsolutePath()));
 			return widgets.get(file.getAbsolutePath()).getScripting();
 		}
@@ -132,6 +132,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 	
 	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
+		System.out.println("Highlighting line "+lineNumber+" in "+fileEngineRunByName);
 		if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 			createFileTab(fileEngineRunByName);
 		}
@@ -395,6 +396,10 @@ public class BowlerStudioController extends TabPane implements
 				+ Previous);
 		// this is added in the script engine when the connection manager is
 		// loaded
+		Platform.runLater(() -> {
+			jfx3dmanager.removeObjects();
+		});
+		ThreadUtil.wait(20);
 		if (ArrayList.class.isInstance(Previous)) {
 			ArrayList<Object> c = (ArrayList<Object>) Previous;
 			for (int i = 0; i < c.size(); i++) {
