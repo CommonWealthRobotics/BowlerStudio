@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.neuronrobotics.bowlerstudio.BowlerKernel;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
@@ -145,7 +146,8 @@ public class CommandLineWidget  extends BorderPane{
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						d.printStackTrace(pw);
-						
+						BowlerStudioController.highlightException(null, d);
+
 						String stackTrace = sw.toString();
 						
 						if(stackTrace.contains("dyio"))

@@ -83,39 +83,39 @@ public class BowlerStudioController extends TabPane implements
 	private BowlerStudio3dEngine jfx3dmanager;
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
-	private static BowlerStudioController bowlerStudio=null;
+	private static BowlerStudioController bowlerStudioControllerStaticReference=null;
 	//private Stage dialog = new Stage();
 	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager,
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
-		bowlerStudio=this;
+		bowlerStudioControllerStaticReference=this;
 		this.jfx3dmanager = jfx3dmanager;
 		this.mainController = mainController;
 		createScene();
 	}
-	private HashMap<File,Tab> openFiles = new HashMap<>();
-	private HashMap<File,LocalFileScriptTab> widgets = new HashMap<>();
+	private HashMap<String,Tab> openFiles = new HashMap<>();
+	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
 	private HashMap<String,ScriptingGistTab> webTabs = new HashMap<>();
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
-		if(openFiles.get(file)!=null){
-			setSelectedTab(openFiles.get(file));
-			return widgets.get(file).getScripting();
+		if(openFiles.get(file.getAbsolutePath())!=null){
+			setSelectedTab(openFiles.get(file.getAbsolutePath()));
+			return widgets.get(file.getAbsolutePath()).getScripting();
 		}
 
 		Tab fileTab =new Tab(file.getName());
-		openFiles.put(file, fileTab);
+		openFiles.put(file.getAbsolutePath(), fileTab);
 		try {
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
 			
 			fileTab.setContent(t);
 			addTab(fileTab, true);
-			widgets.put(file,  t);
+			widgets.put(file.getAbsolutePath(),  t);
 			fileTab.setOnCloseRequest(event->{
-				widgets.remove(file);
-				openFiles.remove(file);
+				widgets.remove(file.getAbsolutePath());
+				openFiles.remove(file.getAbsolutePath());
 			});
 			return t.getScripting();
 		} catch (IOException e) {
@@ -126,40 +126,40 @@ public class BowlerStudioController extends TabPane implements
 	}
 	
 	public void clearHighlits(){
-		for(Entry<File, LocalFileScriptTab> set: widgets.entrySet()){
+		for(Entry<String, LocalFileScriptTab> set: widgets.entrySet()){
 			set.getValue().clearHighlits();
 		}
 	}
 	
 	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
-		if(openFiles.get(fileEngineRunByName)==null){
+		if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 			createFileTab(fileEngineRunByName);
 		}
-		setSelectedTab(openFiles.get(fileEngineRunByName));
+		setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
 		//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 		try {
-			widgets.get(fileEngineRunByName).setHighlight(lineNumber,color);
+			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber,color);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public static void highlightException(File fileEngineRunByName, Exception ex){
-		bowlerStudio.highlightExceptionLocal(fileEngineRunByName, ex);
+		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
 		
 		if(fileEngineRunByName!=null){
-			if(openFiles.get(fileEngineRunByName)==null){
+			if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 				createFileTab(fileEngineRunByName);
 			}
-			setSelectedTab(openFiles.get(fileEngineRunByName));
-			widgets.get(fileEngineRunByName).clearHighlits();
+			setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
+			widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
 			//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 			for(StackTraceElement el:ex.getStackTrace()){
 				if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
 					try {
-						widgets.get(fileEngineRunByName).setHighlight(el.getLineNumber(),Color.RED);
+						widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color.YELLOW);
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
@@ -168,13 +168,13 @@ public class BowlerStudioController extends TabPane implements
 			
 			
 		}
-		if(org.codehaus.groovy.control.MultipleCompilationErrorsException.class.isInstance(ex)){
+		if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
 			String message = ex.getMessage();
 			System.out.println(message);
 			if(message.contentEquals(fileEngineRunByName.getName())){
 				int linNum =  Integer.parseInt(message.split(":")[1]);
 				try {
-					widgets.get(fileEngineRunByName).setHighlight(linNum,Color.RED);
+					widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.YELLOW);
 				} catch (BadLocationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -189,24 +189,24 @@ public class BowlerStudioController extends TabPane implements
 	}
 	
 
-	// Custom function for creation of New Tabs.
-	private void createAndSelectNewTab(final BowlerStudioController tabPane,
-			final String title) {
-
-
-			Platform.runLater(() -> {
-				try {
-					if(ScriptingEngine.getLoginID() != null)
-						
-						addTab(new ScriptingGistTab(title,getHomeUrl(), true), false);
-				} catch (IOException | InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-
-
-	}
+//	// Custom function for creation of New Tabs.
+//	private void createAndSelectNewTab(final BowlerStudioController tabPane,
+//			final String title) {
+//
+//
+//			Platform.runLater(() -> {
+//				try {
+//					if(ScriptingEngine.getLoginID() != null)
+//						
+//						addTab(new ScriptingGistTab(title,getHomeUrl(), true), false);
+//				} catch (IOException | InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			});
+//
+//
+//	}
 	
 	public void openUrlInNewTab(URL url){
 		String urlstr=url.toExternalForm();
@@ -452,7 +452,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	public static BowlerStudioController getBowlerStudio() {
-		return bowlerStudio;
+		return bowlerStudioControllerStaticReference;
 	}
 
 

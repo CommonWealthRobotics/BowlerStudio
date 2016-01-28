@@ -214,10 +214,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				setDefaultDhParameterKinematics(device);
 
 			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				System.out.println(sw.toString());
+				BowlerStudioController.highlightException(null, e);
 			}
 			Log.debug("Loading xml: " + device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
@@ -353,10 +350,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							setDefaultWalkingEngine(device);
 							generateCad();
 						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							PrintWriter pw = new PrintWriter(sw);
-							e.printStackTrace(pw);
-							System.out.println(sw.toString());
+							BowlerStudioController.highlightException(getCadScript(), e);
 						}
 
 					}
@@ -467,7 +461,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		}
 	}
 
-	private void setDefaultDhParameterKinematics(DHParameterKinematics device) {
+	private File setDefaultDhParameterKinematics(DHParameterKinematics device) {
 		File code = null;
 		try {
 			code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0], device.getDhEngine()[1]);
@@ -497,9 +491,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 
 			device.setInverseSolver(defaultDHSolver);
+			return code;
 		} catch (Exception e1) {
 			BowlerStudioController.highlightException(code, e1);
 		}
+		return null;
 
 	}
 

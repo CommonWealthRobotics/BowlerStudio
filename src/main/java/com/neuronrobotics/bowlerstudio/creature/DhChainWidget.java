@@ -198,10 +198,7 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 		        	dhdevice.setInverseSolver((DhInverseSolver) ScriptingEngine.inlineFileScriptRun(getKinematicsFile(), null));
 		        }
 			}catch(Exception e){
-				  StringWriter sw = new StringWriter();
-			      PrintWriter pw = new PrintWriter(sw);
-			      e.printStackTrace(pw);
-			      System.out.println(sw.toString());
+				BowlerStudioController.highlightException(getKinematicsFile(), e);
 			}
 		}
 	}
