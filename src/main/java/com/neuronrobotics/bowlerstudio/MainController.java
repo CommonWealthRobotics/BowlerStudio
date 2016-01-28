@@ -142,7 +142,8 @@ public class MainController implements Initializable {
 	MenuItem createNewGist;
 	@FXML
 	MenuItem addFileToGist;
-
+	private boolean loginWindowOpen=false;
+	private GithubLoginFX controller= null;
 	public static void updateLog() {
 		if (logViewRef != null) {
 			String current;
@@ -186,29 +187,32 @@ public class MainController implements Initializable {
 
 			@Override
 			public String[] prompt(String username) {
+				if(!loginWindowOpen&&controller!=null)
+					controller.reset();
+				loginWindowOpen=true;
 				System.err.println("Calling login from BowlerStudio");
 				// new RuntimeException().printStackTrace();
 				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
 				Parent root = fxmlLoader.getRoot();
-				GithubLoginFX controller = fxmlLoader.getController();
-				Platform.runLater(() -> {
-					controller.reset();
-					controller.getUsername().setText(username);
-					Stage stage = new Stage();
-					stage.setTitle("GitHub Login");
-					stage.initModality(Modality.APPLICATION_MODAL);
-					controller.setStage(stage, root);
-					stage.centerOnScreen();
-					stage.show();
-
-				});
-
+				if(controller==null){
+					controller = fxmlLoader.getController();
+					Platform.runLater(() -> {
+						controller.reset();
+						controller.getUsername().setText(username);
+						Stage stage = new Stage();
+						stage.setTitle("GitHub Login");
+						stage.initModality(Modality.APPLICATION_MODAL);
+						controller.setStage(stage, root);
+						stage.centerOnScreen();
+						stage.show();
+					});
+				}
 				// setContent(root);
 				while (!controller.isDone()) {
-					ThreadUtil.wait(1);
+					ThreadUtil.wait(100);
 				}
 				String[] creds = controller.getCreds();
-				controller.reset();
+				loginWindowOpen=false;
 				return creds;
 			}
 		});

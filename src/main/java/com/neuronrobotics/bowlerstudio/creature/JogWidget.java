@@ -30,7 +30,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
-	
+	double defauletSpeed=0.21;
 	private AbstractKinematicsNR kin;
 	private MobileBase mobilebase=null;
 	Button px = new Button("+X");
@@ -41,7 +41,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button nz = new Button("-Z");
 	Button home = new Button("home");
 	Button game = new Button("Add Game Controller");
-	TextField increment=new TextField("2.1");
+	TextField increment=new TextField(new Double(defauletSpeed).toString());
 	TextField sec=new TextField(".01");
 	private TransformWidget transform;
 	BowlerJInputDevice gameController=null;
@@ -133,7 +133,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	increment, 
 				0, 
 				3);
-		buttons.add(	new Label("mm"), 
+		buttons.add(	new Label("m/s"), 
 				1, 
 				3);
 		
@@ -319,12 +319,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					
 					double inc;
 					try{
-						inc = Double.parseDouble(increment.getText());
+						inc = Double.parseDouble(increment.getText())*1000*seconds;//convert to mm
+						
 					}catch(Exception e){
+						inc=defauletSpeed;
 						Platform.runLater(() -> {
-							increment.setText("2");
+							increment.setText(new Double(defauletSpeed).toString());
 						});
-						inc=10;
 					}
 					//double rxl=0;
 					double ryl=inc/20*slider;

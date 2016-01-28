@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -306,30 +307,43 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		}
 	}
 
-	public void loadCodeFromGist(String addr, WebEngine engine)
+	public void loadCodeFromGist(String a, WebEngine e)
 			throws IOException, InterruptedException {
-		this.addr = addr;
-		this.engine = engine;
-		loadGist = true;
-		fileListBox.valueProperty().removeListener(this);
-		Platform.runLater(()->runfx.setDisable(true));
-		Platform.runLater(()->edit.setDisable(true));
-		Platform.runLater(()->fileListBox.getItems().clear());
-		currentGist = ScriptingEngine.getCurrentGist(addr, engine).get(0);
-		
-		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
-		
-		loadGistLocal(currentGist, fileList.get(0));
-		Platform.runLater(()->{
+		//new Thread(()->{
+			addr = a;
+			engine = e;
+			loadGist = true;
+			fileListBox.valueProperty().removeListener(this);
+			Platform.runLater(()->runfx.setDisable(true));
+			Platform.runLater(()->edit.setDisable(true));
+			Platform.runLater(()->fileListBox.getItems().clear());
+			List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
+			if(gists.size()>0)
+				currentGist = gists.get(0);
+			else
+				return;
 			
-			for(String s:fileList){
-				fileListBox.getItems().add(s);
-			}
-			fileListBox.setValue(fileList.get(0));
-			fileListBox.valueProperty().addListener(this);
-			Platform.runLater(()->runfx.setDisable(false));
-			Platform.runLater(()->edit.setDisable(false));
-		});
+			ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
+//			for(String s:fileList){
+//				System.out.println("GITS: "+s);
+//			}
+			if(fileList.size()>0)
+				loadGistLocal(currentGist, fileList.get(0));
+			
+			Platform.runLater(()->{
+				
+				for(String s:fileList){
+					fileListBox.getItems().add(s);
+				}
+				if(fileList.size()>0){
+					fileListBox.setValue(fileList.get(0));
+					fileListBox.valueProperty().addListener(this);
+					Platform.runLater(()->runfx.setDisable(false));
+					Platform.runLater(()->edit.setDisable(false));
+				}
+			});
+		//}).start();
+		
 	}
 
 
