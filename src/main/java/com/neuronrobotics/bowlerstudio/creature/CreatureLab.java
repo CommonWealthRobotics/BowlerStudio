@@ -555,7 +555,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	public void setCadEngine(String gitsId, String file, MobileBase device)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		setCadScript(ScriptingEngine.fileFromGistID(gitsId, file));
-
+		device.setCadEngine(new String[]{gitsId,file});
 	}
 
 	public synchronized void generateCad() {
@@ -792,7 +792,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	public void setCadEngine(String gitsId, String file, DHParameterKinematics dh)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-
+		dh.setCadEngine(new String[]{gitsId,file});
 		File code = ScriptingEngine.fileFromGistID(gitsId, file);
 		try {
 			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,
