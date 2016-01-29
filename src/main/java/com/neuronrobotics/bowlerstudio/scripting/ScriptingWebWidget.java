@@ -368,7 +368,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				try {
 					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptFinished(obj, scriptResult);
+						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
 					Platform.runLater(() -> {
 						append("\n" + currentFile + " Completed\n");
@@ -428,7 +428,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 						reset();
 					});
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptError(ex);
+						l.onScriptError(ex,currentFile);
 					}
 					throw new RuntimeException(ex);
 				}
@@ -461,7 +461,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		codeText = string;
 		// System.out.println(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onGroovyScriptChanged(pervious, string);
+			l.onScriptChanged(pervious, string,currentFile);
 		}
 	}
 

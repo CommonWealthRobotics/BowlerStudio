@@ -77,6 +77,9 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -98,12 +101,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 
 import static javafx.scene.input.KeyCode.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
@@ -195,6 +200,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private double upDown=0;
 	private double leftRight=0;
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
+	private HashMap<CSG,File> csgSourceFile = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
 
@@ -233,9 +239,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		String trace = debuggerList.get(index);
 		BowlerStudioController
 		.getBowlerStudio()
-		.setHighlight(
-				ScriptingEngine
-					.getFileEngineRunByName(getFilenameFromTrace(trace)),
+		.setHighlight(locateFile(getFilenameFromTrace( trace),selectedCsg),
 					getLineNumbereFromTrace(trace),
 				c
 						);
@@ -300,6 +304,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void removeObjects(){
 		lookGroup.getChildren().clear();
 		csgMap.clear();
+		csgSourceFile.clear();
 	}
 
 	/**
@@ -314,7 +319,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			lookGroup.getChildren().remove(previous);
 		}
 		csgMap.remove(previousCsg);
-
+		csgSourceFile.remove(previousCsg);
 	}
 
 	/**
@@ -323,21 +328,51 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param current the current
 	 * @return the mesh view
 	 */
-	public MeshView addObject(CSG currentCsg) {
+	public MeshView addObject(CSG currentCsg,File source) {
 		
 		csgMap.put(currentCsg, currentCsg.getMesh());
+		csgSourceFile.put(currentCsg, source);
 		
 		MeshView current = csgMap.get(currentCsg);
+		final ContextMenu cm = new ContextMenu();
+		MenuItem cut = new MenuItem("Debug Source");
+		cut.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+				if(selectedCsg == currentCsg)
+					return;
+				selectedCsg= currentCsg;
+				new Thread(){
+					public void run(){
+				        selectObjectsSourceFile(currentCsg);
+					}
+				}.start();
+		    }
+		});
+		cm.getItems().add(cut);
+        cm.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    System.out.println("consuming right release button in cm filter");
+                    event.consume();
+                }
+            }
+        });
+        cm.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("right gets consumed so this must be left on "+
+                        ((MenuItem) event.getTarget()).getText());
+            }
+        });
+		current.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton()==MouseButton.SECONDARY){
 
-		current.setOnMouseClicked(event -> {
-			if(selectedCsg == currentCsg)
-				return;
-			selectedCsg= currentCsg;
-			new Thread(){
-				public void run(){
-			        selectObjectsSourceFile(currentCsg);
 				}
-			}.start();
+			}
 		});
 		
 		Group og = new Group();
@@ -706,7 +741,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			lastFileSelected=fileName;
 			lastFileLine=linNum;
 			
-			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(fileName),linNum,java.awt.Color.PINK);
+			BowlerStudioController.getBowlerStudio().setHighlight(locateFile(fileName,source),linNum,java.awt.Color.PINK);
 
 		        		
 		    	
@@ -717,6 +752,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			back.disableProperty().set(true);
 		});
 	    
+	}
+	
+	private File locateFile(String fileName, CSG source){
+		File f = csgSourceFile.get(source);
+		if(f.getName().contains(fileName)){
+			return f;
+		}
+		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 
 	// @Override

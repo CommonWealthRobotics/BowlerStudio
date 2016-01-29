@@ -355,28 +355,34 @@ public class BowlerStudioController extends TabPane implements
 		}
 	}
 	
-	public static void setCsg(List<CSG> toadd){
+	public static void setCsg(List<CSG> toadd, File source){
 		Platform.runLater(() -> {
 			getBowlerStudio().jfx3dmanager.removeObjects();
 			if(toadd!=null)
 			for(CSG c:toadd){
-				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(c));
+				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(c,source));
 			}
 		});
 	}
+	public static void setCsg(List<CSG> toadd){
+		setCsg(toadd,null);
+	}
 	public static void addCsg(CSG toadd){
+		addCsg(toadd,null);
+	}
+	public static void addCsg(CSG toadd, File source){
 		Platform.runLater(() -> {
 			if(toadd!=null)
-				getBowlerStudio().jfx3dmanager.addObject(toadd);
+				getBowlerStudio().jfx3dmanager.addObject(toadd,source);
 			
 		});
 	}
-	private void addObject(Object o) {
+	private void addObject(Object o, File source) {
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
-				jfx3dmanager.addObject(csg);
+				jfx3dmanager.addObject(csg,source);
 			});
 		} else if (Tab.class.isInstance(o)) {
 
@@ -391,7 +397,7 @@ public class BowlerStudioController extends TabPane implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onGroovyScriptFinished(Object result, Object Previous) {
+	public void onScriptFinished(Object result, Object Previous,File source) {
 		Log.warning("Loading script results " + result + " previous "
 				+ Previous);
 		// this is added in the script engine when the connection manager is
@@ -412,20 +418,20 @@ public class BowlerStudioController extends TabPane implements
 			ArrayList<Object> c = (ArrayList<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
 				Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i));
+				addObject(c.get(i),  source);
 			}
 		} else {
-			addObject(result);
+			addObject(result,  source);
 		}
 	}
 
 	@Override
-	public void onGroovyScriptChanged(String previous, String current) {
+	public void onScriptChanged(String previous, String current,File source) {
 
 	}
 
 	@Override
-	public void onGroovyScriptError(Exception except) {
+	public void onScriptError(Exception except,File source) {
 		// TODO Auto-generated method stub
 
 	}

@@ -298,7 +298,7 @@ public class ScriptingFileWidget extends BorderPane implements
 				try {
 					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptFinished(obj, scriptResult);
+						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
 					Platform.runLater(() -> {
 						append("\n" + currentFile + " Completed\n");
@@ -352,7 +352,7 @@ public class ScriptingFileWidget extends BorderPane implements
 						reset();
 					});
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptError(ex);
+						l.onScriptError(ex,currentFile);
 					}
 					throw new RuntimeException(ex);
 				}
@@ -485,7 +485,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		codeText = string;
 		// System.out.println(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onGroovyScriptChanged(pervious, string);
+			l.onScriptChanged(pervious, string,currentFile);
 		}
 	}
 

@@ -367,7 +367,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					CreaturLabMenue.getItems().remove(localMenue);
 					if (CreaturLabMenue.getItems().size() == 0)
 						CreaturLabMenue.setDisable(true);
-					BowlerStudioController.setCsg(null);
+					BowlerStudioController.setCsg(null,null);
 				}
 
 				@Override
@@ -573,7 +573,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					allCad = generateCad(((DHParameterKinematics) pm), false);
 				}
 				System.out.print("Done!\r\n");
-				BowlerStudioController.setCsg(allCad);
+				BowlerStudioController.setCsg(allCad,getCadScript());
 				cadGenerating = false;
 			}
 
@@ -701,7 +701,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 			// clears old robot and places base
-			BowlerStudioController.setCsg(allCad);
+			BowlerStudioController.setCsg(allCad,getCadScript());
 
 			pi.setProgress(0.4);
 			ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
@@ -711,7 +711,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 				for (CSG csg : generateCad(l, b)) {
 					allCad.add(csg);
-					BowlerStudioController.addCsg(csg);
+					BowlerStudioController.addCsg(csg,getCadScript());
 				}
 
 				i += 1;

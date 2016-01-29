@@ -229,7 +229,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 
 	@Override
-	public void onGroovyScriptFinished(	Object result,Object previous) {
+	public void onScriptFinished(	Object result,Object previous,File source) {
 		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -242,7 +242,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 
 	@Override
-	public void onGroovyScriptChanged(String previous, String current) {
+	public void onScriptChanged(String previous, String current,File source) {
 //		 Cursor place = codeArea.getCursor();
 //		 codeArea.replaceText(current);
 //		 codeArea.setCursor(place);
@@ -254,7 +254,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 
 	@Override
-	public void onGroovyScriptError(Exception except) {
+	public void onScriptError(Exception except,File source) {
 		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
