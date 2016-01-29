@@ -370,8 +370,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			@Override
 			public void handle(MouseEvent event) {
 				if(event.getButton()==MouseButton.SECONDARY){
-
-				}
+					cm.show(current, event.getScreenX(), event.getScreenY());
+					event.consume();
+				}else
+					cm.hide();
 			}
 		});
 		
