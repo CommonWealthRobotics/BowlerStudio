@@ -64,6 +64,7 @@ import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
 import com.neuronrobotics.sdk.dyio.peripherals.DigitalInputChannel;
 import com.neuronrobotics.sdk.dyio.peripherals.IDigitalInputListener;
 import com.neuronrobotics.sdk.pid.PIDConfiguration;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
 
@@ -216,6 +217,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private int debuggerIndex=0;
 	private ArrayList<String> debuggerList=new ArrayList<>();
 	private CSG selectedCsg=null;
+	double color=0;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -232,14 +234,34 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		handleMouse(getSubScene());
 
 		setScene(s);
-		
+
+//		new Thread() {
+//
+//			public void run() {
+//				setName("3d Highlighter");
+//
+//				while (true) {
+//					ThreadUtil.wait(100);
+//					if (getSelectedCsg() != null) {
+//						Color newColor = getSelectedCsg().getColor().interpolate(Color.YELLOW, Math.sin(color));
+//						color += .05;
+//						if (color > Math.PI)
+//							color = 0;
+//						PhongMaterial m = new PhongMaterial(newColor);
+//						// current.setMaterial(m);
+//						Platform.runLater(() -> csgMap.get(getSelectedCsg()).setMaterial(m));
+//					}
+//				}
+//			}
+//		}.start();
+//		
 	}
 	
 	private void highlightDebugIndex(int index, java.awt.Color c){
 		String trace = debuggerList.get(index);
 		BowlerStudioController
 		.getBowlerStudio()
-		.setHighlight(locateFile(getFilenameFromTrace( trace),selectedCsg),
+		.setHighlight(locateFile(getFilenameFromTrace( trace),getSelectedCsg()),
 					getLineNumbereFromTrace(trace),
 				c
 						);
@@ -334,19 +356,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgSourceFile.put(currentCsg, source);
 		
 		MeshView current = csgMap.get(currentCsg);
-		final ContextMenu cm = new ContextMenu();
+		ContextMenu cm = new ContextMenu();
 		MenuItem cut = new MenuItem("Debug Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
-				if(selectedCsg == currentCsg)
-					return;
-				selectedCsg= currentCsg;
-				new Thread(){
-					public void run(){
-				        selectObjectsSourceFile(currentCsg);
-					}
-				}.start();
+				setSelectedCsg(currentCsg);
+
 		    }
 		});
 		cm.getItems().add(cut);
@@ -843,5 +859,24 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public static TransformNR getOffsetforvisualization() {
 		return offsetForVisualization;
+	}
+
+	public CSG getSelectedCsg() {
+		return selectedCsg;
+	}
+
+	public void setSelectedCsg(CSG selectedCsg) {
+		CSG old = getSelectedCsg();
+		if(old!=null){
+			
+			Platform.runLater(()->csgMap.get(old).setMaterial(new PhongMaterial(old.getColor())));
+		}
+		this.selectedCsg = selectedCsg;
+		Platform.runLater(()->csgMap.get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
+		new Thread(){
+			public void run(){
+		        selectObjectsSourceFile(selectedCsg);
+			}
+		}.start();
 	}
 }
