@@ -37,6 +37,9 @@ BowlerStudio Robotics development IDE is based on
 * [Usb4Java](https://github.com/usb4java/usb4java)
 * [NrJavaSerial](https://github.com/NeuronRobotics/nrjavaserial)
 * [BlueCove](https://github.com/hcarver/bluecove) and the new JavaFX 8 3d engine. 
+* [WAlnut](https://github.com/WalnutiQ/wAlnut) a Neural-modeling based AI library.
+* [DeepLearning4J](http://deeplearning4j.org/quickstart.html) a deep learning framework. 
+* [JBullet](http://jbullet.advel.cz/) physics engine ported from the popular Bullet C++ framework.
 
 BowlerStudio is a device manager, scripting engine, CAD package, and simulation tool all in one application. A user can develop the kinematic of an robot arm using the D-H parameters-based automatic kinematics engine. With this kinematics model, the user can then generate the CAD for new unique parts to match the kinematic model. The user can then export the model to an STL, and connect a Bowler 3d printer to BowlerStudio. The printer can print out the part (using the newly generated STL) while the user connects a DyIO and begins testing the servos with the kinematics model. When the print is done, the user can assemble the arm with the tested servos and run the model again to control the arm with Cartesian instructions. Once this is complete, the user can then attach a wiimote to train the robot arm through a set of tasks, recording them with the animation framework built into BowlerStudio. To be sure the arm is moving to the right place, the user can attach a webcam to the end and use OpenCV to verify the arm's position, or use the arm (in conjunction with the webcam with OpenCV enabled) to track and grab objects (IE "eye-in-hand" tracking). 
 
