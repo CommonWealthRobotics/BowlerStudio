@@ -36,7 +36,8 @@ BowlerStudio Robotics development IDE is based on
 * [motej](http://motej.sourceforge.net/)
 * [Usb4Java](https://github.com/usb4java/usb4java)
 * [NrJavaSerial](https://github.com/NeuronRobotics/nrjavaserial)
-* [BlueCove](https://github.com/hcarver/bluecove) and the new JavaFX 8 3d engine. 
+* [BlueCove](https://github.com/hcarver/bluecove)
+* JavaFX 8 3d engine. 
 * [WAlnut](https://github.com/WalnutiQ/wAlnut) a Neural-modeling based AI library.
 * [JBullet](http://jbullet.advel.cz/) physics engine ported from the popular Bullet C++ framework.
 
