@@ -141,7 +141,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	
 	/** The camera distance. */
-	final double cameraDistance = 3000;
+	final double cameraDistance = 4000;
 	
 	/** The molecule group. */
 	final Xform moleculeGroup = new Xform();
