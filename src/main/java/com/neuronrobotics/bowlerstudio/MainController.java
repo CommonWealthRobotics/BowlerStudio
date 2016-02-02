@@ -783,7 +783,8 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onAddFileToGist() {
-
+		//Select from list of existing gists
+		//Single gist file addition is handled differently
 	}
 
 }
