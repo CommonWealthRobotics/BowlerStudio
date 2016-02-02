@@ -5,32 +5,18 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.scripting.*;
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.imageprovider.CHDKImageProvider;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.PromptForGist;
+import com.neuronrobotics.pidsim.LinearPhysicsEngine;
+import com.neuronrobotics.replicator.driver.NRPrinter;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import haar.HaarFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import javax.swing.UIManager;
-
-import org.apache.commons.io.IOUtils;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-import org.opencv.core.Core;
-import org.reactfx.util.FxTimer;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -38,59 +24,35 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-//import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.util.Pair;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.kohsuke.github.*;
+import org.reactfx.util.FxTimer;
 
-import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
-import com.neuronrobotics.bowlerstudio.scripting.CommandLineWidget;
-import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
-import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
-import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
-import com.neuronrobotics.imageprovider.CHDKImageProvider;
-import com.neuronrobotics.imageprovider.NativeResource;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
-import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.nrconsole.util.PromptForGist;
-import com.neuronrobotics.nrconsole.util.XmlFilter;
-import com.neuronrobotics.pidsim.LinearPhysicsEngine;
-import com.neuronrobotics.replicator.driver.NRPrinter;
-import com.neuronrobotics.replicator.driver.Slic3r;
-import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.gui.*;
-import com.sun.crypto.provider.DHParameterGenerator;
-import com.sun.speech.freetts.VoiceManager;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
-import javafx.scene.control.Menu;
+//import javafx.scene.control.ScrollPane;
 
 /**
  * FXML Controller class
@@ -741,7 +703,82 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onCreatenewGist() {
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		dialog.setTitle("Create new Gist");
+		dialog.setHeaderText("Gists are a great way to share your work.\nYou can share single files, parts of files, or full applications.");
+		dialog.initModality(Modality.WINDOW_MODAL);
 
+		ButtonType addAsPublicGistButtonType = new ButtonType("Make Public Gist", ButtonBar.ButtonData.OK_DONE);
+		ButtonType addAsPrivateGistButtonType = new ButtonType("Make Private Gist", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(addAsPublicGistButtonType, addAsPrivateGistButtonType, ButtonType.CANCEL);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(10, 10, 10, 10));
+
+		TextField gistFilename = new TextField();
+		gistFilename.setPromptText("Filename with extension");
+		grid.add(gistFilename, 0, 0);
+
+		TextField gistDescription = new TextField();
+		gistDescription.setPromptText("Gist description");
+		grid.add(gistDescription, 0, 1);
+
+		dialog.getDialogPane().setContent(grid);
+
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == addAsPublicGistButtonType)
+				return new Pair<>("PUBLIC_" + gistFilename.getText(), gistDescription.getText());
+			else if (dialogButton == addAsPrivateGistButtonType)
+				return new Pair<>("PRIVATE" + gistFilename.getText(), gistDescription.getText());
+			else
+				return null;
+		});
+
+		Platform.runLater(() -> {
+			Optional<Pair<String, String>> result = dialog.showAndWait();
+
+			new Thread(() -> {
+				result.ifPresent(gistPair -> {
+					GitHub gitHub = ScriptingEngine.getGithub();
+					GHGistBuilder builder = gitHub.createGist();
+					builder.file(gistPair.getKey().substring(7), "//Your code here.");
+					builder.description(gistPair.getValue());
+					builder.public_(gistPair.getKey().substring(0, 7).equals("PUBLIC_"));
+
+					GHGist gist;
+					try
+					{
+						gist = builder.create();
+						String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
+						BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
+						System.out.println("Creating repo");
+						while (true)
+						{
+							try
+							{
+								ScriptingEngine.fileFromGistID(gistID, gistPair.getKey().substring(7));
+								break;
+							}
+							catch (GitAPIException e)
+							{
+								e.printStackTrace();
+							}
+
+							ThreadUtil.wait(500);
+							Log.warn(gistPair.getKey().substring(7) + " not built yet");
+						}
+
+						System.out.println("Creating gist at " + gistPair.getKey().substring(7));
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				});
+			}).start();
+		});
 	}
 
 	@FXML
