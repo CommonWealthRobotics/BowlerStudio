@@ -34,6 +34,7 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -48,10 +49,12 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -70,6 +73,7 @@ import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.FileUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -77,14 +81,20 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
@@ -357,6 +367,46 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		MeshView current = csgMap.get(currentCsg);
 		ContextMenu cm = new ContextMenu();
+		MenuItem export = new MenuItem("Export STL...");
+		export.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				
+				new Thread() {
+
+					public void run() {
+						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,null );
+						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
+							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
+						if(!baseDirForFiles.exists())
+							try {
+								baseDirForFiles.createNewFile();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						try {
+							FileUtil
+							.write(Paths
+									.get(baseDirForFiles
+											.getAbsolutePath()), 
+									currentCsg
+									.prepForManufacturing()
+									.toStlString());
+							System.out.println("Exported STL to"+baseDirForFiles
+									.getAbsolutePath());
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(source, e);
+						}
+					}
+				}.start();
+		    }
+		});
+		cm.getItems().add(export);
 		MenuItem cut = new MenuItem("Debug Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
