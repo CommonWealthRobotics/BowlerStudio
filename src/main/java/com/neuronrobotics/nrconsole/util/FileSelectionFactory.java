@@ -37,7 +37,6 @@ public class FileSelectionFactory {
 		Platform.runLater(() -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());
-			
 			fileChooser.getExtensionFilters().addAll(filter);
 			fileChooser.setTitle("Bowler File Chooser");
 			file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));

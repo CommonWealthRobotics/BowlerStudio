@@ -79,6 +79,7 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.PrepForManufacturing;
 import eu.mihosoft.vrl.v3d.STL;
 import eu.mihosoft.vrl.v3d.Transform;
 
@@ -93,11 +94,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private HashMap<DHParameterKinematics, FileChangeWatcher> dhKinematicsFileWatchers = new HashMap<>();
 	private HashMap<DHParameterKinematics, FileChangeWatcher> dhCadWatchers = new HashMap<>();
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
+	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
+	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
+
 	private IDriveEngine defaultDriveEngine;
 	// private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
 	private ProgressIndicator pi;
 	private boolean cadGenerating = false;
+	private boolean showingStl=false;
 	private AbstractGameController gameController = new AbstractGameController() {
 
 		@Override
@@ -233,14 +238,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 				chooser.setInitialDirectory(defaultStlDir);
 				File baseDirForFiles = chooser.showDialog(BowlerStudio.getPrimaryStage());
-
-				if (baseDirForFiles == null) {
-					return;
-				}
 				new Thread() {
 
 					public void run() {
 
+						if (baseDirForFiles == null) {
+							return;
+						}
 						ArrayList<File> files;
 						try {
 							files = generateStls((MobileBase) pm, baseDirForFiles);
@@ -254,9 +258,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 								alert.initModality(Modality.APPLICATION_MODAL);
 								alert.show();
 							});
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(getCadScript(), e);
 						}
 
 					}
@@ -367,7 +370,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					CreaturLabMenue.getItems().remove(localMenue);
 					if (CreaturLabMenue.getItems().size() == 0)
 						CreaturLabMenue.setDisable(true);
-					BowlerStudioController.setCsg(null,null);
+					BowlerStudioController.clearCSG();
 				}
 
 				@Override
@@ -676,9 +679,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	public ArrayList<CSG> generateBody(MobileBase base, boolean b) {
 		pi.setProgress(0);
 		allCad = new ArrayList<>();
+		//DHtoCadMap = new HashMap<>();
+		//private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
+		
 		if (MobileBase.class.isInstance(pm)) {
 			MobileBase device = (MobileBase) pm;
-
+			if(BasetoCadMap.get(device)==null){
+				BasetoCadMap.put(device, new ArrayList<CSG>());
+			}
+			
 			if (cadEngine == null) {
 				try {
 					setDefaultLinkLevelCadEngine();
@@ -695,23 +704,46 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 			pi.setProgress(0.3);
 			try {
-				allCad = cadEngine.generateBody(device, b);
-
+				if(showingStl){
+					//skip the regen
+					for(CSG c:BasetoCadMap.get(device)){
+						allCad.add(c);	
+					}
+				}else{
+					allCad = cadEngine.generateBody(device, b);
+					ArrayList<CSG> arrayList = BasetoCadMap.get(device);
+					arrayList.clear();
+					for(CSG c:allCad){
+						arrayList.add(c);	
+					}
+				}
 			} catch (Exception e) {
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 			// clears old robot and places base
-			BowlerStudioController.setCsg(allCad,getCadScript());
+			BowlerStudioController.setCsg(BasetoCadMap.get(device),getCadScript());
 
 			pi.setProgress(0.4);
 			ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 			double numLimbs = limbs.size();
 			double i = 0;
 			for (DHParameterKinematics l : limbs) {
-
-				for (CSG csg : generateCad(l, b)) {
-					allCad.add(csg);
-					BowlerStudioController.addCsg(csg,getCadScript());
+				if(DHtoCadMap.get(l)==null){
+					DHtoCadMap.put(l, new ArrayList<CSG>());
+				}
+				ArrayList<CSG> arrayList = DHtoCadMap.get(l);
+				if(showingStl){
+					for (CSG csg : arrayList) {
+						allCad.add(csg);
+						BowlerStudioController.addCsg(csg,getCadScript());
+					}
+				}else{
+					arrayList.clear();
+					for (CSG csg : generateCad(l, b)) {
+						allCad.add(csg);
+						arrayList.add(csg);
+						BowlerStudioController.addCsg(csg,getCadScript());
+					}
 				}
 
 				i += 1;
@@ -726,6 +758,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 		}
 		BowlerStudio.setSelectedTab(this);
+		showingStl=false;
 		pi.setProgress(1);
 		return allCad;
 	}
@@ -733,33 +766,64 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
 		ArrayList<File> allCadStl = new ArrayList<>();
 		int leg = 0;
+		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+		double numLimbs = limbs.size();
+		double i = 0;
 		// Start by generating the legs using the DH link based generator
-		for (DHParameterKinematics l : base.getAllDHChains()) {
-			int link = 0;
-			for (CSG csg : generateCad(l, true)) {
-				File dir = new File(
-						baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/" + l.getScriptingName());
-				if (!dir.exists())
-					dir.mkdirs();
-				File stl = new File(dir.getAbsolutePath() + "/Leg_" + leg + "_part_" + link + ".stl");
-				FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.toStlString());
-				allCadStl.add(stl);
-				link++;
+		
+		for (DHParameterKinematics l : limbs) {
+			i += 1;
+			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
+			pi.setProgress( progress);
+			
+			CSG legAssembly=null;
+			for (CSG csg : DHtoCadMap.get(l)) {
+				csg = csg.prepForManufacturing();
+				if(legAssembly==null)
+					legAssembly=csg;
+				else{
+					legAssembly = legAssembly
+							.union(csg
+									.movey(.5+legAssembly.getMaxY()+Math.abs(csg.getMinY()))
+									)
+							;
+				}
+//				legAssembly.setManufactuing(new PrepForManufacturing() {
+//					public CSG prep(CSG arg0) {
+//						return null;
+//					}
+//				});
 			}
+			File dir = new File(
+					baseDirForFiles.getAbsolutePath() + "/" + 
+					base.getScriptingName() + "/" + 
+					l.getScriptingName());
+			if (!dir.exists())
+				dir.mkdirs();
+			File stl = new File(dir.getAbsolutePath() + "/Leg_" + leg + ".stl");
+			FileUtil.write(Paths.get(stl.getAbsolutePath()), legAssembly.toStlString());
+			allCadStl.add(stl);
+			BowlerStudioController.setCsg(legAssembly,getCadScript());
 			leg++;
 		}
+		
 		int link = 0;
 		// now we genrate the base pieces
-		for (CSG csg : generateBody(base, true)) {
+		for (CSG csg : BasetoCadMap.get(base)) {
 			File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/");
 			if (!dir.exists())
 				dir.mkdirs();
 			File stl = new File(dir.getAbsolutePath() + "/Body_part_" + link + ".stl");
-			FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.toStlString());
+			FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.prepForManufacturing().clone().toStlString());
 			allCadStl.add(stl);
 			link++;
 		}
-
+//		BowlerStudioController.setCsg(BasetoCadMap.get(base),getCadScript());
+//		for(CSG c: DHtoCadMap.get(base.getAllDHChains().get(0))){
+//			BowlerStudioController.addCsg(c,getCadScript());
+//		}
+		showingStl=true;
+		pi.setProgress(1);
 		return allCadStl;
 	}
 
