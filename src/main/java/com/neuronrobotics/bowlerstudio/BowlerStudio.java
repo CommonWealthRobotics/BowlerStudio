@@ -11,9 +11,6 @@ import javax.swing.UIManager;
 
 import org.opencv.core.Core;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -54,10 +51,6 @@ public class BowlerStudio extends Application {
      */
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-
-    	JsonObject jsonObject = new JsonParser().parse("{\"name\": \"John\"}").getAsJsonObject();
-
-    	System.out.println(jsonObject.get("name").getAsString()); //John
     	
     	if(args.length==0){
     		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
