@@ -471,6 +471,22 @@ public class BowlerStudioController extends TabPane implements
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public static void clearCSG() {
+		Platform.runLater(() -> {
+			getBowlerStudio().jfx3dmanager.removeObjects();
+		});
+	}
+
+	public static void setCsg(CSG legAssembly, File cadScript) {
+		Platform.runLater(() -> {
+			getBowlerStudio().jfx3dmanager.removeObjects();
+			if(legAssembly!=null)
+	
+				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(legAssembly,cadScript));
+			
+		});
+	}
 
 	
 
