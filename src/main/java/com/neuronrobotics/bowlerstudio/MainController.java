@@ -152,6 +152,7 @@ public class MainController implements Initializable {
 			public String[] prompt(String username) {
 				if(!loginWindowOpen&&controller!=null)
 					controller.reset();
+				controller=null;
 				loginWindowOpen=true;
 				System.err.println("Calling login from BowlerStudio");
 				// new RuntimeException().printStackTrace();
