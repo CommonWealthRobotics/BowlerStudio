@@ -175,7 +175,8 @@ dependencies {
 	*/
 	
 	compile "com.neuronrobotics:BowlerScriptingKernel:0.8.4"
-
+	compile 'javax.media:jmf:2.1.1e'
+	
 	
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.8.4.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
