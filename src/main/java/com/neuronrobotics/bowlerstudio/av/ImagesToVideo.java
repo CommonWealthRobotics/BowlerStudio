@@ -46,8 +46,15 @@ import javax.media.format.VideoFormat;
  * QuickTime movie.
  */
 public class ImagesToVideo implements ControllerListener, DataSinkListener {
-
-	public boolean doIt(int width, int height, int frameRate, Vector inFiles, MediaLocator outML) {
+	public boolean doIt(int width, int height, int frameRate, ArrayList<File> inFiles, File outputFile){
+		Vector<String> inputFiles = new Vector<String>();
+		for(File f:inFiles){
+			inputFiles.addElement(f.getAbsolutePath());
+		}
+		MediaLocator oml=createMediaLocator(outputFile.getAbsolutePath());
+		return doIt(width, height, frameRate, inputFiles,oml );
+	}
+	public boolean doIt(int width, int height, int frameRate, Vector<String> inFiles, MediaLocator outML) {
 		ImageDataSource ids = new ImageDataSource(width, height, frameRate, inFiles);
 
 		Processor p;
@@ -241,7 +248,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
 		// Parse the arguments.
 		int i = 0;
 		int width = -1, height = -1, frameRate = 1;
-		Vector inputFiles = new Vector();
+		Vector<String> inputFiles = new Vector<String>();
 		String outputURL = null;
 
 		while (i < args.length) {
