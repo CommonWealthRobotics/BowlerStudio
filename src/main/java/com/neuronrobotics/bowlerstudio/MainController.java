@@ -744,7 +744,7 @@ public class MainController implements Initializable {
 				result.ifPresent(gistPair -> {
 					GitHub gitHub = ScriptingEngine.getGithub();
 					GHGistBuilder builder = gitHub.createGist();
-					builder.file(gistPair.getKey().substring(7), "Your code here.");
+					builder.file(gistPair.getKey().substring(7), "//Your code here");
 					builder.description(gistPair.getValue());
 					builder.public_(gistPair.getKey().substring(0, 7).equals("PUBLIC_"));
 
