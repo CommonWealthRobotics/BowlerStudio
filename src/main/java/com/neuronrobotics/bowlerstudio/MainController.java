@@ -5,32 +5,18 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.scripting.*;
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.imageprovider.CHDKImageProvider;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.PromptForGist;
+import com.neuronrobotics.pidsim.LinearPhysicsEngine;
+import com.neuronrobotics.replicator.driver.NRPrinter;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import haar.HaarFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import javax.swing.UIManager;
-
-import org.apache.commons.io.IOUtils;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-import org.opencv.core.Core;
-import org.reactfx.util.FxTimer;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -38,21 +24,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-//import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -60,37 +36,24 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
+import org.reactfx.util.FxTimer;
 
-import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
-import com.neuronrobotics.bowlerstudio.scripting.CommandLineWidget;
-import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
-import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
-import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingWidgetType;
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
-import com.neuronrobotics.imageprovider.CHDKImageProvider;
-import com.neuronrobotics.imageprovider.NativeResource;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
-import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.nrconsole.util.PromptForGist;
-import com.neuronrobotics.nrconsole.util.XmlFilter;
-import com.neuronrobotics.pidsim.LinearPhysicsEngine;
-import com.neuronrobotics.replicator.driver.NRPrinter;
-import com.neuronrobotics.replicator.driver.Slic3r;
-import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.gui.*;
-import com.sun.crypto.provider.DHParameterGenerator;
-import com.sun.speech.freetts.VoiceManager;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-import javafx.scene.control.Menu;
+//import javafx.scene.control.ScrollPane;
 
 /**
  * FXML Controller class
@@ -741,12 +704,28 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onCreatenewGist() {
-
+		NewGistController controller = new NewGistController();
+		try
+		{
+			controller.start(new Stage());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	public void onAddFileToGist() {
-
+		AddFileToGistController controller = new AddFileToGistController();
+		try
+		{
+			controller.start(new Stage());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }
