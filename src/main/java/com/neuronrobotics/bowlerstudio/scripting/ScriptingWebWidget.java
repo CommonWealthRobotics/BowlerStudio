@@ -147,7 +147,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
 		this.currentFile = currentFile;
-		loadCodeFromGist(currentGist, engine);
+		try {
+			loadCodeFromGist(currentGist, engine);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
@@ -181,14 +186,20 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	    			else{
 	    				// todo fork git repo
 	    				System.out.println("Making Fork...");
-	    				GHGist newGist = ScriptingEngine.fork(currentGist);
-	    				String webURL = newGist.getHtmlUrl();
-	    				try {
-							BowlerStudio.openUrlInNewTab(new URL(webURL));
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+	    				GHGist newGist;
+						try {
+							newGist = ScriptingEngine.fork(currentGist);
+		    				String webURL = newGist.getHtmlUrl();
+		    				try {
+								BowlerStudio.openUrlInNewTab(new URL(webURL));
+							} catch (MalformedURLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} catch (Exception e1) {
+							BowlerStudioController.highlightException(currentFile, e1);
 						}
+
 	    			}
 	    					
 	    		}
@@ -308,7 +319,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	public void loadCodeFromGist(String a, WebEngine e)
-			throws IOException, InterruptedException {
+			throws Exception {
 		//new Thread(()->{
 			addr = a;
 			engine = e;

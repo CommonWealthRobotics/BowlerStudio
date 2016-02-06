@@ -332,8 +332,15 @@ public class MainController implements Initializable {
 									new Thread() {
 										public void run() {
 											System.out.println("Loading files");
-											ArrayList<String> listofFiles = ScriptingEngine
-													.filesInGit(gist.getGitPushUrl(), "master", null);
+											ArrayList<String> listofFiles;
+											try {
+												listofFiles = ScriptingEngine
+														.filesInGit(gist.getGitPushUrl(), "master", null);
+												
+											} catch (Exception e1) {
+												e1.printStackTrace();
+												return;
+											}
 											for (String s : listofFiles) {
 												MenuItem tmp = new MenuItem(s);
 												tmp.setOnAction(event -> {
@@ -571,7 +578,12 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onLogout() {
-		ScriptingEngine.logout();
+		try {
+			ScriptingEngine.logout();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

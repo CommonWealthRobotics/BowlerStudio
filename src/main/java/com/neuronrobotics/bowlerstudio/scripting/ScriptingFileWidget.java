@@ -343,10 +343,9 @@ public class ScriptingFileWidget extends BorderPane implements
 								append("\n" + currentFile + " Interupted\n");
 							} else{
 								BowlerStudioController.highlightException(currentFile, ex);
-								throw new RuntimeException(ex);
 							}
 						}catch(Exception e){
-							BowlerStudioController.highlightException(currentFile, ex);
+							BowlerStudioController.highlightException(currentFile, e);
 						}
 
 						reset();
@@ -354,7 +353,7 @@ public class ScriptingFileWidget extends BorderPane implements
 					for (IScriptEventListener l : listeners) {
 						l.onScriptError(ex,currentFile);
 					}
-					throw new RuntimeException(ex);
+					BowlerStudioController.highlightException(currentFile, ex);
 				}
 
 			}

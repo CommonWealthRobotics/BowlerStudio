@@ -24,16 +24,32 @@ public class PromptForGist {
 			   
 			    String gistcode = ScriptingEngine.urlToGist(result.get());
 			    System.out.println("Creature Gist " + gistcode);
-			    ArrayList<String> choices =ScriptingEngine.filesInGist(gistcode,null);
+			    ArrayList<String> choices;
 			    String suggestedChoice="";
 			    int numXml=0;
-			    for(int i=0;i<choices.size();i++){
-			    	String s = choices.get(i);
-		    		suggestedChoice=s;
-		    		numXml++;
-			    	
-			    }
-			    
+				try {
+					choices = ScriptingEngine.filesInGist(gistcode,null);
+				    for(int i=0;i<choices.size();i++){
+				    	String s = choices.get(i);
+			    		suggestedChoice=s;
+			    		numXml++;
+				    	
+				    }
+				    ChoiceDialog<String> d = new ChoiceDialog<>(suggestedChoice, choices);
+				    d.setTitle("Choose a file in the gist");
+				    d.setHeaderText("Select from the files in the gist to pick the Creature File");
+				    d.setContentText("Choose A Creature:");
+
+				    // Traditional way to get the response value.
+				    Optional<String> r = d.showAndWait();
+				    if (r.isPresent()){
+				        System.out.println("Your choice: " + r.get());
+				        listener.done(gistcode,r.get());
+				    }
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			    if(numXml ==1){
 			    	//System.out.println("Found just one file at  " + suggestedChoice);
 			    	//loadMobilebaseFromGist(gistcode,suggestedChoice);
@@ -41,17 +57,6 @@ public class PromptForGist {
 			    	
 			    }
 
-			    ChoiceDialog<String> d = new ChoiceDialog<>(suggestedChoice, choices);
-			    d.setTitle("Choose a file in the gist");
-			    d.setHeaderText("Select from the files in the gist to pick the Creature File");
-			    d.setContentText("Choose A Creature:");
-
-			    // Traditional way to get the response value.
-			    Optional<String> r = d.showAndWait();
-			    if (r.isPresent()){
-			        System.out.println("Your choice: " + r.get());
-			        listener.done(gistcode,r.get());
-			    }
 			}
 			
 		});

@@ -127,11 +127,15 @@ public class MobleBaseFactory {
 						    System.out.println("Your new creature: " + result.get());
 						    String newName=result.get();
 						    device.setScriptingName(newName);
-						    device.setWalkingEngine(ScriptingEngine.forkGistFile(device.getWalkingEngine()));
-						    device.setCadEngine(ScriptingEngine.forkGistFile(device.getCadEngine()));
-						    for(DHParameterKinematics dh:device.getAllDHChains()){
-						    	dh.setCadEngine(ScriptingEngine.forkGistFile(dh.getCadEngine()));
-						    	dh.setDhEngine(ScriptingEngine.forkGistFile(dh.getDhEngine()));
+						    try{
+							    device.setWalkingEngine(ScriptingEngine.forkGistFile(device.getWalkingEngine()));
+							    device.setCadEngine(ScriptingEngine.forkGistFile(device.getCadEngine()));
+							    for(DHParameterKinematics dh:device.getAllDHChains()){
+							    	dh.setCadEngine(ScriptingEngine.forkGistFile(dh.getCadEngine()));
+							    	dh.setDhEngine(ScriptingEngine.forkGistFile(dh.getDhEngine()));
+							    }
+						    }catch(Exception ex){
+						    	BowlerStudioController.highlightException(null, ex);
 						    }
 						    
 						    String xml = device.getXml();
