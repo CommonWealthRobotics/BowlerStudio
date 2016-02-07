@@ -165,21 +165,6 @@ dependencies {
 	compile 'org.apache.httpcomponents:httpclient:4.5.1'
 	compile 'cz.advel.jbullet:jbullet:20101010-1'
 	
-	//Deep Learning 4 j and dependancies
-	/*
-	compile 'org.deeplearning4j:deeplearning4j-core:0.4-rc3.8'
-
-	//compile 'org.nd4j:nd4j-x86:0.4-rc3.8'
-	
-	compile 'org.deeplearning4j:deeplearning4j-nlp:0.4-rc3.8'
-	
-	compile 'org.deeplearning4j:deeplearning4j-ui:0.4-rc3.8'
-	
-	//compile 'com.google.guava:guava:19.0'
-	compile 'org.nd4j:canova-nd4j-image:0.0.0.14'
-	compile 'org.nd4j:canova-nd4j-codec:0.0.0.14'
-	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.5.1'
-	*/
 	
 	compile 'javax.media:jmf:2.1.1e'
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
