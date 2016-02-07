@@ -61,7 +61,7 @@ import java.util.ResourceBundle;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MainController implements Initializable {
-	private static int sizeOfTextBuffer = 40000;
+	private static int sizeOfTextBuffer = 400000;
 	private static ByteArrayOutputStream out = null;
 	static boolean opencvOk = true;
 	private static TextArea logViewRef = null;

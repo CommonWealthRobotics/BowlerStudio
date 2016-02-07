@@ -413,9 +413,7 @@ public class BowlerStudioController extends TabPane implements
 				+ Previous);
 		// this is added in the script engine when the connection manager is
 		// loaded
-		Platform.runLater(() -> {
-			jfx3dmanager.removeObjects();
-		});
+
 		ThreadUtil.wait(20);
 		if (ArrayList.class.isInstance(Previous)) {
 			ArrayList<Object> c = (ArrayList<Object>) Previous;
@@ -424,6 +422,24 @@ public class BowlerStudioController extends TabPane implements
 			}
 		} else {
 			removeObject(Previous);
+		}
+		//Check if a CSG is coming in and clear the screen first
+		if (ArrayList.class.isInstance(result)) {
+			ArrayList<Object> c = (ArrayList<Object>) result;
+			for (int i = 0; i < c.size(); i++) {
+				if (CSG.class.isInstance(c.get(i))){
+					Platform.runLater(() -> {
+						jfx3dmanager.removeObjects();
+					});
+					break;
+				}
+			}
+		} else {
+			if (CSG.class.isInstance(result)){
+				Platform.runLater(() -> {
+					jfx3dmanager.removeObjects();
+				});
+			}
 		}
 		if (ArrayList.class.isInstance(result)) {
 			ArrayList<Object> c = (ArrayList<Object>) result;
