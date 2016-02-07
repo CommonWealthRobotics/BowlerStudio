@@ -125,6 +125,7 @@ public class BowlerStudioController extends TabPane implements
 		return null;
 	}
 	
+	
 	public void clearHighlits(){
 		for(Entry<String, LocalFileScriptTab> set: widgets.entrySet()){
 			set.getValue().clearHighlits();

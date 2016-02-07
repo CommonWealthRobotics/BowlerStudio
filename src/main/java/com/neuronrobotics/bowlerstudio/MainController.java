@@ -302,7 +302,7 @@ public class MainController implements Initializable {
 								desc = gist.getFiles().keySet().toArray()[0].toString();
 							}
 							Menu tmpGist = new Menu(desc);
-
+							String description = desc;
 							MenuItem loadWebGist = new MenuItem("Show Web Gist...");
 							loadWebGist.setOnAction(event -> {
 								String webURL = gist.getHtmlUrl();
@@ -325,13 +325,22 @@ public class MainController implements Initializable {
 								tmpGist.getItems().addAll(addFile, loadWebGist);
 							});
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
+								boolean gistFlag = false;
+
 								@Override
 								public void handle(Event ev) {
 
 									// for(ScriptingEngine.)
 									new Thread() {
 										public void run() {
-											System.out.println("Loading files");
+											
+											ThreadUtil.wait(500);
+											if(!tmpGist.isShowing())
+												return;
+											if(gistFlag)
+												return;//another thread is servicing this gist
+											gistFlag = true;
+											System.out.println("Loading files for "+description );
 											ArrayList<String> listofFiles;
 											try {
 												listofFiles = ScriptingEngine
@@ -341,6 +350,8 @@ public class MainController implements Initializable {
 												e1.printStackTrace();
 												return;
 											}
+											if(tmpGist.getItems().size()>2)
+												return;// menue populated by another thread
 											for (String s : listofFiles) {
 												MenuItem tmp = new MenuItem(s);
 												tmp.setOnAction(event -> {
@@ -362,6 +373,7 @@ public class MainController implements Initializable {
 												});
 												Platform.runLater(() -> {
 													tmpGist.getItems().add(tmp);
+													// removing this listener after menue is activated for the first time
 													tmpGist.setOnShowing(null);
 
 												});
