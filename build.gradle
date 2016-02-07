@@ -89,7 +89,7 @@ repositories {
 
 dependencies {
 	
-	
+	/*
 	compile 'gov.nist.math:jama:1.0.2'
 
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
@@ -184,8 +184,8 @@ dependencies {
 	compile 'javax.media:jmf:2.1.1e'
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
 	compile fileTree (dir: '../JCSG/libs/', includes: ['*.jar'])
-	
-	//compile "com.neuronrobotics:BowlerScriptingKernel:0.9.0"
+	*/
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.10.0"
 	
 	
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.10.0.jar'])
