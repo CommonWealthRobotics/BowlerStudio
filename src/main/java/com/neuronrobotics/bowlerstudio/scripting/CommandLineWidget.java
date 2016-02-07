@@ -177,7 +177,7 @@ public class CommandLineWidget  extends BorderPane{
 						reset();
 					});
 
-					throw new RuntimeException(ex);
+					BowlerStudioController.highlightException(null, ex);
 				}
 
 			}

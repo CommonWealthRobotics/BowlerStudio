@@ -89,7 +89,9 @@ repositories {
 
 dependencies {
 	
-	/*
+	
+	compile 'gov.nist.math:jama:1.0.2'
+
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
 	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
@@ -99,8 +101,8 @@ dependencies {
 	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-	compile group: 'org.kohsuke.stapler', name: 'stapler-jetty', version: '1.1'
+	compile 'org.kohsuke.stapler:stapler:1.237'
+
 	
 	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.0.1.201506240215-r'
 	
@@ -121,11 +123,12 @@ dependencies {
 	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
     compile 'org.slf4j:slf4j-simple:1.6.1'
 			
-	//compile "com.neuronrobotics:JCSG:0.1.4"
+	//compile "com.neuronrobotics:JCSG:0.2.0"
 	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	//compile "com.neuronrobotics:java-bowler:3.16.5"
+	compile "com.neuronrobotics:java-bowler:3.16.7"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.16.4-jar-with-dependencies.jar'])
-	compile "com.neuronrobotics:WalnutiQ:2.3.1"
+	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JCSG-0.3.1.jar'])
+	compile "com.neuronrobotics:WalnutiQ:2.3.2"
 	
 	
 	
@@ -148,8 +151,6 @@ dependencies {
 	}
 	
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
-	compile 'gov.nist.math:jama:1.0.2'
 	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
 	compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
 	compile group:'com.github.ellzord', name:'JALSE', version:'1.0.9'
@@ -158,26 +159,36 @@ dependencies {
 	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
 	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
     //compile("org.springframework.boot:spring-boot-starter-web:1.2.7.RELEASE")
+    
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'org.jsoup:jsoup:1.8.3'
+	compile 'org.apache.httpcomponents:httpclient:4.5.1'
+	compile 'cz.advel.jbullet:jbullet:20101010-1'
 	
-	compile fileTree (dir: 'libs', includes: ['*.jar'])
-    compile 'org.slf4j:slf4j-simple:1.6.1'
-	compile 'gov.nist.math:jama:1.0.2'
-	compile 'com.miglayout:miglayout-swing:4.1'
-	compile 'org.igniterealtime.smack:smack:3.2.1'
+	//Deep Learning 4 j and dependancies
+	/*
+	compile 'org.deeplearning4j:deeplearning4j-core:0.4-rc3.8'
 
-	compile 'org.igniterealtime.smack:smackx:3.2.1'
-	compile 'org.apache.commons:commons-lang3:3.2.1'
-	compile 'org.usb4java:usb4java:1.2.0'
-	compile 'org.usb4java:usb4java-javax:1.2.0'
-	compile "com.neuronrobotics:nrjavaserial:3.11.0"
-	compile fileTree (dir: '../java-bowler/libs', includes: ['*.jar'])
-	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
+	//compile 'org.nd4j:nd4j-x86:0.4-rc3.8'
+	
+	compile 'org.deeplearning4j:deeplearning4j-nlp:0.4-rc3.8'
+	
+	compile 'org.deeplearning4j:deeplearning4j-ui:0.4-rc3.8'
+	
+	//compile 'com.google.guava:guava:19.0'
+	compile 'org.nd4j:canova-nd4j-image:0.0.0.14'
+	compile 'org.nd4j:canova-nd4j-codec:0.0.0.14'
+	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.5.1'
 	*/
+	
+	compile 'javax.media:jmf:2.1.1e'
+	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
+	compile fileTree (dir: '../JCSG/libs/', includes: ['*.jar'])
 	
 	//compile "com.neuronrobotics:BowlerScriptingKernel:0.9.0"
 	
 	
-	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.10.0.jar'])
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.10.0.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 }
 

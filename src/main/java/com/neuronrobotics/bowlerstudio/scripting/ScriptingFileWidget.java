@@ -337,23 +337,22 @@ public class ScriptingFileWidget extends BorderPane implements
 				}
 				catch (Exception ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
-					Platform.runLater(() -> {
-						try{
-							if (ex.getMessage().contains("sleep interrupted")) {
-								append("\n" + currentFile + " Interupted\n");
-							} else{
-								BowlerStudioController.highlightException(currentFile, ex);
-							}
-						}catch(Exception e){
-							BowlerStudioController.highlightException(currentFile, e);
-						}
 
-						reset();
-					});
+					try{
+						if (ex.getMessage().contains("sleep interrupted")) {
+							append("\n" + currentFile + " Interupted\n");
+						} else{
+							BowlerStudioController.highlightException(currentFile, ex);
+						}
+					}catch(Exception e){
+						BowlerStudioController.highlightException(currentFile, ex);
+					}
+
+					reset();
+		
 					for (IScriptEventListener l : listeners) {
 						l.onScriptError(ex,currentFile);
 					}
-					BowlerStudioController.highlightException(currentFile, ex);
 				}
 
 			}

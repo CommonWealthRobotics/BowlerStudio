@@ -149,44 +149,55 @@ public class BowlerStudioController extends TabPane implements
 		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
-		
-		if(fileEngineRunByName!=null){
-			if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
-				createFileTab(fileEngineRunByName);
-			}
-			setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
-			widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
-			//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
-			for(StackTraceElement el:ex.getStackTrace()){
-				if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
-					try {
-						widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color.YELLOW);
-					} catch (BadLocationException e) {
-						e.printStackTrace();
+		new Thread(){
+			public void run(){
+				setName("Highlighter thread");
+				if(fileEngineRunByName!=null){
+					if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
+						createFileTab(fileEngineRunByName);
 					}
+					setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
+					widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
+					//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
+					for(StackTraceElement el:ex.getStackTrace()){
+						try {
+							if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color.YELLOW);
+							}
+						} catch (Exception e) {
+//							StringWriter sw = new StringWriter();
+//							PrintWriter pw = new PrintWriter(sw);
+//							e.printStackTrace(pw);
+//							System.out.println(sw.toString());
+						}
+					}
+					
+					
 				}
-			}
-			
-			
-		}
-		if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
-			String message = ex.getMessage();
-			System.out.println(message);
-			if(message.contentEquals(fileEngineRunByName.getName())){
-				int linNum =  Integer.parseInt(message.split(":")[1]);
-				try {
-					widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.YELLOW);
-				} catch (BadLocationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
+					String message = ex.getMessage();
+					//System.out.println(message);
+					if(message!=null)
+						if(message.contentEquals(fileEngineRunByName.getName())){
+							int linNum =  Integer.parseInt(message.split(":")[1]);
+							try {
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.YELLOW);
+							} catch (BadLocationException e) {
+								StringWriter sw = new StringWriter();
+								PrintWriter pw = new PrintWriter(sw);
+								e.printStackTrace(pw);
+								System.out.println(sw.toString());
+							}
+						}
 				}
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				ex.printStackTrace(pw);
+				System.out.println(sw.toString());
 			}
-		}else{
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			ex.printStackTrace(pw);
-			System.out.println(sw.toString());
-		}
+		}.start();
+
+		
 	}
 	
 
