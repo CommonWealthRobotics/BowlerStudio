@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -45,6 +46,8 @@ import javax.swing.JFrame;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
@@ -84,7 +87,9 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
@@ -367,6 +372,49 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		MeshView current = csgMap.get(currentCsg);
 		ContextMenu cm = new ContextMenu();
+		
+		Set<String> params = currentCsg.getParameters();
+		if (params != null) {
+			Menu parameters = new Menu("Parameters...");
+			for (String key : params) {
+				Double[] vals = currentCsg.getParameterValues(key);
+				EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+
+					@Override
+					public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+						new Thread() {
+							public void run() {
+								CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
+
+								if (ret != currentCsg) {
+									removeObject(currentCsg);
+									addObject(ret, source);
+								}
+							}
+						}.start();
+					}
+
+					@Override
+					public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+						new Thread() {
+							public void run() {
+								CSG ret = currentCsg.regenerate();
+								if (ret != currentCsg) {
+									removeObject(currentCsg);
+									addObject(ret, source);
+								}
+							}
+						}.start();
+
+					}
+				}, vals[1], vals[2], vals[0], 700, key);
+				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+				customMenuItem.setHideOnClick(false);
+				parameters.getItems().add(customMenuItem);
+			}
+			cm.getItems().add(parameters);
+		}
+		
 		MenuItem export = new MenuItem("Export STL...");
 		export.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
@@ -406,6 +454,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}.start();
 		    }
 		});
+		
 		cm.getItems().add(export);
 		MenuItem cut = new MenuItem("Debug Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {

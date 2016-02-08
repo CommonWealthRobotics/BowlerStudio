@@ -170,7 +170,7 @@ dependencies {
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
 	compile fileTree (dir: '../JCSG/libs/', includes: ['*.jar'])
 	*/
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.11.0"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.12.0"
 	
 	
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.11.0.jar'])

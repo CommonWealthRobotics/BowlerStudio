@@ -14,7 +14,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private TextField setpointValue;
 	private Slider setpoint;
 	private IOnEngineeringUnitsChange listener;
-	private boolean intCast;
+	private boolean intCast=false;
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units, boolean intCast){
 		this(listener, min, max, current, width, units);
