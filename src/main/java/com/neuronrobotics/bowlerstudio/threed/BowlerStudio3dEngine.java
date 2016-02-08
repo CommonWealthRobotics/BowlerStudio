@@ -384,11 +384,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 						new Thread() {
 							public void run() {
-								CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
-
-								if (ret != currentCsg) {
-									removeObject(currentCsg);
-									addObject(ret, source);
+								try{
+									CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
+									
+									if (ret != currentCsg) {
+										Platform.runLater(()->{
+											removeObject(currentCsg);
+											Platform.runLater(()->addObject(ret, source));
+										});
+									}
+								}catch(Exception ex){
+									BowlerStudioController.highlightException(source, ex);
 								}
 							}
 						}.start();
@@ -398,16 +404,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 						new Thread() {
 							public void run() {
-								CSG ret = currentCsg.regenerate();
-								if (ret != currentCsg) {
-									removeObject(currentCsg);
-									addObject(ret, source);
+								try{
+									CSG ret = currentCsg.regenerate();
+									if (ret != currentCsg) {
+										Platform.runLater(()->{
+											removeObject(currentCsg);
+											Platform.runLater(()->addObject(ret, source));
+										});
+										
+									}
+								}catch(Exception ex){
+									BowlerStudioController.highlightException(source, ex);
 								}
 							}
 						}.start();
 
 					}
-				}, vals[1], vals[2], vals[0], 700, key);
+				}, vals[1], vals[2], vals[0], 400, key);
 				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
 				customMenuItem.setHideOnClick(false);
 				parameters.getItems().add(customMenuItem);
