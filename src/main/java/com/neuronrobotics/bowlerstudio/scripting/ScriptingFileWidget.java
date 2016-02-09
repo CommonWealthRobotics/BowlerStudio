@@ -442,6 +442,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(updateneeded)
 			return;
 		updateneeded=true;
+		watcher.removeIFileChangeListener(this);
 		FxTimer.runLater(
 				Duration.ofMillis(500) ,() -> {
 					updateneeded=false;
@@ -451,11 +452,12 @@ public class ScriptingFileWidget extends BorderPane implements
 						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
 								+ " changed");
 						Platform.runLater(() -> {
-							watcher.removeIFileChangeListener(this);
 							try {
-								setCode(new String(Files.readAllBytes(Paths
+								String content = new String(Files.readAllBytes(Paths
 										.get(fileThatChanged.getAbsolutePath())),
-										"UTF-8"));
+										"UTF-8");
+								if(content.length()>2)// ensures tha tthe file contents never get wiped out on the user
+									setCode(content);
 							} catch (UnsupportedEncodingException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
