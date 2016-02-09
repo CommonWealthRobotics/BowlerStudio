@@ -432,6 +432,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						//Get the set of objects to check for regeneration after the initioal regeneration cycle.
 						Set<CSG> objects = csgMap.keySet();
 						fireRegenerate( currentCsg,  source, objects);
+						cm.hide();// hide this menue because the new CSG talks to the new menue
 					}
 				}, vals[1], vals[2], vals[0], 400, key);
 				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
