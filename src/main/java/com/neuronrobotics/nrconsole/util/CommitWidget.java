@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
+import org.jfree.util.Log;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
@@ -21,6 +22,10 @@ import javafx.util.Pair;
 
 public class CommitWidget {
 	public static void commit(File currentFile, String code){
+		if(code.length()<1){
+			Log.error("COmmit failed with no code to commit");
+			return;
+		}
 		Platform.runLater(() ->{
 			// Create the custom dialog.
 			Dialog<Pair<String, String>> dialog = new Dialog<>();

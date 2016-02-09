@@ -350,13 +350,40 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param previous the previous
 	 */
 	public void removeObject(CSG previousCsg) {
-		
+		System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
 		MeshView previous  = csgMap.get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
 		}
 		csgMap.remove(previousCsg);
 		csgSourceFile.remove(previousCsg);
+	}
+	
+	private void fireRegenerate(CSG currentCsg, File source, Set<CSG> currentObjectsToCheck){
+		new Thread() {
+			public void run() {
+				try{
+					CSG ret = currentCsg.regenerate();
+					if (ret != currentCsg) {
+						Platform.runLater(()->{
+							removeObject(currentCsg);
+							Platform.runLater(()->addObject(ret, source));
+						});
+						
+					}
+				}catch(Exception ex){
+					BowlerStudioController.highlightException(source, ex);
+					
+				}
+				if(currentObjectsToCheck!=null)
+					for(CSG c:currentObjectsToCheck){
+						if(c.isMarkedForRegeneration()){
+							//only regenerate one deep otherwise a recoursive bomb is easy here
+							fireRegenerate( currentCsg, csgSourceFile.get(currentCsg), null);
+						}
+					}
+			}
+		}.start();
 	}
 
 	/**
@@ -366,7 +393,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
-		
+		System.out.println(" Adding a CSG from file: "+source.getName());
 		csgMap.put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
 		
@@ -402,23 +429,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					@Override
 					public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-						new Thread() {
-							public void run() {
-								try{
-									CSG ret = currentCsg.regenerate();
-									if (ret != currentCsg) {
-										Platform.runLater(()->{
-											removeObject(currentCsg);
-											Platform.runLater(()->addObject(ret, source));
-										});
-										
-									}
-								}catch(Exception ex){
-									BowlerStudioController.highlightException(source, ex);
-								}
-							}
-						}.start();
-
+						//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+						Set<CSG> objects = csgMap.keySet();
+						fireRegenerate( currentCsg,  source, objects);
 					}
 				}, vals[1], vals[2], vals[0], 400, key);
 				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
@@ -505,12 +518,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		});
 		
-		Group og = new Group();
-		og.getChildren().add(current);
-		Axis a = new Axis();
-		a.getTransforms().addAll(current.getTransforms());
-		og.getChildren().add(a);
-		lookGroup.getChildren().add(og);
+		lookGroup.getChildren().add(current);
 		//Log.warning("Adding new axis");
 		return current;
 	}

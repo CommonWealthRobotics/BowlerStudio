@@ -454,9 +454,8 @@ public class ScriptingFileWidget extends BorderPane implements
 						Platform.runLater(() -> {
 							try {
 								String content = new String(Files.readAllBytes(Paths
-										.get(fileThatChanged.getAbsolutePath())),
-										"UTF-8");
-								if(content.length()>2)// ensures tha tthe file contents never get wiped out on the user
+										.get(fileThatChanged.getAbsolutePath())));
+								if(content.length()>2)// ensures tha the file contents never get wiped out on the user
 									setCode(content);
 							} catch (UnsupportedEncodingException e1) {
 								// TODO Auto-generated catch block
