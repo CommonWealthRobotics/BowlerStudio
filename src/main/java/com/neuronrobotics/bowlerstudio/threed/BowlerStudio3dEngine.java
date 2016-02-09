@@ -43,6 +43,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import com.neuronrobotics.bowlerkernel.BowlerDatabase;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
@@ -77,6 +78,7 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.IParametric;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -350,7 +352,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param previous the previous
 	 */
 	public void removeObject(CSG previousCsg) {
-		System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
+		//System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
 		MeshView previous  = csgMap.get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
@@ -393,7 +395,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
-		System.out.println(" Adding a CSG from file: "+source.getName());
+		//System.out.println(" Adding a CSG from file: "+source.getName());
 		csgMap.put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
 		
@@ -403,8 +405,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		Set<String> params = currentCsg.getParameters();
 		if (params != null) {
 			Menu parameters = new Menu("Parameters...");
+			
 			for (String key : params) {
+				currentCsg.setParameterIfNull(key,new IParametric(){
+					@Override
+					public CSG change(CSG arg0, String arg1, double arg2) {
+						BowlerDatabase.set(arg1, arg2);
+						return arg0;
+					}
+					
+				});
 				Double[] vals = currentCsg.getParameterValues(key);
+				
 				EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 					@Override
@@ -412,6 +424,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						new Thread() {
 							public void run() {
 								try{
+									
 									CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
 									
 									if (ret != currentCsg) {
