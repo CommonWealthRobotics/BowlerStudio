@@ -152,7 +152,6 @@ public class MainController implements Initializable {
 			public String[] prompt(String username) {
 				if(!loginWindowOpen&&controller!=null)
 					controller.reset();
-				controller=null;
 				loginWindowOpen=true;
 				System.err.println("Calling login from BowlerStudio");
 				// new RuntimeException().printStackTrace();
@@ -705,87 +704,28 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onCreatenewGist() {
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.setTitle("Create new Gist");
-		dialog.setHeaderText("Gists are a great way to share your work.\nYou can share single files, parts of files, or full applications.");
-		dialog.initModality(Modality.WINDOW_MODAL);
-
-		ButtonType addAsPublicGistButtonType = new ButtonType("Make Public Gist", ButtonBar.ButtonData.OK_DONE);
-		ButtonType addAsPrivateGistButtonType = new ButtonType("Make Private Gist", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(addAsPublicGistButtonType, addAsPrivateGistButtonType, ButtonType.CANCEL);
-
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(10, 10, 10, 10));
-
-		TextField gistFilename = new TextField();
-		gistFilename.setPromptText("Filename with extension");
-		grid.add(gistFilename, 0, 0);
-
-		TextField gistDescription = new TextField();
-		gistDescription.setPromptText("Gist description");
-		grid.add(gistDescription, 0, 1);
-
-		dialog.getDialogPane().setContent(grid);
-
-		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == addAsPublicGistButtonType)
-				return new Pair<>("PUBLIC_" + gistFilename.getText(), gistDescription.getText());
-			else if (dialogButton == addAsPrivateGistButtonType)
-				return new Pair<>("PRIVATE" + gistFilename.getText(), gistDescription.getText());
-			else
-				return null;
-		});
-
-		Platform.runLater(() -> {
-			Optional<Pair<String, String>> result = dialog.showAndWait();
-
-			new Thread(() -> {
-				result.ifPresent(gistPair -> {
-					GitHub gitHub = ScriptingEngine.getGithub();
-					GHGistBuilder builder = gitHub.createGist();
-					builder.file(gistPair.getKey().substring(7), "Your code here.");
-					builder.description(gistPair.getValue());
-					builder.public_(gistPair.getKey().substring(0, 7).equals("PUBLIC_"));
-
-					GHGist gist;
-					try
-					{
-						gist = builder.create();
-						String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
-						BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
-						System.out.println("Creating repo");
-						while (true)
-						{
-							try
-							{
-								ScriptingEngine.fileFromGistID(gistID, gistPair.getKey().substring(7));
-								break;
-							}
-							catch (GitAPIException e)
-							{
-								e.printStackTrace();
-							}
-
-							ThreadUtil.wait(500);
-							Log.warn(gistPair.getKey().substring(7) + " not built yet");
-						}
-
-						System.out.println("Creating gist at " + gistPair.getKey().substring(7));
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-				});
-			}).start();
-		});
+		NewGistController controller = new NewGistController();
+		try
+		{
+			controller.start(new Stage());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	public void onAddFileToGist() {
-
+		AddFileToGistController controller = new AddFileToGistController();
+		try
+		{
+			controller.start(new Stage());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }
