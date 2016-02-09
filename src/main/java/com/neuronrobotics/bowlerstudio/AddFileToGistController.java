@@ -46,11 +46,6 @@ public class AddFileToGistController extends Application
         primaryStage.setTitle("Add file to Gist");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("addFileToGist.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.initModality(Modality.WINDOW_MODAL);
-        primaryStage.show();
-
         new Thread(() -> {
             GitHub gitHub = ScriptingEngine.getGithub();
             while (gitHub == null)
@@ -66,14 +61,25 @@ public class AddFileToGistController extends Application
                 List<String> gistList = new ArrayList<>();
                 for (GHGist gist : gists)
                     gistList.add(gist.getDescription());
-                ObservableList<String> observableGistList = FXCollections.observableList(gistList);
-                Platform.runLater(() -> gistListView.setItems(observableGistList));
+                ObservableList<String> observableGistList = FXCollections.observableArrayList("One", "Two"); //FXCollections.observableList(gistList);
+                //Platform.runLater(() -> gistListView = new ListView<>(observableGistList));
+                Platform.runLater(() -> {
+                    for (String s : observableGistList)
+                    {
+                        gistListView.getItems().add(s);
+                    }
+                });
+                //throw new IllegalStateException(observableGistList.toString());
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
         }).start();
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.initModality(Modality.WINDOW_MODAL);
+        primaryStage.show();
     }
 
     @FXML
