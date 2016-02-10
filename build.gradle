@@ -170,11 +170,11 @@ dependencies {
 	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
 	compile fileTree (dir: '../JCSG/libs/', includes: ['*.jar'])
 	*/
-	//compile "com.neuronrobotics:BowlerScriptingKernel:0.12.4"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.12.10"
 	
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 	
-	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.12.10.jar'])
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.12.10.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 }
 
