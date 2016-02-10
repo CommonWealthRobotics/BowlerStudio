@@ -121,6 +121,7 @@ If a tutorial is missing and not described as needed by an issue, feel free to a
 - Internet connection (dependencies are downloaded automatically)
 - IDE: [Gradle](http://www.gradle.org/) Plugin (not necessary for command line usage)
 - OpenCV 2.4.9 installed and configured in the library paths (OS installers preferred) 
+- The Binary installer for BowlerStudio must be installed before develpment. 
 
 ### IDE
 
