@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -146,7 +147,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
 		this.currentFile = currentFile;
-		loadCodeFromGist(currentGist, engine);
+		try {
+			loadCodeFromGist(currentGist, engine);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
@@ -180,14 +186,20 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	    			else{
 	    				// todo fork git repo
 	    				System.out.println("Making Fork...");
-	    				GHGist newGist = ScriptingEngine.fork(currentGist);
-	    				String webURL = newGist.getHtmlUrl();
-	    				try {
-							BowlerStudio.openUrlInNewTab(new URL(webURL));
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+	    				GHGist newGist;
+						try {
+							newGist = ScriptingEngine.fork(currentGist);
+		    				String webURL = newGist.getHtmlUrl();
+		    				try {
+								BowlerStudio.openUrlInNewTab(new URL(webURL));
+							} catch (MalformedURLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} catch (Exception e1) {
+							BowlerStudioController.highlightException(currentFile, e1);
 						}
+
 	    			}
 	    					
 	    		}
@@ -306,31 +318,43 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		}
 	}
 
-	public void loadCodeFromGist(String addr, WebEngine engine)
-			throws IOException, InterruptedException {
-		this.addr = addr;
-		this.engine = engine;
-		loadGist = true;
-		fileListBox.valueProperty().removeListener(this);
-		Platform.runLater(()->runfx.setDisable(true));
-		Platform.runLater(()->edit.setDisable(true));
-		Platform.runLater(()->fileListBox.getItems().clear());
-		currentGist = ScriptingEngine.getCurrentGist(addr, engine).get(0);
-		
-		ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
-		
-		if(fileList.size()==1)
-			loadGistLocal(currentGist, fileList.get(0));
-		Platform.runLater(()->{
+	public void loadCodeFromGist(String a, WebEngine e)
+			throws Exception {
+		//new Thread(()->{
+			addr = a;
+			engine = e;
+			loadGist = true;
+			fileListBox.valueProperty().removeListener(this);
+			Platform.runLater(()->runfx.setDisable(true));
+			Platform.runLater(()->edit.setDisable(true));
+			Platform.runLater(()->fileListBox.getItems().clear());
+			List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
+			if(gists.size()>0)
+				currentGist = gists.get(0);
+			else
+				return;
 			
-			for(String s:fileList){
-				fileListBox.getItems().add(s);
-			}
-			fileListBox.setValue(fileList.get(0));
-			fileListBox.valueProperty().addListener(this);
-			Platform.runLater(()->runfx.setDisable(false));
-			Platform.runLater(()->edit.setDisable(false));
-		});
+			ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
+//			for(String s:fileList){
+//				System.out.println("GITS: "+s);
+//			}
+			if(fileList.size()>0)
+				loadGistLocal(currentGist, fileList.get(0));
+			
+			Platform.runLater(()->{
+				
+				for(String s:fileList){
+					fileListBox.getItems().add(s);
+				}
+				if(fileList.size()>0){
+					fileListBox.setValue(fileList.get(0));
+					fileListBox.valueProperty().addListener(this);
+					Platform.runLater(()->runfx.setDisable(false));
+					Platform.runLater(()->edit.setDisable(false));
+				}
+			});
+		//}).start();
+		
 	}
 
 
@@ -355,7 +379,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				try {
 					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptFinished(obj, scriptResult);
+						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
 					Platform.runLater(() -> {
 						append("\n" + currentFile + " Completed\n");
@@ -415,7 +439,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 						reset();
 					});
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptError(ex);
+						l.onScriptError(ex,currentFile);
 					}
 					throw new RuntimeException(ex);
 				}
@@ -448,7 +472,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		codeText = string;
 		// System.out.println(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onGroovyScriptChanged(pervious, string);
+			l.onScriptChanged(pervious, string,currentFile);
 		}
 	}
 

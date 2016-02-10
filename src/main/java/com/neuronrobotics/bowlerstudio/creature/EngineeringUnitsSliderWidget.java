@@ -14,7 +14,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private TextField setpointValue;
 	private Slider setpoint;
 	private IOnEngineeringUnitsChange listener;
-	private boolean intCast;
+	private boolean intCast=false;
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units, boolean intCast){
 		this(listener, min, max, current, width, units);
@@ -60,9 +60,10 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		});
 		setpoint.valueProperty().addListener(this);
 		
+		String unitsString = "("+units+")";
 		getColumnConstraints().add(new ColumnConstraints(width+10)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(unitsString.length()*7)); // column 2 is 100 wide
 		
 		
 		add(	setpoint, 
@@ -71,7 +72,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		add(	setpointValue, 
 				1, 
 				0);
-		add(	new Text("("+units+")"), 
+		add(	new Text(unitsString), 
 				2, 
 				0);
 	}

@@ -6,11 +6,7 @@ import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 
@@ -37,8 +33,8 @@ public class FileSelectionFactory {
 		Platform.runLater(() -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());
-			
-			fileChooser.getExtensionFilters().addAll(filter);
+			if(filter!=null)
+				fileChooser.getExtensionFilters().addAll(filter);
 			fileChooser.setTitle("Bowler File Chooser");
 			file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));
 			file.setDone(true);

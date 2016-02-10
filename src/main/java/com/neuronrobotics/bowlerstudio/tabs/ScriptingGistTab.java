@@ -251,10 +251,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 					try {
 						scripting.loadCodeFromGist(Current_URL, webEngine);
 						myTab.setText(scripting.getFileName());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -317,13 +314,10 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 				System.out.println("Loading code from "+Current_URL);
 				try {
 					scripting.loadCodeFromGist(Current_URL, webEngine);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} 
 				if(firstBoot){
 					firstBoot=false;
 					//now that the application is totally loaded check for connections to add

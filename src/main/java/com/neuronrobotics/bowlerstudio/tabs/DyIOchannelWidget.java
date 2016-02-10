@@ -21,11 +21,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-
-
-
-
-
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -303,10 +299,7 @@ public class DyIOchannelWidget {
 						});
 					}
 				}catch(Exception e){
-					  StringWriter sw = new StringWriter();
-				      PrintWriter pw = new PrintWriter(sw);
-				      e.printStackTrace(pw);
-				      System.out.println(sw.toString());
+					BowlerStudioController.highlightException(null, e);
 				}
 			}
 		}.start();

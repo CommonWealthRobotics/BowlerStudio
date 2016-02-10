@@ -11,9 +11,7 @@ import javax.swing.UIManager;
 
 import org.opencv.core.Core;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.neuronrobotics.bowlerkernel.BowlerDatabase;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -47,32 +45,42 @@ public class BowlerStudio extends Application {
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
-
+	static{
+		PrintStream ps = new PrintStream(MainController.getOut());
+		//System.setErr(ps);
+		System.setOut(ps);
+	}
     /**
      * @param args the command line arguments
      * @throws Exception 
      */
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-
-    	JsonObject jsonObject = new JsonParser().parse("{\"name\": \"John\"}").getAsJsonObject();
-
-    	System.out.println(jsonObject.get("name").getAsString()); //John
     	
     	if(args.length==0){
-    		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
     		
-    		System.out.println("Loading assets ");
+    		
+    		//System.out.println("Loading assets ");
 
     		BowlerStudioResourceFactory.load();
-    		System.out.println("Done loading assets ");
+    		//System.out.println("Done loading assets ");
+    		String key="Bowler Initial Version";
+    		new Thread(()->{
+        		if(BowlerDatabase.get(key)==null){
+        			BowlerDatabase.set(key,StudioBuildInfo.getVersion());
+        		}
+        		System.out.println("First version Bowler Studio: v "+BowlerDatabase.get(key));
+        		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
+        		
+    		}).start();
+
     		fxmlLoader = new FXMLLoader(
                     BowlerStudio.class.getResource("Main.fxml"));
     		//Platform.runLater(()->{
-    			System.out.println("Loading the main fxml ");
+    			//System.out.println("Loading the main fxml ");
                 try {
                     fxmlLoader.load();
-            		System.out.println("Done loading main ");
+            		//System.out.println("Done loading main ");
 
                 } catch (IOException ex) {
                 	ex.printStackTrace();
@@ -84,9 +92,6 @@ public class BowlerStudio extends Application {
     	
 
 
-    		PrintStream ps = new PrintStream(MainController.getOut());
-    		//System.setErr(ps);
-    		System.setOut(ps);
 
     		MainController.updateLog();
 			try{

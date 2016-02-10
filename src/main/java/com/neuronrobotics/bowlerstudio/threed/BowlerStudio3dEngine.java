@@ -34,24 +34,31 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import com.neuronrobotics.bowlerkernel.BowlerDatabase;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -64,11 +71,14 @@ import com.neuronrobotics.sdk.dyio.dypid.DyPIDConfiguration;
 import com.neuronrobotics.sdk.dyio.peripherals.DigitalInputChannel;
 import com.neuronrobotics.sdk.dyio.peripherals.IDigitalInputListener;
 import com.neuronrobotics.sdk.pid.PIDConfiguration;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.IParametric;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -76,11 +86,22 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
@@ -98,12 +119,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 
 import static javafx.scene.input.KeyCode.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
@@ -135,7 +158,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	
 	/** The camera distance. */
-	final double cameraDistance = 3000;
+	final double cameraDistance = 4000;
 	
 	/** The molecule group. */
 	final Xform moleculeGroup = new Xform();
@@ -195,6 +218,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private double upDown=0;
 	private double leftRight=0;
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
+	private HashMap<CSG,File> csgSourceFile = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
 
@@ -210,6 +234,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private int debuggerIndex=0;
 	private ArrayList<String> debuggerList=new ArrayList<>();
 	private CSG selectedCsg=null;
+	double color=0;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -226,16 +251,34 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		handleMouse(getSubScene());
 
 		setScene(s);
-		
+
+//		new Thread() {
+//
+//			public void run() {
+//				setName("3d Highlighter");
+//
+//				while (true) {
+//					ThreadUtil.wait(100);
+//					if (getSelectedCsg() != null) {
+//						Color newColor = getSelectedCsg().getColor().interpolate(Color.YELLOW, Math.sin(color));
+//						color += .05;
+//						if (color > Math.PI)
+//							color = 0;
+//						PhongMaterial m = new PhongMaterial(newColor);
+//						// current.setMaterial(m);
+//						Platform.runLater(() -> csgMap.get(getSelectedCsg()).setMaterial(m));
+//					}
+//				}
+//			}
+//		}.start();
+//		
 	}
 	
 	private void highlightDebugIndex(int index, java.awt.Color c){
 		String trace = debuggerList.get(index);
 		BowlerStudioController
 		.getBowlerStudio()
-		.setHighlight(
-				ScriptingEngine
-					.getFileEngineRunByName(getFilenameFromTrace(trace)),
+		.setHighlight(locateFile(getFilenameFromTrace( trace),getSelectedCsg()),
 					getLineNumbereFromTrace(trace),
 				c
 						);
@@ -300,6 +343,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void removeObjects(){
 		lookGroup.getChildren().clear();
 		csgMap.clear();
+		csgSourceFile.clear();
 	}
 
 	/**
@@ -308,13 +352,40 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param previous the previous
 	 */
 	public void removeObject(CSG previousCsg) {
-		
+		//System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
 		MeshView previous  = csgMap.get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
 		}
 		csgMap.remove(previousCsg);
-
+		csgSourceFile.remove(previousCsg);
+	}
+	
+	private void fireRegenerate(CSG currentCsg, File source, Set<CSG> currentObjectsToCheck){
+		new Thread() {
+			public void run() {
+				try{
+					CSG ret = currentCsg.regenerate();
+					if (ret != currentCsg) {
+						Platform.runLater(()->{
+							removeObject(currentCsg);
+							Platform.runLater(()->addObject(ret, source));
+						});
+						
+					}
+				}catch(Exception ex){
+					BowlerStudioController.highlightException(source, ex);
+					
+				}
+				if(currentObjectsToCheck!=null)
+					for(CSG c:currentObjectsToCheck){
+						if(c.isMarkedForRegeneration()){
+							//only regenerate one deep otherwise a recoursive bomb is easy here
+							fireRegenerate( currentCsg, csgSourceFile.get(currentCsg), null);
+						}
+					}
+			}
+		}.start();
 	}
 
 	/**
@@ -323,29 +394,145 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param current the current
 	 * @return the mesh view
 	 */
-	public MeshView addObject(CSG currentCsg) {
-		
+	public MeshView addObject(CSG currentCsg,File source) {
+		//System.out.println(" Adding a CSG from file: "+source.getName());
 		csgMap.put(currentCsg, currentCsg.getMesh());
+		csgSourceFile.put(currentCsg, source);
 		
 		MeshView current = csgMap.get(currentCsg);
+		ContextMenu cm = new ContextMenu();
+		
+		Set<String> params = currentCsg.getParameters();
+		if (params != null) {
+			Menu parameters = new Menu("Parameters...");
+			
+			for (String key : params) {
+				currentCsg.setParameterIfNull(key,new IParametric(){
+					@Override
+					public CSG change(CSG arg0, String arg1, double arg2) {
+						BowlerDatabase.set(arg1, arg2);
+						return arg0;
+					}
+					
+				});
+				Double[] vals = currentCsg.getParameterValues(key);
+				
+				EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
-		current.setOnMouseClicked(event -> {
-			if(selectedCsg == currentCsg)
-				return;
-			selectedCsg= currentCsg;
-			new Thread(){
-				public void run(){
-			        selectObjectsSourceFile(currentCsg);
+					@Override
+					public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+						new Thread() {
+							public void run() {
+								try{
+									
+									CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
+									
+									if (ret != currentCsg) {
+										Platform.runLater(()->{
+											removeObject(currentCsg);
+											Platform.runLater(()->addObject(ret, source));
+										});
+									}
+								}catch(Exception ex){
+									BowlerStudioController.highlightException(source, ex);
+								}
+							}
+						}.start();
+					}
+
+					@Override
+					public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+						//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+						Set<CSG> objects = csgMap.keySet();
+						fireRegenerate( currentCsg,  source, objects);
+						cm.hide();// hide this menue because the new CSG talks to the new menue
+					}
+				}, vals[1], vals[2], vals[0], 400, key);
+				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+				customMenuItem.setHideOnClick(false);
+				parameters.getItems().add(customMenuItem);
+			}
+			cm.getItems().add(parameters);
+		}
+		
+		MenuItem export = new MenuItem("Export STL...");
+		export.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
 				}
-			}.start();
+				
+				new Thread() {
+
+					public void run() {
+						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,null );
+						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
+							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
+						if(!baseDirForFiles.exists())
+							try {
+								baseDirForFiles.createNewFile();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						try {
+							FileUtil
+							.write(Paths
+									.get(baseDirForFiles
+											.getAbsolutePath()), 
+									currentCsg
+									.prepForManufacturing()
+									.toStlString());
+							System.out.println("Exported STL to"+baseDirForFiles
+									.getAbsolutePath());
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(source, e);
+						}
+					}
+				}.start();
+		    }
 		});
 		
-		Group og = new Group();
-		og.getChildren().add(current);
-		Axis a = new Axis();
-		a.getTransforms().addAll(current.getTransforms());
-		og.getChildren().add(a);
-		lookGroup.getChildren().add(og);
+		cm.getItems().add(export);
+		MenuItem cut = new MenuItem("Debug Source");
+		cut.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+				setSelectedCsg(currentCsg);
+
+		    }
+		});
+		cm.getItems().add(cut);
+        cm.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    System.out.println("consuming right release button in cm filter");
+                    event.consume();
+                }
+            }
+        });
+        cm.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("right gets consumed so this must be left on "+
+                        ((MenuItem) event.getTarget()).getText());
+            }
+        });
+		current.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton()==MouseButton.SECONDARY){
+					cm.show(current, event.getScreenX(), event.getScreenY());
+					event.consume();
+				}else
+					cm.hide();
+			}
+		});
+		
+		lookGroup.getChildren().add(current);
 		//Log.warning("Adding new axis");
 		return current;
 	}
@@ -706,7 +893,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			lastFileSelected=fileName;
 			lastFileLine=linNum;
 			
-			BowlerStudioController.getBowlerStudio().setHighlight(ScriptingEngine.getFileEngineRunByName(fileName),linNum,java.awt.Color.PINK);
+			BowlerStudioController.getBowlerStudio().setHighlight(locateFile(fileName,source),linNum,java.awt.Color.PINK);
 
 		        		
 		    	
@@ -717,6 +904,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			back.disableProperty().set(true);
 		});
 	    
+	}
+	
+	private File locateFile(String fileName, CSG source){
+		File f = csgSourceFile.get(source);
+		if(f.getName().contains(fileName)){
+			return f;
+		}
+		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 
 	// @Override
@@ -798,5 +993,24 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public static TransformNR getOffsetforvisualization() {
 		return offsetForVisualization;
+	}
+
+	public CSG getSelectedCsg() {
+		return selectedCsg;
+	}
+
+	public void setSelectedCsg(CSG selectedCsg) {
+		CSG old = getSelectedCsg();
+		if(old!=null){
+			
+			Platform.runLater(()->csgMap.get(old).setMaterial(new PhongMaterial(old.getColor())));
+		}
+		this.selectedCsg = selectedCsg;
+		Platform.runLater(()->csgMap.get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
+		new Thread(){
+			public void run(){
+		        selectObjectsSourceFile(selectedCsg);
+			}
+		}.start();
 	}
 }

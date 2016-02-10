@@ -19,7 +19,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	private Group hand;
 	private Group cameraFrame = new Group();
 	
-	private double zoomDepth = -1000;
+	private double zoomDepth = -2500;
 	private Affine zoomAffine = new Affine();
 
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){

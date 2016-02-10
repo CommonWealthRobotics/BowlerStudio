@@ -298,7 +298,7 @@ public class ScriptingFileWidget extends BorderPane implements
 				try {
 					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
 					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptFinished(obj, scriptResult);
+						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
 					Platform.runLater(() -> {
 						append("\n" + currentFile + " Completed\n");
@@ -337,24 +337,22 @@ public class ScriptingFileWidget extends BorderPane implements
 				}
 				catch (Exception ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
-					Platform.runLater(() -> {
-						try{
-							if (ex.getMessage().contains("sleep interrupted")) {
-								append("\n" + currentFile + " Interupted\n");
-							} else{
-								BowlerStudioController.highlightException(currentFile, ex);
-								throw new RuntimeException(ex);
-							}
-						}catch(Exception e){
+
+					try{
+						if (ex.getMessage().contains("sleep interrupted")) {
+							append("\n" + currentFile + " Interupted\n");
+						} else{
 							BowlerStudioController.highlightException(currentFile, ex);
 						}
-
-						reset();
-					});
-					for (IScriptEventListener l : listeners) {
-						l.onGroovyScriptError(ex);
+					}catch(Exception e){
+						BowlerStudioController.highlightException(currentFile, ex);
 					}
-					throw new RuntimeException(ex);
+
+					reset();
+		
+					for (IScriptEventListener l : listeners) {
+						l.onScriptError(ex,currentFile);
+					}
 				}
 
 			}
@@ -444,6 +442,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(updateneeded)
 			return;
 		updateneeded=true;
+		watcher.removeIFileChangeListener(this);
 		FxTimer.runLater(
 				Duration.ofMillis(500) ,() -> {
 					updateneeded=false;
@@ -453,11 +452,11 @@ public class ScriptingFileWidget extends BorderPane implements
 						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
 								+ " changed");
 						Platform.runLater(() -> {
-							watcher.removeIFileChangeListener(this);
 							try {
-								setCode(new String(Files.readAllBytes(Paths
-										.get(fileThatChanged.getAbsolutePath())),
-										"UTF-8"));
+								String content = new String(Files.readAllBytes(Paths
+										.get(fileThatChanged.getAbsolutePath())));
+								if(content.length()>2)// ensures tha the file contents never get wiped out on the user
+									setCode(content);
 							} catch (UnsupportedEncodingException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -485,7 +484,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		codeText = string;
 		// System.out.println(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onGroovyScriptChanged(pervious, string);
+			l.onScriptChanged(pervious, string,currentFile);
 		}
 	}
 

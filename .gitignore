@@ -9,6 +9,8 @@
 /.project
 /.classpath
 /.settings*
+/.idea*
 
 /build/
 /whitecylinder/
+*.iml
