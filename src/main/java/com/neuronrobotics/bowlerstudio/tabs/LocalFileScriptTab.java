@@ -125,9 +125,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	        @Override
 	        public void changedUpdate(DocumentEvent arg0) {
-            	getScripting().removeIScriptEventListener(l);
-            	getScripting().setCode(textArea.getText());
-            	getScripting().addIScriptEventListener(l);
+	        	new Thread(){
+	        		public void run(){
+	                	getScripting().removeIScriptEventListener(l);
+	                	getScripting().setCode(textArea.getText());
+	                	getScripting().addIScriptEventListener(l);
+	        		}
+	        	}.start();
 	        }
 	    });
 		

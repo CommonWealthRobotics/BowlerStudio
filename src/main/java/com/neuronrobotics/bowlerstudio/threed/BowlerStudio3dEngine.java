@@ -43,7 +43,6 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import com.neuronrobotics.bowlerkernel.BowlerDatabase;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
@@ -78,7 +77,10 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
-import eu.mihosoft.vrl.v3d.IParametric;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.IParametric;
+import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
+import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -407,50 +409,46 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Menu parameters = new Menu("Parameters...");
 			
 			for (String key : params) {
-				currentCsg.setParameterIfNull(key,new IParametric(){
-					@Override
-					public CSG change(CSG arg0, String arg1, double arg2) {
-						BowlerDatabase.set(arg1, arg2);
-						return arg0;
-					}
+				Parameter param = CSGDatabase.get(key);
+				currentCsg.setParameterIfNull(key);
+				if(LengthParameter.class.isInstance(param)){
+					LengthParameter lp  = (LengthParameter)param;
 					
-				});
-				Double[] vals = currentCsg.getParameterValues(key);
-				
-				EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
-
-					@Override
-					public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-						new Thread() {
-							public void run() {
-								try{
-									
-									CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
-									
-									if (ret != currentCsg) {
-										Platform.runLater(()->{
-											removeObject(currentCsg);
-											Platform.runLater(()->addObject(ret, source));
-										});
+					EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+	
+						@Override
+						public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+							new Thread() {
+								public void run() {
+									try{
+										
+										CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
+										
+										if (ret != currentCsg) {
+											Platform.runLater(()->{
+												removeObject(currentCsg);
+												Platform.runLater(()->addObject(ret, source));
+											});
+										}
+									}catch(Exception ex){
+										BowlerStudioController.highlightException(source, ex);
 									}
-								}catch(Exception ex){
-									BowlerStudioController.highlightException(source, ex);
 								}
-							}
-						}.start();
-					}
-
-					@Override
-					public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-						//Get the set of objects to check for regeneration after the initioal regeneration cycle.
-						Set<CSG> objects = csgMap.keySet();
-						fireRegenerate( currentCsg,  source, objects);
-						cm.hide();// hide this menue because the new CSG talks to the new menue
-					}
-				}, vals[1], vals[2], vals[0], 400, key);
-				CustomMenuItem customMenuItem = new CustomMenuItem(widget);
-				customMenuItem.setHideOnClick(false);
-				parameters.getItems().add(customMenuItem);
+							}.start();
+						}
+	
+						@Override
+						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+							Set<CSG> objects = csgMap.keySet();
+							fireRegenerate( currentCsg,  source, objects);
+							cm.hide();// hide this menue because the new CSG talks to the new menue
+						}
+					},Double.parseDouble(lp.getOptions().get(1).toString()) , Double.parseDouble(lp.getOptions().get(0).toString()), lp.getMM(), 400, key);
+					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+					customMenuItem.setHideOnClick(false);
+					parameters.getItems().add(customMenuItem);
+				}
 			}
 			cm.getItems().add(parameters);
 		}
