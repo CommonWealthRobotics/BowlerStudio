@@ -11,8 +11,8 @@ import javax.swing.UIManager;
 
 import org.opencv.core.Core;
 
-import com.neuronrobotics.bowlerkernel.BowlerDatabase;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.imageprovider.NativeResource;
@@ -22,7 +22,10 @@ import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.javafx.css.CascadingStyle;
+
 import edu.cmu.sphinx.api.Configuration;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -65,14 +68,6 @@ public class BowlerStudio extends Application {
     		BowlerStudioResourceFactory.load();
     		//System.out.println("Done loading assets ");
     		String key="Bowler Initial Version";
-    		new Thread(()->{
-        		if(BowlerDatabase.get(key)==null){
-        			BowlerDatabase.set(key,StudioBuildInfo.getVersion());
-        		}
-        		System.out.println("First version Bowler Studio: v "+BowlerDatabase.get(key));
-        		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
-        		
-    		}).start();
 
     		fxmlLoader = new FXMLLoader(
                     BowlerStudio.class.getResource("Main.fxml"));
@@ -135,10 +130,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    					
-    			
-
-    		ThreadUtil.wait(2000);
+    		CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile()+"/csgDatabase.json"));
     		launch(args);
     	}else{
            BowlerKernel.main(args);

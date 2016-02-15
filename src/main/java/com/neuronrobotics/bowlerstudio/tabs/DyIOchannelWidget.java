@@ -173,8 +173,10 @@ public class DyIOchannelWidget {
 	        		current);
 			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
 				if(!positionSlider.isValueChanging()){// only updae the slider position if the user is not sliding it
-					positionSlider.valueProperty().removeListener(imp);
 					Platform.runLater(()->{
+						if(positionSlider==null)
+							return;
+						positionSlider.valueProperty().removeListener(imp);
 						positionSlider.setValue(current);
 						setLatestValue(current);
 						setFireValue(false);

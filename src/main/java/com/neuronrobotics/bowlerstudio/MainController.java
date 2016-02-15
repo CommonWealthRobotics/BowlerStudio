@@ -61,7 +61,7 @@ import java.util.ResourceBundle;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MainController implements Initializable {
-	private static int sizeOfTextBuffer = 400000;
+	private static int sizeOfTextBuffer = 4000;
 	private static ByteArrayOutputStream out = null;
 	static boolean opencvOk = true;
 	private static TextArea logViewRef = null;
@@ -125,12 +125,16 @@ public class MainController implements Initializable {
 					finalStr = current;
 				}
 				int strlen = finalStr.length() - 1;
-				logViewRef.setText(finalStr);
-				Platform.runLater(() -> logViewRef.positionCaret(strlen));
+				String outStr=finalStr;
+				Platform.runLater(() -> {
+					logViewRef.setText(outStr);
+					logViewRef.positionCaret(strlen);
+				
+				});
 			}
 
 		}
-		FxTimer.runLater(Duration.ofMillis(100), () -> {
+		FxTimer.runLater(Duration.ofMillis(500), () -> {
 
 			updateLog();
 		});
