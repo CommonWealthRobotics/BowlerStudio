@@ -478,6 +478,7 @@ public class MainController implements Initializable {
 				ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
 				if(null!=points){
 					getApplication().addTab(new TwoDCad(points), true);
+					return;
 				}
 				getApplication().createFileTab(openFile);
 			}
