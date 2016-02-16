@@ -7,6 +7,8 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.scripting.*;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
+import com.neuronrobotics.bowlerstudio.twod.TwoDCadFactory;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
@@ -16,6 +18,8 @@ import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.Polygon;
 import haar.HaarFactory;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -462,10 +466,18 @@ public class MainController implements Initializable {
 				openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
 						new ExtensionFilter("Groovy Scripts", "*.groovy", "*.java", "*.txt"),
 						new ExtensionFilter("Clojure", "*.cloj", "*.clj", "*.txt", "*.clojure"),
-						new ExtensionFilter("Python", "*.py", "*.python", "*.txt"), new ExtensionFilter("All", "*.*"));
+						new ExtensionFilter("Python", "*.py", "*.python", "*.txt"),
+						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
+						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg"),
+						new ExtensionFilter("JPG", "*.jpg", "*.jpeg", "*.JPG"),
+						new ExtensionFilter("PNG", "*.png", "*.PNG"),new ExtensionFilter("All", "*.*"));
 
 				if (openFile == null) {
 					return;
+				}
+				ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
+				if(null!=points){
+					getApplication().addTab(new TwoDCad(points), true);
 				}
 				getApplication().createFileTab(openFile);
 			}
