@@ -135,8 +135,10 @@ public class TwoDCadFactory {
 			// load points
 		}else if(incoming.getAbsolutePath().toLowerCase().endsWith(".jpg")){
 			// load points from OpenCV
+			// TODO dimitrisTim
 		}else if(incoming.getAbsolutePath().toLowerCase().endsWith(".png")){
 			// load points from OpenCV
+			// TODO dimitrisTim
 		}else
 			return null;
 	

@@ -11,7 +11,7 @@ public class TwoDCad extends Tab {
 	
 	public TwoDCad(ArrayList<Polygon> points){
 		setText("2D CAD workspace");
-		
+		// add all UI code here
 		setContent(new Group(new Text("Hello world")));
 	}
 
