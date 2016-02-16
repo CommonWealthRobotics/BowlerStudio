@@ -31,7 +31,7 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	private AbstractImageProvider provider;
 	
 	private IObjectDetector detector;
-	private ImageView iconsProcessed = new ImageView();;
+	private ImageView iconsProcessed = new ImageView();
 	private List<Detection> data;
 	private Timer timer;
 	private long session []=new long[4];
