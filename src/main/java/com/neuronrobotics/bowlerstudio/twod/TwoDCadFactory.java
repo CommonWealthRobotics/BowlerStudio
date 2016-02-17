@@ -26,14 +26,10 @@ import eu.mihosoft.vrl.v3d.Polygon;
 import java.awt.Font;
 import eu.mihosoft.vrl.v3d.Vector3d;
 
-import java.awt.Font;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.util.List;
-import javafx.scene.paint.Color;
 
 
 public class TwoDCadFactory {

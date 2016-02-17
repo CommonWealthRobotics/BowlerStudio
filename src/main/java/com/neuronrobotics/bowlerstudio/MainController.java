@@ -291,7 +291,12 @@ public class MainController implements Initializable {
 			logoutGithub.setText("Log out " + name);
 			new Thread() {
 				public void run() {
-
+					try {
+						ScriptingEngine.setAutoupdate(false);
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 					GitHub github = ScriptingEngine.getGithub();
 					while (github == null) {
 						github = ScriptingEngine.getGithub();
@@ -467,18 +472,18 @@ public class MainController implements Initializable {
 						new ExtensionFilter("Groovy Scripts", "*.groovy", "*.java", "*.txt"),
 						new ExtensionFilter("Clojure", "*.cloj", "*.clj", "*.txt", "*.clojure"),
 						new ExtensionFilter("Python", "*.py", "*.python", "*.txt"),
-					    new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
-					    new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg"),
-					    new ExtensionFilter("JPG", "*.jpg", "*.jpeg", "*.JPG"),
-					    new ExtensionFilter("PNG", "*.png", "*.PNG"),new ExtensionFilter("All", "*.*"));
+						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
+						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg","*.txt"),
+						new ExtensionFilter("Image", "*.jpg", "*.jpeg", "*.JPG", "*.png", "*.PNG"),
+						new ExtensionFilter("All", "*.*"));
 				if (openFile == null) {
 					return;
 				}
-			ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
-			if(null!=points){
-				getApplication().addTab(new TwoDCad(points), true);
-				return;
-			}
+				ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
+				if (null != points) {
+					getApplication().addTab(new TwoDCad(points), true);
+					return;
+				}
 				getApplication().createFileTab(openFile);
 			}
 		}.start();
