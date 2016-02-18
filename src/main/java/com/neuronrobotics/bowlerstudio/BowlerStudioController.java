@@ -53,6 +53,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.Detection;
 import com.neuronrobotics.imageprovider.HaarDetector;
@@ -514,6 +515,11 @@ public class BowlerStudioController extends TabPane implements
 				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(legAssembly,cadScript));
 			
 		});
+	}
+
+
+	public static void setCsg(MobileBaseCadManager thread, File cadScript) {
+		setCsg(thread.getAllCad(), cadScript);
 	}
 
 	

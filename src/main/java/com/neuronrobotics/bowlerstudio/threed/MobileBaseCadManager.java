@@ -97,7 +97,7 @@ public class MobileBaseCadManager {
 
 	public ArrayList<CSG> generateBody(MobileBase base, boolean b) {
 		pi.setProgress(0);
-		allCad = new ArrayList<>();
+		setAllCad(new ArrayList<>());
 		//DHtoCadMap = new HashMap<>();
 		//private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
 		
@@ -126,13 +126,13 @@ public class MobileBaseCadManager {
 				if(showingStl){
 					//skip the regen
 					for(CSG c:BasetoCadMap.get(device)){
-						allCad.add(c);	
+						getAllCad().add(c);	
 					}
 				}else{
-					allCad = cadEngine.generateBody(device, b);
+					setAllCad(cadEngine.generateBody(device, b));
 					ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 					arrayList.clear();
-					for(CSG c:allCad){
+					for(CSG c:getAllCad()){
 						arrayList.add(c);	
 					}
 				}
@@ -153,13 +153,13 @@ public class MobileBaseCadManager {
 				ArrayList<CSG> arrayList = DHtoCadMap.get(l);
 				if(showingStl){
 					for (CSG csg : arrayList) {
-						allCad.add(csg);
+						getAllCad().add(csg);
 						BowlerStudioController.addCsg(csg,getCadScript());
 					}
 				}else{
 					arrayList.clear();
 					for (CSG csg : generateCad(l, b)) {
-						allCad.add(csg);
+						getAllCad().add(csg);
 						arrayList.add(csg);
 						BowlerStudioController.addCsg(csg,getCadScript());
 					}
@@ -175,7 +175,7 @@ public class MobileBaseCadManager {
 
 		showingStl=false;
 		pi.setProgress(1);
-		return allCad;
+		return getAllCad();
 	}
 
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
@@ -183,15 +183,16 @@ public class MobileBaseCadManager {
 		int leg = 0;
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
-		double i = 0;
+		int i = 0;
 		// Start by generating the legs using the DH link based generator
-		
-		for (DHParameterKinematics l : limbs) {
-			i += 1;
+		CSG totalAssembly=null;
+		for (i=0;i<limbs.size();i+=1) {
+			
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
 			pi.setProgress( progress);
 			
 			CSG legAssembly=null;
+			DHParameterKinematics l = limbs.get(i);
 			for (CSG csg : DHtoCadMap.get(l)) {
 				csg = csg.prepForManufacturing();
 				if(legAssembly==null)
@@ -218,7 +219,11 @@ public class MobileBaseCadManager {
 			File stl = new File(dir.getAbsolutePath() + "/Leg_" + leg + ".stl");
 			FileUtil.write(Paths.get(stl.getAbsolutePath()), legAssembly.toStlString());
 			allCadStl.add(stl);
-			BowlerStudioController.setCsg(legAssembly,getCadScript());
+			if(totalAssembly==null)
+				totalAssembly=legAssembly;
+			else
+				totalAssembly = totalAssembly.union(legAssembly.movex(-2-legAssembly.getMaxX()+totalAssembly.getMinX()));
+			BowlerStudioController.setCsg(totalAssembly,getCadScript());
 			leg++;
 		}
 		
@@ -231,6 +236,8 @@ public class MobileBaseCadManager {
 			File stl = new File(dir.getAbsolutePath() + "/Body_part_" + link + ".stl");
 			FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.prepForManufacturing().clone().toStlString());
 			allCadStl.add(stl);
+			totalAssembly = totalAssembly.union(csg.toYMin().movex(-2-csg.getMaxX()+totalAssembly.getMinX()));
+			BowlerStudioController.setCsg(totalAssembly,getCadScript());
 			link++;
 		}
 //		BowlerStudioController.setCsg(BasetoCadMap.get(base),getCadScript());
@@ -290,20 +297,16 @@ public class MobileBaseCadManager {
 			return;
 		cadGenerating = true;
 		// new RuntimeException().printStackTrace();
-		new Thread() {
-			public void run() {
-				System.out.print("\r\nGenerating cad...");
-				// new Exception().printStackTrace();
-				ArrayList<CSG> allCad = new ArrayList<>();
-					MobileBase device = base;
-					allCad = generateBody(device, false);
+		new Thread(()->{
+			System.out.print("\r\nGenerating cad...");
+			// new Exception().printStackTrace();
+			MobileBase device = base;
+			setAllCad(generateBody(device, false));
 
-				System.out.print("Done!\r\n");
-				BowlerStudioController.setCsg(allCad,getCadScript());
-				cadGenerating = false;
-			}
-
-		}.start();
+			System.out.print("Done!\r\n");
+			BowlerStudioController.setCsg(this,getCadScript());
+			cadGenerating = false;
+		}).start();
 	}
 	private void setDefaultLinkLevelCadEngine() throws Exception {
 		String[] cad = null;
@@ -363,6 +366,12 @@ public class MobileBaseCadManager {
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		setCadScript(ScriptingEngine.fileFromGistID(gitsId, file));
 		device.setCadEngine(new String[]{gitsId,file});
+	}
+	public ArrayList<CSG> getAllCad() {
+		return allCad;
+	}
+	public void setAllCad(ArrayList<CSG> allCad) {
+		this.allCad = allCad;
 	}
 
 }

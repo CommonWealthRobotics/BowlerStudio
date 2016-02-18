@@ -398,6 +398,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
 		//System.out.println(" Adding a CSG from file: "+source.getName());
+		if(csgMap.get(currentCsg)!= null)
+			return currentCsg.getMesh();
 		csgMap.put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
 		
