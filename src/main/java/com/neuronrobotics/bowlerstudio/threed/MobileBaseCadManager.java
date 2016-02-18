@@ -185,7 +185,8 @@ public class MobileBaseCadManager {
 		double numLimbs = limbs.size();
 		int i = 0;
 		// Start by generating the legs using the DH link based generator
-		CSG totalAssembly=null;
+		ArrayList<CSG> totalAssembly=new ArrayList<>();
+		double offset=0;
 		for (i=0;i<limbs.size();i+=1) {
 			
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
@@ -210,6 +211,8 @@ public class MobileBaseCadManager {
 //					}
 //				});
 			}
+			offset = -2-((legAssembly.getMaxX()+legAssembly.getMinX())*i);
+			legAssembly=legAssembly.movex(offset);
 			File dir = new File(
 					baseDirForFiles.getAbsolutePath() + "/" + 
 					base.getScriptingName() + "/" + 
@@ -219,10 +222,7 @@ public class MobileBaseCadManager {
 			File stl = new File(dir.getAbsolutePath() + "/Leg_" + leg + ".stl");
 			FileUtil.write(Paths.get(stl.getAbsolutePath()), legAssembly.toStlString());
 			allCadStl.add(stl);
-			if(totalAssembly==null)
-				totalAssembly=legAssembly;
-			else
-				totalAssembly = totalAssembly.union(legAssembly.movex(-2-legAssembly.getMaxX()+totalAssembly.getMinX()));
+			totalAssembly.add(legAssembly);
 			BowlerStudioController.setCsg(totalAssembly,getCadScript());
 			leg++;
 		}
@@ -230,13 +230,17 @@ public class MobileBaseCadManager {
 		int link = 0;
 		// now we genrate the base pieces
 		for (CSG csg : BasetoCadMap.get(base)) {
+			csg=csg
+					.prepForManufacturing()
+					.toYMin()
+					.movex(-2-csg.getMaxX()+offset);
 			File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/");
 			if (!dir.exists())
 				dir.mkdirs();
 			File stl = new File(dir.getAbsolutePath() + "/Body_part_" + link + ".stl");
-			FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.prepForManufacturing().clone().toStlString());
+			FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.toStlString());
 			allCadStl.add(stl);
-			totalAssembly = totalAssembly.union(csg.toYMin().movex(-2-csg.getMaxX()+totalAssembly.getMinX()));
+			totalAssembly.add(csg);
 			BowlerStudioController.setCsg(totalAssembly,getCadScript());
 			link++;
 		}
