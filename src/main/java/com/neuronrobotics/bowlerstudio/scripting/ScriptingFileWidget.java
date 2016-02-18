@@ -380,6 +380,7 @@ public class ScriptingFileWidget extends BorderPane implements
 			git = ScriptingEngine.locateGit(currentFile);
 			String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
 			Platform.runLater(() -> {
+				fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
 				git.close();
 			});

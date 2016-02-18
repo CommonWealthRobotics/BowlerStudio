@@ -4,7 +4,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-import com.bulletphysics.collision.broadphase.BroadphaseNativeType;
 import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
@@ -27,13 +26,14 @@ public class CSGPhysicsManager {
 	private RigidBody fallRigidBody;
 	private Affine ballLocation;
 	private CSG baseCSG;
-	public CSGPhysicsManager(int sphereSize, Vector3f start){
+	public CSGPhysicsManager(int sphereSize, Vector3f start, double mass){
 		this.setBaseCSG(new Sphere(sphereSize).toCSG());
 		CollisionShape fallShape = new SphereShape((float) (baseCSG.getMaxX()-baseCSG.getMinX())/2);
-		setup(fallShape,start);
+		setup(fallShape,start,mass);
 	}
-	public CSGPhysicsManager(CSG baseCSG, Vector3f start){
+	public CSGPhysicsManager(CSG baseCSG, Vector3f start, double mass){
 		this.setBaseCSG(baseCSG);// force a hull of the shape to simplify physics
+		
 		
 		ObjectArrayList<Vector3f> arg0= new ObjectArrayList<>();
 		for( Polygon p:baseCSG.getPolygons()){
@@ -42,18 +42,17 @@ public class CSGPhysicsManager {
 			}
 		}
 		CollisionShape fallShape =  new com.bulletphysics.collision.shapes.ConvexHullShape(arg0);
-		setup(fallShape,start);
+		setup(fallShape,start,mass);
 	}
 	
-	private void setup(CollisionShape fallShape,Vector3f start ){
+	private void setup(CollisionShape fallShape,Vector3f start, double mass ){
 		// setup the motion state for the ball
 		DefaultMotionState fallMotionState = new DefaultMotionState(
 				new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)));
 		// This we're going to give mass so it responds to gravity
-		int mass = 10;
 		Vector3f fallInertia = new Vector3f(0, 0, 0);
-		fallShape.calculateLocalInertia(mass, fallInertia);
-		RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(mass, fallMotionState, fallShape,
+		fallShape.calculateLocalInertia((float) mass, fallInertia);
+		RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo((float) mass, fallMotionState, fallShape,
 				fallInertia);
 		setFallRigidBody(new RigidBody(fallRigidBodyCI));
 	}
@@ -61,17 +60,15 @@ public class CSGPhysicsManager {
 
 	
 	public void update(){
-		Platform.runLater(new Runnable() {
-			public void run() {
-				Transform trans = new Transform();
-				fallRigidBody.getMotionState().getWorldTransform(trans);
-				Quat4f out= new Quat4f();
-				trans.getRotation(out);
-				TransformNR  tr = new TransformNR(trans.origin.x,
-						trans.origin.y,
-						trans.origin.z, out.w, out.x, out.y, out.z);
-				TransformFactory.getTransform(tr, ballLocation);
-			}
+		Platform.runLater(() -> {
+			Transform trans = new Transform();
+			fallRigidBody.getMotionState().getWorldTransform(trans);
+			Quat4f out= new Quat4f();
+			trans.getRotation(out);
+			TransformNR  tr = new TransformNR(trans.origin.x,
+					trans.origin.y,
+					trans.origin.z, out.w, out.x, out.y, out.z);
+			TransformFactory.getTransform(tr, ballLocation);
 		});
 	}
 
