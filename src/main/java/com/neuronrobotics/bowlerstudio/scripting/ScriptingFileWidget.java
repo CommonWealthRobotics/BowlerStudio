@@ -138,7 +138,7 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private ScriptingWidgetType type;
 	
-	final Label fileListBox = new Label();
+	final TextField fileListBox = new TextField();
 	private File currentFile = null;
 
 	private HBox controlPane;
