@@ -13,11 +13,12 @@ import javafx.scene.control.TextInputDialog;
 public class PromptForGist {
 	public static void prompt(String purpose,String defaultID, IGistPromptCompletionListener listener){
 		Platform.runLater(() -> {
-			TextInputDialog dialog = new TextInputDialog("https://gist.github.com/"+defaultID);
+			TextInputDialog dialog = new TextInputDialog(defaultID);
 			dialog.setTitle(purpose);
-			dialog.setHeaderText("Enter the URL (Link from the browser)");
+			dialog.setHeaderText("Enter the URL (Clone vie HTTPS)");
 			dialog.setContentText("Link to Gist: ");
-
+			dialog.setResizable(true);
+			dialog.setWidth(800);
 			// Traditional way to get the response value.
 			Optional<String> result = dialog.showAndWait();
 			if (result.isPresent()){

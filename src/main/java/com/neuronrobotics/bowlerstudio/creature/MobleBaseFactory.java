@@ -128,10 +128,15 @@ public class MobleBaseFactory {
 						    String newName=result.get();
 						    device.setScriptingName(newName);
 						    try{
+						    	 System.out.println("Forking walking engine ");
 							    device.setGitWalkingEngine(ScriptingEngine.forkGitFile(device.getGitWalkingEngine()));
+						    	 System.out.println("Forking Cad engine ");
+
 							    device.setGitCadEngine(ScriptingEngine.forkGitFile(device.getGitCadEngine()));
 							    for(DHParameterKinematics dh:device.getAllDHChains()){
+							    	System.out.println("Forking Leg Cad engine ");
 							    	dh.setGitCadEngine(ScriptingEngine.forkGitFile(dh.getGitCadEngine()));
+							    	System.out.println("Forking Leg  Dh engine ");
 							    	dh.setGitDhEngine(ScriptingEngine.forkGitFile(dh.getGitDhEngine()));
 							    }
 						    }catch(Exception ex){
@@ -149,9 +154,9 @@ public class MobleBaseFactory {
 						    GHGist gist;
 							try {
 								gist = builder.create();
-								String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
-								BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
-								System.out.println("Creating repo");
+								String gistID = "https://gist.github.com/"+ScriptingEngine.urlToGist(gist.getHtmlUrl())+".git";
+								
+								System.out.println("Creating new Robot repo");
 								while(true){
 									try {
 										ScriptingEngine.fileFromGit(gistID, filename);
@@ -162,6 +167,7 @@ public class MobleBaseFactory {
 									ThreadUtil.wait(500);
 									Log.warn(gist+" not built yet");
 								}
+								BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
 								System.out.println("Creating gist at: "+gistID);
 								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
 								
