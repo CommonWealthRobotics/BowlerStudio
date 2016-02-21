@@ -128,11 +128,11 @@ public class MobleBaseFactory {
 						    String newName=result.get();
 						    device.setScriptingName(newName);
 						    try{
-							    device.setGitWalkingEngine(ScriptingEngine.forkGistFile(device.getGitWalkingEngine()));
-							    device.setGitCadEngine(ScriptingEngine.forkGistFile(device.getGitCadEngine()));
+							    device.setGitWalkingEngine(ScriptingEngine.forkGitFile(device.getGitWalkingEngine()));
+							    device.setGitCadEngine(ScriptingEngine.forkGitFile(device.getGitCadEngine()));
 							    for(DHParameterKinematics dh:device.getAllDHChains()){
-							    	dh.setGitCadEngine(ScriptingEngine.forkGistFile(dh.getGitCadEngine()));
-							    	dh.setGitDhEngine(ScriptingEngine.forkGistFile(dh.getGitDhEngine()));
+							    	dh.setGitCadEngine(ScriptingEngine.forkGitFile(dh.getGitCadEngine()));
+							    	dh.setGitDhEngine(ScriptingEngine.forkGitFile(dh.getGitDhEngine()));
 							    }
 						    }catch(Exception ex){
 						    	BowlerStudioController.highlightException(null, ex);
