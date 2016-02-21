@@ -22,13 +22,17 @@ public class PromptForGist {
 			Optional<String> result = dialog.showAndWait();
 			if (result.isPresent()){
 			   
-			    String gistcode = ScriptingEngine.urlToGist(result.get());
+			    String gistcode=null;
+			    if(result.get().endsWith(".git"))
+			    	gistcode=result.get();
+			    else
+			    	gistcode= "https://gist.github.com/"+ScriptingEngine.urlToGist(result.get())+".git";
 			    System.out.println("Creature Gist " + gistcode);
 			    ArrayList<String> choices;
 			    String suggestedChoice="";
 			    int numXml=0;
 				try {
-					choices = ScriptingEngine.filesInGist(gistcode,null);
+					choices = ScriptingEngine.filesInGit(gistcode);
 				    for(int i=0;i<choices.size();i++){
 				    	String s = choices.get(i);
 			    		suggestedChoice=s;

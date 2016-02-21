@@ -356,7 +356,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private File setDefaultDhParameterKinematics(DHParameterKinematics device) {
 		File code = null;
 		try {
-			code = ScriptingEngine.fileFromGistID(device.getDhEngine()[0], device.getDhEngine()[1]);
+			code = ScriptingEngine.fileFromGit(device.getGitDhEngine()[0], device.getGitDhEngine()[1]);
 			DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,
 					ShellType.GROOVY);
 
@@ -393,19 +393,19 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private void setDefaultWalkingEngine(MobileBase device) {
 		if (defaultDriveEngine == null) {
-			setWalkingEngine(device.getWalkingEngine()[0], device.getWalkingEngine()[1], device);
+			setGitWalkingEngine(device.getGitWalkingEngine()[0], device.getGitWalkingEngine()[1], device);
 		}
 		for (DHParameterKinematics dh : device.getAllDHChains()) {
 			setDefaultDhParameterKinematics(dh);
 		}
 	}
 
-	public void setWalkingEngine(String gistID, String file, MobileBase device) {
+	public void setGitWalkingEngine(String git, String file, MobileBase device) {
 
-		device.setWalkingEngine(new String[] { gistID, file });
+		device.setGitWalkingEngine(new String[] { git, file });
 		File code = null;
 		try {
-			code = ScriptingEngine.fileFromGistID(gistID, file);
+			code = ScriptingEngine.fileFromGit(git, file);
 		} catch (GitAPIException | IOException e) {
 			BowlerStudioController.highlightException(code, e);
 		}
@@ -478,19 +478,19 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		return gameController;
 	}
 
-	public void setDhEngine(String gitsId, String file, DHParameterKinematics dh) {
-		dh.setDhEngine(new String[] { gitsId, file });
+	public void setGitDhEngine(String gitsId, String file, DHParameterKinematics dh) {
+		dh.setGitDhEngine(new String[] { gitsId, file });
 
 		setDefaultDhParameterKinematics(dh);
 
 	}
 
-	public void setCadEngine(String gitsId, String file, MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		baseManager.setCadEngine(gitsId, file, device);
+	public void setGitCadEngine(String gitsId, String file, MobileBase device) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		baseManager.setGitCadEngine(gitsId, file, device);
 	}
 
-	public void setCadEngine(String gitsId, String file, DHParameterKinematics dh) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		baseManager.setCadEngine(gitsId, file, dh);
+	public void setGitCadEngine(String gitsId, String file, DHParameterKinematics dh) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		baseManager.setGitCadEngine(gitsId, file, dh);
 	}
 
 

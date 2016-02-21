@@ -702,11 +702,11 @@ public class MainController implements Initializable {
 		new Thread() {
 			public void run() {
 				try {
-					BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/" + id));
-					String xmlContent = ScriptingEngine.codeFromGistID(id, file)[0];
+					//BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/" + id));
+					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/" + id+".git", file)[0];
 					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 
-					mb.setSelfSource(new String[] { id, file });
+					mb.setGitSelfSource(new String[] { "https://gist.github.com/" + id+".git", file });
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 
 				} catch (Exception e) {

@@ -297,7 +297,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		//System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = ScriptingEngine.codeFromGistID(id,file);
+			code = ScriptingEngine.codeFromGit("https://gist.github.com/" + id+".git",file);
 			if (code != null) {
 				setCode(code[0]);
 				currentFile = new File(code[2]);
@@ -334,7 +334,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			else
 				return;
 			
-			ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
+			ArrayList<String> fileList = ScriptingEngine.filesInGit("https://gist.github.com/" + currentGist+".git");
 //			for(String s:fileList){
 //				System.out.println("GITS: "+s);
 //			}

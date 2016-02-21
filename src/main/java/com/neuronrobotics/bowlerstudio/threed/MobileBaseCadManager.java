@@ -314,10 +314,10 @@ public class MobileBaseCadManager {
 	}
 	private void setDefaultLinkLevelCadEngine() throws Exception {
 		String[] cad = null;
-			cad = (base).getCadEngine();
+			cad = (base).getGitCadEngine();
 
 		if (cadEngine == null) {
-			setCadEngine(cad[0], cad[1], base);
+			setGitCadEngine(cad[0], cad[1], base);
 		}
 	}
 	public void onTabClosing() {
@@ -326,10 +326,10 @@ public class MobileBaseCadManager {
 			watcher.close();
 		}
 	}
-	public void setCadEngine(String gitsId, String file, DHParameterKinematics dh)
+	public void setGitCadEngine(String gitsId, String file, DHParameterKinematics dh)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		dh.setCadEngine(new String[]{gitsId,file});
-		File code = ScriptingEngine.fileFromGistID(gitsId, file);
+		dh.setGitCadEngine(new String[]{gitsId,file});
+		File code = ScriptingEngine.fileFromGit(gitsId, file);
 		try {
 			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,
 					ShellType.GROOVY);
@@ -366,10 +366,10 @@ public class MobileBaseCadManager {
 
 	}
 	
-	public void setCadEngine(String gitsId, String file, MobileBase device)
+	public void setGitCadEngine(String gitsId, String file, MobileBase device)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		setCadScript(ScriptingEngine.fileFromGistID(gitsId, file));
-		device.setCadEngine(new String[]{gitsId,file});
+		setCadScript(ScriptingEngine.fileFromGit(gitsId, file));
+		device.setGitCadEngine(new String[]{gitsId,file});
 	}
 	public ArrayList<CSG> getAllCad() {
 		return allCad;
