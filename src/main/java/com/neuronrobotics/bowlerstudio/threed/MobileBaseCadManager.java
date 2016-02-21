@@ -129,7 +129,7 @@ public class MobileBaseCadManager {
 						getAllCad().add(c);	
 					}
 				}else{
-					setAllCad(cadEngine.generateBody(device, b));
+					setAllCad(cadEngine.generateBody(device));
 					ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 					arrayList.clear();
 					for(CSG c:getAllCad()){
@@ -263,7 +263,7 @@ public class MobileBaseCadManager {
 	}
 	
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh, boolean b) {
-		ArrayList<DHLink> dhLinks = dh.getChain().getLinks();
+		ArrayList<CSG> dhLinks = new ArrayList<>();
 		if (getCadScript() != null) {
 			try {
 				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
@@ -281,13 +281,22 @@ public class MobileBaseCadManager {
 		try {
 			if (dhCadGen.get(dh) != null) {
 				try {
-					return dhCadGen.get(dh).generateCad(dh, false);
+					for(int i=0;i<dh.getNumberOfLinks();i++){
+						ArrayList<CSG> tmp=dhCadGen.get(dh).generateCad(dh, i);
+						for(CSG c:tmp)
+							dhLinks.add(c);
+					}
+					return dhLinks;
 				} catch (Exception e) {
 					BowlerStudioController.highlightException(dhCadWatchers.get(dh).getFileToWatch(), e);
 				}
 			}
-
-			return cadEngine.generateCad(dh, false);
+			for(int i=0;i<dh.getNumberOfLinks();i++){
+				ArrayList<CSG> tmp=cadEngine.generateCad(dh, i);
+				for(CSG c:tmp)
+					dhLinks.add(c);
+			}
+			return dhLinks;
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(getCadScript(), e);
 		}
