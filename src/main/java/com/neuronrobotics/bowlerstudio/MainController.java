@@ -111,6 +111,11 @@ public class MainController implements Initializable {
 	MenuItem addFileToGist;
 	private boolean loginWindowOpen=false;
 	private GithubLoginFX controller= null;
+	public static void clearConsole(){
+		Platform.runLater(() -> {
+			logViewRef.setText("");
+		});
+	}
 	public static void updateLog() {
 		if (logViewRef != null) {
 			String current;

@@ -98,6 +98,7 @@ import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -279,12 +280,11 @@ public class ScriptingFileWidget extends BorderPane implements
 
 
 	private void start() {
-
+		MainController.clearConsole();
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-			
 		});
 		scriptRunner = new Thread() {
 

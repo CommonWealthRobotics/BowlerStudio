@@ -360,7 +360,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 
 	private void start() {
-
+		MainController.clearConsole();
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");

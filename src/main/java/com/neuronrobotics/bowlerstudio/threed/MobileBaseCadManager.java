@@ -25,6 +25,7 @@ import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import javafx.scene.control.ProgressIndicator;
 
@@ -39,6 +40,7 @@ public class MobileBaseCadManager {
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
+	private HashMap<DHLink, CSG> simplecad = new HashMap<>();
 	private boolean cadGenerating = false;
 	private boolean showingStl=false;
 	private ArrayList<CSG> allCad;
@@ -278,13 +280,21 @@ public class MobileBaseCadManager {
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 		}
+		CSG simpleCad=null;
 		try {
 			if (dhCadGen.get(dh) != null) {
 				try {
 					for(int i=0;i<dh.getNumberOfLinks();i++){
 						ArrayList<CSG> tmp=dhCadGen.get(dh).generateCad(dh, i);
-						for(CSG c:tmp)
+						simpleCad=null;
+						for(CSG c:tmp){
+							if(simpleCad==null)
+								simpleCad=c;
+							else
+								simpleCad=simpleCad.union(c);
 							dhLinks.add(c);
+						}
+						simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 					}
 					return dhLinks;
 				} catch (Exception e) {
@@ -293,8 +303,15 @@ public class MobileBaseCadManager {
 			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
 				ArrayList<CSG> tmp=cadEngine.generateCad(dh, i);
-				for(CSG c:tmp)
+				simpleCad=null;
+				for(CSG c:tmp){
+					if(simpleCad==null)
+						simpleCad=c;
+					else
+						simpleCad=simpleCad.union(c);
 					dhLinks.add(c);
+				}
+				simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 			}
 			return dhLinks;
 		} catch (Exception e) {
@@ -304,6 +321,12 @@ public class MobileBaseCadManager {
 
 	}
 
+	public CSG getSimpleCad(DHLink link){
+		CSG simple=simplecad.get(link);
+		if(simple==null)
+			return new Cube(5).toCSG();
+		return simple;
+	}
 	
 	public synchronized void generateCad() {
 		if (cadGenerating)
@@ -314,8 +337,11 @@ public class MobileBaseCadManager {
 			System.out.print("\r\nGenerating cad...");
 			// new Exception().printStackTrace();
 			MobileBase device = base;
-			setAllCad(generateBody(device, false));
-
+			try{
+				setAllCad(generateBody(device, false));
+			}catch(Exception e){
+				BowlerStudioController.highlightException(getCadScript(), e);
+			}
 			System.out.print("Done!\r\n");
 			BowlerStudioController.setCsg(this,getCadScript());
 			cadGenerating = false;
