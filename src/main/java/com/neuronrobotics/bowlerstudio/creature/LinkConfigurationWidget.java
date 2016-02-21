@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
@@ -43,6 +44,37 @@ public class LinkConfigurationWidget extends GridPane {
 	    getColumnConstraints().add(new ColumnConstraints(10)); // column 2 is 300 wide
 	    setHgap(20);
 	    
+	    TextField mass = new TextField(CreatureLab.getFormatted(conf.getMassKg()));
+	    mass.setOnAction(event -> {
+			conf.setMassKg(Double.parseDouble(mass.getText()));
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		});
+	    TransformNR currentCentroid =conf.getCenterOfMassFromCentroid();
+	    TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
+	    massx.setOnAction(event -> {
+	    	currentCentroid.setX(Double.parseDouble(massx.getText()));
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		});
+	    
+	    TextField massy = new TextField(CreatureLab.getFormatted(currentCentroid.getY()));
+	    massy.setOnAction(event -> {
+	    	currentCentroid.setY(Double.parseDouble(massy.getText()));
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		});
+	    
+	    TextField massz = new TextField(CreatureLab.getFormatted(currentCentroid.getZ()));
+	    massz.setOnAction(event -> {
+	    	currentCentroid.setZ(Double.parseDouble(massz.getText()));
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		});
+	    
 	    TextField scale = new TextField(CreatureLab.getFormatted(conf.getScale()));
 	    scale.setOnAction(event -> {
 			conf.setScale(Double.parseDouble(scale.getText()));
@@ -50,7 +82,8 @@ public class LinkConfigurationWidget extends GridPane {
 			activLink.flush(0);
 		});
 	    
-	    TextField deviceName = new TextField(CreatureLab.getFormatted(conf.getScale()));
+	    
+	    TextField deviceName = new TextField(congiuration.getDeviceScriptingName());
 	    deviceName.setOnAction(event -> {
 			conf.setDeviceScriptingName(deviceName.getText());
 			factory.refreshHardwareLayer(conf);
@@ -205,6 +238,33 @@ public class LinkConfigurationWidget extends GridPane {
 		add(	deviceName, 
 				1, 
 				6);
+		
+		add(	new Text("Mass"), 
+	    		0, 
+	    		7);
+		add(	mass, 
+				1, 
+				7);
+		
+		add(	new Text("Mass Centroid x"), 
+	    		0, 
+	    		8);
+		add(	massx, 
+				1, 
+				8);
+		
+		add(	new Text("Mass Centroid y"), 
+	    		0, 
+	    		9);
+		add(	massy, 
+				1, 
+				9);
+		add(	new Text("Mass Centroid z"), 
+	    		0, 
+	    		10);
+		add(	massz, 
+				1, 
+				10);
 		 
 	}
 
