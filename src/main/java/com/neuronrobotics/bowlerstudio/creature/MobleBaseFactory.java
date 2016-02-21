@@ -37,7 +37,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
-import com.neuronrobotics.nrconsole.util.PromptForGist;
+import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -191,7 +191,7 @@ public class MobleBaseFactory {
 		TreeItem<String> owner = new TreeItem<String>("Owner");
 		TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
 		callbackMapForTreeitems.put(setCAD, () -> {
-			PromptForGist.prompt("Select a CAD Engine From a Gist",device.getGitCadEngine()[0],(gitsId, file) -> {
+			PromptForGit.prompt("Select a CAD Engine From a Gist",device.getGitCadEngine()[0],(gitsId, file) -> {
 				Log.warn("Loading cad engine");
 				try {
 					creatureLab.setGitCadEngine(gitsId, file,device);
@@ -215,7 +215,7 @@ public class MobleBaseFactory {
 		});
 		TreeItem<String> resetWalking = new TreeItem<String>("Set Walking Engine...");
 		callbackMapForTreeitems.put(resetWalking, () -> {
-			PromptForGist.prompt("Select a Walking Engine From a Gist",device.getGitWalkingEngine()[0],(gitsId, file) -> {
+			PromptForGit.prompt("Select a Walking Engine From a Gist",device.getGitWalkingEngine()[0],(gitsId, file) -> {
 				Log.warn("Loading walking engine");
 				try {
 					creatureLab.setGitWalkingEngine(gitsId, file,device);
@@ -638,7 +638,7 @@ public class MobleBaseFactory {
 			TreeItem<String> owner = new TreeItem<String>("Owner");
 			TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
 			callbackMapForTreeitems.put(setCAD, () -> {
-				PromptForGist.prompt("Select a CAD Engine From a Gist",dh.getGitCadEngine()[0],(gitsId, file) -> {
+				PromptForGit.prompt("Select a CAD Engine From a Gist",dh.getGitCadEngine()[0],(gitsId, file) -> {
 					Log.warn("Loading cad engine");
 					try {
 						creatureLab.setGitCadEngine(gitsId, file,dh);
@@ -662,7 +662,7 @@ public class MobleBaseFactory {
 			});
 			TreeItem<String> resetWalking = new TreeItem<String>("Set Dh Kinematics Engine...");
 			callbackMapForTreeitems.put(resetWalking, () -> {
-				PromptForGist.prompt("Select a Walking Engine From a Gist",dh.getGitDhEngine()[0],(gitsId, file) -> {
+				PromptForGit.prompt("Select a Walking Engine From a Gist",dh.getGitDhEngine()[0],(gitsId, file) -> {
 					Log.warn("Loading walking engine");
 					try {
 						creatureLab.setGitDhEngine(gitsId, file,dh);

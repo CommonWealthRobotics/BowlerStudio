@@ -12,7 +12,7 @@ import com.neuronrobotics.bowlerstudio.twod.TwoDCadFactory;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.PromptForGist;
+import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -720,7 +720,7 @@ public class MainController implements Initializable {
 	@FXML
 	public void onMobileBaseFromGist() {
 
-		PromptForGist.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
+		PromptForGit.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
 			loadMobilebaseFromGist(gitsId, file);
 		});
 	}
