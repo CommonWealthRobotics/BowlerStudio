@@ -42,14 +42,16 @@ public class MobileBaseCadManager {
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
-	private HashMap<DHLink, CSG> simplecad = new HashMap<>();
+	private static HashMap<DHLink, CSG> simplecad = new HashMap<>();
 	private boolean cadGenerating = false;
 	private boolean showingStl=false;
 	private ArrayList<CSG> allCad;
-	
+	private static CSG baseCad=null;
 	
 	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi){
 		this.pi = pi;
+		if(pi==null)
+			this.pi=new ProgressIndicator();
 		setMobileBase(base);
 		
 	}
@@ -126,7 +128,6 @@ public class MobileBaseCadManager {
 			}
 		}
 		pi.setProgress(0.3);
-		CSG baseCad=null;
 		try {
 			if(showingStl){
 				//skip the regen
@@ -184,12 +185,12 @@ public class MobileBaseCadManager {
 
 		showingStl=false;
 		pi.setProgress(1);
-		//PhysicsEngine.clear();
-		//return getAllCad();
-		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, getSimplecad());
-		PhysicsEngine.startPhysicsThread(16);
-		return PhysicsEngine.getCsgFromEngine();
-		//return getAllCad();
+//		//PhysicsEngine.clear();
+//		//return getAllCad();
+//		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, getSimplecad());
+//		PhysicsEngine.startPhysicsThread(50);
+//		return PhysicsEngine.getCsgFromEngine();
+		return getAllCad();
 	}
 
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
@@ -427,11 +428,17 @@ public class MobileBaseCadManager {
 	public void setAllCad(ArrayList<CSG> allCad) {
 		this.allCad = allCad;
 	}
-	public HashMap<DHLink, CSG> getSimplecad() {
+	public static HashMap<DHLink, CSG> getSimplecad() {
 		return simplecad;
 	}
-	public void setSimplecad(HashMap<DHLink, CSG> simplecad) {
-		this.simplecad = simplecad;
+	public static void setSimplecad(HashMap<DHLink, CSG> s) {
+		simplecad = s;
+	}
+	public static CSG getBaseCad() {
+		return baseCad;
+	}
+	public static  void setBaseCad(CSG b) {
+		baseCad = b;
 	}
 
 }
