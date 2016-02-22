@@ -14,6 +14,8 @@ import org.eclipse.jgit.api.errors.TransportException;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
+import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
+import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -138,6 +140,8 @@ public class MobileBaseCadManager {
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 				arrayList.clear();
 				for(CSG c:getAllCad()){
+					if(baseCad==null)
+						baseCad=c;
 					arrayList.add(c);	
 				}
 			}
@@ -180,12 +184,12 @@ public class MobileBaseCadManager {
 
 		showingStl=false;
 		pi.setProgress(1);
-//		PhysicsEngine.clear();
-//		//return getAllCad();
-//		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, simplecad);
-//		
-//		return PhysicsEngine.getCsgFromEngine();
-		return getAllCad();
+		//PhysicsEngine.clear();
+		//return getAllCad();
+		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, getSimplecad());
+		PhysicsEngine.startPhysicsThread(16);
+		return PhysicsEngine.getCsgFromEngine();
+		//return getAllCad();
 	}
 
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
@@ -303,7 +307,7 @@ public class MobileBaseCadManager {
 							dhLinks.add(c);
 						}
 						if(simpleCad!=null)
-							simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
+							getSimplecad().put(dh.getDhChain().getLinks().get(i), simpleCad);
 					}
 					return dhLinks;
 				} catch (Exception e) {
@@ -317,11 +321,12 @@ public class MobileBaseCadManager {
 					if(simpleCad==null)
 						simpleCad=c;
 					else
-						simpleCad=simpleCad.union(c);
+						simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
 					dhLinks.add(c);
 				}
+				
 				if(simpleCad!=null)
-					simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
+					getSimplecad().put(dh.getDhChain().getLinks().get(i), simpleCad);
 			}
 			return dhLinks;
 		} catch (Exception e) {
@@ -332,7 +337,7 @@ public class MobileBaseCadManager {
 	}
 
 	public CSG getSimpleCad(DHLink link){
-		CSG simple=simplecad.get(link);
+		CSG simple=getSimplecad().get(link);
 		if(simple==null)
 			return new Cube(5).toCSG();
 		return simple;
@@ -421,6 +426,12 @@ public class MobileBaseCadManager {
 	}
 	public void setAllCad(ArrayList<CSG> allCad) {
 		this.allCad = allCad;
+	}
+	public HashMap<DHLink, CSG> getSimplecad() {
+		return simplecad;
+	}
+	public void setSimplecad(HashMap<DHLink, CSG> simplecad) {
+		this.simplecad = simplecad;
 	}
 
 }
