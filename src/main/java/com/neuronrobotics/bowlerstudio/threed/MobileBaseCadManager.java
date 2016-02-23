@@ -183,8 +183,7 @@ public class MobileBaseCadManager {
 
 		showingStl=false;
 		pi.setProgress(1);
-//		//PhysicsEngine.clear();
-//		//return getAllCad();
+//		PhysicsEngine.clear();
 //		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, getSimplecad());
 //		PhysicsEngine.startPhysicsThread(50);
 //		return PhysicsEngine.getCsgFromEngine();
