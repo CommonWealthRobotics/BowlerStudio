@@ -132,8 +132,7 @@ public class MobileBaseCadManager {
 			if(showingStl){
 				//skip the regen
 				for(CSG c:BasetoCadMap.get(device)){
-					if(baseCad==null)
-						baseCad=c;
+					baseCad=c;
 					getAllCad().add(c);	
 				}
 			}else{
@@ -141,8 +140,7 @@ public class MobileBaseCadManager {
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 				arrayList.clear();
 				for(CSG c:getAllCad()){
-					if(baseCad==null)
-						baseCad=c;
+					baseCad=c;
 					arrayList.add(c);	
 				}
 			}
