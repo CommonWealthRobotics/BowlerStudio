@@ -249,10 +249,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //		 Cursor place = codeArea.getCursor();
 //		 codeArea.replaceText(current);
 //		 codeArea.setCursor(place);
-		Platform.runLater(()->{
-			textArea.setText(current);
-		});
-		
+		if(current.length()>3 && !textArea.getText().contentEquals(current)){// no empty writes
+			Platform.runLater(()->{
+				textArea.setText(current);
+			});
+		}
 	}
 
 
@@ -287,15 +288,19 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void setHighlight(int lineNumber, Color color) throws BadLocationException {
+		
 		painter = new DefaultHighlighter.DefaultHighlightPainter(color);
 		int startIndex = textArea.getLineStartOffset(lineNumber-1);
         int endIndex = textArea.getLineEndOffset(lineNumber-1);
-        textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+        
         try{
+        	
         	textArea.moveCaretPosition(startIndex);
         }catch (Error ex){
         	//ex.printStackTrace();
         }
+        textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+        
 	}
 
 

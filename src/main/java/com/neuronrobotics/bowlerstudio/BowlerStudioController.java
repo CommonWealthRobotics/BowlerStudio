@@ -163,6 +163,7 @@ public class BowlerStudioController extends TabPane implements
 					//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 					for(StackTraceElement el:ex.getStackTrace()){
 						try {
+							//System.out.println("Compairing "+fileEngineRunByName.getName()+" to "+el.getFileName());
 							if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
 								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color. CYAN);
 							}
@@ -174,14 +175,17 @@ public class BowlerStudioController extends TabPane implements
 						}
 					}
 					
-					
 				}
 				if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
 					String message = ex.getMessage();
 					//System.out.println(message);
 					if(message!=null)
-						if(message.contentEquals(fileEngineRunByName.getName())){
-							int linNum =  Integer.parseInt(message.split(":")[1]);
+						if(message.contains(fileEngineRunByName.getName())){
+							int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
+							String fileSub=message.substring(indexOfFile);
+							String [] fileAndNum =fileSub .split(":");
+							String FileNum = fileAndNum[1];
+							int linNum =  Integer.parseInt(FileNum.trim());
 							try {
 								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
 							} catch (BadLocationException e) {
