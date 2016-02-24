@@ -295,7 +295,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
 
 			TreeView<String> tree = new TreeView<String>(rootItem);
-			MobleBaseFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
+			MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
 
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
@@ -370,6 +370,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				File c = code;
 				w.addIFileChangeListener((fileThatChanged, event) -> {
 					try {
+						System.out.println("D-H Solver changed, updating "+device.getScriptingName());
 						DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineScriptRun(c, null,
 								ShellType.GROOVY);
 						device.setInverseSolver(d);
@@ -390,6 +391,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		return null;
 
 	}
+	
+	
 
 	private void setDefaultWalkingEngine(MobileBase device) {
 		if (defaultDriveEngine == null) {

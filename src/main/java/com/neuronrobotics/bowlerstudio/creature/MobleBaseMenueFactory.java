@@ -35,7 +35,9 @@ import javafx.scene.layout.VBox;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
@@ -47,7 +49,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
-public class MobleBaseFactory {
+public class MobleBaseMenueFactory {
 
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device,TreeView<String> view, TreeItem<String> rootItem,
@@ -638,12 +640,12 @@ public class MobleBaseFactory {
 			TreeItem<String> owner = new TreeItem<String>("Owner");
 			TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
 			callbackMapForTreeitems.put(setCAD, () -> {
-				PromptForGit.prompt("Select a CAD Engine From a Gist",dh.getGitCadEngine()[0],(gitsId, file) -> {
+				PromptForGit.prompt("Select a CAD Engine From Git",dh.getGitCadEngine()[0],(gitsId, file) -> {
 					Log.warn("Loading cad engine");
 					try {
 						creatureLab.setGitCadEngine(gitsId, file,dh);
-						File code = ScriptingEngine.fileFromGit(gitsId,file);
-						BowlerStudio.createFileTab(code);
+						openCadTab(creatureLab,gitsId,file);
+
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -653,8 +655,7 @@ public class MobleBaseFactory {
 			TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...");
 			callbackMapForTreeitems.put(editCAD, () -> {
 				try {
-					File code = ScriptingEngine.fileFromGit(dh.getGitCadEngine()[0],dh.getGitCadEngine()[1]);
-					BowlerStudio.createFileTab(code);
+					openCadTab(creatureLab,dh.getGitCadEngine()[0],dh.getGitCadEngine()[1]);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -662,7 +663,7 @@ public class MobleBaseFactory {
 			});
 			TreeItem<String> resetWalking = new TreeItem<String>("Set Dh Kinematics Engine...");
 			callbackMapForTreeitems.put(resetWalking, () -> {
-				PromptForGit.prompt("Select a Walking Engine From a Gist",dh.getGitDhEngine()[0],(gitsId, file) -> {
+				PromptForGit.prompt("Select a DH Solver Engine From Git",dh.getGitDhEngine()[0],(gitsId, file) -> {
 					Log.warn("Loading walking engine");
 					try {
 						creatureLab.setGitDhEngine(gitsId, file,dh);
@@ -704,4 +705,31 @@ public class MobleBaseFactory {
 		
 	}
 
+
+
+
+	private static void openCadTab(CreatureLab creatureLab, String gitsId, String file) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		File code = ScriptingEngine.fileFromGit(gitsId,file);
+		ScriptingFileWidget wid = BowlerStudio.createFileTab(code);
+		wid.addIScriptEventListener(new IScriptEventListener() {
+			
+			@Override
+			public void onScriptFinished(Object result, Object pervious, File source) {
+				
+			}
+			
+			@Override
+			public void onScriptError(Exception except, File source) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onScriptChanged(String previous, String current, File source) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
 }
