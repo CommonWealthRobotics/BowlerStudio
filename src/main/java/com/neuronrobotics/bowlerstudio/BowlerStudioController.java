@@ -164,7 +164,7 @@ public class BowlerStudioController extends TabPane implements
 					for(StackTraceElement el:ex.getStackTrace()){
 						try {
 							if(el.getFileName().contentEquals(fileEngineRunByName.getName())){
-								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color.PINK);
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),Color. CYAN);
 							}
 						} catch (Exception e) {
 //							StringWriter sw = new StringWriter();
@@ -183,7 +183,7 @@ public class BowlerStudioController extends TabPane implements
 						if(message.contentEquals(fileEngineRunByName.getName())){
 							int linNum =  Integer.parseInt(message.split(":")[1]);
 							try {
-								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.PINK);
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
 							} catch (BadLocationException e) {
 								StringWriter sw = new StringWriter();
 								PrintWriter pw = new PrintWriter(sw);
