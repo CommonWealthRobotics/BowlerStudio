@@ -150,6 +150,9 @@ public class BowlerStudioController extends TabPane implements
 	public static void highlightException(File fileEngineRunByName, Exception ex){
 		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
+	public static void clearHighlight(){
+		bowlerStudioControllerStaticReference.clearHighlits();
+	}
 	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
 		new Thread(){
 			public void run(){
