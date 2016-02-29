@@ -81,15 +81,19 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
+	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+	maven { url 'https://jline.sourceforge.net/m2repo' }
+	maven { url 'https://repo.spring.io/milestone'}
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
-	maven { url 'http://repo.jenkins-ci.org/public/' }
-	maven { url 'http://clojars.org/repo' }
+	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
+	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
 }
 
 dependencies {
+/*	
 	
-	/*
 	compile 'gov.nist.math:jama:1.0.2'
 
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
@@ -123,9 +127,9 @@ dependencies {
 	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
     compile 'org.slf4j:slf4j-simple:1.6.1'
 			
-	//compile "com.neuronrobotics:JCSG:0.2.0"
+	compile "com.neuronrobotics:JCSG:0.6.1"
 	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	compile "com.neuronrobotics:java-bowler:3.16.7"
+	//compile "com.neuronrobotics:java-bowler:3.16.7"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.16.4-jar-with-dependencies.jar'])
 	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JCSG-0.3.1.jar'])
 	compile "com.neuronrobotics:WalnutiQ:2.3.2"
@@ -163,18 +167,23 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile 'org.jsoup:jsoup:1.8.3'
 	compile 'org.apache.httpcomponents:httpclient:4.5.1'
-	compile 'cz.advel.jbullet:jbullet:20101010-1'
 	
 	
 	compile 'javax.media:jmf:2.1.1e'
-	//compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
+	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
+	compile fileTree (dir: '../java-bowler//libs/', includes: ['*.jar'])
+	compile "com.neuronrobotics:nrjavaserial:3.11.0"
 	//compile fileTree (dir: '../JCSG/libs/', includes: ['*.jar'])
+
+	
+	compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
+	compile "alda:alda:1.0.0-rc9"
+	compile "yetibot:yetibot:0.1.74"
 	*/
-	
-	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.13.1"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.13.2"
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.13.0.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
+	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 }
 
 // create a fat-jar (class files plus dependencies

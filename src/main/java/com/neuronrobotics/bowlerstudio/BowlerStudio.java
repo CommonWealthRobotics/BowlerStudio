@@ -84,8 +84,14 @@ public class BowlerStudio extends Application {
                     System.exit(1);
                 }
     		//});
-    	
-
+             Configuration configuration = new Configuration();
+                
+       	     // Set path to acoustic model.
+       	     configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
+       	     // Set path to dictionary.
+       	     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
+       	     // Set language model.
+       	     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
 
     		MainController.updateLog();
@@ -148,8 +154,8 @@ public class BowlerStudio extends Application {
 
         setScene(new Scene(main, 1250, 768,true));
 
-        getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
-                toExternalForm());
+//        getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
+//                toExternalForm());
         
         PerspectiveCamera camera = new PerspectiveCamera();
         
@@ -166,29 +172,8 @@ public class BowlerStudio extends Application {
 		});
         primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
         primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
-        Configuration configuration = new Configuration();
-        
-	     // Set path to acoustic model.
-	     configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
-	     // Set path to dictionary.
-	     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-	     // Set language model.
-	     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-     
-        //Log.enableDebugPrint();
-		//new MicroServo().toCSG();
-        //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
-	     
-//    	String xmlContent;
-//		try {
-//			xmlContent = ScriptingEngineWidget.codeFromGistID("2b0cff20ccee085c9c36","TrobotLinks.xml")[0];
-//			MobileBase base = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-//	    	DHParameterKinematics model = base.getAppendages().get(0); 
-//	    	DeviceManager.addConnection(base, "baseTest");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
+
 	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
 	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
 	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
