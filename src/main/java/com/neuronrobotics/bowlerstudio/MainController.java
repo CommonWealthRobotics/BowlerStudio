@@ -165,6 +165,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		System.out.println("Main controller inializing");
+		// THis initialization needs to be launched from a thread to avoid blocking the UI thread that spawwns it
 		new Thread(()->{
 			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
 	
