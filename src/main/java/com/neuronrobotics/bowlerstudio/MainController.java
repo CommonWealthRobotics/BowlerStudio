@@ -118,35 +118,40 @@ public class MainController implements Initializable {
 	}
 	public static void updateLog() {
 		if (logViewRef != null) {
-			String current;
-			String finalStr;
+			
 			if (getOut().size() == 0) {
 				newString = null;
 			} else {
-				newString = getOut().toString();
-				getOut().reset();
-			}
-			if (newString != null) {
-				current = logViewRef.getText() + newString;
-				try {
-					finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
-				} catch (StringIndexOutOfBoundsException ex) {
-					finalStr = current;
-				}
-				int strlen = finalStr.length() - 1;
-				String outStr=finalStr;
-				Platform.runLater(() -> {
-					logViewRef.setText(outStr);
-					logViewRef.positionCaret(strlen);
+				new Thread(()->{
+					String current;
+					String finalStr;
+					newString = getOut().toString();
+					getOut().reset();
+					if (newString != null) {
+						current = logViewRef.getText() + newString;
+						try {
+							finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
+						} catch (StringIndexOutOfBoundsException ex) {
+							finalStr = current;
+						}
+						int strlen = finalStr.length() - 1;
+						String outStr=finalStr;
+						Platform.runLater(() -> {
+							logViewRef.setText(outStr);
+							logViewRef.positionCaret(strlen);
+						
+						});
+					}
+					FxTimer.runLater(Duration.ofMillis(500), () -> {
+
+						updateLog();
+					});
+				}).start();
 				
-				});
 			}
-
+			
 		}
-		FxTimer.runLater(Duration.ofMillis(500), () -> {
 
-			updateLog();
-		});
 	}
 
 	// private final CodeArea codeArea = new CodeArea();
