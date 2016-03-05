@@ -361,6 +361,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private void start() {
 		MainController.clearConsole();
+		try {
+			ScriptingEngine.setAutoupdate(true);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");

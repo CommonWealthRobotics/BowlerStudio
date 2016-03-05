@@ -216,6 +216,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			Log.debug("Loading xml: " + device.getXml());
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
 		} else if (MobileBase.class.isInstance(pm)) {
+			try {
+				ScriptingEngine.setAutoupdate(true);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			MobileBase device = (MobileBase) pm;
 			Menu CreaturLabMenue = BowlerStudio.getCreatureLabMenue();
 			localMenue = new Menu(pm.getScriptingName());
