@@ -164,134 +164,137 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
-
-			@Override
-			public String[] prompt(String username) {
-				if(!loginWindowOpen&&controller!=null)
-					controller.reset();
-				controller=null;
-				loginWindowOpen=true;
-				System.err.println("Calling login from BowlerStudio");
-				// new RuntimeException().printStackTrace();
-				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-				Parent root = fxmlLoader.getRoot();
-				if(controller==null){
-					controller = fxmlLoader.getController();
-					Platform.runLater(() -> {
+		System.out.println("Main controller inializing");
+		new Thread(()->{
+			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
+	
+				@Override
+				public String[] prompt(String username) {
+					if(!loginWindowOpen&&controller!=null)
 						controller.reset();
-						controller.getUsername().setText(username);
-						Stage stage = new Stage();
-						stage.setTitle("GitHub Login");
-						stage.initModality(Modality.APPLICATION_MODAL);
-						controller.setStage(stage, root);
-						stage.centerOnScreen();
-						stage.show();
-					});
+					controller=null;
+					loginWindowOpen=true;
+					System.err.println("Calling login from BowlerStudio");
+					// new RuntimeException().printStackTrace();
+					FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+					Parent root = fxmlLoader.getRoot();
+					if(controller==null){
+						controller = fxmlLoader.getController();
+						Platform.runLater(() -> {
+							controller.reset();
+							controller.getUsername().setText(username);
+							Stage stage = new Stage();
+							stage.setTitle("GitHub Login");
+							stage.initModality(Modality.APPLICATION_MODAL);
+							controller.setStage(stage, root);
+							stage.centerOnScreen();
+							stage.show();
+						});
+					}
+					// setContent(root);
+					while (!controller.isDone()) {
+						ThreadUtil.wait(100);
+					}
+					String[] creds = controller.getCreds();
+					loginWindowOpen=false;
+					return creds;
 				}
-				// setContent(root);
-				while (!controller.isDone()) {
-					ThreadUtil.wait(100);
-				}
-				String[] creds = controller.getCreds();
-				loginWindowOpen=false;
-				return creds;
-			}
-		});
-
-		jfx3dmanager = new BowlerStudio3dEngine();
-
-		setApplication(new BowlerStudioController(jfx3dmanager, this));
-		Platform.runLater(() -> {
-			editorContainer.getChildren().add(getApplication());
-			AnchorPane.setTopAnchor(getApplication(), 0.0);
-			AnchorPane.setRightAnchor(getApplication(), 0.0);
-			AnchorPane.setLeftAnchor(getApplication(), 0.0);
-			AnchorPane.setBottomAnchor(getApplication(), 0.0);
-
-			subScene = jfx3dmanager.getSubScene();
-			subScene.setFocusTraversable(false);
-			subScene.setOnMouseEntered(mouseEvent -> {
-				// System.err.println("3d window requesting focus");
-				Scene topScene = BowlerStudio.getScene();
-				normalKeyPessHandle = topScene.getOnKeyPressed();
-				jfx3dmanager.handleKeyboard(topScene);
 			});
-
-			subScene.setOnMouseExited(mouseEvent -> {
-				// System.err.println("3d window dropping focus");
-				Scene topScene = BowlerStudio.getScene();
-				topScene.setOnKeyPressed(normalKeyPessHandle);
+			System.out.println("Loading 3d engine");
+			jfx3dmanager = new BowlerStudio3dEngine();
+	
+			setApplication(new BowlerStudioController(jfx3dmanager, this));
+			Platform.runLater(() -> {
+				editorContainer.getChildren().add(getApplication());
+				AnchorPane.setTopAnchor(getApplication(), 0.0);
+				AnchorPane.setRightAnchor(getApplication(), 0.0);
+				AnchorPane.setLeftAnchor(getApplication(), 0.0);
+				AnchorPane.setBottomAnchor(getApplication(), 0.0);
+	
+				subScene = jfx3dmanager.getSubScene();
+				subScene.setFocusTraversable(false);
+				subScene.setOnMouseEntered(mouseEvent -> {
+					// System.err.println("3d window requesting focus");
+					Scene topScene = BowlerStudio.getScene();
+					normalKeyPessHandle = topScene.getOnKeyPressed();
+					jfx3dmanager.handleKeyboard(topScene);
+				});
+	
+				subScene.setOnMouseExited(mouseEvent -> {
+					// System.err.println("3d window dropping focus");
+					Scene topScene = BowlerStudio.getScene();
+					topScene.setOnKeyPressed(normalKeyPessHandle);
+				});
+	
+				subScene.widthProperty().bind(viewContainer.widthProperty());
+				subScene.heightProperty().bind(viewContainer.heightProperty());
 			});
-
-			subScene.widthProperty().bind(viewContainer.widthProperty());
-			subScene.heightProperty().bind(viewContainer.heightProperty());
-		});
-
-		Platform.runLater(() -> {
-			jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-			viewContainer.getChildren().add(subScene);
-		});
-
-		System.out.println("Welcome to BowlerStudio!");
-		new Thread() {
-			public void run() {
-				setName("Load Haar Thread");
-				try {
-					HaarFactory.getStream(null);
-				} catch (Exception ex) {
+	
+			Platform.runLater(() -> {
+				jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
+				viewContainer.getChildren().add(subScene);
+			});
+	
+			System.out.println("Welcome to BowlerStudio!");
+			new Thread() {
+				public void run() {
+					setName("Load Haar Thread");
+					try {
+						HaarFactory.getStream(null);
+					} catch (Exception ex) {
+					}
 				}
-			}
-		}.start();
-
-		// getAddDefaultRightArm().setOnAction(event -> {
-		//
-		// application.onAddDefaultRightArm(event);
-		// });
-		// getAddVRCamera().setOnAction(event -> {
-		// if(AddVRCamera.isSelected())
-		// application.onAddVRCamera(event);
-		// });
-
-		FxTimer.runLater(Duration.ofMillis(100), () -> {
-			if (ScriptingEngine.getLoginID() != null) {
-				setToLoggedIn(ScriptingEngine.getLoginID());
-			} else {
-				setToLoggedOut();
-			}
-
-		});
-
-		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-
-			@Override
-			public void onLogout(String oldUsername) {
-				setToLoggedOut();
-			}
-
-			@Override
-			public void onLogin(String newUsername) {
-				setToLoggedIn(newUsername);
-
-			}
-		});
-
-		cmdLine = new CommandLineWidget();
-
-		Platform.runLater(() -> {
-			// logView.resize(250, 300);
-			// after connection manager set up, add scripting widget
-			logViewRef = new TextArea();
-			logViewRef.prefWidthProperty().bind(logView.widthProperty().divide(2));
-			logViewRef.prefHeightProperty().bind(logView.heightProperty().subtract(40));
-			VBox box = new VBox();
-			box.getChildren().add(logViewRef);
-			box.getChildren().add(cmdLine);
-			VBox.setVgrow(logViewRef, Priority.ALWAYS);
-			box.prefWidthProperty().bind(logView.widthProperty().subtract(10));
-
-			logView.getChildren().addAll(box);
-		});
+			}.start();
+	
+			// getAddDefaultRightArm().setOnAction(event -> {
+			//
+			// application.onAddDefaultRightArm(event);
+			// });
+			// getAddVRCamera().setOnAction(event -> {
+			// if(AddVRCamera.isSelected())
+			// application.onAddVRCamera(event);
+			// });
+	
+			FxTimer.runLater(Duration.ofMillis(100), () -> {
+				if (ScriptingEngine.getLoginID() != null) {
+					setToLoggedIn(ScriptingEngine.getLoginID());
+				} else {
+					setToLoggedOut();
+				}
+	
+			});
+	
+			ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+	
+				@Override
+				public void onLogout(String oldUsername) {
+					setToLoggedOut();
+				}
+	
+				@Override
+				public void onLogin(String newUsername) {
+					setToLoggedIn(newUsername);
+	
+				}
+			});
+			System.out.println("Laoding ommand line widget");
+			cmdLine = new CommandLineWidget();
+	
+			Platform.runLater(() -> {
+				// logView.resize(250, 300);
+				// after connection manager set up, add scripting widget
+				logViewRef = new TextArea();
+				logViewRef.prefWidthProperty().bind(logView.widthProperty().divide(2));
+				logViewRef.prefHeightProperty().bind(logView.heightProperty().subtract(40));
+				VBox box = new VBox();
+				box.getChildren().add(logViewRef);
+				box.getChildren().add(cmdLine);
+				VBox.setVgrow(logViewRef, Priority.ALWAYS);
+				box.prefWidthProperty().bind(logView.widthProperty().subtract(10));
+	
+				logView.getChildren().addAll(box);
+			});
+		}).start();
 	}
 
 	private void setToLoggedIn(final String name) {
