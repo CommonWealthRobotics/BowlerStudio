@@ -68,10 +68,10 @@ public class BowlerStudio extends Application {
     		BowlerStudioResourceFactory.load();
     		//System.out.println("Done loading assets ");
     		String key="Bowler Initial Version";
-
+    		//System.out.println("Loading Main.fxml");
     		fxmlLoader = new FXMLLoader(
                     BowlerStudio.class.getResource("Main.fxml"));
-    		//Platform.runLater(()->{
+    		Platform.runLater(()->{
     			//System.out.println("Loading the main fxml ");
                 try {
                     fxmlLoader.load();
@@ -83,7 +83,8 @@ public class BowlerStudio extends Application {
                             log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
-    		//});
+    		});
+    		//System.out.println("Loading langauge configuration");
              Configuration configuration = new Configuration();
                 
        	     // Set path to acoustic model.
@@ -177,6 +178,7 @@ public class BowlerStudio extends Application {
 	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
 	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
 	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
+	     System.out.println("Welcome to BowlerStudio!");
     }
 
     public static Parent loadFromFXML() {

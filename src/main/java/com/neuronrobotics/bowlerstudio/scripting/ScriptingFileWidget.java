@@ -177,8 +177,11 @@ public class ScriptingFileWidget extends BorderPane implements
 		});
 		
 		publish.setOnAction(e -> {
-			save();
-			CommitWidget.commit(currentFile, getCode());
+			new Thread(()->{
+				save();
+				CommitWidget.commit(currentFile, getCode());
+			}).start();
+
 		});
 		
 		

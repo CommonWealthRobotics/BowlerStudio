@@ -109,37 +109,53 @@ public class MainController implements Initializable {
 	MenuItem createNewGist;
 	@FXML
 	MenuItem addFileToGist;
-	private boolean loginWindowOpen=false;
-	private GithubLoginFX controller= null;
-	public static void clearConsole(){
+	private boolean loginWindowOpen = false;
+	private GithubLoginFX controller = null;
+
+	public static void clearConsole() {
 		Platform.runLater(() -> {
 			logViewRef.setText("");
 		});
 	}
+
+	private static boolean logLock = false;
+
 	public static void updateLog() {
 		if (logViewRef != null) {
-			String current;
-			String finalStr;
+
 			if (getOut().size() == 0) {
 				newString = null;
+
 			} else {
-				newString = getOut().toString();
-				getOut().reset();
-			}
-			if (newString != null) {
-				current = logViewRef.getText() + newString;
-				try {
-					finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
-				} catch (StringIndexOutOfBoundsException ex) {
-					finalStr = current;
+				if (!logLock) {
+					logLock = true;
+					new Thread(
+							() -> {
+								String current;
+								String finalStr;
+								newString = getOut().toString();
+								getOut().reset();
+								if (newString != null) {
+									current = logViewRef.getText() + newString;
+									try {
+										finalStr = new String(
+												current.substring(current
+														.getBytes().length
+														- sizeOfTextBuffer));
+									} catch (StringIndexOutOfBoundsException ex) {
+										finalStr = current;
+									}
+									int strlen = finalStr.length() - 1;
+									String outStr = finalStr;
+									Platform.runLater(() -> {
+										logViewRef.setText(outStr);
+										logViewRef.positionCaret(strlen);
+										logLock = false;
+									});
+								}
+							}).start();
+
 				}
-				int strlen = finalStr.length() - 1;
-				String outStr=finalStr;
-				Platform.runLater(() -> {
-					logViewRef.setText(outStr);
-					logViewRef.positionCaret(strlen);
-				
-				});
 			}
 
 		}
@@ -159,134 +175,146 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
+		System.out.println("Main controller inializing");
+		// THis initialization needs to be launched from a thread to avoid
+		// blocking the UI thread that spawwns it
+		new Thread(() -> {
+			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
 
-			@Override
-			public String[] prompt(String username) {
-				if(!loginWindowOpen&&controller!=null)
-					controller.reset();
-				controller=null;
-				loginWindowOpen=true;
-				System.err.println("Calling login from BowlerStudio");
-				// new RuntimeException().printStackTrace();
-				FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-				Parent root = fxmlLoader.getRoot();
-				if(controller==null){
-					controller = fxmlLoader.getController();
-					Platform.runLater(() -> {
+				@Override
+				public String[] prompt(String username) {
+					if (!loginWindowOpen && controller != null)
 						controller.reset();
-						controller.getUsername().setText(username);
-						Stage stage = new Stage();
-						stage.setTitle("GitHub Login");
-						stage.initModality(Modality.APPLICATION_MODAL);
-						controller.setStage(stage, root);
-						stage.centerOnScreen();
-						stage.show();
+					controller = null;
+					loginWindowOpen = true;
+					System.err.println("Calling login from BowlerStudio");
+					// new RuntimeException().printStackTrace();
+					FXMLLoader fxmlLoader = BowlerStudioResourceFactory
+							.getGithubLogin();
+					Parent root = fxmlLoader.getRoot();
+					if (controller == null) {
+						controller = fxmlLoader.getController();
+						Platform.runLater(() -> {
+							controller.reset();
+							controller.getUsername().setText(username);
+							Stage stage = new Stage();
+							stage.setTitle("GitHub Login");
+							stage.initModality(Modality.APPLICATION_MODAL);
+							controller.setStage(stage, root);
+							stage.centerOnScreen();
+							stage.show();
+						});
+					}
+					// setContent(root);
+					while (!controller.isDone()) {
+						ThreadUtil.wait(100);
+					}
+					String[] creds = controller.getCreds();
+					loginWindowOpen = false;
+					return creds;
+				}
+			});
+			// System.out.println("Loading 3d engine");
+				jfx3dmanager = new BowlerStudio3dEngine();
+
+				setApplication(new BowlerStudioController(jfx3dmanager, this));
+				Platform.runLater(() -> {
+					editorContainer.getChildren().add(getApplication());
+					AnchorPane.setTopAnchor(getApplication(), 0.0);
+					AnchorPane.setRightAnchor(getApplication(), 0.0);
+					AnchorPane.setLeftAnchor(getApplication(), 0.0);
+					AnchorPane.setBottomAnchor(getApplication(), 0.0);
+
+					subScene = jfx3dmanager.getSubScene();
+					subScene.setFocusTraversable(false);
+					subScene.setOnMouseEntered(mouseEvent -> {
+						// System.err.println("3d window requesting focus");
+						Scene topScene = BowlerStudio.getScene();
+						normalKeyPessHandle = topScene.getOnKeyPressed();
+						jfx3dmanager.handleKeyboard(topScene);
 					});
-				}
-				// setContent(root);
-				while (!controller.isDone()) {
-					ThreadUtil.wait(100);
-				}
-				String[] creds = controller.getCreds();
-				loginWindowOpen=false;
-				return creds;
-			}
-		});
 
-		jfx3dmanager = new BowlerStudio3dEngine();
+					subScene.setOnMouseExited(mouseEvent -> {
+						// System.err.println("3d window dropping focus");
+						Scene topScene = BowlerStudio.getScene();
+						topScene.setOnKeyPressed(normalKeyPessHandle);
+					});
 
-		setApplication(new BowlerStudioController(jfx3dmanager, this));
-		Platform.runLater(() -> {
-			editorContainer.getChildren().add(getApplication());
-			AnchorPane.setTopAnchor(getApplication(), 0.0);
-			AnchorPane.setRightAnchor(getApplication(), 0.0);
-			AnchorPane.setLeftAnchor(getApplication(), 0.0);
-			AnchorPane.setBottomAnchor(getApplication(), 0.0);
+					subScene.widthProperty()
+							.bind(viewContainer.widthProperty());
+					subScene.heightProperty().bind(
+							viewContainer.heightProperty());
+				});
 
-			subScene = jfx3dmanager.getSubScene();
-			subScene.setFocusTraversable(false);
-			subScene.setOnMouseEntered(mouseEvent -> {
-				// System.err.println("3d window requesting focus");
-				Scene topScene = BowlerStudio.getScene();
-				normalKeyPessHandle = topScene.getOnKeyPressed();
-				jfx3dmanager.handleKeyboard(topScene);
-			});
+				Platform.runLater(() -> {
+					jfx3dControls.getChildren().add(
+							jfx3dmanager.getControlsBox());
+					viewContainer.getChildren().add(subScene);
+				});
 
-			subScene.setOnMouseExited(mouseEvent -> {
-				// System.err.println("3d window dropping focus");
-				Scene topScene = BowlerStudio.getScene();
-				topScene.setOnKeyPressed(normalKeyPessHandle);
-			});
+				new Thread() {
+					public void run() {
+						setName("Load Haar Thread");
+						try {
+							HaarFactory.getStream(null);
+						} catch (Exception ex) {
+						}
+					}
+				}.start();
 
-			subScene.widthProperty().bind(viewContainer.widthProperty());
-			subScene.heightProperty().bind(viewContainer.heightProperty());
-		});
+				// getAddDefaultRightArm().setOnAction(event -> {
+				//
+				// application.onAddDefaultRightArm(event);
+				// });
+				// getAddVRCamera().setOnAction(event -> {
+				// if(AddVRCamera.isSelected())
+				// application.onAddVRCamera(event);
+				// });
 
-		Platform.runLater(() -> {
-			jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-			viewContainer.getChildren().add(subScene);
-		});
+				FxTimer.runLater(Duration.ofMillis(100), () -> {
+					if (ScriptingEngine.getLoginID() != null) {
+						setToLoggedIn(ScriptingEngine.getLoginID());
+					} else {
+						setToLoggedOut();
+					}
 
-		System.out.println("Welcome to BowlerStudio!");
-		new Thread() {
-			public void run() {
-				setName("Load Haar Thread");
-				try {
-					HaarFactory.getStream(null);
-				} catch (Exception ex) {
-				}
-			}
-		}.start();
+				});
 
-		// getAddDefaultRightArm().setOnAction(event -> {
-		//
-		// application.onAddDefaultRightArm(event);
-		// });
-		// getAddVRCamera().setOnAction(event -> {
-		// if(AddVRCamera.isSelected())
-		// application.onAddVRCamera(event);
-		// });
+				ScriptingEngine
+						.addIGithubLoginListener(new IGithubLoginListener() {
 
-		FxTimer.runLater(Duration.ofMillis(100), () -> {
-			if (ScriptingEngine.getLoginID() != null) {
-				setToLoggedIn(ScriptingEngine.getLoginID());
-			} else {
-				setToLoggedOut();
-			}
+							@Override
+							public void onLogout(String oldUsername) {
+								setToLoggedOut();
+							}
 
-		});
+							@Override
+							public void onLogin(String newUsername) {
+								setToLoggedIn(newUsername);
 
-		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+							}
+						});
+				// System.out.println("Laoding ommand line widget");
+				cmdLine = new CommandLineWidget();
 
-			@Override
-			public void onLogout(String oldUsername) {
-				setToLoggedOut();
-			}
+				Platform.runLater(() -> {
+					// logView.resize(250, 300);
+					// after connection manager set up, add scripting widget
+					logViewRef = new TextArea();
+					logViewRef.prefWidthProperty().bind(
+							logView.widthProperty().divide(2));
+					logViewRef.prefHeightProperty().bind(
+							logView.heightProperty().subtract(40));
+					VBox box = new VBox();
+					box.getChildren().add(logViewRef);
+					box.getChildren().add(cmdLine);
+					VBox.setVgrow(logViewRef, Priority.ALWAYS);
+					box.prefWidthProperty().bind(
+							logView.widthProperty().subtract(10));
 
-			@Override
-			public void onLogin(String newUsername) {
-				setToLoggedIn(newUsername);
-
-			}
-		});
-
-		cmdLine = new CommandLineWidget();
-
-		Platform.runLater(() -> {
-			// logView.resize(250, 300);
-			// after connection manager set up, add scripting widget
-			logViewRef = new TextArea();
-			logViewRef.prefWidthProperty().bind(logView.widthProperty().divide(2));
-			logViewRef.prefHeightProperty().bind(logView.heightProperty().subtract(40));
-			VBox box = new VBox();
-			box.getChildren().add(logViewRef);
-			box.getChildren().add(cmdLine);
-			VBox.setVgrow(logViewRef, Priority.ALWAYS);
-			box.prefWidthProperty().bind(logView.widthProperty().subtract(10));
-
-			logView.getChildren().addAll(box);
-		});
+					logView.getChildren().addAll(box);
+				});
+			}).start();
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -317,25 +345,29 @@ public class MainController implements Initializable {
 						for (GHGist gist : gists) {
 							String desc = gist.getDescription();
 							if (desc == null || desc.length() == 0) {
-								desc = gist.getFiles().keySet().toArray()[0].toString();
+								desc = gist.getFiles().keySet().toArray()[0]
+										.toString();
 							}
 							Menu tmpGist = new Menu(desc);
 							String description = desc;
-							MenuItem loadWebGist = new MenuItem("Show Web Gist...");
+							MenuItem loadWebGist = new MenuItem(
+									"Show Web Gist...");
 							loadWebGist.setOnAction(event -> {
 								String webURL = gist.getHtmlUrl();
 								try {
-									BowlerStudio.openUrlInNewTab(new URL(webURL));
+									BowlerStudio
+											.openUrlInNewTab(new URL(webURL));
 								} catch (MalformedURLException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							});
-							MenuItem addFile = new MenuItem("Add file to Gist...");
+							MenuItem addFile = new MenuItem(
+									"Add file to Gist...");
 							addFile.setOnAction(event -> {
 								new Thread() {
 									public void run() {
-										
+
 									}
 								}.start();
 							});
@@ -351,25 +383,30 @@ public class MainController implements Initializable {
 									// for(ScriptingEngine.)
 									new Thread() {
 										public void run() {
-											
+
 											ThreadUtil.wait(500);
-											if(!tmpGist.isShowing())
+											if (!tmpGist.isShowing())
 												return;
-											if(gistFlag)
-												return;//another thread is servicing this gist
+											if (gistFlag)
+												return;// another thread is
+														// servicing this gist
 											gistFlag = true;
-											System.out.println("Loading files for "+description );
+											System.out
+													.println("Loading files for "
+															+ description);
 											ArrayList<String> listofFiles;
 											try {
-												listofFiles = ScriptingEngine
-														.filesInGit(gist.getGitPushUrl(), "master", null);
-												
+												listofFiles = ScriptingEngine.filesInGit(
+														gist.getGitPushUrl(),
+														"master", null);
+
 											} catch (Exception e1) {
 												e1.printStackTrace();
 												return;
 											}
-											if(tmpGist.getItems().size()>2)
-												return;// menue populated by another thread
+											if (tmpGist.getItems().size() > 2)
+												return;// menue populated by
+														// another thread
 											for (String s : listofFiles) {
 												MenuItem tmp = new MenuItem(s);
 												tmp.setOnAction(event -> {
@@ -377,8 +414,11 @@ public class MainController implements Initializable {
 														public void run() {
 															try {
 																File fileSelected = ScriptingEngine
-																		.fileFromGit(gist.getGitPushUrl(), s);
-																BowlerStudio.createFileTab(fileSelected);
+																		.fileFromGit(
+																				gist.getGitPushUrl(),
+																				s);
+																BowlerStudio
+																		.createFileTab(fileSelected);
 															} catch (Exception e) {
 																// TODO
 																// Auto-generated
@@ -391,7 +431,9 @@ public class MainController implements Initializable {
 												});
 												Platform.runLater(() -> {
 													tmpGist.getItems().add(tmp);
-													// removing this listener after menue is activated for the first time
+													// removing this listener
+													// after menue is activated
+													// for the first time
 													tmpGist.setOnShowing(null);
 
 												});
@@ -450,8 +492,9 @@ public class MainController implements Initializable {
 		String urlString = url.toString().replace("jar:", "");
 
 		if (!urlString.startsWith("file:")) {
-			throw new IllegalArgumentException("The specified class\"" + cls.getName()
-					+ "\" has not been loaded from a location" + "on the local filesystem.");
+			throw new IllegalArgumentException("The specified class\""
+					+ cls.getName() + "\" has not been loaded from a location"
+					+ "on the local filesystem.");
 		}
 
 		urlString = urlString.replace("file:", "");
@@ -473,18 +516,22 @@ public class MainController implements Initializable {
 		new Thread() {
 			public void run() {
 				setName("Load File Thread");
-				openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
-						new ExtensionFilter("Groovy Scripts", "*.groovy", "*.java", "*.txt"),
-						new ExtensionFilter("Clojure", "*.cloj", "*.clj", "*.txt", "*.clojure"),
-						new ExtensionFilter("Python", "*.py", "*.python", "*.txt"),
-						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
-						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg","*.txt"),
-						new ExtensionFilter("Image", "*.jpg", "*.jpeg", "*.JPG", "*.png", "*.PNG"),
+				openFile = FileSelectionFactory.GetFile(ScriptingEngine
+						.getLastFile(), new ExtensionFilter("Groovy Scripts",
+						"*.groovy", "*.java", "*.txt"), new ExtensionFilter(
+						"Clojure", "*.cloj", "*.clj", "*.txt", "*.clojure"),
+						new ExtensionFilter("Python", "*.py", "*.python",
+								"*.txt"), new ExtensionFilter("DXF", "*.dxf",
+								"*.DXF"), new ExtensionFilter("GCODE",
+								"*.gcode", "*.nc", "*.ncg", "*.txt"),
+						new ExtensionFilter("Image", "*.jpg", "*.jpeg",
+								"*.JPG", "*.png", "*.PNG"),
 						new ExtensionFilter("All", "*.*"));
 				if (openFile == null) {
 					return;
 				}
-				ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
+				ArrayList<Polygon> points = TwoDCadFactory
+						.pointsFromFile(openFile);
 				if (null != points) {
 					getApplication().addTab(new TwoDCad(points), true);
 					return;
@@ -507,7 +554,8 @@ public class MainController implements Initializable {
 	@FXML
 	private void onConnectVirtual(ActionEvent e) {
 
-		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000), "virtual");
+		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000),
+				"virtual");
 	}
 
 	@FXML
@@ -532,7 +580,8 @@ public class MainController implements Initializable {
 	public void onConnectCHDKCamera(ActionEvent event) {
 		Platform.runLater(() -> {
 			try {
-				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
+				ConnectionManager.addConnection(new CHDKImageProvider(),
+						"cameraCHDK");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -633,7 +682,8 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onPrint(ActionEvent event) {
-		NRPrinter printer = (NRPrinter) ConnectionManager.pickConnectedDevice(NRPrinter.class);
+		NRPrinter printer = (NRPrinter) ConnectionManager
+				.pickConnectedDevice(NRPrinter.class);
 		if (printer != null) {
 			// run a print here
 		}
@@ -645,16 +695,19 @@ public class MainController implements Initializable {
 		new Thread() {
 			public void run() {
 				setName("Load Mobile Base Thread");
-				openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
-						new ExtensionFilter("MobileBase XML", "*.xml", "*.XML"));
+				openFile = FileSelectionFactory.GetFile(ScriptingEngine
+						.getLastFile(), new ExtensionFilter("MobileBase XML",
+						"*.xml", "*.XML"));
 
 				if (openFile == null) {
 					return;
 				}
 				Platform.runLater(() -> {
 					try {
-						MobileBase mb = new MobileBase(new FileInputStream(openFile));
-						ConnectionManager.addConnection(mb, mb.getScriptingName());
+						MobileBase mb = new MobileBase(new FileInputStream(
+								openFile));
+						ConnectionManager.addConnection(mb,
+								mb.getScriptingName());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -707,11 +760,15 @@ public class MainController implements Initializable {
 		new Thread() {
 			public void run() {
 				try {
-					//BowlerStudio.openUrlInNewTab(new URL("https://gist.github.com/" + id));
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/" + id+".git", file)[0];
-					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+					// BowlerStudio.openUrlInNewTab(new
+					// URL("https://gist.github.com/" + id));
+					String xmlContent = ScriptingEngine.codeFromGit(
+							"https://gist.github.com/" + id + ".git", file)[0];
+					MobileBase mb = new MobileBase(IOUtils.toInputStream(
+							xmlContent, "UTF-8"));
 
-					mb.setGitSelfSource(new String[] { "https://gist.github.com/" + id+".git", file });
+					mb.setGitSelfSource(new String[] {
+							"https://gist.github.com/" + id + ".git", file });
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 
 				} catch (Exception e) {
@@ -725,9 +782,10 @@ public class MainController implements Initializable {
 	@FXML
 	public void onMobileBaseFromGist() {
 
-		PromptForGit.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
-			loadMobilebaseFromGist(gitsId, file);
-		});
+		PromptForGit.prompt("Select a Creature From a Gist",
+				"bcb4760a449190206170", (gitsId, file) -> {
+					loadMobilebaseFromGist(gitsId, file);
+				});
 	}
 
 	public ScriptingFileWidget createFileTab(File file) {
