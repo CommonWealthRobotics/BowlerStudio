@@ -24,7 +24,6 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.css.CascadingStyle;
 
-import edu.cmu.sphinx.api.Configuration;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -84,15 +83,6 @@ public class BowlerStudio extends Application {
                     System.exit(1);
                 }
     		});
-    		//System.out.println("Loading langauge configuration");
-             Configuration configuration = new Configuration();
-                
-       	     // Set path to acoustic model.
-       	     configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
-       	     // Set path to dictionary.
-       	     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-       	     // Set language model.
-       	     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
 
     		MainController.updateLog();
