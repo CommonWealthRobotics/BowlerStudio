@@ -200,7 +200,7 @@ public class MainController implements Initializable {
 					return creds;
 				}
 			});
-			System.out.println("Loading 3d engine");
+			//System.out.println("Loading 3d engine");
 			jfx3dmanager = new BowlerStudio3dEngine();
 	
 			setApplication(new BowlerStudioController(jfx3dmanager, this));
@@ -235,7 +235,7 @@ public class MainController implements Initializable {
 				viewContainer.getChildren().add(subScene);
 			});
 	
-			System.out.println("Welcome to BowlerStudio!");
+			
 			new Thread() {
 				public void run() {
 					setName("Load Haar Thread");
@@ -277,7 +277,7 @@ public class MainController implements Initializable {
 	
 				}
 			});
-			System.out.println("Laoding ommand line widget");
+			//System.out.println("Laoding ommand line widget");
 			cmdLine = new CommandLineWidget();
 	
 			Platform.runLater(() -> {
