@@ -182,8 +182,8 @@ dependencies {
 	*/
 	//compile "edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT"
 	//compile "edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT"
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.14.1"
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.13.0.jar'])
+	//compile "com.neuronrobotics:BowlerScriptingKernel:0.14.2"
+	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.14.2.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 }

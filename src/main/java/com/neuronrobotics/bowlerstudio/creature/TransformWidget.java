@@ -65,7 +65,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    //X line
 	    add(	new Text("X"), 
 	    		0,  1);
-		add(	tx, 
+		add(	tz, 
 				1,  1);
 	
 		 add(	new Text("Tilt"), 
@@ -75,7 +75,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    //Y line
 	    add(	new Text("Y"), 
 	    		0,  2);
-		add(	ty, 
+		add(	tx, 
 				1,  2);
 	
 		 add(	new Text("Elevation"), 
@@ -85,7 +85,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    //Z line
 	    add(	new Text("Z"), 
 	    		0,  3);
-		add(	tz, 
+		add(	ty, 
 				1,  3);
 	
 		 add(	new Text("Azimuth"), 
