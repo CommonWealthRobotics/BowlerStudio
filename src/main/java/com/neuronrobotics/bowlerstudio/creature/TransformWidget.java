@@ -62,6 +62,8 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	    		3,  0);
 //	    add(	rw, 
 //	    		4,  0);
+	    // These all seem out of order here, but it is because the 
+	    // screen is rotating the orenation of this interface from BowlerStudio3dEngine.getOffsetforvisualization()
 	    //X line
 	    add(	new Text("X"), 
 	    		0,  1);
