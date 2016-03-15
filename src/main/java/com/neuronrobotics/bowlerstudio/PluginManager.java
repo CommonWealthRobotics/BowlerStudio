@@ -237,7 +237,8 @@ public class PluginManager {
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
-							CreatureLab.class ==c.getPlugin()
+							CreatureLab.class ==c.getPlugin()||
+							CameraTab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());

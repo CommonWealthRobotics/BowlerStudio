@@ -251,16 +251,16 @@ public class MainController implements Initializable {
 							jfx3dmanager.getControlsBox());
 					viewContainer.getChildren().add(subScene);
 				});
-
-				new Thread() {
-					public void run() {
-						setName("Load Haar Thread");
-						try {
-							HaarFactory.getStream(null);
-						} catch (Exception ex) {
-						}
-					}
-				}.start();
+//
+//				new Thread() {
+//					public void run() {
+//						setName("Load Haar Thread");
+//						try {
+//							HaarFactory.getStream(null);
+//						} catch (Exception ex) {
+//						}
+//					}
+//				}.start();
 
 				// getAddDefaultRightArm().setOnAction(event -> {
 				//
