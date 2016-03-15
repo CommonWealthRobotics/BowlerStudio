@@ -32,6 +32,10 @@ import eu.mihosoft.vrl.v3d.FileUtil;
 import javafx.scene.control.ProgressIndicator;
 
 public class MobileBaseCadManager {
+	
+	//static
+	private static HashMap<MobileBase,MobileBaseCadManager> cadmap = new HashMap<>();
+	//static
 	private ICadGenerator cadEngine;
 	private MobileBase base;
 	private ProgressIndicator pi;
@@ -42,18 +46,21 @@ public class MobileBaseCadManager {
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
-	private static HashMap<DHLink, CSG> simplecad = new HashMap<>();
+	private  HashMap<DHLink, CSG> simplecad = new HashMap<>();
 	private boolean cadGenerating = false;
 	private boolean showingStl=false;
 	private ArrayList<CSG> allCad;
-	private static CSG baseCad=null;
+	private  CSG baseCad=null;
+	
+	
 	
 	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi){
-		this.pi = pi;
+		this.setProcesIndictor(pi);
 		if(pi==null)
-			this.pi=new ProgressIndicator();
-		setMobileBase(base);
+			this.setProcesIndictor(new ProgressIndicator());
 		
+		setMobileBase(base);
+		//new Exception().printStackTrace();
 	}
 	public File getCadScript() {
 		return cadScript;
@@ -102,7 +109,7 @@ public class MobileBaseCadManager {
 	}
 
 	public ArrayList<CSG> generateBody(MobileBase base) {
-		pi.setProgress(0);
+		getProcesIndictor().setProgress(0);
 		setAllCad(new ArrayList<>());
 		//DHtoCadMap = new HashMap<>();
 		//private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
@@ -127,7 +134,7 @@ public class MobileBaseCadManager {
 				}
 			}
 		}
-		pi.setProgress(0.3);
+		getProcesIndictor().setProgress(0.3);
 		try {
 			if(showingStl){
 				//skip the regen
@@ -150,7 +157,7 @@ public class MobileBaseCadManager {
 		// clears old robot and places base
 		BowlerStudioController.setCsg(BasetoCadMap.get(device),getCadScript());
 
-		pi.setProgress(0.4);
+		getProcesIndictor().setProgress(0.4);
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
 		double i = 0;
@@ -176,13 +183,13 @@ public class MobileBaseCadManager {
 			i += 1;
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
 			// System.out.println(progress);
-			pi.setProgress(0.5 + progress);
+			getProcesIndictor().setProgress(0.5 + progress);
 		}
 
 		
 
 		showingStl=false;
-		pi.setProgress(1);
+		getProcesIndictor().setProgress(1);
 //		PhysicsEngine.clear();
 //		MobileBasePhysicsManager m = new MobileBasePhysicsManager(base, baseCad, getSimplecad());
 //		PhysicsEngine.startPhysicsThread(50);
@@ -202,7 +209,7 @@ public class MobileBaseCadManager {
 		for (i=0;i<limbs.size();i+=1) {
 			
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
-			pi.setProgress( progress);
+			getProcesIndictor().setProgress( progress);
 			
 			CSG legAssembly=null;
 			DHParameterKinematics l = limbs.get(i);
@@ -261,7 +268,7 @@ public class MobileBaseCadManager {
 //			BowlerStudioController.addCsg(c,getCadScript());
 //		}
 		showingStl=true;
-		pi.setProgress(1);
+		getProcesIndictor().setProgress(1);
 		return allCadStl;
 	}
 
@@ -272,6 +279,7 @@ public class MobileBaseCadManager {
 
 	public void setMobileBase(MobileBase base) {
 		this.base = base;
+		cadmap.put(base, this);
 	}
 	
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
@@ -305,7 +313,7 @@ public class MobileBaseCadManager {
 							dhLinks.add(c);
 						}
 						if(simpleCad!=null)
-							getSimplecad().put(dh.getDhChain().getLinks().get(i), simpleCad);
+							simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 					}
 					return dhLinks;
 				} catch (Exception e) {
@@ -324,7 +332,7 @@ public class MobileBaseCadManager {
 				}
 				
 				if(simpleCad!=null)
-					getSimplecad().put(dh.getDhChain().getLinks().get(i), simpleCad);
+					simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 			}
 			return dhLinks;
 		} catch (Exception e) {
@@ -335,7 +343,7 @@ public class MobileBaseCadManager {
 	}
 
 	public CSG getSimpleCad(DHLink link){
-		CSG simple=getSimplecad().get(link);
+		CSG simple=simplecad.get(link);
 		if(simple==null)
 			return new Cube(5).toCSG();
 		return simple;
@@ -425,17 +433,28 @@ public class MobileBaseCadManager {
 	public void setAllCad(ArrayList<CSG> allCad) {
 		this.allCad = allCad;
 	}
-	public static HashMap<DHLink, CSG> getSimplecad() {
-		return simplecad;
+	 
+	public static MobileBaseCadManager get(MobileBase device){
+		if(cadmap.get(device)==null){
+			return new MobileBaseCadManager(device, new ProgressIndicator());
+		}
+		else
+			return cadmap.get(device);
 	}
-	public static void setSimplecad(HashMap<DHLink, CSG> s) {
-		simplecad = s;
+	
+	public static HashMap<DHLink, CSG> getSimplecad(MobileBase device) {
+		return get(device).simplecad;
 	}
-	public static CSG getBaseCad() {
-		return baseCad;
+
+	public static CSG getBaseCad(MobileBase device) {
+		return get(device).baseCad;
 	}
-	public static  void setBaseCad(CSG b) {
-		baseCad = b;
+	public ProgressIndicator getProcesIndictor() {
+		return pi;
 	}
+	public void setProcesIndictor(ProgressIndicator pi) {
+		this.pi = pi;
+	}
+
 
 }

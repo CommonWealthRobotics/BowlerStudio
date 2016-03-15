@@ -221,6 +221,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private double leftRight=0;
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
 	private HashMap<CSG,File> csgSourceFile = new HashMap<>();
+	private HashMap<MeshView,Axis> axisMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
 
@@ -346,6 +347,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		lookGroup.getChildren().clear();
 		csgMap.clear();
 		csgSourceFile.clear();
+		axisMap.clear();
 	}
 
 	/**
@@ -358,6 +360,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		MeshView previous  = csgMap.get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
+			lookGroup.getChildren().remove(axisMap.get(previous));
+			axisMap.remove(previous);
 		}
 		csgMap.remove(previousCsg);
 		csgSourceFile.remove(previousCsg);
@@ -533,6 +537,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		
 		lookGroup.getChildren().add(current);
+		Axis axis = new Axis();
+		axis.getTransforms().add(currentCsg.getManipulator());
+		axisMap.put(current, axis);
+		lookGroup.getChildren().add(axis);
 		//Log.warning("Adding new axis");
 		return current;
 	}
