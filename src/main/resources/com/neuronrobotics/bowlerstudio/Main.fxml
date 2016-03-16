@@ -61,7 +61,7 @@
             <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
             <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
             <MenuItem mnemonicParsing="false" onAction="#onCreatenewGist" text="Create New Gist" fx:id="createNewGist" />
-            <MenuItem mnemonicParsing="false" onAction="#onAddFileToGist" text="Add File to Existing Gist..." fx:id="addFileToGist" />
+            
             <Menu mnemonicParsing="false" text="My Gists" fx:id="myGists" />
           </items>
         </Menu>
