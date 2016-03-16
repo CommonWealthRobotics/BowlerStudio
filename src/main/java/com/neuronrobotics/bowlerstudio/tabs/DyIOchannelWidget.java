@@ -106,6 +106,8 @@ public class DyIOchannelWidget {
 						public void run(){
 							setName("Setting servo Pos");
 							srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+							if(srv.getChannel().getCachedMode())
+								srv.getChannel().flush();
 						}
 					}.start();
 					
