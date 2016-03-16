@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import haar.HaarFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

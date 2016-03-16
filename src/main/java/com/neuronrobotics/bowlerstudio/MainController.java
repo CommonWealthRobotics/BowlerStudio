@@ -20,7 +20,6 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.Polygon;
-import haar.HaarFactory;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
