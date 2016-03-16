@@ -17,7 +17,7 @@
           <children>
             <ImageView fitHeight="769.0" fitWidth="731.0" pickOnBounds="true" preserveRatio="false" StackPane.alignment="TOP_LEFT">
               <image>
-                <Image url="@../nrconsole/plugin/DyIO/images/dyio-red2.png" />
+                <Image url="@../bowlerstudio/tabs/images/dyio-red2.png" />
               </image>
             </ImageView>
             <GridPane prefHeight="718.0" prefWidth="684.0" style="">
@@ -26,62 +26,62 @@
                   <children>
                     <ImageView fx:id="chanButton23" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="0">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton22" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton21" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton20" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton19" fitHeight="25.92587900161743" fitWidth="69.99987242598435" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="4">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton18" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="5">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton17" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="6">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton16" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="7">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton15" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="8">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton14" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="9">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton13" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="10">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ImageView fx:id="chanButton12" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="11">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <Label text="23" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -254,7 +254,7 @@
                     <Label text="11" GridPane.columnIndex="3" GridPane.rowIndex="11" />
                     <ImageView fx:id="chanButton11" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="11">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType11"  onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="11">
@@ -268,7 +268,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton10" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="10">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType10" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
@@ -282,7 +282,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton9" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="9">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType9" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
@@ -296,7 +296,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton8" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="8">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType8" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
@@ -310,7 +310,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton7" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="7">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType7" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
@@ -324,7 +324,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton6" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType6" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
@@ -338,7 +338,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton5" fitHeight="25.925879627175178" fitWidth="69.99987411499023" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType5" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
@@ -352,7 +352,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton4" fitHeight="25.92587900161743" fitWidth="69.99987242598435" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType4" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
@@ -366,7 +366,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton3" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType3" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
@@ -380,7 +380,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton2" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType2" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
@@ -394,7 +394,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton1" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType1" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
@@ -408,7 +408,7 @@
                     </ComboBox>
                     <ImageView fx:id="chanButton0" fitHeight="25.925924838402597" fitWidth="69.99999618530273" onMouseClicked="#channelClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="0">
                       <image>
-                        <Image url="@../nrconsole/plugin/DyIO/images/channel-default.png" />
+                        <Image url="@../bowlerstudio/tabs/images/channel-default.png" />
                       </image>
                     </ImageView>
                     <ComboBox fx:id="channelType0" onAction="#onChannelSelect"   onMouseClicked="#channelClicked" opacity="0.74" prefHeight="26.0" prefWidth="184.0" GridPane.columnIndex="2" GridPane.rowIndex="0">

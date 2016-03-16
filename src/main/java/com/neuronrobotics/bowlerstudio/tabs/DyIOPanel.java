@@ -130,7 +130,7 @@ public class DyIOPanel  implements Initializable {
 	
 	
 	public void setDyIO(DyIO d){
-		
+		d.setServoPowerSafeMode(false);// disable the browout when using the UI
 		channelTypeSelectors.add( channelType0);
 		channelTypeSelectors.add(  channelType1);
 		channelTypeSelectors.add(  channelType2);
