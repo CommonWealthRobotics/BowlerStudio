@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
+//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
@@ -43,24 +43,24 @@ public class BowlerStudioResourceFactory {
 					//
 					try {
 						image = new Image(
-								DyIOConsole.class
+								DyIOPanel.class
 										.getResourceAsStream("images/icon-"
 												+ cm.toSlug()+ ".png"));
 					} catch (NullPointerException e) {
 						image = new Image(
-								DyIOConsole.class
+								DyIOPanel.class
 										.getResourceAsStream("images/icon-off.png"));
 					}
 					lookup.put( cm, image);
 				}
 				setChanHighlight(new Image(
-						DyIOConsole.class
+						DyIOPanel.class
 						.getResourceAsStream("images/channel-highlight.png")));
 				setChanDefault(new Image(
-														DyIOConsole.class
+						DyIOPanel.class
 																		.getResourceAsStream("images/channel-default.png")));
 				setChanUpdate(new Image(
-								DyIOConsole.class
+						DyIOPanel.class
 								.getResourceAsStream("images/channel-update.png")));
 				
 				for(int i=0;i<24;i++){
