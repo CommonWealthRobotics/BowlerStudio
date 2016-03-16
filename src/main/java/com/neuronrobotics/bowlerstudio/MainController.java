@@ -717,15 +717,15 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onAddFileToGist() {
-		AddFileToGistController controller = new AddFileToGistController();
-		try
-		{
-			controller.start(new Stage());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+//		AddFileToGistController controller = new AddFileToGistController();
+//		try
+//		{
+//			controller.start(new Stage());
+//		}
+//		catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 
 }
