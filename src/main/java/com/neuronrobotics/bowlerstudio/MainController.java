@@ -175,6 +175,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
 		// blocking the UI thread that spawwns it
@@ -184,6 +185,7 @@ public class MainController implements Initializable {
 				@Override
 				public String[] prompt(String username) {
 					if (!loginWindowOpen && controller != null)
+
 						controller.reset();
 					controller = null;
 					loginWindowOpen = true;
@@ -813,12 +815,28 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onCreatenewGist() {
-
+		NewGistController controller = new NewGistController();
+		try
+		{
+			controller.start(new Stage());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	public void onAddFileToGist() {
-
+//		AddFileToGistController controller = new AddFileToGistController();
+//		try
+//		{
+//			controller.start(new Stage());
+//		}
+//		catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 
 }
