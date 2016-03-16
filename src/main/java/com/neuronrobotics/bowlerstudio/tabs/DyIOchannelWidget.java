@@ -49,9 +49,12 @@ public class DyIOchannelWidget {
 				Number old_val, Number new_val) {
 			int newVal = new_val.intValue();
 			chanValue.setText(new Integer(newVal).toString());
-			if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
-				//servo should only set on release when time is defined
-				return;
+			if(currentMode==DyIOChannelMode.SERVO_OUT ){
+				if(timeSlider.getValue()>.1){
+					//servo should only set on release when time is defined
+					return;
+				}
+				
 			}
 			setLatestValue(newVal);
 			setFireValue(true);
