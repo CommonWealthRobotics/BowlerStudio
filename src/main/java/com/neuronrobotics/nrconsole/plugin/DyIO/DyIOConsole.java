@@ -38,7 +38,7 @@ public class DyIOConsole extends AbstractBowlerStudioTab implements IChannelPane
 	//set this variable to make this tab auto open when a device is connected
 
 	private void setupDyIO(){
-		
+		dyio.setServoPowerSafeMode(false);
 		int index = 0;
 		ArrayList<DyIOChannel> chans =(ArrayList<DyIOChannel>) dyio.getChannels();
 		Log.debug("DyIO state: "+dyio+ " \nchans: "+chans );
