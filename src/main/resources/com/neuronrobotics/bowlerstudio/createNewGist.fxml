@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane fx:id="splitpane" dividerPositions="0.2773109243697479" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="240.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerstudio.NewGistController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="69.0" prefWidth="398.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="114.0" prefWidth="598.0" text="Gists are a great way to share your work.&#10;You can share single files, parts of files, or full applications." textAlignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <VBox layoutX="10.0" layoutY="14.0" spacing="10.0">
+               <children>
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Filename including extension:" />
+                        <TextField fx:id="filenameField" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="378.0" promptText="Filename including extension..." />
+                     </children>
+                  </VBox>
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Description:" />
+                        <TextField fx:id="descriptionField" layoutX="14.0" layoutY="39.0" prefHeight="25.0" prefWidth="378.0" promptText="Description..." />
+                     </children>
+                  </VBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Button fx:id="addAsPublicButton" layoutX="111.0" layoutY="126.0" mnemonicParsing="false" onAction="#onAddAsPublic" text="Add As Public" />
+                        <Button fx:id="addAsPrivateButton" layoutX="199.0" layoutY="126.0" mnemonicParsing="false" onAction="#onAddAsPrivate" text="Add As Private" />
+                        <Button fx:id="cancelButton" layoutX="293.0" layoutY="126.0" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
+                     </children>
+                     <padding>
+                        <Insets left="60.0" right="50.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </children></AnchorPane>
+  </items>
+</SplitPane>
