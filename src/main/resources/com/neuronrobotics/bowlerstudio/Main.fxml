@@ -60,6 +60,7 @@
           <items>
             <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
             <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
+            <MenuItem mnemonicParsing="false" onAction="#onOpenGitter" text="Gitter Chat"  />
             <MenuItem mnemonicParsing="false" onAction="#onCreatenewGist" text="Create New Gist" fx:id="createNewGist" />
             
             <Menu mnemonicParsing="false" text="My Gists" fx:id="myGists" />

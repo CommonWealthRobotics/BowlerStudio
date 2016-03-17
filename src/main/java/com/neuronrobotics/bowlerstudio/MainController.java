@@ -838,4 +838,15 @@ public class MainController implements Initializable {
 //		}
 	}
 
+	@FXML public void onOpenGitter() {
+		String url="https://gitter.im/home";
+		 try {
+			BowlerStudio.openUrlInNewTab(new
+			 URL(url));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
