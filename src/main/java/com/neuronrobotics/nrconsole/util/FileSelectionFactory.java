@@ -12,7 +12,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class FileSelectionFactory {
 
-	public static File GetFile(File start, ExtensionFilter... filter) {
+	public static File GetFile(File start, boolean save,ExtensionFilter... filter) {
 		class fileHolder{
 			private boolean done=false;
 			private File file=null;
@@ -36,7 +36,10 @@ public class FileSelectionFactory {
 			if(filter!=null)
 				fileChooser.getExtensionFilters().addAll(filter);
 			fileChooser.setTitle("Bowler File Chooser");
-			file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));
+			if(save)
+				file.setFile(fileChooser.showSaveDialog(BowlerStudio.getPrimaryStage()));
+			else
+				file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));
 			file.setDone(true);
 			
 		});
@@ -45,6 +48,9 @@ public class FileSelectionFactory {
 		}
 			
 		return file.getFile();
+	}
+	public static File GetFile(File start, ExtensionFilter... filter) {
+		return GetFile(start, false,filter);
 	}
 
 }

@@ -348,13 +348,7 @@ public class BowlerStudioController extends TabPane implements
 		return HOME_URL;
 	}
 
-	public void open() {
-		File last = FileSelectionFactory.GetFile(
-				ScriptingEngine.getWorkspace(), new ExtensionFilter("Groovy Scripts","*.groovy","*.java","*.txt"));
-		if (last != null) {
-			createFileTab(last);
-		}
-	}
+
 
 	private void removeObject(Object p) {
 		if (CSG.class.isInstance(p)) {

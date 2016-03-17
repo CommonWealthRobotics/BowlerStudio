@@ -414,8 +414,11 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private void updateFile() {
 		
-		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-				new ExtensionFilter("Save Script","*"));
+		File last = FileSelectionFactory.GetFile(	currentFile==null?
+													ScriptingEngine.getWorkspace():
+													new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
+													true,
+													new ExtensionFilter("Save Script","*"));
 		if (last != null) {
 			setUpFile(last);
 		}

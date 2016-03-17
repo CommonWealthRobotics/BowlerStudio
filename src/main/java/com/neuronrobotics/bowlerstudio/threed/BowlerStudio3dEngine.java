@@ -471,7 +471,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				new Thread() {
 
 					public void run() {
-						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,null );
+						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
 						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
 							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
 						if(!baseDirForFiles.exists())
