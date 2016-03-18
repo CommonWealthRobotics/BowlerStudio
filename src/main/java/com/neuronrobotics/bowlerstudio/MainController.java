@@ -839,7 +839,7 @@ public class MainController implements Initializable {
 	}
 
 	@FXML public void onOpenGitter() {
-		String url="https://gitter.im/home";
+		String url="https://gitter.im";
 		 try {
 			BowlerStudio.openUrlInNewTab(new
 			 URL(url));

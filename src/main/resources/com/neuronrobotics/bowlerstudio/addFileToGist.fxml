@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.17891373801916932" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="315.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerstudio.AddFileToGistController">
+<SplitPane dividerPositions="0.17891373801916932" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="315.0" prefWidth="492.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.neuronrobotics.bowlerstudio.AddFileToGistController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-         <children>
-            <Label layoutX="85.0" layoutY="19.0" text="Add a file to an existing Gist" />
-         </children></AnchorPane>
+      <children>
+        <Label layoutX="85.0" layoutY="19.0" text="Add a file to an existing Gist" />
+      </children>
+    </AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-         <children>
-            <VBox layoutX="10.0" layoutY="10.0" spacing="10.0">
-               <children>
-                  <ListView fx:id="gistListView" prefHeight="132.0" prefWidth="298.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                  <VBox layoutX="10.0" layoutY="158.0" spacing="5.0">
-                     <children>
-                        <Label layoutX="14.0" layoutY="158.0" text="Filename including extension:" />
-                        <TextField fx:id="filenameField" layoutX="10.0" layoutY="175.0" prefHeight="25.0" prefWidth="298.0" promptText="Filename including extension..." />
-                     </children>
-                  </VBox>
-                  <HBox alignment="TOP_RIGHT" layoutX="182.0" layoutY="205.0" spacing="10.0">
-                     <children>
-                        <Button fx:id="addFileButton" layoutX="159.0" layoutY="221.0" mnemonicParsing="false" onAction="#onAddFile" text="Add File" />
-                        <Button fx:id="cancelButton" layoutX="211.0" layoutY="221.0" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
-                     </children>
-                  </HBox>
-               </children>
+      <children>
+        <VBox layoutX="0.0" layoutY="1.0" prefHeight="254.0" prefWidth="490.0" spacing="10.0">
+          <children>
+            <ListView fx:id="gistListView" prefHeight="132.0" prefWidth="298.0" />
+            <VBox spacing="5.0">
+              <children>
+                <Label text="Filename including extension:" />
+                <TextField fx:id="filenameField" prefHeight="25.0" prefWidth="298.0" promptText="Filename including extension..." />
+              </children>
             </VBox>
-         </children></AnchorPane>
+            <HBox alignment="TOP_RIGHT" spacing="10.0">
+              <children>
+                <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#onAddFile" text="Add File" />
+                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
+              </children>
+            </HBox>
+          </children>
+        </VBox>
+      </children>
+    </AnchorPane>
   </items>
 </SplitPane>

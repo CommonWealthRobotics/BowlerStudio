@@ -39,7 +39,7 @@ public class NewGistController extends Application
                 Scene scene = new Scene(root);
                 primaryStage.setScene(scene);
                 primaryStage.initModality(Modality.WINDOW_MODAL);
-                primaryStage.setResizable(false);
+                primaryStage.setResizable(true);
                 primaryStage.show();
             }
             catch (IOException e)
