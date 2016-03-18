@@ -11,7 +11,7 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="69.0" prefWidth="398.0">
          <children>
-            <Label alignment="CENTER" prefHeight="114.0" prefWidth="598.0" text="Gists are a great way to share your work.&#10;You can share single files, parts of files, or full applications." textAlignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Label alignment="CENTER" prefHeight="114.0" prefWidth="598.0" text="Gists are a great way to share your work.&#10;You can share single files or full applications." textAlignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
