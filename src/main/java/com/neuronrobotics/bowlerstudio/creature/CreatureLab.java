@@ -385,6 +385,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					}
 				});
 				w.start();
+				
 			} catch (IOException e) {
 				BowlerStudioController.highlightException(code, e);
 			}

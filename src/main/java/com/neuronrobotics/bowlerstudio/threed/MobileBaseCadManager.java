@@ -280,6 +280,20 @@ public class MobileBaseCadManager {
 	public void setMobileBase(MobileBase base) {
 		this.base = base;
 		cadmap.put(base, this);
+		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice arg0) {
+				System.out.println("Disconnecting Devic eand clearing all file watchers");
+				
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 	
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
