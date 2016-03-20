@@ -77,9 +77,9 @@ public class MobleBaseMenueFactory {
 				widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 		TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-		TreeItem<String> steer = loadLimbs(device, view, device.getSteerable(), "Steerable", rootItem,
+		TreeItem<String> steer = loadLimbs(device, view, device.getSteerable(), "Steerable Wheels", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-		TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Drivable", rootItem,
+		TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Fixed Wheels", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 
 		TreeItem<String> addleg = new TreeItem<String>("Add Leg");
@@ -240,6 +240,44 @@ public class MobleBaseMenueFactory {
 			}
 		});
 
+		TreeItem<String> addFixed = new TreeItem<String>("Add Fixed Wheel");
+
+		callbackMapForTreeitems.put(addFixed, () -> {
+			// TODO Auto-generated method stub
+			System.out.println("Adding Fixed Wheel");
+			try {
+				String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+						"defaultFixed.xml")[0];
+				DHParameterKinematics newArm = new DHParameterKinematics(null,
+						IOUtils.toInputStream(xmlContent, "UTF-8"));
+				System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+				addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
+						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		});
+		TreeItem<String> addsteerable = new TreeItem<String>("Add Steerable Wheel");
+
+		callbackMapForTreeitems.put(addsteerable, () -> {
+			// TODO Auto-generated method stub
+			System.out.println("Adding Steerable Wheel");
+			try {
+				String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+						"defaultSteerable.xml")[0];
+				DHParameterKinematics newArm = new DHParameterKinematics(null,
+						IOUtils.toInputStream(xmlContent, "UTF-8"));
+				System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+				addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
+						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		});
 		TreeItem<String> item = new TreeItem<String>("Add Arm");
 
 		callbackMapForTreeitems.put(item, () -> {
@@ -260,7 +298,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(regnerate, item, addleg, makeCopy);
+		rootItem.getChildren().addAll(regnerate, item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
 			owner.getChildren().addAll(publish, editWalking, editCAD, resetWalking, setCAD);
