@@ -298,13 +298,13 @@ public class MobileBaseCadManager {
 	
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
 		ArrayList<CSG> dhLinks = new ArrayList<>();
-		if (getCadScript() != null) {
-			try {
-				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-			} catch (Exception e) {
-				BowlerStudioController.highlightException(getCadScript(), e);
-			}
-		}
+//		if (getCadScript() != null) {
+//			try {
+//				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+//			} catch (Exception e) {
+//				BowlerStudioController.highlightException(getCadScript(), e);
+//			}
+//		}
 		if (cadEngine == null) {
 			try {
 				setDefaultLinkLevelCadEngine();
@@ -388,6 +388,12 @@ public class MobileBaseCadManager {
 
 		if (cadEngine == null) {
 			setGitCadEngine(cad[0], cad[1], base);
+		}
+		for(DHParameterKinematics kin : base.getAllDHChains()){
+			String[] kinEng = kin.getGitCadEngine();
+			if(!cad[0].contentEquals(kinEng[0]) || !cad[1].contentEquals(kinEng[1])){
+				setGitCadEngine(kinEng[0],kinEng[1],kin);
+			}
 		}
 	}
 	public void onTabClosing() {
