@@ -96,6 +96,7 @@ public class MobileBaseCadManager {
 					if (watcher != null) {
 						watcher.close();
 					}
+					System.out.println("Mobile Base disconnected, closing file watcher");
 				}
 				
 				@Override
