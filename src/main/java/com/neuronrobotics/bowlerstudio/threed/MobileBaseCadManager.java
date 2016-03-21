@@ -96,7 +96,7 @@ public class MobileBaseCadManager {
 					if (watcher != null) {
 						watcher.close();
 					}
-					System.out.println("Mobile Base disconnected, closing file watcher");
+					//System.out.println("Mobile Base disconnected, closing file watcher");
 				}
 				
 				@Override
@@ -281,20 +281,7 @@ public class MobileBaseCadManager {
 	public void setMobileBase(MobileBase base) {
 		this.base = base;
 		cadmap.put(base, this);
-		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
-			
-			@Override
-			public void onDisconnect(BowlerAbstractDevice arg0) {
-				System.out.println("Disconnecting Devic eand clearing all file watchers");
-				
-			}
-			
-			@Override
-			public void onConnect(BowlerAbstractDevice arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
 	}
 	
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
@@ -424,7 +411,8 @@ public class MobileBaseCadManager {
 			
 			@Override
 			public void onDisconnect(BowlerAbstractDevice arg0) {
-				w.close();
+				dhCadWatchers.get(dh).close();
+				//System.out.println(dh.getScriptingName()+ " DH disconnected, closing file watcher");
 			}
 			
 			@Override
