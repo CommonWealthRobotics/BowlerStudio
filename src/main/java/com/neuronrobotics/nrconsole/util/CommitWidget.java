@@ -76,9 +76,10 @@ public class CommitWidget {
 			    }
 			    return null;
 			});
-	
+
+			
 			Optional<Pair<String, String>> result = dialog.showAndWait();
-	
+
 			result.ifPresent(commitBody -> {
 			    new Thread(){
 			    	public void run(){
