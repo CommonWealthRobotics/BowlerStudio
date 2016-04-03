@@ -16,7 +16,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 		//super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
 		super (BowlerStudio.class
 				.getResourceAsStream("flyingCamera.xml"));
-		setDriveType(DrivingType.WALKING);
+		//setDriveType(DrivingType.WALKING);
 		
 		setWalkingDriveEngine(new IDriveEngine() {
 			

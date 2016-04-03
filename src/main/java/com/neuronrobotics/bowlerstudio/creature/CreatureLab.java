@@ -289,11 +289,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 			Group controls = new Group();
 			Accordion advancedPanel = new Accordion();
-			if (device.getDriveType() == DrivingType.WALKING) {
+			//if (device.getDriveType() == DrivingType.WALKING) {
 				TitledPane rp = new TitledPane("Walking Engine", new JogWidget(device));
 				advancedPanel.getPanes().add(rp);
 				advancedPanel.setExpandedPane(rp);
-			}
+			//}
 
 			TreeItem<String> rootItem = new TreeItem<String>("Move Group " + device.getScriptingName());
 			rootItem.setExpanded(true);
