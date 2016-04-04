@@ -1,11 +1,23 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHRepositorySearchBuilder;
+import org.kohsuke.github.GitHub;
+
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.MainController;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
@@ -13,17 +25,30 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 public class LinkConfigurationWidget extends GridPane {
 	
@@ -41,7 +66,7 @@ public class LinkConfigurationWidget extends GridPane {
 		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
 	    getColumnConstraints().add(new ColumnConstraints(200)); // column 2 is 300 wide
-	    getColumnConstraints().add(new ColumnConstraints(10)); // column 2 is 300 wide
+	    getColumnConstraints().add(new ColumnConstraints(200)); // column 2 is 300 wide
 	    setHgap(20);
 	    
 	    TextField mass = new TextField(CreatureLab.getFormatted(conf.getMassKg()));
@@ -81,8 +106,93 @@ public class LinkConfigurationWidget extends GridPane {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 		});
+		Button editHardware = new Button("Edit " + conf.getElectroMechanicalSize());
+		editHardware.setOnAction(event -> {
+			new Thread() {
+				public void run() {
+					try {
+						String type =conf.getElectroMechanicalType();
+						String id = conf.getElectroMechanicalSize();
+						edit(type,
+								id,
+								Vitamins.getConfiguration(type,id));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+		});
+	    Button newHardware = new Button("New "+ conf.getElectroMechanicalType());
+	    newHardware.setOnAction(event -> {
+	    	TextInputDialog d = new TextInputDialog("NewSize");
+	    	d.setTitle("Wizard for new "+conf.getElectroMechanicalType());
+	    	d.setHeaderText("Enter th Side ID for a new "+conf.getElectroMechanicalType());
+	    	d.setContentText("Size:");
+
+	    	// Traditional way to get the response value.
+	    	Optional<String> result = d.showAndWait();
+	    	if (result.isPresent()){
+	    		// Create the custom dialog.
+	    		String id = result.get();
+	    		String type =conf.getElectroMechanicalType();
+	
+				new Thread() {
+					public void run() {
+						
+						try {
+							test( type);
+							Vitamins.newVitamin(id, type);
+							edit(type, id,Vitamins.getConfiguration(type,conf.getElectroMechanicalSize()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}.start();
+				
+
+	    	}
+		});
 	    
-	    
+		final ComboBox<String> emHardwareSize = new ComboBox<String>();
+		for (String s : Vitamins.listVitaminSizes( conf.getElectroMechanicalType())) {
+			emHardwareSize.getItems().add(s);
+		}
+		emHardwareSize.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				conf.setElectroMechanicalSize(emHardwareSize.getSelectionModel().getSelectedItem());
+				newHardware.setText("New "+ conf.getElectroMechanicalType());
+				editHardware.setText("Edit "+ conf.getElectroMechanicalSize());
+			}
+		});
+		emHardwareSize.getSelectionModel().select(conf.getElectroMechanicalSize());
+
+		final ComboBox<String> emHardwareType = new ComboBox<String>();
+
+		emHardwareType.getItems().add("hobbyServo");
+		emHardwareType.getItems().add("stepperMotor");
+
+		emHardwareType.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				conf.setElectroMechanicalType(emHardwareType.getSelectionModel().getSelectedItem());
+				emHardwareSize.getItems().clear();
+				for (String s : Vitamins.listVitaminSizes( conf.getElectroMechanicalType())) {
+					emHardwareSize.getItems().add(s);
+				}
+				newHardware.setText("New "+ conf.getElectroMechanicalType());
+				editHardware.setText("Edit "+ conf.getElectroMechanicalSize());
+			}
+		});
+		emHardwareType.getSelectionModel().select(conf.getElectroMechanicalType());
+
+
+
 	    TextField deviceName = new TextField(congiuration.getDeviceScriptingName());
 	    deviceName.setOnAction(event -> {
 			conf.setDeviceScriptingName(deviceName.getText());
@@ -98,7 +208,7 @@ public class LinkConfigurationWidget extends GridPane {
 				1, 
 				0);
 		 add(	new Text("(unitless)"), 
-		    		3, 
+		    		2, 
 		    		0);
 
 
@@ -194,6 +304,8 @@ public class LinkConfigurationWidget extends GridPane {
 		});
 		comboBox.getSelectionModel().select(conf.getType().toString());
 		
+		
+		
 	    add(	new Text("Zero Degrees Value"), 
 	    		0, 
 	    		1);
@@ -265,7 +377,101 @@ public class LinkConfigurationWidget extends GridPane {
 		add(	massz, 
 				1, 
 				10);
-		 
+		// link hardware
+		add(	new Text("Hardware Type"), 
+	    		0, 
+	    		11);
+		add(	emHardwareType, 
+				1, 
+				11);
+		add(	new Text("Hardware Size"), 
+	    		0, 
+	    		12);
+		add(	emHardwareSize, 
+				1, 
+				12);
+		add(	editHardware, 
+	    		2, 
+	    		12);
+		add(	newHardware, 
+	    		1, 
+	    		13);
+	
+	}
+	
+	private void test(String type) throws IOException{
+		try {
+			Vitamins.saveDatabase(type);
+			
+		} catch (org.eclipse.jgit.api.errors.TransportException e) {
+			GitHub github = ScriptingEngine.getGithub();
+	
+			GHRepository repo = github.getUser("madhephaestus").getRepository("Hardware-Dimensions");
+			GHRepository forked =repo.fork();
+			System.out.println("Vitamins forked to "+forked.getGitTransportUrl());
+			Vitamins.setGitRpoDatabase("https://github.com/"+github.getMyself().getLogin()+"/Hardware-Dimensions.git");
+			System.out.println("Loading new files");
+			//
+
+		}catch (Exception ex){
+			//ex.printStackTrace(MainController.getOut());
+		}
+	}
+	
+	private void edit(String type, String id,HashMap<String, Object> startingConf) throws Exception{
+		System.out.println("Configuration for "+conf.getElectroMechanicalSize());
+		System.out.println("Saving to for "+id);
+		test( type);
+		Platform.runLater(()->{
+			Alert dialog = new Alert(AlertType.CONFIRMATION);
+			dialog.setTitle("Edit Hardware Wizard");
+			dialog.setHeaderText("Update the hardare configurations");
+
+			// Create the username and password labels and fields.
+			GridPane grid = new GridPane();
+			grid.setHgap(10);
+			grid.setVgap(10);
+			grid.setPadding(new Insets(20, 150, 10, 10));
+			
+			
+			HashMap<String,TextField> valueFields=new HashMap<String,TextField> ();
+			
+			int row=0;
+			for(String s: startingConf.keySet()){
+				TextField username = new TextField();
+	    		username.setText(startingConf.get(s).toString());
+	    		grid.add(new Label(s), 0, row);
+	    		grid.add(username, 1, row);
+	    		valueFields.put(s, username);
+	    		row++;
+			}
+
+
+			dialog.getDialogPane().setContent(grid);
+			Optional<ButtonType> r = dialog.showAndWait();
+			if(r.get() == ButtonType.OK){
+				new Thread(){
+						public void run(){
+				    		for(String s:valueFields.keySet()){
+				    			try {
+									Vitamins.setParameter(type,id,s,(Object)valueFields.get(s).getText());
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+				    		}
+				    		try {
+								Vitamins.saveDatabase(type);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				    		
+						}
+				}.start();
+			}
+		});
+		
 	}
 
 }
