@@ -51,7 +51,7 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
-import com.neuronrobotics.bowlerstudio.tabs.ScriptingGistTab;
+import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
@@ -97,7 +97,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 	private HashMap<String,Tab> openFiles = new HashMap<>();
 	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
-	private HashMap<String,ScriptingGistTab> webTabs = new HashMap<>();
+	private HashMap<String,WebTab> webTabs = new HashMap<>();
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
 		if(openFiles.get(file.getAbsolutePath())!=null && widgets.get(file.getAbsolutePath())!=null){
@@ -238,7 +238,7 @@ public class BowlerStudioController extends TabPane implements
 			Platform.runLater(() -> {
 				try {
 					if(ScriptingEngine.getLoginID() != null){
-						ScriptingGistTab newTab = new ScriptingGistTab("Web",url.toExternalForm(), false);
+						WebTab newTab = new WebTab("Web",url.toExternalForm(), false);
 						newTab.setOnCloseRequest(event -> {
 							webTabs.remove(urlstr );
 						});
@@ -253,7 +253,7 @@ public class BowlerStudioController extends TabPane implements
 	}
 
 	private Tab createTab() throws IOException, InterruptedException {
-		final ScriptingGistTab tab = new ScriptingGistTab(null,
+		final WebTab tab = new WebTab(null,
 				 null);
 
 		return tab;
@@ -297,7 +297,7 @@ public class BowlerStudioController extends TabPane implements
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {
-				t = new ScriptingGistTab("Tutorial",getHomeUrl(), true);
+				t = new WebTab("Tutorial",getHomeUrl(), true);
 			} catch (IOException | InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

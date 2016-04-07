@@ -26,7 +26,6 @@ import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.serial.SerialConnection;
@@ -52,11 +51,11 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
-public class ScriptingGistTab extends Tab implements EventHandler<Event>{
+public class WebTab extends Tab implements EventHandler<Event>{
 	
 	private String Current_URL = "http://gist.github.com/";
 
-	private ScriptingGistTab myTab;
+	private WebTab myTab;
 	boolean loaded=false;
 	boolean initialized=false;
 	private WebView webView;
@@ -78,11 +77,11 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 
 	private boolean finishedLoadingScriptingWidget;
 
-	public ScriptingGistTab(String title, String Url) throws IOException, InterruptedException{
+	public WebTab(String title, String Url) throws IOException, InterruptedException{
 		this(title,Url,false);
 	}
 	
-	public ScriptingGistTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
+	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
 
 
@@ -235,7 +234,7 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 			if(!(Current_URL.contains("neuronrobotics.com") || Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID()) )){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
-					BowlerStudioController.getBowlerStudio().addTab(new ScriptingGistTab(null, Current_URL), true);
+					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -318,22 +317,6 @@ public class ScriptingGistTab extends Tab implements EventHandler<Event>{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-				if(firstBoot){
-					firstBoot=false;
-					//now that the application is totally loaded check for connections to add
-		
-					new Thread() {
-						public void run() {
-							setName("Get First Connection");
-							List<String> devs = SerialConnection.getAvailableSerialPorts();
-							if (devs.size() == 0) {
-								return;
-							} else {
-								DeviceManager.addConnection();
-							}
-						}
-					}.start();
-				}
 			}
 		}.start();
 	}
