@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +22,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
@@ -106,6 +109,97 @@ public class LinkConfigurationWidget extends GridPane {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 		});
+		Button editShaft = new Button("Edit " + conf.getShaftSize());
+		editShaft.setOnAction(event -> {
+			new Thread() {
+				public void run() {
+					try {
+						String type =conf.getShaftType();
+						String id = conf.getShaftSize();
+						edit(type,
+								id,
+								Vitamins.getConfiguration(type,id));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+		});
+	    Button newShaft = new Button("New "+ conf.getShaftType());
+	    newShaft.setOnAction(event -> {
+	    	TextInputDialog d = new TextInputDialog("NewSize");
+	    	d.setTitle("Wizard for new "+conf.getShaftType());
+	    	d.setHeaderText("Enter th Side ID for a new "+conf.getShaftType());
+	    	d.setContentText("Size:");
+
+	    	// Traditional way to get the response value.
+	    	Optional<String> result = d.showAndWait();
+	    	if (result.isPresent()){
+	    		// Create the custom dialog.
+	    		String id = result.get();
+	    		String type =conf.getShaftType();
+	
+				new Thread() {
+					public void run() {
+						
+						try {
+							test( type);
+							Vitamins.newVitamin(id, type);
+							edit(type, id,Vitamins.getConfiguration(type,conf.getShaftSize()));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}.start();
+				
+
+	    	}
+		});
+	    
+		final ComboBox<String> shaftSize = new ComboBox<String>();
+		for (String s : Vitamins.listVitaminSizes( conf.getShaftType())) {
+			shaftSize.getItems().add(s);
+		}
+		shaftSize.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				conf.setShaftSize(shaftSize.getSelectionModel().getSelectedItem());
+				newShaft.setText("New "+ conf.getShaftType());
+				editShaft.setText("Edit "+ conf.getShaftSize());
+			}
+		});
+		shaftSize.getSelectionModel().select(conf.getShaftSize());
+
+		final ComboBox<String> shaftType = new ComboBox<String>();
+		
+		for(String vitaminsType: Vitamins.listVitaminTypes()){
+			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
+			if(meta.containsKey("shaft")){
+				shaftType.getItems().add(vitaminsType);
+			}
+		}
+
+		shaftType.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				conf.setShaftType(shaftType.getSelectionModel().getSelectedItem());
+				shaftSize.getItems().clear();
+				for (String s : Vitamins.listVitaminSizes( conf.getShaftType())) {
+					shaftSize.getItems().add(s);
+				}
+				newShaft.setText("New "+ conf.getShaftType());
+				editShaft.setText("Edit "+ conf.getShaftSize());
+			}
+		});
+		shaftType.getSelectionModel().select(conf.getShaftType());
+		
+		// Actuator editing
+		
 		Button editHardware = new Button("Edit " + conf.getElectroMechanicalSize());
 		editHardware.setOnAction(event -> {
 			new Thread() {
@@ -172,10 +266,12 @@ public class LinkConfigurationWidget extends GridPane {
 		emHardwareSize.getSelectionModel().select(conf.getElectroMechanicalSize());
 
 		final ComboBox<String> emHardwareType = new ComboBox<String>();
-
-		emHardwareType.getItems().add("hobbyServo");
-		emHardwareType.getItems().add("stepperMotor");
-
+		for(String vitaminsType: Vitamins.listVitaminTypes()){
+			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
+			if(meta.containsKey("actuator")){
+				emHardwareType.getItems().add(vitaminsType);
+			}
+		}
 		emHardwareType.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -396,6 +492,27 @@ public class LinkConfigurationWidget extends GridPane {
 		add(	newHardware, 
 	    		1, 
 	    		13);
+		
+		// link shaft
+		add(	new Text("Shaft Type"), 
+	    		0, 
+	    		14);
+		add(	shaftType, 
+				1, 
+				14);
+		add(	new Text("Shaft Size"), 
+	    		0, 
+	    		15);
+		add(	shaftSize, 
+				1, 
+				15);
+		add(	editShaft, 
+	    		2, 
+	    		15);
+		add(	newShaft, 
+	    		1, 
+	    		16);
+
 	
 	}
 	
