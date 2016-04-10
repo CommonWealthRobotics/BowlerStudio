@@ -42,6 +42,8 @@ import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 import org.reactfx.util.FxTimer;
@@ -54,6 +56,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 //import javafx.scene.control.ScrollPane;
@@ -124,6 +128,11 @@ public class MainController implements Initializable {
 	@FXML MenuBar BowlerStudioMenue;
 	@FXML TextArea logViewRef;
 	private static TextArea logViewRefStatic  = new TextArea();
+	@FXML TitledPane x2;
+	@FXML Menu GitHubRoot;
+	@FXML Menu myOrganizations;
+	@FXML Menu myRepos;
+	@FXML Menu watchingRepos;
 	public static void updateLog() {
 		if (logViewRefStatic != null) {
 
@@ -368,13 +377,15 @@ public class MainController implements Initializable {
 							addFile.setOnAction(event -> {
 								new Thread() {
 									public void run() {
-
+										//TODO add the implementation of add file, make sure its modular to be reused elsewhere
 									}
 								}.start();
 							});
 							Platform.runLater(() -> {
-								tmpGist.getItems().addAll(addFile, loadWebGist);
+								//tmpGist.getItems().addAll(addFile, loadWebGist);
+								tmpGist.getItems().add( loadWebGist);
 							});
+							int startSize= tmpGist.getItems().size();
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
 
@@ -405,7 +416,7 @@ public class MainController implements Initializable {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() > 2)
+											if (tmpGist.getItems().size() !=startSize)
 												return;// menue populated by
 														// another thread
 											for (String s : listofFiles) {
@@ -456,16 +467,156 @@ public class MainController implements Initializable {
 							});
 
 						}
+						// Now load the users GIT repositories
+						//github.getMyOrganizations();
+						Map<String, GHOrganization> orgs = github.getMyOrganizations();
+						for(String org:orgs.keySet()){
+							//System.out.println("Org: "+org);
+							Menu OrgItem = new Menu(org);
+							GHOrganization ghorg = orgs.get(org);
+							Map<String, GHRepository> repos = ghorg.getRepositories();
+							for(String orgRepo: repos.keySet()){
+								setUpRepoMenue( OrgItem, repos.get(orgRepo) );
+							}
+							Platform.runLater(() -> {
+								myOrganizations.getItems().add(OrgItem);
+							});
+						}
+						GHMyself self = github.getMyself();
+						//Repos I own
+						Map<String, GHRepository> myPublic = self.getAllRepositories();
+						HashMap<String ,Menu> myownerMenue =new HashMap<>();
+						for (String myRepo :myPublic.keySet()){
+							GHRepository g= myPublic.get(myRepo);
+							if(myownerMenue.get(g.getOwnerName())==null){
+								myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
+								Platform.runLater(() -> {
+									myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
+								});
+							}
+							setUpRepoMenue(myownerMenue.get(g.getOwnerName()),g);
+						}
+						//Watched repos
+						PagedIterable<GHRepository> watching = self.listSubscriptions();
+						HashMap<String ,Menu> ownerMenue =new HashMap<>();
+						for(GHRepository g:watching){
+							if(ownerMenue.get(g.getOwnerName())==null){
+								ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
+								Platform.runLater(() -> {
+									watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+								});
+							}
+							setUpRepoMenue(ownerMenue.get(g.getOwnerName()),g);
+						}
+						
+						
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
 				}
 			}.start();
 
 		});
 	}
+	
+	private void setUpRepoMenue(Menu repoMenue, GHRepository repo ){
+		Menu OrgRepo = new Menu(repo.getFullName());
+		MenuItem addFile = new MenuItem(
+				"Add file to Git Repo...");
+		addFile.setOnAction(event -> {
+			new Thread() {
+				public void run() {
+					//TODO add the implementation of add file, make sure its modular to be reused elsewhere
+					
+				}
+			}.start();
+		});
+		Platform.runLater(() -> {
+			OrgRepo.getItems().add(addFile);
+		});
+		String url = repo.getGitTransportUrl().replace("git://", "https://");
+		EventHandler<Event> loadFiles = new EventHandler<Event>() {
+			boolean gistFlag = false;
 
+			@Override
+			public void handle(Event ev) {
+
+				// for(ScriptingEngine.)
+				new Thread() {
+					public void run() {
+
+						ThreadUtil.wait(500);
+						if (!OrgRepo.isShowing())
+							return;
+						if (gistFlag)
+							return;// another thread is
+									// servicing this gist
+						gistFlag = true;
+						System.out
+								.println("Loading files for "+repo.getFullName()+" "
+										+ repo.getDescription());
+						ArrayList<String> listofFiles;
+						try {
+							listofFiles = ScriptingEngine.filesInGit(
+									url,
+									"master", null);
+
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							return;
+						}
+						if (OrgRepo.getItems().size() > 2)
+							return;// menue populated by
+									// another thread
+						for (String s : listofFiles) {
+							MenuItem tmp = new MenuItem(s);
+							tmp.setOnAction(event -> {
+								new Thread() {
+									public void run() {
+										try {
+											File fileSelected = ScriptingEngine
+													.fileFromGit(
+															url,
+															s);
+											BowlerStudio
+													.createFileTab(fileSelected);
+										} catch (Exception e) {
+											// TODO
+											// Auto-generated
+											// catch block
+											e.printStackTrace();
+										}
+									}
+								}.start();
+
+							});
+							Platform.runLater(() -> {
+								OrgRepo.getItems().add(tmp);
+								// removing this listener
+								// after menue is activated
+								// for the first time
+								OrgRepo.setOnShowing(null);
+
+							});
+						}
+						Platform.runLater(() -> {
+							OrgRepo.hide();
+							Platform.runLater(() -> {
+								OrgRepo.show();
+							});
+						});
+					}
+				}.start();
+			}
+		};
+		OrgRepo.setOnShowing(loadFiles);
+		Platform.runLater(() -> {
+			repoMenue.getItems().add(OrgRepo);
+		});
+	}
+ 
 	private void setToLoggedOut() {
 		Platform.runLater(() -> {
 			myGists.getItems().clear();
