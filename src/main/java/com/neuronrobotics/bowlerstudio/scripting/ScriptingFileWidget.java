@@ -397,6 +397,8 @@ public class ScriptingFileWidget extends BorderPane implements
 				fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
 				fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				// These values are display only, so if hte user tries to change them, they reset
+				// the use of text field for static dats is so the user cna copy the vlaues and use them in their scritpts
 				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
 					fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
 				});
