@@ -92,6 +92,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -297,6 +298,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 	public Group getControlsBox(){
 		HBox controls = new HBox(10);
+		home = new Button("Home Camera");
+		
+		home.setOnAction(event ->{
+			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
+			getFlyingCamera().updatePositions();
+		});
+		
+		controls.getChildren().addAll(home);
+		return new Group(controls);
+	}
+	public Group getDebuggerBox(){
+		HBox controls = new HBox(10);
 		
 		back = new Button("Back");
 		fwd = new Button("Forward");
@@ -329,14 +342,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		fwd.disableProperty().set(true);
 		back.disableProperty().set(true);
 		
-		home = new Button("Home Camera");
 		
-		home.setOnAction(event ->{
-			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-			getFlyingCamera().updatePositions();
-		});
-		
-		controls.getChildren().addAll(back,fwd,home);
+		controls.getChildren().addAll(new Label("Cad Debugger"),back,fwd);
 		return new Group(controls);
 	}
 	

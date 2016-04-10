@@ -67,7 +67,6 @@ public class MainController implements Initializable {
 	private static int sizeOfTextBuffer = 4000;
 	private static ByteArrayOutputStream out = null;
 	static boolean opencvOk = true;
-	private static TextArea logViewRef = null;
 	private static String newString = null;
 	@FXML
 	private MenuBar menuBar;
@@ -113,14 +112,20 @@ public class MainController implements Initializable {
 
 	public static void clearConsole() {
 		Platform.runLater(() -> {
-			logViewRef.setText("");
+			logViewRefStatic.setText("");
 		});
 	}
 
 	private static boolean logLock = false;
-
+	@FXML TitledPane x1;
+	@FXML AnchorPane CadDebugger;
+	@FXML AnchorPane CommandLine;
+	@FXML AnchorPane TerminalOutput;
+	@FXML MenuBar BowlerStudioMenue;
+	@FXML TextArea logViewRef;
+	private static TextArea logViewRefStatic  = new TextArea();
 	public static void updateLog() {
-		if (logViewRef != null) {
+		if (logViewRefStatic != null) {
 
 			if (getOut().size() == 0) {
 				newString = null;
@@ -135,7 +140,7 @@ public class MainController implements Initializable {
 								newString = getOut().toString();
 								getOut().reset();
 								if (newString != null) {
-									current = logViewRef.getText() + newString;
+									current = logViewRefStatic.getText() + newString;
 									try {
 										finalStr = new String(
 												current.substring(current
@@ -147,8 +152,8 @@ public class MainController implements Initializable {
 									int strlen = finalStr.length() - 1;
 									String outStr = finalStr;
 									Platform.runLater(() -> {
-										logViewRef.setText(outStr);
-										logViewRef.positionCaret(strlen);
+										logViewRefStatic.setText(outStr);
+										logViewRefStatic.positionCaret(strlen);
 										logLock = false;
 									});
 								}
@@ -174,7 +179,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-
+		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
 		// blocking the UI thread that spawwns it
@@ -299,21 +304,16 @@ public class MainController implements Initializable {
 				cmdLine = new CommandLineWidget();
 
 				Platform.runLater(() -> {
-					// logView.resize(250, 300);
-					// after connection manager set up, add scripting widget
-					logViewRef = new TextArea();
-					logViewRef.prefWidthProperty().bind(
-							logView.widthProperty().divide(2));
-					logViewRef.prefHeightProperty().bind(
-							logView.heightProperty().subtract(40));
-					VBox box = new VBox();
-					box.getChildren().add(logViewRef);
-					box.getChildren().add(cmdLine);
-					VBox.setVgrow(logViewRef, Priority.ALWAYS);
-					box.prefWidthProperty().bind(
-							logView.widthProperty().subtract(10));
-
-					logView.getChildren().addAll(box);
+					CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
+					AnchorPane.setTopAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setRightAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setLeftAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setBottomAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					CommandLine.getChildren().add(cmdLine);
+					AnchorPane.setTopAnchor(cmdLine, 0.0);
+					AnchorPane.setRightAnchor(cmdLine, 0.0);
+					AnchorPane.setLeftAnchor(cmdLine, 0.0);
+					AnchorPane.setBottomAnchor(cmdLine, 0.0);
 				});
 			}).start();
 	}
