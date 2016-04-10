@@ -140,6 +140,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private ScriptingWidgetType type;
 	
 	final TextField fileListBox = new TextField();
+	final TextField fileNameBox = new TextField();
 	private File currentFile = null;
 
 	private HBox controlPane;
@@ -219,7 +220,10 @@ public class ScriptingFileWidget extends BorderPane implements
 		controlPane = new HBox(20);
 
 		controlPane.getChildren().add(runfx);
+		controlPane.getChildren().add(new Label("git:"));
 		controlPane.getChildren().add(fileListBox);
+		controlPane.getChildren().add(new Label("file:"));
+		controlPane.getChildren().add(fileNameBox);
 		controlPane.getChildren().add(publish);
 		
 		// put the flowpane in the top area of the BorderPane
@@ -392,6 +396,13 @@ public class ScriptingFileWidget extends BorderPane implements
 			Platform.runLater(() -> {
 				fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
+				fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				});
+				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileListBox.setText(remote);
+				});
 				git.close();
 			});
 		} catch (IOException e1) {
