@@ -57,13 +57,16 @@
           </items>
         </Menu>
         -->
-        <Menu mnemonicParsing="false" text="GitHub">
+        <Menu mnemonicParsing="false" text="GitHub" fx:id="GitHubRoot">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#onLogin" text="Log in to GitHub" />
             <MenuItem mnemonicParsing="false" onAction="#onLogout" text="Log out of GitHub" fx:id="logoutGithub" />
             <MenuItem mnemonicParsing="false" onAction="#onOpenGitter" text="Gitter Chat" />
             <MenuItem mnemonicParsing="false" onAction="#onCreatenewGist" text="Create New Gist" fx:id="createNewGist" />
             <Menu mnemonicParsing="false" text="My Gists" fx:id="myGists" />
+            <Menu mnemonicParsing="false" text="My Organizations" fx:id="myOrganizations" />
+            <Menu mnemonicParsing="false" text="My Repositories" fx:id="myRepos" />
+            <Menu mnemonicParsing="false" text="Repos I'm Watching" fx:id="watchingRepos" />
           </items>
         </Menu>
         <Menu disable="true" mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />
