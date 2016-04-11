@@ -19,6 +19,7 @@ import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -169,6 +170,7 @@ public class BowlerStudio extends Application {
 	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
 	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
 	     System.out.println("Welcome to BowlerStudio!");
+	     Log.enableWarningPrint();
     }
 
     public static Parent loadFromFXML() {

@@ -16,6 +16,7 @@ import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -539,7 +540,7 @@ public class MainController implements Initializable {
 					orgFiles.getItems().add(loading);
 					orgRepo.getItems().addAll(addFile, orgFiles);
 				});
-				int startSize = orgFiles.getItems().size();
+
 				String url = repo.getGitTransportUrl().replace("git://", "https://");
 				EventHandler<Event> loadFiles = new EventHandler<Event>() {
 					boolean gistFlag = false;
@@ -563,16 +564,19 @@ public class MainController implements Initializable {
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, "master", null);
-
+									System.out.println("Clone Done for "+url+listofFiles.size()+" files");
 								} catch (Exception e1) {
 									e1.printStackTrace();
 									return;
 								}
-								if (orgFiles.getItems().size() != startSize)
+								if (orgFiles.getItems().size() != 1){
+									Log.warning("Bailing out of loading thread");
 									return;// menue populated by
 											// another thread
+								}
 								
 								for (String s : listofFiles) {
+									//System.out.println("Adding file: "+s);
 									MenuItem tmp = new MenuItem(s);
 									tmp.setOnAction(event -> {
 										new Thread() {
@@ -598,7 +602,7 @@ public class MainController implements Initializable {
 										orgFiles.setOnShowing(null);
 
 									});
-									System.out.println("Adding file: "+s);
+									
 								}
 								System.out.println("Refreshing menu");
 								Platform.runLater(() -> {
@@ -985,6 +989,23 @@ public class MainController implements Initializable {
 		}
 	}
 
-	@FXML public void clearScriptCache() {}
+	@FXML public void clearScriptCache() {
+		File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
+		deleteFolder(cache);
+	}
+	private static void deleteFolder(File folder) {
+		System.out.println("Deleting "+folder.getAbsolutePath());
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
+	}
 
 }
