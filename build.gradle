@@ -111,10 +111,10 @@ repositories {
 dependencies {
 
 	//compile "com.neuronrobotics:BowlerScriptingKernel:0.14.6"
-	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.15.2.jar'])
+	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.15.4.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
-	compile "alda:alda:1.0.0-rc14"
+
 }
 
 // create a fat-jar (class files plus dependencies

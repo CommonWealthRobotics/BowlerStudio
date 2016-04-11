@@ -146,7 +146,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private HBox controlPane;
 	private String currentGist;
 	private boolean updateneeded = false;
-	
+	private IScriptingLanguage langaugeType;
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE);
@@ -171,7 +171,10 @@ public class ScriptingFileWidget extends BorderPane implements
 		runfx.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-	    			save();
+	    			
+	    			if(langaugeType.getIsTextFile())
+	    				save();
+	    			//do not attempt to save no binary files
 	    			startStopAction();
 	    		}
 	    	}.start();
@@ -279,7 +282,10 @@ public class ScriptingFileWidget extends BorderPane implements
 			currentFile.createNewFile();
 		}
 		setUpFile(currentFile);
-		setCode(new String(Files.readAllBytes(currentFile.toPath())));
+		if(!langaugeType.getIsTextFile())
+			setCode("Binary File");
+		else
+			setCode(new String(Files.readAllBytes(currentFile.toPath())));
 
 	}
 	
@@ -303,14 +309,14 @@ public class ScriptingFileWidget extends BorderPane implements
 		scriptRunner = new Thread() {
 
 			public void run() {
-				String name;
-				try{
-					name = currentFile.getName();
-				}catch (NullPointerException e){
-					name="";
-				}
+//				String name;
+//				try{
+//					name = currentFile.getName();
+//				}catch (NullPointerException e){
+//					name="";
+//				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.getShellType(name));
+					Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
@@ -388,7 +394,9 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private void setUpFile(File f) {
 		currentFile = f;
-		ScriptingEngine.setLastFile(f);
+		String langType = ScriptingEngine.getShellType(currentFile.getName());
+		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
+		//ScriptingEngine.setLastFile(f);
 		Git git;
 		try {
 			git = ScriptingEngine.locateGit(currentFile);
@@ -405,13 +413,15 @@ public class ScriptingFileWidget extends BorderPane implements
 				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
 					fileListBox.setText(remote);
 				});
+				
 				git.close();
 			});
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		if(!langaugeType.getIsTextFile())
+			return;
 		if (watcher != null) {
 			watcher.close();
 		}
@@ -423,6 +433,7 @@ public class ScriptingFileWidget extends BorderPane implements
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
 		 }
+
 	}
 
 	private void updateFile() {
