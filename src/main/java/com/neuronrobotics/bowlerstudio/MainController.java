@@ -148,6 +148,7 @@ public class MainController implements Initializable {
 	@FXML
 	Menu watchingRepos;
 	@FXML MenuItem clearCache;
+	@FXML Menu CreaturesMenu;
 
 	public static void updateLog() {
 		if (logViewRefStatic != null) {
@@ -331,6 +332,27 @@ public class MainController implements Initializable {
 				AnchorPane.setLeftAnchor(cmdLine, 0.0);
 				AnchorPane.setBottomAnchor(cmdLine, 0.0);
 			});
+			try {
+				File f = ScriptingEngine
+						.fileFromGit(
+								"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+							"exampleRobots.json"// File from within the Git repo
+						);
+				ScriptingEngine.addScriptingLanguage(new JsonRunner());
+				HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
+				for(String menuTitle:map.keySet()){
+					HashMap<String,Object> script = map.get(menuTitle);
+					MenuItem item = new MenuItem(menuTitle);
+					item.setOnAction(event -> {
+						loadMobilebaseFromGit(	(String)script.get("scriptGit"),
+												(String)script.get("scriptFile"));
+					});
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}).start();
 	}
 

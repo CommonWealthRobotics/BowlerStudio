@@ -23,7 +23,8 @@
               <MenuItem mnemonicParsing="false" onAction="#onConnectVirtual" text="Virtual PID Device" />
               <MenuItem mnemonicParsing="false" onAction="#onConnectPidSim" text="Virtual Torque Controller" />
             </Menu>
-            <Menu mnemonicParsing="false" text="Creatures">
+            <Menu mnemonicParsing="false" text="Creatures" fx:id="CreaturesMenu">
+              <!-- 
               <MenuItem mnemonicParsing="false" onAction="#onRobotArm" text="Robot Arm" />
               <MenuItem mnemonicParsing="false" onAction="#onHexapod" text="Six Leg Walker" />
               <MenuItem mnemonicParsing="false" onAction="#onHumanoid" text="Humanoid" />
@@ -32,6 +33,7 @@
               <MenuItem mnemonicParsing="false" onAction="#onAddElephant" text="Elephant" />
               <MenuItem mnemonicParsing="false" onAction="#onAddCNC" text="CNC Controller" />
               <MenuItem mnemonicParsing="false" onAction="#onAddCart" text="Cart Walker" />
+               -->
               <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
               <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromGit" text="From Git..." />
             </Menu>
