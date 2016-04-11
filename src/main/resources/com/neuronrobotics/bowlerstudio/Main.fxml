@@ -71,7 +71,6 @@
             <MenuItem mnemonicParsing="false" onAction="#clearScriptCache" text="Clean Local Cache" fx:id="clearCache" />
           </items>
         </Menu>
-        
       </menus>
     </MenuBar>
     <SplitPane dividerPositions="0.8250444049733571" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1000.0" prefWidth="1411.0" VBox.vgrow="ALWAYS">
@@ -84,23 +83,20 @@
                 <TextArea fx:id="logViewRef" prefHeight="17.0" prefWidth="914.0" text="" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
               </children>
             </AnchorPane>
-            <AnchorPane fx:id="logView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="102.0" prefWidth="924.0">
+            <AnchorPane fx:id="logView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="42.0" prefWidth="924.0">
               <children>
-                <Accordion AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <expandedPane>
-                    <TitledPane fx:id="x2" animated="false" text="Command Line">
-                      <content>
-                        <AnchorPane id="Content" fx:id="CommandLine" minHeight="20.0" minWidth="0.0" prefHeight="57.0" prefWidth="920.0" />
-                      </content>
-                    </TitledPane>
-                  </expandedPane>
+                <Accordion expandedPane="$null" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <panes>
                     <TitledPane fx:id="x1" animated="false" text="Cad Debugger">
                       <content>
                         <AnchorPane id="Content" fx:id="CadDebugger" minHeight="21.0" minWidth="0.0" prefHeight="57.0" prefWidth="920.0" />
                       </content>
                     </TitledPane>
-                    <fx:reference source="x2" />
+                    <TitledPane fx:id="x2" animated="false" expanded="false" text="Command Line">
+                      <content>
+                        <AnchorPane id="Content" fx:id="CommandLine" minHeight="20.0" minWidth="0.0" prefHeight="57.0" prefWidth="920.0" />
+                      </content>
+                    </TitledPane>
                   </panes>
                 </Accordion>
               </children>
