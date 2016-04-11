@@ -990,8 +990,13 @@ public class MainController implements Initializable {
 	}
 
 	@FXML public void clearScriptCache() {
-		File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
-		deleteFolder(cache);
+		new Thread(){
+			public void run(){
+				File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
+				deleteFolder(cache);
+			}
+		}.start();
+
 	}
 	private static void deleteFolder(File folder) {
 		System.out.println("Deleting "+folder.getAbsolutePath());
