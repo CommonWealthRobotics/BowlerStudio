@@ -895,36 +895,7 @@ public class MainController implements Initializable {
 
 	}
 
-	@FXML
-	public void onRobotArm(ActionEvent event) {
-		loadMobilebaseFromGist("2b0cff20ccee085c9c36", "TrobotLinks.xml");
-	}
-
-	@FXML
-	public void onHexapod() {
-		loadMobilebaseFromGist("bcb4760a449190206170", "CarlTheRobot.xml");
-	}
-
-	@FXML
-	public void onGrasshopper() {
-		loadMobilebaseFromGist("a6cbefc11693162cf9d4", "GrassHopper.xml");
-	}
-
-	@FXML
-	public void onInputArm() {
-		loadMobilebaseFromGist("98892e87253005adbe4a", "TrobotMaster.xml");
-	}
-
-	@FXML
-	public void onHumanoid() {
-		loadMobilebaseFromGist("a991ca954460c1ba9860", "humanoid.xml");
-	}
-
-	@FXML
-	public void onAddElephant() {
-		loadMobilebaseFromGist("aef13d65093951d13235", "Elephant.xml");
-	}
-
+	
 	public Menu getCreatureLabMenue() {
 		return CreatureLabMenue;
 	}
@@ -975,10 +946,7 @@ public class MainController implements Initializable {
 		this.application = application;
 	}
 
-	@FXML
-	public void onAddCNC() {
-		loadMobilebaseFromGist("51a9e0bc4ee095b03979", "CNC.xml");
-	}
+	
 
 	public static ByteArrayOutputStream getOut() {
 		if (out == null)
@@ -1064,8 +1032,5 @@ public class MainController implements Initializable {
 		});
 	}
 
-	@FXML public void onAddCart() {
-		loadMobilebaseFromGist("21f739b0d9fb10e81af9", "cartWalker.xml");
-	}
-
+	
 }
