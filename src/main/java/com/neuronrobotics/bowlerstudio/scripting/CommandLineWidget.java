@@ -107,10 +107,9 @@ public class CommandLineWidget  extends BorderPane{
 				BowlerKernel.writeHistory(history);
 			}
 		});
-		ArrayList <String> langOptions = new ArrayList<>();
 		List<String> langs = ScriptingEngine.getAllLangauges();
 		ObservableList<String> options = 
-			    FXCollections.observableArrayList(langOptions);
+			    FXCollections.observableArrayList(langs);
 		comboBox = new ComboBox<String> (options);
 		comboBox.getSelectionModel().select("Groovy");
 		
