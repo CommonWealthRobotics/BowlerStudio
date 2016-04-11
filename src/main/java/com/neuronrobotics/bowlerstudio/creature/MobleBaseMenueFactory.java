@@ -25,12 +25,15 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -38,6 +41,7 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
@@ -107,6 +111,48 @@ public class MobleBaseMenueFactory {
 		callbackMapForTreeitems.put(regnerate, () -> {
 			creatureLab.generateCad();
 
+		});
+		TreeItem<String> printable = new TreeItem<String>("Printable Cad");
+	
+		callbackMapForTreeitems.put(printable, () -> {
+			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+			if (!defaultStlDir.exists()) {
+				defaultStlDir.mkdirs();
+			}
+			Platform.runLater(()->{
+				DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select Output Directory For .STL files");
+
+				chooser.setInitialDirectory(defaultStlDir);
+				File baseDirForFiles = chooser.showDialog(BowlerStudio.getPrimaryStage());
+				new Thread() {
+
+					public void run() {
+						MobileBaseCadManager baseManager = MobileBaseCadManager.get(device) ;
+						if (baseDirForFiles == null) {
+							return;
+						}
+						ArrayList<File> files;
+						try {
+							files = baseManager.generateStls((MobileBase) device, baseDirForFiles);
+							Platform.runLater(() -> {
+								Alert alert = new Alert(AlertType.INFORMATION);
+								alert.setTitle("Stl Export Success!");
+								alert.setHeaderText("Stl Export Success");
+								alert.setContentText(
+										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
+								alert.setWidth(500);
+								alert.initModality(Modality.APPLICATION_MODAL);
+								alert.show();
+							});
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+						}
+
+					}
+				}.start();
+			});
+		
 		});
 
 		TreeItem<String> makeCopy = new TreeItem<String>("Make Copy of Creature");
@@ -298,7 +344,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(regnerate, item, addleg,addFixed,addsteerable, makeCopy);
+		rootItem.getChildren().addAll(regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
 			owner.getChildren().addAll(publish, editWalking, editCAD, resetWalking, setCAD);

@@ -182,65 +182,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				e1.printStackTrace();
 			}
 			MobileBase device = (MobileBase) pm;
-			Menu CreaturLabMenue = BowlerStudio.getCreatureLabMenue();
-			localMenue = new Menu(pm.getScriptingName());
-			MenuItem printable = new MenuItem("Generate Printable CAD");
-			printable.setOnAction(event -> {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-				if (!defaultStlDir.exists()) {
-					defaultStlDir.mkdirs();
-				}
-				DirectoryChooser chooser = new DirectoryChooser();
-				chooser.setTitle("Select Output Directory For .STL files");
-
-				chooser.setInitialDirectory(defaultStlDir);
-				File baseDirForFiles = chooser.showDialog(BowlerStudio.getPrimaryStage());
-				new Thread() {
-
-					public void run() {
-
-						if (baseDirForFiles == null) {
-							return;
-						}
-						ArrayList<File> files;
-						try {
-							files = baseManager.generateStls((MobileBase) pm, baseDirForFiles);
-							Platform.runLater(() -> {
-								Alert alert = new Alert(AlertType.INFORMATION);
-								alert.setTitle("Stl Export Success!");
-								alert.setHeaderText("Stl Export Success");
-								alert.setContentText(
-										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
-								alert.setWidth(500);
-								alert.initModality(Modality.APPLICATION_MODAL);
-								alert.show();
-							});
-						} catch (Exception e) {
-							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
-						}
-
-					}
-				}.start();
-			});
-
-			localMenue.getItems().addAll(printable);
-
-			CreaturLabMenue.getItems().add(localMenue);
-			CreaturLabMenue.setDisable(false);
-			pm.addConnectionEventListener(new IDeviceConnectionEventListener() {
-				@Override
-				public void onDisconnect(BowlerAbstractDevice source) {
-					// cleanup menues after add
-					CreaturLabMenue.getItems().remove(localMenue);
-					if (CreaturLabMenue.getItems().size() == 0)
-						CreaturLabMenue.setDisable(true);
-					BowlerStudioController.clearCSG();
-				}
-
-				@Override
-				public void onConnect(BowlerAbstractDevice source) {
-				}
-			});
 
 			// Button save = new Button("Save Configuration");
 
