@@ -338,7 +338,8 @@ public class MainController implements Initializable {
 								"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
 							"exampleRobots.json"// File from within the Git repo
 						);
-				ScriptingEngine.addScriptingLanguage(new JsonRunner());
+				ScriptingEngine.setAutoupdate(true);
+				@SuppressWarnings("unchecked")
 				HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
 				for(String menuTitle:map.keySet()){
 					HashMap<String,Object> script = map.get(menuTitle);
@@ -346,6 +347,9 @@ public class MainController implements Initializable {
 					item.setOnAction(event -> {
 						loadMobilebaseFromGit(	(String)script.get("scriptGit"),
 												(String)script.get("scriptFile"));
+					});
+					Platform.runLater(()->{
+						CreaturesMenu.getItems().add(item);
 					});
 				}
 			} catch (Exception e) {
