@@ -31,8 +31,9 @@
               <MenuItem mnemonicParsing="false" onAction="#onInputArm" text="Input Arm" />
               <MenuItem mnemonicParsing="false" onAction="#onAddElephant" text="Elephant" />
               <MenuItem mnemonicParsing="false" onAction="#onAddCNC" text="CNC Controller" />
+              <MenuItem mnemonicParsing="false" onAction="#onAddCart" text="Walker with Cart" />
               <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
-              <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromGist" text="From Gist..." />
+              <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromGit" text="From Git..." />
             </Menu>
             <Menu mnemonicParsing="false" text="Vision">
               <MenuItem mnemonicParsing="false" onAction="#onConnectCVCamera" text="OpenCV camera" />

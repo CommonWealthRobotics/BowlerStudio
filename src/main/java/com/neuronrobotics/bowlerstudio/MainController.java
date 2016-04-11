@@ -908,15 +908,18 @@ public class MainController implements Initializable {
 	}
 
 	public void loadMobilebaseFromGist(String id, String file) {
+		loadMobilebaseFromGit("https://gist.github.com/" + id + ".git", file);
+	}
+	public void loadMobilebaseFromGit(String id, String file) {
 		new Thread() {
 			public void run() {
 				try {
 					// BowlerStudio.openUrlInNewTab(new
 					// URL("https://gist.github.com/" + id));
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/" + id + ".git", file)[0];
+					String xmlContent = ScriptingEngine.codeFromGit(id, file)[0];
 					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 
-					mb.setGitSelfSource(new String[] { "https://gist.github.com/" + id + ".git", file });
+					mb.setGitSelfSource(new String[] { id, file });
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 
 				} catch (Exception e) {
@@ -926,7 +929,6 @@ public class MainController implements Initializable {
 			}
 		}.start();
 	}
-
 	@FXML
 	public void onMobileBaseFromGist() {
 
@@ -1028,6 +1030,16 @@ public class MainController implements Initializable {
 	        }
 	    }
 	    folder.delete();
+	}
+
+	@FXML public void onMobileBaseFromGit() {
+		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git", (gitsId, file) -> {
+			loadMobilebaseFromGit(gitsId, file);
+		});
+	}
+
+	@FXML public void onAddCart() {
+		loadMobilebaseFromGist("21f739b0d9fb10e81af9", "cartWalker.xml");
 	}
 
 }
