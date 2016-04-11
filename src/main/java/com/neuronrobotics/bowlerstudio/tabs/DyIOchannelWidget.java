@@ -8,7 +8,6 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
@@ -267,7 +266,7 @@ public class DyIOchannelWidget {
 							sn.setDisable(true);
 							textArea.setEditable(false);
 						});
-						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptStringRun(textArea.getText(), null, ShellType.GROOVY);
+						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptStringRun(textArea.getText(), null, "Groovy");
 						channel.addChannelEventListener(myLocalListener);
 						Platform.runLater(()->{
 							setListenerButton.setText("Kill Listener");

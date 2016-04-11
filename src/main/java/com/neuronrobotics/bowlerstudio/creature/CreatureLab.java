@@ -1,88 +1,47 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.python.core.exceptions;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-import javafx.util.Callback;
-
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
-import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
-import com.neuronrobotics.nrconsole.util.DirectoryFilter;
-import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
-import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
-import com.neuronrobotics.sdk.util.IFileChangeListener;
-
-import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.Cube;
-import eu.mihosoft.vrl.v3d.FileUtil;
-import eu.mihosoft.vrl.v3d.PrepForManufacturing;
-import eu.mihosoft.vrl.v3d.STL;
-import eu.mihosoft.vrl.v3d.Transform;
 
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
@@ -363,8 +322,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		File code = null;
 		try {
 			code = ScriptingEngine.fileFromGit(device.getGitDhEngine()[0], device.getGitDhEngine()[1]);
-			DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineScriptRun(code, null,
-					ShellType.GROOVY);
+			DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineFileScriptRun(code, null);
 
 			if (dhKinematicsFileWatchers.get(device) != null) {
 				dhKinematicsFileWatchers.get(device).close();
@@ -377,8 +335,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				w.addIFileChangeListener((fileThatChanged, event) -> {
 					try {
 						System.out.println("D-H Solver changed, updating "+device.getScriptingName());
-						DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineScriptRun(c, null,
-								ShellType.GROOVY);
+						DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineFileScriptRun(c, null);
 						device.setInverseSolver(d);
 					} catch (Exception ex) {
 						BowlerStudioController.highlightException(c, ex);
@@ -434,7 +391,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 			try {
 
-				defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(c, null, ShellType.GROOVY);
+				defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineFileScriptRun(c, null);
 				device.setWalkingDriveEngine(defaultDriveEngine);
 			} catch (Exception ex) {
 				BowlerStudioController.highlightException(c, ex);
@@ -443,7 +400,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		});
 		driveEngineWitcher.start();
 		try {
-			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineScriptRun(c, null, ShellType.GROOVY);
+			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineFileScriptRun(c, null);
 			device.setWalkingDriveEngine(defaultDriveEngine);
 		} catch (Exception ex) {
 			BowlerStudioController.highlightException(c, ex);

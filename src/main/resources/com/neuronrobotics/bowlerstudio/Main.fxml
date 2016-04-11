@@ -67,6 +67,7 @@
             <Menu mnemonicParsing="false" text="My Organizations" fx:id="myOrganizations" />
             <Menu mnemonicParsing="false" text="My Repositories" fx:id="myRepos" />
             <Menu mnemonicParsing="false" text="Repos I'm Watching" fx:id="watchingRepos" />
+            <MenuItem mnemonicParsing="false" onAction="#clearScriptCache" text="Clean Local Cache" fx:id="clearCache" />
           </items>
         </Menu>
         <Menu disable="true" mnemonicParsing="false" text="Creature Lab" fx:id="CreatureLabMenue" />

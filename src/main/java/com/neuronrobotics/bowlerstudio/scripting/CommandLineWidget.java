@@ -14,9 +14,12 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -34,11 +37,13 @@ public class CommandLineWidget  extends BorderPane{
 	private TextField cmdLineInterface = new TextField ();
 	private ArrayList<String> history = new ArrayList<>();
 	private Button runfx = new Button("Run");
+	private ComboBox<String> comboBox ;
 	private int historyIndex=0;
 	private HBox controlPane;
 	private String codeText="";
 	private boolean running = false;
 	private Thread scriptRunner = null;
+	
 	public CommandLineWidget(){
 		runfx.setOnAction(e -> {
 	    	new Thread(){
@@ -102,10 +107,17 @@ public class CommandLineWidget  extends BorderPane{
 				BowlerKernel.writeHistory(history);
 			}
 		});
+		ArrayList <String> langOptions = new ArrayList<>();
+		List<String> langs = ScriptingEngine.getAllLangauges();
+		ObservableList<String> options = 
+			    FXCollections.observableArrayList(langOptions);
+		comboBox = new ComboBox<String> (options);
+		comboBox.getSelectionModel().select("Groovy");
 		
 		controlPane = new HBox(10);
 		controlPane.getChildren().add(new Label("Bowler CMD:"));
 		controlPane.getChildren().add(cmdLineInterface);
+		controlPane.getChildren().add(comboBox);
 		controlPane.getChildren().add(runfx);
 		setPadding(new Insets(1, 0, 3, 10));
 		setTop(controlPane);
@@ -132,10 +144,9 @@ public class CommandLineWidget  extends BorderPane{
 		scriptRunner = new Thread() {
 
 			public void run() {
-				String name;
-	
+
 				try {
-					Object obj = ScriptingEngine.inlineScriptStringRun(getCode(), null,ShellType.GROOVY);
+					ScriptingEngine.inlineScriptStringRun(getCode(), null,comboBox.getSelectionModel().getSelectedItem());
 					reset();
 				} 
 				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){

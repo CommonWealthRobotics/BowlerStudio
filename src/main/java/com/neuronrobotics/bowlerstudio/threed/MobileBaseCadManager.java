@@ -17,7 +17,6 @@ import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ShellType;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -395,8 +394,7 @@ public class MobileBaseCadManager {
 		dh.setGitCadEngine(new String[]{gitsId,file});
 		File code = ScriptingEngine.fileFromGit(gitsId, file);
 		try {
-			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null,
-					ShellType.GROOVY);
+			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
 			dhCadGen.put(dh, defaultDHSolver);
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(code, e);
@@ -420,7 +418,7 @@ public class MobileBaseCadManager {
 		});
 		w.addIFileChangeListener((fileThatChanged, event) -> {
 			try {
-				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineScriptRun(code, null, ShellType.GROOVY);
+				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
 				dhCadGen.put(dh, d);
 				generateCad();
 			} catch (Exception ex) {

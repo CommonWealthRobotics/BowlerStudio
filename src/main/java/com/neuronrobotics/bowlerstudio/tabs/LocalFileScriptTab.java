@@ -90,19 +90,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		getScripting().addIScriptEventListener(l);
 		String type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
-		switch(ScriptingEngine.setFilename(file.getName())){
-			case CLOJURE:
+		switch(ScriptingEngine.getShellType(file.getName())){
+			case "Clojure":
 				type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
 				break;
-			case GROOVY:
+			default:
+			case "Groovy":
 				type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
 				break;
-			case JYTHON:
+			case "Jython":
 				type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
 				break;
-			case NONE:
-				break;
-			case ROBOT:
+			case "RobotXML":
 				type = SyntaxConstants.SYNTAX_STYLE_XML;
 				break;
 		

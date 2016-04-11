@@ -383,7 +383,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					name="";
 				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
+					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.getShellType(name));
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
