@@ -32,6 +32,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -59,6 +60,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 //import javafx.scene.control.ScrollPane;
@@ -389,13 +391,13 @@ public class MainController implements Initializable {
 								// loadWebGist);
 								tmpGist.getItems().add(loadWebGist);
 							});
-							int startSize = tmpGist.getItems().size();
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
 
 								@Override
 								public void handle(Event ev) {
-
+									if (gistFlag)
+										return;// another thread is servicing this gist
 									// for(ScriptingEngine.)
 									new Thread() {
 										public void run() {
@@ -417,7 +419,7 @@ public class MainController implements Initializable {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() != startSize)
+											if (tmpGist.getItems().size() !=1)
 												return;// menue populated by
 														// another thread
 											for (String s : listofFiles) {
@@ -990,15 +992,29 @@ public class MainController implements Initializable {
 	}
 
 	@FXML public void clearScriptCache() {
-		new Thread(){
-			public void run(){
-				File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
-				deleteFolder(cache);
+		Platform.runLater(()->{
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Are you sure you have published all your work?");
+			alert.setHeaderText("This will wipe out the local cache");
+			alert.setContentText("All files that are not published will be deleted");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK){
+				new Thread(){
+					public void run(){
+						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
+						deleteFolder(cache);
+					}
+				}.start();
+			} else {
+			   System.out.println("Nothing was deleted");
 			}
-		}.start();
+		});
+
 
 	}
 	private static void deleteFolder(File folder) {
+
 		System.out.println("Deleting "+folder.getAbsolutePath());
 	    File[] files = folder.listFiles();
 	    if(files!=null) { //some JVMs return null for empty dirs
