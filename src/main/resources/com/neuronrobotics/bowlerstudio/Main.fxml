@@ -31,7 +31,7 @@
               <MenuItem mnemonicParsing="false" onAction="#onInputArm" text="Input Arm" />
               <MenuItem mnemonicParsing="false" onAction="#onAddElephant" text="Elephant" />
               <MenuItem mnemonicParsing="false" onAction="#onAddCNC" text="CNC Controller" />
-              <MenuItem mnemonicParsing="false" onAction="#onAddCart" text="Walker with Cart" />
+              <MenuItem mnemonicParsing="false" onAction="#onAddCart" text="Cart Walker" />
               <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromFile" text="From File..." />
               <MenuItem mnemonicParsing="false" onAction="#onMobileBaseFromGit" text="From Git..." />
             </Menu>
