@@ -683,6 +683,7 @@ public class MainController implements Initializable {
 						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
 						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg", "*.txt"),
 						new ExtensionFilter("Image", "*.jpg", "*.jpeg", "*.JPG", "*.png", "*.PNG"),
+						new ExtensionFilter("STL", "*.stl","*.STL","*.Stl"),
 						new ExtensionFilter("All", "*.*"));
 				if (openFile == null) {
 					return;

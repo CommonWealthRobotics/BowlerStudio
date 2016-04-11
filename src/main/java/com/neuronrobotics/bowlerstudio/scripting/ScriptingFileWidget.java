@@ -416,8 +416,21 @@ public class ScriptingFileWidget extends BorderPane implements
 				
 				git.close();
 			});
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
+			Platform.runLater(() -> {
+				fileListBox.setText("none");
+				fileListBox.setMinWidth(40);
+				fileNameBox.setText(f.getAbsolutePath());
+				// These values are display only, so if hte user tries to change them, they reset
+				// the use of text field for static dats is so the user cna copy the vlaues and use them in their scritpts
+				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileNameBox.setText(f.getAbsolutePath());
+				});
+				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileListBox.setText("none");
+				});
+				
+			});
 			e1.printStackTrace();
 		}
 		if(!langaugeType.getIsTextFile())
@@ -433,7 +446,6 @@ public class ScriptingFileWidget extends BorderPane implements
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
 		 }
-
 	}
 
 	private void updateFile() {
