@@ -956,12 +956,17 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void onCreatenewGist() {
-		NewGistController controller = new NewGistController();
-		try {
-			controller.start(new Stage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Stage s = new Stage();
+		new Thread(){
+			public void run(){
+				NewGistController controller = new NewGistController();
+				try {
+					controller.start( s);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	@FXML
@@ -1032,5 +1037,4 @@ public class MainController implements Initializable {
 		});
 	}
 
-	
 }
