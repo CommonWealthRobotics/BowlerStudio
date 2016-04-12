@@ -83,7 +83,7 @@ public class CommitWidget {
 			result.ifPresent(commitBody -> {
 			    new Thread(){
 			    	public void run(){
-					    String message = commitBody.getKey()+"/n/n"+commitBody.getValue();
+					    String message = commitBody.getKey()+"\n\n"+commitBody.getValue();
 					    
 					    Git git;
 						try {
