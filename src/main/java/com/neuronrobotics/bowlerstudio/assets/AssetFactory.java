@@ -16,12 +16,16 @@ import org.kohsuke.github.GHRepository;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
+
 public class AssetFactory {
 	private static final String repo = "BowlerStudioImageAssets";
 	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git";
-	private static HashMap<String , BufferedImage> cache =new HashMap<>();
+	private static HashMap<String , Image> cache =new HashMap<>();
 	private static boolean checked =false;
-	public static BufferedImage loadAsset(String file ) throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+	public static Image loadAsset(String file ) throws InvalidRemoteException, TransportException, GitAPIException, IOException{
 		if(cache.get(file)==null){
 			File f =ScriptingEngine
 			.fileFromGit(
@@ -29,15 +33,15 @@ public class AssetFactory {
 					file// File from within the Git repo
 			);
 			if(f==null){
-				BufferedImage obj_img =new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+				WritableImage obj_img =new WritableImage(100, 100);
 			    byte alpha = (byte)0; 
 			    for (int cx=0;cx<obj_img.getWidth();cx++) {          
 			        for (int cy=0;cy<obj_img.getHeight();cy++) {
-			            int color = obj_img.getRGB(cx, cy);
+			            int color = obj_img.getPixelReader().getArgb(cx, cy);
 
 			            int mc = (alpha << 24) | 0x00ffffff;
 			            int newcolor = color & mc;
-			            obj_img.setRGB(cx, cy, newcolor);            
+			            obj_img.getPixelWriter().setArgb(cx, cy, newcolor);            
 
 			        }
 
@@ -47,8 +51,12 @@ public class AssetFactory {
 					File imageFile = ScriptingEngine.createFile(getGitSource(),file,"create file");
 					try {
 						String FileName =imageFile.getName();
-					    ImageIO.write(obj_img, FileName
+
+						BufferedImage bImage = SwingFXUtils.fromFXImage(obj_img, null);
+
+						ImageIO.write(bImage, FileName
 					    		.substring(FileName.lastIndexOf('.')+1).toLowerCase(), imageFile);
+
 					} catch (IOException e) {
 					    
 					}
@@ -61,7 +69,8 @@ public class AssetFactory {
 			    //ScriptingEngine.pushFile(getGitSource(),file);
 			    //obj_img.ge
 			}else{
-				cache.put(file, ImageIO.read(f));
+				System.out.println("Loading file: "+f.getAbsolutePath());
+				cache.put(file, new Image(f.toURI().toString()));
 			}
 			
 		}

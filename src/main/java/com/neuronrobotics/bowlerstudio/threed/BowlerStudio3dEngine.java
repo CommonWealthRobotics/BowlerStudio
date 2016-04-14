@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import java.awt.image.BufferedImage;
+
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
@@ -43,9 +45,12 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -127,6 +132,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 
 import static javafx.scene.input.KeyCode.*;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -688,10 +696,64 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 
+		new Thread(){
+			public void run(){
+				try {
+					Image ruler = AssetFactory.loadAsset("ruler.png");
+					Affine zRuler = new Affine();
+					double scale =0.25;
+					zRuler.setTx(-130*scale);
+					zRuler.setTz(-20*scale);
+					zRuler.appendScale(scale, scale,scale);
+					zRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+					zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
+					
+					Affine yRuler = new Affine();
+					yRuler.setTx(-130*scale);
+					yRuler.setTy(-20*scale);
+					yRuler.appendScale(scale, scale,scale);
+					yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+					
+					Affine xp = new Affine();
+					xp.setTx(-20*scale);
+					xp.appendScale(scale, scale,scale);
+					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					Platform.runLater(()->{
+						ImageView rulerImage = new ImageView(ruler);
+						ImageView yrulerImage = new ImageView(ruler);
+						ImageView zrulerImage = new ImageView(ruler);
+						zrulerImage.getTransforms().add(zRuler);
+						rulerImage.getTransforms().add(xp);
+						yrulerImage.getTransforms().add(yRuler);
+						axisGroup.getChildren().addAll(zrulerImage,rulerImage,yrulerImage);
+					});
+				} catch (GitAPIException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
+		Affine xp = new Affine();
+		xp.setTx(25);
+		Label xText = new Label("+X");
+		xText.getTransforms().add(xp);
+		
+		Affine yp = new Affine();
+		yp.setTy(25);
+		Label yText = new Label("+Y");
+		yText.getTransforms().add(yp);
+		
+		Affine zp = new Affine();
+		zp.setTz(25);
+		Label zText = new Label("+Z");
+		zText.getTransforms().add(zp);
+
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(new Axis(),ground, getVirtualcam().getCameraFrame());
+		axisGroup.getChildren().addAll(yText,zText,xText,ground, getVirtualcam().getCameraFrame());
 		world.getChildren().addAll(axisGroup, lookGroup);
 		
 	}
