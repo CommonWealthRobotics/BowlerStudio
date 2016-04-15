@@ -152,6 +152,8 @@ import javafx.scene.Node;
  */
 public class BowlerStudio3dEngine extends JFXPanel {
 
+	
+
 	/**
 	 * 
 	 */
@@ -520,7 +522,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		
 		cm.getItems().add(export);
-		MenuItem cut = new MenuItem("Debug Source");
+		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
@@ -545,20 +547,21 @@ public class BowlerStudio3dEngine extends JFXPanel {
                         ((MenuItem) event.getTarget()).getText());
             }
         });
-		current.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+		class closeTheMenueHandler implements EventHandler<MouseEvent> {
 			@Override
 			public void handle(MouseEvent event) {
-				cm.show(current, event.getScreenX()-10, event.getScreenY()-10);
+				if(event.isSecondaryButtonDown()||event.isShiftDown())
+					cm.show(current, event.getScreenX()-10, event.getScreenY()-10);
+				
+
+				
 			}
-		});
-		//cm.on
-		cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				System.err.println("Closing the menu");
-				cm.hide();
-			}
-		});
+		}
+		closeTheMenueHandler cmh =new closeTheMenueHandler();
+		current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh);
+		
+		//cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, cmh);
+		
 		
 		lookGroup.getChildren().add(current);
 		Axis axis = new Axis();
@@ -568,6 +571,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		//Log.warning("Adding new axis");
 		return current;
 	}
+	private void prepAllItems(ObservableList<MenuItem> items,EventHandler<MouseEvent> exited,EventHandler<MouseEvent> entered ){
+		for(MenuItem item :items){
+			if(Menu.class.isInstance(item)){
+				Menu m=(Menu)item;
+				prepAllItems( m.getItems(),exited,entered);
+			}else{
+				item.addEventHandler(MouseEvent.MOUSE_EXITED, entered);
+				item.addEventHandler(MouseEvent.MOUSE_ENTERED, entered);
+			}
+			
+		}
+	}
+
 
 	/**
 	 * Save to png.

@@ -187,7 +187,7 @@ public class MainController implements Initializable {
 			}
 
 		}
-		FxTimer.runLater(Duration.ofMillis(500), () -> {
+		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
 
 			updateLog();
 		});

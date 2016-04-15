@@ -533,8 +533,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		String pervious = codeText;
 		codeText = string;
 		// System.out.println(codeText);
-		for (IScriptEventListener l : listeners) {
-			l.onScriptChanged(pervious, string,currentFile);
+		for (int i=0;i<listeners.size();i++ ) {
+			listeners.get(i).onScriptChanged(pervious, string,currentFile);
 		}
 	}
 
