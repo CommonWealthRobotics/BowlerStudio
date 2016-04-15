@@ -147,7 +147,10 @@ public class MobileBaseCadManager {
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 				arrayList.clear();
 				for(CSG c:getAllCad()){
-					baseCad=c;
+					if(baseCad==null)
+						baseCad=c;
+					else
+						baseCad=baseCad.union(c);
 					arrayList.add(c);	
 				}
 			}
