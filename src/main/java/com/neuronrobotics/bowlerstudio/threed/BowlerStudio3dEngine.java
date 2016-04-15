@@ -84,6 +84,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.IParametric;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
@@ -386,29 +387,29 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgSourceFile.remove(previousCsg);
 	}
 	
-	private void fireRegenerate(CSG currentCsg, File source, Set<CSG> currentObjectsToCheck){
+	private void fireRegenerate(String key,File source, Set<CSG> currentObjectsToCheck){
 		new Thread() {
 			public void run() {
-				try{
-					CSG ret = currentCsg.regenerate();
-					if (ret != currentCsg) {
-						Platform.runLater(()->{
-							removeObject(currentCsg);
-							Platform.runLater(()->addObject(ret, source));
-						});
+				ArrayList<CSG> toAdd = new ArrayList<>();
+				ArrayList<CSG> toRemove = new ArrayList<>();
+				for(CSG tester:currentObjectsToCheck){
+					for(String p:tester.getParameters()){
+						if(p.contentEquals(key)){
+							CSG ret = tester.regenerate();
+							toRemove.add(tester);
+							toAdd.add(ret);
 						
-					}
-				}catch(Exception ex){
-					BowlerStudioController.highlightException(source, ex);
-					
-				}
-				if(currentObjectsToCheck!=null)
-					for(CSG c:currentObjectsToCheck){
-						if(c.isMarkedForRegeneration()){
-							//only regenerate one deep otherwise a recoursive bomb is easy here
-							fireRegenerate( currentCsg, csgSourceFile.get(currentCsg), null);
 						}
 					}
+				}
+				for(CSG add:toRemove)
+					Platform.runLater(()->{
+						removeObject(add);
+					});
+				for(CSG ret:toAdd)
+					Platform.runLater(()->{
+						addObject(ret, source);
+					});
 			}
 		}.start();
 	}
@@ -449,15 +450,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							new Thread() {
 								public void run() {
 									try{
+										currentCsg.setParameterNewValue(key, newAngleDegrees);
 										
-										CSG ret = currentCsg.setParameterNewValue(key, newAngleDegrees);
-										
-										if (ret != currentCsg) {
-											Platform.runLater(()->{
-												removeObject(currentCsg);
-												Platform.runLater(()->addObject(ret, source));
-											});
-										}
 									}catch(Exception ex){
 										BowlerStudioController.highlightException(source, ex);
 									}
@@ -469,10 +463,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
 							Set<CSG> objects = csgMap.keySet();
-							fireRegenerate( currentCsg,  source, objects);
+							fireRegenerate( key,  source, objects);
 							cm.hide();// hide this menue because the new CSG talks to the new menue
 						}
-					},Double.parseDouble(lp.getOptions().get(1).toString()) , Double.parseDouble(lp.getOptions().get(0).toString()), lp.getMM(), 400, key);
+					},		Double.parseDouble(lp.getOptions().get(1).toString()) ,
+							Double.parseDouble(lp.getOptions().get(0).toString()), 
+							lp.getMM(), 
+							400, 
+							key);
 					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
 					customMenuItem.setHideOnClick(false);
 					parameters.getItems().add(customMenuItem);
