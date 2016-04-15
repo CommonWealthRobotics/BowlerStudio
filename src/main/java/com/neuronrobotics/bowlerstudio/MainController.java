@@ -149,6 +149,8 @@ public class MainController implements Initializable {
 	Menu watchingRepos;
 	@FXML MenuItem clearCache;
 	@FXML Menu CreaturesMenu;
+	private static Stage stage=null;
+	
 
 	public static void updateLog() {
 		if (logViewRefStatic != null) {
@@ -210,27 +212,34 @@ public class MainController implements Initializable {
 
 				@Override
 				public String[] prompt(String username) {
-					if (!loginWindowOpen && controller != null)
-
-						controller.reset();
-					controller = null;
-					loginWindowOpen = true;
-					System.err.println("Calling login from BowlerStudio");
-					// new RuntimeException().printStackTrace();
-					FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-					Parent root = fxmlLoader.getRoot();
-					if (controller == null) {
-						controller = fxmlLoader.getController();
-						Platform.runLater(() -> {
+					boolean loginWas = loginWindowOpen;
+					
+					if(stage==null){						
+						if (!loginWas && controller != null)
 							controller.reset();
-							controller.getUsername().setText(username);
-							Stage stage = new Stage();
-							stage.setTitle("GitHub Login");
-							stage.initModality(Modality.APPLICATION_MODAL);
-							controller.setStage(stage, root);
-							stage.centerOnScreen();
-							stage.show();
-						});
+						controller = null;
+						System.err.println("Calling login from BowlerStudio");
+						// new RuntimeException().printStackTrace();
+						FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+						Parent root = fxmlLoader.getRoot();
+						if (controller == null) {
+							controller = fxmlLoader.getController();
+							Platform.runLater(() -> {
+								if(!loginWindowOpen){
+									controller.reset();
+									controller.getUsername().setText(username);
+									stage = new Stage();
+									stage.setTitle("GitHub Login");
+									stage.initModality(Modality.APPLICATION_MODAL);
+									controller.setStage(stage, root);
+									stage.centerOnScreen();
+								
+									loginWindowOpen = true;
+									stage.show();
+									stage =null;
+								}
+							});
+						}
 					}
 					// setContent(root);
 					while (!controller.isDone()) {
@@ -241,6 +250,12 @@ public class MainController implements Initializable {
 					return creds;
 				}
 			});
+			try {
+				ScriptingEngine.runLogin();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} 
 			// System.out.println("Loading 3d engine");
 			jfx3dmanager = new BowlerStudio3dEngine();
 
@@ -333,12 +348,13 @@ public class MainController implements Initializable {
 				AnchorPane.setBottomAnchor(cmdLine, 0.0);
 			});
 			try {
+				ScriptingEngine.setAutoupdate(true);
 				File f = ScriptingEngine
 						.fileFromGit(
 								"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
 							"exampleRobots.json"// File from within the Git repo
 						);
-				ScriptingEngine.setAutoupdate(true);
+				
 				@SuppressWarnings("unchecked")
 				HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
 				for(String menuTitle:map.keySet()){

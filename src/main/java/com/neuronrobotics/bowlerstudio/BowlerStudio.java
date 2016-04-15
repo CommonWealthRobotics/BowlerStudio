@@ -64,7 +64,7 @@ public class BowlerStudio extends Application {
     		
     		
     		//System.out.println("Loading assets ");
-
+    	
     		BowlerStudioResourceFactory.load();
     		//System.out.println("Done loading assets ");
     		String key="Bowler Initial Version";
