@@ -548,7 +548,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		current.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				cm.show(current, event.getScreenX()-5, event.getScreenY()-5);
+				cm.show(current, event.getScreenX()-10, event.getScreenY()-10);
 			}
 		});
 		//cm.on
