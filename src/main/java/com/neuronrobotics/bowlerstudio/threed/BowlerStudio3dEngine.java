@@ -46,6 +46,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -117,6 +118,7 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -423,6 +425,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgSourceFile.put(currentCsg, source);
 		
 		MeshView current = csgMap.get(currentCsg);
+		
+		//TriangleMesh mesh =(TriangleMesh) current.getMesh();
+		//mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
 		
 		Set<String> params = currentCsg.getParameters();
@@ -540,14 +545,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
                         ((MenuItem) event.getTarget()).getText());
             }
         });
-		current.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		current.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if(event.getButton()==MouseButton.SECONDARY){
-					cm.show(current, event.getScreenX(), event.getScreenY());
-					event.consume();
-				}else
-					cm.hide();
+				cm.show(current, event.getScreenX()-5, event.getScreenY()-5);
+			}
+		});
+		//cm.on
+		cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				System.err.println("Closing the menu");
+				cm.hide();
 			}
 		});
 		
@@ -747,6 +756,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		Affine zp = new Affine();
 		zp.setTz(25);
+		zp.setTx(25);
+		zp.appendRotation(-90, 0, 0, 0, 1, 0, 0);
+		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
 		Label zText = new Label("+Z");
 		zText.getTransforms().add(zp);
 
