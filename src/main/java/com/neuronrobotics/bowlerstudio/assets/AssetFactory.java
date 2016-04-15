@@ -25,7 +25,7 @@ public class AssetFactory {
 	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git";
 	private static HashMap<String , Image> cache =new HashMap<>();
 	private static boolean checked =false;
-	public static Image loadAsset(String file ) throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+	public static Image loadAsset(String file ) throws Exception{
 		if(cache.get(file)==null){
 			File f =ScriptingEngine
 			.fileFromGit(
@@ -78,7 +78,7 @@ public class AssetFactory {
 		return cache.get(file);
 	}
 	
-	public static String getGitSource() throws IOException {
+	public static String getGitSource() throws Exception {
 		if(!checked){
 			checked=true;
 			ScriptingEngine.setAutoupdate(true);
@@ -96,7 +96,8 @@ public class AssetFactory {
 		}
 		return gitSource;
 	}
-	public static void setGitSource(String gitSource) {
+	public static void setGitSource(String gitSource) throws Exception {
+		ScriptingEngine.filesInGit(gitSource);
 		AssetFactory.gitSource = gitSource;
 	}
 }

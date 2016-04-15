@@ -752,7 +752,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						yrulerImage.getTransforms().add(yRuler);
 						axisGroup.getChildren().addAll(zrulerImage,rulerImage,yrulerImage);
 					});
-				} catch (GitAPIException | IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -1011,9 +1011,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	private File locateFile(String fileName, CSG source){
 		File f = csgSourceFile.get(source);
-		if(f.getName().contains(fileName)){
-			return f;
-		}
+		if(f!=null)
+			if(f.getName().contains(fileName)){
+				return f;
+			}
 		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 
