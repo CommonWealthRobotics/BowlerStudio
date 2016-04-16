@@ -232,13 +232,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptFinished(	Object result,Object previous,File source) {
-		// TODO Auto-generated method stub
-		SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	textArea.requestFocusInWindow();
-            }
-        });
+//		// TODO Auto-generated method stub
+//		SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//            	textArea.requestFocusInWindow();
+//            }
+//        });
 		
 	}
 

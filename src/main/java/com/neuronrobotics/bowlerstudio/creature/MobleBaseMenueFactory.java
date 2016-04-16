@@ -66,14 +66,8 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
-				// create the widget for the leg when looking at it for the
-				// first time
-				new Thread(){
-					public void run(){
-						widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
-					}
-				}.start();
-				
+				widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
+
 			}
 		});
 		
