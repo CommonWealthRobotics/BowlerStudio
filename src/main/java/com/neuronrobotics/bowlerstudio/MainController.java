@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.*;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
@@ -18,6 +19,7 @@ import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
+import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.Polygon;
@@ -33,6 +35,8 @@ import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -149,6 +153,7 @@ public class MainController implements Initializable {
 	Menu watchingRepos;
 	@FXML MenuItem clearCache;
 	@FXML Menu CreaturesMenu;
+	private Image icon;
 	private static Stage stage=null;
 	
 
@@ -252,6 +257,10 @@ public class MainController implements Initializable {
 			});
 			try {
 				ScriptingEngine.runLogin();
+				icon = AssetFactory.loadAsset("BowlerStudio.png");
+				Stage PrimaryStage = BowlerStudio.getPrimaryStage();
+				Platform.runLater(()->PrimaryStage.getIcons().add(icon));
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

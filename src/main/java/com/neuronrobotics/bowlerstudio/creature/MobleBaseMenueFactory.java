@@ -457,7 +457,7 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) throws Exception {
 
-		TreeItem<String> apps = new TreeItem<String>(label,AssetFactory.loadIcon("Limb.png"));
+		TreeItem<String> apps = new TreeItem<String>(label,AssetFactory.loadIcon("Load-Limb-"+label.replace(' ', '-')+".png"));
 		rootItem.getChildren().add(apps);
 		if (drivable.size() == 0)
 			return apps;

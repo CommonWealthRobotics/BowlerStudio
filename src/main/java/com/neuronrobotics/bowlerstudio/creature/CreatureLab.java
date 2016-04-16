@@ -221,7 +221,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			tree.setPrefSize(400, 1000);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 

@@ -70,7 +70,7 @@ public class AssetFactory {
 			    //ScriptingEngine.pushFile(getGitSource(),file);
 			    //obj_img.ge
 			}else{
-				System.out.println("Asset: "+f.getAbsolutePath());
+				//System.out.println("Asset: "+f.getAbsolutePath());
 				cache.put(file, new Image(f.toURI().toString()));
 			}
 			
