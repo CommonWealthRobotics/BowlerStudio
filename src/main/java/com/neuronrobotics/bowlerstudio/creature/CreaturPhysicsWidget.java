@@ -14,6 +14,7 @@ import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -67,7 +68,7 @@ public class CreaturPhysicsWidget extends GridPane {
 				runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
 				runstop.setText("Run");
 				physicsThread.interrupt();
-				PhysicsEngine.clear();
+				
 				msLoopTime.setDisable(false);
 				pauseresume.setDisable(true);
 				if(oldParts!=null){
@@ -87,6 +88,8 @@ public class CreaturPhysicsWidget extends GridPane {
 					public void run(){
 						HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						CSG baseCad=MobileBaseCadManager.getBaseCad(base);
+						base.DriveArc(new TransformNR(), 0);
+						PhysicsEngine.clear();
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
 						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
 						oldParts = threeD.getCsgMap().keySet();
