@@ -22,6 +22,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
@@ -56,6 +57,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private ProgressIndicator pi;
 
 	private MobileBaseCadManager baseManager;
+	private CheckBox autoRegen = new CheckBox("Auto-Regnerate CAD");
 	
 	private AbstractGameController gameController = new AbstractGameController() {
 
@@ -159,6 +161,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		this.pm = pm;
+		autoRegen.setSelected(true);
+		autoRegen.setOnAction(event -> {
+			if(autoRegen.isSelected()){
+				generateCad();
+			}
+		});
 		// TODO Auto-generated method stub
 		setText(pm.getScriptingName());
 
@@ -239,13 +247,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			HBox progress = new HBox(10);
 			pi = new ProgressIndicator(0);
 			progress.getChildren().addAll(new Label("Cad Progress:"), pi);
-			baseManager = new MobileBaseCadManager(device, pi);
+			baseManager = new MobileBaseCadManager(device, pi,autoRegen);
 			// dhlabTopLevel.add(advancedPanel, 0, 0);
 			dhlabTopLevel.add(progress, 0, 0);
+			dhlabTopLevel.add(autoRegen, 0, 1);
+			dhlabTopLevel.add(tree, 0, 2);
 
-			dhlabTopLevel.add(tree, 0, 1);
-
-			dhlabTopLevel.add(controls, 1, 1);
+			dhlabTopLevel.add(controls, 2, 1);
 
 		} else if (AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device = (AbstractKinematicsNR) pm;
@@ -351,6 +359,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 
 	public void generateCad() {
+		new Exception().printStackTrace();
 		baseManager.generateCad();
 	}
 
@@ -359,7 +368,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	public void onTabReOpening() {
 		baseManager.setCadScript(baseManager.getCadScript());
 		try {
-			generateCad();
+			if(autoRegen.isSelected())
+				generateCad();
 		} catch (Exception ex) {
 
 		}
@@ -378,7 +388,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	@Override
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-		generateCad();
+		if(autoRegen.isSelected())
+			generateCad();
 	}
 
 	public AbstractGameController getController() {

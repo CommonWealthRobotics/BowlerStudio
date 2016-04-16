@@ -28,6 +28,7 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.FileUtil;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 
 public class MobileBaseCadManager {
@@ -50,10 +51,12 @@ public class MobileBaseCadManager {
 	private boolean showingStl=false;
 	private ArrayList<CSG> allCad;
 	private  CSG baseCad=null;
+	private CheckBox autoRegen;
 	
 	
 	
-	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi){
+	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi,CheckBox autoRegen){
+		this.autoRegen = autoRegen;
 		this.setProcesIndictor(pi);
 		if(pi==null)
 			this.setProcesIndictor(new ProgressIndicator());
@@ -354,7 +357,7 @@ public class MobileBaseCadManager {
 	}
 	
 	public synchronized void generateCad() {
-		if (cadGenerating)
+		if (cadGenerating || !autoRegen.isSelected())
 			return;
 		cadGenerating = true;
 		// new RuntimeException().printStackTrace();
@@ -446,7 +449,9 @@ public class MobileBaseCadManager {
 	 
 	public static MobileBaseCadManager get(MobileBase device){
 		if(cadmap.get(device)==null){
-			return new MobileBaseCadManager(device, new ProgressIndicator());
+			CheckBox check = new CheckBox();
+			check.setSelected(true);
+			return new MobileBaseCadManager(device, new ProgressIndicator(), check);
 		}
 		else
 			return cadmap.get(device);

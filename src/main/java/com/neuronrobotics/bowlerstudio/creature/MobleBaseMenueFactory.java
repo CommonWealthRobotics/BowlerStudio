@@ -576,7 +576,7 @@ public class MobleBaseMenueFactory {
 
 					@Override
 					public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-						creatureLab.generateCad();
+						creatureLab.onSliderDoneMoving(source,newAngleDegrees);
 					}
 				}));
 			}
