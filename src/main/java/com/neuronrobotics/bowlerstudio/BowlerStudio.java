@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import org.opencv.core.Core;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -208,7 +209,16 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void setPrimaryStage(Stage primaryStage) {
-		BowlerStudio.primaryStage = primaryStage;
+		BowlerStudio.primaryStage=primaryStage;
+	
+		Platform.runLater(()->{
+			try {
+				BowlerStudio.primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudio.png"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void openUrlInNewTab(URL url){

@@ -90,7 +90,7 @@
                 <Accordion expandedPane="$null" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <panes>
 
-                    <TitledPane fx:id="x2" animated="false" expanded="false" text="Command Line">
+                    <TitledPane fx:id="commandLineTitledPane" animated="false" expanded="false" text="Command Line">
                       <content>
                         <AnchorPane id="Content" fx:id="CommandLine" minHeight="20.0" minWidth="0.0" prefHeight="57.0" prefWidth="920.0" />
                       </content>

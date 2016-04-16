@@ -88,15 +88,15 @@ public class MainController implements Initializable {
 	private Menu myGists;
 
 	@FXML
-	private Pane logView;
+	private AnchorPane logView;
 
 	@FXML
 	private AnchorPane editorContainer;
 
 	@FXML
-	private Pane viewContainer;
+	private AnchorPane viewContainer;
 	@FXML
-	private Pane jfx3dControls;
+	private AnchorPane jfx3dControls;
 
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
@@ -142,7 +142,7 @@ public class MainController implements Initializable {
 	TextArea logViewRef;
 	private static TextArea logViewRefStatic = new TextArea();
 	@FXML
-	TitledPane x2;
+	TitledPane commandLineTitledPane;
 	@FXML
 	Menu GitHubRoot;
 	@FXML
@@ -258,8 +258,6 @@ public class MainController implements Initializable {
 			try {
 				ScriptingEngine.runLogin();
 				icon = AssetFactory.loadAsset("BowlerStudio.png");
-				Stage PrimaryStage = BowlerStudio.getPrimaryStage();
-				Platform.runLater(()->PrimaryStage.getIcons().add(icon));
 
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -383,6 +381,7 @@ public class MainController implements Initializable {
 			}
 			
 		}).start();
+		commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 	}
 
 	private void setToLoggedIn(final String name) {
