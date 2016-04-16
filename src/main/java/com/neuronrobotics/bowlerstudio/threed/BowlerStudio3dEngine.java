@@ -723,6 +723,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run(){
 				try {
 					Image ruler = AssetFactory.loadAsset("ruler.png");
+					//Image ground = AssetFactory.loadAsset("ground.png");
+					Affine groundMove = new Affine();
+					groundMove.setTz(-3);
+					groundMove.setTx(-919/2);
+					groundMove.setTy(-689/2);
 					Affine zRuler = new Affine();
 					double scale =0.25;
 					//zRuler.setTx(-130*scale);
@@ -748,6 +753,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ImageView rulerImage = new ImageView(ruler);
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
+						//ImageView groundView = new ImageView(ground);
+						//groundView.getTransforms().add(groundMove);
+						//groundView.setOpacity(0.3);
 						zrulerImage.getTransforms().add(zRuler);
 						rulerImage.getTransforms().add(xp);
 						yrulerImage.getTransforms().add(yRuler);
