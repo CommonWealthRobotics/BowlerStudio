@@ -91,7 +91,7 @@ public class BowlerStudioController extends TabPane implements
 		if(getBowlerStudio()!=null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference=this;
-		this.jfx3dmanager = jfx3dmanager;
+		this.setJfx3dmanager(jfx3dmanager);
 		this.mainController = mainController;
 		createScene();
 	}
@@ -354,7 +354,7 @@ public class BowlerStudioController extends TabPane implements
 	private void removeObject(Object p) {
 		if (CSG.class.isInstance(p)) {
 			Platform.runLater(() -> {
-				jfx3dmanager.removeObjects();
+				getJfx3dmanager().removeObjects();
 			});
 		} else if (Tab.class.isInstance(p)) {
 			Platform.runLater(() -> {
@@ -372,10 +372,10 @@ public class BowlerStudioController extends TabPane implements
 	
 	public static void setCsg(List<CSG> toadd, File source){
 		Platform.runLater(() -> {
-			getBowlerStudio().jfx3dmanager.removeObjects();
+			getBowlerStudio().getJfx3dmanager().removeObjects();
 			if(toadd!=null)
 			for(CSG c:toadd){
-				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(c,source));
+				Platform.runLater(() ->getBowlerStudio().getJfx3dmanager().addObject(c,source));
 			}
 		});
 	}
@@ -388,7 +388,7 @@ public class BowlerStudioController extends TabPane implements
 	public static void addCsg(CSG toadd, File source){
 		Platform.runLater(() -> {
 			if(toadd!=null)
-				getBowlerStudio().jfx3dmanager.addObject(toadd,source);
+				getBowlerStudio().getJfx3dmanager().addObject(toadd,source);
 			
 		});
 	}
@@ -397,7 +397,7 @@ public class BowlerStudioController extends TabPane implements
 			CSG csg = (CSG) o;
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
-				jfx3dmanager.addObject(csg,source);
+				getJfx3dmanager().addObject(csg,source);
 			});
 		} else if (Tab.class.isInstance(o)) {
 
@@ -433,7 +433,7 @@ public class BowlerStudioController extends TabPane implements
 			for (int i = 0; i < c.size(); i++) {
 				if (CSG.class.isInstance(c.get(i))){
 					Platform.runLater(() -> {
-						jfx3dmanager.removeObjects();
+						getJfx3dmanager().removeObjects();
 					});
 					break;
 				}
@@ -441,7 +441,7 @@ public class BowlerStudioController extends TabPane implements
 		} else {
 			if (CSG.class.isInstance(result)){
 				Platform.runLater(() -> {
-					jfx3dmanager.removeObjects();
+					getJfx3dmanager().removeObjects();
 				});
 			}
 		}
@@ -505,16 +505,16 @@ public class BowlerStudioController extends TabPane implements
 	
 	public static void clearCSG() {
 		Platform.runLater(() -> {
-			getBowlerStudio().jfx3dmanager.removeObjects();
+			getBowlerStudio().getJfx3dmanager().removeObjects();
 		});
 	}
 
 	public static void setCsg(CSG legAssembly, File cadScript) {
 		Platform.runLater(() -> {
-			getBowlerStudio().jfx3dmanager.removeObjects();
+			getBowlerStudio().getJfx3dmanager().removeObjects();
 			if(legAssembly!=null)
 	
-				Platform.runLater(() ->getBowlerStudio().jfx3dmanager.addObject(legAssembly,cadScript));
+				Platform.runLater(() ->getBowlerStudio().getJfx3dmanager().addObject(legAssembly,cadScript));
 			
 		});
 	}
@@ -522,6 +522,16 @@ public class BowlerStudioController extends TabPane implements
 
 	public static void setCsg(MobileBaseCadManager thread, File cadScript) {
 		setCsg(thread.getAllCad(), cadScript);
+	}
+
+
+	public BowlerStudio3dEngine getJfx3dmanager() {
+		return jfx3dmanager;
+	}
+
+
+	public void setJfx3dmanager(BowlerStudio3dEngine jfx3dmanager) {
+		this.jfx3dmanager = jfx3dmanager;
 	}
 
 	

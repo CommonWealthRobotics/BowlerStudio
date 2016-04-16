@@ -365,7 +365,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public void removeObjects(){
 		lookGroup.getChildren().clear();
-		csgMap.clear();
+		getCsgMap().clear();
 		csgSourceFile.clear();
 		axisMap.clear();
 	}
@@ -377,13 +377,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public void removeObject(CSG previousCsg) {
 		//System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
-		MeshView previous  = csgMap.get(previousCsg);
+		MeshView previous  = getCsgMap().get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
 			lookGroup.getChildren().remove(axisMap.get(previous));
 			axisMap.remove(previous);
 		}
-		csgMap.remove(previousCsg);
+		getCsgMap().remove(previousCsg);
 		csgSourceFile.remove(previousCsg);
 	}
 	
@@ -422,12 +422,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
 		//System.out.println(" Adding a CSG from file: "+source.getName());
-		if(csgMap.get(currentCsg)!= null)
+		if(getCsgMap().get(currentCsg)!= null)
 			return currentCsg.getMesh();
-		csgMap.put(currentCsg, currentCsg.getMesh());
+		getCsgMap().put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
 		
-		MeshView current = csgMap.get(currentCsg);
+		MeshView current = getCsgMap().get(currentCsg);
 		
 		//TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		//mesh.vertexFormatProperty()
@@ -462,7 +462,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						@Override
 						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
-							Set<CSG> objects = csgMap.keySet();
+							Set<CSG> objects = getCsgMap().keySet();
 							fireRegenerate( key,  source, objects);
 							cm.hide();// hide this menue because the new CSG talks to the new menue
 						}
@@ -1108,14 +1108,22 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		CSG old = getSelectedCsg();
 		if(old!=null){
 			
-			Platform.runLater(()->csgMap.get(old).setMaterial(new PhongMaterial(old.getColor())));
+			Platform.runLater(()->getCsgMap().get(old).setMaterial(new PhongMaterial(old.getColor())));
 		}
 		this.selectedCsg = selectedCsg;
-		Platform.runLater(()->csgMap.get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
+		Platform.runLater(()->getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
 		new Thread(){
 			public void run(){
 		        selectObjectsSourceFile(selectedCsg);
 			}
 		}.start();
+	}
+
+	public HashMap<CSG,MeshView> getCsgMap() {
+		return csgMap;
+	}
+
+	public void setCsgMap(HashMap<CSG,MeshView> csgMap) {
+		this.csgMap = csgMap;
 	}
 }

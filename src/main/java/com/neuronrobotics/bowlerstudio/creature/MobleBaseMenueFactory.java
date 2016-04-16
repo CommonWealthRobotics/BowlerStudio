@@ -68,7 +68,12 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(physics) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
+				new Thread(){
+					public void run(){
+						widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
+					}
+				}.start();
+				
 			}
 		});
 		
@@ -589,7 +594,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		TreeItem<String> design = new TreeItem<String>("Design Parameters" + conf.getName(),AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
+		TreeItem<String> design = new TreeItem<String>("Design Parameters " + conf.getName(),AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
 		callbackMapForTreeitems.put(design, () -> {
 			if (widgetMapForTreeitems.get(design) == null) {

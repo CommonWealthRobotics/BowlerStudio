@@ -1,10 +1,16 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -24,15 +30,15 @@ public class CreaturPhysicsWidget extends GridPane {
 	int msLoopTimeInt =0;
 	boolean run=false;
 	boolean takestep=false;
+	boolean pause=false;
 	Thread physicsThread =null;
+	private Set<CSG> oldParts=null;
 	public CreaturPhysicsWidget(MobileBase base){
 		while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
 			ThreadUtil.wait(1000);
 		}
 
-		HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
-		CSG baseCad=MobileBaseCadManager.getBaseCad(base);
-		new MobileBasePhysicsManager(base, baseCad, simplecad);
+		
 		
 		add(runstop,0,0);
 		add(pauseresume,1,0);
@@ -40,7 +46,22 @@ public class CreaturPhysicsWidget extends GridPane {
 		add(new Label("MS loop"),3,0);
 		add(msLoopTime,4,0);
 		pauseresume.setDisable(true);
-		
+		step.setDisable(true);
+		pauseresume.setOnAction(event->{
+			if(pause){
+				pauseresume.setGraphic(AssetFactory.loadIcon("Resume.png"));
+				runstop.setText("Resume");
+				step.setDisable(false);
+			}else{
+				pauseresume.setGraphic(AssetFactory.loadIcon("Pause.png"));
+				runstop.setText("Pause");
+				step.setDisable(true);
+			}
+			pause=!pause;
+		});
+		step.setOnAction(event->{
+			takestep=true;
+		});
 		runstop.setOnAction(event->{
 			if(run){
 				runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
@@ -49,6 +70,14 @@ public class CreaturPhysicsWidget extends GridPane {
 				PhysicsEngine.clear();
 				msLoopTime.setDisable(false);
 				pauseresume.setDisable(true);
+				if(oldParts!=null){
+					ArrayList<CSG>oldp=new ArrayList<>();
+					for(CSG c:oldParts){
+						oldp.add(c);
+					}
+					BowlerStudioController.setCsg(oldp);
+					oldParts=null;
+				}
 			}else{
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
 				runstop.setText("Stop");
@@ -56,16 +85,25 @@ public class CreaturPhysicsWidget extends GridPane {
 				pauseresume.setDisable(false);
 				new Thread(){
 					public void run(){
+						HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
+						CSG baseCad=MobileBaseCadManager.getBaseCad(base);
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
+						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
+						oldParts = threeD.getCsgMap().keySet();
+						BowlerStudioController.setCsg(PhysicsEngine.getCsgFromEngine());
 						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						physicsThread = new Thread(){
 							public void run(){
 								while(!Thread.interrupted() && run){
-									
+									while(!Thread.interrupted() && pause && takestep==false){
+										ThreadUtil.wait(loopTiming);
+									}
+									takestep=false;
 									long start = System.currentTimeMillis();
 									PhysicsEngine.stepMs(loopTiming);
 									long took = (System.currentTimeMillis() - start);
-									ThreadUtil.wait((int) (loopTiming - took)/4);
+									if (took < loopTiming)
+										ThreadUtil.wait((int) (loopTiming - took)/4);
 								}
 							}
 						};
