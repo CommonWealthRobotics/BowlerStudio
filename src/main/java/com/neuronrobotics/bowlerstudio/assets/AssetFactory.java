@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.assets;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,18 @@ public class AssetFactory {
 	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git";
 	private static HashMap<String , Image> cache =new HashMap<>();
 	private static boolean checked =false;
+	static{
+
+			try {
+				loadAllAssets();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	}
 	public static Image loadAsset(String file ) throws Exception{
+		
 		if(cache.get(file)==null){
 			File f =ScriptingEngine
 			.fileFromGit(
@@ -106,7 +118,13 @@ public class AssetFactory {
 		return gitSource;
 	}
 	public static void setGitSource(String gitSource) throws Exception {
-		ScriptingEngine.filesInGit(gitSource);
+		loadAllAssets();
 		AssetFactory.gitSource = gitSource;
+	}
+	private static void loadAllAssets() throws Exception{
+		ArrayList<String> files = ScriptingEngine.filesInGit(gitSource);
+		for(String file:files){
+			loadAsset(file);
+		}
 	}
 }

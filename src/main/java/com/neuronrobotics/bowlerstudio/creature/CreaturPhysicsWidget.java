@@ -35,11 +35,7 @@ public class CreaturPhysicsWidget extends GridPane {
 	Thread physicsThread =null;
 	private Set<CSG> oldParts=null;
 	public CreaturPhysicsWidget(MobileBase base){
-		while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
-			ThreadUtil.wait(1000);
-		}
 
-		
 		
 		add(runstop,0,0);
 		add(pauseresume,1,0);
@@ -86,6 +82,9 @@ public class CreaturPhysicsWidget extends GridPane {
 				pauseresume.setDisable(false);
 				new Thread(){
 					public void run(){
+						while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
+							ThreadUtil.wait(1000);
+						}
 						HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						CSG baseCad=MobileBaseCadManager.getBaseCad(base);
 						base.DriveArc(new TransformNR(), 0);
@@ -97,16 +96,20 @@ public class CreaturPhysicsWidget extends GridPane {
 						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						physicsThread = new Thread(){
 							public void run(){
-								while(!Thread.interrupted() && run){
-									while(!Thread.interrupted() && pause && takestep==false){
-										ThreadUtil.wait(loopTiming);
+								try{
+									while(!Thread.interrupted() && run){
+										while(!Thread.interrupted() && pause && takestep==false){
+											ThreadUtil.wait(loopTiming);
+										}
+										takestep=false;
+										long start = System.currentTimeMillis();
+										PhysicsEngine.stepMs(loopTiming);
+										long took = (System.currentTimeMillis() - start);
+										if (took < loopTiming)
+											ThreadUtil.wait((int) (loopTiming - took)/4);
 									}
-									takestep=false;
-									long start = System.currentTimeMillis();
-									PhysicsEngine.stepMs(loopTiming);
-									long took = (System.currentTimeMillis() - start);
-									if (took < loopTiming)
-										ThreadUtil.wait((int) (loopTiming - took)/4);
+								}catch(Exception e){
+									
 								}
 							}
 						};
