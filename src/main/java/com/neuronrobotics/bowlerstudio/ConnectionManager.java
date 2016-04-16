@@ -25,6 +25,7 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
@@ -113,15 +114,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		
 		topLine = new HBox(20);
 		
-		Node icon = getIcon("images/connection-icon.png");
-		disconnectAll = new Button("Disconnect All");
+		disconnectAll = new Button("Disconnect All",AssetFactory.loadIcon("Disconnect-All.png"));
 		disconnectAll.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	disconnectAll();
 		    }
 		});
 		disconnectAll.setDisable(true);
-		topLine.getChildren().addAll(icon,new Text("Connected Devices"),disconnectAll);
+		topLine.getChildren().addAll(AssetFactory.loadIcon("Connected-Devices.png"),new Text("Connected Devices"),disconnectAll);
 		rootItem.getChildren().add(topLine);
 
 		rootItem.getChildren().add(accordion);

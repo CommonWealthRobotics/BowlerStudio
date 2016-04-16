@@ -312,7 +312,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public Group getControlsBox(){
 		HBox controls = new HBox(10);
 		home = new Button("Home Camera");
-		
+		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event ->{
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			getFlyingCamera().updatePositions();

@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
@@ -233,7 +234,7 @@ public class PluginManager {
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName());
+				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(),AssetFactory.loadIcon("Plugin-Icon.png"));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
@@ -260,11 +261,16 @@ public class PluginManager {
 				pluginLauncher.getChildren().add(launcher);
 			}
 		}
-		
-		plugins.add(new TitledPane("Device Info", new Text(dev.getClass().getSimpleName())));
+		TitledPane info = new TitledPane("Device Info", new Text(dev.getClass().getSimpleName()));
+		TitledPane protocol = new TitledPane("Bowler Protocol",  getBowlerBrowser());
+		TitledPane pluginsPane = new TitledPane("Plugins",  pluginLauncher);
+		info.setGraphic(AssetFactory.loadIcon("Info.png"));
+		protocol.setGraphic(AssetFactory.loadIcon("BowlerStudio.png"));
+		pluginsPane.setGraphic(AssetFactory.loadIcon("Plugins.png"));
+		plugins.add(info);
 		if(dev.getConnection()!=null)
-			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBrowser()));
-		plugins.add(new TitledPane("Plugins",  pluginLauncher));
+			plugins.add(protocol);
+		plugins.add(pluginsPane);
 		return plugins;
 	}
 	

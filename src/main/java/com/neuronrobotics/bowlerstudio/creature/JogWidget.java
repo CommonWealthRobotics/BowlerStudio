@@ -7,6 +7,7 @@ import net.java.games.input.Component;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -33,14 +34,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	double defauletSpeed=0.21;
 	private AbstractKinematicsNR kin;
 	private MobileBase mobilebase=null;
-	Button px = new Button("+X");
-	Button nx = new Button("-X");
-	Button py = new Button("+Y");
-	Button ny = new Button("-Y");
-	Button pz = new Button("+Z");
-	Button nz = new Button("-Z");
-	Button home = new Button("home");
-	Button game = new Button("Add Game Controller");
+	Button px = new Button("+X",AssetFactory.loadIcon("Plus-X.png"));
+	Button nx = new Button("-X",AssetFactory.loadIcon("Minus-X.png"));
+	Button py = new Button("+Y",AssetFactory.loadIcon("Plus-Y.png"));
+	Button ny = new Button("-Y",AssetFactory.loadIcon("Minus-Y.png"));
+	Button pz = new Button("+Z",AssetFactory.loadIcon("Plus-Z.png"));
+	Button nz = new Button("-Z",AssetFactory.loadIcon("Minuz-Z.png"));
+	Button home = new Button("home",AssetFactory.loadIcon("Home.png"));
+	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
 	TextField increment=new TextField(new Double(defauletSpeed).toString());
 	TextField sec=new TextField(".01");
 	private TransformWidget transform;
@@ -53,8 +54,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		this.setKin(kinimatics);
 		
 		if(MobileBase.class.isInstance(kinimatics)){
-			py = new Button("rZ");
-			ny = new Button("-rZ");
+			py = new Button("rZ",AssetFactory.loadIcon("Rotation-Z.png"));
+			ny = new Button("-rZ",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
 			
 		}
 
@@ -102,15 +103,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		
 		
 		GridPane buttons = new GridPane();
-		buttons.getColumnConstraints().add(new ColumnConstraints(50)); // column 1 is 75 wide
-		buttons.getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 300 wide
-		buttons.getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
+		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
+		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
+		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
 		buttons. getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
 	    
-		buttons.getRowConstraints().add(new RowConstraints(30)); // 
-		buttons. getRowConstraints().add(new RowConstraints(30)); // 
-		buttons. getRowConstraints().add(new RowConstraints(30)); // 
-		buttons.getRowConstraints().add(new RowConstraints(30)); // 
+		buttons.getRowConstraints().add(new RowConstraints(40)); // 
+		buttons. getRowConstraints().add(new RowConstraints(40)); // 
+		buttons. getRowConstraints().add(new RowConstraints(40)); // 
+		buttons.getRowConstraints().add(new RowConstraints(40)); // 
 		
 		buttons.add(	py, 
 				0, 

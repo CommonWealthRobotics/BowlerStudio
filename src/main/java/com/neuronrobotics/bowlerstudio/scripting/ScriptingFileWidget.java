@@ -100,6 +100,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
@@ -154,6 +155,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		loadCodeFromFile(currentFile);
 		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
 		publish.setDisable(!isOwnedByLoggedInUser);
+		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
+		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
 	}
 	
 	private void startStopAction(){
@@ -240,6 +243,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		running = false;
 		Platform.runLater(() -> {
 			runfx.setText("Run");
+			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -304,6 +308,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");
+			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 		});
 		scriptRunner = new Thread() {

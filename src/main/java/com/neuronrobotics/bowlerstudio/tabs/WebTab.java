@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -84,7 +85,11 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
 
-
+		goButton.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
+		homeButton.setGraphic(AssetFactory.loadIcon("Home.png"));
+		backButton.setGraphic(AssetFactory.loadIcon("Back-Button.png"));
+		forwardButton.setGraphic(AssetFactory.loadIcon("Forward-Button.png"));
+		
 		this.isTutorialTab = isTutorialTab;
 		myTab = this;
 

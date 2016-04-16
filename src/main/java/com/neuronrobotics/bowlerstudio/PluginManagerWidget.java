@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 
@@ -30,7 +31,7 @@ public class PluginManagerWidget extends TitledPane {
 		this.manager = m;
 		ArrayList<TitledPane> plugins = manager.getPlugins();
 		accordion.getPanes().addAll(plugins);
-		disconnectTHis = new Button("Disconnect "+manager.getName());
+		disconnectTHis = new Button("Disconnect "+manager.getName(),AssetFactory.loadIcon("Disconnect-Device.png"));
 
 		disconnectTHis.setOnMousePressed(	event -> {
 			new Thread(){
@@ -43,9 +44,10 @@ public class PluginManagerWidget extends TitledPane {
 			}.start();
 
 		});
+		setGraphic(AssetFactory.loadIcon("Bowler-Device-In-Manager.png"));
 		deviceName.setOnAction(event -> {
 			getManager().setName(deviceName.getText());
-			setText("Scripting name: "+manager.getName());
+			setText(manager.getName());
 			disconnectTHis.setText("Disconnect "+manager.getName());
 		});
 		Platform.runLater(()->deviceName.setText(manager.getName()));

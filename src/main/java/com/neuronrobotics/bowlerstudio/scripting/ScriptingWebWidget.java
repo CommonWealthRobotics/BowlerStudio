@@ -96,6 +96,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
@@ -146,6 +147,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	public ScriptingWebWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
+		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
+		edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
 		this.currentFile = currentFile;
 		try {
 			loadCodeFromGist(currentGist, engine);
@@ -248,6 +251,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		running = false;
 		Platform.runLater(() -> {
 			runfx.setText("Run");
+			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -306,8 +310,11 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(() -> {
 				if(isOwnedByLoggedInUser){
 					edit.setText("Edit...");
-				}else
+					edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
+				}else{
 					edit.setText("Make Copy");
+					edit.setGraphic(AssetFactory.loadIcon("Make-Copy-Script.png"));
+				}
 			});
 
 		} catch (Exception e) {
@@ -370,6 +377,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");
+			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
