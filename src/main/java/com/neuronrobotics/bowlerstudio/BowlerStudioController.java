@@ -47,6 +47,7 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -110,8 +111,8 @@ public class BowlerStudioController extends TabPane implements
 		try {
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
-			
 			fileTab.setContent(t);
+			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-"+ScriptingEngine.getShellType(file.getName())+".png"));
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(),  t);
 			fileTab.setOnCloseRequest(event->{
@@ -290,8 +291,9 @@ public class BowlerStudioController extends TabPane implements
 		final Tab newtab = new Tab();
 		newtab.setText("+");
 		newtab.setClosable(false);
-
-		// Addition of New Tab to the tabpane.
+		newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
+		
+		// Addnewtabition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
 
 		

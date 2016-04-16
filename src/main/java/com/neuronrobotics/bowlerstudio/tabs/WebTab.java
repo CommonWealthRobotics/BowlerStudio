@@ -84,7 +84,10 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	
 	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
-
+		if(isTutorialTab){
+			setGraphic(AssetFactory.loadIcon("Tutorial-Tab.png"));
+		}else
+			setGraphic(AssetFactory.loadIcon("Web-Tab.png"));
 		goButton.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
 		homeButton.setGraphic(AssetFactory.loadIcon("Home.png"));
 		backButton.setGraphic(AssetFactory.loadIcon("Back-Button.png"));

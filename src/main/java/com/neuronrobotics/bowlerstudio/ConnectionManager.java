@@ -104,7 +104,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			throw new RuntimeException("Connection manager is a static singleton, access it using ConnectionManager.getConnectionmanager()");
 		}
 		setText("My Devices");
-		
+		setGraphic(AssetFactory.loadIcon("My-Devices.png"));
 		rootItem = new VBox(10);
 		
 //		rootItem.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
