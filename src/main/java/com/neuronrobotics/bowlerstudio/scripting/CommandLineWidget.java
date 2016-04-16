@@ -9,6 +9,7 @@ import java.util.List;
 import com.neuronrobotics.bowlerstudio.BowlerKernel;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -36,7 +37,7 @@ public class CommandLineWidget  extends BorderPane{
 
 	private TextField cmdLineInterface = new TextField ();
 	private ArrayList<String> history = new ArrayList<>();
-	private Button runfx = new Button("Run");
+	private Button runfx = new Button("Run",AssetFactory.loadIcon("Run.png"));
 	private ComboBox<String> comboBox ;
 	private int historyIndex=0;
 	private HBox controlPane;
@@ -127,6 +128,7 @@ public class CommandLineWidget  extends BorderPane{
 		Platform.runLater(() -> {
 
 				runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+				runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 				runfx.setText("Go");
 
 		});
@@ -138,6 +140,7 @@ public class CommandLineWidget  extends BorderPane{
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Kill");
+			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 		});
 		scriptRunner = new Thread() {
