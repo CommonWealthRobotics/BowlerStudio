@@ -54,7 +54,7 @@ public class PluginManagerWidget extends TitledPane {
 		content.setHgrow(accordion, Priority.ALWAYS);
 		content.getChildren().addAll(graphic,disconnectTHis,deviceName,accordion);
 		setContent(content);
-		setText("Scripting name: "+manager.getName());
+		setText(manager.getName());
 	}
 
 	public PluginManager getManager() {
