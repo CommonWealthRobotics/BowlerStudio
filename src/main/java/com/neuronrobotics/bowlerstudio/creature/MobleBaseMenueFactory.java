@@ -38,6 +38,7 @@ import javafx.stage.Modality;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -58,10 +59,15 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		boolean creatureIsOwnedByUser = false;
-		TreeItem<String> publish = new TreeItem<String>("Publish");
+		TreeItem<String> publish;
+		try {
+			publish = new TreeItem<String>("Publish",AssetFactory.loadIcon("Publish.png"));
+		} catch (Exception e1) {
+			publish = new TreeItem<String>("Publish");
+		}
 
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
@@ -86,7 +92,12 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Fixed Wheels", rootItem,
 				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 
-		TreeItem<String> addleg = new TreeItem<String>("Add Leg");
+		TreeItem<String> addleg;
+		try {
+			addleg = new TreeItem<String>("Add Leg",AssetFactory.loadIcon("Add-Leg.png"));
+		} catch (Exception e1) {
+			addleg = new TreeItem<String>("Add Leg");
+		}
 		boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
 		callbackMapForTreeitems.put(addleg, () -> {
 			// TODO Auto-generated method stub
@@ -106,13 +117,13 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
-		TreeItem<String> regnerate = new TreeItem<String>("Generate Cad");
+		TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",AssetFactory.loadIcon("Generate-Cad.png"));
 
 		callbackMapForTreeitems.put(regnerate, () -> {
 			creatureLab.generateCad();
 
 		});
-		TreeItem<String> printable = new TreeItem<String>("Printable Cad");
+		TreeItem<String> printable = new TreeItem<String>("Printable Cad",AssetFactory.loadIcon("Printable-Cad.png"));
 	
 		callbackMapForTreeitems.put(printable, () -> {
 			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
@@ -155,7 +166,7 @@ public class MobleBaseMenueFactory {
 		
 		});
 
-		TreeItem<String> makeCopy = new TreeItem<String>("Make Copy of Creature");
+		TreeItem<String> makeCopy = new TreeItem<String>("Make Copy of Creature",AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(() -> {
 				String oldname = device.getScriptingName();
@@ -234,8 +245,8 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> owner = new TreeItem<String>("Owner");
-		TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
+		TreeItem<String> owner = new TreeItem<String>("Owner",AssetFactory.loadIcon("Owner.png"));
+		TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 		callbackMapForTreeitems.put(setCAD, () -> {
 			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
 				Log.warn("Loading cad engine");
@@ -249,7 +260,7 @@ public class MobleBaseMenueFactory {
 				}
 			});
 		});
-		TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...");
+		TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...",AssetFactory.loadIcon("Edit-CAD-Engine.png"));
 		callbackMapForTreeitems.put(editCAD, () -> {
 			try {
 				File code = ScriptingEngine.fileFromGit(device.getGitCadEngine()[0], device.getGitCadEngine()[1]);
@@ -259,7 +270,7 @@ public class MobleBaseMenueFactory {
 				e.printStackTrace();
 			}
 		});
-		TreeItem<String> resetWalking = new TreeItem<String>("Set Walking Engine...");
+		TreeItem<String> resetWalking = new TreeItem<String>("Set Walking Engine...",AssetFactory.loadIcon("Set-Walking-Engine.png"));
 		callbackMapForTreeitems.put(resetWalking, () -> {
 			PromptForGit.prompt("Select a Walking Engine From a Gist", device.getGitWalkingEngine()[0],
 					(gitsId, file) -> {
@@ -274,7 +285,7 @@ public class MobleBaseMenueFactory {
 				}
 			});
 		});
-		TreeItem<String> editWalking = new TreeItem<String>("Edit Walking Engine...");
+		TreeItem<String> editWalking = new TreeItem<String>("Edit Walking Engine...",AssetFactory.loadIcon("Edit-Walking-Engine.png"));
 		callbackMapForTreeitems.put(editWalking, () -> {
 			try {
 				File code = ScriptingEngine.fileFromGit(device.getGitWalkingEngine()[0],
@@ -286,7 +297,7 @@ public class MobleBaseMenueFactory {
 			}
 		});
 
-		TreeItem<String> addFixed = new TreeItem<String>("Add Fixed Wheel");
+		TreeItem<String> addFixed = new TreeItem<String>("Add Fixed Wheel",AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
 
 		callbackMapForTreeitems.put(addFixed, () -> {
 			// TODO Auto-generated method stub
@@ -305,7 +316,7 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
-		TreeItem<String> addsteerable = new TreeItem<String>("Add Steerable Wheel");
+		TreeItem<String> addsteerable = new TreeItem<String>("Add Steerable Wheel",AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
 
 		callbackMapForTreeitems.put(addsteerable, () -> {
 			// TODO Auto-generated method stub
@@ -324,7 +335,7 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
-		TreeItem<String> item = new TreeItem<String>("Add Arm");
+		TreeItem<String> item = new TreeItem<String>("Add Arm",AssetFactory.loadIcon("Add-Arm.png"));
 
 		callbackMapForTreeitems.put(item, () -> {
 			// TODO Auto-generated method stub
@@ -425,8 +436,13 @@ public class MobleBaseMenueFactory {
 						}
 
 						rootItem.setExpanded(true);
-						loadSingleLimb(base, view, newDevice, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,
-								creatureLab, creatureIsOwnedByUser);
+						try {
+							loadSingleLimb(base, view, newDevice, rootItem, callbackMapForTreeitems, widgetMapForTreeitems,
+									creatureLab, creatureIsOwnedByUser);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						creatureLab.generateCad();
 					}
 				}.start();
@@ -439,9 +455,9 @@ public class MobleBaseMenueFactory {
 			ArrayList<DHParameterKinematics> drivable, String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
-			boolean creatureIsOwnedByUser) {
+			boolean creatureIsOwnedByUser) throws Exception {
 
-		TreeItem<String> apps = new TreeItem<String>(label);
+		TreeItem<String> apps = new TreeItem<String>(label,AssetFactory.loadIcon("Limb.png"));
 		rootItem.getChildren().add(apps);
 		if (drivable.size() == 0)
 			return apps;
@@ -455,9 +471,9 @@ public class MobleBaseMenueFactory {
 
 	private static void setHardwareConfig(LinkConfiguration conf, LinkFactory factory, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
 
-		TreeItem<String> hwConf = new TreeItem<String>("Hardware Config " + conf.getName());
+		TreeItem<String> hwConf = new TreeItem<String>("Hardware Config " + conf.getName(),AssetFactory.loadIcon("Hardware-Config.png"));
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
@@ -471,11 +487,11 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
 
-		TreeItem<String> link = new TreeItem<String>(conf.getName());
+		TreeItem<String> link = new TreeItem<String>(conf.getName(),AssetFactory.loadIcon("Move-Single-Motor.png"));
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
 				// create the widget for the leg when looking at it for the
@@ -485,14 +501,14 @@ public class MobleBaseMenueFactory {
 			// activate controller
 		});
 
-		TreeItem<String> slaves = new TreeItem<String>("Slaves to " + conf.getName());
+		TreeItem<String> slaves = new TreeItem<String>("Slaves to " + conf.getName(),AssetFactory.loadIcon("Slave-Links.png"));
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
 			setHardwareConfig(co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
 
-		TreeItem<String> addSlaves = new TreeItem<String>("Add Slave to " + conf.getName());
+		TreeItem<String> addSlaves = new TreeItem<String>("Add Slave to " + conf.getName(),AssetFactory.loadIcon("Add-Slave-Links.png"));
 
 		callbackMapForTreeitems.put(addSlaves, () -> {
 			// if(widgetMapForTreeitems.get(advanced)==null){
@@ -520,8 +536,13 @@ public class MobleBaseMenueFactory {
 							newLink.setName(result.get());
 							conf.getSlaveLinks().add(newLink);
 							slaveFactory.getLink(newLink);
-							setHardwareConfig(newLink, slaveFactory, slaves, callbackMapForTreeitems,
-									widgetMapForTreeitems);
+							try {
+								setHardwareConfig(newLink, slaveFactory, slaves, callbackMapForTreeitems,
+										widgetMapForTreeitems);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}.start();
 				}
@@ -529,7 +550,7 @@ public class MobleBaseMenueFactory {
 		});
 
 		slaves.getChildren().add(0, addSlaves);
-		TreeItem<String> remove = new TreeItem<String>("Remove " + conf.getName());
+		TreeItem<String> remove = new TreeItem<String>("Remove " + conf.getName(),AssetFactory.loadIcon("Remove-Link.png"));
 		callbackMapForTreeitems.put(remove, () -> {
 			Platform.runLater(() -> {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -560,7 +581,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		TreeItem<String> design = new TreeItem<String>("Design " + conf.getName());
+		TreeItem<String> design = new TreeItem<String>("Design Parameters" + conf.getName(),AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
 		callbackMapForTreeitems.put(design, () -> {
 			if (widgetMapForTreeitems.get(design) == null) {
@@ -595,9 +616,9 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLimb(MobileBase base, TreeView<String> view, DHParameterKinematics dh,
 			TreeItem<String> rootItem, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
-			boolean creatureIsOwnedByUser) {
-
-		TreeItem<String> dhItem = new TreeItem<String>(dh.getScriptingName());
+			boolean creatureIsOwnedByUser) throws Exception {
+		
+		TreeItem<String> dhItem = new TreeItem<String>(dh.getScriptingName(),AssetFactory.loadIcon("Move-Limb.png"));
 
 		callbackMapForTreeitems.put(dhItem, () -> {
 			if (widgetMapForTreeitems.get(dhItem) == null) {
@@ -619,7 +640,7 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> remove = new TreeItem<String>("Remove " + dh.getScriptingName());
+		TreeItem<String> remove = new TreeItem<String>("Remove " + dh.getScriptingName(),AssetFactory.loadIcon("Remove-Limb.png"));
 
 		callbackMapForTreeitems.put(remove, () -> {
 			Platform.runLater(() -> {
@@ -656,7 +677,7 @@ public class MobleBaseMenueFactory {
 					creatureLab);
 		}
 
-		TreeItem<String> addLink = new TreeItem<String>("Add Link");
+		TreeItem<String> addLink = new TreeItem<String>("Add Link",AssetFactory.loadIcon("Add-Link.png"));
 
 		callbackMapForTreeitems.put(addLink, () -> {
 			// if(widgetMapForTreeitems.get(advanced)==null){
@@ -685,8 +706,13 @@ public class MobleBaseMenueFactory {
 							if (dh != null)
 								dh.addNewLink(newLink, new DHLink(0, 0, 0, 0));
 
-							loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
-									callbackMapForTreeitems, widgetMapForTreeitems, creatureLab);
+							try {
+								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
+										callbackMapForTreeitems, widgetMapForTreeitems, creatureLab);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							creatureLab.generateCad();
 						}
 					}.start();
@@ -694,7 +720,7 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration");
+		TreeItem<String> advanced = new TreeItem<String>("Advanced Configuration",AssetFactory.loadIcon("Advanced-Configurartion.png"));
 
 		callbackMapForTreeitems.put(advanced, () -> {
 			if (widgetMapForTreeitems.get(advanced) == null) {
@@ -706,8 +732,8 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(addLink, advanced, remove);
 		if (creatureIsOwnedByUser) {
-			TreeItem<String> owner = new TreeItem<String>("Owner");
-			TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...");
+			TreeItem<String> owner = new TreeItem<String>("Owner",AssetFactory.loadIcon("Owner.png"));
+			TreeItem<String> setCAD = new TreeItem<String>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From Git", dh.getGitCadEngine()[0], (gitsId, file) -> {
 					Log.warn("Loading cad engine");
@@ -721,7 +747,7 @@ public class MobleBaseMenueFactory {
 					}
 				});
 			});
-			TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...");
+			TreeItem<String> editCAD = new TreeItem<String>("Edit CAD Engine...",AssetFactory.loadIcon("Edit-CAD-Engine.png"));
 			callbackMapForTreeitems.put(editCAD, () -> {
 				try {
 					openCadTab(creatureLab, dh.getGitCadEngine()[0], dh.getGitCadEngine()[1]);
@@ -730,7 +756,7 @@ public class MobleBaseMenueFactory {
 					e.printStackTrace();
 				}
 			});
-			TreeItem<String> resetWalking = new TreeItem<String>("Set Dh Kinematics Engine...");
+			TreeItem<String> resetWalking = new TreeItem<String>("Set Dh Kinematics Engine...",AssetFactory.loadIcon("Set-DH-Kinematics.png"));
 			callbackMapForTreeitems.put(resetWalking, () -> {
 				PromptForGit.prompt("Select a DH Solver Engine From Git", dh.getGitDhEngine()[0], (gitsId, file) -> {
 					Log.warn("Loading walking engine");
@@ -744,7 +770,7 @@ public class MobleBaseMenueFactory {
 					}
 				});
 			});
-			TreeItem<String> editWalking = new TreeItem<String>("Edit Kinematics Engine...");
+			TreeItem<String> editWalking = new TreeItem<String>("Edit Kinematics Engine...",AssetFactory.loadIcon("Edit-Kinematics-Engine.png"));
 			callbackMapForTreeitems.put(editWalking, () -> {
 				try {
 					File code = ScriptingEngine.fileFromGit(dh.getGitDhEngine()[0], dh.getGitDhEngine()[1]);

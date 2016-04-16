@@ -18,6 +18,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 public class AssetFactory {
@@ -32,8 +33,8 @@ public class AssetFactory {
 					getGitSource(),// git repo, change this if you fork this demo
 					file// File from within the Git repo
 			);
-			if(f==null){
-				WritableImage obj_img =new WritableImage(100, 100);
+			if(f==null || !f.exists()){
+				WritableImage obj_img =new WritableImage(30, 30);
 			    byte alpha = (byte)0; 
 			    for (int cx=0;cx<obj_img.getWidth();cx++) {          
 			        for (int cy=0;cy<obj_img.getHeight();cy++) {
@@ -69,13 +70,17 @@ public class AssetFactory {
 			    //ScriptingEngine.pushFile(getGitSource(),file);
 			    //obj_img.ge
 			}else{
-				System.out.println("Loading file: "+f.getAbsolutePath());
+				System.out.println("Asset: "+f.getAbsolutePath());
 				cache.put(file, new Image(f.toURI().toString()));
 			}
 			
 		}
 		
 		return cache.get(file);
+	}
+	
+	public static ImageView loadIcon(String file ) throws Exception{
+		return new ImageView(loadAsset(file));
 	}
 	
 	public static String getGitSource() throws Exception {

@@ -25,12 +25,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
@@ -171,7 +173,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		setText(pm.getScriptingName());
 
 		GridPane dhlabTopLevel = new GridPane();
-
 		if (DHParameterKinematics.class.isInstance(pm)) {
 			DHParameterKinematics device = (DHParameterKinematics) pm;
 			try {
@@ -195,7 +196,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 			setDefaultWalkingEngine(device);
 
-			Group controls = new Group();
+			AnchorPane controls = new AnchorPane();
 			Accordion advancedPanel = new Accordion();
 			//if (device.getDriveType() == DrivingType.WALKING) {
 				TitledPane rp = new TitledPane("Walking Engine", new JogWidget(device));
@@ -203,13 +204,23 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				advancedPanel.setExpandedPane(rp);
 			//}
 
-			TreeItem<String> rootItem = new TreeItem<String>("Move Group " + device.getScriptingName());
+			TreeItem<String> rootItem;
+			try {
+				rootItem = new TreeItem<String>( device.getScriptingName(),AssetFactory.loadIcon("creature.png"));
+			} catch (Exception e) {
+				rootItem = new TreeItem<String>( device.getScriptingName());
+			}
 			rootItem.setExpanded(true);
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
 
 			TreeView<String> tree = new TreeView<String>(rootItem);
-			MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
+			try {
+				MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
@@ -232,7 +243,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							} else {
 								Platform.runLater(() -> {
 									controls.getChildren().clear();
-									controls.getChildren().add(advancedPanel);
 								});
 							}
 						}
@@ -252,9 +262,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			dhlabTopLevel.add(progress, 0, 0);
 			dhlabTopLevel.add(autoRegen, 0, 1);
 			dhlabTopLevel.add(tree, 0, 2);
-
-			dhlabTopLevel.add(controls, 2, 1);
-
+			AnchorPane.setTopAnchor(controls, 0.0);
+			AnchorPane.setRightAnchor(controls, 0.0);
+			AnchorPane.setLeftAnchor(controls, 0.0);
+			AnchorPane.setBottomAnchor(controls, 0.0);
+			dhlabTopLevel.add(controls, 1, 2);
+			dhlabTopLevel.add(advancedPanel, 1, 0);
 		} else if (AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device = (AbstractKinematicsNR) pm;
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);
