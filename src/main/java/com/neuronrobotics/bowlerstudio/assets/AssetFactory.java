@@ -88,7 +88,7 @@ public class AssetFactory {
 			for (String myRepo :myPublic.keySet()){
 				if(myRepo.contentEquals(repo)){
 					GHRepository ghrepo= myPublic.get(myRepo);
-					String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "http://");
+					String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
 					System.out.println("Using my version of assets: "+myAssets);
 					setGitSource(myAssets);
 				}

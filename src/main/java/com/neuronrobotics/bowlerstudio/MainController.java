@@ -336,7 +336,7 @@ public class MainController implements Initializable {
 			cmdLine = new CommandLineWidget();
 
 			Platform.runLater(() -> {
-				CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
+				//CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
 				AnchorPane.setTopAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
 				AnchorPane.setRightAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
 				AnchorPane.setLeftAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
