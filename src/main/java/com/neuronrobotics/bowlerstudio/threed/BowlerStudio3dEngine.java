@@ -725,12 +725,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					Image ruler = AssetFactory.loadAsset("ruler.png");
 					Affine zRuler = new Affine();
 					double scale =0.25;
-					zRuler.setTx(-130*scale);
+					//zRuler.setTx(-130*scale);
 					zRuler.setTz(-20*scale);
 					zRuler.appendScale(scale, scale,scale);
-					zRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
 					zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
+					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					
 					Affine yRuler = new Affine();
 					yRuler.setTx(-130*scale);
