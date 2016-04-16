@@ -359,7 +359,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 
 	public void generateCad() {
-		new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 		baseManager.generateCad();
 	}
 
