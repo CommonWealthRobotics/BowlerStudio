@@ -49,13 +49,13 @@ public class CreaturPhysicsWidget extends GridPane {
 		pauseresume.setDisable(true);
 		step.setDisable(true);
 		pauseresume.setOnAction(event->{
-			if(pause){
+			if(!pause){
 				pauseresume.setGraphic(AssetFactory.loadIcon("Resume.png"));
-				runstop.setText("Resume");
+				pauseresume.setText("Resume");
 				step.setDisable(false);
 			}else{
 				pauseresume.setGraphic(AssetFactory.loadIcon("Pause.png"));
-				runstop.setText("Pause");
+				pauseresume.setText("Pause");
 				step.setDisable(true);
 			}
 			pause=!pause;
