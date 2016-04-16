@@ -62,12 +62,20 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		boolean creatureIsOwnedByUser = false;
+		
+		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
+		callbackMapForTreeitems.put(physics, () -> {
+			if (widgetMapForTreeitems.get(physics) == null) {
+				// create the widget for the leg when looking at it for the
+				// first time
+				widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
+			}
+		});
+		
+		
 		TreeItem<String> publish;
-		try {
-			publish = new TreeItem<String>("Publish",AssetFactory.loadIcon("Publish.png"));
-		} catch (Exception e1) {
-			publish = new TreeItem<String>("Publish");
-		}
+		publish = new TreeItem<String>("Publish",AssetFactory.loadIcon("Publish.png"));
+
 
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
@@ -355,7 +363,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
+		rootItem.getChildren().addAll(physics,regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
 			owner.getChildren().addAll(publish, editWalking, editCAD, resetWalking, setCAD);

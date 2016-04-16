@@ -79,8 +79,12 @@ public class AssetFactory {
 		return cache.get(file);
 	}
 	
-	public static ImageView loadIcon(String file ) throws Exception{
-		return new ImageView(loadAsset(file));
+	public static ImageView loadIcon(String file ) {
+		try {
+			return new ImageView(loadAsset(file));
+		} catch (Exception e) {
+			return new ImageView();
+		}
 	}
 	
 	public static String getGitSource() throws Exception {
