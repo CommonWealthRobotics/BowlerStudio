@@ -57,6 +57,7 @@ import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -86,7 +87,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		setScripting(new ScriptingFileWidget( file ));
 		setSpacing(5);
 		l=this;
-
 
 		getScripting().addIScriptEventListener(l);
 		String type = SyntaxConstants.SYNTAX_STYLE_GROOVY;

@@ -7,6 +7,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.highgui.Highgui;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
 
@@ -84,7 +85,7 @@ public class CadWorkspace extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		// TODO Auto-generated method stub
-
+		setGraphic(AssetFactory.loadIcon("2d-Cad-Workspace-Tab.png"));
 	}
 
 	@Override

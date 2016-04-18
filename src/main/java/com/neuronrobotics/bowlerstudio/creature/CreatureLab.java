@@ -162,6 +162,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
+		setGraphic(AssetFactory.loadIcon("CreatureLab-Tab.png"));
 		this.pm = pm;
 		autoRegen.setSelected(true);
 		autoRegen.setOnAction(event -> {

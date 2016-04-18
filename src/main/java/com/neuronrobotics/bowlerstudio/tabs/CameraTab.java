@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.opencv.core.CvException;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.Detection;
@@ -62,6 +63,7 @@ public class CameraTab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
+		setGraphic(AssetFactory.loadIcon("CameraView-Tab.png"));
 		provider = (AbstractImageProvider) pm;
 		setText(pm.getScriptingName());
 		VBox box = new VBox();
