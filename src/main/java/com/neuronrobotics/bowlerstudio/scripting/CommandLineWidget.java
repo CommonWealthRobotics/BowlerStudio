@@ -23,6 +23,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -44,6 +46,7 @@ public class CommandLineWidget  extends BorderPane{
 	private String codeText="";
 	private boolean running = false;
 	private Thread scriptRunner = null;
+	private ImageView scriptType = new ImageView();
 	
 	public CommandLineWidget(){
 		runfx.setOnAction(e -> {
@@ -114,9 +117,20 @@ public class CommandLineWidget  extends BorderPane{
 		comboBox = new ComboBox<String> (options);
 		comboBox.getSelectionModel().select("Groovy");
 		
+		comboBox.setOnAction(event->{
+			try {
+				Image icon = AssetFactory.loadAsset("Script-Tab-"+comboBox.getSelectionModel().getSelectedItem()+".png");
+				scriptType.setImage(icon);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		});
 		controlPane = new HBox(10);
 		controlPane.getChildren().add(new Label("Bowler CMD:"));
 		controlPane.getChildren().add(cmdLineInterface);
+		controlPane.getChildren().add(scriptType);
 		controlPane.getChildren().add(comboBox);
 		controlPane.getChildren().add(runfx);
 		setPadding(new Insets(1, 0, 3, 10));

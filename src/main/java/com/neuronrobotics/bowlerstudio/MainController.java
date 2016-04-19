@@ -263,6 +263,7 @@ public class MainController implements Initializable {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} 
+			//ScriptingEngine.getGithub().getMyself().getGravatarId()
 			// System.out.println("Loading 3d engine");
 			jfx3dmanager = new BowlerStudio3dEngine();
 

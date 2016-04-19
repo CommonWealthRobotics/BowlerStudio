@@ -148,6 +148,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private String currentGist;
 	private boolean updateneeded = false;
 	private IScriptingLanguage langaugeType;
+	private ImageView image=new ImageView();
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE);
@@ -157,6 +158,12 @@ public class ScriptingFileWidget extends BorderPane implements
 		publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+		try {
+			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void startStopAction(){
@@ -224,10 +231,14 @@ public class ScriptingFileWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
+		
 
 		controlPane.getChildren().add(runfx);
+		controlPane.getChildren().add(image);
 		controlPane.getChildren().add(new Label("git:"));
+		
 		controlPane.getChildren().add(fileListBox);
+		
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
 		controlPane.getChildren().add(publish);
@@ -400,6 +411,12 @@ public class ScriptingFileWidget extends BorderPane implements
 	private void setUpFile(File f) {
 		currentFile = f;
 		String langType = ScriptingEngine.getShellType(currentFile.getName());
+		try {
+			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
 		//ScriptingEngine.setLastFile(f);
 		Git git;

@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.twod;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+
 import eu.mihosoft.vrl.v3d.Polygon;
 import javafx.scene.Group;
 import javafx.scene.control.Tab;
@@ -13,6 +15,7 @@ public class TwoDCad extends Tab {
 		setText("2D CAD workspace");
 		// add all UI code here
 		setContent(new Group(new Text("Hello world")));
+		setGraphic(AssetFactory.loadIcon("2d-Cad-Workspace-Tab.png"));
 	}
 
 }

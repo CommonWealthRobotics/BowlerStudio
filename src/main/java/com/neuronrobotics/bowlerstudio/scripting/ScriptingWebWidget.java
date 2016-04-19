@@ -57,6 +57,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -142,6 +143,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private HBox controlPane;
 	private String currentGist;
 	private boolean isOwnedByLoggedInUser;
+	private ImageView image=new ImageView();
 
 	
 	public ScriptingWebWidget(File currentFile, String currentGist,
@@ -212,33 +214,15 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		
 
 
-		// String ctrlSave = "CTRL Save";
-//		fileLabel.setOnMouseEntered(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getAbsolutePath());
-//			});
-//		});
-//
-//		fileLabel.setOnMouseExited(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getName());
-//			});
-//		});
-
-
-		// Set up the run controls and the code area
-		// The BorderPane has the same areas laid out as the
-		// BorderLayout layout manager
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
 
 		controlPane.getChildren().add(runfx);
+		controlPane.getChildren().add(image);
 		controlPane.getChildren().add(edit);
-		controlPane.getChildren().add(fileListBox);
 		
+		controlPane.getChildren().add(fileListBox);
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -316,6 +300,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					edit.setGraphic(AssetFactory.loadIcon("Make-Copy-Script.png"));
 				}
 			});
+			try {
+				image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+			} catch (Exception e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();

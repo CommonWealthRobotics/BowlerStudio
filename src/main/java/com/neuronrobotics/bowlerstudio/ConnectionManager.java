@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.imageio.IIOImage;
+
 import org.reactfx.util.FxTimer;
 
 import net.java.games.input.Component;
@@ -26,6 +28,7 @@ import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
@@ -55,6 +58,7 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -296,12 +300,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	 public static void onConnectFileSourceCamera() {
+		 Platform.runLater(()->{});
 		 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
 		File f = fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage());
 		if(f!=null){
-			StaticFileProvider p = new StaticFileProvider(f);
+			AbstractImageProvider p = new StaticFileProvider(f);
 			String name = "image";
 			addConnection(p,name);
 		}
