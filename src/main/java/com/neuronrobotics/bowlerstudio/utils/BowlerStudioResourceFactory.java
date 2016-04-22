@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
@@ -68,6 +70,7 @@ public class BowlerStudioResourceFactory {
 					FXMLLoader fxmlLoader = new FXMLLoader(
 				            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
 			        try {
+			        	RSyntaxTextArea area = new RSyntaxTextArea();
 			            fxmlLoader.load();
 			        } catch (IOException ex) {
 			            throw new RuntimeException(ex);

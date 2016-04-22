@@ -775,8 +775,11 @@ public class MainController implements Initializable {
 	}
 
 	public void disconnect() {
-
-		getApplication().disconnect();
+		try{
+			getApplication().disconnect();
+		}catch (NullPointerException ex){
+			
+		}
 	}
 
 	public void openUrlInNewTab(URL url) {

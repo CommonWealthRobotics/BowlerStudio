@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javax.swing.text.BadLocationException;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 //import org.bytedeco.javacpp.DoublePointer;
 
@@ -76,7 +79,7 @@ import com.sun.javafx.scene.control.skin.TabPaneSkin;
 public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
-	private static final String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
+	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
 	 * 
 	 */
@@ -86,7 +89,7 @@ public class BowlerStudioController extends TabPane implements
 	private MainController mainController;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudioControllerStaticReference=null;
-	//private Stage dialog = new Stage();
+	private boolean doneLoadingTutorials = false;
 	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager,
 			MainController mainController) {
 		if(getBowlerStudio()!=null)
@@ -95,6 +98,7 @@ public class BowlerStudioController extends TabPane implements
 		this.setJfx3dmanager(jfx3dmanager);
 		this.mainController = mainController;
 		createScene();
+		
 	}
 	private HashMap<String,Tab> openFiles = new HashMap<>();
 	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
@@ -295,13 +299,39 @@ public class BowlerStudioController extends TabPane implements
 		
 		// Addnewtabition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
-
+		new Thread(){
+			public void run(){
+				try {
+					
+					File indexOfTutorial = ScriptingEngine.fileFromGit(
+							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+							"BowlerStudio/Welcome-To-BowlerStudio/index.html");
+					URL uri = indexOfTutorial.toURI().toURL();
+					HOME_URL = uri.toExternalForm();
+					doneLoadingTutorials=true;
+				} catch (GitAPIException | IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				
+			}
+		}.start();
 		
+		long start = System.currentTimeMillis();
+		// wait up to 30 seconds for menue to load, then fail over to the web version
+		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<30000)){
+			ThreadUtil.wait(100);
+		}
+		if(!doneLoadingTutorials){
+			System.out.println("Using Web Tutorial "+getHomeUrl() );
+		}
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {
+				
+				
 				t = new WebTab("Tutorial",getHomeUrl(), true);
-			} catch (IOException | InterruptedException e1) {
+			} catch (Exception  e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
