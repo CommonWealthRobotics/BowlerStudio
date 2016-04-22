@@ -306,8 +306,7 @@ public class BowlerStudioController extends TabPane implements
 					File indexOfTutorial = ScriptingEngine.fileFromGit(
 							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
 							"BowlerStudio/Welcome-To-BowlerStudio/index.html");
-					URL uri = indexOfTutorial.toURI().toURL();
-					HOME_URL = uri.toExternalForm();
+					HOME_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
 					doneLoadingTutorials=true;
 				} catch (GitAPIException | IOException e2) {
 					// TODO Auto-generated catch block
@@ -319,12 +318,14 @@ public class BowlerStudioController extends TabPane implements
 		
 		long start = System.currentTimeMillis();
 		// wait up to 30 seconds for menue to load, then fail over to the web version
-		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<30000)){
+		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
 			ThreadUtil.wait(100);
 		}
 		if(!doneLoadingTutorials){
 			System.out.println("Using Web Tutorial "+getHomeUrl() );
 		}
+		else
+			System.out.println("Using Cached Tutorial "+getHomeUrl() );
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {

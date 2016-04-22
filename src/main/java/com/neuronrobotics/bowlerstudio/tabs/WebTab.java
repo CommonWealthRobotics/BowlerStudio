@@ -170,7 +170,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 						State oldState = (State)oldValue;
 						State newState = (State)newValue;
 						if (State.SUCCEEDED == newValue) {
-							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")
+							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")|| urlField.getText().startsWith("file:")
 									? urlField.getText() 
 									: "http://" + urlField.getText();
 									
@@ -192,7 +192,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			loadUrl("http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+			loadUrl(BowlerStudioController.getHomeUrl());
 		});
 
 		// Layout logic
@@ -235,11 +235,13 @@ public class WebTab extends Tab implements EventHandler<Event>{
 
 	
 	private boolean processNewTab(String url){
-		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
+		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
 				? urlField.getText() 
 				: "http://" + urlField.getText();
 		if(isTutorialTab ){
-			if(!(Current_URL.contains("neuronrobotics.com") || Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID()) )){
+			if(		!(Current_URL.contains("neuronrobotics.com") &&
+					!Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())&&
+					!Current_URL.startsWith("file:") )){
 				try {
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
