@@ -66,7 +66,7 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
-				widgetMapForTreeitems.put(physics, new Group(new CreaturPhysicsWidget(device)));
+				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
 
 			}
 		});

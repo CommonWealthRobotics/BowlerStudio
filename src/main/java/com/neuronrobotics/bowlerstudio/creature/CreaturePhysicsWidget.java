@@ -23,7 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-public class CreaturPhysicsWidget extends GridPane {
+public class CreaturePhysicsWidget extends GridPane {
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
 	Button pauseresume = new Button("Pause", AssetFactory.loadIcon("Pause.png"));
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
@@ -34,7 +34,7 @@ public class CreaturPhysicsWidget extends GridPane {
 	boolean pause=false;
 	Thread physicsThread =null;
 	private Set<CSG> oldParts=null;
-	public CreaturPhysicsWidget(MobileBase base){
+	public CreaturePhysicsWidget(MobileBase base){
 
 		
 		add(runstop,0,0);
