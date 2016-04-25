@@ -241,8 +241,9 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		if(isTutorialTab ){
 			if(		!(Current_URL.contains("neuronrobotics.com") &&
 					!Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())&&
-					!Current_URL.startsWith("file:") )){
+					!Current_URL.startsWith("file") )){
 				try {
+					
 					Log.debug("Non demo page found, opening new tab "+Current_URL);
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
