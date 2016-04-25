@@ -149,6 +149,7 @@ public class MobileBaseCadManager {
 				setAllCad(cadEngine.generateBody(device));
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 				arrayList.clear();
+				baseCad=null;//clear the unioned version too
 				for(CSG c:getAllCad()){
 					if(baseCad==null)
 						baseCad=c;

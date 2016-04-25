@@ -31,9 +31,9 @@ public class CreaturePhysicsWidget extends GridPane {
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
 	TextField msLoopTime =new TextField("200") ;
 	int msLoopTimeInt =0;
-	boolean run=false;
-	boolean takestep=false;
-	boolean pause=false;
+	private boolean run=false;
+	private boolean takestep=false;
+	private boolean pause=false;
 	Thread physicsThread =null;
 	private Set<CSG> oldParts=null;
 	public CreaturePhysicsWidget(MobileBase base){
@@ -56,7 +56,7 @@ public class CreaturePhysicsWidget extends GridPane {
 		pauseresume.setDisable(true);
 		step.setDisable(true);
 		pauseresume.setOnAction(event->{
-			if(!pause){
+			if(!isPause()){
 				pauseresume.setGraphic(AssetFactory.loadIcon("Resume.png"));
 				pauseresume.setText("Resume");
 				step.setDisable(false);
@@ -65,13 +65,13 @@ public class CreaturePhysicsWidget extends GridPane {
 				pauseresume.setText("Pause");
 				step.setDisable(true);
 			}
-			pause=!pause;
+			setPause(!isPause());
 		});
 		step.setOnAction(event->{
-			takestep=true;
+			setTakestep(true);
 		});
 		runstop.setOnAction(event->{
-			if(run){
+			if(isRun()){
 				stop();
 			}else{
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
@@ -95,11 +95,11 @@ public class CreaturePhysicsWidget extends GridPane {
 						physicsThread = new Thread(){
 							public void run(){
 								try{
-									while(!Thread.interrupted() && run){
-										while(!Thread.interrupted() && pause && takestep==false){
+									while(!Thread.interrupted() && isRun()){
+										while(!Thread.interrupted() && isPause() && isTakestep()==false){
 											ThreadUtil.wait(loopTiming);
 										}
-										takestep=false;
+										setTakestep(false);
 										long start = System.currentTimeMillis();
 										PhysicsEngine.stepMs(loopTiming);
 										long took = (System.currentTimeMillis() - start);
@@ -116,7 +116,7 @@ public class CreaturePhysicsWidget extends GridPane {
 				}.start();
 				
 			}
-			run=!run;
+			setRun(!isRun());
 		});
 		
 	}
@@ -136,5 +136,23 @@ public class CreaturePhysicsWidget extends GridPane {
 			oldParts=null;
 		}
 		System.gc();// clean up any objects created by the physics engine
+	}
+	public boolean isTakestep() {
+		return takestep;
+	}
+	public void setTakestep(boolean takestep) {
+		this.takestep = takestep;
+	}
+	public boolean isPause() {
+		return pause;
+	}
+	public void setPause(boolean pause) {
+		this.pause = pause;
+	}
+	public boolean isRun() {
+		return run;
+	}
+	public void setRun(boolean run) {
+		this.run = run;
 	}
 }
