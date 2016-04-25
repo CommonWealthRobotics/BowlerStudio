@@ -80,6 +80,7 @@ public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
 	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
+	private static String HOME_Local_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
 	 * 
 	 */
@@ -306,7 +307,8 @@ public class BowlerStudioController extends TabPane implements
 					File indexOfTutorial = ScriptingEngine.fileFromGit(
 							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
 							"BowlerStudio/Welcome-To-BowlerStudio/index.html");
-					HOME_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
+					
+					HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
 					doneLoadingTutorials=true;
 				} catch (GitAPIException | IOException e2) {
 					// TODO Auto-generated catch block
@@ -321,11 +323,8 @@ public class BowlerStudioController extends TabPane implements
 		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
 			ThreadUtil.wait(100);
 		}
-		if(!doneLoadingTutorials){
-			System.out.println("Using Web Tutorial "+getHomeUrl() );
-		}
-		else
-			System.out.println("Using Cached Tutorial "+getHomeUrl() );
+		if(doneLoadingTutorials && !ScriptingEngine.isAutoupdate())
+				HOME_URL = HOME_Local_URL;
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {
