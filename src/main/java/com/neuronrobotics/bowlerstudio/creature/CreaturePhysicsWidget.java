@@ -15,6 +15,8 @@ import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -36,7 +38,16 @@ public class CreaturePhysicsWidget extends GridPane {
 	private Set<CSG> oldParts=null;
 	public CreaturePhysicsWidget(MobileBase base){
 
-		
+		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice arg0) {
+				stop();
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice arg0) {}
+		});
 		add(runstop,0,0);
 		add(pauseresume,1,0);
 		add(step,2,0);
@@ -61,20 +72,7 @@ public class CreaturePhysicsWidget extends GridPane {
 		});
 		runstop.setOnAction(event->{
 			if(run){
-				runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
-				runstop.setText("Run");
-				physicsThread.interrupt();
-				
-				msLoopTime.setDisable(false);
-				pauseresume.setDisable(true);
-				if(oldParts!=null){
-					ArrayList<CSG>oldp=new ArrayList<>();
-					for(CSG c:oldParts){
-						oldp.add(c);
-					}
-					BowlerStudioController.setCsg(oldp);
-					oldParts=null;
-				}
+				stop();
 			}else{
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
 				runstop.setText("Stop");
@@ -121,5 +119,21 @@ public class CreaturePhysicsWidget extends GridPane {
 			run=!run;
 		});
 		
+	}
+	private void stop() {
+		runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
+		runstop.setText("Run");
+		physicsThread.interrupt();
+		
+		msLoopTime.setDisable(false);
+		pauseresume.setDisable(true);
+		if(oldParts!=null){
+			ArrayList<CSG>oldp=new ArrayList<>();
+			for(CSG c:oldParts){
+				oldp.add(c);
+			}
+			BowlerStudioController.setCsg(oldp);
+			oldParts=null;
+		}
 	}
 }
