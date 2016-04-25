@@ -123,7 +123,8 @@ public class CreaturePhysicsWidget extends GridPane {
 	private void stop() {
 		runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
 		runstop.setText("Run");
-		physicsThread.interrupt();
+		if(physicsThread!=null)
+			physicsThread.interrupt();
 		
 		msLoopTime.setDisable(false);
 		pauseresume.setDisable(true);
