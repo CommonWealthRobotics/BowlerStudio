@@ -135,5 +135,6 @@ public class CreaturePhysicsWidget extends GridPane {
 			BowlerStudioController.setCsg(oldp);
 			oldParts=null;
 		}
+		System.gc();// clean up any objects created by the physics engine
 	}
 }

@@ -271,7 +271,7 @@ public class BowlerStudioController extends TabPane implements
 		 */
 
 		final Tab newtab = new Tab();
-		newtab.setText("+");
+		newtab.setText("");
 		newtab.setClosable(false);
 		newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 		
