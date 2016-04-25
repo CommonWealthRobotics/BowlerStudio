@@ -62,10 +62,10 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private WebView webView;
 	private WebEngine webEngine;
 	private VBox vBox;
-	private Button goButton = new Button("Go");
-	private Button homeButton = new Button("Home");
-	private Button backButton = new Button("<");
-	private Button forwardButton = new Button(">");
+	private Button goButton = new Button("");
+	private Button homeButton = new Button("");
+	private Button backButton = new Button("");
+	private Button forwardButton = new Button("");
 	
 	private TextField urlField;
 	//private String currentAddress;

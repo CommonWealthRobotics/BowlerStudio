@@ -116,11 +116,19 @@ public class CommandLineWidget  extends BorderPane{
 			    FXCollections.observableArrayList(langs);
 		comboBox = new ComboBox<String> (options);
 		comboBox.getSelectionModel().select("Groovy");
+		Image icon;
+		try {
+			icon = AssetFactory.loadAsset("Script-Tab-"+comboBox.getSelectionModel().getSelectedItem()+".png");
+			scriptType.setImage(icon);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		
 		comboBox.setOnAction(event->{
 			try {
-				Image icon = AssetFactory.loadAsset("Script-Tab-"+comboBox.getSelectionModel().getSelectedItem()+".png");
-				scriptType.setImage(icon);
+
+				scriptType.setImage( AssetFactory.loadAsset("Script-Tab-"+comboBox.getSelectionModel().getSelectedItem()+".png"));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

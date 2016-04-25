@@ -31,16 +31,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
-	double defauletSpeed=0.21;
+	double defauletSpeed=0.40;
 	private AbstractKinematicsNR kin;
 	private MobileBase mobilebase=null;
-	Button px = new Button("+X",AssetFactory.loadIcon("Plus-X.png"));
-	Button nx = new Button("-X",AssetFactory.loadIcon("Minus-X.png"));
-	Button py = new Button("+Y",AssetFactory.loadIcon("Plus-Y.png"));
-	Button ny = new Button("-Y",AssetFactory.loadIcon("Minus-Y.png"));
-	Button pz = new Button("+Z",AssetFactory.loadIcon("Plus-Z.png"));
-	Button nz = new Button("-Z",AssetFactory.loadIcon("Minuz-Z.png"));
-	Button home = new Button("home",AssetFactory.loadIcon("Home.png"));
+	Button px = new Button("",AssetFactory.loadIcon("Plus-X.png"));
+	Button nx = new Button("",AssetFactory.loadIcon("Minus-X.png"));
+	Button py = new Button("",AssetFactory.loadIcon("Plus-Y.png"));
+	Button ny = new Button("",AssetFactory.loadIcon("Minus-Y.png"));
+	Button pz = new Button("",AssetFactory.loadIcon("Plus-Z.png"));
+	Button nz = new Button("",AssetFactory.loadIcon("Minuz-Z.png"));
+	Button home = new Button("",AssetFactory.loadIcon("Home.png"));
 	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
 	TextField increment=new TextField(new Double(defauletSpeed).toString());
 	TextField sec=new TextField(".01");
@@ -54,8 +54,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		this.setKin(kinimatics);
 		
 		if(MobileBase.class.isInstance(kinimatics)){
-			py = new Button("rZ",AssetFactory.loadIcon("Rotation-Z.png"));
-			ny = new Button("-rZ",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
+			py = new Button("",AssetFactory.loadIcon("Rotation-Z.png"));
+			ny = new Button("",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
 			
 		}
 
@@ -141,7 +141,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	sec, 
 				2, 
 				3);
-		buttons.add(	new Label("seconds"), 
+		buttons.add(	new Label("sec"), 
 				3, 
 				3);
 		if(!MobileBase.class.isInstance(kinimatics)){
