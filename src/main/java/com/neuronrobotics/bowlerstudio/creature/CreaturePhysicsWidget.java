@@ -73,6 +73,12 @@ public class CreaturePhysicsWidget extends GridPane {
 		runstop.setOnAction(event->{
 			if(isRun()){
 				stop();
+				new Thread(){
+					public void run(){
+						ThreadUtil.wait(50);
+						System.gc();// clean up any objects created by the physics engine
+					}
+				}.start();
 			}else{
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
 				runstop.setText("Stop");
@@ -136,7 +142,6 @@ public class CreaturePhysicsWidget extends GridPane {
 			BowlerStudioController.setCsg(oldp);
 			oldParts=null;
 		}
-		System.gc();// clean up any objects created by the physics engine
 	}
 	public boolean isTakestep() {
 		return takestep;
