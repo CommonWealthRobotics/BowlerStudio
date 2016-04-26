@@ -94,7 +94,6 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		this.zoomDepth = zoomDepth;
 		zoomAffine.setTz(getZoomDepth());
 	}
-	@Override
 	public BufferedImage captureNewImage() {
 		// TODO Auto-generated method stub
 		return null;

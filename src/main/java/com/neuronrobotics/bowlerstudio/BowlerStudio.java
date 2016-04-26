@@ -52,7 +52,7 @@ public class BowlerStudio extends Application {
 	static{
 		PrintStream ps = new PrintStream(MainController.getOut());
 		//System.setErr(ps);
-		System.setOut(ps);
+		//System.setOut(ps);
 	}
     /**
      * @param args the command line arguments

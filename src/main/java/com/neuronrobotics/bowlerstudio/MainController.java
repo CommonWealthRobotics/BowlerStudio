@@ -45,6 +45,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHMyself;
@@ -212,175 +213,179 @@ public class MainController implements Initializable {
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
 		// blocking the UI thread that spawwns it
-		new Thread(() -> {
-			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
+		MainController mainControllerRef = this;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
 
-				@Override
-				public String[] prompt(String username) {
-					boolean loginWas = loginWindowOpen;
-					
-					if(stage==null){						
-						if (!loginWas && controller != null)
-							controller.reset();
-						controller = null;
-						System.err.println("Calling login from BowlerStudio");
-						// new RuntimeException().printStackTrace();
-						FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-						Parent root = fxmlLoader.getRoot();
-						if (controller == null) {
-							controller = fxmlLoader.getController();
-							Platform.runLater(() -> {
-								if(!loginWindowOpen){
-									controller.reset();
-									controller.getUsername().setText(username);
-									stage = new Stage();
-									stage.setTitle("GitHub Login");
-									stage.initModality(Modality.APPLICATION_MODAL);
-									controller.setStage(stage, root);
-									stage.centerOnScreen();
-								
-									loginWindowOpen = true;
-									stage.show();
-									stage =null;
-								}
-							});
+					@Override
+					public String[] prompt(String username) {
+						boolean loginWas = loginWindowOpen;
+						
+						if(stage==null){						
+							if (!loginWas && controller != null)
+								controller.reset();
+							controller = null;
+							System.err.println("Calling login from BowlerStudio");
+							// new RuntimeException().printStackTrace();
+							FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+							Parent root = fxmlLoader.getRoot();
+							if (controller == null) {
+								controller = fxmlLoader.getController();
+								Platform.runLater(() -> {
+									if(!loginWindowOpen){
+										controller.reset();
+										controller.getUsername().setText(username);
+										stage = new Stage();
+										stage.setTitle("GitHub Login");
+										stage.initModality(Modality.APPLICATION_MODAL);
+										controller.setStage(stage, root);
+										stage.centerOnScreen();
+									
+										loginWindowOpen = true;
+										stage.show();
+										stage =null;
+									}
+								});
+							}
 						}
+						// setContent(root);
+						while (!controller.isDone()) {
+							ThreadUtil.wait(100);
+						}
+						String[] creds = controller.getCreds();
+						loginWindowOpen = false;
+						return creds;
 					}
-					// setContent(root);
-					while (!controller.isDone()) {
-						ThreadUtil.wait(100);
-					}
-					String[] creds = controller.getCreds();
-					loginWindowOpen = false;
-					return creds;
-				}
-			});
-			try {
-				ScriptingEngine.runLogin();
-				icon = AssetFactory.loadAsset("BowlerStudio.png");
+				});
+				try {
+					ScriptingEngine.runLogin();
+					icon = AssetFactory.loadAsset("BowlerStudio.png");
 
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} 
-			//ScriptingEngine.getGithub().getMyself().getGravatarId()
-			// System.out.println("Loading 3d engine");
-			jfx3dmanager = new BowlerStudio3dEngine();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} 
+				//ScriptingEngine.getGithub().getMyself().getGravatarId()
+				// System.out.println("Loading 3d engine");
+				jfx3dmanager = new BowlerStudio3dEngine();
 
-			setApplication(new BowlerStudioController(jfx3dmanager, this));
-			Platform.runLater(() -> {
-				editorContainer.getChildren().add(getApplication());
-				AnchorPane.setTopAnchor(getApplication(), 0.0);
-				AnchorPane.setRightAnchor(getApplication(), 0.0);
-				AnchorPane.setLeftAnchor(getApplication(), 0.0);
-				AnchorPane.setBottomAnchor(getApplication(), 0.0);
+				setApplication(new BowlerStudioController(jfx3dmanager, mainControllerRef));
+				Platform.runLater(() -> {
+					editorContainer.getChildren().add(getApplication());
+					AnchorPane.setTopAnchor(getApplication(), 0.0);
+					AnchorPane.setRightAnchor(getApplication(), 0.0);
+					AnchorPane.setLeftAnchor(getApplication(), 0.0);
+					AnchorPane.setBottomAnchor(getApplication(), 0.0);
 
-				subScene = jfx3dmanager.getSubScene();
-				subScene.setFocusTraversable(false);
-				subScene.setOnMouseEntered(mouseEvent -> {
-					// System.err.println("3d window requesting focus");
-					Scene topScene = BowlerStudio.getScene();
-					normalKeyPessHandle = topScene.getOnKeyPressed();
-					jfx3dmanager.handleKeyboard(topScene);
+					subScene = jfx3dmanager.getSubScene();
+					subScene.setFocusTraversable(false);
+					subScene.setOnMouseEntered(mouseEvent -> {
+						// System.err.println("3d window requesting focus");
+						Scene topScene = BowlerStudio.getScene();
+						normalKeyPessHandle = topScene.getOnKeyPressed();
+						jfx3dmanager.handleKeyboard(topScene);
+					});
+
+					subScene.setOnMouseExited(mouseEvent -> {
+						// System.err.println("3d window dropping focus");
+						Scene topScene = BowlerStudio.getScene();
+						topScene.setOnKeyPressed(normalKeyPessHandle);
+					});
+
+					subScene.widthProperty().bind(viewContainer.widthProperty());
+					subScene.heightProperty().bind(viewContainer.heightProperty());
 				});
 
-				subScene.setOnMouseExited(mouseEvent -> {
-					// System.err.println("3d window dropping focus");
-					Scene topScene = BowlerStudio.getScene();
-					topScene.setOnKeyPressed(normalKeyPessHandle);
+				Platform.runLater(() -> {
+					jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
+					viewContainer.getChildren().add(subScene);
+				});
+				//
+				// new Thread() {
+				// public void run() {
+				// setName("Load Haar Thread");
+				// try {
+				// HaarFactory.getStream(null);
+				// } catch (Exception ex) {
+				// }
+				// }
+				// }.start();
+
+				// getAddDefaultRightArm().setOnAction(event -> {
+				//
+				// application.onAddDefaultRightArm(event);
+				// });
+				// getAddVRCamera().setOnAction(event -> {
+				// if(AddVRCamera.isSelected())
+				// application.onAddVRCamera(event);
+				// });
+
+				FxTimer.runLater(Duration.ofMillis(100), () -> {
+					if (ScriptingEngine.getLoginID() != null) {
+						setToLoggedIn(ScriptingEngine.getLoginID());
+					} else {
+						setToLoggedOut();
+					}
+
 				});
 
-				subScene.widthProperty().bind(viewContainer.widthProperty());
-				subScene.heightProperty().bind(viewContainer.heightProperty());
-			});
+				ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
 
-			Platform.runLater(() -> {
-				jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-				viewContainer.getChildren().add(subScene);
-			});
-			//
-			// new Thread() {
-			// public void run() {
-			// setName("Load Haar Thread");
-			// try {
-			// HaarFactory.getStream(null);
-			// } catch (Exception ex) {
-			// }
-			// }
-			// }.start();
+					@Override
+					public void onLogout(String oldUsername) {
+						setToLoggedOut();
+					}
 
-			// getAddDefaultRightArm().setOnAction(event -> {
-			//
-			// application.onAddDefaultRightArm(event);
-			// });
-			// getAddVRCamera().setOnAction(event -> {
-			// if(AddVRCamera.isSelected())
-			// application.onAddVRCamera(event);
-			// });
+					@Override
+					public void onLogin(String newUsername) {
+						setToLoggedIn(newUsername);
 
-			FxTimer.runLater(Duration.ofMillis(100), () -> {
-				if (ScriptingEngine.getLoginID() != null) {
-					setToLoggedIn(ScriptingEngine.getLoginID());
-				} else {
-					setToLoggedOut();
+					}
+				});
+				// System.out.println("Laoding ommand line widget");
+				cmdLine = new CommandLineWidget();
+
+				Platform.runLater(() -> {
+					//CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
+					AnchorPane.setTopAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setRightAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setLeftAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					AnchorPane.setBottomAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
+					CommandLine.getChildren().add(cmdLine);
+					AnchorPane.setTopAnchor(cmdLine, 0.0);
+					AnchorPane.setRightAnchor(cmdLine, 0.0);
+					AnchorPane.setLeftAnchor(cmdLine, 0.0);
+					AnchorPane.setBottomAnchor(cmdLine, 0.0);
+				});
+				try {
+					ScriptingEngine.setAutoupdate(true);
+					File f = ScriptingEngine
+							.fileFromGit(
+									"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+								"exampleRobots.json"// File from within the Git repo
+							);
+					
+					@SuppressWarnings("unchecked")
+					HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
+					for(String menuTitle:map.keySet()){
+						HashMap<String,Object> script = map.get(menuTitle);
+						MenuItem item = new MenuItem(menuTitle);
+						item.setOnAction(event -> {
+							loadMobilebaseFromGit(	(String)script.get("scriptGit"),
+													(String)script.get("scriptFile"));
+						});
+						Platform.runLater(()->{
+							CreaturesMenu.getItems().add(item);
+						});
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
-			});
-
-			ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-
-				@Override
-				public void onLogout(String oldUsername) {
-					setToLoggedOut();
-				}
-
-				@Override
-				public void onLogin(String newUsername) {
-					setToLoggedIn(newUsername);
-
-				}
-			});
-			// System.out.println("Laoding ommand line widget");
-			cmdLine = new CommandLineWidget();
-
-			Platform.runLater(() -> {
-				//CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
-				AnchorPane.setTopAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
-				AnchorPane.setRightAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
-				AnchorPane.setLeftAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
-				AnchorPane.setBottomAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
-				CommandLine.getChildren().add(cmdLine);
-				AnchorPane.setTopAnchor(cmdLine, 0.0);
-				AnchorPane.setRightAnchor(cmdLine, 0.0);
-				AnchorPane.setLeftAnchor(cmdLine, 0.0);
-				AnchorPane.setBottomAnchor(cmdLine, 0.0);
-			});
-			try {
-				ScriptingEngine.setAutoupdate(true);
-				File f = ScriptingEngine
-						.fileFromGit(
-								"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
-							"exampleRobots.json"// File from within the Git repo
-						);
 				
-				@SuppressWarnings("unchecked")
-				HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
-				for(String menuTitle:map.keySet()){
-					HashMap<String,Object> script = map.get(menuTitle);
-					MenuItem item = new MenuItem(menuTitle);
-					item.setOnAction(event -> {
-						loadMobilebaseFromGit(	(String)script.get("scriptGit"),
-												(String)script.get("scriptFile"));
-					});
-					Platform.runLater(()->{
-						CreaturesMenu.getItems().add(item);
-					});
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			
 		}).start();
 		commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 	}
