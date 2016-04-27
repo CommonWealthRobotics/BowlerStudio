@@ -200,9 +200,9 @@ public class BowlerStudio extends Application {
         return log;
     }
     
-	public static Menu getCreatureLabMenue() {
-		return controller.getCreatureLabMenue();
-	}
+//	public static Menu getCreatureLabMenue() {
+//		return controller.getCreatureLabMenue();
+//	}
 
 	public static Stage getPrimaryStage() {
 		return primaryStage;

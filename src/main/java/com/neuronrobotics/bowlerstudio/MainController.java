@@ -71,87 +71,54 @@ import java.util.ResourceBundle;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MainController implements Initializable {
+	/**
+	 * class vatiables
+	 */
 	private static int sizeOfTextBuffer = 4000;
 	private static ByteArrayOutputStream out = null;
 	static boolean opencvOk = true;
 	private static String newString = null;
-	@FXML
-	private MenuBar menuBar;
-	@FXML
-	private MenuItem logoutGithub;
-
-	@FXML
-	private Menu myGists;
-
-	@FXML
-	private AnchorPane logView;
-
-	@FXML
-	private AnchorPane editorContainer;
-
-	@FXML
-	private AnchorPane viewContainer;
-	@FXML
-	private AnchorPane jfx3dControls;
-
+	private static TextArea logViewRefStatic = new TextArea();
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
-
 	private File openFile;
-
 	private BowlerStudioController application;
 	private Stage primaryStage;
-
-	@FXML
-	private CheckMenuItem AddDefaultRightArm;
-	@FXML
-	private CheckMenuItem AddVRCamera;
-	private CommandLineWidget cmdLine;
-	@FXML
-	Menu CreatureLabMenue;
-	private EventHandler<? super KeyEvent> normalKeyPessHandle;
-	@FXML
-	MenuItem createNewGist;
-	@FXML
-	MenuItem addFileToGist;
 	private boolean loginWindowOpen = false;
 	private GithubLoginFX controller = null;
-
 	public static void clearConsole() {
 		Platform.runLater(() -> {
 			logViewRefStatic.setText("");
 		});
 	}
-
 	private static boolean logLock = false;
-	@FXML
-	TitledPane x1;
-	@FXML
-	AnchorPane CadDebugger;
-	@FXML
-	AnchorPane CommandLine;
-	@FXML
-	AnchorPane TerminalOutput;
-	@FXML
-	MenuBar BowlerStudioMenue;
-	@FXML
-	TextArea logViewRef;
-	private static TextArea logViewRefStatic = new TextArea();
-	@FXML
-	TitledPane commandLineTitledPane;
-	@FXML
-	Menu GitHubRoot;
-	@FXML
-	Menu myOrganizations;
-	@FXML
-	Menu myRepos;
-	@FXML
-	Menu watchingRepos;
-	@FXML MenuItem clearCache;
-	@FXML Menu CreaturesMenu;
 	private Image icon;
 	private static Stage stage=null;
+	private CommandLineWidget cmdLine;
 	
+	/**
+	 * FXML Widgets
+	 */
+	@FXML MenuBar BowlerStudioMenue;
+	@FXML Menu CreaturesMenu;
+	@FXML Menu GitHubRoot;
+	@FXML MenuItem logoutGithub;
+	@FXML MenuItem createNewGist;
+	@FXML Menu myGists;
+	@FXML Menu myOrganizations;
+	@FXML Menu myRepos;
+	@FXML Menu watchingRepos;
+	@FXML MenuItem clearCache;
+	@FXML AnchorPane editorContainer;
+	@FXML TextArea logViewRef;
+	@FXML AnchorPane logView;
+	@FXML TitledPane commandLineTitledPane;
+	@FXML AnchorPane CommandLine;
+	@FXML AnchorPane jfx3dControls;
+	@FXML AnchorPane viewContainer;
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
+
+
 
 	public static void updateLog() {
 		if (logViewRefStatic != null) {
@@ -210,6 +177,8 @@ public class MainController implements Initializable {
 		// blocking the UI thread that spawwns it
 		MainController mainControllerRef = this;
 		new Thread(new Runnable() {
+			
+
 			@Override
 			public void run() {
 				ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
@@ -924,13 +893,13 @@ public class MainController implements Initializable {
 	}
 
 	
-	public Menu getCreatureLabMenue() {
-		return CreatureLabMenue;
-	}
-
-	public void setCreatureLabMenue(Menu creatureLabMenue) {
-		CreatureLabMenue = creatureLabMenue;
-	}
+//	public Menu getCreatureLabMenue() {
+//		return CreatureLabMenue;
+//	}
+//
+//	public void setCreatureLabMenue(Menu creatureLabMenue) {
+//		CreatureLabMenue = creatureLabMenue;
+//	}
 
 	public void loadMobilebaseFromGist(String id, String file) {
 		loadMobilebaseFromGit("https://gist.github.com/" + id + ".git", file);
