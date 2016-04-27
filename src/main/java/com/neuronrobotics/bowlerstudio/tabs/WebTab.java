@@ -167,8 +167,6 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				new ChangeListener<Object>() {
 					public void changed(ObservableValue<?> observable,
 							Object oldValue, Object newValue) {
-						State oldState = (State)oldValue;
-						State newState = (State)newValue;
 						if (State.SUCCEEDED == newValue) {
 							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")|| urlField.getText().startsWith("file:")
 									? urlField.getText() 

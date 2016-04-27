@@ -225,7 +225,6 @@ public class CommandLineWidget  extends BorderPane{
 		return codeText;
 	}
 	public void setCode(String string) {
-		String pervious = codeText;
 		codeText = string;
 	}
 	private void startStopAction(){

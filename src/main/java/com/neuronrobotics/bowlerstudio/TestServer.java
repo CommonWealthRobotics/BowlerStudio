@@ -74,8 +74,6 @@ public class TestServer {
 				}// no async in this demo
 			}
 
-			SampleBowlerServer server = new SampleBowlerServer();
-			
 			SampleBowlerClient client = new SampleBowlerClient();
 			
 			//client.setConnection(new UDPBowlerConnection(InetAddress.getByName("127.0.0.1"), 1865));
