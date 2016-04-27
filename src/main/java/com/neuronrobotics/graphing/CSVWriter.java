@@ -11,7 +11,10 @@ import javax.swing.JOptionPane;
 import com.neuronrobotics.sdk.common.SDKInfo;
 
 public class CSVWriter {
-	public static void WriteToCSV(ArrayList<GraphDataElement> dataTable,String filename) {
+	private CSVWriter() {
+	}
+
+	public static void WriteToCSV(ArrayList<GraphDataElement> dataTable, String filename) {
 		String out = "";
 		synchronized(dataTable){
 			for(int j =0;j< dataTable.size();j++) {

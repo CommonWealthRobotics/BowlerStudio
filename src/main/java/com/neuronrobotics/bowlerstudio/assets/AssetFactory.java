@@ -37,6 +37,10 @@ public class AssetFactory {
 			}
 
 	}
+
+	private AssetFactory() {
+	}
+
 	public static Image loadAsset(String file ) throws Exception{
 		
 		if(cache.get(file)==null){

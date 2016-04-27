@@ -12,7 +12,10 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class FileSelectionFactory {
 
-	public static File GetFile(File start, boolean save,ExtensionFilter... filter) {
+	private FileSelectionFactory() {
+	}
+
+	public static File GetFile(File start, boolean save, ExtensionFilter... filter) {
 		class fileHolder{
 			private boolean done=false;
 			private File file=null;

@@ -33,7 +33,10 @@ public class BowlerStudioResourceFactory {
 
 		
 	}
-	
+
+	private BowlerStudioResourceFactory() {
+	}
+
 	public static FXMLLoader getLoader(int channelIndex){
 		return fxmlLoaders.get(channelIndex);
 	}
