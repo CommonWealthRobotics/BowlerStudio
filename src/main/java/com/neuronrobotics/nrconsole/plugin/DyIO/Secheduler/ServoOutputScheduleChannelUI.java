@@ -160,8 +160,8 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 			ex.printStackTrace();
 		}
 		//recordConfig.setVisible(record.isSelected());
-		zero.setText(new Integer(getChannel().getInputCenter()).toString());
-		scale.setText(new Double(getChannel().getInputScale()).toString());
+		zero.setText(Integer.toString(getChannel().getInputCenter()));
+		scale.setText(Double.toString(getChannel().getInputScale()));
 		setScaleingInfo();
 	}
 	private void setScaleingInfo() {

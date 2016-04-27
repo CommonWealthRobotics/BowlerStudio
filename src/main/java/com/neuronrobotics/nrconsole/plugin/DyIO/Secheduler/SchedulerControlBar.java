@@ -170,7 +170,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	}
 	
 	private void setTrackLegnth(int ms){
-		length.setText(new Double(((double)ms)/1000.0).toString());
+		length.setText(Double.toString(((double)ms)/1000.0));
 		setBounds(ms);
 	}
 	
