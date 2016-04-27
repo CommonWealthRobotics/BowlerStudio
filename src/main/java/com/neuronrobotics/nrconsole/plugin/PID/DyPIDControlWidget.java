@@ -204,7 +204,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		return outMode;
 	}
 	public Collection<DyIOChannelMode> getAvailableInputModes(Collection<DyIOChannelMode> m ){
-		Collection<DyIOChannelMode> back = new ArrayList<DyIOChannelMode>();
+		Collection<DyIOChannelMode> back = new ArrayList<>();
 		for(DyIOChannelMode mode: m) {
 			switch(mode) {
 			case ANALOG_IN:
@@ -219,7 +219,7 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		return back;
 	}
 	public Collection<DyIOChannelMode> getAvailableOutputModes(Collection<DyIOChannelMode> m ){
-		Collection<DyIOChannelMode> back = new ArrayList<DyIOChannelMode>();
+		Collection<DyIOChannelMode> back = new ArrayList<>();
 		for(DyIOChannelMode mode: m) {
 			switch(mode) {
 			case SERVO_OUT:

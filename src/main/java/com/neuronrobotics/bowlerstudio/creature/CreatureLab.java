@@ -216,7 +216,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
 
-			TreeView<String> tree = new TreeView<String>(rootItem);
+			TreeView<String> tree = new TreeView<>(rootItem);
 			try {
 				MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
 			} catch (Exception e) {

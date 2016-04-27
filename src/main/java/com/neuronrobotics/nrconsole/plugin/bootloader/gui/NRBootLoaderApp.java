@@ -17,7 +17,7 @@ public class NRBootLoaderApp {
 	public NRBootLoaderApp(String[] args){
 		String port = null;
 		Hexml hex=null;
-		ArrayList<Core> cores = new ArrayList<Core>();
+		ArrayList<Core> cores = new ArrayList<>();
 		for (int i=0;i<args.length;i++){
 			if(args[i].contains("--core")){
 				BootloaderParams param = new BootloaderParams();

@@ -50,7 +50,7 @@ public class PluginManager {
 	
 	private BowlerAbstractDevice dev;
 	
-	private static ArrayList<DeviceSupportPluginMap> deviceSupport = new ArrayList<DeviceSupportPluginMap>();
+	private static ArrayList<DeviceSupportPluginMap> deviceSupport = new ArrayList<>();
 	private ArrayList<AbstractBowlerStudioTab> liveTabs = new ArrayList<>();
 	
 	// add tabs to the support list based on thier class
@@ -152,22 +152,22 @@ public class PluginManager {
 	
 	public Node getBowlerBrowser(){
 
-		CheckBoxTreeItem<String> rpc = new CheckBoxTreeItem<String> ("Bowler RPC"); 
-		TreeView<String> treeView =new  TreeView<String>(rpc);
+		CheckBoxTreeItem<String> rpc = new CheckBoxTreeItem<> ("Bowler RPC"); 
+		TreeView<String> treeView =new  TreeView<>(rpc);
 		treeView.setCellFactory(CheckBoxTreeCell.forTreeView());
 		
 		if(dev.getConnection()!=null){
 			rpc.setExpanded(true);
 			ArrayList<String> nameSpaceList = dev.getNamespaces();
 			for(String namespace:nameSpaceList){
-				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<String> (namespace); 
+				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<> (namespace); 
 				ns.setExpanded(false);
 				rpc.getChildren().add(ns);
 				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
-				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<String> ("GET"); 
-				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<String> ("POST"); 
-				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<String> ("ASYNC"); 
-				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<String> ("CRITICAL");
+				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<> ("GET"); 
+				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<> ("POST"); 
+				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<> ("ASYNC"); 
+				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<> ("CRITICAL");
 				get.setExpanded(false);
 				ns.getChildren().add(get);
 				post.setExpanded(false);
@@ -177,7 +177,7 @@ public class PluginManager {
 				crit.setExpanded(false);
 				ns.getChildren().add(crit);
 				for(RpcEncapsulation rpcEnc:rpcList){
-					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<String> (rpcEnc.getRpc()); 
+					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<> (rpcEnc.getRpc()); 
 					rc.setExpanded(false);
 					switch(rpcEnc.getDownstreamMethod()){
 					case ASYNCHRONOUS:
@@ -228,7 +228,7 @@ public class PluginManager {
 	}
 
 	public ArrayList<TitledPane> getPlugins() {
-		ArrayList<TitledPane> plugins = new ArrayList<TitledPane>();
+		ArrayList<TitledPane> plugins = new ArrayList<>();
 		
 		VBox pluginLauncher = new VBox(20);
 		

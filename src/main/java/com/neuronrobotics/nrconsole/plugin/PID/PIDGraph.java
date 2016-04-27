@@ -27,7 +27,7 @@ import com.neuronrobotics.graphing.GraphDataElement;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class PIDGraph extends JPanel  {
-	private ArrayList<GraphDataElement> dataTable = new ArrayList<GraphDataElement>();
+	private ArrayList<GraphDataElement> dataTable = new ArrayList<>();
 	private XYSeries setpoints;
 	private XYSeries positions;
 	private XYSeriesCollection xyDataset=new XYSeriesCollection();

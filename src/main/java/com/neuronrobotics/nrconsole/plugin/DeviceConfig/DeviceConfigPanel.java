@@ -54,7 +54,7 @@ public class DeviceConfigPanel extends JPanel {
 	private LocalSettingsPanel localSettingsPanel = new LocalSettingsPanel();
 	private JPanel axisConfigsPanel;
 	private JTabbedPane AxisTabs;
-	private ArrayList<AxisPanel> axisPanels = new ArrayList<AxisPanel>();
+	private ArrayList<AxisPanel> axisPanels = new ArrayList<>();
 	public DeviceConfigPanel() {
 		
 		java.awt.EventQueue.invokeLater(new Runnable() {

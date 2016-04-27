@@ -64,7 +64,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 
 	@Override
 	public ArrayList<String> getNamespacesImp() {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public PerspectiveCamera getCamera() {
