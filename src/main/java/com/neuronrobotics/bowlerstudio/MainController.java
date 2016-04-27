@@ -352,7 +352,9 @@ public class MainController implements Initializable {
 				
 			}
 		}).start();
-		commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+		Platform.runLater(()->{
+			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+		});
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -775,12 +777,12 @@ public class MainController implements Initializable {
 
 	}
 
-	@FXML
-	public void onConnectJavaCVCamera() {
-
-		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
-
-	}
+//	@FXML
+//	public void onConnectJavaCVCamera() {
+//
+//		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
+//
+//	}
 
 	@FXML
 	public void onConnectFileSourceCamera() {

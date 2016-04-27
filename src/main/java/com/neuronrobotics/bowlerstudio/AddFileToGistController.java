@@ -44,7 +44,7 @@ public class AddFileToGistController extends Application
     public void start(Stage primaryStage) throws Exception
     {
         primaryStage.setTitle("Add file to Gist");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("addFileToGist.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("addFileToGist.fxml"));
         Parent root = loader.load();
         new Thread(() -> {
             GitHub gitHub = ScriptingEngine.getGithub();

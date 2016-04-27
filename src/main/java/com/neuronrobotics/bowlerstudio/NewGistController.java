@@ -28,7 +28,7 @@ public class NewGistController extends Application {
 	@Override
     public void start(Stage primaryStage) throws Exception
     {      
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("createNewGist.fxml"));
+    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("createNewGist.fxml"));
     	Parent root;
  
         root = loader.load();

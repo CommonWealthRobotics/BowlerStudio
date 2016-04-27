@@ -25,9 +25,9 @@ public class BowlerStudioResourceFactory {
 	private static Image chanDefault;
 	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<FXMLLoader>();
 	private static FXMLLoader mainPanel = new FXMLLoader(
-            BowlerStudio.class.getResource("DyIOPanel.fxml"));
+            BowlerStudio.class.getClassLoader().getResource("DyIOPanel.fxml"));
 	private static FXMLLoader githubLogin = new FXMLLoader(
-            BowlerStudio.class.getResource("githublogin.fxml"));
+            BowlerStudio.class.getClassLoader().getResource("githublogin.fxml"));
 	static {
 
 

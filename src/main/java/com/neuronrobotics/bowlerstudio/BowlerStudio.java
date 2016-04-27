@@ -71,10 +71,11 @@ public class BowlerStudio extends Application {
     		String key="Bowler Initial Version";
     		//System.out.println("Loading Main.fxml");
     		fxmlLoader = new FXMLLoader(
-                    BowlerStudio.class.getResource("Main.fxml"));
+                    BowlerStudio.class.getClassLoader().getResource("Main.fxml"));
     		Platform.runLater(()->{
     			//System.out.println("Loading the main fxml ");
                 try {
+                	fxmlLoader.setController(new MainController());
                     fxmlLoader.load();
             		//System.out.println("Done loading main ");
 
