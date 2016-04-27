@@ -95,6 +95,7 @@ public class MainController implements Initializable {
 	private Image icon;
 	private static Stage stage=null;
 	private CommandLineWidget cmdLine;
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 	
 	/**
 	 * FXML Widgets
@@ -116,7 +117,7 @@ public class MainController implements Initializable {
 	@FXML AnchorPane CommandLine;
 	@FXML AnchorPane jfx3dControls;
 	@FXML AnchorPane viewContainer;
-	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
+
 
 
 
