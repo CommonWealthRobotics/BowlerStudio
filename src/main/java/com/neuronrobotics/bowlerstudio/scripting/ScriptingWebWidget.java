@@ -357,7 +357,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 
 	private void start() {
-		MainController.clearConsole();
+		BowlerStudio.clearConsole();
 		try {
 			ScriptingEngine.setAutoupdate(true);
 		} catch (IOException e1) {

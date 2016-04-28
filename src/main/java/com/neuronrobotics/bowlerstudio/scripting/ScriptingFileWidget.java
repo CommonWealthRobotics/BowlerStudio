@@ -308,7 +308,7 @@ public class ScriptingFileWidget extends BorderPane implements
 
 
 	private void start() {
-		MainController.clearConsole();
+		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
 		try {
 			ScriptingEngine.setAutoupdate(false);

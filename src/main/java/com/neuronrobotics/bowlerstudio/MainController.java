@@ -85,7 +85,7 @@ public class MainController implements Initializable {
 	private File openFile;
 	private BowlerStudioController application;
 
-	public static void clearConsole() {
+	public void clearConsole() {
 		Platform.runLater(() -> {
 			logViewRefStatic.setText("");
 		});
@@ -117,7 +117,7 @@ public class MainController implements Initializable {
 
 
 
-	public static void updateLog() {
+	public  void updateLog() {
 		if (logViewRefStatic != null) {
 
 			if (getOut().size() == 0) {
@@ -168,7 +168,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-	
+		updateLog();
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
@@ -590,42 +590,42 @@ public class MainController implements Initializable {
 		});
 	}
 
-	/**
-	 * Returns the location of the Jar archive or .class file the specified
-	 * class has been loaded from. <b>Note:</b> this only works if the class is
-	 * loaded from a jar archive or a .class file on the locale file system.
-	 *
-	 * @param cls
-	 *            class to locate
-	 * @return the location of the Jar archive the specified class comes from
-	 */
-	public static File getClassLocation(Class<?> cls) {
-
-		// VParamUtil.throwIfNull(cls);
-		String className = cls.getName();
-		ClassLoader cl = cls.getClassLoader();
-		URL url = cl.getResource(className.replace(".", "/") + ".class");
-
-		String urlString = url.toString().replace("jar:", "");
-
-		if (!urlString.startsWith("file:")) {
-			throw new IllegalArgumentException("The specified class\"" + cls.getName()
-					+ "\" has not been loaded from a location" + "on the local filesystem.");
-		}
-
-		urlString = urlString.replace("file:", "");
-		urlString = urlString.replace("%20", " ");
-
-		int location = urlString.indexOf(".jar!");
-
-		if (location > 0) {
-			urlString = urlString.substring(0, location) + ".jar";
-		} else {
-			// System.err.println("No Jar File found: " + cls.getName());
-		}
-
-		return new File(urlString);
-	}
+//	/**
+//	 * Returns the location of the Jar archive or .class file the specified
+//	 * class has been loaded from. <b>Note:</b> this only works if the class is
+//	 * loaded from a jar archive or a .class file on the locale file system.
+//	 *
+//	 * @param cls
+//	 *            class to locate
+//	 * @return the location of the Jar archive the specified class comes from
+//	 */
+//	public static File getClassLocation(Class<?> cls) {
+//
+//		// VParamUtil.throwIfNull(cls);
+//		String className = cls.getName();
+//		ClassLoader cl = cls.getClassLoader();
+//		URL url = cl.getResource(className.replace(".", "/") + ".class");
+//
+//		String urlString = url.toString().replace("jar:", "");
+//
+//		if (!urlString.startsWith("file:")) {
+//			throw new IllegalArgumentException("The specified class\"" + cls.getName()
+//					+ "\" has not been loaded from a location" + "on the local filesystem.");
+//		}
+//
+//		urlString = urlString.replace("file:", "");
+//		urlString = urlString.replace("%20", " ");
+//
+//		int location = urlString.indexOf(".jar!");
+//
+//		if (location > 0) {
+//			urlString = urlString.substring(0, location) + ".jar";
+//		} else {
+//			// System.err.println("No Jar File found: " + cls.getName());
+//		}
+//
+//		return new File(urlString);
+//	}
 
 	
 	public void onLoadFile(ActionEvent e) {

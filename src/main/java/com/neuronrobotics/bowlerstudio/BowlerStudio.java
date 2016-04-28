@@ -89,10 +89,6 @@ public class BowlerStudio extends Application {
     		String key="Bowler Initial Version";
     		//System.out.println("Loading Main.fxml");
 
-
-
-
-    		MainController.updateLog();
 			try{
 				OpenCVJNILoader.load();              // Loads the JNI (java native interface)
 			}catch(Exception e){
@@ -249,5 +245,8 @@ public class BowlerStudio extends Application {
 
 	public static void setScene(Scene s) {
 		scene = s;
+	}
+	public static void clearConsole() {
+		controller.clearConsole();
 	}
 }
