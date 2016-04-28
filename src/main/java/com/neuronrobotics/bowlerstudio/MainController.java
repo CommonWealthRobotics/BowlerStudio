@@ -168,8 +168,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		return;
-		/*
+	
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
@@ -288,7 +287,7 @@ public class MainController implements Initializable {
 		Platform.runLater(()->{
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 		});
-		*/
+		
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -583,7 +582,7 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	public void setToLoggedOut(ActionEvent e) {
+	public void setToLoggedOut() {
 		Platform.runLater(() -> {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);

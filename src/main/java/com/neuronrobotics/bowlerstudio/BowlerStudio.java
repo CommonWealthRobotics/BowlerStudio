@@ -185,7 +185,13 @@ public class BowlerStudio extends Application {
         if (controller!=null) {
             throw new IllegalStateException("UI already loaded");
         }
-
+        fxmlLoader.setController(new MainController());
+        try {
+			fxmlLoader.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         controller = fxmlLoader.getController();
         
         log = controller.getLogView();
