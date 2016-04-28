@@ -20,6 +20,9 @@ import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 
 public class TestServer {
 
+	private TestServer() {
+	}
+
 	public static void main(String[] args) throws Exception {
 			class SampleBowlerServer extends BowlerAbstractServer {
 				BowlerAbstractDeviceServerNamespace ns = new BowlerAbstractDeviceServerNamespace(

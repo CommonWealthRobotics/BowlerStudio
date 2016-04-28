@@ -23,6 +23,9 @@ import com.neuronrobotics.sdk.common.Log;
  */
 public class NRConsoleDocumentationFactory {
 
+	private NRConsoleDocumentationFactory() {
+	}
+
 	public static URI getDocumentationURL(Object input) {
 
 		try {

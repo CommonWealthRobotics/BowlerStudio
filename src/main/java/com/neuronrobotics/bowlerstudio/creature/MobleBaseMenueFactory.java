@@ -56,6 +56,9 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class MobleBaseMenueFactory {
 
+	private MobleBaseMenueFactory() {
+	}
+
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,

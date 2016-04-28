@@ -17,6 +17,9 @@ import java.net.URL;
 
 public class GistHelper
 {
+    private GistHelper() {
+    }
+
     public static void createNewGist(String filename, String description, boolean isPublic)
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException

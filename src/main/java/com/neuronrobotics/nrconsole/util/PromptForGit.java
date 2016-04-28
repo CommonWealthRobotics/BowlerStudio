@@ -11,7 +11,10 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 
 public class PromptForGit {
-	public static void prompt(String purpose,String defaultID, IGistPromptCompletionListener listener){
+	private PromptForGit() {
+	}
+
+	public static void prompt(String purpose, String defaultID, IGistPromptCompletionListener listener){
 		Platform.runLater(() -> {
 			TextInputDialog dialog = new TextInputDialog(defaultID);
 			dialog.setTitle(purpose);
