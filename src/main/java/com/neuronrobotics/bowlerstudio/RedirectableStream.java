@@ -73,7 +73,7 @@ public class RedirectableStream extends PrintStream {
     public static PrintStream ORIGINAL_SOUT = System.out;
     public static PrintStream ORIGINAL_SERR = System.err;
 
-    private final List<TextArea> views = new ArrayList<TextArea>();
+    private final List<TextArea> views = new ArrayList<>();
     private boolean redirectToUi;
     private boolean redirectToStdOut;
     private final List<OutputFilter> filters = new ArrayList<>();

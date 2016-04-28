@@ -26,7 +26,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	
 	
 	public void setDevice(BowlerAbstractDevice pm){
-		 myNames = new ArrayList<String> ();
+		 myNames = new ArrayList<> ();
 		 if(getMyNameSpaces().length>0){
 			for(int i=0;i<getMyNameSpaces().length;i++){
 				myNames.add(getMyNameSpaces()[i]);

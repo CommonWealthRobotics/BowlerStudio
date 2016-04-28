@@ -31,8 +31,8 @@ public class RpcCommandPanel extends JPanel implements ActionListener {
 	private RpcEncapsulation rpc;
 	private CheckBoxTreeItem<?> rpcDhild;
 	private boolean commandsEnabled=false;
-	private ArrayList<JTextField> tx = new ArrayList<JTextField>();
-	private ArrayList<JLabel> rx = new ArrayList<JLabel>();
+	private ArrayList<JTextField> tx = new ArrayList<>();
+	private ArrayList<JLabel> rx = new ArrayList<>();
 	private JButton send = new JButton("Send");
 	private JLabel txRpc = new JLabel("****");
 	private JLabel rxRpc = new JLabel("****");

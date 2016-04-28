@@ -27,7 +27,7 @@ import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 
 public class PIDControl extends AbstractBowlerStudioTab {
 
-	private ArrayList<PIDControlWidget> widgits = new ArrayList<PIDControlWidget> ();
+	private ArrayList<PIDControlWidget> widgits = new ArrayList<> ();
 	private TreeView<String> tree;
 	private DyIO dyio=null;
 	private IPidControlNamespace pid=null;
@@ -44,7 +44,7 @@ public class PIDControl extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		
-		CheckBoxTreeItem<String> rootItem = new CheckBoxTreeItem<String>("Closed-Loop Channels");
+		CheckBoxTreeItem<String> rootItem = new CheckBoxTreeItem<>("Closed-Loop Channels");
 		rootItem.setExpanded(true);
 		rootItem.setSelected(true);
 		rootItem.selectedProperty().addListener(b -> {
@@ -83,7 +83,7 @@ public class PIDControl extends AbstractBowlerStudioTab {
 						Stage dialog = new Stage();
 						dialog.initStyle(StageStyle.UTILITY);
 						dialog.setTitle("Channel: "+index);
-						CheckBoxTreeItem<String> chan = new CheckBoxTreeItem<String>("Channel: "+index);
+						CheckBoxTreeItem<String> chan = new CheckBoxTreeItem<>("Channel: "+index);
 						
 						SwingNode sn = new SwingNode();
 				        sn.setContent(w);

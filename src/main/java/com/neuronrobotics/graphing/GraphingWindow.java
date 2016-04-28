@@ -36,7 +36,7 @@ public class GraphingWindow extends JPanel {
 	private JTextField length = new JTextField(5);
 	private JSlider window = new JSlider(1, 100);
 	private JSlider scale = new JSlider(1, 100);
-	private ArrayList<DataChannel> dataChannels = new ArrayList<DataChannel>();
+	private ArrayList<DataChannel> dataChannels = new ArrayList<>();
 
 	/**
 	 * long 

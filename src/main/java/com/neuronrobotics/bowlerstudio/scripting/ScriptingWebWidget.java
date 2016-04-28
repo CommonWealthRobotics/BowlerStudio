@@ -126,7 +126,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private Object scriptResult;
 	private String codeText="";
 
-	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");;
 	private Button edit = new Button("Edit...");
@@ -137,7 +137,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private ScriptingWidgetType type;
 	
-	final ComboBox<String> fileListBox = new ComboBox<String>();
+	final ComboBox<String> fileListBox = new ComboBox<>();
 	private File currentFile = null;
 
 	private HBox controlPane;

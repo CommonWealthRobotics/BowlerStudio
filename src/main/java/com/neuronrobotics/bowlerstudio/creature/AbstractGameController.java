@@ -3,7 +3,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import java.util.ArrayList;
 
 public abstract class AbstractGameController {
-	private ArrayList<IGameControllerUpdateListener> listeners = new ArrayList<IGameControllerUpdateListener>();
+	private ArrayList<IGameControllerUpdateListener> listeners = new ArrayList<>();
 	
 	public void addIGameControllerUpdateListener(IGameControllerUpdateListener l){
 		if(!listeners.contains(l))
