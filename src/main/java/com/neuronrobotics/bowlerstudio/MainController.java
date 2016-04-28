@@ -334,9 +334,9 @@ public class MainController implements Initializable {
 					
 					@SuppressWarnings("unchecked")
 					HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
-					for(String menuTitle:map.keySet()){
-						HashMap<String,Object> script = map.get(menuTitle);
-						MenuItem item = new MenuItem(menuTitle);
+					for(Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()){
+						HashMap<String,Object> script = entry.getValue();
+						MenuItem item = new MenuItem(entry.getKey());
 						item.setOnAction(event -> {
 							loadMobilebaseFromGit(	(String)script.get("scriptGit"),
 													(String)script.get("scriptFile"));
@@ -493,13 +493,13 @@ public class MainController implements Initializable {
 						// Now load the users GIT repositories
 						// github.getMyOrganizations();
 						Map<String, GHOrganization> orgs = github.getMyOrganizations();
-						for (String org : orgs.keySet()) {
+						for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
 							// System.out.println("Org: "+org);
-							Menu OrgItem = new Menu(org);
-							GHOrganization ghorg = orgs.get(org);
+							Menu OrgItem = new Menu(entry.getKey());
+							GHOrganization ghorg = entry.getValue();
 							Map<String, GHRepository> repos = ghorg.getRepositories();
-							for (String orgRepo : repos.keySet()) {
-								setUpRepoMenue(OrgItem, repos.get(orgRepo));
+							for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
+								setUpRepoMenue(OrgItem, entry1.getValue());
 							}
 							Platform.runLater(() -> {
 								myOrganizations.getItems().add(OrgItem);
@@ -509,8 +509,8 @@ public class MainController implements Initializable {
 						// Repos I own
 						Map<String, GHRepository> myPublic = self.getAllRepositories();
 						HashMap<String, Menu> myownerMenue = new HashMap<>();
-						for (String myRepo : myPublic.keySet()) {
-							GHRepository g = myPublic.get(myRepo);
+						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+							GHRepository g = entry.getValue();
 							if (myownerMenue.get(g.getOwnerName()) == null) {
 								myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 								Platform.runLater(() -> {
