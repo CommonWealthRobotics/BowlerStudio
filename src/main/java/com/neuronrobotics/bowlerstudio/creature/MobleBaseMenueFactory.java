@@ -466,7 +466,7 @@ public class MobleBaseMenueFactory {
 
 		TreeItem<String> apps = new TreeItem<String>(label,AssetFactory.loadIcon("Load-Limb-"+label.replace(' ', '-')+".png"));
 		rootItem.getChildren().add(apps);
-		if (drivable.size() == 0)
+		if (drivable.isEmpty())
 			return apps;
 		for (DHParameterKinematics dh : drivable) {
 			loadSingleLimb(base, view, dh, apps, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
