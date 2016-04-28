@@ -89,7 +89,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		l=this;
 
 		getScripting().addIScriptEventListener(l);
-		String type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
+		String type;
 		switch(ScriptingEngine.getShellType(file.getName())){
 			case "Clojure":
 				type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;

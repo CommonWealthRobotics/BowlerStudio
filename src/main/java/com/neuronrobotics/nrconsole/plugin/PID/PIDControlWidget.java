@@ -76,7 +76,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		getPidSet().addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double p=0,i=0,d=0,l=0,vp,vd,up,low;
+				double p,i,d,l,vp,vd,up,low;
 				try{
 					p=Double.parseDouble(kp.getText());
 				}catch(Exception e){

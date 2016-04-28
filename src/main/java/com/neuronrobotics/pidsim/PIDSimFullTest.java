@@ -27,7 +27,7 @@ public class PIDSimFullTest {
     		double set = pid.getSetPoint();
     		double now = pid.getPosition();
     		
-    		double torque = 0;
+    		double torque;
     		
     		double error = now - set;
     		iTotal -= IntegralCircularBuffer[index];

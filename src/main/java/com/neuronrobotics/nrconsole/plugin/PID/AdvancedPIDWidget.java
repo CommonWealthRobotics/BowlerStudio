@@ -79,7 +79,7 @@ public class AdvancedPIDWidget extends JPanel{
 	    runLoop.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double s=0,m=0,e=0,i=0,t=0;
+				double s,m,e,i,t;
 				try{
 					s=Double.parseDouble(loopStart.getText());
 					m=Double.parseDouble(loopMiddle.getText());
@@ -101,7 +101,7 @@ public class AdvancedPIDWidget extends JPanel{
 			@SuppressWarnings("unused")
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double m=0,e=0,i=0,t=0;
+				double m=0,e,i=0,t=0;
 				try{
 					m=Double.parseDouble(loopMiddle.getText());
 					e=Double.parseDouble(loopEnd.getText());

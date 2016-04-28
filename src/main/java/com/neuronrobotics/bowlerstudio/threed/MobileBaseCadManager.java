@@ -209,7 +209,7 @@ public class MobileBaseCadManager {
 		int leg = 0;
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
-		int i = 0;
+		int i;
 		// Start by generating the legs using the DH link based generator
 		ArrayList<CSG> totalAssembly=new ArrayList<>();
 		double offset=0;
@@ -306,7 +306,7 @@ public class MobileBaseCadManager {
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 		}
-		CSG simpleCad=null;
+		CSG simpleCad;
 		try {
 			if (dhCadGen.get(dh) != null) {
 				try {
@@ -377,7 +377,7 @@ public class MobileBaseCadManager {
 		}).start();
 	}
 	private void setDefaultLinkLevelCadEngine() throws Exception {
-		String[] cad = null;
+		String[] cad;
 			cad = (base).getGitCadEngine();
 
 		if (cadEngine == null) {
