@@ -147,7 +147,7 @@ public class FormacarumRover extends AbstractRobotDrive {
 		//Log.enableDebugPrint(true);
 		
 		drive.ResetPIDChannel(0);
-		ThreadUtil.wait((200));
+		ThreadUtil.wait(200);
 		//Log.enableDebugPrint(false);
 	}
 	

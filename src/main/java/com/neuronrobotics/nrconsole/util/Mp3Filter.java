@@ -14,7 +14,7 @@ public class Mp3Filter extends FileFilter {
 			return true;
 		}
 		String path = f.getAbsolutePath().toLowerCase();
-		if ( (path.endsWith("wav")&& (path.charAt(path.length() - 3)) == '.')) {
+		if (path.endsWith("wav")&& path.charAt(path.length() - 3) == '.') {
 			return true;
 		}
 		return f.getName().matches(".+\\.wav$");

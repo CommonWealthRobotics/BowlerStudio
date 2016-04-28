@@ -132,7 +132,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 				}
 				
 				String path = f.getAbsolutePath().toLowerCase();
-				if ((path.endsWith("xml") && (path.charAt(path.length() - 3)) == '.')) {
+				if (path.endsWith("xml") && path.charAt(path.length() - 3) == '.') {
 					return true;
 				}
 				

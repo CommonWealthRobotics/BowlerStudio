@@ -378,7 +378,7 @@ public class MobileBaseCadManager {
 	}
 	private void setDefaultLinkLevelCadEngine() throws Exception {
 		String[] cad;
-			cad = (base).getGitCadEngine();
+			cad = base.getGitCadEngine();
 
 		if (cadEngine == null) {
 			setGitCadEngine(cad[0], cad[1], base);
