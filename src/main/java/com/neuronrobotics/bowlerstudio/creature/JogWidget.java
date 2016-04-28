@@ -42,7 +42,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button nz = new Button("",AssetFactory.loadIcon("Minus-Z.png"));
 	Button home = new Button("",AssetFactory.loadIcon("Home.png"));
 	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
-	TextField increment=new TextField(new Double(defauletSpeed).toString());
+	TextField increment=new TextField(Double.toString(defauletSpeed));
 	TextField sec=new TextField(".01");
 	private TransformWidget transform;
 	BowlerJInputDevice gameController=null;
@@ -325,7 +325,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					}catch(Exception e){
 						inc=defauletSpeed;
 						Platform.runLater(() -> {
-							increment.setText(new Double(defauletSpeed).toString());
+							increment.setText(Double.toString(defauletSpeed));
 						});
 					}
 					//double rxl=0;

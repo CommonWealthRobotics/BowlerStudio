@@ -74,7 +74,7 @@ public class CameraTab extends AbstractBowlerStudioTab {
 			System.err.println(l);
 			options = FXCollections.observableArrayList(l);
 			@SuppressWarnings("unchecked")
-			ComboBox<String> comboBox = new ComboBox<String>(options);
+			ComboBox<String> comboBox = new ComboBox<>(options);
 			comboBox.setOnAction((event) -> {
 				String item = comboBox.getSelectionModel().getSelectedItem();
 				Log.warning("Setting detector to " + item);

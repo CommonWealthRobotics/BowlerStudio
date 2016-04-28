@@ -26,7 +26,7 @@ public class RoverDataTable extends NonBowlerDevice {
 	@Override
 	public ArrayList<String> getNamespacesImp() {
 		// TODO Auto-generated method stub
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public ArrayList<ObjectDetectionDataTableElement> getDetections() {

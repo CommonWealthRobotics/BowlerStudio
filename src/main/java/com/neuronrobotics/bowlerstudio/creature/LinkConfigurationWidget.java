@@ -138,7 +138,7 @@ public class LinkConfigurationWidget extends GridPane {
 	    	}
 		});
 	    
-		final ComboBox<String> shaftSize = new ComboBox<String>();
+		final ComboBox<String> shaftSize = new ComboBox<>();
 		for (String s : Vitamins.listVitaminSizes( conf.getShaftType())) {
 			shaftSize.getItems().add(s);
 		}
@@ -153,7 +153,7 @@ public class LinkConfigurationWidget extends GridPane {
 		});
 		shaftSize.getSelectionModel().select(conf.getShaftSize());
 
-		final ComboBox<String> shaftType = new ComboBox<String>();
+		final ComboBox<String> shaftType = new ComboBox<>();
 		
 		for(String vitaminsType: Vitamins.listVitaminTypes()){
 			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
@@ -230,7 +230,7 @@ public class LinkConfigurationWidget extends GridPane {
 	    	}
 		});
 	    
-		final ComboBox<String> emHardwareSize = new ComboBox<String>();
+		final ComboBox<String> emHardwareSize = new ComboBox<>();
 		for (String s : Vitamins.listVitaminSizes( conf.getElectroMechanicalType())) {
 			emHardwareSize.getItems().add(s);
 		}
@@ -245,7 +245,7 @@ public class LinkConfigurationWidget extends GridPane {
 		});
 		emHardwareSize.getSelectionModel().select(conf.getElectroMechanicalSize());
 
-		final ComboBox<String> emHardwareType = new ComboBox<String>();
+		final ComboBox<String> emHardwareType = new ComboBox<>();
 		for(String vitaminsType: Vitamins.listVitaminTypes()){
 			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
 			if(meta !=null)
@@ -351,9 +351,9 @@ public class LinkConfigurationWidget extends GridPane {
 		}, 
 		conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
 
-		final ComboBox<String> channel = new ComboBox<String>();
+		final ComboBox<String> channel = new ComboBox<>();
 		for (int i=0;i<24;i++) {
-			channel.getItems().add(new Integer(i).toString());
+			channel.getItems().add(Integer.toString(i));
 		}
 		channel.setOnAction(new EventHandler<ActionEvent>() {
 			
@@ -367,7 +367,7 @@ public class LinkConfigurationWidget extends GridPane {
 		});
 		channel.getSelectionModel().select(conf.getHardwareIndex());
 		
-		final ComboBox<String> comboBox = new ComboBox<String>();
+		final ComboBox<String> comboBox = new ComboBox<>();
 		for (LinkType type : LinkType.values()) {
 			comboBox.getItems().add(type.getName());
 		}
@@ -532,7 +532,7 @@ public class LinkConfigurationWidget extends GridPane {
 			grid.setPadding(new Insets(20, 150, 10, 10));
 			
 			
-			HashMap<String,TextField> valueFields=new HashMap<String,TextField> ();
+			HashMap<String,TextField> valueFields=new HashMap<> ();
 			
 			int row=0;
 			for(String s: startingConf.keySet()){

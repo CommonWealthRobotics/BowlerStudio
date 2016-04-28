@@ -47,7 +47,7 @@ public class DyIOchannelWidget {
 		public void changed(ObservableValue<? extends Number> ov,
 				Number old_val, Number new_val) {
 			int newVal = new_val.intValue();
-			chanValue.setText(new Integer(newVal).toString());
+			chanValue.setText(Integer.toString(newVal));
 			if(currentMode==DyIOChannelMode.SERVO_OUT ){
 				if(timeSlider.getValue()>.1){
 					//servo should only set on release when time is defined
@@ -89,8 +89,8 @@ public class DyIOchannelWidget {
 			this.channel = c;
 			startTime=System.currentTimeMillis();
 			setMode( channel.getMode());
-			Platform.runLater(()->deviceNumber.setText(new Integer(channel.getChannelNumber()).toString()));
-			Platform.runLater(()->chanValue.setText(new Integer(channel.getValue()).toString()));
+			Platform.runLater(()->deviceNumber.setText(Integer.toString(channel.getChannelNumber())));
+			Platform.runLater(()->chanValue.setText(Integer.toString(channel.getValue())));
 			Platform.runLater(()->secondsLabel.setText(String.format("%.2f", 0.0)));
 			Platform.runLater(()->positionSlider.setValue(channel.getValue()));
 			Platform.runLater(()->graphValueAxis.setAnimated(false));
@@ -99,7 +99,7 @@ public class DyIOchannelWidget {
 			
 			positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 	
-				chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
+				chanValue.setText(Integer.toString((int) positionSlider.getValue()));
 				if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
 					new Thread(){
 						public void run(){
@@ -153,7 +153,7 @@ public class DyIOchannelWidget {
 			Data<Integer, Integer> newChart = new XYChart.Data<Integer, Integer>(
 	        		(int) (startTime-System.currentTimeMillis()),
 	        		current);
-			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
+			Platform.runLater(()->chanValue.setText(Integer.toString(current)));
 				if(!positionSlider.isValueChanging()){// only updae the slider position if the user is not sliding it
 					Platform.runLater(()->{
 						if(positionSlider==null)

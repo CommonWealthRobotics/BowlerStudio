@@ -213,13 +213,13 @@ public class DyIOPanel  implements Initializable {
 			ObservableList<String> items = FXCollections.observableArrayList();
 			DyIOChannel chan = dyio.getChannel(index);
 			displayFlash.add(new Boolean(true));
-			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
+			Platform.runLater(()->channelValue.get(index).setText(Integer.toString(chan.getValue())));
 			chan.addChannelEventListener(e -> {
 				// set the value label text
 				if(displayFlash.get(index)){
 					displayFlash.set(index, false);
 					Platform.runLater(()->{
-							channelValue.get(index).setText(new Integer(e.getValue()).toString());
+							channelValue.get(index).setText(Integer.toString(e.getValue()));
 							channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
 							FxTimer.runLater(
 									Duration.ofMillis(200) ,() -> {

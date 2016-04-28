@@ -40,7 +40,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	private JPanel latchPanel = new JPanel(new MigLayout());
 	private JButton  pidSet = new JButton("Configure");
 	private JButton  pidStop = new JButton("Stop");
-	private JTextField setpoint=new JTextField(new Double(0).toString(),5);
+	private JTextField setpoint=new JTextField(Double.toString(0),5);
 	private JButton  setSetpoint = new JButton("Set Setpoint");
 	private JButton  zero = new JButton("Zero PID");
 	private JLabel   currentPos = new JLabel("0");
@@ -64,7 +64,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 //			Log.enableDebugPrint(true);
 		setBorder(BorderFactory.createRaisedBevelBorder());
 		tab.getPidDevice().addPIDEventListener(this);
-		currentPos.setText(new Integer(startValue).toString());
+		currentPos.setText(Integer.toString(startValue));
 		setpointValue=startValue;
 		setPositionDisplay(startValue);
 		setLayout(new MigLayout("", "[]", "[][][]"));
@@ -76,60 +76,60 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		getPidSet().addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double p=0,i=0,d=0,l=0,vp,vd,up,low;
+				double p,i,d,l,vp,vd,up,low;
 				try{
 					p=Double.parseDouble(kp.getText());
 				}catch(Exception e){
-					kp.setText(new Double(1).toString());
+					kp.setText(Double.toString(1));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					i=Double.parseDouble(ki.getText());
 				}catch(Exception e){
-					ki.setText(new Double(0).toString());
+					ki.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					d=Double.parseDouble(kd.getText());
 				}catch(Exception e){
-					kd.setText(new Double(0).toString());
+					kd.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					l=Double.parseDouble(indexLatch.getText());
 				}catch(Exception e){
-					indexLatch.setText(new Double(0).toString());
+					indexLatch.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					vp=Double.parseDouble(vkp.getText());
 				}catch(Exception e){
-					vkp.setText(new Double(.1).toString());
+					vkp.setText(Double.toString(.1));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					vd=Double.parseDouble(vkd.getText());
 				}catch(Exception e){
-					vkd.setText(new Double(0).toString());
+					vkd.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					up=Double.parseDouble(upHys.getText());
 				}catch(Exception e){
-					upHys.setText(new Double(0).toString());
+					upHys.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
 				try{
 					low=Double.parseDouble(lowHys.getText());
 				}catch(Exception e){
-					lowHys.setText(new Double(0).toString());
+					lowHys.setText(Double.toString(0));
 					showMessage( "Bad PID values, resetting.",e);
 					return;
 				}
@@ -155,7 +155,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 				ResetPIDChannel();
 				int val = GetPIDPosition();
 				setSetpoint(val);
-				currentPos.setText(new Integer(val).toString());
+				currentPos.setText(Integer.toString(val));
 			}
 		});
 		
@@ -172,7 +172,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 			}
 		});
 		
-		setpoint.setText(new Integer(startValue).toString());
+		setpoint.setText(Integer.toString(startValue));
 		setpoint.addActionListener(this);
 		setSetpoint.addActionListener(this);
 		
@@ -269,16 +269,16 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	private void populatePID() {
 		advanced = new  AdvancedPIDWidget(this);
 		getPIDConfiguration();
-		kp.setText(new Double(getPIDConfiguration().getKP()).toString());
-		ki.setText(new Double(getPIDConfiguration().getKI()).toString());
-		kd.setText(new Double(getPIDConfiguration().getKD()).toString());
+		kp.setText(Double.toString(getPIDConfiguration().getKP()));
+		ki.setText(Double.toString(getPIDConfiguration().getKI()));
+		kd.setText(Double.toString(getPIDConfiguration().getKD()));
 		
-		upHys.setText(new Double(getPIDConfiguration().getUpperHystersys()).toString());
-		lowHys.setText(new Double(getPIDConfiguration().getLowerHystersys()).toString());
+		upHys.setText(Double.toString(getPIDConfiguration().getUpperHystersys()));
+		lowHys.setText(Double.toString(getPIDConfiguration().getLowerHystersys()));
 		
-		vkp.setText(new Double(getPDVelocityConfiguration().getKP()).toString());
-		vkd.setText(new Double(getPDVelocityConfiguration().getKD()).toString());
-		indexLatch.setText(new Double(getPIDConfiguration().getIndexLatch()).toString());
+		vkp.setText(Double.toString(getPDVelocityConfiguration().getKP()));
+		vkd.setText(Double.toString(getPDVelocityConfiguration().getKD()));
+		indexLatch.setText(Double.toString(getPIDConfiguration().getIndexLatch()));
 	    useLatch.setSelected(getPIDConfiguration().isUseLatch());
 	    stopOnLatch.setSelected(getPIDConfiguration().isStopOnIndex());
 		inverted.setSelected(getPIDConfiguration().isInverted());
@@ -348,7 +348,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	public void setInternalSetpoint(int setPoint){
 		//System.out.println("Setting setpoint on group="+getGroup()+" value="+setPoint);
 		setpointValue=setPoint;
-		setpoint.setText(new Integer(setPoint).toString());
+		setpoint.setText(Integer.toString(setPoint));
 		graphVals();
 		getPidStop().setEnabled(true);
 	}
@@ -380,7 +380,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 	}
 
 	public void setPositionDisplay(int positionValue) {
-		currentPos.setText(new Integer(positionValue).toString());
+		currentPos.setText(Integer.toString(positionValue));
 		this.positionValue = positionValue;
 		graphVals();
 	}
@@ -416,7 +416,7 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		try{
 			setSetpoint(getSetPoint());
 		}catch(Exception e){
-			setpoint.setText(new Integer(0).toString());
+			setpoint.setText(Integer.toString(0));
 			return;
 		}
 	}

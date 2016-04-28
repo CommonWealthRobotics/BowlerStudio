@@ -95,6 +95,7 @@ public class MainController implements Initializable {
 	private Image icon;
 	private static Stage stage=null;
 	private CommandLineWidget cmdLine;
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 	
 	/**
 	 * FXML Widgets
@@ -116,7 +117,7 @@ public class MainController implements Initializable {
 	@FXML AnchorPane CommandLine;
 	@FXML AnchorPane jfx3dControls;
 	@FXML AnchorPane viewContainer;
-	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
+
 
 
 
@@ -351,7 +352,9 @@ public class MainController implements Initializable {
 				
 			}
 		}).start();
-		commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+		Platform.runLater(()->{
+			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+		});
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -774,12 +777,12 @@ public class MainController implements Initializable {
 
 	}
 
-	@FXML
-	public void onConnectJavaCVCamera() {
-
-		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
-
-	}
+//	@FXML
+//	public void onConnectJavaCVCamera() {
+//
+//		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
+//
+//	}
 
 	@FXML
 	public void onConnectFileSourceCamera() {

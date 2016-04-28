@@ -19,21 +19,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 
 public class BowlerStudioResourceFactory {
-	private static final Map<DyIOChannelMode,Image> lookup = new HashMap<DyIOChannelMode,Image>();
+	private static final Map<DyIOChannelMode,Image> lookup = new HashMap<>();
 	private static Image chanHighlight;
 	private static Image chanUpdate;
 	private static Image chanDefault;
-	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<FXMLLoader>();
+	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<>();
 	private static FXMLLoader mainPanel = new FXMLLoader(
-            BowlerStudio.class.getResource("DyIOPanel.fxml"));
+            BowlerStudio.class.getClassLoader().getResource("DyIOPanel.fxml"));
 	private static FXMLLoader githubLogin = new FXMLLoader(
-            BowlerStudio.class.getResource("githublogin.fxml"));
+            BowlerStudio.class.getClassLoader().getResource("githublogin.fxml"));
 	static {
 
 
 		
 	}
-	
+
+	private BowlerStudioResourceFactory() {
+	}
+
 	public static FXMLLoader getLoader(int channelIndex){
 		return fxmlLoaders.get(channelIndex);
 	}

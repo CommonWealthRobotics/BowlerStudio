@@ -33,7 +33,7 @@ public class StatusLabel extends JLabel {
 	}
 	
 	protected ImageIcon createImageIcon(String path) {
-	    java.net.URL imgURL = BootloaderPanel.class.getResource(path);
+	    java.net.URL imgURL = BootloaderPanel.class.getClassLoader().getResource(path);
 	    if (imgURL != null) {
 	        return new ImageIcon(imgURL);
 	    } else {

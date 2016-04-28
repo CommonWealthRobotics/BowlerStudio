@@ -33,8 +33,11 @@ import java.awt.geom.PathIterator;
 
 
 public class TwoDCadFactory {
-	
-	public static ArrayList<Polygon> pointsFromString(Font font,String text){
+
+	private TwoDCadFactory() {
+	}
+
+	public static ArrayList<Polygon> pointsFromString(Font font, String text){
 		ArrayList<Polygon> sections = new ArrayList<>();
 		ArrayList<Vector3d> points = new ArrayList<>();
 		FontRenderContext frc = new FontRenderContext(null,(boolean)true,(boolean)true);
@@ -57,7 +60,7 @@ public class TwoDCadFactory {
 					if(points.size()>3){
 						sections.add(Polygon.fromPoints(Extrude.toCCW(points)));
 					}
-		            points = new ArrayList<Vector3d>();
+		            points = new ArrayList<>();
 		            break;
 				case PathIterator.SEG_QUADTO:
 					//println "SEG_QUADTO from ( "+coords[0]+" , "+coords[1]+" ) to ( "+coords[2]+" , "+coords[3]+" )";

@@ -130,7 +130,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private Object scriptResult;
 	private String codeText="";
 
-	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
 	private Button publish = new Button("Publish");

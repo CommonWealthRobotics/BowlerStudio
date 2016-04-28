@@ -41,8 +41,8 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	private CoreScheduler cs;
 	private File mp3File=null;
 	private ChangeListener sliderListener;
-	private ArrayList<ActionListener> pauseListeners = new ArrayList<ActionListener> ();
-	private ArrayList<ActionListener> playListeners = new ArrayList<ActionListener> ();
+	private ArrayList<ActionListener> pauseListeners = new ArrayList<> ();
+	private ArrayList<ActionListener> playListeners = new ArrayList<> ();
 	/**
 	 * long 
 	 */
@@ -170,7 +170,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	}
 	
 	private void setTrackLegnth(int ms){
-		length.setText(new Double(((double)ms)/1000.0).toString());
+		length.setText(Double.toString(((double)ms)/1000.0));
 		setBounds(ms);
 	}
 	
