@@ -104,7 +104,7 @@ public class AssetFactory {
 	}
 	
 	public static String getGitSource() throws Exception {
-		if(!checked){
+		if(!checked && ScriptingEngine.getCreds().exists()){
 			checked=true;
 			ScriptingEngine.setAutoupdate(true);
 			org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();

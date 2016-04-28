@@ -13,6 +13,8 @@ import org.opencv.core.Core;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
+import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
@@ -49,6 +51,7 @@ public class BowlerStudio extends Application {
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
+
 	static{
 		PrintStream ps = new PrintStream(MainController.getOut());
 		//System.setErr(ps);
@@ -62,30 +65,32 @@ public class BowlerStudio extends Application {
 	public static void main(String[] args) throws Exception {
     	
     	if(args.length==0){
+
     		
+    		//ScriptingEngine.logout();
+			ScriptingEngine.setLoginManager(new GitHubLoginManager());
+			
+    		if(ScriptingEngine.getCreds().exists())
+    			ScriptingEngine.runLogin();
+    		else
+    			ScriptingEngine.setupAnyonmous();
+    		//Download and Load all of the assets
+    		AssetFactory.loadAsset("BowlerStudio.png");
+    		BowlerStudioResourceFactory.load();
+    		
+    		if(!ScriptingEngine.getCreds().exists()){
+    			ScriptingEngine.logout();
+    			ScriptingEngine.login();
+    		}
     		
     		//System.out.println("Loading assets ");
     	
-    		BowlerStudioResourceFactory.load();
+    		
     		//System.out.println("Done loading assets ");
     		String key="Bowler Initial Version";
     		//System.out.println("Loading Main.fxml");
-    		fxmlLoader = new FXMLLoader(
-                    BowlerStudio.class.getResource("Main.fxml"));
-    		Platform.runLater(()->{
-    			//System.out.println("Loading the main fxml ");
-                try {
-                	fxmlLoader.setController(new MainController());
-                    fxmlLoader.load();
-            		//System.out.println("Done loading main ");
 
-                } catch (IOException ex) {
-                	ex.printStackTrace();
-                    Logger.getLogger(BowlerStudio.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                    System.exit(1);
-                }
-    		});
+
 
 
     		MainController.updateLog();
@@ -176,13 +181,11 @@ public class BowlerStudio extends Application {
     }
 
     public static Parent loadFromFXML() {
-        
+    	new Exception().printStackTrace();
+		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
         if (controller!=null) {
             throw new IllegalStateException("UI already loaded");
         }
-        
-        
-
 
         controller = fxmlLoader.getController();
         

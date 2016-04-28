@@ -84,8 +84,7 @@ public class MainController implements Initializable {
 	private File openFile;
 	private BowlerStudioController application;
 	private Stage primaryStage;
-	private boolean loginWindowOpen = false;
-	private GithubLoginFX controller = null;
+
 	public static void clearConsole() {
 		Platform.runLater(() -> {
 			logViewRefStatic.setText("");
@@ -182,48 +181,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public void run() {
-				ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
 
-					@Override
-					public String[] prompt(String username) {
-						boolean loginWas = loginWindowOpen;
-						
-						if(stage==null){						
-							if (!loginWas && controller != null)
-								controller.reset();
-							controller = null;
-							System.err.println("Calling login from BowlerStudio");
-							// new RuntimeException().printStackTrace();
-							FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
-							Parent root = fxmlLoader.getRoot();
-							if (controller == null) {
-								controller = fxmlLoader.getController();
-								Platform.runLater(() -> {
-									if(!loginWindowOpen){
-										controller.reset();
-										controller.getUsername().setText(username);
-										stage = new Stage();
-										stage.setTitle("GitHub Login");
-										stage.initModality(Modality.APPLICATION_MODAL);
-										controller.setStage(stage, root);
-										stage.centerOnScreen();
-									
-										loginWindowOpen = true;
-										stage.show();
-										stage =null;
-									}
-								});
-							}
-						}
-						// setContent(root);
-						while (!controller.isDone()) {
-							ThreadUtil.wait(100);
-						}
-						String[] creds = controller.getCreds();
-						loginWindowOpen = false;
-						return creds;
-					}
-				});
 				try {
 					ScriptingEngine.runLogin();
 					icon = AssetFactory.loadAsset("BowlerStudio.png");

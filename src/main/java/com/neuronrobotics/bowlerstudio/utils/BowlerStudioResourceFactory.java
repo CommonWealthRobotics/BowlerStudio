@@ -28,7 +28,8 @@ public class BowlerStudioResourceFactory {
             BowlerStudio.class.getResource("DyIOPanel.fxml"));
 	private static FXMLLoader githubLogin = new FXMLLoader(
             BowlerStudio.class.getResource("githublogin.fxml"));
-
+	private static FXMLLoader mainControllerPanel = new FXMLLoader(
+            BowlerStudio.class.getResource("Main.fxml"));
 	private BowlerStudioResourceFactory() {
 	}
 
@@ -133,6 +134,14 @@ public class BowlerStudioResourceFactory {
 
 	public static void setGithubLogin(FXMLLoader githubLogin) {
 		BowlerStudioResourceFactory.githubLogin = githubLogin;
+	}
+
+	public static FXMLLoader getMainControllerPanel() {
+		return mainControllerPanel;
+	}
+
+	public static void setMainControllerPanel(FXMLLoader mainControllerPanel) {
+		BowlerStudioResourceFactory.mainControllerPanel = mainControllerPanel;
 	}
 
 }
