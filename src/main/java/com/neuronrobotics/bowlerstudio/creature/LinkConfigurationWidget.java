@@ -157,10 +157,8 @@ public class LinkConfigurationWidget extends GridPane {
 		
 		for(String vitaminsType: Vitamins.listVitaminTypes()){
 			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
-			if(meta!=null)
-				if(meta.containsKey("shaft")){
-					shaftType.getItems().add(vitaminsType);
-				}
+			if(meta!=null && meta.containsKey("shaft"))
+				shaftType.getItems().add(vitaminsType);
 		}
 
 		shaftType.setOnAction(new EventHandler<ActionEvent>() {
@@ -248,10 +246,8 @@ public class LinkConfigurationWidget extends GridPane {
 		final ComboBox<String> emHardwareType = new ComboBox<String>();
 		for(String vitaminsType: Vitamins.listVitaminTypes()){
 			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
-			if(meta !=null)
-				if(meta.containsKey("actuator")){
-					emHardwareType.getItems().add(vitaminsType);
-				}
+			if(meta !=null && meta.containsKey("actuator"))
+				emHardwareType.getItems().add(vitaminsType);
 		}
 		emHardwareType.setOnAction(new EventHandler<ActionEvent>() {
 

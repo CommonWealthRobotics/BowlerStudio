@@ -313,9 +313,8 @@ public class DyIOPanel  implements Initializable {
 						if(controller.isFireValue()){
 							controller.setFireValue(false);
 							dyio.setValue(i,controller.getLatestValue());
-							if(dyio.getMode(i)==DyIOChannelMode.SERVO_OUT){
-								if(dyio.getChannel(i).getCachedMode())
-									dyio.getChannel(i).flush();
+							if(dyio.getMode(i)==DyIOChannelMode.SERVO_OUT && dyio.getChannel(i).getCachedMode()){
+								dyio.getChannel(i).flush();
 							}
 						}
 						
