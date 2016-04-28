@@ -52,11 +52,7 @@ public class BowlerStudio extends Application {
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
 
-	static{
-		PrintStream ps = new PrintStream(MainController.getOut());
-		//System.setErr(ps);
-		//System.setOut(ps);
-	}
+
     /**
      * @param args the command line arguments
      * @throws Exception 
@@ -82,6 +78,9 @@ public class BowlerStudio extends Application {
     			ScriptingEngine.logout();
     			ScriptingEngine.login();
     		}
+    		PrintStream ps = new PrintStream(MainController.getOut());
+    		//System.setErr(ps);
+    		//System.setOut(ps);
     		
     		//System.out.println("Loading assets ");
     	
@@ -181,7 +180,7 @@ public class BowlerStudio extends Application {
     }
 
     public static Parent loadFromFXML() {
-    	new Exception().printStackTrace();
+    	//new Exception().printStackTrace();
 		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
         if (controller!=null) {
             throw new IllegalStateException("UI already loaded");

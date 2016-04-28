@@ -69,21 +69,21 @@ import java.util.ResourceBundle;
  * FXML Controller class
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Kevin Harrington madhephaestus:github mad.hephaestus@gmail.com
  */
 public class MainController implements Initializable {
 	/**
 	 * class vatiables
 	 */
 	private static int sizeOfTextBuffer = 4000;
-	private static ByteArrayOutputStream out = null;
-	static boolean opencvOk = true;
+	private static ByteArrayOutputStream out = new ByteArrayOutputStream();
+	private static boolean opencvOk = true;
 	private static String newString = null;
-	private static TextArea logViewRefStatic = new TextArea();
+	private static TextArea logViewRefStatic;
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
 	private File openFile;
 	private BowlerStudioController application;
-	private Stage primaryStage;
 
 	public static void clearConsole() {
 		Platform.runLater(() -> {
@@ -91,32 +91,29 @@ public class MainController implements Initializable {
 		});
 	}
 	private static boolean logLock = false;
-	private Image icon;
-	private static Stage stage=null;
 	private CommandLineWidget cmdLine;
 	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 	
 	/**
 	 * FXML Widgets
 	 */
-	@FXML MenuBar BowlerStudioMenue;
-	@FXML Menu CreaturesMenu;
-	@FXML Menu GitHubRoot;
-	@FXML MenuItem logoutGithub;
-	@FXML MenuItem createNewGist;
-	@FXML Menu myGists;
-	@FXML Menu myOrganizations;
-	@FXML Menu myRepos;
-	@FXML Menu watchingRepos;
-	@FXML MenuItem clearCache;
-	@FXML AnchorPane editorContainer;
-	@FXML TextArea logViewRef;
-	@FXML AnchorPane logView;
-	@FXML TitledPane commandLineTitledPane;
-	@FXML AnchorPane CommandLine;
-	@FXML AnchorPane jfx3dControls;
-	@FXML AnchorPane viewContainer;
-
+@FXML	 MenuBar BowlerStudioMenue;
+@FXML	 Menu CreaturesMenu;
+@FXML	 Menu GitHubRoot;
+@FXML	 MenuItem logoutGithub;
+@FXML	 MenuItem createNewGist;
+@FXML	 Menu myGists;
+@FXML	 Menu myOrganizations;
+@FXML	 Menu myRepos;
+@FXML	 Menu watchingRepos;
+@FXML	 MenuItem clearCache;
+@FXML	 AnchorPane editorContainer;
+@FXML	 TextArea logViewRef;
+@FXML	 AnchorPane logView;
+@FXML	 TitledPane commandLineTitledPane;
+@FXML	 AnchorPane CommandLine;
+@FXML	 AnchorPane jfx3dControls;
+@FXML	 AnchorPane viewContainer;
 
 
 
@@ -171,6 +168,8 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		return;
+		/*
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
@@ -182,20 +181,14 @@ public class MainController implements Initializable {
 			@Override
 			public void run() {
 
-				try {
-					ScriptingEngine.runLogin();
-					icon = AssetFactory.loadAsset("BowlerStudio.png");
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} 
+	
 				//ScriptingEngine.getGithub().getMyself().getGravatarId()
 				// System.out.println("Loading 3d engine");
 				jfx3dmanager = new BowlerStudio3dEngine();
 
 				setApplication(new BowlerStudioController(jfx3dmanager, mainControllerRef));
 				Platform.runLater(() -> {
+					logViewRefStatic = new TextArea();
 					editorContainer.getChildren().add(getApplication());
 					AnchorPane.setTopAnchor(getApplication(), 0.0);
 					AnchorPane.setRightAnchor(getApplication(), 0.0);
@@ -225,25 +218,7 @@ public class MainController implements Initializable {
 					jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
 					viewContainer.getChildren().add(subScene);
 				});
-				//
-				// new Thread() {
-				// public void run() {
-				// setName("Load Haar Thread");
-				// try {
-				// HaarFactory.getStream(null);
-				// } catch (Exception ex) {
-				// }
-				// }
-				// }.start();
 
-				// getAddDefaultRightArm().setOnAction(event -> {
-				//
-				// application.onAddDefaultRightArm(event);
-				// });
-				// getAddVRCamera().setOnAction(event -> {
-				// if(AddVRCamera.isSelected())
-				// application.onAddVRCamera(event);
-				// });
 
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
 					if (ScriptingEngine.getLoginID() != null) {
@@ -313,6 +288,7 @@ public class MainController implements Initializable {
 		Platform.runLater(()->{
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 		});
+		*/
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -607,7 +583,7 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	private void setToLoggedOut() {
+	public void setToLoggedOut(ActionEvent e) {
 		Platform.runLater(() -> {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
@@ -652,8 +628,8 @@ public class MainController implements Initializable {
 		return new File(urlString);
 	}
 
-	@FXML
-	private void onLoadFile(ActionEvent e) {
+	
+	public void onLoadFile(ActionEvent e) {
 		new Thread() {
 			public void run() {
 				setName("Load File Thread");
@@ -679,8 +655,8 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	@FXML
-	private void onConnect(ActionEvent e) {
+	
+	public void onConnect(ActionEvent e) {
 		new Thread() {
 			public void run() {
 				setName("Load BowlerDevice Dialog Thread");
@@ -689,14 +665,14 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	@FXML
-	private void onConnectVirtual(ActionEvent e) {
+	
+	public void onConnectVirtual(ActionEvent e) {
 
 		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000), "virtual");
 	}
 
-	@FXML
-	private void onClose(ActionEvent e) {
+	
+	public void onClose(ActionEvent e) {
 		System.exit(0);
 	}
 
@@ -716,7 +692,7 @@ public class MainController implements Initializable {
 		getApplication().openUrlInNewTab(url);
 	}
 
-	@FXML
+	
 	public void onConnectCHDKCamera(ActionEvent event) {
 		Platform.runLater(() -> {
 			try {
@@ -728,40 +704,40 @@ public class MainController implements Initializable {
 		});
 	}
 
-	@FXML
+	
 	public void onConnectCVCamera(ActionEvent event) {
 
 		Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
 
 	}
 
-//	@FXML
+//	
 //	public void onConnectJavaCVCamera() {
 //
 //		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
 //
 //	}
 
-	@FXML
-	public void onConnectFileSourceCamera() {
+	
+	public void onConnectFileSourceCamera(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectFileSourceCamera());
 
 	}
 
-	@FXML
-	public void onConnectURLSourceCamera() {
+	
+	public void onConnectURLSourceCamera(ActionEvent event) {
 
 		Platform.runLater(() -> ConnectionManager.onConnectURLSourceCamera());
 
 	}
 
-	@FXML
+	
 	public void onConnectHokuyoURG(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectHokuyoURG());
 
 	}
 
-	@FXML
+	
 	public void onConnectGamePad(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectGamePad("gamepad"));
 
@@ -786,8 +762,8 @@ public class MainController implements Initializable {
 	// AddDefaultRightArm = addDefaultRightArm;
 	// }
 
-	@FXML
-	public void onLogin() {
+	
+	public void onLogin(ActionEvent event) {
 		new Thread() {
 			public void run() {
 				setName("Login Gist Thread");
@@ -802,8 +778,8 @@ public class MainController implements Initializable {
 
 	}
 
-	@FXML
-	public void onLogout() {
+	
+	public void onLogout(ActionEvent event) {
 		try {
 			ScriptingEngine.logout();
 		} catch (IOException e) {
@@ -812,14 +788,14 @@ public class MainController implements Initializable {
 		}
 	}
 
-	@FXML
-	public void onConnectPidSim() {
+	
+	public void onConnectPidSim(ActionEvent event) {
 		LinearPhysicsEngine eng = new LinearPhysicsEngine();
 		eng.connect();
 		ConnectionManager.addConnection(eng, "engine");
 	}
 
-	@FXML
+	
 	public void onPrint(ActionEvent event) {
 		NRPrinter printer = (NRPrinter) ConnectionManager.pickConnectedDevice(NRPrinter.class);
 		if (printer != null) {
@@ -828,8 +804,8 @@ public class MainController implements Initializable {
 
 	}
 
-	@FXML
-	public void onMobileBaseFromFile() {
+	
+	public void onMobileBaseFromFile(ActionEvent event) {
 		new Thread() {
 			public void run() {
 				setName("Load Mobile Base Thread");
@@ -885,8 +861,8 @@ public class MainController implements Initializable {
 		}.start();
 
 	}
-	@FXML
-	public void onMobileBaseFromGist() {
+	
+	public void onMobileBaseFromGist(ActionEvent event) {
 
 		PromptForGit.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
 			loadMobilebaseFromGist(gitsId, file);
@@ -908,13 +884,12 @@ public class MainController implements Initializable {
 	
 
 	public static ByteArrayOutputStream getOut() {
-		if (out == null)
-			out = new ByteArrayOutputStream();
+
 		return out;
 	}
 
-	@FXML
-	public void onCreatenewGist() {
+	
+	public void onCreatenewGist(ActionEvent event) {
 		Stage s = new Stage();
 		new Thread(){
 			public void run(){
@@ -928,8 +903,8 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	@FXML
-	public void onAddFileToGist() {
+	
+	public void onAddFileToGist(ActionEvent event) {
 		// AddFileToGistController controller = new AddFileToGistController();
 		// try
 		// {
@@ -941,8 +916,8 @@ public class MainController implements Initializable {
 		// }
 	}
 
-	@FXML
-	public void onOpenGitter() {
+	
+	public void onOpenGitter(ActionEvent event) {
 		String url = "https://gitter.im";
 		try {
 			BowlerStudio.openUrlInNewTab(new URL(url));
@@ -952,7 +927,7 @@ public class MainController implements Initializable {
 		}
 	}
 
-	@FXML public void clearScriptCache() {
+	 public void clearScriptCache() {
 		Platform.runLater(()->{
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Are you sure you have published all your work?");
@@ -990,7 +965,7 @@ public class MainController implements Initializable {
 	    folder.delete();
 	}
 
-	@FXML public void onMobileBaseFromGit() {
+	 public void onMobileBaseFromGit(ActionEvent event) {
 		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git", (gitsId, file) -> {
 			loadMobilebaseFromGit(gitsId, file);
 		});
