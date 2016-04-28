@@ -353,7 +353,7 @@ public class LinkConfigurationWidget extends GridPane {
 
 		final ComboBox<String> channel = new ComboBox<String>();
 		for (int i=0;i<24;i++) {
-			channel.getItems().add(new Integer(i).toString());
+			channel.getItems().add(Integer.toString(i));
 		}
 		channel.setOnAction(new EventHandler<ActionEvent>() {
 			

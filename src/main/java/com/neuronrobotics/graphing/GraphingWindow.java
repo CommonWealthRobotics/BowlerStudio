@@ -114,7 +114,7 @@ public class GraphingWindow extends JPanel {
 				}
 				
 				axis.setFixedAutoRange(value);
-				length.setText(value + "");
+				length.setText(String.valueOf(value));
 				scale.setValue(value);
 				
 				invalidate();
@@ -160,7 +160,7 @@ public class GraphingWindow extends JPanel {
 		
         axis.setAutoRange(true);
         axis.setFixedAutoRange(scale.getValue());  
-        length.setText("" + scale.getValue());
+        length.setText(String.valueOf(scale.getValue()));
 		//invalidate();
 		repaint();
 	}
@@ -176,7 +176,7 @@ public class GraphingWindow extends JPanel {
         double sLower =loc-(scale.getValue()/2);
         double sUpper =loc+(scale.getValue()/2);
         axis.setRange(sLower, sUpper);
-        length.setText("" + scale.getValue());
+        length.setText(String.valueOf(scale.getValue()));
 		//invalidate();
 		//repaint();
 	}

@@ -89,18 +89,18 @@ public class PrinterConfiguration extends JPanel {
 		if(NRPrinter.class.isInstance(p)){
 			this.printer = (NRPrinter)p;
 			state = printer.getStateBasedControllerConfiguration();
-			kp.setText(new Double(state.getkP()).toString());
-			ki.setText(new Double(state.getkI()).toString());
-			kd.setText(new Double(state.getkD()).toString());
-			vkp.setText(new Double(state.getvKP()).toString());
-			vkd.setText(new Double(state.getvKD()).toString());
-			mmPos.setText(new Double(state.getMmPositionResolution()).toString());
-			maxVel.setText(new Double(state.getMaximumMMperSec()).toString());
-			baseRad.setText(new Double(state.getBaseRadius()).toString());
-			EErad.setText(new Double(state.getEndEffectorRadius()).toString());
-			maxz.setText(new Double(state.getMaxZ()).toString());
-			minz.setText(new Double(state.getMinZ()).toString());
-			rodlen.setText(new Double(state.getRodLength()).toString());
+			kp.setText(Double.toString(state.getkP()));
+			ki.setText(Double.toString(state.getkI()));
+			kd.setText(Double.toString(state.getkD()));
+			vkp.setText(Double.toString(state.getvKP()));
+			vkd.setText(Double.toString(state.getvKD()));
+			mmPos.setText(Double.toString(state.getMmPositionResolution()));
+			maxVel.setText(Double.toString(state.getMaximumMMperSec()));
+			baseRad.setText(Double.toString(state.getBaseRadius()));
+			EErad.setText(Double.toString(state.getEndEffectorRadius()));
+			maxz.setText(Double.toString(state.getMaxZ()));
+			minz.setText(Double.toString(state.getMinZ()));
+			rodlen.setText(Double.toString(state.getRodLength()));
 			hardPos.setSelected(state.isUseHardPositioning());
 			add(controls,"wrap");
 		}
