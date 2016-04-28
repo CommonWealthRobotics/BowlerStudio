@@ -39,7 +39,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button py = new Button("",AssetFactory.loadIcon("Plus-Y.png"));
 	Button ny = new Button("",AssetFactory.loadIcon("Minus-Y.png"));
 	Button pz = new Button("",AssetFactory.loadIcon("Plus-Z.png"));
-	Button nz = new Button("",AssetFactory.loadIcon("Minuz-Z.png"));
+	Button nz = new Button("",AssetFactory.loadIcon("Minus-Z.png"));
 	Button home = new Button("",AssetFactory.loadIcon("Home.png"));
 	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
 	TextField increment=new TextField(new Double(defauletSpeed).toString());
