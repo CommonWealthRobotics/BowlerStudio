@@ -173,7 +173,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 
 		if(!button.isPressed()){
 			// button released
-			Log.warning(button.getText()+" Button released ");
+			//Log.info(button.getText()+" Button released ");
 			try {
 				TransformNR t = getKin().getCurrentTaskSpaceTransform();
 				getKin().setDesiredTaskSpaceTransform(t,  0);

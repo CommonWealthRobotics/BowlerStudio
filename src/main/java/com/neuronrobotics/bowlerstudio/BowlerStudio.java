@@ -45,178 +45,176 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class BowlerStudio extends Application {
-    
-    private static TextArea log;
-    private static MainController controller;
+
+	private static TextArea log;
+	private static MainController controller;
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
 
-
-    /**
-     * @param args the command line arguments
-     * @throws Exception 
-     */
-    @SuppressWarnings("unchecked")
+	/**
+	 * @param args
+	 *            the command line arguments
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-    	
-    	if(args.length==0){
 
-    		
-    		//ScriptingEngine.logout();
+		if (args.length == 0) {
+
+			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
-			
-    		if(ScriptingEngine.getCreds().exists())
-    			ScriptingEngine.runLogin();
-    		else
-    			ScriptingEngine.setupAnyonmous();
-    		//Download and Load all of the assets
-    		AssetFactory.loadAsset("BowlerStudio.png");
-    		BowlerStudioResourceFactory.load();
-    		
-    		if(!ScriptingEngine.getCreds().exists()){
-    			ScriptingEngine.logout();
-    			ScriptingEngine.login();
-    		}
-    		PrintStream ps = new PrintStream(MainController.getOut());
-    		//System.setErr(ps);
-    		//System.setOut(ps);
-    		
-    		//System.out.println("Loading assets ");
-    	
-    		
-    		//System.out.println("Done loading assets ");
-    		String key="Bowler Initial Version";
-    		//System.out.println("Loading Main.fxml");
 
-			try{
-				OpenCVJNILoader.load();              // Loads the JNI (java native interface)
-			}catch(Exception e){
-				//e.printStackTrace();
-				//opencvOk=false;
-    						Platform.runLater(()->{
-    							Alert alert = new Alert(AlertType.INFORMATION);
-    							alert.setTitle("OpenCV missing");
-    							alert.setHeaderText("Opencv library is missing");
-    							alert.setContentText(e.getMessage());
-    							alert .initModality(Modality.APPLICATION_MODAL);
-    							alert.show();
-    							e.printStackTrace();
-    						});
+			if (ScriptingEngine.getCreds().exists())
+				ScriptingEngine.runLogin();
+			else
+				ScriptingEngine.setupAnyonmous();
+			// Download and Load all of the assets
+			AssetFactory.loadAsset("BowlerStudio.png");
+			BowlerStudioResourceFactory.load();
+
+			if (!ScriptingEngine.getCreds().exists()) {
+				ScriptingEngine.logout();
+				ScriptingEngine.login();
+			}
+
+			// System.out.println("Loading assets ");
+
+			// System.out.println("Done loading assets ");
+			String key = "Bowler Initial Version";
+			// System.out.println("Loading Main.fxml");
+
+			try {
+				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
+			} catch (Exception e) {
+				// e.printStackTrace();
+				// opencvOk=false;
+				Platform.runLater(() -> {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("OpenCV missing");
+					alert.setHeaderText("Opencv library is missing");
+					alert.setContentText(e.getMessage());
+					alert.initModality(Modality.APPLICATION_MODAL);
+					alert.show();
+					e.printStackTrace();
+				});
 
 			}
-			if(NativeResource.isLinux()){
-				String [] possibleLocals = new String[]{
-						"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
-						"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
-				};
+			if (NativeResource.isLinux()) {
+				String[] possibleLocals = new String[] {
+						"/usr/local/share/OpenCV/java/lib" + Core.NATIVE_LIBRARY_NAME + ".so",
+						"/usr/lib/jni/lib" + Core.NATIVE_LIBRARY_NAME + ".so" };
 				Slic3r.setExecutableLocation("/usr/bin/slic3r");
-				
-			}else if(NativeResource.isWindows()){
-				String basedir =System.getenv("OPENCV_DIR");
-				if(basedir == null)
-					throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-				System.err.println("OPENCV_DIR found at "+ basedir);
-				basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+
+			} else if (NativeResource.isWindows()) {
+				String basedir = System.getenv("OPENCV_DIR");
+				if (basedir == null)
+					throw new RuntimeException(
+							"OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+				System.err.println("OPENCV_DIR found at " + basedir);
+				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
 				Slic3r.setExecutableLocation(basedir);
-				
+
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// This is a workaround for #8 and is only relavent on osx
-				// it causes the SwingNodes not to load if not called way ahead of time
+				// it causes the SwingNodes not to load if not called way ahead
+				// of time
 				javafx.scene.text.Font.getFamilies();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    		CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile()+"/csgDatabase.json"));
-    		launch(args);
-    	}else{
-           BowlerKernel.main(args);
-    	}
-    }
-   
+			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
+			launch(args);
+		} else {
+			BowlerKernel.main(args);
+		}
+	}
+
 	public static void setSelectedTab(Tab tab) {
 		controller.getApplication().setSelectedTab(tab);
 	}
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        setPrimaryStage(primaryStage);
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		setPrimaryStage(primaryStage);
 		Parent main = loadFromFXML();
 
-        setScene(new Scene(main, 1250, 768,true));
+		setScene(new Scene(main, 1250, 768, true));
 
-//        getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
-//                toExternalForm());
-        
-        PerspectiveCamera camera = new PerspectiveCamera();
-        
-        getScene().setCamera(camera);
+		// getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
+		// toExternalForm());
 
-        primaryStage.setTitle("Bowler Studio");
-        primaryStage.setScene(getScene());
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(arg0 -> {
-        	
-        	controller.disconnect();
-        	ThreadUtil.wait(100);
-        	System.exit(0);
+		PerspectiveCamera camera = new PerspectiveCamera();
+
+		getScene().setCamera(camera);
+
+		primaryStage.setTitle("Bowler Studio");
+		primaryStage.setScene(getScene());
+		primaryStage.show();
+		primaryStage.setOnCloseRequest(arg0 -> {
+
+			controller.disconnect();
+			ThreadUtil.wait(100);
+			System.exit(0);
 		});
-        primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
-        primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
+		primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+		primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream("images/hat.png")));
 
+		PrintStream ps = new PrintStream(MainController.getOut());
+		System.setErr(ps);
+		System.setOut(ps);
 
-	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
-	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
-	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
-	     System.out.println("Welcome to BowlerStudio!");
-	     Log.enableWarningPrint();
-    }
+		System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+		System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+		System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+		System.out.println("Welcome to BowlerStudio!");
+		Log.enableWarningPrint();
+	}
 
-    public static Parent loadFromFXML() {
-    	//new Exception().printStackTrace();
+	public static Parent loadFromFXML() {
+		// new Exception().printStackTrace();
 		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
-        if (controller!=null) {
-            throw new IllegalStateException("UI already loaded");
-        }
-        fxmlLoader.setController(new MainController());
-        try {
+		if (controller != null) {
+			throw new IllegalStateException("UI already loaded");
+		}
+		fxmlLoader.setController(new MainController());
+		try {
 			fxmlLoader.load();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        controller = fxmlLoader.getController();
-        
-        log = controller.getLogView();
-        
+		controller = fxmlLoader.getController();
 
-        return fxmlLoader.getRoot();
-    }
-    
-    public static TextArea getLogView() {
-        
-        if (log==null) {
-            throw new IllegalStateException("Load the UI first.");
-        }
-        
-        return log;
-    }
-    
-//	public static Menu getCreatureLabMenue() {
-//		return controller.getCreatureLabMenue();
-//	}
+		log = controller.getLogView();
+
+		return fxmlLoader.getRoot();
+	}
+
+	public static TextArea getLogView() {
+
+		if (log == null) {
+			throw new IllegalStateException("Load the UI first.");
+		}
+
+		return log;
+	}
+
+	// public static Menu getCreatureLabMenue() {
+	// return controller.getCreatureLabMenue();
+	// }
 
 	public static Stage getPrimaryStage() {
 		return primaryStage;
 	}
 
 	public static void setPrimaryStage(Stage primaryStage) {
-		BowlerStudio.primaryStage=primaryStage;
-	
-		Platform.runLater(()->{
+		BowlerStudio.primaryStage = primaryStage;
+
+		Platform.runLater(() -> {
 			try {
 				BowlerStudio.primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudio.png"));
 			} catch (Exception e) {
@@ -225,17 +223,17 @@ public class BowlerStudio extends Application {
 			}
 		});
 	}
-	
-	public static void openUrlInNewTab(URL url){
+
+	public static void openUrlInNewTab(URL url) {
 		controller.openUrlInNewTab(url);
 	}
-	
-	public static int speak(String msg){
-		
+
+	public static int speak(String msg) {
+
 		return BowlerKernel.speak(msg);
 	}
-	
-	public static ScriptingFileWidget createFileTab(File file){
+
+	public static ScriptingFileWidget createFileTab(File file) {
 		return controller.createFileTab(file);
 	}
 
@@ -246,6 +244,7 @@ public class BowlerStudio extends Application {
 	public static void setScene(Scene s) {
 		scene = s;
 	}
+
 	public static void clearConsole() {
 		controller.clearConsole();
 	}
