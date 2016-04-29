@@ -73,9 +73,9 @@ public class BowlerStudio extends Application {
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
 
-			if (!ScriptingEngine.getCreds().exists()) {
-				ScriptingEngine.logout();
-			}
+//			if (!ScriptingEngine.getCreds().exists()) {
+//				ScriptingEngine.logout();
+//			}
 
 			// System.out.println("Loading assets ");
 
@@ -162,28 +162,28 @@ public class BowlerStudio extends Application {
 		primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
 		primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream("images/hat.png")));
 
-		PrintStream ps = new PrintStream(MainController.getOut());
-		System.setErr(ps);
-		System.setOut(ps);
+
+		//System.setErr(new PrintStream(MainController.getOut()));
+		System.setOut(new PrintStream(MainController.getOut()));
 
 		System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 		System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 		System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 		System.out.println("Welcome to BowlerStudio!");
-		Log.enableWarningPrint();
-		new Thread(){
-			public void run(){
-				ThreadUtil.wait(1000);
-				if (!ScriptingEngine.getCreds().exists()) {
-					try {
-						ScriptingEngine.login();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}.start();
+		Log.enableSystemPrint(false);
+//		new Thread(){
+//			public void run(){
+//				ThreadUtil.wait(1000);
+//				if (!ScriptingEngine.getCreds().exists()) {
+//					try {
+//						ScriptingEngine.login();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}.start();
 
 	}
 

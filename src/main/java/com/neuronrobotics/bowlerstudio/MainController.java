@@ -76,7 +76,7 @@ public class MainController implements Initializable {
 	 * class vatiables
 	 */
 	private static int sizeOfTextBuffer = 4000;
-	private static ByteArrayOutputStream out = new ByteArrayOutputStream();
+	private static ByteArrayOutputStream out;
 	private static boolean opencvOk = true;
 	private static String newString = null;
 	private static TextArea logViewRefStatic;
@@ -883,7 +883,8 @@ public class MainController implements Initializable {
 	
 
 	public static ByteArrayOutputStream getOut() {
-
+		if(out==null)
+			out = new ByteArrayOutputStream();
 		return out;
 	}
 
