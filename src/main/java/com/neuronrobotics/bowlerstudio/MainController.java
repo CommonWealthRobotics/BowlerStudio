@@ -168,7 +168,6 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		updateLog();
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		// THis initialization needs to be launched from a thread to avoid
@@ -286,6 +285,10 @@ public class MainController implements Initializable {
 		}).start();
 		Platform.runLater(()->{
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+		});
+		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
+
+			updateLog();
 		});
 		
 	}
@@ -765,6 +768,7 @@ public class MainController implements Initializable {
 	public void onLogin(ActionEvent event) {
 		new Thread() {
 			public void run() {
+				ScriptingEngine.setLoginManager(new GitHubLoginManager());
 				setName("Login Gist Thread");
 				try {
 					ScriptingEngine.login();

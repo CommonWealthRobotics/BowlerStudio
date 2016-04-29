@@ -24,7 +24,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 			
 			@Override
 			public void onLogout(String oldUsername) {
-				System.err.println("Logout!");
+				//System.err.println("Logout!");
 				//AnonSelected=false;
 			}
 			
@@ -75,9 +75,9 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 			ThreadUtil.wait(100);
 		}
 		creds = githublogin.getCreds();
-		System.err.println(" login = "+creds);
+		//System.err.println(" login = "+creds);
 		if(creds == null){
-			System.err.println("Anon mode");
+			//System.err.println("Anon mode");
 			AnonSelected=true;
 		}
 		loginWindowOpen = false;
