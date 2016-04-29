@@ -32,6 +32,7 @@ import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -41,6 +42,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -267,5 +269,30 @@ public class BowlerStudio extends Application {
 
 	public static void clearConsole() {
 		controller.clearConsole();
+	}
+	public static void setOverlayLeft(Group content){
+		controller.setOverlayLeft(content);
+	}
+	public static  void clearOverlayLeft(){
+		controller.clearOverlayLeft();
+	}
+	
+	public  static void setOverlayTop(Group content){
+		controller.setOverlayTop(content);;
+	}
+	public static  void clearOverlayTop(){
+		controller.clearOverlayTop();
+	}
+	public static  void setOverlayTopRight(Group content){
+		controller.setOverlayTopRight(content);
+	}
+	public static  void clearOverlayTopRight(){
+		controller.clearOverlayTopRight();
+	}
+	public  static void setOverlayBottomRight(Group content){
+		controller.setOverlayBottomRight(content);
+	}
+	public static  void clearOverlayBottomRight(){
+		controller.clearOverlayBottomRight();
 	}
 }

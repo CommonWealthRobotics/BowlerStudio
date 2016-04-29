@@ -199,12 +199,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			setDefaultWalkingEngine(device);
 
 			AnchorPane controls = new AnchorPane();
-			Accordion advancedPanel = new Accordion();
-			//if (device.getDriveType() == DrivingType.WALKING) {
-				TitledPane rp = new TitledPane("Walking Engine", new JogWidget(device));
-				advancedPanel.getPanes().add(rp);
-				advancedPanel.setExpandedPane(rp);
-			//}
+//			Accordion advancedPanel = new Accordion();
+//			//if (device.getDriveType() == DrivingType.WALKING) {
+//				TitledPane rp = new TitledPane("Walking Engine", );
+//				advancedPanel.getPanes().add(rp);
+//				advancedPanel.setExpandedPane(rp);
+//			//}
 
 			TreeItem<String> rootItem;
 			try {
@@ -223,7 +223,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			tree.setPrefSize(400, 1000);
+			tree.setPrefSize(325, 1000);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
@@ -262,15 +262,38 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			baseManager = new MobileBaseCadManager(device, pi,autoRegen);
 			// dhlabTopLevel.add(advancedPanel, 0, 0);
 			VBox inputs = new VBox(10);
-			inputs.getChildren().addAll(progress,tree);
-			dhlabTopLevel.add(inputs, 0, 0);
-			AnchorPane.setTopAnchor(controls, 0.0);
-			AnchorPane.setRightAnchor(controls, 0.0);
-			AnchorPane.setLeftAnchor(controls, 0.0);
-			AnchorPane.setBottomAnchor(controls, 0.0);
-			VBox controlGroup = new VBox(10);
-			controlGroup.getChildren().addAll(advancedPanel,controls);
-			dhlabTopLevel.add(controlGroup, 1, 0);
+			BowlerStudio.setOverlayLeft(new Group(tree));
+			device.addConnectionEventListener(new IDeviceConnectionEventListener() {
+				
+				@Override
+				public void onDisconnect(BowlerAbstractDevice arg0) {
+					BowlerStudio.clearOverlayLeft();
+					BowlerStudio.clearOverlayTop();
+					BowlerStudio.clearOverlayTopRight();
+					BowlerStudio.clearOverlayBottomRight();
+				}
+				
+				@Override
+				public void onConnect(BowlerAbstractDevice arg0) {}
+			});
+			progress.setStyle("-fx-background-color: #FFFFFF;");
+			progress.setOpacity(.7);
+			progress.setPrefSize(325, 50);
+			BowlerStudio.setOverlayTop(new Group(progress));
+			BowlerStudio.setOverlayTopRight(new Group(new JogWidget(device)));
+			BowlerStudio.setOverlayBottomRight(new Group(controls));
+			
+			
+			
+//			//inputs.getChildren().addAll(progress);
+//			dhlabTopLevel.add(inputs, 0, 0);
+//			AnchorPane.setTopAnchor(controls, 0.0);
+//			AnchorPane.setRightAnchor(controls, 0.0);
+//			AnchorPane.setLeftAnchor(controls, 0.0);
+//			AnchorPane.setBottomAnchor(controls, 0.0);
+//			VBox controlGroup = new VBox(10);
+//			controlGroup.getChildren().addAll(advancedPanel,controls);
+//			dhlabTopLevel.add(controlGroup, 1, 0);
 		} else if (AbstractKinematicsNR.class.isInstance(pm)) {
 			AbstractKinematicsNR device = (AbstractKinematicsNR) pm;
 			dhlabTopLevel.add(new DhChainWidget(device, null), 0, 0);

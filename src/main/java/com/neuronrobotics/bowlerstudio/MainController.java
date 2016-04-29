@@ -29,6 +29,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
@@ -98,23 +99,78 @@ public class MainController implements Initializable {
 	/**
 	 * FXML Widgets
 	 */
-@FXML	 MenuBar BowlerStudioMenue;
-@FXML	 Menu CreaturesMenu;
-@FXML	 Menu GitHubRoot;
-@FXML	 MenuItem logoutGithub;
-@FXML	 MenuItem createNewGist;
-@FXML	 Menu myGists;
-@FXML	 Menu myOrganizations;
-@FXML	 Menu myRepos;
-@FXML	 Menu watchingRepos;
-@FXML	 MenuItem clearCache;
-@FXML	 AnchorPane editorContainer;
-@FXML	 TextArea logViewRef;
-@FXML	 AnchorPane logView;
-@FXML	 TitledPane commandLineTitledPane;
-@FXML	 AnchorPane CommandLine;
-@FXML	 AnchorPane jfx3dControls;
-@FXML	 AnchorPane viewContainer;
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private ResourceBundle resources;
+
+    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    private URL location;
+
+    @FXML // fx:id="BowlerStudioMenue"
+    private MenuBar BowlerStudioMenue; // Value injected by FXMLLoader
+
+    @FXML // fx:id="CadControlsAnchor"
+    private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
+
+    @FXML // fx:id="CommandLine"
+    private AnchorPane CommandLine; // Value injected by FXMLLoader
+
+    @FXML // fx:id="CreaturesMenu"
+    private Menu CreaturesMenu; // Value injected by FXMLLoader
+
+    @FXML // fx:id="DriveControlsAnchor"
+    private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
+
+    @FXML // fx:id="GitHubRoot"
+    private Menu GitHubRoot; // Value injected by FXMLLoader
+
+    @FXML // fx:id="TempControlsAnchor"
+    private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
+
+    @FXML // fx:id="clearCache"
+    private MenuItem clearCache; // Value injected by FXMLLoader
+
+    @FXML // fx:id="commandLineTitledPane"
+    private TitledPane commandLineTitledPane; // Value injected by FXMLLoader
+
+    @FXML // fx:id="createNewGist"
+    private MenuItem createNewGist; // Value injected by FXMLLoader
+
+    @FXML // fx:id="editorContainer"
+    private AnchorPane editorContainer; // Value injected by FXMLLoader
+
+    @FXML // fx:id="jfx3dControls"
+    private AnchorPane jfx3dControls; // Value injected by FXMLLoader
+
+    @FXML // fx:id="logView"
+    private AnchorPane logView; // Value injected by FXMLLoader
+
+    @FXML // fx:id="logViewRef"
+    private TextArea logViewRef; // Value injected by FXMLLoader
+
+    @FXML // fx:id="logoutGithub"
+    private MenuItem logoutGithub; // Value injected by FXMLLoader
+
+    @FXML // fx:id="myGists"
+    private Menu myGists; // Value injected by FXMLLoader
+
+    @FXML // fx:id="myOrganizations"
+    private Menu myOrganizations; // Value injected by FXMLLoader
+
+    @FXML // fx:id="myRepos"
+    private Menu myRepos; // Value injected by FXMLLoader
+
+
+    @FXML // fx:id="overlayScrollPanel"
+    private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
+
+    @FXML // fx:id="viewContainer"
+    private AnchorPane viewContainer; // Value injected by FXMLLoader
+
+    @FXML // fx:id="watchingRepos"
+    private Menu watchingRepos; // Value injected by FXMLLoader
+
+
+
 private MainController mainControllerRef;
 
 
@@ -132,6 +188,71 @@ private MainController mainControllerRef;
 	        appendText(String.valueOf((char)b));
 	    }
 	}
+	
+	public void setOverlayLeft(Group content){
+		Platform.runLater(()->{
+			overlayScrollPanel.setContent(content);
+			overlayScrollPanel.setVisible(true);
+		});
+	}
+	public void clearOverlayLeft(){
+		Platform.runLater(()->{
+			
+			overlayScrollPanel.setVisible(false);
+		});
+	}
+	
+	public void setOverlayTop(Group content){
+		Platform.runLater(()->{
+			CadControlsAnchor.getChildren().clear();
+			CadControlsAnchor.getChildren().add(content);
+			AnchorPane.setTopAnchor(content, 0.0);
+			AnchorPane.setRightAnchor(content, 0.0);
+			AnchorPane.setLeftAnchor(content, 0.0);
+			AnchorPane.setBottomAnchor(content, 0.0);
+			CadControlsAnchor.setVisible(true);
+		});
+	}
+	public void clearOverlayTop(){
+		Platform.runLater(()->{
+			CadControlsAnchor.getChildren().clear();
+			CadControlsAnchor.setVisible(false);
+		});
+	}
+	public void setOverlayTopRight(Group content){
+		Platform.runLater(()->{
+			DriveControlsAnchor.getChildren().clear();
+			DriveControlsAnchor.getChildren().add(content);
+			AnchorPane.setTopAnchor(content, 0.0);
+			AnchorPane.setRightAnchor(content, 0.0);
+			AnchorPane.setLeftAnchor(content, 0.0);
+			AnchorPane.setBottomAnchor(content, 0.0);
+			DriveControlsAnchor.setVisible(true);
+		});
+	}
+	public void clearOverlayTopRight(){
+		Platform.runLater(()->{
+			DriveControlsAnchor.getChildren().clear();
+			DriveControlsAnchor.setVisible(false);
+		});
+	}
+	public void setOverlayBottomRight(Group content){
+		Platform.runLater(()->{
+			TempControlsAnchor.getChildren().clear();
+			TempControlsAnchor.getChildren().add(content);
+			AnchorPane.setTopAnchor(content, 0.0);
+			AnchorPane.setRightAnchor(content, 0.0);
+			AnchorPane.setLeftAnchor(content, 0.0);
+			AnchorPane.setBottomAnchor(content, 0.0);
+			TempControlsAnchor.setVisible(true);
+		});
+	}
+	public void clearOverlayBottomRight(){
+		Platform.runLater(()->{
+			TempControlsAnchor.getChildren().clear();
+			TempControlsAnchor.setVisible(false);
+		});
+	}
 
 	// private final CodeArea codeArea = new CodeArea();
 
@@ -143,6 +264,28 @@ private MainController mainControllerRef;
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+        assert BowlerStudioMenue != null : "fx:id=\"BowlerStudioMenue\" was not injected: check your FXML file 'Main.fxml'.";
+        assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+        assert CommandLine != null : "fx:id=\"CommandLine\" was not injected: check your FXML file 'Main.fxml'.";
+        assert CreaturesMenu != null : "fx:id=\"CreaturesMenu\" was not injected: check your FXML file 'Main.fxml'.";
+        assert DriveControlsAnchor != null : "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+        assert GitHubRoot != null : "fx:id=\"GitHubRoot\" was not injected: check your FXML file 'Main.fxml'.";
+        assert TempControlsAnchor != null : "fx:id=\"TempControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+        assert clearCache != null : "fx:id=\"clearCache\" was not injected: check your FXML file 'Main.fxml'.";
+        assert commandLineTitledPane != null : "fx:id=\"commandLineTitledPane\" was not injected: check your FXML file 'Main.fxml'.";
+        assert createNewGist != null : "fx:id=\"createNewGist\" was not injected: check your FXML file 'Main.fxml'.";
+        assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'Main.fxml'.";
+        assert jfx3dControls != null : "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'Main.fxml'.";
+        assert logView != null : "fx:id=\"logView\" was not injected: check your FXML file 'Main.fxml'.";
+        assert logViewRef != null : "fx:id=\"logViewRef\" was not injected: check your FXML file 'Main.fxml'.";
+        assert logoutGithub != null : "fx:id=\"logoutGithub\" was not injected: check your FXML file 'Main.fxml'.";
+        assert myGists != null : "fx:id=\"myGists\" was not injected: check your FXML file 'Main.fxml'.";
+        assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'Main.fxml'.";
+        assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'Main.fxml'.";
+        assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'Main.fxml'.";
+        assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
+        assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
+        clearOverlayLeft();
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
 		mainControllerRef = this;
