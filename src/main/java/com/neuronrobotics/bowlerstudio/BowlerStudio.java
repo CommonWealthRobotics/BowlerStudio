@@ -54,8 +54,9 @@ public class BowlerStudio extends Application {
 	
 	static{
 		//These must be changed before anything starts
-		//System.setErr(new PrintStream(MainController.getOut()));
-		System.setOut(new PrintStream(MainController.getOut()));
+		PrintStream ps =new PrintStream(MainController.getOut());
+		//System.setErr(ps);
+		System.setOut(ps);
 	}
 
 	/**

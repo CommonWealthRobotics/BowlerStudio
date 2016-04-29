@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -76,7 +77,7 @@ public class MainController implements Initializable {
 	 * class vatiables
 	 */
 	private static int sizeOfTextBuffer = 4000;
-	private static ByteArrayOutputStream out;
+	private static Console out;
 	private static boolean opencvOk = true;
 	private static String newString = null;
 	private static TextArea logViewRefStatic;
@@ -118,50 +119,18 @@ private MainController mainControllerRef;
 
 
 
-	public  void updateLog() {
-		//System.err.print(".");
-		try{
-			if (logViewRefStatic != null) {
+	private static class Console extends OutputStream {
 	
-				if (getOut().size() == 0) {
-					newString = null;
+	    public void appendText(String valueOf) {
+			Platform.runLater(() -> {
+				if (logViewRefStatic != null)
+					logViewRefStatic.appendText(valueOf);
+			});
+	    }
 	
-				} else {
-					if (!logLock) {
-						logLock = true;
-						new Thread(() -> {
-							String current;
-							String finalStr;
-							newString = getOut().toString();
-							getOut().reset();
-							if (newString != null) {
-								current = logViewRefStatic.getText() + newString;
-								try {
-									finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
-								} catch (StringIndexOutOfBoundsException ex) {
-									finalStr = current;
-								}
-								int strlen = finalStr.length() - 1;
-								String outStr = finalStr;
-								Platform.runLater(() -> {
-									logViewRefStatic.setText(outStr);
-									logViewRefStatic.positionCaret(strlen);
-									logLock = false;
-								});
-							}
-						}).start();
-	
-					}
-				}
-	
-			}
-		}catch(Exception ex){
-			// keep the log going
-		}
-		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
-
-			updateLog();
-		});
+	    public void write(int b) throws IOException {
+	        appendText(String.valueOf((char)b));
+	    }
 	}
 
 	// private final CodeArea codeArea = new CodeArea();
@@ -190,7 +159,6 @@ private MainController mainControllerRef;
 
 				setApplication(new BowlerStudioController(jfx3dmanager, mainControllerRef));
 				Platform.runLater(() -> {
-					logViewRefStatic = new TextArea();
 					editorContainer.getChildren().add(getApplication());
 					AnchorPane.setTopAnchor(getApplication(), 0.0);
 					AnchorPane.setRightAnchor(getApplication(), 0.0);
@@ -290,10 +258,7 @@ private MainController mainControllerRef;
 		Platform.runLater(()->{
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 		});
-		Platform.runLater(()-> {
 
-			updateLog();
-		});
 		
 	}
 
@@ -890,9 +855,9 @@ private MainController mainControllerRef;
 
 	
 
-	public static ByteArrayOutputStream getOut() {
+	public static OutputStream getOut() {
 		if(out==null)
-			out = new ByteArrayOutputStream();
+			out = new Console();
 		return out;
 	}
 
