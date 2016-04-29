@@ -114,6 +114,7 @@ public class MainController implements Initializable {
 @FXML	 AnchorPane CommandLine;
 @FXML	 AnchorPane jfx3dControls;
 @FXML	 AnchorPane viewContainer;
+private MainController mainControllerRef;
 
 
 
@@ -152,7 +153,7 @@ public class MainController implements Initializable {
 			}
 
 		}
-		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
+		FxTimer.runLater(java.time.Duration.ofMillis(200), () -> {
 
 			updateLog();
 		});
@@ -170,9 +171,7 @@ public class MainController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		logViewRefStatic = logViewRef;
 		System.out.println("Main controller inializing");
-		// THis initialization needs to be launched from a thread to avoid
-		// blocking the UI thread that spawwns it
-		MainController mainControllerRef = this;
+		mainControllerRef = this;
 		new Thread(new Runnable() {
 			
 
@@ -286,7 +285,7 @@ public class MainController implements Initializable {
 		Platform.runLater(()->{
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 		});
-		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
+		Platform.runLater(()-> {
 
 			updateLog();
 		});
