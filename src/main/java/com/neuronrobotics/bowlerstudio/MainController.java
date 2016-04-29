@@ -37,6 +37,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -108,13 +109,13 @@ public class MainController implements Initializable {
 @FXML	 Menu myRepos;
 @FXML	 Menu watchingRepos;
 @FXML	 MenuItem clearCache;
-@FXML	 AnchorPane editorContainer;
+@FXML	 Pane editorContainer;
 @FXML	 TextArea logViewRef;
-@FXML	 AnchorPane logView;
+@FXML	 Pane logView;
 @FXML	 TitledPane commandLineTitledPane;
-@FXML	 AnchorPane CommandLine;
-@FXML	 AnchorPane jfx3dControls;
-@FXML	 AnchorPane viewContainer;
+@FXML	 Pane CommandLine;
+@FXML	 Pane jfx3dControls;
+@FXML	 Pane viewContainer;
 private MainController mainControllerRef;
 
 
