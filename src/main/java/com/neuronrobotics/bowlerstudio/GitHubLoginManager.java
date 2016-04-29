@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
+import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -15,8 +17,28 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 	private  boolean loginWindowOpen = false;
 	private  GithubLoginFX githublogin = null;
 	private  Stage stage;
+	private boolean AnonSelected = false;
+	private String[] creds;
+	public GitHubLoginManager(){
+		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+			
+			@Override
+			public void onLogout(String oldUsername) {
+				AnonSelected=false;
+			}
+			
+			@Override
+			public void onLogin(String newUsername) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
 	@Override
 	public String[] prompt(String username) {
+		if (AnonSelected){
+			return creds;
+		}
 		boolean loginWas = loginWindowOpen;
 		
 		
@@ -51,7 +73,9 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 		while (!githublogin.isDone()) {
 			ThreadUtil.wait(100);
 		}
-		String[] creds = githublogin.getCreds();
+		creds = githublogin.getCreds();
+		if(creds == null)
+			AnonSelected=true;
 		loginWindowOpen = false;
 		return creds;
 	}
