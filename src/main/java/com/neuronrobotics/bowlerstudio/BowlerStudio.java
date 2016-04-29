@@ -171,9 +171,20 @@ public class BowlerStudio extends Application {
 		System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 		System.out.println("Welcome to BowlerStudio!");
 		Log.enableWarningPrint();
-		if (!ScriptingEngine.getCreds().exists()) {
-			ScriptingEngine.login();
-		}
+		new Thread(){
+			public void run(){
+				ThreadUtil.wait(1000);
+				if (!ScriptingEngine.getCreds().exists()) {
+					try {
+						ScriptingEngine.login();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+
 	}
 
 	public static Parent loadFromFXML() {

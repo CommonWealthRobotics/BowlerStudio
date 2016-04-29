@@ -57,7 +57,7 @@ public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
 	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
-	private static String HOME_Local_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
+	//private static String HOME_Local_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
 	 * 
 	 */
@@ -277,31 +277,31 @@ public class BowlerStudioController extends TabPane implements
 		
 		// Addnewtabition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
-		new Thread(){
-			public void run(){
-				try {
-					
-					File indexOfTutorial = ScriptingEngine.fileFromGit(
-							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
-							"BowlerStudio/Welcome-To-BowlerStudio/index.html");
-					
-					HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
-					doneLoadingTutorials=true;
-				} catch (GitAPIException | IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				
-			}
-		}.start();
+//		new Thread(){
+//			public void run(){
+//				try {
+//					
+//					File indexOfTutorial = ScriptingEngine.fileFromGit(
+//							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+//							"BowlerStudio/Welcome-To-BowlerStudio/index.html");
+//					
+//					HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
+//					doneLoadingTutorials=true;
+//				} catch (GitAPIException | IOException e2) {
+//					// TODO Auto-generated catch block
+//					e2.printStackTrace();
+//				}
+//				
+//			}
+//		}.start();
 		
 		long start = System.currentTimeMillis();
 		// wait up to 30 seconds for menue to load, then fail over to the web version
-		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
-			ThreadUtil.wait(100);
-		}
-		if(doneLoadingTutorials && !ScriptingEngine.isAutoupdate())
-				HOME_URL = HOME_Local_URL;
+//		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
+//			ThreadUtil.wait(100);
+//		}
+//		if(doneLoadingTutorials && !ScriptingEngine.isAutoupdate())
+//				HOME_URL = HOME_Local_URL;
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {
