@@ -119,41 +119,46 @@ private MainController mainControllerRef;
 
 
 	public  void updateLog() {
-		if (logViewRefStatic != null) {
-
-			if (getOut().size() == 0) {
-				newString = null;
-
-			} else {
-				if (!logLock) {
-					logLock = true;
-					new Thread(() -> {
-						String current;
-						String finalStr;
-						newString = getOut().toString();
-						getOut().reset();
-						if (newString != null) {
-							current = logViewRefStatic.getText() + newString;
-							try {
-								finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
-							} catch (StringIndexOutOfBoundsException ex) {
-								finalStr = current;
+		//System.err.print(".");
+		try{
+			if (logViewRefStatic != null) {
+	
+				if (getOut().size() == 0) {
+					newString = null;
+	
+				} else {
+					if (!logLock) {
+						logLock = true;
+						new Thread(() -> {
+							String current;
+							String finalStr;
+							newString = getOut().toString();
+							getOut().reset();
+							if (newString != null) {
+								current = logViewRefStatic.getText() + newString;
+								try {
+									finalStr = new String(current.substring(current.getBytes().length - sizeOfTextBuffer));
+								} catch (StringIndexOutOfBoundsException ex) {
+									finalStr = current;
+								}
+								int strlen = finalStr.length() - 1;
+								String outStr = finalStr;
+								Platform.runLater(() -> {
+									logViewRefStatic.setText(outStr);
+									logViewRefStatic.positionCaret(strlen);
+									logLock = false;
+								});
 							}
-							int strlen = finalStr.length() - 1;
-							String outStr = finalStr;
-							Platform.runLater(() -> {
-								logViewRefStatic.setText(outStr);
-								logViewRefStatic.positionCaret(strlen);
-								logLock = false;
-							});
-						}
-					}).start();
-
+						}).start();
+	
+					}
 				}
+	
 			}
-
+		}catch(Exception ex){
+			// keep the log going
 		}
-		FxTimer.runLater(java.time.Duration.ofMillis(200), () -> {
+		FxTimer.runLater(java.time.Duration.ofMillis(500), () -> {
 
 			updateLog();
 		});

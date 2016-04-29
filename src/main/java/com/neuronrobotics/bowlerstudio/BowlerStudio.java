@@ -51,6 +51,12 @@ public class BowlerStudio extends Application {
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
+	
+	static{
+		//These must be changed before anything starts
+		//System.setErr(new PrintStream(MainController.getOut()));
+		System.setOut(new PrintStream(MainController.getOut()));
+	}
 
 	/**
 	 * @param args
@@ -163,8 +169,8 @@ public class BowlerStudio extends Application {
 		primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream("images/hat.png")));
 
 
-		//System.setErr(new PrintStream(MainController.getOut()));
-		System.setOut(new PrintStream(MainController.getOut()));
+		
+		
 
 		System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 		System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
