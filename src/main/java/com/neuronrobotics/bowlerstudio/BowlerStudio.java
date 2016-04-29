@@ -75,7 +75,6 @@ public class BowlerStudio extends Application {
 
 			if (!ScriptingEngine.getCreds().exists()) {
 				ScriptingEngine.logout();
-				ScriptingEngine.login();
 			}
 
 			// System.out.println("Loading assets ");
@@ -172,6 +171,9 @@ public class BowlerStudio extends Application {
 		System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 		System.out.println("Welcome to BowlerStudio!");
 		Log.enableWarningPrint();
+		if (!ScriptingEngine.getCreds().exists()) {
+			ScriptingEngine.login();
+		}
 	}
 
 	public static Parent loadFromFXML() {
