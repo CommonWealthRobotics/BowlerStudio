@@ -7,7 +7,8 @@ import java.util.ResourceBundle;
 
 import org.reactfx.util.FxTimer;
 
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
@@ -72,6 +73,7 @@ public class DyIOPanel  implements Initializable {
 	@FXML ImageView chanButton2;
 	@FXML ImageView chanButton1;
 	@FXML ImageView chanButton0;
+	@FXML ImageView background;
 	
 	@FXML ComboBox<String> channelType23;
 	@FXML ComboBox<String> channelType22;
@@ -207,6 +209,13 @@ public class DyIOPanel  implements Initializable {
 		channelValue.add(  channelValue22);
 		channelValue.add(  channelValue23);
 		
+		try {
+			background.setImage(AssetFactory.loadAsset("dyio/dyio-red2.png"));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		this.dyio = d;
 		for (int i = 0; i < 24; i++) {
 			int index = i;
@@ -214,21 +223,9 @@ public class DyIOPanel  implements Initializable {
 			DyIOChannel chan = dyio.getChannel(index);
 			displayFlash.add(new Boolean(true));
 			Platform.runLater(()->channelValue.get(index).setText(Integer.toString(chan.getValue())));
+			Platform.runLater(()->displayFlash( index,chan.getCachedValue()));
 			chan.addChannelEventListener(e -> {
-				// set the value label text
-				if(displayFlash.get(index)){
-					displayFlash.set(index, false);
-					Platform.runLater(()->{
-							channelValue.get(index).setText(Integer.toString(e.getValue()));
-							channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
-							FxTimer.runLater(
-									Duration.ofMillis(200) ,() -> {
-										channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
-										displayFlash.set(index, true);
-									});
-						
-					});
-				}
+				displayFlash( index,e.getValue());
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
@@ -326,6 +323,23 @@ public class DyIOPanel  implements Initializable {
 			}
 		}.start();
 		
+	}
+	
+	private void displayFlash(int index,int value){
+		// set the value label text
+		if(displayFlash.get(index)){
+			displayFlash.set(index, false);
+			Platform.runLater(()->{
+					channelValue.get(index).setText(Integer.toString(value));
+					channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
+					FxTimer.runLater(
+							Duration.ofMillis(200) ,() -> {
+								channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
+								displayFlash.set(index, true);
+							});
+				
+			});
+		}
 	}
 	
 	@FXML public void channelClicked(MouseEvent event) {

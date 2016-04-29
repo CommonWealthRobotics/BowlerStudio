@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -19,80 +22,103 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 
 public class BowlerStudioResourceFactory {
-	private static final Map<DyIOChannelMode,Image> lookup = new HashMap<>();
+	private static final Map<DyIOChannelMode, Image> lookup = new HashMap<>();
 	private static Image chanHighlight;
 	private static Image chanUpdate;
 	private static Image chanDefault;
-	private static final ArrayList<FXMLLoader>fxmlLoaders=new ArrayList<>();
-	private static FXMLLoader mainPanel = new FXMLLoader(
-            BowlerStudio.class.getResource("DyIOPanel.fxml"));
-	private static FXMLLoader githubLogin = new FXMLLoader(
-            BowlerStudio.class.getResource("githublogin.fxml"));
-	private static FXMLLoader mainControllerPanel = new FXMLLoader(
-            BowlerStudio.class.getResource("Main.fxml"));
+	private static final ArrayList<FXMLLoader> fxmlLoaders = new ArrayList<>();
+	private static FXMLLoader mainPanel;
+	private static FXMLLoader githubLogin;
+	private static FXMLLoader mainControllerPanel;
+
 	private BowlerStudioResourceFactory() {
 	}
 
-	public static FXMLLoader getLoader(int channelIndex){
+	public static FXMLLoader getLoader(int channelIndex) {
 		return fxmlLoaders.get(channelIndex);
 	}
-	
-	public static void load(){
 
-				for(DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
-					Image image;
-					//
-					try {
-						image = new Image(
-								DyIOPanel.class
-										.getResourceAsStream("images/icon-"
-												+ cm.toSlug()+ ".png"));
-					} catch (NullPointerException e) {
-						image = new Image(
-								DyIOPanel.class
-										.getResourceAsStream("images/icon-off.png"));
-					}
-					lookup.put( cm, image);
-				}
-				setChanHighlight(new Image(
-						DyIOPanel.class
-						.getResourceAsStream("images/channel-highlight.png")));
-				setChanDefault(new Image(
-						DyIOPanel.class
-																		.getResourceAsStream("images/channel-default.png")));
-				setChanUpdate(new Image(
-						DyIOPanel.class
-								.getResourceAsStream("images/channel-update.png")));
-				
-				for(int i=0;i<24;i++){
-					// generate the control widgets
-					FXMLLoader fxmlLoader = new FXMLLoader(
-				            BowlerStudio.class.getResource("DyIOChannelContorol.fxml"));
-			        try {
-			        	RSyntaxTextArea area = new RSyntaxTextArea();
-			            fxmlLoader.load();
-			        } catch (IOException ex) {
-			            throw new RuntimeException(ex);
-			        }
-					fxmlLoaders.add(fxmlLoader);
-				}
+	public static void load() throws Exception {
+		try {
+			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
+			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
+			mainControllerPanel = AssetFactory.loadLayout("layout/Main.fxml");
+		} catch (InvalidRemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (TransportException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (GitAPIException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+
+		for (DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
+			Image image;
+			//
+			try {
+				image = AssetFactory.loadAsset("dyio/icon-" + cm.toSlug() + ".png");
+			} catch (NullPointerException e) {
+				image = AssetFactory.loadAsset("dyio/icon-off.png");
+			}
+			lookup.put(cm, image);
+		}
+		setChanHighlight(AssetFactory.loadAsset("dyio/channel-highlight.png"));
+		setChanDefault(AssetFactory.loadAsset("dyio/channel-default.png"));
+		setChanUpdate(AssetFactory.loadAsset("dyio/channel-update.png"));
+
+		for (int i = 0; i < 24; i++) {
+			// generate the control widgets
+			FXMLLoader fxmlLoader;
+			try {
+				fxmlLoader = AssetFactory.loadLayout("layout/DyIOChannelContorol.fxml", true);
 				try {
-					mainPanel.load();
-			    } catch (IOException ex) {
-			        Logger.getLogger(BowlerStudio.class.getName()).
-			                log(Level.SEVERE, null, ex);
-			    }
-				
-				try {
-					githubLogin.load();
-				} catch (IOException e) {
-					Logger.getLogger(BowlerStudio.class.getName()).
-		            log(Level.SEVERE, null, e);
+					fxmlLoader.load();
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
-			
-	}//stub to force a load from the static in a specific thread
-	
-	public static Image getModeImage(DyIOChannelMode mode){
+				fxmlLoaders.add(fxmlLoader);
+			} catch (InvalidRemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransportException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		try {
+			mainPanel.load();
+		} catch (IOException ex) {
+			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		try {
+			githubLogin.load();
+		} catch (IOException e) {
+			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, e);
+		}
+
+	}// stub to force a load from the static in a specific thread
+
+	public static Image getModeImage(DyIOChannelMode mode) {
 		return lookup.get(mode);
 	}
 

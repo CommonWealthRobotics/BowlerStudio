@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+
 /**
  * Created by Ryan Benasutti on 2/5/2016.
  */
@@ -28,7 +30,7 @@ public class NewGistController extends Application {
 	@Override
     public void start(Stage primaryStage) throws Exception
     {      
-    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("createNewGist.fxml"));
+    	FXMLLoader loader =AssetFactory.loadLayout("layout/createNewGist.fxml");
     	Parent root;
  
         root = loader.load();

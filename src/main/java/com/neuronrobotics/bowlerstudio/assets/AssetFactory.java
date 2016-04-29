@@ -18,6 +18,7 @@ import org.kohsuke.github.GHRepository;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -26,6 +27,7 @@ public class AssetFactory {
 	private static final String repo = "BowlerStudioImageAssets";
 	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git";
 	private static HashMap<String , Image> cache =new HashMap<>();
+	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
 	private static boolean checked =false;
 	static{
 
@@ -40,16 +42,34 @@ public class AssetFactory {
 
 	private AssetFactory() {
 	}
+	public static FXMLLoader loadLayout(String file ,boolean refresh) throws Exception{
+		if(loaders.get(file)==null || refresh){
+
+			loaders.put(file, new FXMLLoader(loadFile(file).toURI().toURL()));
+		}
+		return loaders.get(file);
+	}
+	public static FXMLLoader loadLayout(String file ) throws Exception{
+		return loadLayout(file, false);
+	}
+	
+	public static File loadFile(String file) throws Exception {
+		return ScriptingEngine
+		.fileFromGit(
+				getGitSource(),// git repo, change this if you fork this demo
+				file// File from within the Git repo
+		);
+	}
 
 	public static Image loadAsset(String file ) throws Exception{
 		
 		if(cache.get(file)==null){
-			File f =ScriptingEngine
-			.fileFromGit(
-					getGitSource(),// git repo, change this if you fork this demo
-					file// File from within the Git repo
-			);
-			if(f==null || !f.exists()){
+			File f =loadFile(file);
+			if(f.getName().endsWith(".fxml")){
+				loadLayout(file);
+				return null;
+			}else
+			if((f==null || !f.exists()) && f.getName().endsWith(".png")){
 				WritableImage obj_img =new WritableImage(30, 30);
 			    byte alpha = (byte)0; 
 			    for (int cx=0;cx<obj_img.getWidth();cx++) {          
@@ -64,6 +84,7 @@ public class AssetFactory {
 
 			    }
 			    cache.put(file, obj_img);
+			    System.out.println("No image at "+file);
 			    try {
 					File imageFile = ScriptingEngine.createFile(getGitSource(),file,"create file");
 					try {
