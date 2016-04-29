@@ -201,16 +201,23 @@ private MainController mainControllerRef;
 		Platform.runLater(()->{CadTextSplit.setDividerPosition(0, value);});
 	}
 	
-	public void setOverlayLeft(Group content){
+	public void setOverlayLeft(TreeView<String>  content){
 		Platform.runLater(()->{
-			overlayScrollPanel.setContent(content);
+
 			overlayScrollPanel.setFitToHeight(true);
-			overlayScrollPanel.setFitToWidth(true);
-			overlayScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) ->{
-				      //Node content = overlayScrollPanel.getContent();
-				      //overlayScrollPanel.setFitToWidth(true);
-				      overlayScrollPanel.setFitToHeight(true);
-				    });
+			overlayScrollPanel.setContent(content);
+			overlayScrollPanel.viewportBoundsProperty()
+					.addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) -> {
+				// Node content = overlayScrollPanel.getContent();
+				// 
+				System.out.println("Resizing " + arg2);
+				Platform.runLater(() -> {
+					overlayScrollPanel.setFitToHeight(true);
+					///content.seth
+					overlayScrollPanel.setContent(content);
+					
+				});
+			});
 			overlayScrollPanel.setVisible(true);
 		});
 	}

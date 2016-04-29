@@ -263,7 +263,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			baseManager = new MobileBaseCadManager(device, pi,autoRegen);
 			// dhlabTopLevel.add(advancedPanel, 0, 0);
 			VBox inputs = new VBox(10);
-			BowlerStudio.setOverlayLeft(new Group(tree));
+			BowlerStudio.setOverlayLeft(tree);
 			device.addConnectionEventListener(new IDeviceConnectionEventListener() {
 				
 				@Override

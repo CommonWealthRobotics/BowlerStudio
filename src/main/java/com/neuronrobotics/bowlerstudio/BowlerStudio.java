@@ -41,6 +41,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -270,8 +271,8 @@ public class BowlerStudio extends Application {
 	public static void clearConsole() {
 		controller.clearConsole();
 	}
-	public static void setOverlayLeft(Group content){
-		controller.setOverlayLeft(content);
+	public static void setOverlayLeft(TreeView<String> tree){
+		controller.setOverlayLeft(tree);
 	}
 	public static  void clearOverlayLeft(){
 		controller.clearOverlayLeft();
