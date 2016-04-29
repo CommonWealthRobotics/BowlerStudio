@@ -212,7 +212,7 @@ private MainController mainControllerRef;
 					.addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) -> {
 				// Node content = overlayScrollPanel.getContent();
 				// 
-				System.out.println("Resizing " + arg2);
+				//System.out.println("Resizing " + arg2);
 				Platform.runLater(() -> {
 					overlayScrollPanel.setFitToHeight(true);
 					///content.seth
