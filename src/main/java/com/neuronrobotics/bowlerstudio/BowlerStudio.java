@@ -295,4 +295,8 @@ public class BowlerStudio extends Application {
 	public static  void clearOverlayBottomRight(){
 		controller.clearOverlayBottomRight();
 	}
+	public  static  void setCadSplit(double value){
+		controller.setCadSplit(value);
+	}
+	
 }

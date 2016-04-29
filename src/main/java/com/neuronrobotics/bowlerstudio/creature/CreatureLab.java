@@ -46,6 +46,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
@@ -223,7 +224,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			tree.setPrefSize(325, 1000);
+			tree.setPrefWidth(325);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
@@ -283,8 +284,14 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			BowlerStudio.setOverlayTopRight(new Group(new JogWidget(device)));
 			BowlerStudio.setOverlayBottomRight(new Group(controls));
 			
+			BowlerStudio.setCadSplit(.1);
 			
-			
+			new Thread(){
+				public void run(){
+					ThreadUtil.wait(500);
+					requestClose();
+				}
+			}.start();
 //			//inputs.getChildren().addAll(progress);
 //			dhlabTopLevel.add(inputs, 0, 0);
 //			AnchorPane.setTopAnchor(controls, 0.0);

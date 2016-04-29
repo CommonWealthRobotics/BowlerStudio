@@ -23,13 +23,17 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.Polygon;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
@@ -116,6 +120,10 @@ public class MainController implements Initializable {
 
     @FXML // fx:id="CreaturesMenu"
     private Menu CreaturesMenu; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="CadTextSplit"
+    private SplitPane CadTextSplit; // Value injected by FXMLLoader
+
 
     @FXML // fx:id="DriveControlsAnchor"
     private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
@@ -189,9 +197,20 @@ private MainController mainControllerRef;
 	    }
 	}
 	
+	public void setCadSplit(double value){
+		Platform.runLater(()->{CadTextSplit.setDividerPosition(0, value);});
+	}
+	
 	public void setOverlayLeft(Group content){
 		Platform.runLater(()->{
 			overlayScrollPanel.setContent(content);
+			overlayScrollPanel.setFitToHeight(true);
+			overlayScrollPanel.setFitToWidth(true);
+			overlayScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) ->{
+				      //Node content = overlayScrollPanel.getContent();
+				      //overlayScrollPanel.setFitToWidth(true);
+				      overlayScrollPanel.setFitToHeight(true);
+				    });
 			overlayScrollPanel.setVisible(true);
 		});
 	}
@@ -206,6 +225,7 @@ private MainController mainControllerRef;
 		Platform.runLater(()->{
 			CadControlsAnchor.getChildren().clear();
 			CadControlsAnchor.getChildren().add(content);
+			
 			AnchorPane.setTopAnchor(content, 0.0);
 			AnchorPane.setRightAnchor(content, 0.0);
 			AnchorPane.setLeftAnchor(content, 0.0);
