@@ -42,6 +42,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -103,6 +104,7 @@ public class MainController implements Initializable {
 	/**
 	 * FXML Widgets
 	 */
+
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
