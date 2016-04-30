@@ -701,33 +701,35 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	private void buildAxes() {
 		
-		int gridSize=1000;
-		int gridDensity=gridSize/10;
-		ground = new Group();
-		Affine groundPlacment=new Affine();
-		for(int i=-gridSize;i<gridSize;i++){
-			for(int j=-gridSize;j<gridSize;j++){
-				if(i%gridDensity==0 &&j%gridDensity==0){
-					Sphere s = new Sphere(1);
-					Affine sp=new Affine();
-					sp.setTy(i);
-					sp.setTx(j);
-					//System.err.println("Placing sphere at "+i+" , "+j);
-					s.getTransforms().add(sp);
-					ground.getChildren().add(s);
-				}
-			}
-		}
+//		int gridSize=1000;
+//		int gridDensity=gridSize/10;
+//		
+//		PhongMaterial phongMaterial = new PhongMaterial();
+//		phongMaterial.setDiffuseColor(Color.BLACK);
+//		for(int i=-gridSize;i<gridSize;i++){
+//			for(int j=-gridSize;j<gridSize;j++){
+//				if(i%gridDensity==0 &&j%gridDensity==0){
+//					Sphere s = new Sphere(1);
+//					s.setMaterial(phongMaterial);
+//					Affine sp=new Affine();
+//					sp.setTy(i);
+//					sp.setTx(j);
+//					//System.err.println("Placing sphere at "+i+" , "+j);
+//					s.getTransforms().add(sp);
+//					ground.getChildren().add(s);
+//				}
+//			}
+//		}
 
 		new Thread(){
 			public void run(){
 				try {
 					Image ruler = AssetFactory.loadAsset("ruler.png");
-					//Image ground = AssetFactory.loadAsset("ground.png");
+					Image ground = AssetFactory.loadAsset("ground.png");
 					Affine groundMove = new Affine();
-					groundMove.setTz(-3);
-					groundMove.setTx(-919/2);
-					groundMove.setTy(-689/2);
+					//groundMove.setTz(-3);
+					groundMove.setTx(-ground.getHeight()/2);
+					groundMove.setTy(-ground.getWidth()/2);
 					Affine zRuler = new Affine();
 					double scale =0.25;
 					//zRuler.setTx(-130*scale);
@@ -753,13 +755,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ImageView rulerImage = new ImageView(ruler);
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
-						//ImageView groundView = new ImageView(ground);
-						//groundView.getTransforms().add(groundMove);
-						//groundView.setOpacity(0.3);
+						ImageView groundView = new ImageView(ground);
+						groundView.getTransforms().add(groundMove);
+						groundView.setOpacity(0.3);
 						zrulerImage.getTransforms().add(zRuler);
 						rulerImage.getTransforms().add(xp);
 						yrulerImage.getTransforms().add(yRuler);
-						axisGroup.getChildren().addAll(zrulerImage,rulerImage,yrulerImage);
+						axisGroup.getChildren().addAll(zrulerImage,rulerImage,yrulerImage,groundView);
 					});
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -784,9 +786,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
 		Label zText = new Label("+Z");
 		zText.getTransforms().add(zp);
-
+		Affine groundPlacment=new Affine();
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
+		ground = new Group();
 		ground.getTransforms().add(groundPlacment);
 		axisGroup.getChildren().addAll(yText,zText,xText,ground, getVirtualcam().getCameraFrame());
 		world.getChildren().addAll(axisGroup, lookGroup);
