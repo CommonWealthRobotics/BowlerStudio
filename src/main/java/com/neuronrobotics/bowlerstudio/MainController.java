@@ -208,6 +208,7 @@ private MainController mainControllerRef;
 
 			overlayScrollPanel.setFitToHeight(true);
 			overlayScrollPanel.setContent(content);
+			content.setOpacity(1);
 			overlayScrollPanel.viewportBoundsProperty()
 					.addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) -> {
 				// Node content = overlayScrollPanel.getContent();
@@ -771,7 +772,7 @@ private MainController mainControllerRef;
 //		return new File(urlString);
 //	}
 
-	
+	@FXML
 	public void onLoadFile(ActionEvent e) {
 		new Thread() {
 			public void run() {
@@ -798,7 +799,7 @@ private MainController mainControllerRef;
 		}.start();
 	}
 
-	
+	@FXML
 	public void onConnect(ActionEvent e) {
 		new Thread() {
 			public void run() {
@@ -808,13 +809,13 @@ private MainController mainControllerRef;
 		}.start();
 	}
 
-	
+	@FXML
 	public void onConnectVirtual(ActionEvent e) {
 
 		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000), "virtual");
 	}
 
-	
+	@FXML
 	public void onClose(ActionEvent e) {
 		System.exit(0);
 	}
@@ -835,7 +836,7 @@ private MainController mainControllerRef;
 		getApplication().openUrlInNewTab(url);
 	}
 
-	
+	@FXML
 	public void onConnectCHDKCamera(ActionEvent event) {
 		Platform.runLater(() -> {
 			try {
@@ -847,7 +848,7 @@ private MainController mainControllerRef;
 		});
 	}
 
-	
+	@FXML
 	public void onConnectCVCamera(ActionEvent event) {
 
 		Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
@@ -861,26 +862,26 @@ private MainController mainControllerRef;
 //
 //	}
 
-	
+	@FXML
 	public void onConnectFileSourceCamera(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectFileSourceCamera());
 
 	}
 
-	
+	@FXML
 	public void onConnectURLSourceCamera(ActionEvent event) {
 
 		Platform.runLater(() -> ConnectionManager.onConnectURLSourceCamera());
 
 	}
 
-	
+	@FXML
 	public void onConnectHokuyoURG(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectHokuyoURG());
 
 	}
 
-	
+	@FXML
 	public void onConnectGamePad(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectGamePad("gamepad"));
 
@@ -905,7 +906,7 @@ private MainController mainControllerRef;
 	// AddDefaultRightArm = addDefaultRightArm;
 	// }
 
-	
+	@FXML
 	public void onLogin(ActionEvent event) {
 		new Thread() {
 			public void run() {
@@ -922,7 +923,7 @@ private MainController mainControllerRef;
 
 	}
 
-	
+	@FXML
 	public void onLogout(ActionEvent event) {
 		try {
 			ScriptingEngine.logout();
@@ -932,14 +933,14 @@ private MainController mainControllerRef;
 		}
 	}
 
-	
+	@FXML
 	public void onConnectPidSim(ActionEvent event) {
 		LinearPhysicsEngine eng = new LinearPhysicsEngine();
 		eng.connect();
 		ConnectionManager.addConnection(eng, "engine");
 	}
 
-	
+	@FXML
 	public void onPrint(ActionEvent event) {
 		NRPrinter printer = (NRPrinter) ConnectionManager.pickConnectedDevice(NRPrinter.class);
 		if (printer != null) {
@@ -948,7 +949,7 @@ private MainController mainControllerRef;
 
 	}
 
-	
+	@FXML
 	public void onMobileBaseFromFile(ActionEvent event) {
 		new Thread() {
 			public void run() {
@@ -1033,7 +1034,7 @@ private MainController mainControllerRef;
 		return out;
 	}
 
-	
+	@FXML
 	public void onCreatenewGist(ActionEvent event) {
 		Stage s = new Stage();
 		new Thread(){
@@ -1061,7 +1062,7 @@ private MainController mainControllerRef;
 		// }
 	}
 
-	
+	@FXML
 	public void onOpenGitter(ActionEvent event) {
 		String url = "https://gitter.im";
 		try {
@@ -1071,8 +1072,8 @@ private MainController mainControllerRef;
 			e.printStackTrace();
 		}
 	}
-
-	 public void clearScriptCache() {
+	@FXML
+	 public void clearScriptCache(ActionEvent event) {
 		Platform.runLater(()->{
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Are you sure you have published all your work?");
@@ -1109,11 +1110,12 @@ private MainController mainControllerRef;
 	    }
 	    folder.delete();
 	}
-
+	@FXML
 	 public void onMobileBaseFromGit(ActionEvent event) {
 		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git", (gitsId, file) -> {
 			loadMobilebaseFromGit(gitsId, file);
 		});
 	}
+	 
 
 }
