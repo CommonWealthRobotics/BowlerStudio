@@ -731,7 +731,7 @@ public class MobleBaseMenueFactory {
 		});
 
 
-		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",AssetFactory.loadIcon("Advanced-Configurartion.png"));
+		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",AssetFactory.loadIcon("Advanced-Configuration.png"));
 
 		callbackMapForTreeitems.put(advanced, () -> {
 			if (widgetMapForTreeitems.get(advanced) == null) {
