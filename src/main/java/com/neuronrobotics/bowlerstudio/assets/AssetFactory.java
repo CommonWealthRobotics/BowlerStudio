@@ -44,10 +44,13 @@ public class AssetFactory {
 	private AssetFactory() {
 	}
 	public static FXMLLoader loadLayout(String file ,boolean refresh) throws Exception{
+		File fxmlFIle =loadFile(file);
 		if(loaders.get(file)==null || refresh){
 
-			loaders.put(file, new FXMLLoader(loadFile(file).toURI().toURL()));
+			loaders.put(file, new FXMLLoader(fxmlFIle.toURI().toURL()));
+			
 		}
+		loaders.get(file).setLocation(fxmlFIle.toURI().toURL());
 		return loaders.get(file);
 	}
 	public static FXMLLoader loadLayout(String file ) throws Exception{
