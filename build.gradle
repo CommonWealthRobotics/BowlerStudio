@@ -110,14 +110,10 @@ repositories {
 
 dependencies {
 
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.17.0"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.17.1"
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.16.2.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
-	compile "org.eclipse.jetty:jetty-server:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-servlet:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-servlets:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-webapp:9.0.2.v20130417"
-	compile "javax.servlet:javax.servlet-api:3.1.0"
+
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 
 }
