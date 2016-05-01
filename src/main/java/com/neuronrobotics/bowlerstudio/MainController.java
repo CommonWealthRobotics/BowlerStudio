@@ -989,7 +989,7 @@ public class MainController implements Initializable {
 		}.start();
 
 	}
-	
+	@FXML
 	public void onMobileBaseFromGist(ActionEvent event) {
 
 		PromptForGit.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
@@ -1028,7 +1028,7 @@ public class MainController implements Initializable {
 		}.start();
 	}
 
-	
+	@FXML
 	public void onAddFileToGist(ActionEvent event) {
 		// AddFileToGistController controller = new AddFileToGistController();
 		// try

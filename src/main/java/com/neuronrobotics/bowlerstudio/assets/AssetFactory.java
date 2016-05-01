@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.assets;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,12 +46,14 @@ public class AssetFactory {
 	}
 	public static FXMLLoader loadLayout(String file ,boolean refresh) throws Exception{
 		File fxmlFIle =loadFile(file);
+		URL fileURL= fxmlFIle.toURI().toURL();
+		System.err.println("FXML from "+fileURL);
 		if(loaders.get(file)==null || refresh){
 
-			loaders.put(file, new FXMLLoader(fxmlFIle.toURI().toURL()));
+			loaders.put(file, new FXMLLoader(fileURL));
 			
 		}
-		loaders.get(file).setLocation(fxmlFIle.toURI().toURL());
+		loaders.get(file).setLocation(fileURL);
 		return loaders.get(file);
 	}
 	public static FXMLLoader loadLayout(String file ) throws Exception{
