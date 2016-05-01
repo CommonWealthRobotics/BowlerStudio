@@ -6,7 +6,6 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.scripting.*;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
@@ -23,28 +22,30 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.Polygon;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import org.apache.commons.io.IOUtils;
@@ -56,7 +57,6 @@ import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 import org.reactfx.util.FxTimer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -79,27 +79,16 @@ import java.util.ResourceBundle;
  * @author Kevin Harrington madhephaestus:github mad.hephaestus@gmail.com
  */
 public class MainController implements Initializable {
-	/**
-	 * class vatiables
-	 */
-	private static int sizeOfTextBuffer = 4000;
 	private static Console out;
-	private static boolean opencvOk = true;
-	private static String newString = null;
-	private static TextArea logViewRefStatic;
+	private static TextArea logViewRefStatic=null;
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
 	private File openFile;
 	private BowlerStudioController application;
-
-	public void clearConsole() {
-		Platform.runLater(() -> {
-			logViewRefStatic.setText("");
-		});
-	}
-	private static boolean logLock = false;
-	private CommandLineWidget cmdLine;
-	protected EventHandler<? super KeyEvent> normalKeyPessHandle;
+	private MainController mainControllerRef;
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle=null;
+	//private CommandLineWidget cmdLine;
+	//protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 	
 	/**
 	 * FXML Widgets
@@ -181,7 +170,6 @@ public class MainController implements Initializable {
 
 
 
-private MainController mainControllerRef;
 
 
 
@@ -197,6 +185,13 @@ private MainController mainControllerRef;
 	    public void write(int b) throws IOException {
 	        appendText(String.valueOf((char)b));
 	    }
+	}
+	
+	public void clearConsole() {
+		Platform.runLater(() -> {
+			if(logViewRefStatic!=null)
+				logViewRefStatic.setText("");
+		});
 	}
 	
 	public void setCadSplit(double value){
@@ -350,7 +345,8 @@ private MainController mainControllerRef;
 					subScene.setOnMouseExited(mouseEvent -> {
 						// System.err.println("3d window dropping focus");
 						Scene topScene = BowlerStudio.getScene();
-						topScene.setOnKeyPressed(normalKeyPessHandle);
+						if(normalKeyPessHandle!=null)
+							topScene.setOnKeyPressed(normalKeyPessHandle);
 					});
 
 					subScene.widthProperty().bind(viewContainer.widthProperty());
@@ -386,7 +382,7 @@ private MainController mainControllerRef;
 					}
 				});
 				// System.out.println("Laoding ommand line widget");
-				cmdLine = new CommandLineWidget();
+				CommandLineWidget cmdLine = new CommandLineWidget();
 
 				Platform.runLater(() -> {
 					//CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
