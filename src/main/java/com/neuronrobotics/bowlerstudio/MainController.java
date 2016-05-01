@@ -6,7 +6,11 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.*;
+import com.neuronrobotics.bowlerstudio.scripting.CommandLineWidget;
+import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+//import com.neuronrobotics.bowlerstudio.scripting.*;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCadFactory;
