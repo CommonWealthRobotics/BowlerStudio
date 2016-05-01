@@ -247,11 +247,11 @@ public class BowlerStudio extends Application {
 		fxmlLoader.setController(new MainController());
 		try {
 			fxmlLoader.load();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		controller = fxmlLoader.getController();
+		controller = (MainController)fxmlLoader.getController();
 
 		log = controller.getLogView();
 
