@@ -87,9 +87,10 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 
-			if (ScriptingEngine.getCreds().exists())
+			if (ScriptingEngine.getCreds().exists()){
 				ScriptingEngine.runLogin();
-			else
+				ScriptingEngine.setAutoupdate(true);
+			}else
 				ScriptingEngine.setupAnyonmous();
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
