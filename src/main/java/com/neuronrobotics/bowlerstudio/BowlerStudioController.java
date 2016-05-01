@@ -20,6 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+//import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 //import org.bytedeco.javacpp.DoublePointer;
@@ -297,7 +298,7 @@ public class BowlerStudioController extends TabPane implements
 					ResourceHandler resource_handler = new ResourceHandler();
 					resource_handler.setDirectoriesListed(true);
 					resource_handler.setWelcomeFiles(new String[] { "index.html" });
-
+					System.out.println("Serving "+ indexOfTutorial.getParent());
 					resource_handler.setResourceBase(indexOfTutorial.getParent());
 
 					HandlerList handlers = new HandlerList();
