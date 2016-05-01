@@ -15,6 +15,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHRepository;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.embed.swing.SwingFXUtils;
@@ -125,6 +126,7 @@ public class AssetFactory {
 	}
 	
 	public static String getGitSource() throws Exception {
+		if(BowlerStudio.hasNetwork())
 		if(!checked && ScriptingEngine.getCreds().exists()){
 			checked=true;
 			ScriptingEngine.setAutoupdate(true);

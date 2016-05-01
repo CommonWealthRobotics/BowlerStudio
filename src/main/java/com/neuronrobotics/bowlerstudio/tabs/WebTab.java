@@ -237,9 +237,9 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				? urlField.getText() 
 				: "http://" + urlField.getText();
 		if(isTutorialTab ){
-			if(		!(Current_URL.contains("neuronrobotics.com") &&
-					!Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())&&
-					!Current_URL.startsWith("file") )){
+			if(		!((Current_URL.contains("neuronrobotics.com") ||
+					Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())||
+					Current_URL.contains("localhost") ))){
 				try {
 					
 					Log.debug("Non demo page found, opening new tab "+Current_URL);

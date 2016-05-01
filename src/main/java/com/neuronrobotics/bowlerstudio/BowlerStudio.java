@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,12 +55,23 @@ public class BowlerStudio extends Application {
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
+	private static boolean hasnetwork;
 	
 	static{
 		//These must be changed before anything starts
 		PrintStream ps =new PrintStream(MainController.getOut());
 		//System.setErr(ps);
 		System.setOut(ps);
+		try {                                                                                                                                                                                                                                 
+	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
+	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
+	        conn.connect();    
+	        conn.getInputStream();                                                                                                                                                                                                               
+	        setHasnetwork(true);                                                                                                                                                                                                                      
+	    } catch (Exception e) {                                                                                                                                                                                                             
+	        // we assuming we have no access to the server and run off of the chached gists.    
+	    	setHasnetwork(false);                                                                                                                                                                                                                              
+	    }  
 	}
 
 	/**
@@ -82,7 +94,16 @@ public class BowlerStudio extends Application {
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
-
+			// load tutorials repo
+			ScriptingEngine.fileFromGit(
+					"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+					"index.html");
+			ScriptingEngine
+			.fileFromGit(
+					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+				"exampleRobots.json"// File from within the Git repo
+			);
+			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 //			if (!ScriptingEngine.getCreds().exists()) {
 //				ScriptingEngine.logout();
 //			}
@@ -95,7 +116,7 @@ public class BowlerStudio extends Application {
 
 			try {
 				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
-			} catch (Exception e) {
+			} catch (Exception |Error e ) {
 				// e.printStackTrace();
 				// opencvOk=false;
 				Platform.runLater(() -> {
@@ -110,9 +131,7 @@ public class BowlerStudio extends Application {
 
 			}
 			if (NativeResource.isLinux()) {
-				String[] possibleLocals = new String[] {
-						"/usr/local/share/OpenCV/java/lib" + Core.NATIVE_LIBRARY_NAME + ".so",
-						"/usr/lib/jni/lib" + Core.NATIVE_LIBRARY_NAME + ".so" };
+
 				Slic3r.setExecutableLocation("/usr/bin/slic3r");
 
 			} else if (NativeResource.isWindows()) {
@@ -135,7 +154,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
+			
 			launch(args);
 		} else {
 			BowlerKernel.main(args);
@@ -298,6 +317,14 @@ public class BowlerStudio extends Application {
 	}
 	public  static  void setCadSplit(double value){
 		controller.setCadSplit(value);
+	}
+
+	public static boolean hasNetwork() {
+		return hasnetwork;
+	}
+
+	public static void setHasnetwork(boolean hasnetwork) {
+		BowlerStudio.hasnetwork = hasnetwork;
 	}
 	
 }

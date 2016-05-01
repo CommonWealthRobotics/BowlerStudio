@@ -15,8 +15,10 @@ import java.util.Map.Entry;
 
 import javax.swing.text.BadLocationException;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -62,7 +64,7 @@ import com.sun.javafx.scene.control.skin.TabPaneSkin;
 public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
-	private static final int WEBSERVER_PORT = 8065;
+	private static int WEBSERVER_PORT = 8065;
 	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	private static String HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
 	/**
@@ -293,8 +295,9 @@ public class BowlerStudioController extends TabPane implements
 							"index.html");
 					
 					//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
-					Server server = new Server(WEBSERVER_PORT);
-
+					Server server = new Server();
+					ServerConnector connector = new ServerConnector(server);  
+					server.setConnectors(new Connector[] { connector });
 					ResourceHandler resource_handler = new ResourceHandler();
 					resource_handler.setDirectoriesListed(true);
 					resource_handler.setWelcomeFiles(new String[] { "index.html" });
@@ -304,9 +307,12 @@ public class BowlerStudioController extends TabPane implements
 					HandlerList handlers = new HandlerList();
 					handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
 					server.setHandler(handlers);
-					doneLoadingTutorials = true;
+					
 					try {
 						server.start();
+						WEBSERVER_PORT= connector.getLocalPort();
+						HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
+						doneLoadingTutorials = true;
 						server.join();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -326,7 +332,7 @@ public class BowlerStudioController extends TabPane implements
 		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
 			ThreadUtil.wait(100);
 		}
-		if(doneLoadingTutorials && !ScriptingEngine.isAutoupdate())
+		if(doneLoadingTutorials )
 				HOME_URL = HOME_Local_URL;
 		Platform.runLater(() -> {
 			Tab t=new Tab();
