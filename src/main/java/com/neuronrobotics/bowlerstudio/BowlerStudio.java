@@ -89,7 +89,8 @@ public class BowlerStudio extends Application {
 
 			if (ScriptingEngine.getCreds().exists()){
 				ScriptingEngine.runLogin();
-				ScriptingEngine.setAutoupdate(true);
+				if(BowlerStudio.hasNetwork())
+					ScriptingEngine.setAutoupdate(true);
 			}else
 				ScriptingEngine.setupAnyonmous();
 			// Download and Load all of the assets
