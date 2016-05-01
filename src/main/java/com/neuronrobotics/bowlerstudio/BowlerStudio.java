@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -56,10 +57,29 @@ public class BowlerStudio extends Application {
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
 	private static boolean hasnetwork;
+	private static Console out;
+	private static TextArea logViewRefStatic=null;
+	private static class Console extends OutputStream {
+		
+	    public void appendText(String valueOf) {
+			Platform.runLater(() -> {
+				if (getLogViewRefStatic() != null)
+					getLogViewRefStatic().appendText(valueOf);
+			});
+	    }
 	
+	    public void write(int b) throws IOException {
+	        appendText(String.valueOf((char)b));
+	    }
+	}
+	public static OutputStream getOut() {
+		if(out==null)
+			out = new Console();
+		return out;
+	}
 	static{
 		//These must be changed before anything starts
-		PrintStream ps =new PrintStream(MainController.getOut());
+		PrintStream ps =new PrintStream(getOut());
 		//System.setErr(ps);
 		System.setOut(ps);
 		try {                                                                                                                                                                                                                                 
@@ -290,7 +310,10 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void clearConsole() {
-		controller.clearConsole();
+		Platform.runLater(() -> {
+			if(getLogViewRefStatic()!=null)
+				getLogViewRefStatic().setText("");
+		});
 	}
 	public static void setOverlayLeft(TreeView<String> tree){
 		controller.setOverlayLeft(tree);
@@ -327,6 +350,14 @@ public class BowlerStudio extends Application {
 
 	public static void setHasnetwork(boolean hasnetwork) {
 		BowlerStudio.hasnetwork = hasnetwork;
+	}
+
+	public static TextArea getLogViewRefStatic() {
+		return logViewRefStatic;
+	}
+
+	public static void setLogViewRefStatic(TextArea logViewRefStatic) {
+		BowlerStudio.logViewRefStatic = logViewRefStatic;
 	}
 	
 }

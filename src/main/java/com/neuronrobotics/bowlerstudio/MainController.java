@@ -83,8 +83,8 @@ import java.util.ResourceBundle;
  * @author Kevin Harrington madhephaestus:github mad.hephaestus@gmail.com
  */
 public class MainController implements Initializable {
-	private static Console out;
-	private static TextArea logViewRefStatic=null;
+
+
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
 	private File openFile;
@@ -177,26 +177,9 @@ public class MainController implements Initializable {
 
 
 
-	private static class Console extends OutputStream {
+
 	
-	    public void appendText(String valueOf) {
-			Platform.runLater(() -> {
-				if (logViewRefStatic != null)
-					logViewRefStatic.appendText(valueOf);
-			});
-	    }
-	
-	    public void write(int b) throws IOException {
-	        appendText(String.valueOf((char)b));
-	    }
-	}
-	
-	public void clearConsole() {
-		Platform.runLater(() -> {
-			if(logViewRefStatic!=null)
-				logViewRefStatic.setText("");
-		});
-	}
+
 	
 	public void setCadSplit(double value){
 		Platform.runLater(()->{CadTextSplit.setDividerPosition(0, value);});
@@ -315,7 +298,7 @@ public class MainController implements Initializable {
         assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
         assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
         clearOverlayLeft();
-		logViewRefStatic = logViewRef;
+		BowlerStudio.setLogViewRefStatic(logViewRef);
 		System.out.println("Main controller inializing");
 		mainControllerRef = this;
 		new Thread(new Runnable() {
@@ -1028,11 +1011,7 @@ public class MainController implements Initializable {
 
 	
 
-	public static OutputStream getOut() {
-		if(out==null)
-			out = new Console();
-		return out;
-	}
+
 
 	@FXML
 	public void onCreatenewGist(ActionEvent event) {
