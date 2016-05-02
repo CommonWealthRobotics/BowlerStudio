@@ -190,7 +190,25 @@ public class BowlerStudio extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		setPrimaryStage(primaryStage);
-		Parent main = loadFromFXML();
+		// new Exception().printStackTrace();
+		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
+		if (controller != null) {
+			throw new IllegalStateException("UI already loaded");
+		}
+		fxmlLoader.setController(new MainController());
+
+		fxmlLoader.setClassLoader(MainController.class.getClassLoader());
+		try {
+			fxmlLoader.load();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		controller = (MainController)fxmlLoader.getController();
+
+		log = controller.getLogView();
+
+		Parent main= fxmlLoader.getRoot();
 
 		setScene(new Scene(main, 1250, 768, true));
 
@@ -236,26 +254,6 @@ public class BowlerStudio extends Application {
 //			}
 //		}.start();
 
-	}
-
-	public static Parent loadFromFXML() {
-		// new Exception().printStackTrace();
-		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
-		if (controller != null) {
-			throw new IllegalStateException("UI already loaded");
-		}
-		fxmlLoader.setController(new MainController());
-		try {
-			fxmlLoader.load();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		controller = (MainController)fxmlLoader.getController();
-
-		log = controller.getLogView();
-
-		return fxmlLoader.getRoot();
 	}
 
 	public static TextArea getLogView() {

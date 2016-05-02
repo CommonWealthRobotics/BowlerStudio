@@ -43,6 +43,7 @@ public class BowlerStudioResourceFactory {
 			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
 			mainControllerPanel = AssetFactory.loadLayout("layout/Main.fxml");
+
 		} catch (InvalidRemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

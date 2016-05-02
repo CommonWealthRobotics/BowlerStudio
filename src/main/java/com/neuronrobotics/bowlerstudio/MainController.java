@@ -298,7 +298,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public void run() {
-
+				ThreadUtil.wait(200);
 	
 				//ScriptingEngine.getGithub().getMyself().getGravatarId()
 				// System.out.println("Loading 3d engine");
