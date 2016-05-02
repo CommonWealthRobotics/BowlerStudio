@@ -47,7 +47,7 @@ public class AssetFactory {
 	public static FXMLLoader loadLayout(String file ,boolean refresh) throws Exception{
 		File fxmlFIle =loadFile(file);
 		URL fileURL= fxmlFIle.toURI().toURL();
-		System.err.println("FXML from "+fileURL);
+		//System.err.println("FXML from "+fileURL);
 		if(loaders.get(file)==null || refresh){
 
 			loaders.put(file, new FXMLLoader(fileURL));
