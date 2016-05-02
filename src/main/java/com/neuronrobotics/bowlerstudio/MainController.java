@@ -172,14 +172,6 @@ public class MainController implements Initializable {
     @FXML // fx:id="watchingRepos"
     private Menu watchingRepos; // Value injected by FXMLLoader
 
-
-
-
-
-
-
-	
-
 	
 	public void setCadSplit(double value){
 		Platform.runLater(()->{CadTextSplit.setDividerPosition(0, value);});
