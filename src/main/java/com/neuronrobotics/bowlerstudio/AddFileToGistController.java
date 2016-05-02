@@ -1,7 +1,9 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -16,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GitHub;
@@ -45,6 +48,8 @@ public class AddFileToGistController extends Application
     {
         primaryStage.setTitle("Add file to Gist");
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("addFileToGist.fxml"));
+        loader.setController(new NewGistController());
+        loader.setClassLoader(NewGistController.class.getClassLoader());
         Parent root = loader.load();
         new Thread(() -> {
             GitHub gitHub = ScriptingEngine.getGithub();

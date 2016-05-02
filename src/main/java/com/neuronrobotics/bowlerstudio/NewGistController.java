@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
 
 /**
  * Created by Ryan Benasutti on 2/5/2016.
@@ -32,7 +33,8 @@ public class NewGistController extends Application {
     {      
     	FXMLLoader loader =AssetFactory.loadLayout("layout/createNewGist.fxml");
     	Parent root;
- 
+    	//loader.setController(this);
+		loader.setClassLoader(getClass().getClassLoader());
         root = loader.load();
         Platform.runLater(() -> {
             primaryStage.setTitle("Create new Gist");

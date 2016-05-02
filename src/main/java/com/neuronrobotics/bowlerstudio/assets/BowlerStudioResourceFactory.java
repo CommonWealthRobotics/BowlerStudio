@@ -14,7 +14,10 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.MainController;
+import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
+import com.neuronrobotics.bowlerstudio.tabs.DyIOchannelWidget;
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 
@@ -41,9 +44,14 @@ public class BowlerStudioResourceFactory {
 	public static void load() throws Exception {
 		try {
 			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
+			//mainPanel.setController(new DyIOPanel());
+			mainPanel.setClassLoader(DyIOPanel.class.getClassLoader());
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
+			//githubLogin.setController(new GithubLoginFX());
+			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
 			mainControllerPanel = AssetFactory.loadLayout("layout/Main.fxml");
-
+			mainControllerPanel.setController(new MainController());
+			mainControllerPanel.setClassLoader(MainController.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -81,6 +89,8 @@ public class BowlerStudioResourceFactory {
 			FXMLLoader fxmlLoader;
 			try {
 				fxmlLoader = AssetFactory.loadLayout("layout/DyIOChannelContorol.fxml", true);
+				//fxmlLoader.setController(new DyIOchannelWidget());
+				fxmlLoader.setClassLoader(DyIOchannelWidget.class.getClassLoader());
 				try {
 					fxmlLoader.load();
 				} catch (IOException ex) {
