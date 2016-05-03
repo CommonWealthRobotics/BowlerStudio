@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.kohsuke.github.GHRepository;
@@ -531,12 +532,12 @@ public class LinkConfigurationWidget extends GridPane {
 			HashMap<String,TextField> valueFields=new HashMap<> ();
 			
 			int row=0;
-			for(String s: startingConf.keySet()){
+			for(Map.Entry<String, Object> entry : startingConf.entrySet()){
 				TextField username = new TextField();
-	    		username.setText(startingConf.get(s).toString());
-	    		grid.add(new Label(s), 0, row);
+	    		username.setText(entry.getValue().toString());
+	    		grid.add(new Label(entry.getKey()), 0, row);
 	    		grid.add(username, 1, row);
-	    		valueFields.put(s, username);
+	    		valueFields.put(entry.getKey(), username);
 	    		row++;
 			}
 
@@ -546,9 +547,9 @@ public class LinkConfigurationWidget extends GridPane {
 			if(r.get() == ButtonType.OK){
 				new Thread(){
 						public void run(){
-				    		for(String s:valueFields.keySet()){
+				    		for(Map.Entry<String, TextField> entry : valueFields.entrySet()){
 				    			try {
-									Vitamins.setParameter(type,id,s,(Object)valueFields.get(s).getText());
+									Vitamins.setParameter(type,id, entry.getKey(),(Object) entry.getValue().getText());
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
