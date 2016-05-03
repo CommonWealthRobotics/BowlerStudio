@@ -78,7 +78,7 @@ public class CommandLineWidget  extends BorderPane{
 			    	   historyIndex++;
 			       else
 			    	   historyIndex--;
-			       if(history.size()>0){
+			       if(!history.isEmpty()){
 				       if(historyIndex>history.size()){
 				    	   historyIndex =  history.size();
 				       }
