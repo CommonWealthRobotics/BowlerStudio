@@ -88,18 +88,14 @@ public class DyPIDControlWidget extends JPanel implements IDyIOEventListener{
 		if((conf.getOutputChannel() != 0xff) && (conf.getInputChannel() != 0xff )){
 			for(int i=0;i<inMode.getItemCount();i++){
 				DyIOChannelMode selected = (DyIOChannelMode)(inMode.getItemAt(i));
-				if(selected != null){
-					if(selected == conf.getInputMode()){
-						inMode.setSelectedItem(inMode.getItemAt(i));
-					}
+				if(selected != null && selected == conf.getInputMode()){
+					inMode.setSelectedItem(inMode.getItemAt(i));
 				}
 			}
 			for(int i=0;i<outMode.getItemCount();i++){
 				DyIOChannelMode selected = (DyIOChannelMode)(outMode.getItemAt(i));
-				if(selected != null){
-					if(selected == conf.getOutputMode()){
-						outMode.setSelectedItem(outMode.getItemAt(i));
-					}
+				if(selected != null && selected == conf.getOutputMode()){
+					outMode.setSelectedItem(outMode.getItemAt(i));
 				}
 			}
 			widgit.getPidSet().setEnabled(true);

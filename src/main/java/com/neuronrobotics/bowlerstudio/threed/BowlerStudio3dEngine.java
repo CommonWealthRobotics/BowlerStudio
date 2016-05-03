@@ -1023,10 +1023,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	private File locateFile(String fileName, CSG source){
 		File f = csgSourceFile.get(source);
-		if(f!=null)
-			if(f.getName().contains(fileName)){
-				return f;
-			}
+		if(f!=null && f.getName().contains(fileName))
+			return f;
 		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 
