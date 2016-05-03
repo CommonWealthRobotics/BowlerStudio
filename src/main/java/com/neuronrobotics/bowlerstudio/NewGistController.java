@@ -31,7 +31,7 @@ public class NewGistController extends Application {
 	@Override
     public void start(Stage primaryStage) throws Exception
     {      
-    	FXMLLoader loader =AssetFactory.loadLayout("layout/createNewGist.fxml");
+    	FXMLLoader loader = AssetFactory.loadLayout("layout/createNewGist.fxml", true);
     	Parent root;
     	//loader.setController(this);
 		loader.setClassLoader(getClass().getClassLoader());
