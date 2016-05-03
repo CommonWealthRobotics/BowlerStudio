@@ -14,7 +14,7 @@ public class StlFilter extends FileFilter {
 			return true;
 		}
 		String path = f.getAbsolutePath().toLowerCase();
-		if ((path.toLowerCase().endsWith("stl") && (path.charAt(path.length() - 3)) == '.')) {
+		if (path.toLowerCase().endsWith("stl") && path.charAt(path.length() - 3) == '.') {
 			return true;
 		}
 

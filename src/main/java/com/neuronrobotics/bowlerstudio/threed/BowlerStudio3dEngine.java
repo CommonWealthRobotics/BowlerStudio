@@ -870,7 +870,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			@Override
 			public void handle(ScrollEvent t) {
-				if (ScrollEvent.SCROLL == (t).getEventType()) {
+				if (ScrollEvent.SCROLL == t.getEventType()) {
 
 //					double zoomFactor = (t.getDeltaY());
 //
