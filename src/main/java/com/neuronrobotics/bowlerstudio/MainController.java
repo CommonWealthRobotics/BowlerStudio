@@ -468,8 +468,8 @@ public class MainController implements Initializable {
                                 }
                             }.start());
 							Platform.runLater(() -> {
-								 tmpGist.getItems().addAll(addFile, loadWebGist);
-//								tmpGist.getItems().add(loadWebGist);
+								// tmpGist.getItems().addAll(addFile, loadWebGist);
+								tmpGist.getItems().add(loadWebGist);
 							});
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;

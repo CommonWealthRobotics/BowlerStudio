@@ -238,8 +238,10 @@ public class ScriptingFileWidget extends BorderPane implements
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
+		fileNameBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.getChildren().add(new Label("git:"));
 		controlPane.getChildren().add(fileListBox);
+		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
 
 		
