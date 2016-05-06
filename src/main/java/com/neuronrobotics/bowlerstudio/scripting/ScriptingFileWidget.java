@@ -235,13 +235,14 @@ public class ScriptingFileWidget extends BorderPane implements
 
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(image);
-		controlPane.getChildren().add(new Label("git:"));
-		
-		controlPane.getChildren().add(fileListBox);
-		
+		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
-		controlPane.getChildren().add(publish);
+		controlPane.getChildren().add(new Label("git:"));
+		controlPane.getChildren().add(fileListBox);
+		controlPane.setMaxWidth(Double.MAX_VALUE);
+
+		
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -424,8 +425,9 @@ public class ScriptingFileWidget extends BorderPane implements
 			git = ScriptingEngine.locateGit(currentFile);
 			String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
 			Platform.runLater(() -> {
-				fileListBox.setMinWidth(remote.getBytes().length*10);
+				//fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
+				//fileListBox.res
 				fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
 				// These values are display only, so if hte user tries to change them, they reset
 				// the use of text field for static dats is so the user cna copy the vlaues and use them in their scritpts
