@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -11,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,10 +25,13 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
+import org.python.antlr.op.Add;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Created by Ryan Benasutti on 2/6/2016.
@@ -35,70 +40,65 @@ import java.util.List;
 public class AddFileToGistController extends Application
 {
     @FXML
-    public ListView<String> gistListView;
-
-    @FXML
     public TextField filenameField;
 
     @FXML
     public Button addFileButton, cancelButton;
 
+    private String gistID;
+
+    public AddFileToGistController()
+    {
+        this.gistID = MainController.currentGistID;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        primaryStage.setTitle("Add file to Gist");
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("addFileToGist.fxml"));
-        loader.setController(new NewGistController());
-        loader.setClassLoader(NewGistController.class.getClassLoader());
-        Parent root = loader.load();
-        new Thread(() -> {
-            GitHub gitHub = ScriptingEngine.getGithub();
-            while (gitHub == null)
-            {
-                gitHub = ScriptingEngine.getGithub();
-                ThreadUtil.wait(20);
-            }
+        FXMLLoader loader = AssetFactory.loadLayout("layout/addFileToGist.fxml", true);
+        Parent root;
 
-            try
-            {
-                GHMyself myself = gitHub.getMyself();
-                PagedIterable<GHGist> gists = myself.listGists();
-                List<String> gistList = new ArrayList<>();
-                for (GHGist gist : gists)
-                    gistList.add(gist.getDescription());
-                ObservableList<String> observableGistList = FXCollections.observableArrayList("One", "Two"); //FXCollections.observableList(gistList);
-                //Platform.runLater(() -> gistListView = new ListView<>(observableGistList));
-                Platform.runLater(() -> {
-                    for (String s : observableGistList)
-                    {
-                        gistListView.getItems().add(s);
-                    }
-                });
-                //throw new IllegalStateException(observableGistList.toString());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }).start();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.initModality(Modality.WINDOW_MODAL);
-        primaryStage.show();
-    }
+        loader.setClassLoader(getClass().getClassLoader());
+        root = loader.load();
 
-    @FXML
-    public void onAddFile(ActionEvent actionEvent)
-    {
-
-    }
-
-    @FXML
-    public void onCancel(ActionEvent actionEvent)
-    {
         Platform.runLater(() -> {
-            Stage stage = (Stage)cancelButton.getScene().getWindow();
+            primaryStage.setTitle("Add File to Gist");
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.initModality(Modality.WINDOW_MODAL);
+            primaryStage.setResizable(true);
+            primaryStage.show();
+        });
+    }
+
+    @FXML
+    public void onAddFile(ActionEvent event)
+    {
+        GistHelper.addFileToGist(filenameField.getText(), "//Your code here", gistID);
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) addFileButton.getScene().getWindow();
             stage.close();
         });
+    }
+
+    @FXML
+    public void onCancel(ActionEvent event)
+    {
+        Platform.runLater(() -> {
+            Stage stage = (Stage) cancelButton.getScene().getWindow();
+            stage.close();
+        });
+    }
+
+    public String getGistID()
+    {
+        return gistID;
+    }
+
+    public void setGistID(String gistID)
+    {
+        this.gistID = gistID;
     }
 }

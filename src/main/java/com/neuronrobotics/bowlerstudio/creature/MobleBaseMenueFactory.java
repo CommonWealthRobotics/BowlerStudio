@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
@@ -394,13 +395,13 @@ public class MobleBaseMenueFactory {
 				}
 			}
 		}
-		for (String key : deviceMap.keySet()) {
-			HashMap<Integer, Boolean> chans = deviceMap.get(key);
+		for (Map.Entry<String, HashMap<Integer, Boolean>> entry : deviceMap.entrySet()) {
+			HashMap<Integer, Boolean> chans = entry.getValue();
 			for (int i = 0; i < 24; i++) {
 
 				if (chans.get(i) == null) {
-					System.err.println("Channel free: " + i + " on device " + key);
-					confOfChannel.setDeviceScriptingName(key);
+					System.err.println("Channel free: " + i + " on device " + entry.getKey());
+					confOfChannel.setDeviceScriptingName(entry.getKey());
 					confOfChannel.setHardwareIndex(i);
 					return;
 				}
@@ -469,7 +470,7 @@ public class MobleBaseMenueFactory {
 
 		TreeItem<String> apps = new TreeItem<>(label,AssetFactory.loadIcon("Load-Limb-"+label.replace(' ', '-')+".png"));
 		rootItem.getChildren().add(apps);
-		if (drivable.size() == 0)
+		if (drivable.isEmpty())
 			return apps;
 		for (DHParameterKinematics dh : drivable) {
 			loadSingleLimb(base, view, dh, apps, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,

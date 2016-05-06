@@ -870,7 +870,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			@Override
 			public void handle(ScrollEvent t) {
-				if (ScrollEvent.SCROLL == (t).getEventType()) {
+				if (ScrollEvent.SCROLL == t.getEventType()) {
 
 //					double zoomFactor = (t.getDeltaY());
 //
@@ -1023,10 +1023,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	private File locateFile(String fileName, CSG source){
 		File f = csgSourceFile.get(source);
-		if(f!=null)
-			if(f.getName().contains(fileName)){
-				return f;
-			}
+		if(f!=null && f.getName().contains(fileName))
+			return f;
 		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 

@@ -68,11 +68,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 //import javafx.scene.control.ScrollPane;
 
@@ -84,13 +80,14 @@ import java.util.ResourceBundle;
  */
 public class MainController implements Initializable {
 
-
 	private SubScene subScene;
 	private BowlerStudio3dEngine jfx3dmanager;
 	private File openFile;
 	private BowlerStudioController application;
 	private MainController mainControllerRef;
 	protected EventHandler<? super KeyEvent> normalKeyPessHandle=null;
+	protected static String currentGistID = ""; //Is there a better solution to pass data into a controller than using
+												//a static global?
 	//private CommandLineWidget cmdLine;
 	//protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 	
@@ -385,9 +382,9 @@ public class MainController implements Initializable {
 					
 					@SuppressWarnings("unchecked")
 					HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
-					for(String menuTitle:map.keySet()){
-						HashMap<String,Object> script = map.get(menuTitle);
-						MenuItem item = new MenuItem(menuTitle);
+					for(Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()){
+						HashMap<String,Object> script = entry.getValue();
+						MenuItem item = new MenuItem(entry.getKey());
 						item.setOnAction(event -> {
 							loadMobilebaseFromGit(	(String)script.get("scriptGit"),
 													(String)script.get("scriptFile"));
@@ -453,19 +450,26 @@ public class MainController implements Initializable {
 								}
 							});
 							MenuItem addFile = new MenuItem("Add file to Gist...");
-							addFile.setOnAction(event -> {
-								new Thread() {
-									public void run() {
-										// TODO add the implementation of add
-										// file, make sure its modular to be
-										// reused elsewhere
-									}
-								}.start();
-							});
+							addFile.setOnAction(event -> new Thread() {
+                                public void run() {
+									Platform.runLater(() -> {
+										Stage s = new Stage();
+										currentGistID = gist.getHtmlUrl().substring(24);
+										AddFileToGistController controller = new AddFileToGistController();
+										try
+										{
+											controller.start(s);
+										}
+										catch (Exception e)
+										{
+											e.printStackTrace();
+										}
+									});
+                                }
+                            }.start());
 							Platform.runLater(() -> {
-								// tmpGist.getItems().addAll(addFile,
-								// loadWebGist);
-								tmpGist.getItems().add(loadWebGist);
+								 tmpGist.getItems().addAll(addFile, loadWebGist);
+//								tmpGist.getItems().add(loadWebGist);
 							});
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
@@ -546,13 +550,13 @@ public class MainController implements Initializable {
 						// Now load the users GIT repositories
 						// github.getMyOrganizations();
 						Map<String, GHOrganization> orgs = github.getMyOrganizations();
-						for (String org : orgs.keySet()) {
+						for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
 							// System.out.println("Org: "+org);
-							Menu OrgItem = new Menu(org);
-							GHOrganization ghorg = orgs.get(org);
+							Menu OrgItem = new Menu(entry.getKey());
+							GHOrganization ghorg = entry.getValue();
 							Map<String, GHRepository> repos = ghorg.getRepositories();
-							for (String orgRepo : repos.keySet()) {
-								setUpRepoMenue(OrgItem, repos.get(orgRepo));
+							for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
+								setUpRepoMenue(OrgItem, entry1.getValue());
 							}
 							Platform.runLater(() -> {
 								myOrganizations.getItems().add(OrgItem);
@@ -562,8 +566,8 @@ public class MainController implements Initializable {
 						// Repos I own
 						Map<String, GHRepository> myPublic = self.getAllRepositories();
 						HashMap<String, Menu> myownerMenue = new HashMap<>();
-						for (String myRepo : myPublic.keySet()) {
-							GHRepository g = myPublic.get(myRepo);
+						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+							GHRepository g = entry.getValue();
 							if (myownerMenue.get(g.getOwnerName()) == null) {
 								myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 								Platform.runLater(() -> {
@@ -1018,19 +1022,6 @@ public class MainController implements Initializable {
 				}
 			}
 		}.start();
-	}
-
-	@FXML
-	public void onAddFileToGist(ActionEvent event) {
-		// AddFileToGistController controller = new AddFileToGistController();
-		// try
-		// {
-		// controller.start(new Stage());
-		// }
-		// catch (Exception e)
-		// {
-		// e.printStackTrace();
-		// }
 	}
 
 	@FXML

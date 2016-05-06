@@ -14,10 +14,10 @@ public class GCodeFilter extends FileFilter {
 			return true;
 		}
 		String path = f.getAbsolutePath().toLowerCase();
-		if ((path.endsWith("gcode") && (path.charAt(path.length() - 5)) == '.')) {
+		if (path.endsWith("gcode") && path.charAt(path.length() - 5) == '.') {
 			return true;
 		}
-		if ((path.endsWith("ngc") && (path.charAt(path.length() - 3)) == '.')) {
+		if (path.endsWith("ngc") && path.charAt(path.length() - 3) == '.') {
 			return true;
 		}
 		return f.getName().matches(".+\\.gcode$") || f.getName().matches(".+\\.ngc$");

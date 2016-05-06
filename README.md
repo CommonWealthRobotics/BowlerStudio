@@ -23,14 +23,6 @@ BowlerStudio Robotics development IDE is based on
 * [JCSG](https://github.com/miho/JCSG)
 * [Java-Bowler](https://github.com/NeuronRobotics/java-bowler)
 * [OpenCV](http://opencv.org/)
-* [JavaCV](https://github.com/bytedeco/javacv) which provides
-* [FFmpeg](http://ffmpeg.org/)
-* [libdc1394](http://damien.douxchamps.net/ieee1394/libdc1394/)
-* [PGR FlyCapture](http://www.ptgrey.com/products/pgrflycapture/)
-* [OpenKinect](http://openkinect.org/)
-* [videoInput](http://muonics.net/school/spring05/videoInput/)
-* [ARToolKitPlus](http://studierstube.icg.tugraz.at/handheld_ar/artoolkitplus.php)
-* [flandmark](http://cmp.felk.cvut.cz/~uricamic/flandmark/))
 * [CHDK-PTP-Java](https://github.com/acamilo/CHDK-PTP-Java)
 * [Jinput](https://github.com/jinput/jinput)
 * [motej](http://motej.sourceforge.net/)
@@ -40,6 +32,7 @@ BowlerStudio Robotics development IDE is based on
 * JavaFX 8 3d engine. 
 * [WAlnut](https://github.com/WalnutiQ/wAlnut) a Neural-modeling based AI library.
 * [JBullet](http://jbullet.advel.cz/) physics engine ported from the popular Bullet C++ framework.
+* [Jetty](http://www.eclipse.org/jetty/) Web Framework
 
 BowlerStudio is a device manager, scripting engine, CAD package, and simulation tool all in one application. A user can develop the kinematic of an robot arm using the D-H parameters-based automatic kinematics engine. With this kinematics model, the user can then generate the CAD for new unique parts to match the kinematic model. The user can then export the model to an STL, and connect a Bowler 3d printer to BowlerStudio. The printer can print out the part (using the newly generated STL) while the user connects a DyIO and begins testing the servos with the kinematics model. When the print is done, the user can assemble the arm with the tested servos and run the model again to control the arm with Cartesian instructions. Once this is complete, the user can then attach a wiimote to train the robot arm through a set of tasks, recording them with the animation framework built into BowlerStudio. To be sure the arm is moving to the right place, the user can attach a webcam to the end and use OpenCV to verify the arm's position, or use the arm (in conjunction with the webcam with OpenCV enabled) to track and grab objects (IE "eye-in-hand" tracking). 
 
@@ -140,7 +133,17 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     sudo apt-get update
    
     sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java libopencv2.4-jni
-   
+##### Ubuntu 14.04, install extra dependancies
+	sudo add-apt-repository ppa:cwchien/gradle -y
+	sudo apt-add-repository ppa:webupd8team/java -y
+	sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
+	sudo apt-get update -qq
+	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni  libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils
+	sudo apt-get install oracle-java8-set-default
+	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
+	
+	### Install the .deb (Command Line)
+	dpkg -i Ubuntu-BowlerStudio-.deb
 #####All Unix  
    
     git clone https://github.com/NeuronRobotics/BowlerStudio.git

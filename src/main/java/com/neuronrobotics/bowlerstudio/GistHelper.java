@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jfree.util.Log;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
+import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GitHub;
 
 import java.io.IOException;
@@ -17,18 +18,54 @@ import java.net.URL;
 
 public class GistHelper
 {
-    private GistHelper() {
-    }
+    private GistHelper() {}
 
     public static void createNewGist(String filename, String description, boolean isPublic)
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException
+        //Setup gist
         GitHub gitHub = ScriptingEngine.getGithub();
         GHGistBuilder builder = gitHub.createGist();
         builder.file(filename, "//Your code here");
         builder.description(description);
         builder.public_(isPublic);
 
+        //Make gist
+        createGistFromBuilder(builder, filename);
+    }
+
+    public static void addFileToGist(String filename, String content, String gistID)
+    {
+        GitHub gitHub = ScriptingEngine.getGithub();
+        try
+        {
+            //Copy from old gist
+            GHGist oldGist = gitHub.getGist(gistID);
+            GHGistBuilder builder = gitHub.createGist();
+
+            builder.description(oldGist.getDescription());
+            builder.public_(oldGist.isPublic());
+
+            for (String key : oldGist.getFiles().keySet())
+                builder.file(key, oldGist.getFiles().get(key).getContent());
+
+            //Add new file
+            builder.file(filename, content);
+
+            //Make new gist with old filename
+            createGistFromBuilder(builder, oldGist.getFiles().values().iterator().next().getFileName());
+
+            //Remove old gist
+            oldGist.delete();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createGistFromBuilder(GHGistBuilder builder, String filename)
+    {
         GHGist gist;
         try
         {
@@ -58,7 +95,5 @@ public class GistHelper
         {
             e.printStackTrace();
         }
-
-        System.out.println("Creating gist at " + filename);
     }
 }

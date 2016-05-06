@@ -185,7 +185,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 				}
 				
 				String path = f.getAbsolutePath().toLowerCase();
-				if ((path.endsWith("xml") && (path.charAt(path.length() - 3)) == '.')) {
+				if (path.endsWith("xml") && path.charAt(path.length() - 3) == '.') {
 					return true;
 				}
 				

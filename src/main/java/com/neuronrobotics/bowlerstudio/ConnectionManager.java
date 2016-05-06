@@ -178,7 +178,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	public static BowlerAbstractDevice pickConnectedDevice(Class class1) {
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
-		if(choices.size()>0){
+		if(!choices.isEmpty()){
 			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
 					choices);
 			dialog.setTitle("Bowler Device Chooser");
@@ -339,7 +339,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	 public static void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();
-		if(ports.size()==0)
+		if(ports.isEmpty())
 			return;
 		for (String s: ports){
 			choices.add(s);
@@ -485,7 +485,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				Duration.ofMillis(100) ,() -> {
 			Log.warning("Refreshing Tree size="+plugins.size());
 			accordion.getPanes().clear();
-			if(plugins.size()==0)
+			if(plugins.isEmpty())
 				return;
 			TitledPane last=null;
 			for(int i=0;i<plugins.size();i++){
@@ -494,7 +494,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 			
 
-			if(plugins.size()>0){
+			if(!plugins.isEmpty()){
 				disconnectAll.setDisable(false);
 				accordion.setExpandedPane(last);
 			}else{

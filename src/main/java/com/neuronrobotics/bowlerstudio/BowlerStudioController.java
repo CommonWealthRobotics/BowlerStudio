@@ -174,22 +174,19 @@ public class BowlerStudioController extends TabPane implements
 				if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
 					String message = ex.getMessage();
 					//System.out.println(message);
-					if(message!=null)
-						if(message.contains(fileEngineRunByName.getName())){
-							
-							try {
-								int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
-								String fileSub=message.substring(indexOfFile);
-								String [] fileAndNum =fileSub .split(":");
-								String FileNum = fileAndNum[1];
-								int linNum =  Integer.parseInt(FileNum.trim());
-								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
-							} catch (Exception e) {
-								StringWriter sw = new StringWriter();
-								PrintWriter pw = new PrintWriter(sw);
-								e.printStackTrace(pw);
-								System.out.println(sw.toString());
-							}
+					if(message!=null && message.contains(fileEngineRunByName.getName()))
+						try {
+							int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
+							String fileSub=message.substring(indexOfFile);
+							String [] fileAndNum =fileSub .split(":");
+							String FileNum = fileAndNum[1];
+							int linNum =  Integer.parseInt(FileNum.trim());
+							widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							e.printStackTrace(pw);
+							System.out.println(sw.toString());
 						}
 				}
 				StringWriter sw = new StringWriter();

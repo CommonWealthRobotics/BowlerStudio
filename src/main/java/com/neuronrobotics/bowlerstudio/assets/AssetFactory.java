@@ -27,7 +27,7 @@ import javafx.scene.image.WritableImage;
 
 public class AssetFactory {
 	private static final String repo = "BowlerStudioImageAssets";
-	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git";
+	private static String gitSource = "https://github.com/Octogonapus/"+repo+".git"; //madhephaestus
 	private static HashMap<String , Image> cache =new HashMap<>();
 	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
 	private static boolean checked =false;
@@ -139,9 +139,9 @@ public class AssetFactory {
 			org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
 			GHMyself self = github.getMyself();
 			Map<String, GHRepository> myPublic = self.getAllRepositories();
-			for (String myRepo :myPublic.keySet()){
-				if(myRepo.contentEquals(repo)){
-					GHRepository ghrepo= myPublic.get(myRepo);
+			for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
+				if(entry.getKey().contentEquals(repo)){
+					GHRepository ghrepo= entry.getValue();
 					String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
 					System.out.println("Using my version of assets: "+myAssets);
 					setGitSource(myAssets);
