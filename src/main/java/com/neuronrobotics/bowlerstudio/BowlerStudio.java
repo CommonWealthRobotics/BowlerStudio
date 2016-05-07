@@ -148,7 +148,7 @@ public class BowlerStudio extends Application {
 					alert.setContentText(e.getMessage());
 					alert.initModality(Modality.APPLICATION_MODAL);
 					alert.show();
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 				});
 
 			}
