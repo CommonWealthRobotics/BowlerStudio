@@ -315,7 +315,7 @@ public class MainController implements Initializable {
 						// System.err.println("3d window requesting focus");
 						Scene topScene = BowlerStudio.getScene();
 						normalKeyPessHandle = topScene.getOnKeyPressed();
-						jfx3dmanager.handleKeyboard(topScene);
+						//jfx3dmanager.handleKeyboard(topScene);
 					});
 
 					subScene.setOnMouseExited(mouseEvent -> {

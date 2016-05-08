@@ -6,18 +6,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.swing.UIManager;
-
-import org.opencv.core.Core;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
-import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
-import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.imageprovider.NativeResource;
@@ -28,8 +21,6 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.javafx.css.CascadingStyle;
-
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -40,12 +31,10 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -101,6 +90,8 @@ public class BowlerStudio extends Application {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
+
+				
 
 		if (args.length == 0) {
 

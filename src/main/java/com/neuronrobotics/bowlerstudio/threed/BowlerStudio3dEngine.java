@@ -264,7 +264,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		Stop[] stops = null;
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		Scene s = new Scene(new Group(getSubScene()));
-		handleKeyboard(s);
+		//handleKeyboard(s);
 		handleMouse(getSubScene());
 
 		setScene(s);
@@ -891,7 +891,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *
 	 * @param scene the scene
 	 * @param root the root
-	 */
+	 *
 	public void handleKeyboard(Scene scene) {
 		//final boolean moveCamera = true;
 		//System.out.println("Adding keyboard listeners");
@@ -965,6 +965,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			
 		});
 	}
+	*/
 	
 	private void moveCamera( TransformNR newPose, double seconds){
 		getFlyingCamera()
