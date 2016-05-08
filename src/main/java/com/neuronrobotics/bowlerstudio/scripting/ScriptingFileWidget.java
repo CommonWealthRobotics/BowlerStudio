@@ -410,7 +410,13 @@ public class ScriptingFileWidget extends BorderPane implements
 	private void append(String s) {
 		System.out.println(s);
 	}
-
+	
+	public String getGitRepo(){
+		return fileListBox.getText();
+	}
+	public String getGitFile(){
+		return fileNameBox.getText();
+	}
 	private void setUpFile(File f) {
 		currentFile = f;
 		String langType = ScriptingEngine.getShellType(currentFile.getName());

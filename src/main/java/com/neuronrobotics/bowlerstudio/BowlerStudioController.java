@@ -47,6 +47,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -99,9 +100,16 @@ public class BowlerStudioController extends TabPane implements
 
 		Tab fileTab =new Tab(file.getName());
 		openFiles.put(file.getAbsolutePath(), fileTab);
+		
 		try {
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
+			String key =t.getScripting().getGitRepo()+":"+t.getScripting().getGitFile();
+			ConfigurationDatabase.setObject(
+					"studio-open-git", 
+					key, 
+					new String[]{t.getScripting().getGitRepo(),t.getScripting().getGitFile()});
+			
 			fileTab.setContent(t);
 			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-"+ScriptingEngine.getShellType(file.getName())+".png"));
 			addTab(fileTab, true);
@@ -109,6 +117,9 @@ public class BowlerStudioController extends TabPane implements
 			fileTab.setOnCloseRequest(event->{
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
+				ConfigurationDatabase.removeObject(
+						"studio-open-git", 
+						key);
 			});
 			return t.getScripting();
 		} catch (IOException e) {
