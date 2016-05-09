@@ -6,6 +6,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.CommandLineWidget;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -53,6 +54,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
@@ -397,6 +399,17 @@ public class MainController implements Initializable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+				for(String s:openGits.keySet() ){
+					ArrayList<String> repoFile = (ArrayList<String>)openGits.get(s);
+					try {
+						File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
+						getApplication().createFileTab(f);
+					} catch (GitAPIException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				
 			}
 		}).start();
@@ -702,6 +715,7 @@ public class MainController implements Initializable {
 				Platform.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);
 				});
+
 			}
 		}.start();
 	}

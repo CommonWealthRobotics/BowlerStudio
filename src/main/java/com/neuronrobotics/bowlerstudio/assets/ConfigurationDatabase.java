@@ -23,24 +23,30 @@ public class ConfigurationDatabase {
 	private static Type TT_mapStringString = new TypeToken<HashMap<String,HashMap<String,Object>>>(){}.getType();
 	//chreat the gson object, this is the parsing factory
 	private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-	static Thread shutDownHook = null;
 	public static HashMap<String,Object> getParams(String paramsKey){
 		return getDatabase().get(paramsKey);
 	}
 	
 	public static Object getObject(String paramsKey,String objectKey , Object defaultValue){
-		if(getDatabase().get(paramsKey).get(objectKey)==null){
+		if(getParamMap(paramsKey).get(objectKey)==null){
 			setObject( paramsKey, objectKey,  defaultValue );
 		}
-		return getDatabase().get(paramsKey).get(objectKey);
+		return getParamMap(paramsKey).get(objectKey);
+	}
+	
+	public static HashMap<String,Object> getParamMap(String paramsKey){
+		if(getDatabase().get(paramsKey)==null){
+			getDatabase().put(paramsKey, new HashMap<String,Object>());
+		}
+		return getDatabase().get(paramsKey);
 	}
 	
 	public static Object setObject(String paramsKey,String objectKey, Object value ){
-		return getDatabase().get(paramsKey).put(objectKey,value);
+		return getParamMap(paramsKey).put(objectKey,value);
 	}
 	
 	public static Object removeObject(String paramsKey,String objectKey ){
-		return getDatabase().get(paramsKey).remove(objectKey);
+		return getParamMap(paramsKey).remove(objectKey);
 	}
 	
 	
@@ -64,25 +70,12 @@ public class ConfigurationDatabase {
 			return database;
 		try {
 			database= (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(loadFile(), null);
-			setShutDowHook();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return database;
-	}
-
-	private static void setShutDowHook() {
-		if(shutDownHook==null){
-			shutDownHook =new Thread() {
-				@Override
-				public void run() {
-					save();
-				}
-			};
-			
-			Runtime.getRuntime().addShutdownHook(shutDownHook);
-		}
 	}
 
 	public static File loadFile() throws Exception {

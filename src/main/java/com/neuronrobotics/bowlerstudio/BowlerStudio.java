@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.imageprovider.NativeResource;
@@ -212,8 +213,9 @@ public class BowlerStudio extends Application {
 		primaryStage.setScene(getScene());
 		primaryStage.show();
 		primaryStage.setOnCloseRequest(arg0 -> {
-
+			
 			controller.disconnect();
+			ConfigurationDatabase.save();
 			ThreadUtil.wait(100);
 			System.exit(0);
 		});
