@@ -26,6 +26,7 @@ public class ConfigurationDatabase {
 	
 	public static Object getObject(String paramsKey,String objectKey , Object defaultValue){
 		if(getParamMap(paramsKey).get(objectKey)==null){
+			System.err.println("Cant find: "+paramsKey+":"+objectKey);
 			setObject( paramsKey, objectKey,  defaultValue );
 		}
 		return getParamMap(paramsKey).get(objectKey);
