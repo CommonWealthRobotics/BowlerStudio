@@ -169,18 +169,20 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        linkval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"));
-        xval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x"));
-        yval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y"));
-        zval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz"));
-        rzval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider"));
+        Platform.runLater(()->{
+            linkval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"));
+            xval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x"));
+            yval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y"));
+            zval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz"));
+            rzval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider"));
+        });
         
 
     }
 	@Override
 	public void onEvent(Component arg0, Event arg1, float value, String arg3) {
 		if(Math.abs(value)>0.75 && selected!=null){
-			selected.setText(arg0.getName());
+			 Platform.runLater(()->selected.setText(arg0.getName()));
 		}
 		
 	}
