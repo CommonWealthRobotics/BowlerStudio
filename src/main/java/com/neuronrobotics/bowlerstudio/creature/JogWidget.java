@@ -11,6 +11,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
@@ -247,19 +248,28 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void home(){
 		if(getMobilebase()!=null){
 			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
-		}
-		for(int i=0;i<getKin().getNumberOfLinks();i++){
-			try {
-				getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for(DHParameterKinematics c:getMobilebase().getAllDHChains()){
+				try {
+					c.setDesiredTaskSpaceTransform( c.calcHome(),0);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+		}else{
+			for(int i=0;i<getKin().getNumberOfLinks();i++){
+				try {
+					getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			try {
+				kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
+			} catch (Exception e) {}
 		}
-		try {
-			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
-		} catch (Exception e) {}
 	}
 
 	@Override
