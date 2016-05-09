@@ -181,6 +181,7 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 				if(controlThreadRunning){
 					try {
 						device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
+						setpoint.setValue(newValue);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
