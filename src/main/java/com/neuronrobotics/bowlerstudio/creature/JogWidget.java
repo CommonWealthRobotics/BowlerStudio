@@ -389,7 +389,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							e.printStackTrace();
 						}
 					}else{
-						toSet.setZ(0);
+						//toSet.setZ(0);
 						try {
 							getMobilebase().DriveArc(toSet, toSeconds);
 						} catch (Exception e) {
