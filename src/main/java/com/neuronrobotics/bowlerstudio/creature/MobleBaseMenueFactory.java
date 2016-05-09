@@ -46,6 +46,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -630,25 +631,22 @@ public class MobleBaseMenueFactory {
 			boolean creatureIsOwnedByUser) throws Exception {
 		
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(),AssetFactory.loadIcon("Move-Limb.png"));
-
+		JogWidget widget = new JogWidget(dh);
 		callbackMapForTreeitems.put(dhItem, () -> {
 			if (widgetMapForTreeitems.get(dhItem) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
+				
 				VBox jog = new VBox(10);
 				jog.getChildren().add(new Label("Jog Limb"));
-				jog.getChildren().add(new JogWidget(dh));
+				jog.getChildren().add(widget);
 				widgetMapForTreeitems.put(dhItem, new Group(new JogWidget(dh)));
 			}
-			AbstractGameController controller = creatureLab.getController();
-			controller.clearIGameControllerUpdateListener();
-			controller.addIGameControllerUpdateListener(new IGameControllerUpdateListener() {
-				@Override
-				public void onControllerUpdate(AbstractGameController source) {
-					// TODO Auto-generated method stub
-
-				}
-			});
+			 BowlerJInputDevice controller = creatureLab.getController();
+			 if(controller!=null){
+				 widget.setGameController(controller); 
+			 }
+			
 		});
 
 		TreeItem<String> remove = new TreeItem<>("Remove " + dh.getScriptingName(),AssetFactory.loadIcon("Remove-Limb.png"));

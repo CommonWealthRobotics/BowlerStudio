@@ -37,6 +37,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
@@ -62,93 +63,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private MobileBaseCadManager baseManager;
 	private CheckBox autoRegen = new CheckBox("Auto-Regnerate CAD");
+
 	
-	private AbstractGameController gameController = new AbstractGameController() {
-
-		@Override
-		public double getNavUp() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getNavRight() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getNavLeft() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getNavDown() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls3Plus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls3Minus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls2Plus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls2Minus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls1Plus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls1Minus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls0Plus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getControls0Minus() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getActionRight() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getActionLeft() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	};
+	private BowlerJInputDevice gameController = null;
 	
 
 	@Override
@@ -226,6 +143,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 			tree.setPrefWidth(325);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+			JogWidget walkWidget = new JogWidget(device);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
 				@Override
@@ -234,6 +152,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					TreeItem<String> treeItem = (TreeItem<String>) newValue;
 					new Thread() {
 						public void run() {
+							if(walkWidget.getGameController()!=null)
+								setGameController(walkWidget.getGameController());
 							if (callbackMapForTreeitems.get(treeItem) != null) {
 								callbackMapForTreeitems.get(treeItem).run();
 							}
@@ -247,6 +167,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 								Platform.runLater(() -> {
 									controls.getChildren().clear();
 								});
+								
+								walkWidget.setGameController(getController());
 							}
 						}
 					}.start();
@@ -281,7 +203,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			progress.setOpacity(.7);
 			progress.setPrefSize(325, 50);
 			BowlerStudio.setOverlayTop(new Group(progress));
-			BowlerStudio.setOverlayTopRight(new Group(new JogWidget(device)));
+			BowlerStudio.setOverlayTopRight(new Group(walkWidget));
 			BowlerStudio.setOverlayBottomRight(new Group(controls));
 			
 			BowlerStudio.setCadSplit(.1);
@@ -438,9 +360,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			generateCad();
 	}
 
-	public AbstractGameController getController() {
+	public BowlerJInputDevice getController() {
 
-		return gameController;
+		return getGameController();
 	}
 
 	public void setGitDhEngine(String gitsId, String file, DHParameterKinematics dh) {
@@ -456,6 +378,14 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	public void setGitCadEngine(String gitsId, String file, DHParameterKinematics dh) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		baseManager.setGitCadEngine(gitsId, file, dh);
+	}
+
+	public BowlerJInputDevice getGameController() {
+		return gameController;
+	}
+
+	public void setGameController(BowlerJInputDevice bowlerJInputDevice) {
+		this.gameController = bowlerJInputDevice;
 	}
 
 

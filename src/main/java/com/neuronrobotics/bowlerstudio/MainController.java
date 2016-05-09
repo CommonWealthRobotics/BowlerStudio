@@ -200,7 +200,7 @@ public class MainController implements Initializable {
 	}
 	public void clearOverlayLeft(){
 		Platform.runLater(()->{
-			
+			overlayScrollPanel.setContent(null);
 			overlayScrollPanel.setVisible(false);
 		});
 	}

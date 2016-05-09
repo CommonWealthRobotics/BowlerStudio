@@ -45,7 +45,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	TextField increment=new TextField(Double.toString(defauletSpeed));
 	TextField sec=new TextField("0.03");
 	private TransformWidget transform;
-	BowlerJInputDevice gameController=null;
+	private BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
 	private boolean stop=true;
 	private jogThread jogTHreadHandle;
@@ -79,25 +79,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		nz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
 		home.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
 		game.setOnAction(event -> {
-			if(gameController == null){
-				gameController = (BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController");
-				if(gameController==null){
+			if(getGameController() == null){
+				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController"));
+				if(getGameController()==null){
 					ConnectionManager.onConnectGamePad("jogController");
-					gameController = (BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController");
-				}
-				if(gameController!=null){
-					gameController.addListeners(this);
-					game.setText("Remove Game Controller");
-					controllerLoop();
-					//TODO open a configuration panel here
-				}else{
-					//the controller must not be availible, bailing
+					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController"));
 				}
 				
 			}else{
-				gameController.removeListeners(this);
-				game.setText("Add Game Controller");
-				gameController=null;
+				RemoveGameController();
 			}
 		});
 		
@@ -167,6 +157,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		jogTHreadHandle = new jogThread();
 		jogTHreadHandle.start();
 		controllerLoop();
+	}
+
+	private BowlerJInputDevice RemoveGameController() {
+		BowlerJInputDevice stale = getGameController();
+		getGameController().removeListeners(this);
+		game.setText("Add Game Controller");
+		setGameController(null);
+		return stale;
 	}
 	
 	private void handle(final Button button ){
@@ -267,9 +265,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	@Override
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 		// TODO Auto-generated method stub
-		Platform.runLater(() -> {
-			transform.updatePose(pose);
-		});
+		if(pose != null)
+			Platform.runLater(() -> {
+				transform.updatePose(pose);
+			});
 	}
 
 	@Override
@@ -312,7 +311,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	
 	private void controllerLoop(){
 		double seconds=.1;
-		if(gameController!=null || stop==false){
+		if(getGameController()!=null || stop==false){
 			try{
 				seconds =Double.parseDouble(sec.getText());
 				if(!stop){ 
@@ -452,6 +451,20 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 
 	public void setMobilebase(MobileBase mobilebase) {
 		this.mobilebase = mobilebase;
+	}
+
+	public BowlerJInputDevice getGameController() {
+		return gameController;
+	}
+
+	public void setGameController(BowlerJInputDevice gameController) {
+		this.gameController = gameController;
+		if(gameController!=null){
+			
+			getGameController().addListeners(this);
+			game.setText("Remove Game Controller");
+			controllerLoop();
+		}
 	}
 
 }
