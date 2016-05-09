@@ -49,7 +49,7 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 	private boolean stop;
 	private double seconds;
 	private String paramsKey;
-	private String sliderMapVlaue;
+
 
 	
 	
@@ -215,7 +215,6 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 			getGameController().clearListeners();
 			getGameController().addListeners(this);
 			controllerLoop();
-			sliderMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x");
 		}
 	}
 
@@ -229,7 +228,7 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 	public void onEvent(Component comp, net.java.games.input.Event event,
 			float value, String eventString){
 		
-		if(comp.getName().toLowerCase().contentEquals(sliderMapVlaue))
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x")))
 			slider=-value;
 
 		if(Math.abs(slider)<.01)

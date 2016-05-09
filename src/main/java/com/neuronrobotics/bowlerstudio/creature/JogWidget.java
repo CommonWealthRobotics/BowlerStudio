@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.time.Duration;
+import java.util.HashMap;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
@@ -8,6 +9,7 @@ import net.java.games.input.Controller;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.NewGistController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -32,6 +34,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
 	double defauletSpeed=0.40;
@@ -45,6 +48,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button nz = new Button("",AssetFactory.loadIcon("Minus-Z.png"));
 	Button home = new Button("",AssetFactory.loadIcon("Home.png"));
 	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
+	Button conf = new Button("Configure...",AssetFactory.loadIcon("Configure-Game-Controller.png"));
 	TextField increment=new TextField(Double.toString(defauletSpeed));
 	TextField sec=new TextField("0.03");
 	private TransformWidget transform;
@@ -53,10 +57,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	private boolean stop=true;
 	private jogThread jogTHreadHandle;
 	private String paramsKey;
-	private String xMapVlaue;
-	private String yMapVlaue;
-	private String zMapVlaue;
-	private String slideMapVlaue;
+
 	
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
@@ -98,7 +99,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				RemoveGameController();
 			}
 		});
-		
+		conf.setOnAction(event -> {
+			if(getGameController() != null){
+				runControllerMap();				
+			}
+		});
 		
 		GridPane buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
@@ -153,6 +158,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	game, 
 				4, 
 				0);
+		buttons.add(	conf, 
+				4, 
+				1);
 		add(	buttons, 
 				0, 
 				0);
@@ -432,13 +440,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onEvent(Component comp, net.java.games.input.Event event,
 			float value, String eventString) {
 
-		if(comp.getName().toLowerCase().contentEquals(yMapVlaue))
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
 			x=value;
-		if(comp.getName().toLowerCase().contentEquals(zMapVlaue))
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
 			y=value;
-		if(comp.getName().toLowerCase().contentEquals(xMapVlaue))
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
 			rz=-value;
-		if(comp.getName().toLowerCase().contentEquals(slideMapVlaue))
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
 			slider=-value;
 		if(Math.abs(x)<.01)
 			x=0;
@@ -484,13 +492,34 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			controllerLoop();
 			Controller hwController = gameController.getController();
 			paramsKey = hwController.getName();
-			
-			xMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x");
-			yMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y");
-			zMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz");
-			slideMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider");
-			
+			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
+			boolean hasmap = false;
+			if(map.containsKey("jogKinx")&&
+					map.containsKey("jogKiny")	&&
+					map.containsKey("jogKinz")	&&	
+					map.containsKey("jogKinslider")
+					){
+				hasmap=true;
+			}
+
+			if(!hasmap){
+				runControllerMap();
+			}
 		}
+	}
+
+	private void runControllerMap() {
+		Stage s = new Stage();
+		new Thread(){
+			public void run(){
+				JogTrainerWidget controller = new JogTrainerWidget(gameController);
+				try {
+					controller.start( s);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	public TransformWidget getTransform() {
