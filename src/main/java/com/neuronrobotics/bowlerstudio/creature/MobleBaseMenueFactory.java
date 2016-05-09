@@ -502,14 +502,19 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
-
+		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dhLink, dh);
 		TreeItem<String> link = new TreeItem<>(conf.getName(),AssetFactory.loadIcon("Move-Single-Motor.png"));
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(link, new LinkSliderWidget(linkIndex, dhLink, dh));
+				widgetMapForTreeitems.put(link,lsw);
 			}
+			 BowlerJInputDevice controller = creatureLab.getController();
+			 if(controller!=null){
+				 lsw.setGameController(controller); 
+			 }
+			
 			// activate controller
 		});
 

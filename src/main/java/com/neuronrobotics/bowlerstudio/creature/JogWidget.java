@@ -3,11 +3,13 @@ package com.neuronrobotics.bowlerstudio.creature;
 import java.time.Duration;
 
 import net.java.games.input.Component;
+import net.java.games.input.Controller;
 
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -50,6 +52,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	double x,y,rz,slider=0;
 	private boolean stop=true;
 	private jogThread jogTHreadHandle;
+	private String paramsKey;
+	private String xMapVlaue;
+	private String yMapVlaue;
+	private String zMapVlaue;
+	private String slideMapVlaue;
 	
 	public JogWidget(AbstractKinematicsNR kinimatics){
 		this.setKin(kinimatics);
@@ -253,7 +260,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					c.setDesiredTaskSpaceTransform( c.calcHome(),0);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}else{
@@ -425,13 +432,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onEvent(Component comp, net.java.games.input.Event event,
 			float value, String eventString) {
 
-		if(comp.getName().toLowerCase().contentEquals("y"))
+		if(comp.getName().toLowerCase().contentEquals(yMapVlaue))
 			x=value;
-		if(comp.getName().toLowerCase().contentEquals("rz"))
+		if(comp.getName().toLowerCase().contentEquals(zMapVlaue))
 			y=value;
-		if(comp.getName().toLowerCase().contentEquals("x"))
+		if(comp.getName().toLowerCase().contentEquals(xMapVlaue))
 			rz=-value;
-		if(comp.getName().toLowerCase().contentEquals("slider"))
+		if(comp.getName().toLowerCase().contentEquals(slideMapVlaue))
 			slider=-value;
 		if(Math.abs(x)<.01)
 			x=0;
@@ -475,6 +482,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			getGameController().addListeners(this);
 			game.setText("Remove Game Controller");
 			controllerLoop();
+			Controller hwController = gameController.getController();
+			paramsKey = hwController.getName();
+			
+			xMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x");
+			yMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y");
+			zMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz");
+			slideMapVlaue = (String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider");
+			
 		}
 	}
 
