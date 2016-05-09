@@ -148,9 +148,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		add(	buttons, 
 				0, 
 				0);
-		transform = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
+		setTransform(new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this));
 		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Current Position", transform));
+		advancedPanel.getPanes().add(new TitledPane("Current Position", getTransform()));
 		add(	advancedPanel, 
 				0, 
 				1);
@@ -265,17 +265,18 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	@Override
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 		// TODO Auto-generated method stub
-		if(pose != null)
+		if(pose != null &&getTransform()!=null)
 			Platform.runLater(() -> {
-				transform.updatePose(pose);
+				getTransform().updatePose(pose);
 			});
 	}
 
 	@Override
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,
 			TransformNR pose) {
+		if(pose != null &&getTransform()!=null)
 		Platform.runLater(() -> {
-			transform.updatePose(pose);
+			getTransform().updatePose(pose);
 		});
 	}
 	
@@ -465,6 +466,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			game.setText("Remove Game Controller");
 			controllerLoop();
 		}
+	}
+
+	public TransformWidget getTransform() {
+		return transform;
+	}
+
+	public void setTransform(TransformWidget transform) {
+		this.transform = transform;
 	}
 
 }
