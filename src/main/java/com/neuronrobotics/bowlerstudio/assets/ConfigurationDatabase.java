@@ -16,16 +16,14 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 public class ConfigurationDatabase {
 	private static final String repo = "BowlerStudioConfiguration";
-	private static String gitSource = "https://github.com/madhephaestus/" + repo + ".git"; // madhephaestus
+	private static String gitSource = "https://github.com/NeuronRobotics/" + repo + ".git"; // madhephaestus
 	private static String dbFile= "database.json";
 	private static boolean checked;
 	private static HashMap<String,HashMap<String,Object>> database=null;
-	private static Type TT_mapStringString = new TypeToken<HashMap<String,HashMap<String,Object>>>(){}.getType();
+	private static final  Type TT_mapStringString = new TypeToken<HashMap<String,HashMap<String,Object>>>(){}.getType();
 	//chreat the gson object, this is the parsing factory
 	private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-	public static HashMap<String,Object> getParams(String paramsKey){
-		return getDatabase().get(paramsKey);
-	}
+
 	
 	public static Object getObject(String paramsKey,String objectKey , Object defaultValue){
 		if(getParamMap(paramsKey).get(objectKey)==null){

@@ -96,80 +96,81 @@ public class MainController implements Initializable {
 	/**
 	 * FXML Widgets
 	 */
+	   @FXML // ResourceBundle that was given to the FXMLLoader
+	    private ResourceBundle resources;
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
+	    @FXML // URL location of the FXML file that was given to the FXMLLoader
+	    private URL location;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+	    @FXML // fx:id="BowlerStudioMenu"
+	    private Menu BowlerStudioMenu; // Value injected by FXMLLoader
 
-    @FXML // fx:id="BowlerStudioMenue"
-    private MenuBar BowlerStudioMenue; // Value injected by FXMLLoader
+	    @FXML // fx:id="BowlerStudioMenue"
+	    private MenuBar BowlerStudioMenue; // Value injected by FXMLLoader
 
-    @FXML // fx:id="CadControlsAnchor"
-    private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
+	    @FXML // fx:id="CadControlsAnchor"
+	    private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="CommandLine"
-    private AnchorPane CommandLine; // Value injected by FXMLLoader
+	    @FXML // fx:id="CadTextSplit"
+	    private SplitPane CadTextSplit; // Value injected by FXMLLoader
 
-    @FXML // fx:id="CreaturesMenu"
-    private Menu CreaturesMenu; // Value injected by FXMLLoader
-    
-    @FXML // fx:id="CadTextSplit"
-    private SplitPane CadTextSplit; // Value injected by FXMLLoader
+	    @FXML // fx:id="CommandLine"
+	    private AnchorPane CommandLine; // Value injected by FXMLLoader
 
+	    @FXML // fx:id="CreaturesMenu"
+	    private Menu CreaturesMenu; // Value injected by FXMLLoader
 
-    @FXML // fx:id="DriveControlsAnchor"
-    private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
+	    @FXML // fx:id="DriveControlsAnchor"
+	    private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="GitHubRoot"
-    private Menu GitHubRoot; // Value injected by FXMLLoader
+	    @FXML // fx:id="GitHubRoot"
+	    private Menu GitHubRoot; // Value injected by FXMLLoader
 
-    @FXML // fx:id="TempControlsAnchor"
-    private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
+	    @FXML // fx:id="TempControlsAnchor"
+	    private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="clearCache"
-    private MenuItem clearCache; // Value injected by FXMLLoader
+	    @FXML // fx:id="clearCache"
+	    private MenuItem clearCache; // Value injected by FXMLLoader
 
-    @FXML // fx:id="commandLineTitledPane"
-    private TitledPane commandLineTitledPane; // Value injected by FXMLLoader
+	    @FXML // fx:id="commandLineTitledPane"
+	    private TitledPane commandLineTitledPane; // Value injected by FXMLLoader
 
-    @FXML // fx:id="createNewGist"
-    private MenuItem createNewGist; // Value injected by FXMLLoader
+	    @FXML // fx:id="createNewGist"
+	    private MenuItem createNewGist; // Value injected by FXMLLoader
 
-    @FXML // fx:id="editorContainer"
-    private AnchorPane editorContainer; // Value injected by FXMLLoader
+	    @FXML // fx:id="editorContainer"
+	    private AnchorPane editorContainer; // Value injected by FXMLLoader
 
-    @FXML // fx:id="jfx3dControls"
-    private AnchorPane jfx3dControls; // Value injected by FXMLLoader
+	    @FXML // fx:id="jfx3dControls"
+	    private AnchorPane jfx3dControls; // Value injected by FXMLLoader
 
-    @FXML // fx:id="logView"
-    private AnchorPane logView; // Value injected by FXMLLoader
+	    @FXML // fx:id="logView"
+	    private AnchorPane logView; // Value injected by FXMLLoader
 
-    @FXML // fx:id="logViewRef"
-    private TextArea logViewRef; // Value injected by FXMLLoader
+	    @FXML // fx:id="logViewRef"
+	    private TextArea logViewRef; // Value injected by FXMLLoader
 
-    @FXML // fx:id="logoutGithub"
-    private MenuItem logoutGithub; // Value injected by FXMLLoader
+	    @FXML // fx:id="logoutGithub"
+	    private MenuItem logoutGithub; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myGists"
-    private Menu myGists; // Value injected by FXMLLoader
+	    @FXML // fx:id="myGists"
+	    private Menu myGists; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myOrganizations"
-    private Menu myOrganizations; // Value injected by FXMLLoader
+	    @FXML // fx:id="myOrganizations"
+	    private Menu myOrganizations; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myRepos"
-    private Menu myRepos; // Value injected by FXMLLoader
+	    @FXML // fx:id="myRepos"
+	    private Menu myRepos; // Value injected by FXMLLoader
 
+	    @FXML // fx:id="overlayScrollPanel"
+	    private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
 
-    @FXML // fx:id="overlayScrollPanel"
-    private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
+	    @FXML // fx:id="viewContainer"
+	    private AnchorPane viewContainer; // Value injected by FXMLLoader
 
-    @FXML // fx:id="viewContainer"
-    private AnchorPane viewContainer; // Value injected by FXMLLoader
+	    @FXML // fx:id="watchingRepos"
+	    private Menu watchingRepos; // Value injected by FXMLLoader
 
-    @FXML // fx:id="watchingRepos"
-    private Menu watchingRepos; // Value injected by FXMLLoader
 
 	
 	public void setCadSplit(double value){
@@ -1093,5 +1094,15 @@ public class MainController implements Initializable {
 		});
 	}
 	 
+    @FXML
+    void onSaveConfiguration(ActionEvent event) {
+    	System.err.println("Saving database");
+		new Thread(){
+			public void run(){
+				
+				ConfigurationDatabase.save();
+			}
+		}.start();
+    }
 
 }
