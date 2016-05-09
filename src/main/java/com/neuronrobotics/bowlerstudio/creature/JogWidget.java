@@ -460,7 +460,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void setGameController(BowlerJInputDevice gameController) {
 		this.gameController = gameController;
 		if(gameController!=null){
-			
+			getGameController().clearListeners();
 			getGameController().addListeners(this);
 			game.setText("Remove Game Controller");
 			controllerLoop();
