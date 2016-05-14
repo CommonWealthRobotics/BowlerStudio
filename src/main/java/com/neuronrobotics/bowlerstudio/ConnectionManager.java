@@ -34,6 +34,7 @@ import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.kinematics.gcodebridge.GcodeDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDataType;
@@ -335,7 +336,33 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	}
 
+	 public static void onMarlinGCODE() {
+			Set<String> ports = NRSerialPort.getAvailableSerialPorts();
+			List<String> choices = new ArrayList<>();
+			if(ports.isEmpty())
+				return;
+			for (String s: ports){
+				choices.add(s);
+			}
 
+			
+			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+			dialog.setTitle("GCODE Device Serial Port Chooser");
+			dialog.setHeaderText("Supports Marlin");
+			dialog.setContentText("GCODE Device Port:");
+
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			
+			// The Java 8 way to get the response value (with lambda expression).
+			result.ifPresent(letter -> {
+				GcodeDevice p =  new GcodeDevice(new NRSerialPort(letter, 115200));
+				p.connect();
+				String name = "GCODE";
+				addConnection(p,name);
+			});
+			
+		}
 	 public static void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();

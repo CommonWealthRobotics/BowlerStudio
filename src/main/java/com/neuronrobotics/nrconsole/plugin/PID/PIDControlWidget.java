@@ -405,8 +405,8 @@ public class PIDControlWidget extends JPanel implements IPIDEventListener,Action
 		if(e.getGroup() == getGroup()){
 			System.out.println("Limit event: "+e);
 			//if(e.getLimitType() == PIDLimitEventType.INDEXEVENT){
-				setInternalSetpoint(e.getValue());
-				setPositionDisplay(e.getValue());
+				setInternalSetpoint((int) e.getValue());
+				setPositionDisplay((int) e.getValue());
 			//}
 		}
 	}

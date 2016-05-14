@@ -87,98 +87,101 @@ public class MainController implements Initializable {
 	private File openFile;
 	private BowlerStudioController application;
 	private MainController mainControllerRef;
-	protected EventHandler<? super KeyEvent> normalKeyPessHandle=null;
-	protected static String currentGistID = ""; //Is there a better solution to pass data into a controller than using
-												//a static global?
-	//private CommandLineWidget cmdLine;
-	//protected EventHandler<? super KeyEvent> normalKeyPessHandle;
-	
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle = null;
+	protected static String currentGistID = ""; // Is there a better solution to
+												// pass data into a controller
+												// than using
+												// a static global?
+	// private CommandLineWidget cmdLine;
+	// protected EventHandler<? super KeyEvent> normalKeyPessHandle;
+
 	/**
 	 * FXML Widgets
 	 */
-	   @FXML // ResourceBundle that was given to the FXMLLoader
-	    private ResourceBundle resources;
 
-	    @FXML // URL location of the FXML file that was given to the FXMLLoader
-	    private URL location;
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
 
-	    @FXML // fx:id="BowlerStudioMenu"
-	    private Menu BowlerStudioMenu; // Value injected by FXMLLoader
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
 
-	    @FXML // fx:id="BowlerStudioMenue"
-	    private MenuBar BowlerStudioMenue; // Value injected by FXMLLoader
+	@FXML // fx:id="BowlerStudioMenue"
+	private MenuBar BowlerStudioMenue; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="CadControlsAnchor"
-	    private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="CadControlsAnchor"
+	private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="CadTextSplit"
-	    private SplitPane CadTextSplit; // Value injected by FXMLLoader
+	@FXML // fx:id="CadTextSplit"
+	private SplitPane CadTextSplit; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="CommandLine"
-	    private AnchorPane CommandLine; // Value injected by FXMLLoader
+	@FXML // fx:id="CommandLine"
+	private AnchorPane CommandLine; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="CreaturesMenu"
-	    private Menu CreaturesMenu; // Value injected by FXMLLoader
+	@FXML // fx:id="CreaturesMenu"
+	private Menu CreaturesMenu; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="DriveControlsAnchor"
-	    private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="DriveControlsAnchor"
+	private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="GitHubRoot"
-	    private Menu GitHubRoot; // Value injected by FXMLLoader
+	@FXML // fx:id="GitHubRoot"
+	private Menu GitHubRoot; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="TempControlsAnchor"
-	    private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="TempControlsAnchor"
+	private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="clearCache"
-	    private MenuItem clearCache; // Value injected by FXMLLoader
+	@FXML // fx:id="addMarlinGCODEDevice"
+	private MenuItem addMarlinGCODEDevice; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="commandLineTitledPane"
-	    private TitledPane commandLineTitledPane; // Value injected by FXMLLoader
+	@FXML // fx:id="clearCache"
+	private MenuItem clearCache; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="createNewGist"
-	    private MenuItem createNewGist; // Value injected by FXMLLoader
+	@FXML // fx:id="commandLineTitledPane"
+	private TitledPane commandLineTitledPane; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="editorContainer"
-	    private AnchorPane editorContainer; // Value injected by FXMLLoader
+	@FXML // fx:id="createNewGist"
+	private MenuItem createNewGist; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="jfx3dControls"
-	    private AnchorPane jfx3dControls; // Value injected by FXMLLoader
+	@FXML // fx:id="editorContainer"
+	private AnchorPane editorContainer; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="logView"
-	    private AnchorPane logView; // Value injected by FXMLLoader
+	@FXML // fx:id="jfx3dControls"
+	private AnchorPane jfx3dControls; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="logViewRef"
-	    private TextArea logViewRef; // Value injected by FXMLLoader
+	@FXML // fx:id="logView"
+	private AnchorPane logView; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="logoutGithub"
-	    private MenuItem logoutGithub; // Value injected by FXMLLoader
+	@FXML // fx:id="logViewRef"
+	private TextArea logViewRef; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="myGists"
-	    private Menu myGists; // Value injected by FXMLLoader
+	@FXML // fx:id="logoutGithub"
+	private MenuItem logoutGithub; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="myOrganizations"
-	    private Menu myOrganizations; // Value injected by FXMLLoader
+	@FXML // fx:id="myGists"
+	private Menu myGists; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="myRepos"
-	    private Menu myRepos; // Value injected by FXMLLoader
+	@FXML // fx:id="myOrganizations"
+	private Menu myOrganizations; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="overlayScrollPanel"
-	    private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
+	@FXML // fx:id="myRepos"
+	private Menu myRepos; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="viewContainer"
-	    private AnchorPane viewContainer; // Value injected by FXMLLoader
+	@FXML // fx:id="overlayScrollPanel"
+	private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
 
-	    @FXML // fx:id="watchingRepos"
-	    private Menu watchingRepos; // Value injected by FXMLLoader
+	@FXML // fx:id="viewContainer"
+	private AnchorPane viewContainer; // Value injected by FXMLLoader
 
+	@FXML // fx:id="watchingRepos"
+	private Menu watchingRepos; // Value injected by FXMLLoader
 
-	
-	public void setCadSplit(double value){
-		Platform.runLater(()->{CadTextSplit.setDividerPosition(0, value);});
+	public void setCadSplit(double value) {
+		Platform.runLater(() -> {
+			CadTextSplit.setDividerPosition(0, value);
+		});
 	}
-	
-	public void setOverlayLeft(TreeView<String>  content){
-		Platform.runLater(()->{
+
+	public void setOverlayLeft(TreeView<String> content) {
+		Platform.runLater(() -> {
 
 			overlayScrollPanel.setFitToHeight(true);
 			overlayScrollPanel.setContent(content);
@@ -186,30 +189,31 @@ public class MainController implements Initializable {
 			overlayScrollPanel.viewportBoundsProperty()
 					.addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) -> {
 				// Node content = overlayScrollPanel.getContent();
-				// 
-				//System.out.println("Resizing " + arg2);
+				//
+				// System.out.println("Resizing " + arg2);
 				Platform.runLater(() -> {
 					overlayScrollPanel.setFitToHeight(true);
-					///content.seth
+					/// content.seth
 					overlayScrollPanel.setContent(content);
-					
+
 				});
 			});
 			overlayScrollPanel.setVisible(true);
 		});
 	}
-	public void clearOverlayLeft(){
-		Platform.runLater(()->{
+
+	public void clearOverlayLeft() {
+		Platform.runLater(() -> {
 			overlayScrollPanel.setContent(null);
 			overlayScrollPanel.setVisible(false);
 		});
 	}
-	
-	public void setOverlayTop(Group content){
-		Platform.runLater(()->{
+
+	public void setOverlayTop(Group content) {
+		Platform.runLater(() -> {
 			CadControlsAnchor.getChildren().clear();
 			CadControlsAnchor.getChildren().add(content);
-			
+
 			AnchorPane.setTopAnchor(content, 0.0);
 			AnchorPane.setRightAnchor(content, 0.0);
 			AnchorPane.setLeftAnchor(content, 0.0);
@@ -217,14 +221,16 @@ public class MainController implements Initializable {
 			CadControlsAnchor.setVisible(true);
 		});
 	}
-	public void clearOverlayTop(){
-		Platform.runLater(()->{
+
+	public void clearOverlayTop() {
+		Platform.runLater(() -> {
 			CadControlsAnchor.getChildren().clear();
 			CadControlsAnchor.setVisible(false);
 		});
 	}
-	public void setOverlayTopRight(Group content){
-		Platform.runLater(()->{
+
+	public void setOverlayTopRight(Group content) {
+		Platform.runLater(() -> {
 			DriveControlsAnchor.getChildren().clear();
 			DriveControlsAnchor.getChildren().add(content);
 			AnchorPane.setTopAnchor(content, 0.0);
@@ -234,14 +240,16 @@ public class MainController implements Initializable {
 			DriveControlsAnchor.setVisible(true);
 		});
 	}
-	public void clearOverlayTopRight(){
-		Platform.runLater(()->{
+
+	public void clearOverlayTopRight() {
+		Platform.runLater(() -> {
 			DriveControlsAnchor.getChildren().clear();
 			DriveControlsAnchor.setVisible(false);
 		});
 	}
-	public void setOverlayBottomRight(Group content){
-		Platform.runLater(()->{
+
+	public void setOverlayBottomRight(Group content) {
+		Platform.runLater(() -> {
 			TempControlsAnchor.getChildren().clear();
 			TempControlsAnchor.getChildren().add(content);
 			AnchorPane.setTopAnchor(content, 0.0);
@@ -251,8 +259,9 @@ public class MainController implements Initializable {
 			TempControlsAnchor.setVisible(true);
 		});
 	}
-	public void clearOverlayBottomRight(){
-		Platform.runLater(()->{
+
+	public void clearOverlayBottomRight() {
+		Platform.runLater(() -> {
 			TempControlsAnchor.getChildren().clear();
 			TempControlsAnchor.setVisible(false);
 		});
@@ -268,39 +277,41 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-        assert BowlerStudioMenue != null : "fx:id=\"BowlerStudioMenue\" was not injected: check your FXML file 'Main.fxml'.";
-        assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
-        assert CommandLine != null : "fx:id=\"CommandLine\" was not injected: check your FXML file 'Main.fxml'.";
-        assert CreaturesMenu != null : "fx:id=\"CreaturesMenu\" was not injected: check your FXML file 'Main.fxml'.";
-        assert DriveControlsAnchor != null : "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
-        assert GitHubRoot != null : "fx:id=\"GitHubRoot\" was not injected: check your FXML file 'Main.fxml'.";
-        assert TempControlsAnchor != null : "fx:id=\"TempControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
-        assert clearCache != null : "fx:id=\"clearCache\" was not injected: check your FXML file 'Main.fxml'.";
-        assert commandLineTitledPane != null : "fx:id=\"commandLineTitledPane\" was not injected: check your FXML file 'Main.fxml'.";
-        assert createNewGist != null : "fx:id=\"createNewGist\" was not injected: check your FXML file 'Main.fxml'.";
-        assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'Main.fxml'.";
-        assert jfx3dControls != null : "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'Main.fxml'.";
-        assert logView != null : "fx:id=\"logView\" was not injected: check your FXML file 'Main.fxml'.";
-        assert logViewRef != null : "fx:id=\"logViewRef\" was not injected: check your FXML file 'Main.fxml'.";
-        assert logoutGithub != null : "fx:id=\"logoutGithub\" was not injected: check your FXML file 'Main.fxml'.";
-        assert myGists != null : "fx:id=\"myGists\" was not injected: check your FXML file 'Main.fxml'.";
-        assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'Main.fxml'.";
-        assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'Main.fxml'.";
-        assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'Main.fxml'.";
-        assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
-        assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
-        clearOverlayLeft();
+		assert BowlerStudioMenue != null : "fx:id=\"BowlerStudioMenue\" was not injected: check your FXML file 'Main.fxml'.";
+		assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+		assert CommandLine != null : "fx:id=\"CommandLine\" was not injected: check your FXML file 'Main.fxml'.";
+		assert CreaturesMenu != null : "fx:id=\"CreaturesMenu\" was not injected: check your FXML file 'Main.fxml'.";
+		assert DriveControlsAnchor != null : "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+		assert GitHubRoot != null : "fx:id=\"GitHubRoot\" was not injected: check your FXML file 'Main.fxml'.";
+		assert TempControlsAnchor != null : "fx:id=\"TempControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
+		assert clearCache != null : "fx:id=\"clearCache\" was not injected: check your FXML file 'Main.fxml'.";
+		assert commandLineTitledPane != null : "fx:id=\"commandLineTitledPane\" was not injected: check your FXML file 'Main.fxml'.";
+		assert createNewGist != null : "fx:id=\"createNewGist\" was not injected: check your FXML file 'Main.fxml'.";
+		assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'Main.fxml'.";
+		assert jfx3dControls != null : "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'Main.fxml'.";
+		assert logView != null : "fx:id=\"logView\" was not injected: check your FXML file 'Main.fxml'.";
+		assert logViewRef != null : "fx:id=\"logViewRef\" was not injected: check your FXML file 'Main.fxml'.";
+		assert logoutGithub != null : "fx:id=\"logoutGithub\" was not injected: check your FXML file 'Main.fxml'.";
+		assert myGists != null : "fx:id=\"myGists\" was not injected: check your FXML file 'Main.fxml'.";
+		assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'Main.fxml'.";
+		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'Main.fxml'.";
+		assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'Main.fxml'.";
+		assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
+		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
+		clearOverlayLeft();
 		BowlerStudio.setLogViewRefStatic(logViewRef);
 		System.out.println("Main controller inializing");
 		mainControllerRef = this;
+		addMarlinGCODEDevice.setOnAction(event->{
+			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
+		});
 		new Thread(new Runnable() {
-			
 
 			@Override
 			public void run() {
 				ThreadUtil.wait(200);
-	
-				//ScriptingEngine.getGithub().getMyself().getGravatarId()
+
+				// ScriptingEngine.getGithub().getMyself().getGravatarId()
 				// System.out.println("Loading 3d engine");
 				jfx3dmanager = new BowlerStudio3dEngine();
 
@@ -318,13 +329,13 @@ public class MainController implements Initializable {
 						// System.err.println("3d window requesting focus");
 						Scene topScene = BowlerStudio.getScene();
 						normalKeyPessHandle = topScene.getOnKeyPressed();
-						//jfx3dmanager.handleKeyboard(topScene);
+						// jfx3dmanager.handleKeyboard(topScene);
 					});
 
 					subScene.setOnMouseExited(mouseEvent -> {
 						// System.err.println("3d window dropping focus");
 						Scene topScene = BowlerStudio.getScene();
-						if(normalKeyPessHandle!=null)
+						if (normalKeyPessHandle != null)
 							topScene.setOnKeyPressed(normalKeyPessHandle);
 					});
 
@@ -336,7 +347,6 @@ public class MainController implements Initializable {
 					jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
 					viewContainer.getChildren().add(subScene);
 				});
-
 
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
 					if (ScriptingEngine.getLoginID() != null) {
@@ -364,7 +374,7 @@ public class MainController implements Initializable {
 				CommandLineWidget cmdLine = new CommandLineWidget();
 
 				Platform.runLater(() -> {
-					//CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
+					// CadDebugger.getChildren().add(jfx3dmanager.getDebuggerBox());
 					AnchorPane.setTopAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
 					AnchorPane.setRightAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
 					AnchorPane.setLeftAnchor(jfx3dmanager.getDebuggerBox(), 0.0);
@@ -377,22 +387,29 @@ public class MainController implements Initializable {
 				});
 				try {
 					ScriptingEngine.setAutoupdate(true);
-					File f = ScriptingEngine
-							.fileFromGit(
-									"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
-								"exampleRobots.json"// File from within the Git repo
-							);
-					
+					File f = ScriptingEngine.fileFromGit(
+							"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
+																								// repo,
+																								// change
+																								// this
+																								// if
+																								// you
+																								// fork
+																								// this
+																								// demo
+							"exampleRobots.json"// File from within the Git repo
+					);
+
 					@SuppressWarnings("unchecked")
-					HashMap<String,HashMap<String,Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine.inlineFileScriptRun(f, null);
-					for(Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()){
-						HashMap<String,Object> script = entry.getValue();
+					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+							.inlineFileScriptRun(f, null);
+					for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
+						HashMap<String, Object> script = entry.getValue();
 						MenuItem item = new MenuItem(entry.getKey());
 						item.setOnAction(event -> {
-							loadMobilebaseFromGit(	(String)script.get("scriptGit"),
-													(String)script.get("scriptFile"));
+							loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
 						});
-						Platform.runLater(()->{
+						Platform.runLater(() -> {
 							CreaturesMenu.getItems().add(item);
 						});
 					}
@@ -401,8 +418,8 @@ public class MainController implements Initializable {
 					e.printStackTrace();
 				}
 				HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-				for(String s:openGits.keySet() ){
-					ArrayList<String> repoFile = (ArrayList<String>)openGits.get(s);
+				for (String s : openGits.keySet()) {
+					ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 					try {
 						File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 						getApplication().createFileTab(f);
@@ -412,13 +429,13 @@ public class MainController implements Initializable {
 					}
 				}
 				
+
 			}
 		}).start();
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			commandLineTitledPane.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
 		});
 
-		
 	}
 
 	private void setToLoggedIn(final String name) {
@@ -465,24 +482,22 @@ public class MainController implements Initializable {
 							});
 							MenuItem addFile = new MenuItem("Add file to Gist...");
 							addFile.setOnAction(event -> new Thread() {
-                                public void run() {
+								public void run() {
 									Platform.runLater(() -> {
 										Stage s = new Stage();
 										currentGistID = gist.getHtmlUrl().substring(24);
 										AddFileToGistController controller = new AddFileToGistController();
-										try
-										{
+										try {
 											controller.start(s);
-										}
-										catch (Exception e)
-										{
+										} catch (Exception e) {
 											e.printStackTrace();
 										}
 									});
-                                }
-                            }.start());
+								}
+							}.start());
 							Platform.runLater(() -> {
-								// tmpGist.getItems().addAll(addFile, loadWebGist);
+								// tmpGist.getItems().addAll(addFile,
+								// loadWebGist);
 								tmpGist.getItems().add(loadWebGist);
 							});
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
@@ -491,7 +506,8 @@ public class MainController implements Initializable {
 								@Override
 								public void handle(Event ev) {
 									if (gistFlag)
-										return;// another thread is servicing this gist
+										return;// another thread is servicing
+												// this gist
 									// for(ScriptingEngine.)
 									new Thread() {
 										public void run() {
@@ -513,7 +529,7 @@ public class MainController implements Initializable {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() !=1)
+											if (tmpGist.getItems().size() != 1)
 												return;// menue populated by
 														// another thread
 											for (String s : listofFiles) {
@@ -660,19 +676,19 @@ public class MainController implements Initializable {
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, "master", null);
-									System.out.println("Clone Done for "+url+listofFiles.size()+" files");
+									System.out.println("Clone Done for " + url + listofFiles.size() + " files");
 								} catch (Exception e1) {
 									e1.printStackTrace();
 									return;
 								}
-								if (orgFiles.getItems().size() != 1){
+								if (orgFiles.getItems().size() != 1) {
 									Log.warning("Bailing out of loading thread");
 									return;// menue populated by
 											// another thread
 								}
-								
+
 								for (String s : listofFiles) {
-									//System.out.println("Adding file: "+s);
+									// System.out.println("Adding file: "+s);
 									MenuItem tmp = new MenuItem(s);
 									tmp.setOnAction(event -> {
 										new Thread() {
@@ -698,7 +714,7 @@ public class MainController implements Initializable {
 										orgFiles.setOnShowing(null);
 
 									});
-									
+
 								}
 								System.out.println("Refreshing menu");
 								Platform.runLater(() -> {
@@ -729,42 +745,44 @@ public class MainController implements Initializable {
 		});
 	}
 
-//	/**
-//	 * Returns the location of the Jar archive or .class file the specified
-//	 * class has been loaded from. <b>Note:</b> this only works if the class is
-//	 * loaded from a jar archive or a .class file on the locale file system.
-//	 *
-//	 * @param cls
-//	 *            class to locate
-//	 * @return the location of the Jar archive the specified class comes from
-//	 */
-//	public static File getClassLocation(Class<?> cls) {
-//
-//		// VParamUtil.throwIfNull(cls);
-//		String className = cls.getName();
-//		ClassLoader cl = cls.getClassLoader();
-//		URL url = cl.getResource(className.replace(".", "/") + ".class");
-//
-//		String urlString = url.toString().replace("jar:", "");
-//
-//		if (!urlString.startsWith("file:")) {
-//			throw new IllegalArgumentException("The specified class\"" + cls.getName()
-//					+ "\" has not been loaded from a location" + "on the local filesystem.");
-//		}
-//
-//		urlString = urlString.replace("file:", "");
-//		urlString = urlString.replace("%20", " ");
-//
-//		int location = urlString.indexOf(".jar!");
-//
-//		if (location > 0) {
-//			urlString = urlString.substring(0, location) + ".jar";
-//		} else {
-//			// System.err.println("No Jar File found: " + cls.getName());
-//		}
-//
-//		return new File(urlString);
-//	}
+	// /**
+	// * Returns the location of the Jar archive or .class file the specified
+	// * class has been loaded from. <b>Note:</b> this only works if the class
+	// is
+	// * loaded from a jar archive or a .class file on the locale file system.
+	// *
+	// * @param cls
+	// * class to locate
+	// * @return the location of the Jar archive the specified class comes from
+	// */
+	// public static File getClassLocation(Class<?> cls) {
+	//
+	// // VParamUtil.throwIfNull(cls);
+	// String className = cls.getName();
+	// ClassLoader cl = cls.getClassLoader();
+	// URL url = cl.getResource(className.replace(".", "/") + ".class");
+	//
+	// String urlString = url.toString().replace("jar:", "");
+	//
+	// if (!urlString.startsWith("file:")) {
+	// throw new IllegalArgumentException("The specified class\"" +
+	// cls.getName()
+	// + "\" has not been loaded from a location" + "on the local filesystem.");
+	// }
+	//
+	// urlString = urlString.replace("file:", "");
+	// urlString = urlString.replace("%20", " ");
+	//
+	// int location = urlString.indexOf(".jar!");
+	//
+	// if (location > 0) {
+	// urlString = urlString.substring(0, location) + ".jar";
+	// } else {
+	// // System.err.println("No Jar File found: " + cls.getName());
+	// }
+	//
+	// return new File(urlString);
+	// }
 
 	@FXML
 	public void onLoadFile(ActionEvent e) {
@@ -778,8 +796,7 @@ public class MainController implements Initializable {
 						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
 						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg", "*.txt"),
 						new ExtensionFilter("Image", "*.jpg", "*.jpeg", "*.JPG", "*.png", "*.PNG"),
-						new ExtensionFilter("STL", "*.stl","*.STL","*.Stl"),
-						new ExtensionFilter("All", "*.*"));
+						new ExtensionFilter("STL", "*.stl", "*.STL", "*.Stl"), new ExtensionFilter("All", "*.*"));
 				if (openFile == null) {
 					return;
 				}
@@ -819,10 +836,10 @@ public class MainController implements Initializable {
 	}
 
 	public void disconnect() {
-		try{
+		try {
 			getApplication().disconnect();
-		}catch (NullPointerException ex){
-			
+		} catch (NullPointerException ex) {
+
 		}
 	}
 
@@ -849,12 +866,12 @@ public class MainController implements Initializable {
 
 	}
 
-//	
-//	public void onConnectJavaCVCamera() {
-//
-//		Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
-//
-//	}
+	//
+	// public void onConnectJavaCVCamera() {
+	//
+	// Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
+	//
+	// }
 
 	@FXML
 	public void onConnectFileSourceCamera(ActionEvent event) {
@@ -968,18 +985,18 @@ public class MainController implements Initializable {
 
 	}
 
-	
-//	public Menu getCreatureLabMenue() {
-//		return CreatureLabMenue;
-//	}
-//
-//	public void setCreatureLabMenue(Menu creatureLabMenue) {
-//		CreatureLabMenue = creatureLabMenue;
-//	}
+	// public Menu getCreatureLabMenue() {
+	// return CreatureLabMenue;
+	// }
+	//
+	// public void setCreatureLabMenue(Menu creatureLabMenue) {
+	// CreatureLabMenue = creatureLabMenue;
+	// }
 
 	public void loadMobilebaseFromGist(String id, String file) {
 		loadMobilebaseFromGit("https://gist.github.com/" + id + ".git", file);
 	}
+
 	public void loadMobilebaseFromGit(String id, String file) {
 		new Thread() {
 			public void run() {
@@ -1000,6 +1017,7 @@ public class MainController implements Initializable {
 		}.start();
 
 	}
+
 	@FXML
 	public void onMobileBaseFromGist(ActionEvent event) {
 
@@ -1020,18 +1038,14 @@ public class MainController implements Initializable {
 		this.application = application;
 	}
 
-	
-
-
-
 	@FXML
 	public void onCreatenewGist(ActionEvent event) {
 		Stage s = new Stage();
-		new Thread(){
-			public void run(){
+		new Thread() {
+			public void run() {
 				NewGistController controller = new NewGistController();
 				try {
-					controller.start( s);
+					controller.start(s);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1049,60 +1063,63 @@ public class MainController implements Initializable {
 			e.printStackTrace();
 		}
 	}
+
 	@FXML
-	 public void clearScriptCache(ActionEvent event) {
-		Platform.runLater(()->{
+	public void clearScriptCache(ActionEvent event) {
+		Platform.runLater(() -> {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Are you sure you have published all your work?");
 			alert.setHeaderText("This will wipe out the local cache");
 			alert.setContentText("All files that are not published will be deleted");
 
 			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get() == ButtonType.OK){
-				new Thread(){
-					public void run(){
-						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/gistcache/");
+			if (result.get() == ButtonType.OK) {
+				new Thread() {
+					public void run() {
+						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/");
 						deleteFolder(cache);
 					}
 				}.start();
 			} else {
-			   System.out.println("Nothing was deleted");
+				System.out.println("Nothing was deleted");
 			}
 		});
 
-
 	}
+
 	private static void deleteFolder(File folder) {
 
-		System.out.println("Deleting "+folder.getAbsolutePath());
-	    File[] files = folder.listFiles();
-	    if(files!=null) { //some JVMs return null for empty dirs
-	        for(File f: files) {
-	            if(f.isDirectory()) {
-	                deleteFolder(f);
-	            } else {
-	                f.delete();
-	            }
-	        }
-	    }
-	    folder.delete();
+		System.out.println("Deleting " + folder.getAbsolutePath());
+		File[] files = folder.listFiles();
+		if (files != null) { // some JVMs return null for empty dirs
+			for (File f : files) {
+				if (f.isDirectory()) {
+					deleteFolder(f);
+				} else {
+					f.delete();
+				}
+			}
+		}
+		folder.delete();
 	}
+
 	@FXML
-	 public void onMobileBaseFromGit(ActionEvent event) {
-		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git", (gitsId, file) -> {
-			loadMobilebaseFromGit(gitsId, file);
-		});
+	public void onMobileBaseFromGit(ActionEvent event) {
+		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git",
+				(gitsId, file) -> {
+					loadMobilebaseFromGit(gitsId, file);
+				});
 	}
-	 
-    @FXML
-    void onSaveConfiguration(ActionEvent event) {
-    	System.err.println("Saving database");
-		new Thread(){
-			public void run(){
-				
+
+	@FXML
+	void onSaveConfiguration(ActionEvent event) {
+		System.err.println("Saving database");
+		new Thread() {
+			public void run() {
+
 				ConfigurationDatabase.save();
 			}
 		}.start();
-    }
+	}
 
 }
