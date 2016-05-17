@@ -220,13 +220,17 @@ public class BowlerStudio extends Application {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				ConfigurationDatabase.save();
+				if (ScriptingEngine.getCreds().exists()) 
+					ConfigurationDatabase.save();
 			}
 		});
 		primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
 		primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream("images/hat.png")));
-		String firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion", StudioBuildInfo.getVersion());
-
+		
+		String firstVer="";
+		if (ScriptingEngine.getCreds().exists())
+			firstVer= (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion", StudioBuildInfo.getVersion());
+	
 		
 		
 		System.out.println("BowlerStudio First Version: " + firstVer);

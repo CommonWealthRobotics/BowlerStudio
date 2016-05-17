@@ -298,6 +298,7 @@ public class MainController implements Initializable {
 		assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'Main.fxml'.";
 		assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
+		assert addMarlinGCODEDevice != null : "fx:id=\"addMarlinGCODEDevice\" was not injected: check your FXML file 'Main.fxml'.";
 		clearOverlayLeft();
 		BowlerStudio.setLogViewRefStatic(logViewRef);
 		System.out.println("Main controller inializing");
@@ -417,19 +418,20 @@ public class MainController implements Initializable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-				for (String s : openGits.keySet()) {
-					ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
-					try {
-						File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-						getApplication().createFileTab(f);
-					} catch (GitAPIException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				if (ScriptingEngine.getCreds().exists()) {
+					HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+					for (String s : openGits.keySet()) {
+						ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+						try {
+							File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
+							getApplication().createFileTab(f);
+						} catch (GitAPIException | IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
-				
 
+				}
 			}
 		}).start();
 		Platform.runLater(() -> {
