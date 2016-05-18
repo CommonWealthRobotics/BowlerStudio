@@ -124,6 +124,8 @@ public class DockFX extends Application {
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
     
+
+    
   }
 
   private TreeView<String> generateRandomTree() {
