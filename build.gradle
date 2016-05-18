@@ -113,7 +113,14 @@ dependencies {
 	compile "com.neuronrobotics:BowlerScriptingKernel:0.18.2"
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.17.4.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
-
+	compile "org.jfxtras:jfxtras-common:8.0-r4"
+	compile "org.jfxtras:jfxtras-fxml:8.0-r4"
+	compile "org.jfxtras:jfxtras-controls:8.0-r4"
+	compile "org.jfxtras:jfxtras-agenda:8.0-r4"
+	compile "org.jfxtras:jfxtras-window:8.0-r4"
+	compile "org.jfxtras:jfxtras-menu:8.0-r4"
+	compile "org.jfxtras:jfxtras-labs:8.0-r4"
+	
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 
 }
