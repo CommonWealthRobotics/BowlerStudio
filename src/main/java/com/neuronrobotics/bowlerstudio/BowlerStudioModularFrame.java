@@ -128,16 +128,7 @@ public class BowlerStudioModularFrame {
 			
 			// Initial docked setup
 			addTutorial();
-			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
 
-				@Override
-				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
-					showConectionManager();
-				}
-
-				@Override
-				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
-			});
 
 			// Add the dock pane to the window
 			editorContainer.getChildren().add(dockPane);
@@ -204,7 +195,9 @@ public class BowlerStudioModularFrame {
 			
 			
 			// focus on the tutorial to start
-			getTutorialDockNode().requestFocus();
+			Platform.runLater(() -> getTutorialDockNode().requestFocus());
+			
+			
 		} catch (Exception | Error e) {
 			e.printStackTrace();
 		}
@@ -228,6 +221,7 @@ public class BowlerStudioModularFrame {
 				@Override
 				public void invalidated(Observable event) {
 					if (ScriptingEngine.getCreds().exists()){
+						System.err.println("Closing devices");
 						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
 					}
 					connectionManagerDockNode.closedProperty().removeListener(connectionManagerRemover);	
@@ -250,6 +244,7 @@ public class BowlerStudioModularFrame {
 				@Override
 				public void invalidated(Observable event) {
 					if (ScriptingEngine.getCreds().exists()){
+						
 						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
 					}
 					connectionManagerDockNode.closedProperty().removeListener(creatureManagerRemover);	

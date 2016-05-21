@@ -18,6 +18,9 @@ import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
@@ -119,10 +122,11 @@ public class BowlerStudio extends Application {
 				"exampleRobots.json"// File from within the Git repo
 			);
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
-//			if (!ScriptingEngine.getCreds().exists()) {
-//				ScriptingEngine.logout();
-//			}
-
+			
+			String firstVer = "";
+			if (ScriptingEngine.getCreds().exists())
+				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
 			// System.out.println("Loading assets ");
 
 			// System.out.println("Done loading assets ");
@@ -169,7 +173,9 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println("BowlerStudio First Version: " + firstVer);
 			launch(args);
+			
 		} else {
 			BowlerKernel.main(args);
 		}
@@ -299,12 +305,19 @@ public class BowlerStudio extends Application {
 
 			primaryStage.setResizable(true);
 
-			String firstVer = "";
-			if (ScriptingEngine.getCreds().exists())
-				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-						StudioBuildInfo.getVersion());
+		
+			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
 
-			System.out.println("BowlerStudio First Version: " + firstVer);
+				@Override
+				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
+					System.err.println("Device connected: "+arg0);
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
+				}
+
+				@Override
+				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
+			});
+			
 			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());

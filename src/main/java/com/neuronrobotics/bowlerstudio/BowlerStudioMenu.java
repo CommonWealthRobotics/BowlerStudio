@@ -807,6 +807,16 @@ public class BowlerStudioMenu {
 							//e.printStackTrace();
 						}
 					}
+					HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
+					for (String s : openWeb.keySet()) {
+						String repoFile = (String) openWeb.get(s);
+						try {
+							bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							//e.printStackTrace();
+						}
+					}
 
 				}
 			}
