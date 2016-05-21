@@ -305,7 +305,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
-		File f = fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage());
+		File f = fileChooser.showOpenDialog(BowlerStudioModularFrame.getPrimaryStage());
 		if(f!=null){
 			AbstractImageProvider p = new StaticFileProvider(f);
 			String name = "image";

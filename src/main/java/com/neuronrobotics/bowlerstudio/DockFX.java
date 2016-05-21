@@ -20,7 +20,6 @@
  **/
 
 package com.neuronrobotics.bowlerstudio;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,6 +28,7 @@ import java.util.Random;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -91,7 +91,7 @@ public class DockFX extends Application {
 
     DockNode tabsDock = new DockNode(tabs, "Tabs Dock", new ImageView(dockImage));
     tabsDock.setPrefSize(300, 100);
-    tabsDock.dock(dockPane, DockPos.TOP);
+
     DockNode tableDock = new DockNode(tableView);
     // let's disable our table from being undocked
     tableDock.setDockTitleBar(null);
@@ -108,6 +108,7 @@ public class DockFX extends Application {
     DockNode treeDock = new DockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(100, 100);
     treeDock.dock(dockPane, DockPos.LEFT);
+    
     treeDock = new DockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(100, 100);
     treeDock.dock(dockPane, DockPos.RIGHT);
@@ -121,11 +122,10 @@ public class DockFX extends Application {
     // this must be called after the primary stage is shown
     // https://bugs.openjdk.java.net/browse/JDK-8132900
     DockPane.initializeDefaultUserAgentStylesheet();
+    //apply sub dock after bugfix
+    tabsDock.dock(dockPane, DockPos.CENTER,treeDock);
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
-    
-
-    
   }
 
   private TreeView<String> generateRandomTree() {

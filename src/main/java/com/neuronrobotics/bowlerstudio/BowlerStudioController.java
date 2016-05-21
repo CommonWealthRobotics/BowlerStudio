@@ -65,26 +65,21 @@ import com.sun.javafx.scene.control.skin.TabPaneSkin;
 public class BowlerStudioController extends TabPane implements
 		IScriptEventListener {
 
-	private static int WEBSERVER_PORT = 8065;
-	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
-	private static String HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2686618188618431477L;
 	private ConnectionManager connectionManager;
 	private BowlerStudio3dEngine jfx3dmanager;
-	private MainController mainController;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudioControllerStaticReference=null;
 	private boolean doneLoadingTutorials = false;
-	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager,
-			MainController mainController) {
+	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager) {
 		if(getBowlerStudio()!=null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference=this;
 		this.setJfx3dmanager(jfx3dmanager);
-		this.mainController = mainController;
 		createScene();
 		
 	}
@@ -294,60 +289,13 @@ public class BowlerStudioController extends TabPane implements
 		
 		// Addnewtabition of New Tab to the tabpane.
 		getTabs().addAll(newtab);
-		new Thread(){
-			public void run(){
-				try {
-					
-					File indexOfTutorial = ScriptingEngine.fileFromGit(
-							"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
-							"index.html");
-					
-					//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
-					Server server = new Server();
-					ServerConnector connector = new ServerConnector(server);  
-					server.setConnectors(new Connector[] { connector });
-					ResourceHandler resource_handler = new ResourceHandler();
-					resource_handler.setDirectoriesListed(true);
-					resource_handler.setWelcomeFiles(new String[] { "index.html" });
-					System.out.println("Serving "+ indexOfTutorial.getParent());
-					resource_handler.setResourceBase(indexOfTutorial.getParent());
-
-					HandlerList handlers = new HandlerList();
-					handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
-					server.setHandler(handlers);
-					
-					try {
-						server.start();
-						WEBSERVER_PORT= connector.getLocalPort();
-						HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
-						doneLoadingTutorials = true;
-						server.join();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				} catch (GitAPIException | IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				
-			}
-		}.start();
-		
-		long start = System.currentTimeMillis();
-		// wait up to 30 seconds for menue to load, then fail over to the web version
-		while(! doneLoadingTutorials && (System.currentTimeMillis()-start<3000)){
-			ThreadUtil.wait(100);
-		}
-		if(doneLoadingTutorials )
-				HOME_URL = HOME_Local_URL;
+		String homeURL = Tutorial.getHomeUrl();
 		Platform.runLater(() -> {
 			Tab t=new Tab();
 			try {
 				
 				
-				t = new WebTab("Tutorial",getHomeUrl(), true);
+				t = new WebTab("Tutorial",homeURL, true);
 			} catch (Exception  e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -391,11 +339,6 @@ public class BowlerStudioController extends TabPane implements
 						}
 					}
 				});
-	}
-
-	public static String getHomeUrl() {
-
-		return HOME_URL;
 	}
 
 
@@ -452,7 +395,9 @@ public class BowlerStudioController extends TabPane implements
 
 			addTab((Tab) o, true);
 
-		}if (BowlerAbstractDevice.class.isInstance(o)) {
+		}
+		
+		if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
 			ConnectionManager.addConnection((BowlerAbstractDevice) o,
 					bad.getScriptingName());
@@ -522,7 +467,7 @@ public class BowlerStudioController extends TabPane implements
 
 	public Stage getPrimaryStage() {
 		// TODO Auto-generated method stub
-		return BowlerStudio.getPrimaryStage();
+		return BowlerStudioModularFrame.getPrimaryStage();
 	}
 
 	public void setSelectedTab(Tab tab) {

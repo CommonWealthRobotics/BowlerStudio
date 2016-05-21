@@ -33,6 +33,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
@@ -206,7 +207,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			BowlerStudio.setOverlayTopRight(new Group(walkWidget));
 			BowlerStudio.setOverlayBottomRight(new Group(controls));
 			
-			BowlerStudio.setCadSplit(.1);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 			
 			new Thread(){
 				public void run(){

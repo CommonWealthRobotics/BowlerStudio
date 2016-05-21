@@ -38,6 +38,7 @@ import javafx.stage.Modality;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
@@ -147,7 +148,7 @@ public class MobleBaseMenueFactory {
 				chooser.setTitle("Select Output Directory For .STL files");
 
 				chooser.setInitialDirectory(defaultStlDir);
-				File baseDirForFiles = chooser.showDialog(BowlerStudio.getPrimaryStage());
+				File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
 				new Thread() {
 
 					public void run() {

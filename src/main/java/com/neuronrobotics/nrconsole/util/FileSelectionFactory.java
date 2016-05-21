@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 
@@ -40,9 +41,9 @@ public class FileSelectionFactory {
 				fileChooser.getExtensionFilters().addAll(filter);
 			fileChooser.setTitle("Bowler File Chooser");
 			if(save)
-				file.setFile(fileChooser.showSaveDialog(BowlerStudio.getPrimaryStage()));
+				file.setFile(fileChooser.showSaveDialog(BowlerStudioModularFrame.getPrimaryStage()));
 			else
-				file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));
+				file.setFile(fileChooser.showOpenDialog(BowlerStudioModularFrame.getPrimaryStage()));
 			file.setDone(true);
 			
 		});
