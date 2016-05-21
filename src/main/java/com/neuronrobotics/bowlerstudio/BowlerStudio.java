@@ -40,7 +40,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class BowlerStudio {
+public class BowlerStudio extends Application {
 
 	private static TextArea log;
 	private static Stage primaryStage;
@@ -50,6 +50,7 @@ public class BowlerStudio {
 	private static Console out;
 	private static TextArea logViewRefStatic=null;
 	private static CreatureLab3dController creatureLab3dController;
+	private BowlerStudioModularFrame modularFrame;
 	private static class Console extends OutputStream {
 		
 	    public void appendText(String valueOf) {
@@ -92,11 +93,10 @@ public class BowlerStudio {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-
+		
 				
 
 		if (args.length == 0) {
-
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 
@@ -169,8 +169,7 @@ public class BowlerStudio {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			BowlerStudioModularFrame.launch(args);
+			launch(args);
 		} else {
 			BowlerKernel.main(args);
 		}
@@ -253,6 +252,71 @@ public class BowlerStudio {
 	public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
 		BowlerStudio.creatureLab3dController = creatureLab3dController;
 	}
+
+
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+
+		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
+		// Initialize your logic here: all @FXML variables will have been
+		// injected
+		FXMLLoader mainControllerPanel;
+
+		try {
+			mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
+			BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
+			mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
+			mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+			try {
+				mainControllerPanel.load();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+			File f = AssetFactory.loadFile("layout/default.css");
+			scene.getStylesheets().clear();
+			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+
+			primaryStage.setTitle("Bowler Studio");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			primaryStage.setOnCloseRequest(arg0 -> {
+				// ThreadUtil.wait(100);
+				new Thread(){
+					public void run(){
+						ConnectionManager.disconnectAll();
+						if (ScriptingEngine.getCreds().exists()) 
+							ConfigurationDatabase.save();
+						System.exit(0);
+					}
+				}.start();
+				
+			});
+
+			primaryStage.setResizable(true);
+
+			String firstVer = "";
+			if (ScriptingEngine.getCreds().exists())
+				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
+
+			System.out.println("BowlerStudio First Version: " + firstVer);
+			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+			System.out.println("Welcome to BowlerStudio!");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
 
 
 	
