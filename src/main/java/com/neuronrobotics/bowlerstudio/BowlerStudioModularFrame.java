@@ -25,6 +25,7 @@ import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
@@ -310,11 +311,18 @@ public class BowlerStudioModularFrame {
 		}else{
 			DockNode dn =new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 			dn.closedProperty().addListener(event->{
+				System.err.println("Closing tab: "+newTab.getText());
 				webTabs.remove(newTab );
-				newTab.getOnClosed().handle(null);
+				if(newTab.getOnCloseRequest()!=null){
+					
+					newTab.getOnCloseRequest().handle(null);
+				}
 			});
 			webTabs.put(newTab,dn );
-			Platform.runLater(() -> dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode()));
+			Platform.runLater(() -> {
+				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+				//dn.setFloating(true);
+			});
 		}
 	}
 
