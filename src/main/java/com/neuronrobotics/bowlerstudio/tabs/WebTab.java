@@ -53,7 +53,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
-public class WebTab extends Tab implements EventHandler<Event>{
+public class WebTab extends Tab {
 	
 	private String Current_URL = "http://gist.github.com/";
 
@@ -78,6 +78,8 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private boolean isTutorialTab =false;
 
 	private boolean finishedLoadingScriptingWidget;
+
+	private static BowlerStudioController controller;
 
 	public WebTab(String title, String Url) throws IOException, InterruptedException{
 		this(title,Url,false);
@@ -115,7 +117,6 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    
 		
 		loaded=false;
-		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	//System.err.println("Just finished! "+webEngine.getLocation());
@@ -131,7 +132,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    				
 	    				else{
 	    					try {
-	    						scripting.loadCodeFromGist(Current_URL, webEngine);
+	    						getScripting().loadCodeFromGist(Current_URL, webEngine);
 	    					} catch (Exception e) {
 	    						// TODO Auto-generated catch block
 	    						//e.printStackTrace();
@@ -243,7 +244,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					Current_URL.contains("localhost") ))){
 				try {
 					
-					Log.debug("Non demo page found, opening new tab "+Current_URL);
+					Log.error("Non demo page found, opening new tab "+Current_URL);
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
@@ -253,13 +254,13 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			}
 		}else{
 			Log.debug("no load new tab");
-			if(scripting!=null){
+			if(getScripting()!=null){
 				try{
-					myTab.setText(scripting.getFileName());
+					myTab.setText(getScripting().getFileName());
 				}catch(java.lang.NullPointerException ex){
 					try {
-						scripting.loadCodeFromGist(Current_URL, webEngine);
-						myTab.setText(scripting.getFileName());
+						getScripting().loadCodeFromGist(Current_URL, webEngine);
+						myTab.setText(getScripting().getFileName());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -281,9 +282,9 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    		splash.close();
 	    		splashGraphics=null;
 	    	}
-			if(scripting!=null){
+			if(getScripting()!=null){
 				//when navagating to a new file, stop the script that is running
-				scripting.stop();
+				getScripting().stop();
 			}
 		}catch(Exception E){
 			E.printStackTrace();
@@ -292,14 +293,14 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			public void run() {
 				finishedLoadingScriptingWidget=false;
 				try{
-					scripting = new ScriptingWebWidget( null ,Current_URL, webEngine);
+					setScripting(new ScriptingWebWidget( null ,Current_URL, webEngine));
 					Platform.runLater(() -> {
-						vBox.getChildren().add(scripting);
+						vBox.getChildren().add(getScripting());
 						if(!isTutorialTab){
 							Platform.runLater(()->{
 								try{
 									
-									myTab.setText(scripting.getFileName());
+									myTab.setText(getScripting().getFileName());
 								}catch(java.lang.NullPointerException ex){
 									// web page contains no gist
 									ex.printStackTrace();
@@ -322,7 +323,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				}
 				System.out.println("Loading code from "+Current_URL);
 				try {
-					scripting.loadCodeFromGist(Current_URL, webEngine);
+					getScripting().loadCodeFromGist(Current_URL, webEngine);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -333,6 +334,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	
     public String goBack()
     {    
+    	new Exception().printStackTrace(System.err);
       final WebHistory history=webEngine.getHistory();
       ObservableList<WebHistory.Entry> entryList=history.getEntries();
       int currentIndex=history.getCurrentIndex();
@@ -343,7 +345,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
     	  try{
     		  history.go(-1);
     	  }catch(Exception e){
-    		  e.printStackTrace();
+    		 // e.printStackTrace();
     	  }
       });
       return entryList.get(currentIndex>0?currentIndex-1:currentIndex).getUrl();
@@ -369,10 +371,24 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    return domain.startsWith("www.") ? domain.substring(4) : domain;
 	}
 
-	@Override
 	public void handle(Event event) {
-		if(scripting!=null)
-			scripting.stop();
+		if(getScripting()!=null)
+			getScripting().stop();
+	}
+
+	public ScriptingWebWidget getScripting() {
+		return scripting;
+	}
+
+	public void setScripting(ScriptingWebWidget scripting) {
+		this.scripting = scripting;
+		
+		scripting.addIScriptEventListener(controller);
+	}
+
+	public static void setController(BowlerStudioController controller) {
+		WebTab.controller = controller;
+		
 	}
 
 	

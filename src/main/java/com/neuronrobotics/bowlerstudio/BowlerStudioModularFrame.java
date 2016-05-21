@@ -5,7 +5,9 @@ package com.neuronrobotics.bowlerstudio;
  **/
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
@@ -95,6 +97,8 @@ public class BowlerStudioModularFrame {
 
 	private static BowlerStudioModularFrame bowlerStudioModularFrame;
 
+	private HashMap<String,DockNode> webTabs = new HashMap<>();
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -108,7 +112,11 @@ public class BowlerStudioModularFrame {
 			newtab.setClosable(false);
 			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 			String homeURL = Tutorial.getHomeUrl();
-			Tab webtab = new Tab();
+			jfx3dmanager =  new BowlerStudio3dEngine();
+			controller = new BowlerStudioController(jfx3dmanager);
+			WebTab.setController(controller);
+			
+			WebTab webtab=null;
 			try {
 
 				webtab = new WebTab("Tutorial", homeURL, true);
@@ -189,10 +197,6 @@ public class BowlerStudioModularFrame {
 				if( (boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
 					showCreatureLab();
 			}
-			jfx3dmanager =  new BowlerStudio3dEngine();
-			controller = new BowlerStudioController(jfx3dmanager);
-			
-			
 			
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
@@ -277,17 +281,37 @@ public class BowlerStudioModularFrame {
 
 	public ScriptingFileWidget createFileTab(File file) {
 		// TODO Auto-generated method stub
-		return null;
+		return controller.createFileTab(file);
 	}
 
-	public void openUrlInNewTab(URL url) {
-		// TODO Auto-generated method stub
-		
+	public void openUrlInNewTab(URL url){
+			Platform.runLater(() -> {
+				try {
+					if(ScriptingEngine.getLoginID() != null){
+						WebTab newTab = new WebTab("Web",url.toExternalForm(), false);
+						
+						addTab(newTab, true);
+					}
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 	}
 
-	public void addTab(TwoDCad twoDCad, boolean b) {
-		// TODO Auto-generated method stub
-		
+
+	public void addTab(Tab newTab, boolean b) {
+		String urlstr=new Integer(newTab.hashCode()).toString();
+		if(webTabs.get(urlstr)!=null){
+			Platform.runLater(() -> webTabs.get(urlstr).requestFocus());
+		}else{
+			DockNode dn =new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
+			dn.closedProperty().addListener(event->{
+				webTabs.remove(urlstr );
+			});
+			webTabs.put(urlstr,dn );
+			dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+		}
 	}
 
 	public static BowlerStudioModularFrame getBowlerStudioModularFrame() {
