@@ -88,10 +88,7 @@ public class MainController implements Initializable {
 	private BowlerStudioController application;
 	private MainController mainControllerRef;
 	protected EventHandler<? super KeyEvent> normalKeyPessHandle = null;
-	protected static String currentGistID = ""; // Is there a better solution to
-												// pass data into a controller
-												// than using
-												// a static global?
+
 	// private CommandLineWidget cmdLine;
 	// protected EventHandler<? super KeyEvent> normalKeyPessHandle;
 
@@ -231,13 +228,13 @@ public class MainController implements Initializable {
 				// System.out.println("Loading 3d engine");
 				jfx3dmanager = new BowlerStudio3dEngine();
 
-				setApplication(new BowlerStudioController(jfx3dmanager));
+				//setApplication(new BowlerStudioController(jfx3dmanager));
 				Platform.runLater(() -> {
-					editorContainer.getChildren().add(getApplication());
-					AnchorPane.setTopAnchor(getApplication(), 0.0);
-					AnchorPane.setRightAnchor(getApplication(), 0.0);
-					AnchorPane.setLeftAnchor(getApplication(), 0.0);
-					AnchorPane.setBottomAnchor(getApplication(), 0.0);
+//					editorContainer.getChildren().add(getApplication());
+//					AnchorPane.setTopAnchor(getApplication(), 0.0);
+//					AnchorPane.setRightAnchor(getApplication(), 0.0);
+//					AnchorPane.setLeftAnchor(getApplication(), 0.0);
+//					AnchorPane.setBottomAnchor(getApplication(), 0.0);
 
 					subScene = jfx3dmanager.getSubScene();
 					subScene.setFocusTraversable(false);
@@ -308,7 +305,7 @@ public class MainController implements Initializable {
 						ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 						try {
 							File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-							getApplication().createFileTab(f);
+							//getApplication().createFileTab(f);
 						} catch (GitAPIException | IOException|ArrayIndexOutOfBoundsException e) {
 							// TODO Auto-generated catch block
 							//e.printStackTrace();
@@ -325,98 +322,6 @@ public class MainController implements Initializable {
 	}
 
 
-
-	
-
-
-
-	// /**
-	// * Returns the location of the Jar archive or .class file the specified
-	// * class has been loaded from. <b>Note:</b> this only works if the class
-	// is
-	// * loaded from a jar archive or a .class file on the locale file system.
-	// *
-	// * @param cls
-	// * class to locate
-	// * @return the location of the Jar archive the specified class comes from
-	// */
-	// public static File getClassLocation(Class<?> cls) {
-	//
-	// // VParamUtil.throwIfNull(cls);
-	// String className = cls.getName();
-	// ClassLoader cl = cls.getClassLoader();
-	// URL url = cl.getResource(className.replace(".", "/") + ".class");
-	//
-	// String urlString = url.toString().replace("jar:", "");
-	//
-	// if (!urlString.startsWith("file:")) {
-	// throw new IllegalArgumentException("The specified class\"" +
-	// cls.getName()
-	// + "\" has not been loaded from a location" + "on the local filesystem.");
-	// }
-	//
-	// urlString = urlString.replace("file:", "");
-	// urlString = urlString.replace("%20", " ");
-	//
-	// int location = urlString.indexOf(".jar!");
-	//
-	// if (location > 0) {
-	// urlString = urlString.substring(0, location) + ".jar";
-	// } else {
-	// // System.err.println("No Jar File found: " + cls.getName());
-	// }
-	//
-	// return new File(urlString);
-	// }
-
-
-
-	//
-	// public void onConnectJavaCVCamera() {
-	//
-	// Platform.runLater(() -> ConnectionManager.onConnectJavaCVCamera());
-	//
-	// }
-
-
-	// public CheckMenuItem getAddVRCamera() {
-	// return AddVRCamera;
-	// }
-	//
-	//
-	// public void setAddVRCamera(CheckMenuItem addVRCamera) {
-	// AddVRCamera = addVRCamera;
-	// }
-	//
-	//
-	// public CheckMenuItem getAddDefaultRightArm() {
-	// return AddDefaultRightArm;
-	// }
-	//
-	//
-	// public void setAddDefaultRightArm(CheckMenuItem addDefaultRightArm) {
-	// AddDefaultRightArm = addDefaultRightArm;
-	// }
-
-
-
-	// public Menu getCreatureLabMenue() {
-	// return CreatureLabMenue;
-	// }
-	//
-	// public void setCreatureLabMenue(Menu creatureLabMenue) {
-	// CreatureLabMenue = creatureLabMenue;
-	// }
-
-
-
-	public BowlerStudioController getApplication() {
-		return application;
-	}
-
-	public void setApplication(BowlerStudioController application) {
-		this.application = application;
-	}
 
 
 }

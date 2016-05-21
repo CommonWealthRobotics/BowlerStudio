@@ -34,13 +34,13 @@ public class GistHelper
         createGistFromBuilder(builder, filename);
     }
 
-    public static void addFileToGist(String filename, String content, String gistID)
+    public static void addFileToGist(String filename, String content, GHGist gistID)
     {
         GitHub gitHub = ScriptingEngine.getGithub();
         try
         {
             //Copy from old gist
-            GHGist oldGist = gitHub.getGist(gistID);
+            GHGist oldGist = gistID;
             GHGistBuilder builder = gitHub.createGist();
 
             builder.description(oldGist.getDescription());

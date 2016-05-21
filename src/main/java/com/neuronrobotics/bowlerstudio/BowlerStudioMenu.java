@@ -220,7 +220,7 @@ public class BowlerStudioMenu {
 									Platform.runLater(() -> {
 										Stage s = new Stage();
 										
-										AddFileToGistController controller = new AddFileToGistController();
+										AddFileToGistController controller = new AddFileToGistController(gist);
 										try {
 											controller.start(s);
 										} catch (Exception e) {
