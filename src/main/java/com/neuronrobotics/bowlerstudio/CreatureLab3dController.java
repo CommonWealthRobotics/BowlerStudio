@@ -175,6 +175,10 @@ public class CreatureLab3dController {
 			subScene.widthProperty().bind(viewContainer.widthProperty());
 			subScene.heightProperty().bind(viewContainer.heightProperty());
 		});
+		Platform.runLater(() -> {
+			jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
+			viewContainer.getChildren().add(subScene);
+		});
     }
 
 }

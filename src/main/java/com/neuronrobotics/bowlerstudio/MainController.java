@@ -256,33 +256,8 @@ public class MainController implements Initializable {
 					subScene.heightProperty().bind(viewContainer.heightProperty());
 				});
 
-				Platform.runLater(() -> {
-					jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-					viewContainer.getChildren().add(subScene);
-				});
+			
 
-				FxTimer.runLater(Duration.ofMillis(100), () -> {
-					if (ScriptingEngine.getLoginID() != null) {
-						//setToLoggedIn(ScriptingEngine.getLoginID());
-					} else {
-						//setToLoggedOut();
-					}
-
-				});
-
-				ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-
-					@Override
-					public void onLogout(String oldUsername) {
-						//setToLoggedOut();
-					}
-
-					@Override
-					public void onLogin(String newUsername) {
-						//setToLoggedIn(newUsername);
-
-					}
-				});
 				// System.out.println("Laoding ommand line widget");
 				CommandLineWidget cmdLine = new CommandLineWidget();
 

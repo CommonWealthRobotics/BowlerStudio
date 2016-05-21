@@ -362,6 +362,19 @@ public class BowlerStudioMenu {
 			}.start();
 
 		});
+		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+
+			@Override
+			public void onLogout(String oldUsername) {
+				setToLoggedOut();
+			}
+
+			@Override
+			public void onLogin(String newUsername) {
+				setToLoggedIn(newUsername);
+
+			}
+		});
 	}
 	
 	private void setUpRepoMenue(Menu repoMenue, GHRepository repo) {
