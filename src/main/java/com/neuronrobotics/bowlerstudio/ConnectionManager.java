@@ -499,7 +499,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				});
 		refreshItemTree();
 		if(	getBowlerStudioController()!=null)
-		getBowlerStudioController().setSelectedTab(this);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
 	private BowlerStudioController getBowlerStudioController() {
 		// TODO Auto-generated method stub

@@ -299,20 +299,7 @@ public class MainController implements Initializable {
 					AnchorPane.setBottomAnchor(cmdLine, 0.0);
 				});
 				
-				if (ScriptingEngine.getCreds().exists()) {
-					HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-					for (String s : openGits.keySet()) {
-						ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
-						try {
-							File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-							//getApplication().createFileTab(f);
-						} catch (GitAPIException | IOException|ArrayIndexOutOfBoundsException e) {
-							// TODO Auto-generated catch block
-							//e.printStackTrace();
-						}
-					}
-
-				}
+				
 			}
 		}).start();
 		Platform.runLater(() -> {

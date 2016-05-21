@@ -798,8 +798,9 @@ public class BowlerStudioMenu {
 				if (ScriptingEngine.getCreds().exists()) {
 					HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
 					for (String s : openGits.keySet()) {
-						ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+						
 						try {
+							ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 							File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 							createFileTab(f);
 						} catch (GitAPIException | IOException|ArrayIndexOutOfBoundsException e) {

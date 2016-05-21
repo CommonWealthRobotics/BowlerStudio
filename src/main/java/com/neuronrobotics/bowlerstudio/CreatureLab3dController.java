@@ -8,13 +8,19 @@ package com.neuronrobotics.bowlerstudio;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 
@@ -43,6 +49,13 @@ public class CreatureLab3dController {
 
     @FXML // fx:id="viewContainer"
     private AnchorPane viewContainer; // Value injected by FXMLLoader
+    private SubScene subScene;
+	private BowlerStudio3dEngine jfx3dmanager;
+	protected EventHandler<? super KeyEvent> normalKeyPessHandle = null;
+    public  CreatureLab3dController (BowlerStudio3dEngine engine){
+		this.jfx3dmanager = engine;
+    	
+    }
     
 	public void setOverlayLeft(TreeView<String> content) {
 		Platform.runLater(() -> {
@@ -142,7 +155,26 @@ public class CreatureLab3dController {
         assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'CreatureLab.fxml'.";
         clearOverlayLeft();
         // Initialize your logic here: all @FXML variables will have been injected
+		Platform.runLater(() -> {
+			subScene = jfx3dmanager.getSubScene();
+			subScene.setFocusTraversable(false);
+			subScene.setOnMouseEntered(mouseEvent -> {
+				// System.err.println("3d window requesting focus");
+				Scene topScene = BowlerStudio.getScene();
+				normalKeyPessHandle = topScene.getOnKeyPressed();
+				// jfx3dmanager.handleKeyboard(topScene);
+			});
 
+			subScene.setOnMouseExited(mouseEvent -> {
+				// System.err.println("3d window dropping focus");
+				Scene topScene = BowlerStudio.getScene();
+				if (normalKeyPessHandle != null)
+					topScene.setOnKeyPressed(normalKeyPessHandle);
+			});
+
+			subScene.widthProperty().bind(viewContainer.widthProperty());
+			subScene.heightProperty().bind(viewContainer.heightProperty());
+		});
     }
 
 }

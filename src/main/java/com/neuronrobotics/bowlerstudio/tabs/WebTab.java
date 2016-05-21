@@ -53,7 +53,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
-public class WebTab extends Tab {
+public class WebTab extends Tab implements EventHandler<Event>{
 	
 	private String Current_URL = "http://gist.github.com/";
 
@@ -117,6 +117,7 @@ public class WebTab extends Tab {
 	    
 		
 		loaded=false;
+		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	//System.err.println("Just finished! "+webEngine.getLocation());
@@ -334,7 +335,7 @@ public class WebTab extends Tab {
 	
     public String goBack()
     {    
-    	new Exception().printStackTrace(System.err);
+    	//new Exception().printStackTrace(System.err);
       final WebHistory history=webEngine.getHistory();
       ObservableList<WebHistory.Entry> entryList=history.getEntries();
       int currentIndex=history.getCurrentIndex();
@@ -371,6 +372,7 @@ public class WebTab extends Tab {
 	    return domain.startsWith("www.") ? domain.substring(4) : domain;
 	}
 
+	@Override
 	public void handle(Event event) {
 		if(getScripting()!=null)
 			getScripting().stop();

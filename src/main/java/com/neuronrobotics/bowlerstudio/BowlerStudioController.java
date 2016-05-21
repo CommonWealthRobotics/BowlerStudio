@@ -62,7 +62,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
-public class BowlerStudioController extends TabPane implements
+public class BowlerStudioController  implements
 		IScriptEventListener {
 
 
@@ -80,7 +80,7 @@ public class BowlerStudioController extends TabPane implements
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference=this;
 		this.setJfx3dmanager(jfx3dmanager);
-		createScene();
+
 		
 	}
 	private HashMap<String,Tab> openFiles = new HashMap<>();
@@ -88,7 +88,7 @@ public class BowlerStudioController extends TabPane implements
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
 		if(openFiles.get(file.getAbsolutePath())!=null && widgets.get(file.getAbsolutePath())!=null){
-			setSelectedTab(openFiles.get(file.getAbsolutePath()));
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(openFiles.get(file.getAbsolutePath()));
 			return widgets.get(file.getAbsolutePath()).getScripting();
 		}
 
@@ -135,7 +135,7 @@ public class BowlerStudioController extends TabPane implements
 		if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 			createFileTab(fileEngineRunByName);
 		}
-		setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
 		//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber,color);
@@ -158,7 +158,7 @@ public class BowlerStudioController extends TabPane implements
 					if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 						createFileTab(fileEngineRunByName);
 					}
-					setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
 					widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
 					//System.out.println("Highlighting "+fileEngineRunByName+" at line "+lineNumber+" to color "+color);
 					for(StackTraceElement el:ex.getStackTrace()){
@@ -237,86 +237,12 @@ public class BowlerStudioController extends TabPane implements
 		//new RuntimeException().printStackTrace();
 
 		Platform.runLater(() -> {
-			final ObservableList<Tab> tabs = getTabs();
-			tab.setClosable(closable);
-			int index = tabs.size() - 1;
-			//new RuntimeException().printStackTrace();
-			tabs.add(index, tab);
-			setSelectedTab(tab);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().addTab(tab, closable);
 		});
 		
 	}
 
-	public void createScene() {
 
-		// BorderPane borderPane = new BorderPane();
-
-		// Placement of TabPane.
-		setSide(Side.TOP);
-
-		/*
-		 * To disable closing of tabs.
-		 * tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-		 */
-
-		final Tab newtab = new Tab();
-		newtab.setText("");
-		newtab.setClosable(false);
-		newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
-		
-		// Addnewtabition of New Tab to the tabpane.
-		getTabs().addAll(newtab);
-		String homeURL = Tutorial.getHomeUrl();
-		Platform.runLater(() -> {
-			Tab t=new Tab();
-			try {
-				
-				
-				t = new WebTab("Tutorial",homeURL, true);
-			} catch (Exception  e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			Tab tab =t;
-			final ObservableList<Tab> tabs = getTabs();
-			ConnectionManager.getConnectionManager().setClosable(false);
-			int index = tabs.size() - 1;
-			//new RuntimeException().printStackTrace();
-			tabs.add(index, ConnectionManager.getConnectionManager());
-			setSelectedTab(ConnectionManager.getConnectionManager());
-
-			tab.setClosable(false);
-			index = tabs.size() - 1;
-			//new RuntimeException().printStackTrace();
-			tabs.add(index, tab);
-			setSelectedTab(tab);
-
-		});
-
-		// Function to add and display new tabs with default URL display.
-		getSelectionModel().selectedItemProperty().addListener(
-				new ChangeListener<Tab>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Tab> observable,
-							Tab oldSelectedTab, Tab newSelectedTab) {
-						if (newSelectedTab == newtab) {
-
-							try {
-								addTab(createTab(), true);
-
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-						}
-					}
-				});
-	}
 
 
 
@@ -325,18 +251,7 @@ public class BowlerStudioController extends TabPane implements
 			Platform.runLater(() -> {
 				getJfx3dmanager().removeObjects();
 			});
-		} else if (Tab.class.isInstance(p)) {
-			Platform.runLater(() -> {
-				// new RuntimeException().printStackTrace();
-				getTabs().remove(p);
-				Tab t = (Tab) p;
-				TabPaneBehavior behavior = ((TabPaneSkin) getSkin())
-						.getBehavior();
-				if (behavior.canCloseTab(t)) {
-					behavior.closeTab(t);
-				}
-			});
-		}
+		} 
 	}
 	
 	public static void setCsg(List<CSG> toadd, File source){
@@ -445,15 +360,6 @@ public class BowlerStudioController extends TabPane implements
 	public Stage getPrimaryStage() {
 		// TODO Auto-generated method stub
 		return BowlerStudioModularFrame.getPrimaryStage();
-	}
-
-	public void setSelectedTab(Tab tab) {
-		if(getSelectionModel().getSelectedItem()!=tab){
-			Platform.runLater(() -> {
-				//System.out.println("Selecting "+tab.getText());
-				getSelectionModel().select(tab);
-			});
-		}
 	}
 
 	public AbstractImageProvider getVrCamera() {

@@ -7,7 +7,9 @@ package com.neuronrobotics.bowlerstudio;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
@@ -15,6 +17,7 @@ import javax.swing.UIManager;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -97,7 +100,7 @@ public class BowlerStudioModularFrame {
 
 	private static BowlerStudioModularFrame bowlerStudioModularFrame;
 
-	private HashMap<String,DockNode> webTabs = new HashMap<>();
+	private HashMap<Tab,DockNode> webTabs = new HashMap<>();
 
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
@@ -159,7 +162,7 @@ public class BowlerStudioModularFrame {
 			DockPane.initializeDefaultUserAgentStylesheet();
 			FXMLLoader WindowLoader3d;
 			WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
-			creatureLab3dController = new CreatureLab3dController();
+			creatureLab3dController = new CreatureLab3dController(jfx3dmanager);
 			BowlerStudio.setCreatureLab3d(creatureLab3dController);
 			WindowLoader3d.setController(creatureLab3dController);
 			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
@@ -301,16 +304,17 @@ public class BowlerStudioModularFrame {
 
 
 	public void addTab(Tab newTab, boolean b) {
-		String urlstr=new Integer(newTab.hashCode()).toString();
-		if(webTabs.get(urlstr)!=null){
-			Platform.runLater(() -> webTabs.get(urlstr).requestFocus());
+		System.err.println("Loading a new tab: "+newTab.getText());
+		if(webTabs.get(newTab)!=null){
+			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
 		}else{
 			DockNode dn =new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 			dn.closedProperty().addListener(event->{
-				webTabs.remove(urlstr );
+				webTabs.remove(newTab );
+				newTab.getOnClosed().handle(null);
 			});
-			webTabs.put(urlstr,dn );
-			dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+			webTabs.put(newTab,dn );
+			Platform.runLater(() -> dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode()));
 		}
 	}
 
@@ -320,6 +324,11 @@ public class BowlerStudioModularFrame {
 
 	public static void setBowlerStudioModularFrame(BowlerStudioModularFrame bowlerStudioModularFrame) {
 		BowlerStudioModularFrame.bowlerStudioModularFrame = bowlerStudioModularFrame;
+	}
+
+	public void setSelectedTab(Tab tab) {
+		// TODO Auto-generated method stub
+		Platform.runLater(() -> webTabs.get(tab).requestFocus());
 	}
 
 }
