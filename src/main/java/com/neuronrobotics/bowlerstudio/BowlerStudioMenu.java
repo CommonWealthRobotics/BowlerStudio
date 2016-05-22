@@ -101,10 +101,13 @@ public class BowlerStudioMenu {
     @FXML // fx:id="myRepos"
     private Menu myRepos; // Value injected by FXMLLoader
     
-    @FXML // fx:id="myRepos"
+    @FXML // fx:id="showDevicesPanel"
     private MenuItem showDevicesPanel; // Value injected by FXMLLoader
-    @FXML // fx:id="myRepos"
+    @FXML // fx:id="showCreatureLab"
     private MenuItem showCreatureLab; // Value injected by FXMLLoader
+    @FXML // fx:id="showTerminal"
+    private MenuItem showTerminal;
+    
     @FXML // fx:id="watchingRepos"
     private Menu watchingRepos; // Value injected by FXMLLoader
 
@@ -743,6 +746,9 @@ public class BowlerStudioMenu {
 		});  
         showCreatureLab.setOnAction(event -> {
         	bowlerStudioModularFrame.showCreatureLab();;
+		});
+        showTerminal.setOnAction(event -> {
+        	bowlerStudioModularFrame.showTerminal();
 		});
         try {
 			ScriptingEngine.setAutoupdate(true);

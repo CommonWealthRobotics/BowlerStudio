@@ -103,6 +103,10 @@ public class BowlerStudioModularFrame {
 
 	private HashMap<Tab, DockNode> webTabs = new HashMap<>();
 
+	private Terminal terminal;
+
+	private DockNode terminalDockNode;
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -166,11 +170,10 @@ public class BowlerStudioModularFrame {
 			WindowLoader3d.setController(creatureLab3dController);
 			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
 			FXMLLoader commandLine;
-			commandLine = AssetFactory.loadLayout("layout/Treminal.fxml");
-			menueController = new BowlerStudioMenu(this);
-			commandLine.setController(menueController);
-			commandLine.setClassLoader(BowlerStudioMenu.class.getClassLoader());
-			
+			commandLine = AssetFactory.loadLayout("layout/Terminal.fxml");
+			terminal = new Terminal();
+			commandLine.setController(terminal);
+			commandLine.setClassLoader(Terminal.class.getClassLoader());
 			FXMLLoader menueBar;
 			menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
 			menueController = new BowlerStudioMenu(this);
@@ -180,15 +183,21 @@ public class BowlerStudioModularFrame {
 			try {
 				menueBar.load();
 				WindowLoader3d.load();
+				commandLine.load();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			BorderPane menue = (BorderPane) menueBar.getRoot();
 			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
+			AnchorPane cmd = (AnchorPane) commandLine.getRoot();
 			WindowLoader3dDockNode = new DockNode(threed, "Creature Lab",
-					AssetFactory.loadIcon("CreatureLabDockWidget.png"));
+					AssetFactory.loadIcon("CreatureLab-Tab.png"));
 			WindowLoader3dDockNode.setPrefSize(400, 400);
+			
+			terminalDockNode = new DockNode(cmd, "Terminal",
+					AssetFactory.loadIcon("Command-Line.png"));
+			terminalDockNode.setPrefSize(400, 400);
 
 			// Add the dock pane to the window
 			menurAnchor.getChildren().add(menue);
@@ -221,11 +230,16 @@ public class BowlerStudioModularFrame {
 		Platform.runLater(() -> getTutorialDockNode().dock(dockPane, DockPos.LEFT));
 
 	}
+	
+
 
 	public void showConectionManager() {
 		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
 			Platform.runLater(() -> {
-				connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				if((boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal"))
+					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
+				else
+					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				connectionManagerDockNode.requestFocus();
 
 				if (ScriptingEngine.getCreds().exists()) {
@@ -246,7 +260,33 @@ public class BowlerStudioModularFrame {
 			});
 		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
+	public void showTerminal() {
+		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal"))
+			Platform.runLater(() -> {
+				if((boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
+					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
+				else
+					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				terminalDockNode.requestFocus();
 
+				if (ScriptingEngine.getCreds().exists()) {
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
+				}
+		
+				terminalDockNode.closedProperty().addListener(new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						if (ScriptingEngine.getCreds().exists()) {
+							//System.err.println("Closing devices");
+							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);
+						}
+						terminalDockNode.closedProperty().removeListener(this);
+					}
+				});
+
+			});
+		Platform.runLater(() ->terminalDockNode.requestFocus());
+	}
 	public void showCreatureLab() {
 		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab"))
 			Platform.runLater(() -> {
