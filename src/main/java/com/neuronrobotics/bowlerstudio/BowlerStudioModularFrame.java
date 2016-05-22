@@ -57,6 +57,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jmapps.export.PanelMediaTargetFormat;
@@ -190,7 +191,7 @@ public class BowlerStudioModularFrame {
 			}
 			BorderPane menue = (BorderPane) menueBar.getRoot();
 			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
-			AnchorPane cmd = (AnchorPane) commandLine.getRoot();
+			VBox cmd = (VBox) commandLine.getRoot();
 			WindowLoader3dDockNode = new DockNode(threed, "Creature Lab",
 					AssetFactory.loadIcon("CreatureLab-Tab.png"));
 			WindowLoader3dDockNode.setPrefSize(400, 400);
@@ -215,6 +216,10 @@ public class BowlerStudioModularFrame {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);//bypass the already open check for startup
 					showConectionManager();
 				}
+				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)){
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);//bypass the already open check for startup
+					showTerminal();
+				}
 			}
 
 			// focus on the tutorial to start
@@ -236,7 +241,7 @@ public class BowlerStudioModularFrame {
 	public void showConectionManager() {
 		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
 			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal"))
+				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false))
 					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
 				else
 					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
@@ -263,7 +268,7 @@ public class BowlerStudioModularFrame {
 	public void showTerminal() {
 		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal"))
 			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
+				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
 					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
 				else
 					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
@@ -383,7 +388,8 @@ public class BowlerStudioModularFrame {
 
 	public void setSelectedTab(Tab tab) {
 		// TODO Auto-generated method stub
-		Platform.runLater(() -> webTabs.get(tab).requestFocus());
+		if(webTabs.get(tab)!=null)
+			Platform.runLater(() -> webTabs.get(tab).requestFocus());
 	}
 
 }
