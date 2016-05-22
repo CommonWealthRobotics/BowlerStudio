@@ -242,10 +242,7 @@ public class BowlerStudioModularFrame {
 		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices")){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false))
-					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
-				else
-					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				connectionManagerDockNode.requestFocus();
 
 				if (ScriptingEngine.getCreds().exists()) {
