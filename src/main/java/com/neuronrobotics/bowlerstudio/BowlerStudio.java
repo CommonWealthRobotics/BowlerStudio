@@ -302,6 +302,8 @@ public class BowlerStudio extends Application {
 				}.start();
 				
 			});
+			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+			primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 
 			primaryStage.setResizable(true);
 
