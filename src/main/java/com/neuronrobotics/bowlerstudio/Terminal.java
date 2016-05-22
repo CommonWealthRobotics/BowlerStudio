@@ -40,7 +40,7 @@ public class Terminal {
         assert langaugeIcon != null : "fx:id=\"langaugeIcon\" was not injected: check your FXML file 'Terminal.fxml'.";
         assert langauges != null : "fx:id=\"langauges\" was not injected: check your FXML file 'Terminal.fxml'.";
         assert outputBox != null : "fx:id=\"outputBox\" was not injected: check your FXML file 'Terminal.fxml'.";
-
+        BowlerStudio.setLogViewRefStatic(outputBox);
         // Initialize your logic here: all @FXML variables will have been injected
 
     }
