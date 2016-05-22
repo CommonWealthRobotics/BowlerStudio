@@ -85,13 +85,13 @@ public class BowlerStudioModularFrame {
 
 	private BowlerStudioMenu menueController;
 
-	private InvalidationListener connectionManagerRemover;
+	//private InvalidationListener connectionManagerRemover;
 
 	private CreatureLab3dController creatureLab3dController;
 
 	private DockNode WindowLoader3dDockNode;
 
-	private InvalidationListener creatureManagerRemover;
+	//private InvalidationListener creatureManagerRemover;
 
 	private BowlerStudio3dEngine jfx3dmanager;
 
@@ -194,8 +194,14 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setBottomAnchor(menue, 0.0);
 
 			if (ScriptingEngine.getCreds().exists()) {
-				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
+				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)){
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);//bypass the already open check for startup
 					showCreatureLab();
+				}
+				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)){
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);//bypass the already open check for startup
+					showConectionManager();
+				}
 			}
 
 			// focus on the tutorial to start
@@ -213,32 +219,32 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void showConectionManager() {
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
+		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
 			Platform.runLater(() -> {
-				connectionManagerDockNode.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+				connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				connectionManagerDockNode.requestFocus();
 
 				if (ScriptingEngine.getCreds().exists()) {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 				}
-				connectionManagerRemover = new InvalidationListener() {
+		
+				connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
 						if (ScriptingEngine.getCreds().exists()) {
-							System.err.println("Closing devices");
+							//System.err.println("Closing devices");
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
 						}
-						connectionManagerDockNode.closedProperty().removeListener(connectionManagerRemover);
+						connectionManagerDockNode.closedProperty().removeListener(this);
 					}
-				};
-				connectionManagerDockNode.closedProperty().addListener(connectionManagerRemover);
+				});
 
 			});
 		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
 
 	public void showCreatureLab() {
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
+		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab"))
 			Platform.runLater(() -> {
 				WindowLoader3dDockNode.dock(dockPane, DockPos.RIGHT);
 				WindowLoader3dDockNode.requestFocus();
@@ -246,17 +252,17 @@ public class BowlerStudioModularFrame {
 				if (ScriptingEngine.getCreds().exists()) {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
 				}
-				creatureManagerRemover = new InvalidationListener() {
+				
+				WindowLoader3dDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
 						if (ScriptingEngine.getCreds().exists()) {
 
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
 						}
-						connectionManagerDockNode.closedProperty().removeListener(creatureManagerRemover);
+						connectionManagerDockNode.closedProperty().removeListener(this);
 					}
-				};
-				WindowLoader3dDockNode.closedProperty().addListener(creatureManagerRemover);
+				});
 
 			});
 		Platform.runLater(() -> WindowLoader3dDockNode.requestFocus());

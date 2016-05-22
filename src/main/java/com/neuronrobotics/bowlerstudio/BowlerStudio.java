@@ -292,14 +292,7 @@ public class BowlerStudio extends Application {
 			primaryStage.show();
 			primaryStage.setOnCloseRequest(arg0 -> {
 				// ThreadUtil.wait(100);
-				new Thread(){
-					public void run(){
-						ConnectionManager.disconnectAll();
-						if (ScriptingEngine.getCreds().exists()) 
-							ConfigurationDatabase.save();
-						System.exit(0);
-					}
-				}.start();
+				closeBowlerStudio();
 				
 			});
 			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
@@ -329,6 +322,20 @@ public class BowlerStudio extends Application {
 			e.printStackTrace();
 		}
 
+	}
+
+
+
+	public static void closeBowlerStudio() {
+		new Thread(){
+			public void run(){
+				System.err.println("Closing application");
+				ConnectionManager.disconnectAll();
+				if (ScriptingEngine.getCreds().exists()) 
+					ConfigurationDatabase.save();
+				System.exit(0);
+			}
+		}.start();
 	}
 
 

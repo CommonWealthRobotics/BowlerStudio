@@ -528,7 +528,7 @@ public class BowlerStudioMenu {
 
 	@FXML
 	public void onClose(ActionEvent e) {
-		System.exit(0);
+		BowlerStudio.closeBowlerStudio();
 	}
 
 	@FXML
