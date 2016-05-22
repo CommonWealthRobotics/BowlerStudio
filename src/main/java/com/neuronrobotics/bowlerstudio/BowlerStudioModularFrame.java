@@ -90,7 +90,7 @@ public class BowlerStudioModularFrame {
 
 	private CreatureLab3dController creatureLab3dController;
 
-	private DockNode WindowLoader3dDockNode;
+	private DockNode creatureLab3dDockNode;
 
 	//private InvalidationListener creatureManagerRemover;
 
@@ -192,9 +192,9 @@ public class BowlerStudioModularFrame {
 			BorderPane menue = (BorderPane) menueBar.getRoot();
 			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
 			VBox cmd = (VBox) commandLine.getRoot();
-			WindowLoader3dDockNode = new DockNode(threed, "Creature Lab",
+			creatureLab3dDockNode = new DockNode(threed, "Creature Lab",
 					AssetFactory.loadIcon("CreatureLab-Tab.png"));
-			WindowLoader3dDockNode.setPrefSize(400, 400);
+			creatureLab3dDockNode.setPrefSize(400, 400);
 			
 			terminalDockNode = new DockNode(cmd, "Terminal",
 					AssetFactory.loadIcon("Command-Line.png"));
@@ -239,7 +239,8 @@ public class BowlerStudioModularFrame {
 
 
 	public void showConectionManager() {
-		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices"))
+		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices")){
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 			Platform.runLater(() -> {
 				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false))
 					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
@@ -248,7 +249,6 @@ public class BowlerStudioModularFrame {
 				connectionManagerDockNode.requestFocus();
 
 				if (ScriptingEngine.getCreds().exists()) {
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 				}
 		
 				connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
@@ -263,10 +263,12 @@ public class BowlerStudioModularFrame {
 				});
 
 			});
+		}
 		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
 	public void showTerminal() {
-		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal"))
+		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal")){
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
 			Platform.runLater(() -> {
 				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
 					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
@@ -275,7 +277,7 @@ public class BowlerStudioModularFrame {
 				terminalDockNode.requestFocus();
 
 				if (ScriptingEngine.getCreds().exists()) {
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
+					
 				}
 		
 				terminalDockNode.closedProperty().addListener(new InvalidationListener() {
@@ -290,31 +292,29 @@ public class BowlerStudioModularFrame {
 				});
 
 			});
+		}
 		Platform.runLater(() ->terminalDockNode.requestFocus());
 	}
 	public void showCreatureLab() {
-		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab"))
+		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab")){
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
 			Platform.runLater(() -> {
-				WindowLoader3dDockNode.dock(dockPane, DockPos.RIGHT);
-				WindowLoader3dDockNode.requestFocus();
-
-				if (ScriptingEngine.getCreds().exists()) {
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
-				}
-				
-				WindowLoader3dDockNode.closedProperty().addListener(new InvalidationListener() {
+				creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
+				creatureLab3dDockNode.requestFocus();
+				creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
 						if (ScriptingEngine.getCreds().exists()) {
 
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
 						}
-						connectionManagerDockNode.closedProperty().removeListener(this);
+						creatureLab3dDockNode.closedProperty().removeListener(this);
 					}
 				});
 
 			});
-		Platform.runLater(() -> WindowLoader3dDockNode.requestFocus());
+		}
+		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 			
 	}
 
