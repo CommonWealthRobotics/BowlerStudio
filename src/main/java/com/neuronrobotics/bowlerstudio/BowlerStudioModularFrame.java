@@ -180,7 +180,7 @@ public class BowlerStudioModularFrame {
 				e.printStackTrace();
 			}
 			BorderPane menue = (BorderPane) menueBar.getRoot();
-			BorderPane threed = (BorderPane) menueBar.getRoot();
+			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
 			WindowLoader3dDockNode = new DockNode(threed, "Creature Lab",
 					AssetFactory.loadIcon("CreatureLabDockWidget.png"));
 			WindowLoader3dDockNode.setPrefSize(400, 400);

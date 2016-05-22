@@ -164,7 +164,12 @@ public class CreatureLab3dController {
 		Platform.runLater(() -> {
 			jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
 			viewContainer.getChildren().add(subScene);
+			AnchorPane.setTopAnchor(subScene, 0.0);
+			AnchorPane.setRightAnchor(subScene, 0.0);
+			AnchorPane.setLeftAnchor(subScene, 0.0);
+			AnchorPane.setBottomAnchor(subScene, 0.0);
 		});
+		
     }
 
 }
