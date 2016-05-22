@@ -165,7 +165,12 @@ public class BowlerStudioModularFrame {
 			BowlerStudio.setCreatureLab3d(creatureLab3dController);
 			WindowLoader3d.setController(creatureLab3dController);
 			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
-
+			FXMLLoader commandLine;
+			commandLine = AssetFactory.loadLayout("layout/Treminal.fxml");
+			menueController = new BowlerStudioMenu(this);
+			commandLine.setController(menueController);
+			commandLine.setClassLoader(BowlerStudioMenu.class.getClassLoader());
+			
 			FXMLLoader menueBar;
 			menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
 			menueController = new BowlerStudioMenu(this);
