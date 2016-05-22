@@ -283,6 +283,7 @@ public class BowlerStudioController  implements
 				// new RuntimeException().printStackTrace();
 				getJfx3dmanager().addObject(csg,source);
 			});
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		} else if (Tab.class.isInstance(o)) {
 
 			addTab((Tab) o, true);
@@ -334,7 +335,7 @@ public class BowlerStudioController  implements
 		if (ArrayList.class.isInstance(result)) {
 			ArrayList<Object> c = (ArrayList<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
-				Log.warning("Loading array Lists with removals " + c.get(i));
+				//Log.warning("Loading array Lists with removals " + c.get(i));
 				addObject(c.get(i),  source);
 			}
 		} else {
