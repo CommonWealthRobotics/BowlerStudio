@@ -101,7 +101,7 @@ public class BowlerStudioModularFrame {
 
 	private static BowlerStudioModularFrame bowlerStudioModularFrame;
 
-	private HashMap<Tab,DockNode> webTabs = new HashMap<>();
+	private HashMap<Tab, DockNode> webTabs = new HashMap<>();
 
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
@@ -116,11 +116,11 @@ public class BowlerStudioModularFrame {
 			newtab.setClosable(false);
 			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 			String homeURL = Tutorial.getHomeUrl();
-			jfx3dmanager =  new BowlerStudio3dEngine();
+			jfx3dmanager = new BowlerStudio3dEngine();
 			controller = new BowlerStudioController(jfx3dmanager);
 			WebTab.setController(controller);
-			
-			WebTab webtab=null;
+
+			WebTab webtab = null;
 			try {
 
 				webtab = new WebTab("Tutorial", homeURL, true);
@@ -136,11 +136,9 @@ public class BowlerStudioModularFrame {
 					ConnectionManager.getConnectionManager().getText(),
 					ConnectionManager.getConnectionManager().getGraphic());
 			connectionManagerDockNode.setPrefSize(200, 700);
-			
-			
+
 			// Initial docked setup
 			addTutorial();
-
 
 			// Add the dock pane to the window
 			editorContainer.getChildren().add(dockPane);
@@ -167,8 +165,7 @@ public class BowlerStudioModularFrame {
 			BowlerStudio.setCreatureLab3d(creatureLab3dController);
 			WindowLoader3d.setController(creatureLab3dController);
 			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
-			
-			
+
 			FXMLLoader menueBar;
 			menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
 			menueController = new BowlerStudioMenu();
@@ -185,27 +182,25 @@ public class BowlerStudioModularFrame {
 			}
 			BorderPane menue = (BorderPane) menueBar.getRoot();
 			BorderPane threed = (BorderPane) menueBar.getRoot();
-			WindowLoader3dDockNode = new DockNode(threed,
-						"Creature Lab",
-						AssetFactory.loadIcon("CreatureLabDockWidget.png"));
+			WindowLoader3dDockNode = new DockNode(threed, "Creature Lab",
+					AssetFactory.loadIcon("CreatureLabDockWidget.png"));
 			WindowLoader3dDockNode.setPrefSize(400, 400);
-			
+
 			// Add the dock pane to the window
 			menurAnchor.getChildren().add(menue);
 			AnchorPane.setTopAnchor(menue, 0.0);
 			AnchorPane.setRightAnchor(menue, 0.0);
 			AnchorPane.setLeftAnchor(menue, 0.0);
 			AnchorPane.setBottomAnchor(menue, 0.0);
-			
-			if (ScriptingEngine.getCreds().exists()){
-				if( (boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
+
+			if (ScriptingEngine.getCreds().exists()) {
+				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
 					showCreatureLab();
 			}
-			
+
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
-			
-			
+
 		} catch (Exception | Error e) {
 			e.printStackTrace();
 		}
@@ -218,55 +213,58 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void showConectionManager() {
-		Platform.runLater(() -> {
-			connectionManagerDockNode.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
-			connectionManagerDockNode.requestFocus();
-			
-			if (ScriptingEngine.getCreds().exists()){
-				ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
-			}
-			connectionManagerRemover = new InvalidationListener() {
-				@Override
-				public void invalidated(Observable event) {
-					if (ScriptingEngine.getCreds().exists()){
-						System.err.println("Closing devices");
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
-					}
-					connectionManagerDockNode.closedProperty().removeListener(connectionManagerRemover);	
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
+			Platform.runLater(() -> {
+				connectionManagerDockNode.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+				connectionManagerDockNode.requestFocus();
+
+				if (ScriptingEngine.getCreds().exists()) {
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 				}
-			};
-			connectionManagerDockNode.closedProperty().addListener(connectionManagerRemover);	
-			
-			
-		});
-	}
-	public void showCreatureLab() {
-		Platform.runLater(() -> {
-			WindowLoader3dDockNode.dock(dockPane, DockPos.RIGHT);
-			WindowLoader3dDockNode.requestFocus();
-			
-			if (ScriptingEngine.getCreds().exists()){
-				ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
-			}
-			creatureManagerRemover = new InvalidationListener() {
-				@Override
-				public void invalidated(Observable event) {
-					if (ScriptingEngine.getCreds().exists()){
-						
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
+				connectionManagerRemover = new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						if (ScriptingEngine.getCreds().exists()) {
+							System.err.println("Closing devices");
+							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
+						}
+						connectionManagerDockNode.closedProperty().removeListener(connectionManagerRemover);
 					}
-					connectionManagerDockNode.closedProperty().removeListener(creatureManagerRemover);	
-				}
-			};
-			WindowLoader3dDockNode.closedProperty().addListener(creatureManagerRemover);	
-			
-			
-		});
+				};
+				connectionManagerDockNode.closedProperty().addListener(connectionManagerRemover);
+
+			});
+		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
 
+	public void showCreatureLab() {
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false))
+			Platform.runLater(() -> {
+				WindowLoader3dDockNode.dock(dockPane, DockPos.RIGHT);
+				WindowLoader3dDockNode.requestFocus();
+
+				if (ScriptingEngine.getCreds().exists()) {
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
+				}
+				creatureManagerRemover = new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						if (ScriptingEngine.getCreds().exists()) {
+
+							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
+						}
+						connectionManagerDockNode.closedProperty().removeListener(creatureManagerRemover);
+					}
+				};
+				WindowLoader3dDockNode.closedProperty().addListener(creatureManagerRemover);
+
+			});
+		Platform.runLater(() -> WindowLoader3dDockNode.requestFocus());
+			
+	}
 
 	public DockNode getTutorialDockNode() {
-		
+
 		return tutorialDockNode;
 	}
 
@@ -288,40 +286,39 @@ public class BowlerStudioModularFrame {
 		return controller.createFileTab(file);
 	}
 
-	public void openUrlInNewTab(URL url){
-			Platform.runLater(() -> {
-				try {
-					if(ScriptingEngine.getLoginID() != null){
-						WebTab newTab = new WebTab("Web",url.toExternalForm(), false);
-						
-						addTab(newTab, true);
-					}
-				} catch (IOException | InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+	public void openUrlInNewTab(URL url) {
+		Platform.runLater(() -> {
+			try {
+				if (ScriptingEngine.getLoginID() != null) {
+					WebTab newTab = new WebTab("Web", url.toExternalForm(), false);
+
+					addTab(newTab, true);
 				}
-			});
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 
-
 	public void addTab(Tab newTab, boolean b) {
-		System.err.println("Loading a new tab: "+newTab.getText());
-		if(webTabs.get(newTab)!=null){
+		System.err.println("Loading a new tab: " + newTab.getText());
+		if (webTabs.get(newTab) != null) {
 			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
-		}else{
-			DockNode dn =new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
-			dn.closedProperty().addListener(event->{
-				System.err.println("Closing tab: "+newTab.getText());
-				webTabs.remove(newTab );
-				if(newTab.getOnCloseRequest()!=null){
-					
+		} else {
+			DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
+			dn.closedProperty().addListener(event -> {
+				System.err.println("Closing tab: " + newTab.getText());
+				webTabs.remove(newTab);
+				if (newTab.getOnCloseRequest() != null) {
+
 					newTab.getOnCloseRequest().handle(null);
 				}
 			});
-			webTabs.put(newTab,dn );
+			webTabs.put(newTab, dn);
 			Platform.runLater(() -> {
 				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
-				//dn.setFloating(true);
+				// dn.setFloating(true);
 			});
 		}
 	}
