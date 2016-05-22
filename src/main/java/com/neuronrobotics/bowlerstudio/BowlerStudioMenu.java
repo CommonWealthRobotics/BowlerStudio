@@ -110,7 +110,9 @@ public class BowlerStudioMenu {
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
-
+	public BowlerStudioMenu(BowlerStudioModularFrame  tl){
+		bowlerStudioModularFrame=tl;
+	}
 	@FXML
 	public void onMobileBaseFromGist(ActionEvent event) {
 
@@ -135,10 +137,6 @@ public class BowlerStudioMenu {
 		MeneBarBowlerStudio = meneBarBowlerStudio;
 	}
 
-	public void setTopLevel(BowlerStudioModularFrame bowlerStudioModularFrame) {
-		this.bowlerStudioModularFrame = bowlerStudioModularFrame;
-
-	}
 
 
 	public void loadMobilebaseFromGit(String id, String file) {

@@ -158,20 +158,6 @@ public class CreatureLab3dController {
 		Platform.runLater(() -> {
 			subScene = jfx3dmanager.getSubScene();
 			subScene.setFocusTraversable(false);
-			subScene.setOnMouseEntered(mouseEvent -> {
-				// System.err.println("3d window requesting focus");
-				Scene topScene = BowlerStudio.getScene();
-				normalKeyPessHandle = topScene.getOnKeyPressed();
-				// jfx3dmanager.handleKeyboard(topScene);
-			});
-
-			subScene.setOnMouseExited(mouseEvent -> {
-				// System.err.println("3d window dropping focus");
-				Scene topScene = BowlerStudio.getScene();
-				if (normalKeyPessHandle != null)
-					topScene.setOnKeyPressed(normalKeyPessHandle);
-			});
-
 			subScene.widthProperty().bind(viewContainer.widthProperty());
 			subScene.heightProperty().bind(viewContainer.heightProperty());
 		});

@@ -111,10 +111,10 @@ public class BowlerStudioModularFrame {
 			assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 			dockPane = new DockPane();
 			dockImage = AssetFactory.loadAsset("BowlerStudioModularFrameIcon.png");
-			final Tab newtab = new Tab();
-			newtab.setText("");
-			newtab.setClosable(false);
-			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
+//			final Tab newtab = new Tab();
+//			newtab.setText("");
+//			newtab.setClosable(false);
+//			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 			String homeURL = Tutorial.getHomeUrl();
 			jfx3dmanager = new BowlerStudio3dEngine();
 			controller = new BowlerStudioController(jfx3dmanager);
@@ -168,8 +168,7 @@ public class BowlerStudioModularFrame {
 
 			FXMLLoader menueBar;
 			menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
-			menueController = new BowlerStudioMenu();
-			menueController.setTopLevel(this);
+			menueController = new BowlerStudioMenu(this);
 			menueBar.setController(menueController);
 			menueBar.setClassLoader(BowlerStudioMenu.class.getClassLoader());
 
