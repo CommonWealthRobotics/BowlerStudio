@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessControlContext;
 import java.time.Duration;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
@@ -55,6 +57,8 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.javafx.stage.WindowHelper;
+import com.sun.javafx.tk.TKStage;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -64,7 +68,9 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
@@ -73,7 +79,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
     IScriptEventListener l=null;
 	private RSyntaxTextArea textArea;
-	private SwingNode sn;
+	private MySwingNode sn;
 	private RTextScrollPane sp;
 
 	private Highlighter highlighter;
@@ -81,6 +87,27 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private HighlightPainter painter;
 	private int pos = 0;
 
+	private class MySwingNode extends SwingNode{
+	    /**
+	     * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
+	     * This value corresponds to the minimum width of the Swing component.
+	     * 
+	     * @return the minimum width that the node should be resized to during layout
+	     */    
+	    @Override public double minWidth(double height) {
+	        
+	        return 200;
+	    }
+	    /**
+	     * Returns the {@code SwingNode}'s minimum height for use in layout calculations.
+	     * This value corresponds to the minimum height of the Swing component.
+	     * 
+	     * @return the minimum height that the node should be resized to during layout
+	     */    
+	    @Override public double minHeight(double width) {
+	    	return 200;
+	    }
+	}
     
 	public LocalFileScriptTab( File file) throws IOException {
 		
@@ -146,7 +173,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		sp = new RTextScrollPane(textArea);
 		
-		sn = new SwingNode();
+		sn = new MySwingNode();
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -225,6 +252,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 		
 		highlighter.removeAllHighlights();
+
 
 	}
 

@@ -106,6 +106,7 @@ repositories {
 	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
 	maven { url 'https://plugins.gradle.org/m2/' }
+	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 }
 
 dependencies {
@@ -120,6 +121,8 @@ dependencies {
 	compile "org.jfxtras:jfxtras-window:8.0-r4"
 	compile "org.jfxtras:jfxtras-menu:8.0-r4"
 	compile "org.jfxtras:jfxtras-labs:8.0-r4"
+	compile 'org.dockfx:DockFX:0.1.5'
+	
 	
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 

@@ -14,7 +14,6 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.scripting.GithubLoginFX;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOPanel;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOchannelWidget;
@@ -49,9 +48,6 @@ public class BowlerStudioResourceFactory {
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
 			//githubLogin.setController(new GithubLoginFX());
 			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
-			mainControllerPanel = AssetFactory.loadLayout("layout/Main.fxml");
-			mainControllerPanel.setController(new MainController());
-			mainControllerPanel.setClassLoader(MainController.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

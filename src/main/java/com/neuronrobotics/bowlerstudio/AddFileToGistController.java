@@ -45,11 +45,11 @@ public class AddFileToGistController extends Application
     @FXML
     public Button addFileButton, cancelButton;
 
-    private String gistID;
+    private GHGist gistID;
 
-    public AddFileToGistController()
+    public AddFileToGistController(GHGist id)
     {
-        this.gistID = MainController.currentGistID;
+        this.gistID = id;
     }
 
     @Override
@@ -92,12 +92,12 @@ public class AddFileToGistController extends Application
         });
     }
 
-    public String getGistID()
+    public GHGist getGistID()
     {
         return gistID;
     }
 
-    public void setGistID(String gistID)
+    public void setGistID(GHGist gistID)
     {
         this.gistID = gistID;
     }

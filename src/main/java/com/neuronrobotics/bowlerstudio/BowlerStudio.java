@@ -18,6 +18,9 @@ import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
@@ -38,17 +41,19 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class BowlerStudio extends Application {
 
 	private static TextArea log;
-	private static MainController controller;
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
 	private static boolean hasnetwork;
 	private static Console out;
 	private static TextArea logViewRefStatic=null;
+	private static CreatureLab3dController creatureLab3dController;
+	private BowlerStudioModularFrame modularFrame;
 	private static class Console extends OutputStream {
 		
 	    public void appendText(String valueOf) {
@@ -91,11 +96,10 @@ public class BowlerStudio extends Application {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-
+		
 				
 
 		if (args.length == 0) {
-
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 
@@ -118,10 +122,11 @@ public class BowlerStudio extends Application {
 				"exampleRobots.json"// File from within the Git repo
 			);
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
-//			if (!ScriptingEngine.getCreds().exists()) {
-//				ScriptingEngine.logout();
-//			}
-
+			
+			String firstVer = "";
+			if (ScriptingEngine.getCreds().exists())
+				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
 			// System.out.println("Loading assets ");
 
 			// System.out.println("Done loading assets ");
@@ -168,125 +173,18 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+			System.out.println("BowlerStudio First Version: " + firstVer);
 			launch(args);
+			
 		} else {
 			BowlerKernel.main(args);
 		}
 	}
 
-	public static void setSelectedTab(Tab tab) {
-		controller.getApplication().setSelectedTab(tab);
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		setPrimaryStage(primaryStage);
-		// new Exception().printStackTrace();
-		fxmlLoader = BowlerStudioResourceFactory.getMainControllerPanel();
-		if (controller != null) {
-			throw new IllegalStateException("UI already loaded");
-		}
-		
-		try {
-			fxmlLoader.load();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		controller = (MainController)fxmlLoader.getController();
-
-		log = controller.getLogView();
-
-		Parent main= fxmlLoader.getRoot();
-
-		setScene(new Scene(main, 1250, 768, true));
-
-		// getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
-		// toExternalForm());
-
-		PerspectiveCamera camera = new PerspectiveCamera();
-
-		getScene().setCamera(camera);
-
-		primaryStage.setTitle("Bowler Studio");
-		primaryStage.setScene(getScene());
-		primaryStage.show();
-		primaryStage.setOnCloseRequest(arg0 -> {
-			controller.disconnect();
-			ThreadUtil.wait(100);
-			System.exit(0);
-		});
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				if (ScriptingEngine.getCreds().exists()) 
-					ConfigurationDatabase.save();
-			}
-		});
-		primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
-		primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream("images/hat.png")));
-		
-		String firstVer="";
-		if (ScriptingEngine.getCreds().exists())
-			firstVer= (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion", StudioBuildInfo.getVersion());
 	
-		
-		
-		System.out.println("BowlerStudio First Version: " + firstVer);
-		System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-		System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-		System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-		System.out.println("Welcome to BowlerStudio!");
-		Log.enableSystemPrint(false);
-//		new Thread(){
-//			public void run(){
-//				ThreadUtil.wait(1000);
-//				if (!ScriptingEngine.getCreds().exists()) {
-//					try {
-//						ScriptingEngine.login();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		}.start();
-
-	}
-
-	public static TextArea getLogView() {
-
-		if (log == null) {
-			throw new IllegalStateException("Load the UI first.");
-		}
-
-		return log;
-	}
-
-	// public static Menu getCreatureLabMenue() {
-	// return controller.getCreatureLabMenue();
-	// }
-
-	public static Stage getPrimaryStage() {
-		return primaryStage;
-	}
-
-	public static void setPrimaryStage(Stage primaryStage) {
-		BowlerStudio.primaryStage = primaryStage;
-
-		Platform.runLater(() -> {
-			try {
-				BowlerStudio.primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudio.png"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-	}
 
 	public static void openUrlInNewTab(URL url) {
-		controller.openUrlInNewTab(url);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
 	}
 
 	public static int speak(String msg) {
@@ -295,7 +193,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static ScriptingFileWidget createFileTab(File file) {
-		return controller.createFileTab(file);
+		return BowlerStudioModularFrame.getBowlerStudioModularFrame().createFileTab(file);
 	}
 
 	public static Scene getScene() {
@@ -313,33 +211,31 @@ public class BowlerStudio extends Application {
 		});
 	}
 	public static void setOverlayLeft(TreeView<String> tree){
-		controller.setOverlayLeft(tree);
+		BowlerStudio.creatureLab3dController.setOverlayLeft(tree);
 	}
 	public static  void clearOverlayLeft(){
-		controller.clearOverlayLeft();
+		BowlerStudio.creatureLab3dController.clearOverlayLeft();
 	}
 	
 	public  static void setOverlayTop(Group content){
-		controller.setOverlayTop(content);;
+		BowlerStudio.creatureLab3dController.setOverlayTop(content);;
 	}
 	public static  void clearOverlayTop(){
-		controller.clearOverlayTop();
+		BowlerStudio.creatureLab3dController.clearOverlayTop();
 	}
 	public static  void setOverlayTopRight(Group content){
-		controller.setOverlayTopRight(content);
+		BowlerStudio.creatureLab3dController.setOverlayTopRight(content);
 	}
 	public static  void clearOverlayTopRight(){
-		controller.clearOverlayTopRight();
+		BowlerStudio.creatureLab3dController.clearOverlayTopRight();
 	}
 	public  static void setOverlayBottomRight(Group content){
-		controller.setOverlayBottomRight(content);
+		BowlerStudio.creatureLab3dController.setOverlayBottomRight(content);
 	}
 	public static  void clearOverlayBottomRight(){
-		controller.clearOverlayBottomRight();
+		BowlerStudio.creatureLab3dController.clearOverlayBottomRight();
 	}
-	public  static  void setCadSplit(double value){
-		controller.setCadSplit(value);
-	}
+
 
 	public static boolean hasNetwork() {
 		return hasnetwork;
@@ -356,5 +252,94 @@ public class BowlerStudio extends Application {
 	public static void setLogViewRefStatic(TextArea logViewRefStatic) {
 		BowlerStudio.logViewRefStatic = logViewRefStatic;
 	}
+
+
+
+	public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
+		BowlerStudio.creatureLab3dController = creatureLab3dController;
+	}
+
+
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+
+		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
+		// Initialize your logic here: all @FXML variables will have been
+		// injected
+		FXMLLoader mainControllerPanel;
+
+		try {
+			mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
+			BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
+			mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
+			mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+			try {
+				mainControllerPanel.load();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+			File f = AssetFactory.loadFile("layout/default.css");
+			scene.getStylesheets().clear();
+			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+
+			primaryStage.setTitle("Bowler Studio");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			primaryStage.setOnCloseRequest(arg0 -> {
+				// ThreadUtil.wait(100);
+				closeBowlerStudio();
+				
+			});
+			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+			primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+
+			primaryStage.setResizable(true);
+
+		
+			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+
+				@Override
+				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
+					System.err.println("Device connected: "+arg0);
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
+				}
+
+				@Override
+				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
+			});
+			
+			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+			System.out.println("Welcome to BowlerStudio!");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
+
+	public static void closeBowlerStudio() {
+		new Thread(){
+			public void run(){
+				System.err.println("Closing application");
+				ConnectionManager.disconnectAll();
+				if (ScriptingEngine.getCreds().exists()) 
+					ConfigurationDatabase.save();
+				System.exit(0);
+			}
+		}.start();
+	}
+
+
+
+
 	
 }
