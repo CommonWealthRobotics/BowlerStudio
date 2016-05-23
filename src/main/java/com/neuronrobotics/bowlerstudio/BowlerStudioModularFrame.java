@@ -153,7 +153,7 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setBottomAnchor(dockPane, 0.0);
 
 			// test the look and feel with both Caspian and Modena
-			Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
+			//Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
 			// library's internal Default.css stylesheet
