@@ -747,6 +747,7 @@ public class BowlerStudioMenu {
 		});
         new Thread(){
         	public void run(){
+        		ThreadUtil.wait(500);
                 try {
         			ScriptingEngine.setAutoupdate(true);
         			File f = ScriptingEngine.fileFromGit(
@@ -796,20 +797,6 @@ public class BowlerStudioMenu {
 						setToLoggedOut();
 					}
 
-				});
-
-				ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-
-					@Override
-					public void onLogout(String oldUsername) {
-						setToLoggedOut();
-					}
-
-					@Override
-					public void onLogin(String newUsername) {
-						setToLoggedIn(newUsername);
-
-					}
 				});
 
 				if (ScriptingEngine.getCreds().exists()) {
