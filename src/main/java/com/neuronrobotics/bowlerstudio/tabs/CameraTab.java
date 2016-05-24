@@ -125,7 +125,7 @@ public class CameraTab extends AbstractBowlerStudioTab {
 							long process = session[2] - session[1];
 							long show = session[3] - session[2];
 
-							if (isSelected()) {
+							//if (isSelected()) {
 								System.out.println("Total " + (int) (1 / (total / 1000.0)) + "FPS " + "capture="
 										+ capture + "ms " + "process=" + process + "ms " + "convert=" + show + "ms "
 										+ "spacing=" + spacing + "ms ");
@@ -136,9 +136,9 @@ public class CameraTab extends AbstractBowlerStudioTab {
 								session[2] = System.currentTimeMillis();
 								// if (data.size() > 0)
 								// System.out.println("Got: " + data.size());
-							} else {
-								// System.out.println("idle: ");
-							}
+//							} else {
+//								// System.out.println("idle: ");
+//							}
 							Image Img = AbstractImageProvider.getJfxImage(outImage);
 							session[3] = System.currentTimeMillis();
 							// make sure capture never gets ahead of showing
