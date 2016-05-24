@@ -169,7 +169,7 @@ public class BowlerStudioMenu {
 		});
 	}
 	private void setToLoggedIn(final String name) {
-		// new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 		FxTimer.runLater(Duration.ofMillis(100), () -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + name);
@@ -358,19 +358,7 @@ public class BowlerStudioMenu {
 			}.start();
 
 		});
-		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
 
-			@Override
-			public void onLogout(String oldUsername) {
-				setToLoggedOut();
-			}
-
-			@Override
-			public void onLogin(String newUsername) {
-				setToLoggedIn(newUsername);
-
-			}
-		});
 	}
 	
 	private void setUpRepoMenue(Menu repoMenue, GHRepository repo) {
@@ -790,6 +778,19 @@ public class BowlerStudioMenu {
 
 			@Override
 			public void run() {
+				ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
+
+					@Override
+					public void onLogout(String oldUsername) {
+						setToLoggedOut();
+					}
+
+					@Override
+					public void onLogin(String newUsername) {
+						setToLoggedIn(newUsername);
+
+					}
+				});
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
 					if (ScriptingEngine.getLoginID() != null) {
 						setToLoggedIn(ScriptingEngine.getLoginID());
