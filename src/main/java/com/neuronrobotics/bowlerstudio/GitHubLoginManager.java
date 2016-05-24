@@ -20,20 +20,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 	private boolean AnonSelected = false;
 	private String[] creds;
 	public GitHubLoginManager(){
-		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-			
-			@Override
-			public void onLogout(String oldUsername) {
-				//System.err.println("Logout!");
-				//AnonSelected=false;
-			}
-			
-			@Override
-			public void onLogin(String newUsername) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
 	}
 	@Override
 	public String[] prompt(String username) {
@@ -59,7 +46,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 						githublogin.getUsername().setText(username);
 						stage = new Stage();
 						stage.setTitle("GitHub Login");
-						stage.initModality(Modality.APPLICATION_MODAL);
+						//stage.initModality(Modality.APPLICATION_MODAL);
 						githublogin.setStage(stage, root);
 						stage.centerOnScreen();
 					

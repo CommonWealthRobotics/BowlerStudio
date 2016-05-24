@@ -745,38 +745,43 @@ public class BowlerStudioMenu {
         showTerminal.setOnAction(event -> {
         	bowlerStudioModularFrame.showTerminal();
 		});
-        try {
-			ScriptingEngine.setAutoupdate(true);
-			File f = ScriptingEngine.fileFromGit(
-					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
-																						// repo,
-																						// change
-																						// this
-																						// if
-																						// you
-																						// fork
-																						// this
-																						// demo
-					"exampleRobots.json"// File from within the Git repo
-			);
+        new Thread(){
+        	public void run(){
+                try {
+        			ScriptingEngine.setAutoupdate(true);
+        			File f = ScriptingEngine.fileFromGit(
+        					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
+        																						// repo,
+        																						// change
+        																						// this
+        																						// if
+        																						// you
+        																						// fork
+        																						// this
+        																						// demo
+        					"exampleRobots.json"// File from within the Git repo
+        			);
 
-			@SuppressWarnings("unchecked")
-			HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-					.inlineFileScriptRun(f, null);
-			for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
-				HashMap<String, Object> script = entry.getValue();
-				MenuItem item = new MenuItem(entry.getKey());
-				item.setOnAction(event -> {
-					loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
-				});
-				Platform.runLater(() -> {
-					CreaturesMenu.getItems().add(item);
-				});
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        			@SuppressWarnings("unchecked")
+        			HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+        					.inlineFileScriptRun(f, null);
+        			for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
+        				HashMap<String, Object> script = entry.getValue();
+        				MenuItem item = new MenuItem(entry.getKey());
+        				item.setOnAction(event -> {
+        					loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
+        				});
+        				Platform.runLater(() -> {
+        					CreaturesMenu.getItems().add(item);
+        				});
+        			}
+        		} catch (Exception e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        	}
+        }.start();
+
     	addMarlinGCODEDevice.setOnAction(event->{
 			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
 		});
