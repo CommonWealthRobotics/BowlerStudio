@@ -126,19 +126,20 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
 
-#####Ubuntu Dependancies
+#####Ubuntu 16.04 Dependancies
 
     sudo add-apt-repository ppa:webupd8team/java
    
     sudo apt-get update
    
-    sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java libopencv2.4-jni
+    sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java slic3r libopencv2.4-jni
 ##### Ubuntu 14.04, install extra dependancies
 	sudo add-apt-repository ppa:cwchien/gradle -y
 	sudo apt-add-repository ppa:webupd8team/java -y
+	sudo apt-add-repository ppa:rsalveti/3d-printing -y
 	sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
 	sudo apt-get update -qq
-	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni  libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils
+	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni slic3r libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils
 	sudo apt-get install oracle-java8-set-default
 	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
 	
@@ -150,11 +151,7 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
    
     cd BowlerStudio
     
-    git submodule init
-    
-    git submodule update
-    
-    ./gradlew jar
+    gradle jar
     
     java -jar build/libs/BowlerStudio.jar
     
