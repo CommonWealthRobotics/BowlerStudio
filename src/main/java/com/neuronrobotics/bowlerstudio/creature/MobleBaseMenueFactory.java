@@ -258,7 +258,7 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> owner = new TreeItem<>("Owner",AssetFactory.loadIcon("Owner.png"));
+		TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 		TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 		callbackMapForTreeitems.put(setCAD, () -> {
 			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
@@ -748,7 +748,7 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(addLink, advanced, remove);
 		if (creatureIsOwnedByUser) {
-			TreeItem<String> owner = new TreeItem<>("Owner",AssetFactory.loadIcon("Owner.png"));
+			TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From Git", dh.getGitCadEngine()[0], (gitsId, file) -> {

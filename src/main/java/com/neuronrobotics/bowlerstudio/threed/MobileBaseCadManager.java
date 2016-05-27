@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.python.core.exceptions;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -139,6 +140,7 @@ public class MobileBaseCadManager {
 		}
 		getProcesIndictor().setProgress(0.3);
 		try {
+			getAllCad().clear();
 			if(showingStl){
 				//skip the regen
 				for(CSG c:BasetoCadMap.get(device)){
@@ -146,11 +148,19 @@ public class MobileBaseCadManager {
 					getAllCad().add(c);	
 				}
 			}else{
-				if(device.isAvailable())
-					setAllCad(cadEngine.generateBody(device));
+				if(device.isAvailable()){
+					ArrayList<CSG>  newcad  = cadEngine.generateBody(device);
+					for(CSG c:newcad){
+						getAllCad().add(c);	
+					}
+				}else
+					new Exception().printStackTrace();
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
-				BowlerStudioController.clearCSG();
-				BowlerStudioController.setCsg(arrayList);
+				arrayList.clear();
+				baseCad=null;//clear the unioned version too
+				for(CSG c:getAllCad()){
+					arrayList.add(c);	
+				}
 				new Thread(()->{
 					localGetBaseCad( device);// load the cad union in a thread to make it ready for physics
 				}).start();
