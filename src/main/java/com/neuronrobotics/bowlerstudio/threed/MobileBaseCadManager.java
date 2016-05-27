@@ -155,6 +155,9 @@ public class MobileBaseCadManager {
 					arrayList.add(c);	
 				}
 				BowlerStudioController.setCsg(arrayList);
+				new Thread(()->{
+					localGetBaseCad( device);// load the cad union in a thread to make it ready for physics
+				}).start();
 			}
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(getCadScript(), e);
@@ -464,15 +467,18 @@ public class MobileBaseCadManager {
 		return get(device).simplecad;
 	}
 	
-	private CSG localGetBaseCad(MobileBase device){
+	private synchronized CSG localGetBaseCad(MobileBase device){
+
 		if(baseCad==null){
-			for(CSG c:getAllCad()){
+			for(int i=0;i<getAllCad().size();i++){
+				CSG c = getAllCad().get(i);
 				if(baseCad==null)
 					baseCad=c;
 				else
 					baseCad=baseCad.union(c);
 			}
 		}
+		
 		return baseCad;
 	}
 
