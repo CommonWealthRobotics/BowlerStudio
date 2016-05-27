@@ -149,11 +149,7 @@ public class MobileBaseCadManager {
 				if(device.isAvailable())
 					setAllCad(cadEngine.generateBody(device));
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
-				arrayList.clear();
-				baseCad=null;//clear the unioned version too
-				for(CSG c:getAllCad()){
-					arrayList.add(c);	
-				}
+				BowlerStudioController.clearCSG();
 				BowlerStudioController.setCsg(arrayList);
 				new Thread(()->{
 					localGetBaseCad( device);// load the cad union in a thread to make it ready for physics
