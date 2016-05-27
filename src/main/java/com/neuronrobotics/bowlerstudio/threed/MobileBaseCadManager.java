@@ -146,24 +146,24 @@ public class MobileBaseCadManager {
 					getAllCad().add(c);	
 				}
 			}else{
-				setAllCad(cadEngine.generateBody(device));
+				if(device.isAvailable())
+					setAllCad(cadEngine.generateBody(device));
 				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
 				arrayList.clear();
 				baseCad=null;//clear the unioned version too
 				for(CSG c:getAllCad()){
-					if(baseCad==null)
-						baseCad=c;
-					else
-						baseCad=baseCad.union(c);
 					arrayList.add(c);	
 				}
+				BowlerStudioController.setCsg(arrayList);
 			}
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(getCadScript(), e);
 		}
+		System.out.println("Displaying Body");
+		getProcesIndictor().setProgress(0.35);
 		// clears old robot and places base
 		BowlerStudioController.setCsg(BasetoCadMap.get(device),getCadScript());
-
+		System.out.println("Rendering limbs");
 		getProcesIndictor().setProgress(0.4);
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
@@ -173,18 +173,20 @@ public class MobileBaseCadManager {
 				DHtoCadMap.put(l, new ArrayList<CSG>());
 			}
 			ArrayList<CSG> arrayList = DHtoCadMap.get(l);
-			if(showingStl){
+			if(showingStl || !device.isAvailable()){
 				for (CSG csg : arrayList) {
 					getAllCad().add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
 				}
 			}else{
+				
 				arrayList.clear();
 				for (CSG csg : generateCad(l)) {
 					getAllCad().add(csg);
 					arrayList.add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
 				}
+				
 			}
 
 			i += 1;
@@ -461,9 +463,21 @@ public class MobileBaseCadManager {
 	public static HashMap<DHLink, CSG> getSimplecad(MobileBase device) {
 		return get(device).simplecad;
 	}
+	
+	private CSG localGetBaseCad(MobileBase device){
+		if(baseCad==null){
+			for(CSG c:getAllCad()){
+				if(baseCad==null)
+					baseCad=c;
+				else
+					baseCad=baseCad.union(c);
+			}
+		}
+		return baseCad;
+	}
 
 	public static CSG getBaseCad(MobileBase device) {
-		return get(device).baseCad;
+		return get(device).localGetBaseCad(device);
 	}
 	public ProgressIndicator getProcesIndictor() {
 		return pi;
