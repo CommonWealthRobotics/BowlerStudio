@@ -53,7 +53,7 @@ public class MobileBaseCadManager {
 	private ArrayList<CSG> allCad;
 	private  CSG baseCad=null;
 	private CheckBox autoRegen;
-	
+	private boolean bail=false;
 	
 	
 	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi,CheckBox autoRegen){
@@ -61,7 +61,19 @@ public class MobileBaseCadManager {
 		this.setProcesIndictor(pi);
 		if(pi==null)
 			this.setProcesIndictor(new ProgressIndicator());
-		
+		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice arg0) {
+				bail=true;
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		setMobileBase(base);
 		//new Exception().printStackTrace();
 	}
@@ -118,7 +130,7 @@ public class MobileBaseCadManager {
 		//DHtoCadMap = new HashMap<>();
 		//private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
 		
-
+		
 		MobileBase device = base;
 		if(BasetoCadMap.get(device)==null){
 			BasetoCadMap.put(device, new ArrayList<CSG>());
@@ -148,7 +160,7 @@ public class MobileBaseCadManager {
 					getAllCad().add(c);	
 				}
 			}else{
-				if(device.isAvailable()){
+				if(!bail){
 					ArrayList<CSG>  newcad  = cadEngine.generateBody(device);
 					for(CSG c:newcad){
 						getAllCad().add(c);	
@@ -322,17 +334,19 @@ public class MobileBaseCadManager {
 			if (dhCadGen.get(dh) != null) {
 				try {
 					for(int i=0;i<dh.getNumberOfLinks();i++){
-						ArrayList<CSG> tmp=dhCadGen.get(dh).generateCad(dh, i);
-						simpleCad=null;
-						for(CSG c:tmp){
-							if(simpleCad==null)
-								simpleCad=c;
-							else
-								simpleCad=simpleCad.union(c);
-							dhLinks.add(c);
+						if(!bail){
+							ArrayList<CSG> tmp=dhCadGen.get(dh).generateCad(dh, i);
+							simpleCad=null;
+							for(CSG c:tmp){
+								if(simpleCad==null)
+									simpleCad=c;
+								else
+									simpleCad=simpleCad.union(c);
+								dhLinks.add(c);
+							}
+							if(simpleCad!=null)
+								simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 						}
-						if(simpleCad!=null)
-							simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 					}
 					return dhLinks;
 				} catch (Exception e) {
@@ -340,18 +354,20 @@ public class MobileBaseCadManager {
 				}
 			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
-				ArrayList<CSG> tmp=cadEngine.generateCad(dh, i);
-				simpleCad=null;
-				for(CSG c:tmp){
-					if(simpleCad==null)
-						simpleCad=c;
-					else
-						simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
-					dhLinks.add(c);
+				if(!bail){
+					ArrayList<CSG> tmp=cadEngine.generateCad(dh, i);
+					simpleCad=null;
+					for(CSG c:tmp){
+						if(simpleCad==null)
+							simpleCad=c;
+						else
+							simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
+						dhLinks.add(c);
+					}
+					
+					if(simpleCad!=null)
+						simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 				}
-				
-				if(simpleCad!=null)
-					simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
 			}
 			return dhLinks;
 		} catch (Exception e) {
