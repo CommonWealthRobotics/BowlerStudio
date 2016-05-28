@@ -205,6 +205,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void clearConsole() {
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
 		Platform.runLater(() -> {
 			if(getLogViewRefStatic()!=null)
 				getLogViewRefStatic().setText("");
