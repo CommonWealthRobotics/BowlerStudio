@@ -54,6 +54,7 @@ public class BowlerStudio extends Application {
 	private static TextArea logViewRefStatic=null;
 	private static CreatureLab3dController creatureLab3dController;
 	private BowlerStudioModularFrame modularFrame;
+	private static 	String firstVer = "";
 	private static class Console extends OutputStream {
 		
 	    public void appendText(String valueOf) {
@@ -107,6 +108,8 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.runLogin();
 				if(BowlerStudio.hasNetwork())
 					ScriptingEngine.setAutoupdate(true);
+				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
 			}else
 				ScriptingEngine.setupAnyonmous();
 			// Download and Load all of the assets
@@ -123,14 +126,10 @@ public class BowlerStudio extends Application {
 			);
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 			
-			String firstVer = "";
-			if (ScriptingEngine.getCreds().exists())
-				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-						StudioBuildInfo.getVersion());
+			
+
 			// System.out.println("Loading assets ");
 
-			// System.out.println("Done loading assets ");
-			String key = "Bowler Initial Version";
 			// System.out.println("Loading Main.fxml");
 
 			try {
@@ -173,7 +172,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("BowlerStudio First Version: " + firstVer);
+			
 			launch(args);
 			
 		} else {
@@ -313,7 +312,7 @@ public class BowlerStudio extends Application {
 				@Override
 				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
 			});
-			
+			System.out.println("BowlerStudio First Version: " + firstVer);
 			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
