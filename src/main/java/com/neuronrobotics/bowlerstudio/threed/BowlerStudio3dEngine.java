@@ -217,7 +217,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	/** The look group. */
 	private final Group lookGroup = new Group();
-	
+	/** The look group. */
+	private final Group focusGroup = new Group();
 	/** The scene. */
 	private SubScene scene;
 	
@@ -525,7 +526,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		    @Override
 		    public void handle(ActionEvent event) {
 				setSelectedCsg(currentCsg);
-
+				new Thread(){
+					public void run(){
+				        selectObjectsSourceFile(selectedCsg);
+					}
+				}.start();
 		    }
 		});
 		cm.getItems().add(cut);
@@ -538,21 +543,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
                 }
             }
         });
-        cm.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("right gets consumed so this must be left on "+
-                        ((MenuItem) event.getTarget()).getText());
-            }
-        });
+   
 		class closeTheMenueHandler implements EventHandler<MouseEvent> {
 			@Override
 			public void handle(MouseEvent event) {
 				if(event.isSecondaryButtonDown()||event.isShiftDown())
 					cm.show(current, event.getScreenX()-10, event.getScreenY()-10);
-				
+				else if(event.isPrimaryButtonDown()){
+					setSelectedCsg(currentCsg);
+				}
 
-				
 			}
 		}
 		closeTheMenueHandler cmh =new closeTheMenueHandler();
@@ -791,11 +791,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		//ground.setOpacity(.5);
 		ground = new Group();
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(yText,zText,xText,ground, getVirtualcam().getCameraFrame());
+		focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
+		axisGroup.getChildren().addAll(yText,zText,xText,ground,focusGroup );
 		world.getChildren().addAll(axisGroup, lookGroup);
 		
 	}
 	
+	private void cancelSelection() {
+		focusGroup.getTransforms().clear();
+	}
 	
 
 	/**
@@ -805,6 +809,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param root the root
 	 */
 	private void handleMouse(SubScene scene) {
+
+		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			long lastClickedTime  = 0;
+			@Override
+			public void handle(MouseEvent event) {
+				if(System.currentTimeMillis()-lastClickedTime<500){
+					cancelSelection();
+				}
+				lastClickedTime=System.currentTimeMillis();
+			}
+
+			
+		});
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
@@ -1121,12 +1138,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Platform.runLater(()->getCsgMap().get(old).setMaterial(new PhongMaterial(old.getColor())));
 		}
 		this.selectedCsg = selectedCsg;
-		Platform.runLater(()->getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
-		new Thread(){
-			public void run(){
-		        selectObjectsSourceFile(selectedCsg);
-			}
-		}.start();
+		Platform.runLater(()->getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(new Color(
+				old.getColor().getRed()+20,
+				old.getColor().getGreen()+20,
+				old.getColor().getBlue()+20,
+				old.getColor().getOpacity()))));
+		focusGroup.getTransforms().add(selectedCsg.getManipulator());
 	}
 
 	public HashMap<CSG,MeshView> getCsgMap() {
