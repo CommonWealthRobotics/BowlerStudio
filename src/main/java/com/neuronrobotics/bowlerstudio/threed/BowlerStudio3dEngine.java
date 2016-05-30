@@ -1072,7 +1072,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			MeshView mesh = getCsgMap().get(selectedCsg.get(i));
 			if(mesh!=null)
 				FxTimer.runLater(
-				        java.time.Duration.ofMillis(50),
+				        java.time.Duration.ofMillis(100),
 				        
 			()->{
 //				mesh.setMaterial(new PhongMaterial(new Color(
@@ -1090,11 +1090,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			return;
 		
 		cancelSelection();
-		System.err.println("Selecting one");
+		//System.err.println("Selecting one");
 		this.selectedCsg = selectedCsg;
 		
 		FxTimer.runLater(
-			        java.time.Duration.ofMillis(50),
+			        java.time.Duration.ofMillis(100),
 			        
 		()->{
 			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
