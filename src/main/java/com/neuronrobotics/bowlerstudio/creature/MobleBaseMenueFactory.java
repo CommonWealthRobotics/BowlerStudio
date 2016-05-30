@@ -73,7 +73,11 @@ public class MobleBaseMenueFactory {
 		CSG csg = limCad.get(limCad.size()-1);
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
 	}
-	
+	public static void select(MobileBase base,LinkConfiguration limb){
+		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+		CSG csg = limCad.get(limCad.size()-1);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+	}
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -494,7 +498,7 @@ public class MobleBaseMenueFactory {
 		return apps;
 	}
 
-	private static void setHardwareConfig(LinkConfiguration conf, LinkFactory factory, TreeItem<String> rootItem,
+	private static void setHardwareConfig(MobileBase base,LinkConfiguration conf, LinkFactory factory, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
 
@@ -505,6 +509,7 @@ public class MobleBaseMenueFactory {
 				// first time
 				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory)));
 			}
+			select( base,conf);
 		});
 		rootItem.getChildren().add(hwConf);
 	}
@@ -527,7 +532,8 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 lsw.setGameController(controller); 
 			 }
-			 select( base, dh);
+			 select( base,conf);
+			 //select( base, dh);
 			// activate controller
 		});
 
@@ -535,7 +541,7 @@ public class MobleBaseMenueFactory {
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
-			setHardwareConfig(co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
+			setHardwareConfig(base,co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
 
 		TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),AssetFactory.loadIcon("Add-Slave-Links.png"));
@@ -567,7 +573,7 @@ public class MobleBaseMenueFactory {
 							conf.getSlaveLinks().add(newLink);
 							slaveFactory.getLink(newLink);
 							try {
-								setHardwareConfig(newLink, slaveFactory, slaves, callbackMapForTreeitems,
+								setHardwareConfig(base,newLink, slaveFactory, slaves, callbackMapForTreeitems,
 										widgetMapForTreeitems);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
@@ -631,11 +637,12 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
+			select( base,conf);
 		});
 
 		link.getChildren().addAll(design);
 
-		setHardwareConfig(conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		setHardwareConfig(base,conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);

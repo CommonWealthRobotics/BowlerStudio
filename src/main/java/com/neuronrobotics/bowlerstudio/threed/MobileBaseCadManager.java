@@ -20,6 +20,7 @@ import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
@@ -46,6 +47,7 @@ public class MobileBaseCadManager {
 
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
+	private HashMap<LinkConfiguration, ArrayList<CSG>> LinktoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
 	private  HashMap<DHLink, CSG> simplecad = new HashMap<>();
 	private boolean cadGenerating = false;
@@ -314,16 +316,14 @@ public class MobileBaseCadManager {
 		cadmap.put(base, this);
 
 	}
-	
+	/**
+	 * This function iterates through the links generating them
+	 * @param dh
+	 * @return
+	 */
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
 		ArrayList<CSG> dhLinks = new ArrayList<>();
-//		if (getCadScript() != null) {
-//			try {
-//				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-//			} catch (Exception e) {
-//				BowlerStudioController.highlightException(getCadScript(), e);
-//			}
-//		}
+
 		if (cadEngine == null) {
 			try {
 				setDefaultLinkLevelCadEngine();
@@ -333,31 +333,19 @@ public class MobileBaseCadManager {
 		}
 		CSG simpleCad;
 		try {
+			ICadGenerator generatorToUse=cadEngine;
+			
 			if (dhCadGen.get(dh) != null) {
-				try {
-					for(int i=0;i<dh.getNumberOfLinks();i++){
-						if(!bail){
-							ArrayList<CSG> tmp=dhCadGen.get(dh).generateCad(dh, i);
-							simpleCad=null;
-							for(CSG c:tmp){
-								if(simpleCad==null)
-									simpleCad=c;
-								else
-									simpleCad=simpleCad.union(c);
-								dhLinks.add(c);
-							}
-							if(simpleCad!=null)
-								simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
-						}
-					}
-					return dhLinks;
-				} catch (Exception e) {
-					BowlerStudioController.highlightException(dhCadWatchers.get(dh).getFileToWatch(), e);
-				}
+				generatorToUse=dhCadGen.get(dh);
 			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
 				if(!bail){
-					ArrayList<CSG> tmp=cadEngine.generateCad(dh, i);
+					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);
+					LinkConfiguration configuration = dh.getLinkConfiguration(i);
+					if(getLinktoCadMap().get(configuration)==null){
+						getLinktoCadMap().put(configuration, new ArrayList<>());
+					}else
+						getLinktoCadMap().get(configuration).clear();
 					simpleCad=null;
 					for(CSG c:tmp){
 						if(simpleCad==null)
@@ -365,6 +353,7 @@ public class MobileBaseCadManager {
 						else
 							simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
 						dhLinks.add(c);
+						getLinktoCadMap().get(configuration).add(c);// add to the regestration storage
 					}
 					
 					if(simpleCad!=null)
@@ -526,6 +515,12 @@ public class MobileBaseCadManager {
 	}
 	public void setDHtoCadMap(HashMap<DHParameterKinematics, ArrayList<CSG>> dHtoCadMap) {
 		DHtoCadMap = dHtoCadMap;
+	}
+	public HashMap<LinkConfiguration, ArrayList<CSG>> getLinktoCadMap() {
+		return LinktoCadMap;
+	}
+	public void setLinktoCadMap(HashMap<LinkConfiguration, ArrayList<CSG>> linktoCadMap) {
+		LinktoCadMap = linktoCadMap;
 	}
 
 
