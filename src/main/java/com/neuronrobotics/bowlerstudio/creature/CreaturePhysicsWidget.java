@@ -172,13 +172,13 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 	}
 	@Override
 	public void onIMUUpdate(IMUUpdate arg0) {
-		System.err.println("X = "+arg0.getxAcceleration()+
-				" Y = "+arg0.getyAcceleration()+
-				" Z = "+arg0.getzAcceleration()+
-				" rX = "+arg0.getRotxAcceleration()+
-				" rY = "+arg0.getRotyAcceleration()+
-				" rZ = "+arg0.getRotzAcceleration()
-		
-				);
+//		System.err.println("X = "+arg0.getxAcceleration()+
+//				" Y = "+arg0.getyAcceleration()+
+//				" Z = "+arg0.getzAcceleration()+
+//				" rX = "+arg0.getRotxAcceleration()+
+//				" rY = "+arg0.getRotyAcceleration()+
+//				" rZ = "+arg0.getRotzAcceleration()
+//		
+//				);
 	}
 }
