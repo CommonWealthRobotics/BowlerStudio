@@ -296,7 +296,7 @@ public class BowlerStudioModularFrame {
 		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab")){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
 			Platform.runLater(() -> {
-				creatureLab3dDockNode.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
+				creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
 				creatureLab3dDockNode.requestFocus();
 				creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
