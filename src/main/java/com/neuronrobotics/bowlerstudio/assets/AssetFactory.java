@@ -26,10 +26,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 public class AssetFactory {
-	private static final String repo = "BowlerStudioImageAssets";
+	public static final String repo = "BowlerStudioImageAssets";
 	private static String gitSource = "https://github.com/madhephaestus/"+repo+".git"; //madhephaestus
 	private static HashMap<String , Image> cache =new HashMap<>();
 	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
+	private static String assetRepoBranch = "master";
 	private static boolean checked =false;
 	static{
 
@@ -61,9 +62,11 @@ public class AssetFactory {
 	}
 	
 	public static File loadFile(String file) throws Exception {
+		
 		return ScriptingEngine
 		.fileFromGit(
 				getGitSource(),// git repo, change this if you fork this demo
+				getAssetRepoBranch(),
 				file// File from within the Git repo
 		);
 	}
@@ -132,32 +135,24 @@ public class AssetFactory {
 	}
 	
 	public static String getGitSource() throws Exception {
-		if(BowlerStudio.hasNetwork())
-		if(!checked && ScriptingEngine.getCreds().exists()){
-			checked=true;
-			ScriptingEngine.setAutoupdate(true);
-			org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
-			GHMyself self = github.getMyself();
-			Map<String, GHRepository> myPublic = self.getAllRepositories();
-			for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
-				if(entry.getKey().contentEquals(repo)){
-					GHRepository ghrepo= entry.getValue();
-					String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
-					System.out.println("Using my version of assets: "+myAssets);
-					setGitSource(myAssets);
-				}
-			}
-		}
+
 		return gitSource;
 	}
-	public static void setGitSource(String gitSource) throws Exception {
-		loadAllAssets();
+	public static void setGitSource(String gitSource,String assetRepoBranch) throws Exception {
+		setAssetRepoBranch( assetRepoBranch);
 		AssetFactory.gitSource = gitSource;
+		loadAllAssets();
 	}
 	private static void loadAllAssets() throws Exception{
 		ArrayList<String> files = ScriptingEngine.filesInGit(gitSource);
 		for(String file:files){
 			loadAsset(file);
 		}
+	}
+	public static String getAssetRepoBranch() {
+		return assetRepoBranch;
+	}
+	public static void setAssetRepoBranch(String assetRepoBranch) {
+		AssetFactory.assetRepoBranch = assetRepoBranch;
 	}
 }

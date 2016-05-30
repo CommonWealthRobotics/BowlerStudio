@@ -7,8 +7,12 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.UIManager;
+
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHRepository;
 
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -138,6 +142,29 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
+				String myAssets =AssetFactory.getGitSource();
+				if(BowlerStudio.hasNetwork()){
+						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
+						GHMyself self = github.getMyself();
+						Map<String, GHRepository> myPublic = self.getAllRepositories();
+						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
+							if(entry.getKey().contentEquals(AssetFactory.repo)){
+								GHRepository ghrepo= entry.getValue();
+								myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
+								System.err.println("Using my version of assets: "+myAssets);
+								
+							}
+						
+						}
+						
+				}
+				AssetFactory.setGitSource(
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+								myAssets),
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+								"master")
+						);
+				
 			}else
 				ScriptingEngine.setupAnyonmous();
 			// Download and Load all of the assets
