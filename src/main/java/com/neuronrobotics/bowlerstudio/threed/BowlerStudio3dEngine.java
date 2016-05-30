@@ -1059,7 +1059,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		return selectedCsg;
 	}
 
-	public synchronized void  setSelectedCsg(CSG selectedCsg) {
+	public  void  setSelectedCsg(CSG selectedCsg) {
 		if(selectedCsg == this.selectedCsg)
 			return;
 		cancelSelection();
@@ -1092,11 +1092,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			poseToMove.translateZ(zcenter);
 		}
 		Affine centering = TransformFactory.nrToAffine(poseToMove);
-		TransformNR reverseRotationa =TransformFactory.affineToNr(selectedCsg.getManipulator());
-		reverseRotationa.setX(0);
-		reverseRotationa.setY(0);
-		reverseRotationa.setZ(0);
-		TransformNR reverseRotation=reverseRotationa.inverse();
+		//this section keeps the camera orented the same way to avoid whipping around
+		TransformNR rotationOnlyCOmponentOfManipulator =TransformFactory.affineToNr(selectedCsg.getManipulator());
+		rotationOnlyCOmponentOfManipulator.setX(0);
+		rotationOnlyCOmponentOfManipulator.setY(0);
+		rotationOnlyCOmponentOfManipulator.setZ(0);
+		TransformNR reverseRotation=rotationOnlyCOmponentOfManipulator.inverse();
 	
 		Platform.runLater(()->{
 			focusGroup.getTransforms().clear();

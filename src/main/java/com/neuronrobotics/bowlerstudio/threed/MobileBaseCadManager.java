@@ -132,8 +132,8 @@ public class MobileBaseCadManager {
 		
 		
 		MobileBase device = base;
-		if(BasetoCadMap.get(device)==null){
-			BasetoCadMap.put(device, new ArrayList<CSG>());
+		if(getBasetoCadMap().get(device)==null){
+			getBasetoCadMap().put(device, new ArrayList<CSG>());
 		}
 		
 		if (cadEngine == null) {
@@ -155,7 +155,7 @@ public class MobileBaseCadManager {
 			getAllCad().clear();
 			if(showingStl){
 				//skip the regen
-				for(CSG c:BasetoCadMap.get(device)){
+				for(CSG c:getBasetoCadMap().get(device)){
 					baseCad=c;
 					getAllCad().add(c);	
 				}
@@ -167,7 +167,7 @@ public class MobileBaseCadManager {
 					}
 				}else
 					new Exception().printStackTrace();
-				ArrayList<CSG> arrayList = BasetoCadMap.get(device);
+				ArrayList<CSG> arrayList = getBasetoCadMap().get(device);
 				arrayList.clear();
 				baseCad=null;//clear the unioned version too
 				for(CSG c:getAllCad()){
@@ -183,17 +183,17 @@ public class MobileBaseCadManager {
 		System.out.println("Displaying Body");
 		getProcesIndictor().setProgress(0.35);
 		// clears old robot and places base
-		BowlerStudioController.setCsg(BasetoCadMap.get(device),getCadScript());
+		BowlerStudioController.setCsg(getBasetoCadMap().get(device),getCadScript());
 		System.out.println("Rendering limbs");
 		getProcesIndictor().setProgress(0.4);
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
 		double i = 0;
 		for (DHParameterKinematics l : limbs) {
-			if(DHtoCadMap.get(l)==null){
-				DHtoCadMap.put(l, new ArrayList<CSG>());
+			if(getDHtoCadMap().get(l)==null){
+				getDHtoCadMap().put(l, new ArrayList<CSG>());
 			}
-			ArrayList<CSG> arrayList = DHtoCadMap.get(l);
+			ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
 			if(showingStl || !device.isAvailable()){
 				for (CSG csg : arrayList) {
 					getAllCad().add(csg);
@@ -202,7 +202,9 @@ public class MobileBaseCadManager {
 			}else{
 				
 				arrayList.clear();
-				for (CSG csg : generateCad(l)) {
+				ArrayList<CSG> linksCad = generateCad(l);
+				
+				for (CSG csg : linksCad) {
 					getAllCad().add(csg);
 					arrayList.add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
@@ -243,7 +245,7 @@ public class MobileBaseCadManager {
 			
 			CSG legAssembly=null;
 			DHParameterKinematics l = limbs.get(i);
-			for (CSG csg : DHtoCadMap.get(l)) {
+			for (CSG csg : getDHtoCadMap().get(l)) {
 				csg = csg.prepForManufacturing();
 				if(legAssembly==null)
 					legAssembly=csg;
@@ -278,7 +280,7 @@ public class MobileBaseCadManager {
 		
 		int link = 0;
 		// now we genrate the base pieces
-		for (CSG csg : BasetoCadMap.get(base)) {
+		for (CSG csg : getBasetoCadMap().get(base)) {
 			csg=csg
 					.prepForManufacturing()
 					.toYMin()
@@ -512,6 +514,18 @@ public class MobileBaseCadManager {
 	}
 	public void setProcesIndictor(ProgressIndicator pi) {
 		this.pi = pi;
+	}
+	public HashMap<MobileBase, ArrayList<CSG>> getBasetoCadMap() {
+		return BasetoCadMap;
+	}
+	public void setBasetoCadMap(HashMap<MobileBase, ArrayList<CSG>> basetoCadMap) {
+		BasetoCadMap = basetoCadMap;
+	}
+	public HashMap<DHParameterKinematics, ArrayList<CSG>> getDHtoCadMap() {
+		return DHtoCadMap;
+	}
+	public void setDHtoCadMap(HashMap<DHParameterKinematics, ArrayList<CSG>> dHtoCadMap) {
+		DHtoCadMap = dHtoCadMap;
 	}
 
 

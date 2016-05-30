@@ -57,11 +57,22 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import eu.mihosoft.vrl.v3d.CSG;
+
 public class MobleBaseMenueFactory {
 
 	private MobleBaseMenueFactory() {
 	}
-
+	
+	public static void select(MobileBase base){
+		CSG csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base).get(0);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+	}
+	public static void select(MobileBase base,DHParameterKinematics limb){
+		CSG csg = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb).get(0);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -515,7 +526,7 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 lsw.setGameController(controller); 
 			 }
-			
+			 select( base, dh);
 			// activate controller
 		});
 
@@ -652,6 +663,7 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 widget.setGameController(controller); 
 			 }
+			 select( base, dh);
 			
 		});
 

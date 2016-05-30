@@ -121,8 +121,8 @@ public class BowlerStudioModularFrame {
 //			newtab.setClosable(false);
 //			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 			String homeURL = Tutorial.getHomeUrl();
-			jfx3dmanager = new BowlerStudio3dEngine();
-			controller = new BowlerStudioController(jfx3dmanager);
+			setJfx3dmanager(new BowlerStudio3dEngine());
+			controller = new BowlerStudioController(getJfx3dmanager());
 			WebTab.setController(controller);
 
 			WebTab webtab = null;
@@ -166,7 +166,7 @@ public class BowlerStudioModularFrame {
 			DockPane.initializeDefaultUserAgentStylesheet();
 			FXMLLoader WindowLoader3d;
 			WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
-			creatureLab3dController = new CreatureLab3dController(jfx3dmanager);
+			creatureLab3dController = new CreatureLab3dController(getJfx3dmanager());
 			BowlerStudio.setCreatureLab3d(creatureLab3dController);
 			WindowLoader3d.setController(creatureLab3dController);
 			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
@@ -387,6 +387,14 @@ public class BowlerStudioModularFrame {
 		// TODO Auto-generated method stub
 		if(webTabs.get(tab)!=null)
 			Platform.runLater(() -> webTabs.get(tab).requestFocus());
+	}
+
+	public BowlerStudio3dEngine getJfx3dmanager() {
+		return jfx3dmanager;
+	}
+
+	public void setJfx3dmanager(BowlerStudio3dEngine jfx3dmanager) {
+		this.jfx3dmanager = jfx3dmanager;
 	}
 
 }

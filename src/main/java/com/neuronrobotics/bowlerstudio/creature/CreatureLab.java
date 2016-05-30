@@ -168,7 +168,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 								Platform.runLater(() -> {
 									controls.getChildren().clear();
 								});
-								
+								MobleBaseMenueFactory.select(device);
 								walkWidget.setGameController(getController());
 							}
 						}
