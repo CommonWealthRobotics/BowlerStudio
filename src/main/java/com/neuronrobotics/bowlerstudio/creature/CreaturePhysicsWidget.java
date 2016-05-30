@@ -13,6 +13,8 @@ import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
+import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdateListener;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
@@ -24,7 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-public class CreaturePhysicsWidget extends GridPane {
+public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListener {
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
 	Button pauseresume = new Button("Pause", AssetFactory.loadIcon("Pause.png"));
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
@@ -35,8 +37,11 @@ public class CreaturePhysicsWidget extends GridPane {
 	private boolean pause=false;
 	Thread physicsThread =null;
 	private Set<CSG> oldParts=null;
+	private MobileBase base;
+
 	public CreaturePhysicsWidget(MobileBase base){
 
+		this.base = base;
 		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
 			
 			@Override
@@ -83,7 +88,10 @@ public class CreaturePhysicsWidget extends GridPane {
 				runstop.setText("Stop");
 				msLoopTime.setDisable(true);
 				pauseresume.setDisable(false);
+				base.getImu().addvirtualListeners(this);
 				new Thread(){
+					
+
 					public void run(){
 						while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
 							ThreadUtil.wait(1000);
@@ -97,6 +105,7 @@ public class CreaturePhysicsWidget extends GridPane {
 						oldParts = threeD.getCsgMap().keySet();
 						BowlerStudioController.setCsg(PhysicsEngine.getCsgFromEngine());
 						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
+						
 						physicsThread = new Thread(){
 							public void run(){
 								try{
@@ -141,6 +150,7 @@ public class CreaturePhysicsWidget extends GridPane {
 			BowlerStudioController.setCsg(oldp);
 			oldParts=null;
 		}
+		base.getImu().removevirtualListeners(this);
 	}
 	public boolean isTakestep() {
 		return takestep;
@@ -159,5 +169,16 @@ public class CreaturePhysicsWidget extends GridPane {
 	}
 	public void setRun(boolean run) {
 		this.run = run;
+	}
+	@Override
+	public void onIMUUpdate(IMUUpdate arg0) {
+		System.err.println("X = "+arg0.getxAcceleration()+
+				" Y = "+arg0.getyAcceleration()+
+				" Z = "+arg0.getzAcceleration()+
+				" rX = "+arg0.getRotxAcceleration()+
+				" rY = "+arg0.getRotyAcceleration()+
+				" rZ = "+arg0.getRotzAcceleration()
+		
+				);
 	}
 }
