@@ -1059,7 +1059,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		return selectedCsg;
 	}
 
-	public void setSelectedCsg(CSG selectedCsg) {
+	public synchronized void  setSelectedCsg(CSG selectedCsg) {
+		if(selectedCsg == this.selectedCsg)
+			return;
 		cancelSelection();
 
 		this.selectedCsg = selectedCsg;
@@ -1091,17 +1093,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		Affine centering = TransformFactory.nrToAffine(poseToMove);
 		TransformNR reverseRotationa =TransformFactory.affineToNr(selectedCsg.getManipulator());
+		reverseRotationa.setX(0);
+		reverseRotationa.setY(0);
+		reverseRotationa.setZ(0);
 		TransformNR reverseRotation=reverseRotationa.inverse();
-		reverseRotation.setX(0);
-		reverseRotation.setY(0);
-		reverseRotation.setZ(0);
+	
 		Platform.runLater(()->{
-			if(		Math.abs(reverseRotationa.getX())>0.1 ||
-					Math.abs(reverseRotationa.getY())>0.1||
-					Math.abs(reverseRotationa.getZ())>0.1){
+			focusGroup.getTransforms().clear();
+			if(		Math.abs(selectedCsg.getManipulator().getTx())>0.1 ||
+					Math.abs(selectedCsg.getManipulator().getTy())>0.1||
+					Math.abs(selectedCsg.getManipulator().getTz())>0.1){
 				Platform.runLater(()->{
 					focusGroup.getTransforms().add(selectedCsg.getManipulator());
-						Platform.runLater(()->focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation)));
+					focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation));
 				});
 			}else
 				focusGroup.getTransforms().add(centering);
