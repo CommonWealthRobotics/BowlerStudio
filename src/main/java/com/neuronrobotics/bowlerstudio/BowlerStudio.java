@@ -164,6 +164,9 @@ public class BowlerStudio extends Application {
 						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 								"master")
 						);
+				// to set a new repo
+				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
 				
 			}else
 				ScriptingEngine.setupAnyonmous();
