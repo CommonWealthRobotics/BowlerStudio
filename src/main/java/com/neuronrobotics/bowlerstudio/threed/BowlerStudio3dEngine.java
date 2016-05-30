@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -255,6 +256,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private ArrayList<String> debuggerList=new ArrayList<>();
 	private CSG selectedCsg=null;
 	double color=0;
+
+	private List<CSG> selectedSet=null;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -809,11 +812,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	private void cancelSelection() {
 		focusGroup.getTransforms().clear();
-		CSG old = getSelectedCsg();
-		if(old!=null){
+		for(CSG key:getCsgMap().keySet()){
 			
-			Platform.runLater(()->getCsgMap().get(old).setMaterial(new PhongMaterial(old.getColor())));
+			Platform.runLater(()->getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
+
+		selectedSet=null;
 		this.selectedCsg=null;
 	}
 	
@@ -1058,7 +1062,21 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public CSG getSelectedCsg() {
 		return selectedCsg;
 	}
-
+	public  void  setSelectedCsg(List<CSG> selectedCsg){
+		selectedSet = selectedCsg;
+		setSelectedCsg(selectedCsg.get(0));
+		for(int in=1;in<selectedCsg.size();in++){
+			int i=in;
+			Platform.runLater(()->{
+				getCsgMap().get(selectedCsg.get(i)).setMaterial(new PhongMaterial(new Color(
+					1,
+					(selectedCsg.get(i).getColor().getGreen())*0.6,
+					(selectedCsg.get(i).getColor().getBlue())*0.6,
+					selectedCsg.get(i).getColor().getOpacity())));
+			});
+			
+		}
+	}
 	public  void  setSelectedCsg(CSG selectedCsg) {
 		if(selectedCsg == this.selectedCsg)
 			return;

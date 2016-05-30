@@ -65,18 +65,18 @@ public class MobleBaseMenueFactory {
 	}
 	
 	public static void select(MobileBase base){
-		CSG csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base).get(0);
+		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
 	}
 	public static void select(MobileBase base,DHParameterKinematics limb){
 		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
-		CSG csg = limCad.get(limCad.size()-1);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+	
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 	public static void select(MobileBase base,LinkConfiguration limb){
 		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
-		CSG csg = limCad.get(limCad.size()-1);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
