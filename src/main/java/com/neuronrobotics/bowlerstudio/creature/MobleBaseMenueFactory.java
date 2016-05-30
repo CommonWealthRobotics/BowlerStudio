@@ -69,7 +69,8 @@ public class MobleBaseMenueFactory {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
 	}
 	public static void select(MobileBase base,DHParameterKinematics limb){
-		CSG csg = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb).get(0);
+		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
+		CSG csg = limCad.get(limCad.size()-1);
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
 	}
 	
