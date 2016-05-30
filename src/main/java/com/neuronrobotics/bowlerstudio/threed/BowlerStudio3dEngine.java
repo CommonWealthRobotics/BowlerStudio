@@ -810,8 +810,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 	}
 	
-	private void cancelSelection() {
-		focusGroup.getTransforms().clear();
+	public void cancelSelection() {
+		Platform.runLater(()->focusGroup.getTransforms().clear());
 		for(CSG key:getCsgMap().keySet()){
 			
 			Platform.runLater(()->getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
@@ -819,6 +819,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		selectedSet=null;
 		this.selectedCsg=null;
+		//new Exception().printStackTrace();
 	}
 	
 
@@ -964,10 +965,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		    	
 		}
 		debuggerIndex = debuggerList.size()-1;
-		Platform.runLater(()->{
-			fwd.disableProperty().set(false);
-			back.disableProperty().set(true);
-		});
+//		Platform.runLater(()->{
+//			fwd.disableProperty().set(false);
+//			back.disableProperty().set(true);
+//		});
 	    
 	}
 	
@@ -1063,16 +1064,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		return selectedCsg;
 	}
 	public  void  setSelectedCsg(List<CSG> selectedCsg){
+		//System.err.println("Selecting group");
 		selectedSet = selectedCsg;
-		setSelectedCsg(selectedCsg.get(0));
+		//setSelectedCsg(selectedCsg.get(0));
 		for(int in=1;in<selectedCsg.size();in++){
 			int i=in;
-			Platform.runLater(()->{
-				getCsgMap().get(selectedCsg.get(i)).setMaterial(new PhongMaterial(new Color(
-					1,
-					(selectedCsg.get(i).getColor().getGreen())*0.6,
-					(selectedCsg.get(i).getColor().getBlue())*0.6,
-					selectedCsg.get(i).getColor().getOpacity())));
+			MeshView mesh = getCsgMap().get(selectedCsg.get(i));
+			if(mesh!=null)
+				FxTimer.runLater(
+				        java.time.Duration.ofMillis(50),
+				        
+			()->{
+//				mesh.setMaterial(new PhongMaterial(new Color(
+//					1,
+//					(selectedCsg.get(i).getColor().getGreen())*0.6,
+//					(selectedCsg.get(i).getColor().getBlue())*0.6,
+//					selectedCsg.get(i).getColor().getOpacity())));
+				mesh.setMaterial(new PhongMaterial(Color.GOLD));
 			});
 			
 		}
@@ -1080,17 +1088,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public  void  setSelectedCsg(CSG selectedCsg) {
 		if(selectedCsg == this.selectedCsg)
 			return;
+		
 		cancelSelection();
-
+		System.err.println("Selecting one");
 		this.selectedCsg = selectedCsg;
-		Platform.runLater(()->{
-			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(new Color(
-				1,
-				(selectedCsg.getColor().getGreen())*0.6,
-				(selectedCsg.getColor().getBlue())*0.6,
-				selectedCsg.getColor().getOpacity())));
+		
+		FxTimer.runLater(
+			        java.time.Duration.ofMillis(50),
+			        
+		()->{
+			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 		});
-		System.out.println("Selecting "+selectedCsg);
+		//System.out.println("Selecting "+selectedCsg);
 		double xcenter = selectedCsg.getMaxX()/2+selectedCsg.getMinX()/2;
 		double ycenter = selectedCsg.getMaxY()/2+selectedCsg.getMinY()/2;
 		double zcenter = selectedCsg.getMaxZ()/2+selectedCsg.getMinZ()/2;
@@ -1138,5 +1147,47 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public void setCsgMap(HashMap<CSG,MeshView> csgMap) {
 		this.csgMap = csgMap;
+	}
+
+	public void setSelectedCsg(File script, int lineNumber) {
+		
+		ArrayList<CSG> objsFromScriptLine = new ArrayList<>();	
+		//check all visable CSGs
+		for(CSG checker:getCsgMap().keySet()){
+			for (String trace:checker.getCreationEventStackTraceList()){
+				String[] traceParts = trace.split(":");
+				//System.err.println("Seeking: "+script.getName()+" line= "+lineNumber+" checking from line: "+trace);
+				//System.err.println("TraceParts "+traceParts[0]+" and "+traceParts[1]);
+				if(traceParts[0]
+						.trim()
+						.toLowerCase()
+						.contains(
+								script
+								.getName()
+								.toLowerCase()
+								.trim()
+								)
+						)
+				{
+					//System.out.println("Script matches");
+					try{
+						int num = Integer.parseInt(traceParts[1].trim());
+						
+						if (num ==lineNumber ){
+							//System.out.println("MATCH");
+							objsFromScriptLine.add(checker);
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		if(objsFromScriptLine.size()>0){
+			cancelSelection();
+			setSelectedCsg(objsFromScriptLine.get(0));
+			focusGroup.getTransforms().clear();
+			setSelectedCsg(objsFromScriptLine);
+		}
 	}
 }

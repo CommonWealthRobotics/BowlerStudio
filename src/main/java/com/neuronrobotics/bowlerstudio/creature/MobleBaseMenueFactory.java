@@ -64,20 +64,10 @@ public class MobleBaseMenueFactory {
 	private MobleBaseMenueFactory() {
 	}
 	
-	public static void select(MobileBase base){
-		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
-	}
-	public static void select(MobileBase base,DHParameterKinematics limb){
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
 	
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-	}
-	public static void select(MobileBase base,LinkConfiguration limb){
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+	
 
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-	}
+	
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -509,7 +499,7 @@ public class MobleBaseMenueFactory {
 				// first time
 				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory)));
 			}
-			select( base,conf);
+			BowlerStudio.select( base,conf);
 		});
 		rootItem.getChildren().add(hwConf);
 	}
@@ -532,7 +522,7 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 lsw.setGameController(controller); 
 			 }
-			 select( base,conf);
+			 BowlerStudio.select( base,conf);
 			 //select( base, dh);
 			// activate controller
 		});
@@ -637,7 +627,7 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
-			select( base,conf);
+			BowlerStudio.select( base,conf);
 		});
 
 		link.getChildren().addAll(design);
@@ -671,7 +661,7 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 widget.setGameController(controller); 
 			 }
-			 select( base, dh);
+			 BowlerStudio.select( base, dh);
 			
 		});
 

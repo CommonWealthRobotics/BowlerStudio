@@ -31,6 +31,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -59,6 +61,7 @@ import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.stage.WindowHelper;
 import com.sun.javafx.tk.TKStage;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -86,7 +89,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private HighlightPainter painter;
 	private int pos = 0;
-
+	private int lineSelected=0;
 	private class MySwingNode extends SwingNode{
 	    /**
 	     * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
@@ -160,6 +163,42 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	        	}.start();
 	        }
 	    });
+		textArea.addCaretListener(new CaretListener() {
+			
+			@Override
+			public void caretUpdate(CaretEvent e) {
+
+                // Lets start with some default values for the line and column.
+                int linenum = 1;
+                int columnnum = 1;
+
+                // We create a try catch to catch any exceptions. We will simply ignore such an error for our demonstration.
+                try {
+                    // First we find the position of the caret. This is the number of where the caret is in relation to the start of the JTextArea
+                    // in the upper left corner. We use this position to find offset values (eg what line we are on for the given position as well as
+                    // what position that line starts on.
+                    int caretpos = textArea.getCaretPosition();
+                    linenum = textArea.getLineOfOffset(caretpos);
+
+                    // We subtract the offset of where our line starts from the overall caret position.
+                    // So lets say that we are on line 5 and that line starts at caret position 100, if our caret position is currently 106
+                    // we know that we must be on column 6 of line 5.
+                    columnnum = caretpos - textArea.getLineStartOffset(linenum);
+
+                    // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
+                    linenum += 1;
+                }
+                catch(Exception ex) { }
+                if(lineSelected!=linenum){
+                	lineSelected = linenum;
+                	//System.err.println("Select "+lineSelected);
+                	BowlerStudio.select(file, lineSelected);
+                	
+                }
+
+            }
+			
+		});
 		
 		textArea.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
