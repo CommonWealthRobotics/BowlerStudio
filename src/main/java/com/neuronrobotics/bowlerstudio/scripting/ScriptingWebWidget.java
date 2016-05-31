@@ -193,12 +193,20 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	    				GHGist newGist;
 						try {
 							newGist = ScriptingEngine.fork(currentGist);
-		    				String webURL = newGist.getHtmlUrl();
-		    				try {
-								BowlerStudio.openUrlInNewTab(new URL(webURL));
-							} catch (MalformedURLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							Map<String, GHGistFile> fileMap = newGist.getFiles();
+							if(fileMap.size()==1){
+								String filename = (String) fileMap.keySet().toArray()[0];
+								String url =newGist.getGitPullUrl();
+								File file = ScriptingEngine.fileFromGit(url, filename);
+								BowlerStudio.createFileTab(file);
+							}else{
+			    				String webURL = newGist.getHtmlUrl();
+			    				try {
+									BowlerStudio.openUrlInNewTab(new URL(webURL));
+								} catch (MalformedURLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						} catch (Exception e1) {
 							BowlerStudioController.highlightException(currentFile, e1);
