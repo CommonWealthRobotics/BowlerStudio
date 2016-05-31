@@ -139,6 +139,7 @@ public class AssetFactory {
 		return gitSource;
 	}
 	public static void setGitSource(String gitSource,String assetRepoBranch) throws Exception {
+		System.err.println("Using my version of assets: "+gitSource+":"+assetRepoBranch);
 		setAssetRepoBranch( assetRepoBranch);
 		AssetFactory.gitSource = gitSource;
 		loadAllAssets();

@@ -151,7 +151,7 @@ public class BowlerStudio extends Application {
 							if(entry.getKey().contentEquals(AssetFactory.repo)){
 								GHRepository ghrepo= entry.getValue();
 								myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
-								System.err.println("Using my version of assets: "+myAssets);
+								
 								
 							}
 						
@@ -164,6 +164,7 @@ public class BowlerStudio extends Application {
 						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 								"master")
 						);
+				
 				// to set a new repo
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
@@ -173,6 +174,10 @@ public class BowlerStudio extends Application {
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
+			//load the vitimins repo so the demo is always snappy
+			ScriptingEngine.fileFromGit(
+					"https://github.com/NeuronRobotics/BowlerStudioVitamins.git", 
+					"BowlerStudioVitamins/stl/servo/smallservo.stl");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
 					"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
