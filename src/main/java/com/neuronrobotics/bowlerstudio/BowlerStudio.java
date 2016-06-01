@@ -244,11 +244,21 @@ public class BowlerStudio extends Application {
 	}
 
 	
-
+	/**
+	* @author Sainath 
+	* @version 1.0
+	* @param URL url - The URL of the tab that needs to be opened
+	* @return None
+	*/
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
 	}
-
+	/**
+	* @author Sainath 
+	* @version 1.0
+	* @param String msg - message that needs to be spoken
+	* @return an integer
+	*/
 	public static int speak(String msg) {
 
 		return BowlerKernel.speak(msg);
