@@ -9,6 +9,12 @@
 /.project
 /.classpath
 /.settings*
+/.idea*
 
 /build/
 /whitecylinder/
+*.iml
+/CSGdatabase.json
+/jbullet-20101010/
+/.DS_Store
+*hs_err_pid*.log*

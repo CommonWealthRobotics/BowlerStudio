@@ -6,8 +6,8 @@ import java.util.List;
 import javax.swing.JPanel;
 
 public abstract class SettingsPanel extends JPanel {
-private ArrayList<MachineSetting> settings = new ArrayList<MachineSetting>();
-private List<SettingsChangeListener> listeners = new ArrayList<SettingsChangeListener>();
+private ArrayList<MachineSetting> settings = new ArrayList<>();
+private List<SettingsChangeListener> listeners = new ArrayList<>();
 
 
 

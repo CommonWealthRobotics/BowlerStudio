@@ -25,11 +25,9 @@ public class IntegerComboBox extends JComboBox{
 		for(int i=0;i<getItemCount();i++){
 			try{
 				Integer selected = (Integer)( getItemAt(i));
-				if(selected != null){
-					if(selected.intValue() == in){
-						removeItemAt(i);
-						return;
-					}
+				if(selected != null && selected.intValue() == in){
+					removeItemAt(i);
+					return;
 				}
 			}catch(ClassCastException ex){
 				//ingnore the None case
@@ -41,10 +39,8 @@ public class IntegerComboBox extends JComboBox{
 		for(int i=0;i<getItemCount();i++){
 			try{
 				Integer selected = (Integer)( getItemAt(i));
-				if(selected != null){
-					if(selected.intValue() == in){
-						return;
-					}
+				if(selected != null && selected.intValue() == in){
+					return;
 				}
 			}catch(ClassCastException ex){
 				//ingnore the None case
@@ -68,11 +64,9 @@ public class IntegerComboBox extends JComboBox{
 		for(int i=0;i<getItemCount();i++){
 			try{
 				Integer selected = (Integer)( getItemAt(i));
-				if(selected != null){
-					if(selected.intValue() == in){
-						setSelectedItem(getItemAt(i));
-						return;
-					}
+				if(selected != null && selected.intValue() == in){
+					setSelectedItem(getItemAt(i));
+					return;
 				}
 			}catch(ClassCastException ex){
 				//ignore

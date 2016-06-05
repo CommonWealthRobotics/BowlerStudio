@@ -57,6 +57,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -94,8 +95,8 @@ import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.MainController;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
@@ -124,7 +125,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private Object scriptResult;
 	private String codeText="";
 
-	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");;
 	private Button edit = new Button("Edit...");
@@ -135,19 +136,27 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private ScriptingWidgetType type;
 	
-	final ComboBox<String> fileListBox = new ComboBox<String>();
+	final ComboBox<String> fileListBox = new ComboBox<>();
 	private File currentFile = null;
 
 	private HBox controlPane;
 	private String currentGist;
 	private boolean isOwnedByLoggedInUser;
+	private ImageView image=new ImageView();
 
 	
 	public ScriptingWebWidget(File currentFile, String currentGist,
 			WebEngine engine) throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
+		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
+		edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
 		this.currentFile = currentFile;
-		loadCodeFromGist(currentGist, engine);
+		try {
+			loadCodeFromGist(currentGist, engine);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
@@ -181,14 +190,28 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	    			else{
 	    				// todo fork git repo
 	    				System.out.println("Making Fork...");
-	    				GHGist newGist = ScriptingEngine.fork(currentGist);
-	    				String webURL = newGist.getHtmlUrl();
-	    				try {
-							BowlerStudio.openUrlInNewTab(new URL(webURL));
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+	    				GHGist newGist;
+						try {
+							newGist = ScriptingEngine.fork(currentGist);
+							Map<String, GHGistFile> fileMap = newGist.getFiles();
+							if(fileMap.size()==1){
+								String filename = (String) fileMap.keySet().toArray()[0];
+								String url =newGist.getGitPullUrl();
+								File file = ScriptingEngine.fileFromGit(url, filename);
+								BowlerStudio.createFileTab(file);
+							}else{
+			    				String webURL = newGist.getHtmlUrl();
+			    				try {
+									BowlerStudio.openUrlInNewTab(new URL(webURL));
+								} catch (MalformedURLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						} catch (Exception e1) {
+							BowlerStudioController.highlightException(currentFile, e1);
 						}
+
 	    			}
 	    					
 	    		}
@@ -198,33 +221,15 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		
 
 
-		// String ctrlSave = "CTRL Save";
-//		fileLabel.setOnMouseEntered(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getAbsolutePath());
-//			});
-//		});
-//
-//		fileLabel.setOnMouseExited(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getName());
-//			});
-//		});
-
-
-		// Set up the run controls and the code area
-		// The BorderPane has the same areas laid out as the
-		// BorderLayout layout manager
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
 
 		controlPane.getChildren().add(runfx);
+		controlPane.getChildren().add(image);
 		controlPane.getChildren().add(edit);
-		controlPane.getChildren().add(fileListBox);
 		
+		controlPane.getChildren().add(fileListBox);
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -237,6 +242,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		running = false;
 		Platform.runLater(() -> {
 			runfx.setText("Run");
+			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -286,7 +292,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		//System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = ScriptingEngine.codeFromGistID(id,file);
+			code = ScriptingEngine.codeFromGit("https://gist.github.com/" + id+".git",file);
 			if (code != null) {
 				setCode(code[0]);
 				currentFile = new File(code[2]);
@@ -295,9 +301,18 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(() -> {
 				if(isOwnedByLoggedInUser){
 					edit.setText("Edit...");
-				}else
+					edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
+				}else{
 					edit.setText("Make Copy");
+					edit.setGraphic(AssetFactory.loadIcon("Make-Copy-Script.png"));
+				}
 			});
+			try {
+				image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+			} catch (Exception e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			  StringWriter sw = new StringWriter();
@@ -308,7 +323,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	public void loadCodeFromGist(String a, WebEngine e)
-			throws IOException, InterruptedException {
+			throws Exception {
 		//new Thread(()->{
 			addr = a;
 			engine = e;
@@ -318,16 +333,16 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(()->edit.setDisable(true));
 			Platform.runLater(()->fileListBox.getItems().clear());
 			List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
-			if(gists.size()>0)
+			if(!gists.isEmpty())
 				currentGist = gists.get(0);
 			else
 				return;
 			
-			ArrayList<String> fileList = ScriptingEngine.filesInGist(currentGist);
+			ArrayList<String> fileList = ScriptingEngine.filesInGit("https://gist.github.com/" + currentGist+".git");
 //			for(String s:fileList){
 //				System.out.println("GITS: "+s);
 //			}
-			if(fileList.size()>0)
+			if(!fileList.isEmpty())
 				loadGistLocal(currentGist, fileList.get(0));
 			
 			Platform.runLater(()->{
@@ -335,7 +350,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				for(String s:fileList){
 					fileListBox.getItems().add(s);
 				}
-				if(fileList.size()>0){
+				if(!fileList.isEmpty()){
 					fileListBox.setValue(fileList.get(0));
 					fileListBox.valueProperty().addListener(this);
 					Platform.runLater(()->runfx.setDisable(false));
@@ -349,10 +364,17 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 
 	private void start() {
-
+		BowlerStudio.clearConsole();
+		try {
+			ScriptingEngine.setAutoupdate(true);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");
+			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -366,7 +388,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					name="";
 				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
+					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.getShellType(name));
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}

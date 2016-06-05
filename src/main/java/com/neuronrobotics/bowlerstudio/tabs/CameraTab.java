@@ -1,14 +1,18 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import haar.HaarFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.opencv.core.CvException;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.Detection;
 import com.neuronrobotics.imageprovider.HaarDetector;
@@ -24,22 +28,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-
-
-public class CameraTab extends AbstractBowlerStudioTab  {
+public class CameraTab extends AbstractBowlerStudioTab {
 	private boolean open = true;
 	private AbstractImageProvider provider;
-	
+
 	private IObjectDetector detector;
-	private ImageView iconsProcessed = new ImageView();;
+	private ImageView iconsProcessed = new ImageView();
 	private List<Detection> data;
 	private Timer timer;
-	private long session []=new long[4];
-	private BufferedImage inputImage = AbstractImageProvider.newBufferImage(640,480);
-	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640,480);
-	//set this variable to make this tab auto open when a device is connected
+	private long session[] = new long[4];
+	private BufferedImage inputImage = AbstractImageProvider.newBufferImage(640, 480);
+	private BufferedImage outImage = AbstractImageProvider.newBufferImage(640, 480);
+	// set this variable to make this tab auto open when a device is connected
 
-	public CameraTab(){}//default construtor
+	public CameraTab() {
+	}// default construtor
+
 	public CameraTab(AbstractImageProvider pr, IObjectDetector dr) {
 		this.provider = pr;
 		this.setDetector(dr);
@@ -59,24 +63,33 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
-		provider = (AbstractImageProvider)pm;
+		setGraphic(AssetFactory.loadIcon("CameraView-Tab.png"));
+		provider = (AbstractImageProvider) pm;
 		setText(pm.getScriptingName());
 		VBox box = new VBox();
 		box.getChildren().add(iconsProcessed);
 		ObservableList<String> options;
 		try {
-			List<String> l = HaarFactory.getAvailibHaar();
+			List<String> l = ScriptingEngine.filesInGit(getHaarRepo());
 			System.err.println(l);
 			options = FXCollections.observableArrayList(l);
 			@SuppressWarnings("unchecked")
-			ComboBox<String> comboBox = new ComboBox<String>(options);
+			ComboBox<String> comboBox = new ComboBox<>(options);
 			comboBox.setOnAction((event) -> {
 				String item = comboBox.getSelectionModel().getSelectedItem();
-			   Log.warning("Setting detector to "+item);
-			   setDetector(new HaarDetector(item));
+				Log.warning("Setting detector to " + item);
+				try {
+					setDetector(new HaarDetector(ScriptingEngine.fileFromGit(getHaarRepo(), item)));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			});
 			box.getChildren().add(comboBox);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -87,76 +100,75 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 		onTabReOpening();
 	}
 
+	private String getHaarRepo() {
+		return "https://github.com/madhephaestus/DefaultHaarCascade.git";
+	}
+
 	@Override
 	public void onTabReOpening() {
 		open = true;
-		for(int i=0;i<session.length;i++){
-			session[i]=System.currentTimeMillis();
+		for (int i = 0; i < session.length; i++) {
+			session[i] = System.currentTimeMillis();
 		}
-		new Thread(){
+		new Thread() {
 			private boolean done;
 
-			public void run(){
-				try{
-					done=true;// startup passes the frame update check
+			public void run() {
+				try {
+					done = true;// startup passes the frame update check
 					while (open && provider.isAvailable()) {
-	
+
 						try {
-							long spacing=System.currentTimeMillis()-session[3];
+							long spacing = System.currentTimeMillis() - session[3];
 							double total = System.currentTimeMillis() - session[0];
-							long capture=session[1]-session[0];
-							long process=session[2]-session[1];
-							long show=session[3]-session[2];
-	
-							
-							if (isSelected()) {
-								System.out.println("Total "+(int)(1/(total/1000.0))+"FPS "+
-										"capture="+capture+"ms "+
-										"process="+process+"ms "+
-										"convert="+show+"ms "+
-										"spacing="+spacing+"ms "
-										);
+							long capture = session[1] - session[0];
+							long process = session[2] - session[1];
+							long show = session[3] - session[2];
+
+							//if (isSelected()) {
+								System.out.println("Total " + (int) (1 / (total / 1000.0)) + "FPS " + "capture="
+										+ capture + "ms " + "process=" + process + "ms " + "convert=" + show + "ms "
+										+ "spacing=" + spacing + "ms ");
 								session[0] = System.currentTimeMillis();
 								provider.getLatestImage(inputImage, outImage); // capture
-								session[1] = System.currentTimeMillis();	   // image
+								session[1] = System.currentTimeMillis(); // image
 								data = getDetector().getObjects(inputImage, outImage);
 								session[2] = System.currentTimeMillis();
-//								if (data.size() > 0)
-//									System.out.println("Got: " + data.size());
-							} else {
-								//System.out.println("idle: ");
-							}
-							Image Img= AbstractImageProvider
-									.getJfxImage(outImage);
+								// if (data.size() > 0)
+								// System.out.println("Got: " + data.size());
+//							} else {
+//								// System.out.println("idle: ");
+//							}
+							Image Img = AbstractImageProvider.getJfxImage(outImage);
 							session[3] = System.currentTimeMillis();
-							//make sure capture never gets ahead of showing
-							while(!done){
+							// make sure capture never gets ahead of showing
+							while (!done) {
 								try {
 									Thread.sleep(1);
 								} catch (InterruptedException e) {
-									done=true;//break the loop
+									done = true;// break the loop
 								}
 							}
-							
+
 							done = false;
 							Platform.runLater(() -> {
-								
-								iconsProcessed.setImage(Img); // show processed image
-								done=true;
+
+								iconsProcessed.setImage(Img); // show processed
+																// image
+								done = true;
 							});
-							
-						
-						} catch (CvException |NullPointerException |IllegalArgumentException e2) {
+
+						} catch (CvException | NullPointerException | IllegalArgumentException e2) {
 							// startup noise
 							// e.printStackTrace();
-							for(int i=0;i<session.length;i++){
-								session[i]=System.currentTimeMillis();
+							for (int i = 0; i < session.length; i++) {
+								session[i] = System.currentTimeMillis();
 							}
 						}
-	
+
 					}
 					System.out.print("\r\nFinished " + getText());
-				}catch(Exception e){
+				} catch (Exception e) {
 					e.printStackTrace(System.out);
 					System.out.println("Camera error, close and open the aplication (blame OpenCV)");
 					throw e;
@@ -166,8 +178,22 @@ public class CameraTab extends AbstractBowlerStudioTab  {
 	}
 
 	public IObjectDetector getDetector() {
-		if(detector==null)
-			setDetector(new HaarDetector());
+		if (detector == null)
+			try {
+				setDetector(new HaarDetector(ScriptingEngine.fileFromGit(getHaarRepo(), "haarcascade_frontalface_default.xml")));
+			} catch (InvalidRemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransportException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return detector;
 	}
 

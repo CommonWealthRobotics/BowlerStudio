@@ -21,16 +21,16 @@ public class AdvancedPIDWidget extends JPanel{
 	private StepLoop looper=null;
 	private SineTrack siner=null;
 	
-	private JTextField loopStart=new JTextField(new Double(0).toString(),5);
-	private JTextField loopMiddle=new JTextField(new Double(100).toString(),5);
-	private JTextField loopEnd=new JTextField(new Double(200).toString(),5);
-	private JTextField loopIterations=new JTextField(new Double(20).toString(),5);
-	private JTextField loopTime=new JTextField(new Double(.5).toString(),5);
+	private JTextField loopStart=new JTextField(Double.toString(0),5);
+	private JTextField loopMiddle=new JTextField(Double.toString(100),5);
+	private JTextField loopEnd=new JTextField(Double.toString(200),5);
+	private JTextField loopIterations=new JTextField(Double.toString(20),5);
+	private JTextField loopTime=new JTextField(Double.toString(.5),5);
 	private JButton  runLoop = new JButton("Run Step Loop");
 	private JButton  stopLoop = new JButton("Stop Loop");
 	private JButton  runSin = new JButton("Run Sin wave");
 	private JButton  jogP = new JButton("Jog+");
-	private JTextField jogV=new JTextField(new Integer(100).toString(),5);
+	private JTextField jogV=new JTextField(Integer.toString(100),5);
 	private JButton  jogM = new JButton("Jog-");
 	
 	public AdvancedPIDWidget(PIDControlWidget pid) {
@@ -79,7 +79,7 @@ public class AdvancedPIDWidget extends JPanel{
 	    runLoop.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double s=0,m=0,e=0,i=0,t=0;
+				double s,m,e,i,t;
 				try{
 					s=Double.parseDouble(loopStart.getText());
 					m=Double.parseDouble(loopMiddle.getText());
@@ -101,7 +101,7 @@ public class AdvancedPIDWidget extends JPanel{
 			@SuppressWarnings("unused")
 			
 			public void actionPerformed(ActionEvent arg0) {
-				double m=0,e=0,i=0,t=0;
+				double m=0,e,i=0,t=0;
 				try{
 					m=Double.parseDouble(loopMiddle.getText());
 					e=Double.parseDouble(loopEnd.getText());

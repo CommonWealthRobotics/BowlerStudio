@@ -1,8 +1,11 @@
 package com.neuronrobotics.nrconsole.plugin.bootloader.gui;
 
+import java.net.MalformedURLException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 
 public class StatusLabel extends JLabel {
@@ -18,13 +21,13 @@ public class StatusLabel extends JLabel {
 	public void setStatus(int status) {
 		switch (status) {
 		case OK:
-			setIcon(createImageIcon("images/ok.png"));
+			setIcon(createImageIcon("dyio/ok.png"));
 			break;
 		case ERROR:
-			setIcon(createImageIcon("images/error.png"));
+			setIcon(createImageIcon("dyio/error.png"));
 			break;
 		default:
-			setIcon(createImageIcon("images/blank.png"));
+			setIcon(createImageIcon("dyio/blank.png"));
 			break;
 		}
 		
@@ -33,12 +36,22 @@ public class StatusLabel extends JLabel {
 	}
 	
 	protected ImageIcon createImageIcon(String path) {
-	    java.net.URL imgURL = BootloaderPanel.class.getResource(path);
-	    if (imgURL != null) {
-	        return new ImageIcon(imgURL);
-	    } else {
-	        System.err.println("Couldn't find file: " + path);
-	        return null;
-	    }
+	    java.net.URL imgURL;
+		try {
+			imgURL = AssetFactory.loadFile(path).toURI().toURL();
+		    if (imgURL != null) 
+		        return new ImageIcon(imgURL);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+        System.err.println("Couldn't find file: " + path);
+        return null;
+
 	}
 }

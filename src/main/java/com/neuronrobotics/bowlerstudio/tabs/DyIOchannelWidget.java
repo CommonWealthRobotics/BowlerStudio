@@ -1,64 +1,41 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-
-
-
-
-
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-
-
-
-
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ShellType;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelEvent;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.dyio.IChannelEventListener;
 import com.neuronrobotics.sdk.dyio.peripherals.ServoChannel;
 
-
-
-
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.scene.chart.Axis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class DyIOchannelWidget {
 	
@@ -70,10 +47,13 @@ public class DyIOchannelWidget {
 		public void changed(ObservableValue<? extends Number> ov,
 				Number old_val, Number new_val) {
 			int newVal = new_val.intValue();
-			chanValue.setText(new Integer(newVal).toString());
-			if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
-				//servo should only set on release when time is defined
-				return;
+			chanValue.setText(Integer.toString(newVal));
+			if(currentMode==DyIOChannelMode.SERVO_OUT ){
+				if(timeSlider.getValue()>.1){
+					//servo should only set on release when time is defined
+					return;
+				}
+				
 			}
 			setLatestValue(newVal);
 			setFireValue(true);
@@ -109,8 +89,8 @@ public class DyIOchannelWidget {
 			this.channel = c;
 			startTime=System.currentTimeMillis();
 			setMode( channel.getMode());
-			Platform.runLater(()->deviceNumber.setText(new Integer(channel.getChannelNumber()).toString()));
-			Platform.runLater(()->chanValue.setText(new Integer(channel.getValue()).toString()));
+			Platform.runLater(()->deviceNumber.setText(Integer.toString(channel.getChannelNumber())));
+			Platform.runLater(()->chanValue.setText(Integer.toString(channel.getValue())));
 			Platform.runLater(()->secondsLabel.setText(String.format("%.2f", 0.0)));
 			Platform.runLater(()->positionSlider.setValue(channel.getValue()));
 			Platform.runLater(()->graphValueAxis.setAnimated(false));
@@ -119,12 +99,14 @@ public class DyIOchannelWidget {
 			
 			positionSlider.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 	
-				chanValue.setText(new Integer((int) positionSlider.getValue()).toString());
+				chanValue.setText(Integer.toString((int) positionSlider.getValue()));
 				if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
 					new Thread(){
 						public void run(){
 							setName("Setting servo Pos");
 							srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+							if(srv.getChannel().getCachedMode())
+								srv.getChannel().flush();
 						}
 					}.start();
 					
@@ -171,10 +153,12 @@ public class DyIOchannelWidget {
 			Data<Integer, Integer> newChart = new XYChart.Data<Integer, Integer>(
 	        		(int) (startTime-System.currentTimeMillis()),
 	        		current);
-			Platform.runLater(()->chanValue.setText(new Integer(current).toString()));
+			Platform.runLater(()->chanValue.setText(Integer.toString(current)));
 				if(!positionSlider.isValueChanging()){// only updae the slider position if the user is not sliding it
-					positionSlider.valueProperty().removeListener(imp);
 					Platform.runLater(()->{
+						if(positionSlider==null)
+							return;
+						positionSlider.valueProperty().removeListener(imp);
 						positionSlider.setValue(current);
 						setLatestValue(current);
 						setFireValue(false);
@@ -282,7 +266,7 @@ public class DyIOchannelWidget {
 							sn.setDisable(true);
 							textArea.setEditable(false);
 						});
-						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptStringRun(textArea.getText(), null, ShellType.GROOVY);
+						myLocalListener=(IChannelEventListener) ScriptingEngine.inlineScriptStringRun(textArea.getText(), null, "Groovy");
 						channel.addChannelEventListener(myLocalListener);
 						Platform.runLater(()->{
 							setListenerButton.setText("Kill Listener");

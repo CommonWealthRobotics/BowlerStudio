@@ -73,9 +73,9 @@ public class RGBSlider extends JPanel {
 		getColor();
 	}
 	public Color getColor(){
-		rl.setText(new Integer(r.getValue()).toString());
-		gl.setText(new Integer(g.getValue()).toString());
-		bl.setText(new Integer(b.getValue()).toString());
+		rl.setText(Integer.toString(r.getValue()));
+		gl.setText(Integer.toString(g.getValue()));
+		bl.setText(Integer.toString(b.getValue()));
 		Color now =new Color(r.getValue(),g.getValue(),b.getValue());
 		c.setColor(now);
 		setBackground(now);

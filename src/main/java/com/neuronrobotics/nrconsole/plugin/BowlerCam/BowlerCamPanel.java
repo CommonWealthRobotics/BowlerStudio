@@ -77,13 +77,13 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 		controls.add(new JLabel("Threshhold"),"wrap");
 		controls.add(threshhold);
 		controls.add(thr,"wrap");
-		thr.setText(new Integer(threshhold.getValue()).toString());
+		thr.setText(Integer.toString(threshhold.getValue()));
 		controls.add(within,"wrap");
 		within.setSelected(true);
 		
 		controls.add(new JLabel("Image Scale"));
 		controls.add(scale,"wrap");
-		scale.setText(new Double(scaleSet).toString());
+		scale.setText(Double.toString(scaleSet));
 		
 		min.setText("5");
 		max.setText("100000");
@@ -123,7 +123,7 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 	
 	
 	private void displayImage() {
-		thr.setText(new Integer(threshhold.getValue()).toString());
+		thr.setText(Integer.toString(threshhold.getValue()));
 		target.getColor();
 		if(scaleSet != Double.parseDouble(scale.getText())){
 			//System.out.println("Resetting scale : "+scale.getText());

@@ -39,7 +39,7 @@ public class SchedulerGui extends JPanel{
 	JPanel channelBar = new JPanel(new MigLayout());
 	private IntegerComboBox availibleChans = new IntegerComboBox();
 	private IntegerComboBox usedChans = new IntegerComboBox();
-	private ArrayList< ServoOutputScheduleChannelUI> outputs = new ArrayList< ServoOutputScheduleChannelUI>();
+	private ArrayList< ServoOutputScheduleChannelUI> outputs = new ArrayList<>();
 	private File configFile=null;
 	CoreScheduler cs;
 	SchedulerControlBar cb;

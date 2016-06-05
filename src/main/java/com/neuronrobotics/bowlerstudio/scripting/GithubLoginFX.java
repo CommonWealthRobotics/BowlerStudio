@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -42,7 +43,13 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 
 	@FXML public void anonMode() {
 		setCreds(null);
-	
+		try {
+			// this should make anon mode stick
+			ScriptingEngine.setupAnyonmous();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		finish();
 	}
 	private void finish(){

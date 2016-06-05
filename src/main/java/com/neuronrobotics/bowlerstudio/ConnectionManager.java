@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.imageio.IIOImage;
+
 import org.reactfx.util.FxTimer;
 
 import net.java.games.input.Component;
@@ -25,11 +27,14 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.kinematics.gcodebridge.GcodeDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.BowlerDataType;
@@ -54,6 +59,7 @@ import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -103,7 +109,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			throw new RuntimeException("Connection manager is a static singleton, access it using ConnectionManager.getConnectionmanager()");
 		}
 		setText("My Devices");
-		
+		setGraphic(AssetFactory.loadIcon("My-Devices.png"));
 		rootItem = new VBox(10);
 		
 //		rootItem.getColumnConstraints().add(new ColumnConstraints(30)); // column 1 is 75 wide
@@ -113,15 +119,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		
 		topLine = new HBox(20);
 		
-		Node icon = getIcon("images/connection-icon.png");
-		disconnectAll = new Button("Disconnect All");
+		disconnectAll = new Button("Disconnect All",AssetFactory.loadIcon("Disconnect-All.png"));
 		disconnectAll.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	disconnectAll();
 		    }
 		});
 		disconnectAll.setDisable(true);
-		topLine.getChildren().addAll(icon,new Text("Connected Devices"),disconnectAll);
+		topLine.getChildren().addAll(AssetFactory.loadIcon("Connected-Devices.png"),new Text("Connected Devices"),disconnectAll);
 		rootItem.getChildren().add(topLine);
 
 		rootItem.getChildren().add(accordion);
@@ -174,7 +179,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	public static BowlerAbstractDevice pickConnectedDevice(Class class1) {
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
-		if(choices.size()>0){
+		if(!choices.isEmpty()){
 			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
 					choices);
 			dialog.setTitle("Bowler Device Chooser");
@@ -296,12 +301,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	 public static void onConnectFileSourceCamera() {
+		 Platform.runLater(()->{});
 		 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
-		File f = fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage());
+		File f = fileChooser.showOpenDialog(BowlerStudioModularFrame.getPrimaryStage());
 		if(f!=null){
-			StaticFileProvider p = new StaticFileProvider(f);
+			AbstractImageProvider p = new StaticFileProvider(f);
 			String name = "image";
 			addConnection(p,name);
 		}
@@ -330,11 +336,37 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	}
 
+	 public static void onMarlinGCODE() {
+			Set<String> ports = NRSerialPort.getAvailableSerialPorts();
+			List<String> choices = new ArrayList<>();
+			if(ports.isEmpty())
+				return;
+			for (String s: ports){
+				choices.add(s);
+			}
 
+			
+			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+			dialog.setTitle("GCODE Device Serial Port Chooser");
+			dialog.setHeaderText("Supports Marlin");
+			dialog.setContentText("GCODE Device Port:");
+
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			
+			// The Java 8 way to get the response value (with lambda expression).
+			result.ifPresent(letter -> {
+				GcodeDevice p =  new GcodeDevice(new NRSerialPort(letter, 115200));
+				p.connect();
+				String name = "GCODE";
+				addConnection(p,name);
+			});
+			
+		}
 	 public static void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();
-		if(ports.size()==0)
+		if(ports.isEmpty())
 			return;
 		for (String s: ports){
 			choices.add(s);
@@ -467,7 +499,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				});
 		refreshItemTree();
 		if(	getBowlerStudioController()!=null)
-		getBowlerStudioController().setSelectedTab(this);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
 	private BowlerStudioController getBowlerStudioController() {
 		// TODO Auto-generated method stub
@@ -480,7 +512,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				Duration.ofMillis(100) ,() -> {
 			Log.warning("Refreshing Tree size="+plugins.size());
 			accordion.getPanes().clear();
-			if(plugins.size()==0)
+			if(plugins.isEmpty())
 				return;
 			TitledPane last=null;
 			for(int i=0;i<plugins.size();i++){
@@ -489,7 +521,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 			
 
-			if(plugins.size()>0){
+			if(!plugins.isEmpty()){
 				disconnectAll.setDisable(false);
 				accordion.setExpandedPane(last);
 			}else{

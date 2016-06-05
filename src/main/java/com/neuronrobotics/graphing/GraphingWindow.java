@@ -36,7 +36,7 @@ public class GraphingWindow extends JPanel {
 	private JTextField length = new JTextField(5);
 	private JSlider window = new JSlider(1, 100);
 	private JSlider scale = new JSlider(1, 100);
-	private ArrayList<DataChannel> dataChannels = new ArrayList<DataChannel>();
+	private ArrayList<DataChannel> dataChannels = new ArrayList<>();
 
 	/**
 	 * long 
@@ -114,7 +114,7 @@ public class GraphingWindow extends JPanel {
 				}
 				
 				axis.setFixedAutoRange(value);
-				length.setText(value + "");
+				length.setText(String.valueOf(value));
 				scale.setValue(value);
 				
 				invalidate();
@@ -160,7 +160,7 @@ public class GraphingWindow extends JPanel {
 		
         axis.setAutoRange(true);
         axis.setFixedAutoRange(scale.getValue());  
-        length.setText("" + scale.getValue());
+        length.setText(String.valueOf(scale.getValue()));
 		//invalidate();
 		repaint();
 	}
@@ -176,7 +176,7 @@ public class GraphingWindow extends JPanel {
         double sLower =loc-(scale.getValue()/2);
         double sUpper =loc+(scale.getValue()/2);
         axis.setRange(sLower, sUpper);
-        length.setText("" + scale.getValue());
+        length.setText(String.valueOf(scale.getValue()));
 		//invalidate();
 		//repaint();
 	}

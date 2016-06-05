@@ -99,6 +99,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
@@ -128,7 +129,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private Object scriptResult;
 	private String codeText="";
 
-	private ArrayList<IScriptEventListener> listeners = new ArrayList<IScriptEventListener>();
+	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
 	private Button publish = new Button("Publish");
@@ -138,13 +139,15 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private ScriptingWidgetType type;
 	
-	final Label fileListBox = new Label();
+	final TextField fileListBox = new TextField();
+	final TextField fileNameBox = new TextField();
 	private File currentFile = null;
 
 	private HBox controlPane;
 	private String currentGist;
 	private boolean updateneeded = false;
-	
+	private IScriptingLanguage langaugeType;
+	private ImageView image=new ImageView();
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE);
@@ -152,6 +155,14 @@ public class ScriptingFileWidget extends BorderPane implements
 		loadCodeFromFile(currentFile);
 		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
 		publish.setDisable(!isOwnedByLoggedInUser);
+		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
+		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+		try {
+			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void startStopAction(){
@@ -169,15 +180,21 @@ public class ScriptingFileWidget extends BorderPane implements
 		runfx.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
-	    			save();
+	    			
+	    			if(langaugeType.getIsTextFile())
+	    				save();
+	    			//do not attempt to save no binary files
 	    			startStopAction();
 	    		}
 	    	}.start();
 		});
 		
 		publish.setOnAction(e -> {
-			save();
-			CommitWidget.commit(currentFile, getCode());
+			new Thread(()->{
+				save();
+				CommitWidget.commit(currentFile, getCode());
+			}).start();
+
 		});
 		
 		
@@ -213,10 +230,20 @@ public class ScriptingFileWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
+		
 
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(fileListBox);
+		controlPane.getChildren().add(image);
 		controlPane.getChildren().add(publish);
+		controlPane.getChildren().add(new Label("file:"));
+		controlPane.getChildren().add(fileNameBox);
+		fileNameBox.setMaxWidth(Double.MAX_VALUE);
+		controlPane.getChildren().add(new Label("git:"));
+		controlPane.getChildren().add(fileListBox);
+		fileListBox.setMaxWidth(Double.MAX_VALUE);
+		controlPane.setMaxWidth(Double.MAX_VALUE);
+
+		
 		
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -229,6 +256,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		running = false;
 		Platform.runLater(() -> {
 			runfx.setText("Run");
+			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 			
 		});
@@ -271,7 +299,10 @@ public class ScriptingFileWidget extends BorderPane implements
 			currentFile.createNewFile();
 		}
 		setUpFile(currentFile);
-		setCode(new String(Files.readAllBytes(currentFile.toPath())));
+		if(!langaugeType.getIsTextFile())
+			setCode("Binary File");
+		else
+			setCode(new String(Files.readAllBytes(currentFile.toPath())));
 
 	}
 	
@@ -279,24 +310,31 @@ public class ScriptingFileWidget extends BorderPane implements
 
 
 	private void start() {
-
+		BowlerStudio.clearConsole();
+		BowlerStudioController.clearHighlight();
+		try {
+			ScriptingEngine.setAutoupdate(false);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		running = true;
 		Platform.runLater(()->{
 			runfx.setText("Stop");
+			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-			
 		});
 		scriptRunner = new Thread() {
 
 			public void run() {
-				String name;
-				try{
-					name = currentFile.getName();
-				}catch (NullPointerException e){
-					name="";
-				}
+//				String name;
+//				try{
+//					name = currentFile.getName();
+//				}catch (NullPointerException e){
+//					name="";
+//				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.setFilename(name));
+					Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
@@ -337,24 +375,22 @@ public class ScriptingFileWidget extends BorderPane implements
 				}
 				catch (Exception ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
-					Platform.runLater(() -> {
-						try{
-							if (ex.getMessage().contains("sleep interrupted")) {
-								append("\n" + currentFile + " Interupted\n");
-							} else{
-								BowlerStudioController.highlightException(currentFile, ex);
-								throw new RuntimeException(ex);
-							}
-						}catch(Exception e){
+
+					try{
+						if (ex.getMessage().contains("sleep interrupted")) {
+							append("\n" + currentFile + " Interupted\n");
+						} else{
 							BowlerStudioController.highlightException(currentFile, ex);
 						}
+					}catch(Exception e){
+						BowlerStudioController.highlightException(currentFile, ex);
+					}
 
-						reset();
-					});
+					reset();
+		
 					for (IScriptEventListener l : listeners) {
 						l.onScriptError(ex,currentFile);
 					}
-					throw new RuntimeException(ex);
 				}
 
 			}
@@ -373,23 +409,63 @@ public class ScriptingFileWidget extends BorderPane implements
 	private void append(String s) {
 		System.out.println(s);
 	}
-
+	
+	public String getGitRepo(){
+		return fileListBox.getText();
+	}
+	public String getGitFile(){
+		return fileNameBox.getText();
+	}
 	private void setUpFile(File f) {
 		currentFile = f;
-		ScriptingEngine.setLastFile(f);
+		String langType = ScriptingEngine.getShellType(currentFile.getName());
+		try {
+			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
+		//ScriptingEngine.setLastFile(f);
 		Git git;
 		try {
 			git = ScriptingEngine.locateGit(currentFile);
 			String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
 			Platform.runLater(() -> {
+				//fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
+				//fileListBox.res
+				fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				// These values are display only, so if hte user tries to change them, they reset
+				// the use of text field for static dats is so the user cna copy the vlaues and use them in their scritpts
+				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				});
+				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileListBox.setText(remote);
+				});
+				
 				git.close();
 			});
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
+			Platform.runLater(() -> {
+				fileListBox.setText("none");
+				fileListBox.setMinWidth(40);
+				fileNameBox.setText(f.getAbsolutePath());
+				// These values are display only, so if hte user tries to change them, they reset
+				// the use of text field for static dats is so the user cna copy the vlaues and use them in their scritpts
+				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileNameBox.setText(f.getAbsolutePath());
+				});
+				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
+					fileListBox.setText("none");
+				});
+				
+			});
 			e1.printStackTrace();
 		}
-
+		if(!langaugeType.getIsTextFile())
+			return;
 		if (watcher != null) {
 			watcher.close();
 		}
@@ -405,8 +481,11 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private void updateFile() {
 		
-		File last = FileSelectionFactory.GetFile(currentFile==null?ScriptingEngine.getWorkspace():new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
-				new ExtensionFilter("Save Script","*"));
+		File last = FileSelectionFactory.GetFile(	currentFile==null?
+													ScriptingEngine.getWorkspace():
+													new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/"+currentFile.getName()),
+													true,
+													new ExtensionFilter("Save Script","*"));
 		if (last != null) {
 			setUpFile(last);
 		}
@@ -444,6 +523,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(updateneeded)
 			return;
 		updateneeded=true;
+		watcher.removeIFileChangeListener(this);
 		FxTimer.runLater(
 				Duration.ofMillis(500) ,() -> {
 					updateneeded=false;
@@ -453,11 +533,11 @@ public class ScriptingFileWidget extends BorderPane implements
 						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
 								+ " changed");
 						Platform.runLater(() -> {
-							watcher.removeIFileChangeListener(this);
 							try {
-								setCode(new String(Files.readAllBytes(Paths
-										.get(fileThatChanged.getAbsolutePath())),
-										"UTF-8"));
+								String content = new String(Files.readAllBytes(Paths
+										.get(fileThatChanged.getAbsolutePath())));
+								if(content.length()>2)// ensures tha the file contents never get wiped out on the user
+									setCode(content);
 							} catch (UnsupportedEncodingException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -484,8 +564,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		String pervious = codeText;
 		codeText = string;
 		// System.out.println(codeText);
-		for (IScriptEventListener l : listeners) {
-			l.onScriptChanged(pervious, string,currentFile);
+		for (int i=0;i<listeners.size();i++ ) {
+			listeners.get(i).onScriptChanged(pervious, string,currentFile);
 		}
 	}
 

@@ -15,11 +15,12 @@ import javafx.scene.transform.Translate;
 
 public class VirtualCameraDevice extends AbstractImageProvider {
 
+	private static final int DEFAULT_ZOOM_DEPTH = -1500;
 	private PerspectiveCamera camera;
 	private Group hand;
 	private Group cameraFrame = new Group();
 	
-	private double zoomDepth = -1000;
+	private double zoomDepth = getDefaultZoomDepth();
 	private Affine zoomAffine = new Affine();
 
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
@@ -36,7 +37,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 		camera.getTransforms().add(zoomAffine);
 		zoomAffine.setTz(getZoomDepth());
 		
-		getCameraFrame().getTransforms().add(TransformFactory.getTransform(
+		getCameraFrame().getTransforms().add(TransformFactory.nrToAffine(
 				BowlerStudio3dEngine.getOffsetforvisualization()
 						));
 		manipulationFrame.getTransforms().add(affine);
@@ -63,7 +64,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 
 	@Override
 	public ArrayList<String> getNamespacesImp() {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public PerspectiveCamera getCamera() {
@@ -88,10 +89,17 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public void setZoomDepth(double zoomDepth) {
 		if(zoomDepth>-2)
 			zoomDepth=-2;
-		if(zoomDepth<-3000)
-			zoomDepth=-3000;
+		if(zoomDepth<-5000)
+			zoomDepth=-5000;
 		this.zoomDepth = zoomDepth;
 		zoomAffine.setTz(getZoomDepth());
+	}
+	public BufferedImage captureNewImage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public static int getDefaultZoomDepth() {
+		return DEFAULT_ZOOM_DEPTH;
 	}
 
 }

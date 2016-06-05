@@ -88,7 +88,6 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 
 	@Override
 	public void disconnectDeviceImp() {
-		// TODO Auto-generated method stub
 		run=false;
 	}
 

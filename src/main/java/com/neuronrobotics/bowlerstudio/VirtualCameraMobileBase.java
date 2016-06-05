@@ -1,6 +1,9 @@
 package com.neuronrobotics.bowlerstudio;
+import java.io.FileInputStream;
+
 import org.apache.commons.io.IOUtils;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
@@ -14,9 +17,8 @@ public class VirtualCameraMobileBase extends MobileBase {
 	
 	public  VirtualCameraMobileBase() throws Exception{
 		//super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
-		super (BowlerStudio.class
-				.getResourceAsStream("flyingCamera.xml"));
-		setDriveType(DrivingType.WALKING);
+		super (new FileInputStream( AssetFactory.loadFile("layout/flyingCamera.xml")));
+		//setDriveType(DrivingType.WALKING);
 		
 		setWalkingDriveEngine(new IDriveEngine() {
 			

@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessControlContext;
 import java.time.Duration;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -39,6 +42,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
@@ -55,15 +59,21 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.javafx.stage.WindowHelper;
+import com.sun.javafx.tk.TKStage;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.PluginManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
@@ -72,14 +82,35 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
     IScriptEventListener l=null;
 	private RSyntaxTextArea textArea;
-	private SwingNode sn;
+	private MySwingNode sn;
 	private RTextScrollPane sp;
 
 	private Highlighter highlighter;
 
 	private HighlightPainter painter;
 	private int pos = 0;
-
+	private int lineSelected=0;
+	private class MySwingNode extends SwingNode{
+	    /**
+	     * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
+	     * This value corresponds to the minimum width of the Swing component.
+	     * 
+	     * @return the minimum width that the node should be resized to during layout
+	     */    
+	    @Override public double minWidth(double height) {
+	        
+	        return 200;
+	    }
+	    /**
+	     * Returns the {@code SwingNode}'s minimum height for use in layout calculations.
+	     * This value corresponds to the minimum height of the Swing component.
+	     * 
+	     * @return the minimum height that the node should be resized to during layout
+	     */    
+	    @Override public double minHeight(double width) {
+	    	return 200;
+	    }
+	}
     
 	public LocalFileScriptTab( File file) throws IOException {
 		
@@ -87,22 +118,20 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		setSpacing(5);
 		l=this;
 
-
 		getScripting().addIScriptEventListener(l);
-		String type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
-		switch(ScriptingEngine.setFilename(file.getName())){
-			case CLOJURE:
+		String type;
+		switch(ScriptingEngine.getShellType(file.getName())){
+			case "Clojure":
 				type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
 				break;
-			case GROOVY:
+			default:
+			case "Groovy":
 				type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
 				break;
-			case JYTHON:
+			case "Jython":
 				type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
 				break;
-			case NONE:
-				break;
-			case ROBOT:
+			case "RobotXML":
 				type = SyntaxConstants.SYNTAX_STYLE_XML;
 				break;
 		
@@ -125,18 +154,57 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	        @Override
 	        public void changedUpdate(DocumentEvent arg0) {
-            	getScripting().removeIScriptEventListener(l);
-            	getScripting().setCode(textArea.getText());
-            	getScripting().addIScriptEventListener(l);
+	        	new Thread(){
+	        		public void run(){
+	                	getScripting().removeIScriptEventListener(l);
+	                	getScripting().setCode(textArea.getText());
+	                	getScripting().addIScriptEventListener(l);
+	        		}
+	        	}.start();
 	        }
 	    });
+		textArea.addCaretListener(new CaretListener() {
+			
+			@Override
+			public void caretUpdate(CaretEvent e) {
+
+                // Lets start with some default values for the line and column.
+                int linenum = 1;
+                int columnnum = 1;
+
+                // We create a try catch to catch any exceptions. We will simply ignore such an error for our demonstration.
+                try {
+                    // First we find the position of the caret. This is the number of where the caret is in relation to the start of the JTextArea
+                    // in the upper left corner. We use this position to find offset values (eg what line we are on for the given position as well as
+                    // what position that line starts on.
+                    int caretpos = textArea.getCaretPosition();
+                    linenum = textArea.getLineOfOffset(caretpos);
+
+                    // We subtract the offset of where our line starts from the overall caret position.
+                    // So lets say that we are on line 5 and that line starts at caret position 100, if our caret position is currently 106
+                    // we know that we must be on column 6 of line 5.
+                    columnnum = caretpos - textArea.getLineStartOffset(linenum);
+
+                    // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
+                    linenum += 1;
+                }
+                catch(Exception ex) { }
+                if(lineSelected!=linenum){
+                	lineSelected = linenum;
+                	//System.err.println("Select "+lineSelected);
+                	BowlerStudio.select(file, lineSelected);
+                	
+                }
+
+            }
+			
+		});
 		
 		textArea.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount()>3) {
 					highlighter.removeAllHighlights();
 				}
-
 //				System.out.println("Number of click: " + e.getClickCount());
 //				System.out.println("Click position (X, Y):  " + e.getX() + ", " + e.getY());
 			}
@@ -144,7 +212,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		sp = new RTextScrollPane(textArea);
 		
-		sn = new SwingNode();
+		sn = new MySwingNode();
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -224,19 +292,20 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		
 		highlighter.removeAllHighlights();
 
+
 	}
 
 
 
 	@Override
 	public void onScriptFinished(	Object result,Object previous,File source) {
-		// TODO Auto-generated method stub
-		SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	textArea.requestFocusInWindow();
-            }
-        });
+//		// TODO Auto-generated method stub
+//		SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//            	textArea.requestFocusInWindow();
+//            }
+//        });
 		
 	}
 
@@ -246,10 +315,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //		 Cursor place = codeArea.getCursor();
 //		 codeArea.replaceText(current);
 //		 codeArea.setCursor(place);
-		Platform.runLater(()->{
-			textArea.setText(current);
-		});
-		
+		if(current.length()>3 && !textArea.getText().contentEquals(current)){// no empty writes
+			Platform.runLater(()->{
+				textArea.setText(current);
+			});
+		}
 	}
 
 
@@ -284,15 +354,19 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void setHighlight(int lineNumber, Color color) throws BadLocationException {
+		
 		painter = new DefaultHighlighter.DefaultHighlightPainter(color);
 		int startIndex = textArea.getLineStartOffset(lineNumber-1);
         int endIndex = textArea.getLineEndOffset(lineNumber-1);
-        textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+        
         try{
+        	
         	textArea.moveCaretPosition(startIndex);
         }catch (Error ex){
         	//ex.printStackTrace();
         }
+        textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+        
 	}
 
 

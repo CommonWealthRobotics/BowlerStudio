@@ -2,250 +2,260 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.UIManager;
 
-import org.opencv.core.Core;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHRepository;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceAddedListener;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import edu.cmu.sphinx.api.Configuration;
+
+import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class BowlerStudio extends Application {
-    
-    private static TextArea log;
-    private static MainController controller;
+
+	private static TextArea log;
 	private static Stage primaryStage;
 	private static Scene scene;
 	private static FXMLLoader fxmlLoader;
+	private static boolean hasnetwork;
+	private static Console out;
+	private static TextArea logViewRefStatic=null;
+	private static CreatureLab3dController creatureLab3dController;
+	private BowlerStudioModularFrame modularFrame;
+	private static 	String firstVer = "";
+	private static class Console extends OutputStream {
+		
+	    public void appendText(String valueOf) {
+			Platform.runLater(() -> {
+				if (getLogViewRefStatic() != null)
+					getLogViewRefStatic().appendText(valueOf);
+			});
+	    }
+	
+	    public void write(int b) throws IOException {
+	        appendText(String.valueOf((char)b));
+	    }
+	}
+	public static OutputStream getOut() {
+		if(out==null)
+			out = new Console();
+		return out;
+	}
+	static{
+		//These must be changed before anything starts
+		PrintStream ps =new PrintStream(getOut());
+		//System.setErr(ps);
+		System.setOut(ps);
+		try {                                                                                                                                                                                                                                 
+	        final URL url = new URL("http://github.com");                                                                                                                                                                                 
+	        final URLConnection conn = url.openConnection();                                                                                                                                                                                  
+	        conn.connect();    
+	        conn.getInputStream();                                                                                                                                                                                                               
+	        setHasnetwork(true);                                                                                                                                                                                                                      
+	    } catch (Exception e) {                                                                                                                                                                                                             
+	        // we assuming we have no access to the server and run off of the chached gists.    
+	    	setHasnetwork(false);                                                                                                                                                                                                                              
+	    }  
+	}
+	
+	public static void select(MobileBase base){
+		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+	}
+	public static void select(MobileBase base,DHParameterKinematics limb){
+		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad.get(limCad.size()-1));
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+	}
+	public static void select(MobileBase base,LinkConfiguration limb){
+		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad.get(limCad.size()-1));
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+	}
+	
+	public static void select(File script, int lineNumber){
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
+	}
 
-    /**
-     * @param args the command line arguments
-     * @throws Exception 
-     */
-    @SuppressWarnings("unchecked")
+	/**
+	 * @param args
+	 *            the command line arguments
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
+		
+				
 
-    	JsonObject jsonObject = new JsonParser().parse("{\"name\": \"John\"}").getAsJsonObject();
+		if (args.length == 0) {
+			// ScriptingEngine.logout();
+			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 
-    	System.out.println(jsonObject.get("name").getAsString()); //John
-    	
-    	if(args.length==0){
-    		System.out.println("Bowler Studio: v "+StudioBuildInfo.getVersion());
-    		
-    		System.out.println("Loading assets ");
+			if (ScriptingEngine.getCreds().exists()){
+				ScriptingEngine.runLogin();
+				if(BowlerStudio.hasNetwork())
+					ScriptingEngine.setAutoupdate(true);
+				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
+				String myAssets =AssetFactory.getGitSource();
+				if(BowlerStudio.hasNetwork()){
+						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
+						GHMyself self = github.getMyself();
+						Map<String, GHRepository> myPublic = self.getAllRepositories();
+						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
+							if(entry.getKey().contentEquals(AssetFactory.repo)){
+								GHRepository ghrepo= entry.getValue();
+								myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
+								
+								
+							}
+						
+						}
+						
+				}
+				AssetFactory.setGitSource(
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+								myAssets),
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+								"master")
+						);
+				
+				// to set a new repo
+				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
+				
+			}else
+				ScriptingEngine.setupAnyonmous();
+			// Download and Load all of the assets
+			AssetFactory.loadAsset("BowlerStudio.png");
+			BowlerStudioResourceFactory.load();
+			//load the vitimins repo so the demo is always snappy
+			ScriptingEngine.fileFromGit(
+					"https://github.com/NeuronRobotics/BowlerStudioVitamins.git", 
+					"BowlerStudioVitamins/stl/servo/smallservo.stl");
+			// load tutorials repo
+			ScriptingEngine.fileFromGit(
+					"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+					"index.html");
+			ScriptingEngine
+			.fileFromGit(
+					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+				"exampleRobots.json"// File from within the Git repo
+			);
+			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
+			
+			
 
-    		BowlerStudioResourceFactory.load();
-    		System.out.println("Done loading assets ");
-    		fxmlLoader = new FXMLLoader(
-                    BowlerStudio.class.getResource("Main.fxml"));
-    		//Platform.runLater(()->{
-    			System.out.println("Loading the main fxml ");
-                try {
-                    fxmlLoader.load();
-            		System.out.println("Done loading main ");
+			// System.out.println("Loading assets ");
 
-                } catch (IOException ex) {
-                	ex.printStackTrace();
-                    Logger.getLogger(BowlerStudio.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                    System.exit(1);
-                }
-    		//});
-    	
+			// System.out.println("Loading Main.fxml");
 
-
-    		PrintStream ps = new PrintStream(MainController.getOut());
-    		//System.setErr(ps);
-    		System.setOut(ps);
-
-    		MainController.updateLog();
-			try{
-				OpenCVJNILoader.load();              // Loads the JNI (java native interface)
-			}catch(Exception e){
-				//e.printStackTrace();
-				//opencvOk=false;
-    						Platform.runLater(()->{
-    							Alert alert = new Alert(AlertType.INFORMATION);
-    							alert.setTitle("OpenCV missing");
-    							alert.setHeaderText("Opencv library is missing");
-    							alert.setContentText(e.getMessage());
-    							alert .initModality(Modality.APPLICATION_MODAL);
-    							alert.show();
-    							e.printStackTrace();
-    						});
+			try {
+				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
+			} catch (Exception |Error e ) {
+				// e.printStackTrace();
+				// opencvOk=false;
+				Platform.runLater(() -> {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("OpenCV missing");
+					alert.setHeaderText("Opencv library is missing");
+					alert.setContentText(e.getMessage());
+					alert.initModality(Modality.APPLICATION_MODAL);
+					alert.show();
+					e.printStackTrace(System.out);
+				});
 
 			}
-			if(NativeResource.isLinux()){
-				String [] possibleLocals = new String[]{
-						"/usr/local/share/OpenCV/java/lib"+Core.NATIVE_LIBRARY_NAME+".so",
-						"/usr/lib/jni/lib"+Core.NATIVE_LIBRARY_NAME+".so"
-				};
+			if (NativeResource.isLinux()) {
+
 				Slic3r.setExecutableLocation("/usr/bin/slic3r");
-				
-			}else if(NativeResource.isWindows()){
-				String basedir =System.getenv("OPENCV_DIR");
-				if(basedir == null)
-					throw new RuntimeException("OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-				System.err.println("OPENCV_DIR found at "+ basedir);
-				basedir+="\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+
+			} else if (NativeResource.isWindows()) {
+				String basedir = System.getenv("OPENCV_DIR");
+				if (basedir == null)
+					throw new RuntimeException(
+							"OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+				System.err.println("OPENCV_DIR found at " + basedir);
+				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
 				Slic3r.setExecutableLocation(basedir);
-				
+
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// This is a workaround for #8 and is only relavent on osx
-				// it causes the SwingNodes not to load if not called way ahead of time
+				// it causes the SwingNodes not to load if not called way ahead
+				// of time
 				javafx.scene.text.Font.getFamilies();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    					
-    			
-
-    		ThreadUtil.wait(2000);
-    		launch(args);
-    	}else{
-           BowlerKernel.main(args);
-    	}
-    }
-   
-	public static void setSelectedTab(Tab tab) {
-		controller.getApplication().setSelectedTab(tab);
+			
+			launch(args);
+			
+		} else {
+			BowlerKernel.main(args);
+		}
 	}
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        setPrimaryStage(primaryStage);
-		Parent main = loadFromFXML();
-
-        setScene(new Scene(main, 1250, 768,true));
-
-        getScene().getStylesheets().add(BowlerStudio.class.getResource("java-keywords.css").
-                toExternalForm());
-        
-        PerspectiveCamera camera = new PerspectiveCamera();
-        
-        getScene().setCamera(camera);
-
-        primaryStage.setTitle("Bowler Studio");
-        primaryStage.setScene(getScene());
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(arg0 -> {
-        	
-        	controller.disconnect();
-        	ThreadUtil.wait(100);
-        	System.exit(0);
-		});
-        primaryStage.setTitle("Bowler Studio: v "+StudioBuildInfo.getVersion());
-        primaryStage.getIcons().add(new Image(AbstractConnectionPanel.class.getResourceAsStream( "images/hat.png" ))); 
-        Configuration configuration = new Configuration();
-        
-	     // Set path to acoustic model.
-	     configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
-	     // Set path to dictionary.
-	     configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-	     // Set language model.
-	     configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-     
-        //Log.enableDebugPrint();
-		//new MicroServo().toCSG();
-        //IObjectDetector detector = new HaarDetector("haarcascade_frontalface_default.xml");
-	     
-//    	String xmlContent;
-//		try {
-//			xmlContent = ScriptingEngineWidget.codeFromGistID("2b0cff20ccee085c9c36","TrobotLinks.xml")[0];
-//			MobileBase base = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-//	    	DHParameterKinematics model = base.getAppendages().get(0); 
-//	    	DeviceManager.addConnection(base, "baseTest");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	     System.out.println("Java-Bowler Version: "+SDKBuildInfo.getVersion()); 
-	     System.out.println("Bowler-Scripting-Kernel Version: "+BowlerKernelBuildInfo.getVersion());
-	     System.out.println("JavaCad Version: "+JavaCadBuildInfo.getVersion());
-    }
-
-    public static Parent loadFromFXML() {
-        
-        if (controller!=null) {
-            throw new IllegalStateException("UI already loaded");
-        }
-        
-        
-
-
-        controller = fxmlLoader.getController();
-        
-        log = controller.getLogView();
-        
-
-        return fxmlLoader.getRoot();
-    }
-    
-    public static TextArea getLogView() {
-        
-        if (log==null) {
-            throw new IllegalStateException("Load the UI first.");
-        }
-        
-        return log;
-    }
-    
-	public static Menu getCreatureLabMenue() {
-		return controller.getCreatureLabMenue();
-	}
-
-	public static Stage getPrimaryStage() {
-		return primaryStage;
-	}
-
-	public static void setPrimaryStage(Stage primaryStage) {
-		BowlerStudio.primaryStage = primaryStage;
-	}
 	
-	public static void openUrlInNewTab(URL url){
-		controller.openUrlInNewTab(url);
+
+	public static void openUrlInNewTab(URL url) {
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
 	}
-	
-	public static int speak(String msg){
-		
+
+	public static int speak(String msg) {
+
 		return BowlerKernel.speak(msg);
 	}
-	
-	public static ScriptingFileWidget createFileTab(File file){
-		return controller.createFileTab(file);
+
+	public static ScriptingFileWidget createFileTab(File file) {
+		return BowlerStudioModularFrame.getBowlerStudioModularFrame().createFileTab(file);
 	}
 
 	public static Scene getScene() {
@@ -255,4 +265,144 @@ public class BowlerStudio extends Application {
 	public static void setScene(Scene s) {
 		scene = s;
 	}
+
+	public static void clearConsole() {
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
+		Platform.runLater(() -> {
+			if(getLogViewRefStatic()!=null)
+				getLogViewRefStatic().setText("");
+		});
+	}
+	public static void setOverlayLeft(TreeView<String> tree){
+		BowlerStudio.creatureLab3dController.setOverlayLeft(tree);
+	}
+	public static  void clearOverlayLeft(){
+		BowlerStudio.creatureLab3dController.clearOverlayLeft();
+	}
+	
+	public  static void setOverlayTop(Group content){
+		BowlerStudio.creatureLab3dController.setOverlayTop(content);;
+	}
+	public static  void clearOverlayTop(){
+		BowlerStudio.creatureLab3dController.clearOverlayTop();
+	}
+	public static  void setOverlayTopRight(Group content){
+		BowlerStudio.creatureLab3dController.setOverlayTopRight(content);
+	}
+	public static  void clearOverlayTopRight(){
+		BowlerStudio.creatureLab3dController.clearOverlayTopRight();
+	}
+	public  static void setOverlayBottomRight(Group content){
+		BowlerStudio.creatureLab3dController.setOverlayBottomRight(content);
+	}
+	public static  void clearOverlayBottomRight(){
+		BowlerStudio.creatureLab3dController.clearOverlayBottomRight();
+	}
+
+
+	public static boolean hasNetwork() {
+		return hasnetwork;
+	}
+
+	public static void setHasnetwork(boolean hasnetwork) {
+		BowlerStudio.hasnetwork = hasnetwork;
+	}
+
+	public static TextArea getLogViewRefStatic() {
+		return logViewRefStatic;
+	}
+
+	public static void setLogViewRefStatic(TextArea logViewRefStatic) {
+		BowlerStudio.logViewRefStatic = logViewRefStatic;
+	}
+
+
+
+	public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
+		BowlerStudio.creatureLab3dController = creatureLab3dController;
+	}
+
+
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+
+		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
+		// Initialize your logic here: all @FXML variables will have been
+		// injected
+		FXMLLoader mainControllerPanel;
+
+		try {
+			mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
+			BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
+			mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
+			mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+			try {
+				mainControllerPanel.load();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+			File f = AssetFactory.loadFile("layout/default.css");
+			scene.getStylesheets().clear();
+			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+
+			primaryStage.setTitle("Bowler Studio");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			primaryStage.setOnCloseRequest(arg0 -> {
+				// ThreadUtil.wait(100);
+				closeBowlerStudio();
+				
+			});
+			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+			primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+
+			primaryStage.setResizable(true);
+
+		
+			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+
+				@Override
+				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
+					System.err.println("Device connected: "+arg0);
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
+				}
+
+				@Override
+				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
+			});
+			System.out.println("BowlerStudio First Version: " + firstVer);
+			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+			System.out.println("Welcome to BowlerStudio!");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
+
+	public static void closeBowlerStudio() {
+		new Thread(){
+			public void run(){
+				System.err.println("Closing application");
+				ConnectionManager.disconnectAll();
+				if (ScriptingEngine.getCreds().exists()) 
+					ConfigurationDatabase.save();
+				System.exit(0);
+			}
+		}.start();
+	}
+
+
+
+
+	
 }

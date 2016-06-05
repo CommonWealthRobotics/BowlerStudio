@@ -4,6 +4,9 @@ import java.time.Duration;
 
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
+import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -11,7 +14,10 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhLinkType;
 import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -27,13 +33,23 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
+import net.java.games.input.Component;
+import net.java.games.input.Controller;
+import net.java.games.input.Event;
 
-public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListenerNR {
+public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListenerNR,IJInputEventListener {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
 	private int linkIndex;
 	private EngineeringUnitsSliderWidget setpoint;
+	private BowlerJInputDevice controller;
+	private jogThread jogTHreadHandle;
+	private double slider;
+	private boolean stop;
+	private double seconds;
+	private String paramsKey;
+
 
 	
 	
@@ -61,19 +77,19 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
-					double newAngleDegrees) {
-	    		try {
-					device2.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 2);
+				try {
+					device2.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				};
+			}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+					double newAngleDegrees) {
+	    		
 			}
 		}, 
 		abstractLink.getMinEngineeringUnits(), 
@@ -135,6 +151,93 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 			JointLimit event) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void controllerLoop(){
+		seconds = .1;
+		if(getGameController()!=null || stop==false){
+
+
+			if(!stop){ 
+				jogTHreadHandle.setToSet(slider+setpoint.getValue(), seconds);
+			}
+
+			FxTimer.runLater(
+					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
+						controllerLoop();
+					});
+		}
+	}
+
+	private class jogThread extends Thread{
+		private boolean controlThreadRunning=false;
+
+		private double toSeconds=seconds;
+
+		private double newValue;
+		public void run(){
+			setName("Jog Link Slider");
+			while(device.isAvailable() ){
+				if(controlThreadRunning){
+					try {
+						device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
+						setpoint.setValue(newValue);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					controlThreadRunning=false;
+				}
+				ThreadUtil.wait((int) (toSeconds*1000));
+			}
+		}
+
+		public void setToSet(double newValue,double toSeconds) {
+
+			this.newValue = newValue;
+			this.toSeconds = toSeconds;
+			controlThreadRunning=true;
+		}
+		
+	}
+	
+	public void setGameController(BowlerJInputDevice controller) {
+		this.controller = controller;
+		if(	controller!= null && 	jogTHreadHandle ==null){
+			jogTHreadHandle = new jogThread();
+			jogTHreadHandle.start();
+		}
+		
+		if(controller!=null){
+			Controller hwController = controller.getController();
+			paramsKey = hwController.getName();
+			System.err.println("Controller key: "+paramsKey);
+			getGameController().clearListeners();
+			getGameController().addListeners(this);
+			controllerLoop();
+		}
+	}
+
+
+	public BowlerJInputDevice getGameController() {
+		return controller;
+	}
+
+
+	@Override
+	public void onEvent(Component comp, net.java.games.input.Event event,
+			float value, String eventString){
+		
+		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x")))
+			slider=-value;
+
+		if(Math.abs(slider)<.01)
+			slider=0;
+		if(slider==0) {
+			//System.out.println("Stoping on="+comp.getName());
+			stop=true;
+		}else
+			stop=false;
 	}
 
 

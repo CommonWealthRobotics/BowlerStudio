@@ -1,52 +1,41 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import javax.management.RuntimeErrorException;
-import javax.swing.ImageIcon;
-
 import org.reactfx.util.FxTimer;
 
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
+//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelMode;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.util.Callback;
-import javafx.scene.layout.AnchorPane;
 
 public class DyIOPanel  implements Initializable {
 	
@@ -84,6 +73,7 @@ public class DyIOPanel  implements Initializable {
 	@FXML ImageView chanButton2;
 	@FXML ImageView chanButton1;
 	@FXML ImageView chanButton0;
+	@FXML ImageView background;
 	
 	@FXML ComboBox<String> channelType23;
 	@FXML ComboBox<String> channelType22;
@@ -142,7 +132,7 @@ public class DyIOPanel  implements Initializable {
 	
 	
 	public void setDyIO(DyIO d){
-		
+		d.setServoPowerSafeMode(false);// disable the browout when using the UI
 		channelTypeSelectors.add( channelType0);
 		channelTypeSelectors.add(  channelType1);
 		channelTypeSelectors.add(  channelType2);
@@ -219,28 +209,23 @@ public class DyIOPanel  implements Initializable {
 		channelValue.add(  channelValue22);
 		channelValue.add(  channelValue23);
 		
+		try {
+			background.setImage(AssetFactory.loadAsset("dyio/dyio-red2.png"));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		this.dyio = d;
 		for (int i = 0; i < 24; i++) {
 			int index = i;
 			ObservableList<String> items = FXCollections.observableArrayList();
 			DyIOChannel chan = dyio.getChannel(index);
 			displayFlash.add(new Boolean(true));
-			Platform.runLater(()->channelValue.get(index).setText(new Integer(chan.getValue()).toString()));
+			Platform.runLater(()->channelValue.get(index).setText(Integer.toString(chan.getValue())));
+			Platform.runLater(()->displayFlash( index,chan.getCachedValue()));
 			chan.addChannelEventListener(e -> {
-				// set the value label text
-				if(displayFlash.get(index)){
-					displayFlash.set(index, false);
-					Platform.runLater(()->{
-							channelValue.get(index).setText(new Integer(e.getValue()).toString());
-							channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
-							FxTimer.runLater(
-									Duration.ofMillis(200) ,() -> {
-										channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
-										displayFlash.set(index, true);
-									});
-						
-					});
-				}
+				displayFlash( index,e.getValue());
 			});
 			channelButtonSelectors.get(index).setOnMouseEntered(event -> {
 				Platform.runLater(()->
@@ -325,7 +310,11 @@ public class DyIOPanel  implements Initializable {
 						if(controller.isFireValue()){
 							controller.setFireValue(false);
 							dyio.setValue(i,controller.getLatestValue());
+							if(dyio.getMode(i)==DyIOChannelMode.SERVO_OUT && dyio.getChannel(i).getCachedMode()){
+								dyio.getChannel(i).flush();
+							}
 						}
+						
 						controller.updateValue();
 					}
 					ThreadUtil.wait(50);
@@ -333,6 +322,23 @@ public class DyIOPanel  implements Initializable {
 			}
 		}.start();
 		
+	}
+	
+	private void displayFlash(int index,int value){
+		// set the value label text
+		if(displayFlash.get(index)){
+			displayFlash.set(index, false);
+			Platform.runLater(()->{
+					channelValue.get(index).setText(Integer.toString(value));
+					channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
+					FxTimer.runLater(
+							Duration.ofMillis(200) ,() -> {
+								channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
+								displayFlash.set(index, true);
+							});
+				
+			});
+		}
 	}
 	
 	@FXML public void channelClicked(MouseEvent event) {

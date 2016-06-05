@@ -10,7 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.utils.BowlerStudioResourceFactory;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 
@@ -33,7 +34,7 @@ public class DyIOControl extends AbstractBowlerStudioTab {
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		this.dyio = (DyIO)pm;
-		
+		setGraphic(AssetFactory.loadIcon("DyIO-Tab.png"));
 		
 		setText(dyio.getScriptingName());
 		FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getMainPanel();

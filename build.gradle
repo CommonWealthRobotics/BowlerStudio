@@ -1,7 +1,71 @@
+/*
+buildscript {
+  repositories {
+    maven {
+      url 'https://plugins.gradle.org/m2/'
+    }
+  }
+  dependencies {
+    classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.1'
+  }
+}
+*/
+boolean is64Bit() {
+	////System.out.println("Arch: "+getOsArch());
+	return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
+}
+ boolean isARM() {
+	return getOsArch().startsWith("arm");
+}
+ boolean isCortexA8(){
+	if(isARM()){
+		//TODO check for cortex a8 vs arm9 generic
+		return true;
+	}
+	return false;
+}
+ boolean isWindows() {
+	////System.out.println("OS name: "+getOsName());
+	return getOsName().toLowerCase().startsWith("windows") ||getOsName().toLowerCase().startsWith("microsoft") || getOsName().toLowerCase().startsWith("ms");
+}
+
+ boolean isLinux() {
+	return getOsName().toLowerCase().startsWith("linux");
+}
+
+ boolean isOSX() {
+	return getOsName().toLowerCase().startsWith("mac");
+}
+
+ String getExtension() {
+	if(isWindows()) {
+		return ".dll";
+	}
+	
+	if(isLinux()) {
+		return ".so";
+	}
+	
+	if(isOSX()) {
+		return ".jnilib";
+	}
+	
+	return "";
+}
+
+String getOsName() {	
+	return System.getProperty("os.name");
+}
+
+String getOsArch() {
+	return System.getProperty("os.arch");
+}
+
 apply plugin: 'java'
 apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'application'
+//apply plugin: 'edu.sc.seis.launch4j'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -20,165 +84,48 @@ File buildDir = file(".");
 configurations.all {
 	exclude module: 'slf4j-log4j12'
 }
-
-task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-	gradleVersion = '2.1'
+/*
+launch4j {
+  mainClassName = ext.mainClass
+  icon = buildDir.getAbsolutePath()+"/src/main/resources/NeuronRobotics.ico"
 }
-
+*/
 Properties props = new Properties()
 props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/com/neuronrobotics/bowlerstudio/build.properties"))
 
-		boolean is64Bit() {
-			////System.out.println("Arch: "+getOsArch());
-			return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
-		}
-		 boolean isARM() {
-			return getOsArch().startsWith("arm");
-		}
-		 boolean isCortexA8(){
-			if(isARM()){
-				//TODO check for cortex a8 vs arm9 generic
-				return true;
-			}
-			return false;
-		}
-		 boolean isWindows() {
-			////System.out.println("OS name: "+getOsName());
-			return getOsName().toLowerCase().startsWith("windows") ||getOsName().toLowerCase().startsWith("microsoft") || getOsName().toLowerCase().startsWith("ms");
-		}
-		
-		 boolean isLinux() {
-			return getOsName().toLowerCase().startsWith("linux");
-		}
-		
-		 boolean isOSX() {
-			return getOsName().toLowerCase().startsWith("mac");
-		}
-		
-		 String getExtension() {
-			if(isWindows()) {
-				return ".dll";
-			}
-			
-			if(isLinux()) {
-				return ".so";
-			}
-			
-			if(isOSX()) {
-				return ".jnilib";
-			}
-			
-			return "";
-		}
-		
-		String getOsName() {	
-			return System.getProperty("os.name");
-		}
-		
-		String getOsArch() {
-			return System.getProperty("os.arch");
-		}
+
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
+	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+	maven { url 'https://jline.sourceforge.net/m2repo' }
+	maven { url 'https://repo.spring.io/milestone'}
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
-	maven { url 'http://repo.jenkins-ci.org/public/' }
-	maven { url 'http://clojars.org/repo' }
+	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
+	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
+	maven { url 'https://plugins.gradle.org/m2/' }
+	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 }
 
 dependencies {
-	
-	/*
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
-	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
-
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-
-	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
-	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-	compile group: 'org.kohsuke.stapler', name: 'stapler-jetty', version: '1.1'
-	
-	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.0.1.201506240215-r'
-	
-	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
-	compile group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
-	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
-	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
-	compile group: 'org.kohsuke', name: 'github-api', version: '1.66'
-	compile 'com.miglayout:miglayout-swing:4.2'
-	compile 'commons-io:commons-io:2.4'
-	compile group:'org.python',name:'jython',version:'2.5.3'
-	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
-	compile 'org.clojure:clojure:1.7.0'
-	compile 'org.clojure:tools.nrepl:0.2.10'
-	compile "overtone:overtone:0.9.1"
-	compile "edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT"
-	compile "edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT"
-	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
-    compile 'org.slf4j:slf4j-simple:1.6.1'
-			
-	//compile "com.neuronrobotics:JCSG:0.1.4"
-	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	//compile "com.neuronrobotics:java-bowler:3.16.5"
-	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.16.4-jar-with-dependencies.jar'])
-	compile "com.neuronrobotics:WalnutiQ:2.3.1"
-	
-	
-	
-	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
-	println("OPENCV_DIR="+basedir);
-	if(isWindows()){
-
-		compile files(basedir)
-	}
-	if(isOSX()){
-		if(System.getenv("OPENCV_DIR")!=null)
-			compile files(basedir)
-		else
-			//If you set your OPENCV_DIR environment variable, then we wouldnt have to do hacky things
-			compile files('/Volumes/Snow Leopard/Applications/BowlerStudio.app/Contents/MacOS/opencv249build/bin/opencv-249.jar')
-	}
-	if(isLinux()){
-		//compile files('/usr/share/java/opencv-249.jar')
-		compile fileTree (dir: '/usr/share/java/', includes: ['*opencv-24*.jar'])
-	}
-	
-	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
-	compile 'gov.nist.math:jama:1.0.2'
-	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
-	compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
-	compile group:'com.github.ellzord', name:'JALSE', version:'1.0.9'
-	
-	compile group:'de.huxhorn.sulky', name:'de.huxhorn.sulky.3rdparty.jlayer', version:'1.0'
-	compile group:'com.googlecode.json-simple', name:'json-simple', version:'1.1'
-	compile 'com.fifesoft:rsyntaxtextarea:2.5.6'
-    //compile("org.springframework.boot:spring-boot-starter-web:1.2.7.RELEASE")
-	
-	compile fileTree (dir: 'libs', includes: ['*.jar'])
-    compile 'org.slf4j:slf4j-simple:1.6.1'
-	compile 'gov.nist.math:jama:1.0.2'
-	compile 'com.miglayout:miglayout-swing:4.1'
-	compile 'org.igniterealtime.smack:smack:3.2.1'
-
-	compile 'org.igniterealtime.smack:smackx:3.2.1'
-	compile 'org.apache.commons:commons-lang3:3.2.1'
-	compile 'org.usb4java:usb4java:1.2.0'
-	compile 'org.usb4java:usb4java-javax:1.2.0'
-	compile "com.neuronrobotics:nrjavaserial:3.11.0"
-	compile fileTree (dir: '../java-bowler/libs', includes: ['*.jar'])
-	compile fileTree (dir: '../bowler-script-kernel/libs/', includes: ['*.jar'])
-	*/
-	
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.8.3"
-
-	
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.8.1.jar'])
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.20.0"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.19.2.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
+	compile "org.jfxtras:jfxtras-common:8.0-r4"
+	compile "org.jfxtras:jfxtras-fxml:8.0-r4"
+	compile "org.jfxtras:jfxtras-controls:8.0-r4"
+	compile "org.jfxtras:jfxtras-agenda:8.0-r4"
+	compile "org.jfxtras:jfxtras-window:8.0-r4"
+	compile "org.jfxtras:jfxtras-menu:8.0-r4"
+	compile "org.jfxtras:jfxtras-labs:8.0-r4"
+	compile 'org.dockfx:DockFX:0.1.5'
+	
+	
+	compile fileTree (dir: 'libs/', includes: ['*.jar'])
+
 }
 
 // create a fat-jar (class files plus dependencies
@@ -206,7 +153,7 @@ jar {
 	manifest {  
 	    attributes(	
 	    				"Main-Class": mainClass,
-	    				"SplashScreen-Image": "com/neuronrobotics/nrconsole/images/logo.png",
+	    				"SplashScreen-Image": "com/neuronrobotics/nrconsole/images/splash.png",
 		    			"Manifest-Version": "1.0",
 		    			"Created-By": "Neuron Robotics Cooperative",
 		    			"Specification-Title": props."app.name",
@@ -220,6 +167,8 @@ jar {
 		    )
 		}
 }
+
+
 
 //task run(type: JavaExec) {
 //	classpath = sourceSets.main.runtimeClasspath

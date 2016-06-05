@@ -34,9 +34,9 @@ public class PIDConstantsDialog extends JPanel {
 		add(iData,"wrap");
 		add(new JLabel("Kd"));
 		add(dData,"wrap");
-		pData.setText(new Double(getKp()).toString());
-		iData.setText(new Double(getKi()).toString());
-		dData.setText(new Double(getKd()).toString());
+		pData.setText(Double.toString(getKp()));
+		iData.setText(Double.toString(getKi()));
+		dData.setText(Double.toString(getKd()));
 		set.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

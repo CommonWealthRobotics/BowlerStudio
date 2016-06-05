@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import java.awt.image.BufferedImage;
+
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
@@ -34,24 +36,36 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.reactfx.util.FxTimer;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
@@ -70,6 +84,12 @@ import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
+import eu.mihosoft.vrl.v3d.parametrics.IParametric;
+import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
+import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -77,14 +97,23 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.paint.PhongMaterial;
@@ -92,7 +121,9 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
@@ -107,6 +138,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 
 import static javafx.scene.input.KeyCode.*;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -121,6 +155,8 @@ import javafx.scene.Node;
  * MoleculeSampleApp.
  */
 public class BowlerStudio3dEngine extends JFXPanel {
+
+	
 
 	/**
 	 * 
@@ -141,7 +177,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	
 	/** The camera distance. */
-	final double cameraDistance = 3000;
+	final double cameraDistance = 4000;
 	
 	/** The molecule group. */
 	final Xform moleculeGroup = new Xform();
@@ -184,7 +220,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	/** The look group. */
 	private final Group lookGroup = new Group();
-	
+	/** The look group. */
+	private final Group focusGroup = new Group();
 	/** The scene. */
 	private SubScene scene;
 	
@@ -202,6 +239,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private double leftRight=0;
 	private HashMap<CSG,MeshView> csgMap = new HashMap<>();
 	private HashMap<CSG,File> csgSourceFile = new HashMap<>();
+	private HashMap<MeshView,Axis> axisMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
 
@@ -218,6 +256,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private ArrayList<String> debuggerList=new ArrayList<>();
 	private CSG selectedCsg=null;
 	double color=0;
+
+	private List<CSG> selectedSet=null;
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -230,7 +270,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		Stop[] stops = null;
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		Scene s = new Scene(new Group(getSubScene()));
-		handleKeyboard(s);
+		//handleKeyboard(s);
 		handleMouse(getSubScene());
 
 		setScene(s);
@@ -277,6 +317,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 	public Group getControlsBox(){
 		HBox controls = new HBox(10);
+		home = new Button("Home Camera");
+		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
+		home.setOnAction(event ->{
+			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
+			getFlyingCamera().updatePositions();
+		});
+		
+		controls.getChildren().addAll(home);
+		return new Group(controls);
+	}
+	public Group getDebuggerBox(){
+		HBox controls = new HBox(10);
 		
 		back = new Button("Back");
 		fwd = new Button("Forward");
@@ -309,14 +361,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		fwd.disableProperty().set(true);
 		back.disableProperty().set(true);
 		
-		home = new Button("Home Camera");
 		
-		home.setOnAction(event ->{
-			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-			getFlyingCamera().updatePositions();
-		});
-		
-		controls.getChildren().addAll(back,fwd,home);
+		controls.getChildren().addAll(new Label("Cad Debugger"),back,fwd);
 		return new Group(controls);
 	}
 	
@@ -325,8 +371,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public void removeObjects(){
 		lookGroup.getChildren().clear();
-		csgMap.clear();
+		getCsgMap().clear();
 		csgSourceFile.clear();
+		axisMap.clear();
 	}
 
 	/**
@@ -335,13 +382,42 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param previous the previous
 	 */
 	public void removeObject(CSG previousCsg) {
-		
-		MeshView previous  = csgMap.get(previousCsg);
+		//System.out.println(" Removing a CSG from file: "+previousCsg+" from file "+csgSourceFile.get(previousCsg));
+		MeshView previous  = getCsgMap().get(previousCsg);
 		if (previous != null) {
 			lookGroup.getChildren().remove(previous);
+			lookGroup.getChildren().remove(axisMap.get(previous));
+			axisMap.remove(previous);
 		}
-		csgMap.remove(previousCsg);
+		getCsgMap().remove(previousCsg);
 		csgSourceFile.remove(previousCsg);
+	}
+	
+	private void fireRegenerate(String key,File source, Set<CSG> currentObjectsToCheck){
+		new Thread() {
+			public void run() {
+				ArrayList<CSG> toAdd = new ArrayList<>();
+				ArrayList<CSG> toRemove = new ArrayList<>();
+				for(CSG tester:currentObjectsToCheck){
+					for(String p:tester.getParameters()){
+						if(p.contentEquals(key)){
+							CSG ret = tester.regenerate();
+							toRemove.add(tester);
+							toAdd.add(ret);
+						
+						}
+					}
+				}
+				for(CSG add:toRemove)
+					Platform.runLater(()->{
+						removeObject(add);
+					});
+				for(CSG ret:toAdd)
+					Platform.runLater(()->{
+						addObject(ret, source);
+					});
+			}
+		}.start();
 	}
 
 	/**
@@ -351,18 +427,115 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
-		
-		csgMap.put(currentCsg, currentCsg.getMesh());
+		//System.out.println(" Adding a CSG from file: "+source.getName());
+		if(getCsgMap().get(currentCsg)!= null)
+			return currentCsg.getMesh();
+		getCsgMap().put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
 		
-		MeshView current = csgMap.get(currentCsg);
+		MeshView current = getCsgMap().get(currentCsg);
+		
+		//TriangleMesh mesh =(TriangleMesh) current.getMesh();
+		//mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
-		MenuItem cut = new MenuItem("Debug Source");
+		
+		Set<String> params = currentCsg.getParameters();
+		if (params != null) {
+			Menu parameters = new Menu("Parameters...");
+			
+			for (String key : params) {
+				Parameter param = CSGDatabase.get(key);
+				currentCsg.setParameterIfNull(key);
+				if(LengthParameter.class.isInstance(param)){
+					LengthParameter lp  = (LengthParameter)param;
+					
+					EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+	
+						@Override
+						public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+							new Thread() {
+								public void run() {
+									try{
+										currentCsg.setParameterNewValue(key, newAngleDegrees);
+										
+									}catch(Exception ex){
+										BowlerStudioController.highlightException(source, ex);
+									}
+								}
+							}.start();
+						}
+	
+						@Override
+						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+							Set<CSG> objects = getCsgMap().keySet();
+							fireRegenerate( key,  source, objects);
+							cm.hide();// hide this menue because the new CSG talks to the new menue
+						}
+					},		Double.parseDouble(lp.getOptions().get(1).toString()) ,
+							Double.parseDouble(lp.getOptions().get(0).toString()), 
+							lp.getMM(), 
+							400, 
+							key);
+					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+					customMenuItem.setHideOnClick(false);
+					parameters.getItems().add(customMenuItem);
+				}
+			}
+			cm.getItems().add(parameters);
+		}
+		
+		MenuItem export = new MenuItem("Export STL...");
+		export.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				
+				new Thread() {
+
+					public void run() {
+						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
+						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
+							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
+						if(!baseDirForFiles.exists())
+							try {
+								baseDirForFiles.createNewFile();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						try {
+							FileUtil
+							.write(Paths
+									.get(baseDirForFiles
+											.getAbsolutePath()), 
+									currentCsg
+									.prepForManufacturing()
+									.toStlString());
+							System.out.println("Exported STL to"+baseDirForFiles
+									.getAbsolutePath());
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(source, e);
+						}
+					}
+				}.start();
+		    }
+		});
+		
+		cm.getItems().add(export);
+		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
 				setSelectedCsg(currentCsg);
-
+				new Thread(){
+					public void run(){
+				        selectObjectsSourceFile(selectedCsg);
+					}
+				}.start();
 		    }
 		});
 		cm.getItems().add(cut);
@@ -375,33 +548,53 @@ public class BowlerStudio3dEngine extends JFXPanel {
                 }
             }
         });
-        cm.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("right gets consumed so this must be left on "+
-                        ((MenuItem) event.getTarget()).getText());
-            }
-        });
-		current.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+   
+		class closeTheMenueHandler implements EventHandler<MouseEvent> {
+			long lastClickedTime  = 0;
 			@Override
 			public void handle(MouseEvent event) {
-				if(event.getButton()==MouseButton.SECONDARY){
-					cm.show(current, event.getScreenX(), event.getScreenY());
-					event.consume();
-				}else
-					cm.hide();
+				if(event.isSecondaryButtonDown()||event.isShiftDown())
+					cm.show(current, event.getScreenX()-10, event.getScreenY()-10);
+				else if(event.isPrimaryButtonDown()){
+					if(System.currentTimeMillis()-lastClickedTime<500){
+						FxTimer.runLater(
+						        java.time.Duration.ofMillis(200),
+						        () -> setSelectedCsg(currentCsg));
+						
+					}
+					lastClickedTime=System.currentTimeMillis();
+					//event.consume();
+				}
+
 			}
-		});
+		}
+		closeTheMenueHandler cmh =new closeTheMenueHandler();
+		current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh);
 		
-		Group og = new Group();
-		og.getChildren().add(current);
-		Axis a = new Axis();
-		a.getTransforms().addAll(current.getTransforms());
-		og.getChildren().add(a);
-		lookGroup.getChildren().add(og);
+		//cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, cmh);
+		
+		
+		lookGroup.getChildren().add(current);
+		Axis axis = new Axis();
+		axis.getTransforms().add(currentCsg.getManipulator());
+		axisMap.put(current, axis);
+		lookGroup.getChildren().add(axis);
 		//Log.warning("Adding new axis");
 		return current;
 	}
+	private void prepAllItems(ObservableList<MenuItem> items,EventHandler<MouseEvent> exited,EventHandler<MouseEvent> entered ){
+		for(MenuItem item :items){
+			if(Menu.class.isInstance(item)){
+				Menu m=(Menu)item;
+				prepAllItems( m.getItems(),exited,entered);
+			}else{
+				item.addEventHandler(MouseEvent.MOUSE_EXITED, entered);
+				item.addEventHandler(MouseEvent.MOUSE_ENTERED, entered);
+			}
+			
+		}
+	}
+
 
 	/**
 	 * Save to png.
@@ -521,32 +714,113 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	private void buildAxes() {
 		
-		int gridSize=1000;
-		int gridDensity=gridSize/10;
-		ground = new Group();
-		Affine groundPlacment=new Affine();
-		for(int i=-gridSize;i<gridSize;i++){
-			for(int j=-gridSize;j<gridSize;j++){
-				if(i%gridDensity==0 &&j%gridDensity==0){
-					Sphere s = new Sphere(1);
-					Affine sp=new Affine();
-					sp.setTy(i);
-					sp.setTx(j);
-					//System.err.println("Placing sphere at "+i+" , "+j);
-					s.getTransforms().add(sp);
-					ground.getChildren().add(s);
+//		int gridSize=1000;
+//		int gridDensity=gridSize/10;
+//		
+//		PhongMaterial phongMaterial = new PhongMaterial();
+//		phongMaterial.setDiffuseColor(Color.BLACK);
+//		for(int i=-gridSize;i<gridSize;i++){
+//			for(int j=-gridSize;j<gridSize;j++){
+//				if(i%gridDensity==0 &&j%gridDensity==0){
+//					Sphere s = new Sphere(1);
+//					s.setMaterial(phongMaterial);
+//					Affine sp=new Affine();
+//					sp.setTy(i);
+//					sp.setTx(j);
+//					//System.err.println("Placing sphere at "+i+" , "+j);
+//					s.getTransforms().add(sp);
+//					ground.getChildren().add(s);
+//				}
+//			}
+//		}
+
+		new Thread(){
+			public void run(){
+				try {
+					Image ruler = AssetFactory.loadAsset("ruler.png");
+					Image ground = AssetFactory.loadAsset("ground.png");
+					Affine groundMove = new Affine();
+					//groundMove.setTz(-3);
+					groundMove.setTx(-ground.getHeight()/2);
+					groundMove.setTy(-ground.getWidth()/2);
+					Affine zRuler = new Affine();
+					double scale =0.25;
+					//zRuler.setTx(-130*scale);
+					zRuler.setTz(-20*scale);
+					zRuler.appendScale(scale, scale,scale);
+					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+					zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+					zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
+					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+					
+					Affine yRuler = new Affine();
+					yRuler.setTx(-130*scale);
+					yRuler.setTy(-20*scale);
+					yRuler.appendScale(scale, scale,scale);
+					yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+					
+					Affine xp = new Affine();
+					xp.setTx(-20*scale);
+					xp.appendScale(scale, scale,scale);
+					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					Platform.runLater(()->{
+						ImageView rulerImage = new ImageView(ruler);
+						ImageView yrulerImage = new ImageView(ruler);
+						ImageView zrulerImage = new ImageView(ruler);
+						ImageView groundView = new ImageView(ground);
+						groundView.getTransforms().add(groundMove);
+						groundView.setOpacity(0.3);
+						zrulerImage.getTransforms().add(zRuler);
+						rulerImage.getTransforms().add(xp);
+						yrulerImage.getTransforms().add(yRuler);
+						axisGroup.getChildren().addAll(zrulerImage,rulerImage,yrulerImage,groundView);
+					});
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-		}
-
+		}.start();
+		Affine xp = new Affine();
+		xp.setTx(25);
+		Label xText = new Label("+X");
+		xText.getTransforms().add(xp);
+		
+		Affine yp = new Affine();
+		yp.setTy(25);
+		Label yText = new Label("+Y");
+		yText.getTransforms().add(yp);
+		
+		Affine zp = new Affine();
+		zp.setTz(25);
+		zp.setTx(25);
+		zp.appendRotation(-90, 0, 0, 0, 1, 0, 0);
+		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
+		Label zText = new Label("+Z");
+		zText.getTransforms().add(zp);
+		Affine groundPlacment=new Affine();
 		groundPlacment.setTz(-1);
 		//ground.setOpacity(.5);
+		ground = new Group();
 		ground.getTransforms().add(groundPlacment);
-		axisGroup.getChildren().addAll(new Axis(),ground, getVirtualcam().getCameraFrame());
+		focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
+		axisGroup.getChildren().addAll(yText,zText,xText,ground,focusGroup );
 		world.getChildren().addAll(axisGroup, lookGroup);
 		
 	}
 	
+	public void cancelSelection() {
+		Platform.runLater(()->focusGroup.getTransforms().clear());
+		for(CSG key:getCsgMap().keySet()){
+			
+			Platform.runLater(()->getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+		}
+
+		selectedSet=null;
+		this.selectedCsg=null;
+		//new Exception().printStackTrace();
+	}
 	
 
 	/**
@@ -556,6 +830,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param root the root
 	 */
 	private void handleMouse(SubScene scene) {
+
+		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			long lastClickedTime  = 0;
+			@Override
+			public void handle(MouseEvent event) {
+				if(!event.isConsumed()){
+					if(System.currentTimeMillis()-lastClickedTime<500){
+						cancelSelection();
+					}
+					
+					//System.out.println("Cancel event detected");
+				}
+				lastClickedTime=System.currentTimeMillis();
+			}
+
+			
+		});
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
@@ -621,7 +912,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			@Override
 			public void handle(ScrollEvent t) {
-				if (ScrollEvent.SCROLL == (t).getEventType()) {
+				if (ScrollEvent.SCROLL == t.getEventType()) {
 
 //					double zoomFactor = (t.getDeltaY());
 //
@@ -637,103 +928,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	}
 
-	/**
-	 * Handle keyboard.
-	 *
-	 * @param scene the scene
-	 * @param root the root
-	 */
-	public void handleKeyboard(Scene scene) {
-		//final boolean moveCamera = true;
-		//System.out.println("Adding keyboard listeners");
-		
-		double modifier = 5.0;		
-		
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			
-			@Override
-			public void handle(KeyEvent event) {
-				//System.err.println(event);
-				//Duration currentTime;
-				
-				switch (event.getCode()) {
-				case W:
-				case UP:
-					upDown=modifier;
-					break;
-				case S:
-				case DOWN:
-					upDown=-modifier;
-					break;
-				case D:
-				case RIGHT:
-					leftRight=-modifier;
-					break;
-				case A:
-				case LEFT:
-					leftRight=modifier;
-					break;
-				default:// do not consume events associated with the navigation
-					return;
-				}
-				moveCamera(new TransformNR(leftRight,upDown,0,
-						new RotationNR())
-						, 0);
-				
-				event.consume();
-			}
-			
-		});
-		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			
-			@Override
-			public void handle(KeyEvent event) {
-				//System.err.println(event);
-				//Duration currentTime;
-				
-				switch (event.getCode()) {
-				case W:
-				case UP:
-				case S:
-				case DOWN:
-					upDown=0;
-					break;
-				case D:
-				case RIGHT:
-				case A:
-				case LEFT:
-					leftRight=0;
-					break;
-				default:// do not consume events associated with the navigation
-					return;
-				}
-				moveCamera(new TransformNR(leftRight,upDown,0,
-						new RotationNR())
-						, 0);
-				
-				event.consume();
-			}
-			
-		});
-	}
+
 	
 	private void moveCamera( TransformNR newPose, double seconds){
 		getFlyingCamera()
 		.DriveArc(newPose, seconds);
-		// Selection of a part fro the cameras focal point
-//		TransformNR t = offsetForVisualization// re-orent the frame of reference for the gobal camera. 
-//				.times(getFlyingCamera().getFiducialToGlobalTransform());
-//		for ( Entry<CSG, MeshView> bits:csgMap.entrySet()){
-//			Bounds locBounds = bits.getValue().getBoundsInParent();
-//			if(locBounds.contains(	t.getX(),
-//									t.getY(), 
-//									t.getZ())){
-//				//System.err.println("Object in screen bounded by: "+locBounds);
-//				//System.err.println("Look Center: "+getFlyingCamera().getFiducialToGlobalTransform());
-//				//bits.getKey().getCreationEventStackTrace().printStackTrace();
-//		        selectObjectsSourceFile(bits.getKey());
-//			}
-//		}
+
 	}
 	
 	private void selectObjectsSourceFile(CSG source ){
@@ -765,18 +965,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		    	
 		}
 		debuggerIndex = debuggerList.size()-1;
-		Platform.runLater(()->{
-			fwd.disableProperty().set(false);
-			back.disableProperty().set(true);
-		});
+//		Platform.runLater(()->{
+//			fwd.disableProperty().set(false);
+//			back.disableProperty().set(true);
+//		});
 	    
 	}
 	
 	private File locateFile(String fileName, CSG source){
 		File f = csgSourceFile.get(source);
-		if(f.getName().contains(fileName)){
+		if(f!=null && f.getName().contains(fileName))
 			return f;
-		}
 		return ScriptingEngine.getFileEngineRunByName(fileName);
 	}
 
@@ -864,19 +1063,131 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public CSG getSelectedCsg() {
 		return selectedCsg;
 	}
-
-	public void setSelectedCsg(CSG selectedCsg) {
-		CSG old = getSelectedCsg();
-		if(old!=null){
+	public  void  setSelectedCsg(List<CSG> selectedCsg){
+		//System.err.println("Selecting group");
+		selectedSet = selectedCsg;
+		//setSelectedCsg(selectedCsg.get(0));
+		for(int in=1;in<selectedCsg.size();in++){
+			int i=in;
+			MeshView mesh = getCsgMap().get(selectedCsg.get(i));
+			if(mesh!=null)
+				FxTimer.runLater(
+				        java.time.Duration.ofMillis(100),
+				        
+			()->{
+//				mesh.setMaterial(new PhongMaterial(new Color(
+//					1,
+//					(selectedCsg.get(i).getColor().getGreen())*0.6,
+//					(selectedCsg.get(i).getColor().getBlue())*0.6,
+//					selectedCsg.get(i).getColor().getOpacity())));
+				mesh.setMaterial(new PhongMaterial(Color.GOLD));
+			});
 			
-			Platform.runLater(()->csgMap.get(old).setMaterial(new PhongMaterial(old.getColor())));
 		}
+	}
+	public  void  setSelectedCsg(CSG selectedCsg) {
+		if(selectedCsg == this.selectedCsg)
+			return;
+		
+		cancelSelection();
+		//System.err.println("Selecting one");
 		this.selectedCsg = selectedCsg;
-		Platform.runLater(()->csgMap.get(selectedCsg).setMaterial(new PhongMaterial(Color.YELLOW)));
-		new Thread(){
-			public void run(){
-		        selectObjectsSourceFile(selectedCsg);
+		
+		FxTimer.runLater(
+			        java.time.Duration.ofMillis(100),
+			        
+		()->{
+			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
+		});
+		//System.out.println("Selecting "+selectedCsg);
+		double xcenter = selectedCsg.getMaxX()/2+selectedCsg.getMinX()/2;
+		double ycenter = selectedCsg.getMaxY()/2+selectedCsg.getMinY()/2;
+		double zcenter = selectedCsg.getMaxZ()/2+selectedCsg.getMinZ()/2;
+		
+		TransformNR poseToMove = new TransformNR();
+		CSG finalCSG = selectedCsg;
+		if(selectedCsg.getMaxX()<1 ||selectedCsg.getMinX()>-1 ){
+			finalCSG=finalCSG.movex(-xcenter);
+			poseToMove.translateX(xcenter);
+		}
+		if(selectedCsg.getMaxY()<1 ||selectedCsg.getMinY()>-1 ){
+			finalCSG=finalCSG.movey(-ycenter);
+			poseToMove.translateY(ycenter);
+		}
+		if(selectedCsg.getMaxZ()<1 ||selectedCsg.getMinZ()>-1 ){
+			finalCSG=finalCSG.movez(-zcenter);
+			poseToMove.translateZ(zcenter);
+		}
+		Affine centering = TransformFactory.nrToAffine(poseToMove);
+		//this section keeps the camera orented the same way to avoid whipping around
+		TransformNR rotationOnlyCOmponentOfManipulator =TransformFactory.affineToNr(selectedCsg.getManipulator());
+		rotationOnlyCOmponentOfManipulator.setX(0);
+		rotationOnlyCOmponentOfManipulator.setY(0);
+		rotationOnlyCOmponentOfManipulator.setZ(0);
+		TransformNR reverseRotation=rotationOnlyCOmponentOfManipulator.inverse();
+	
+		Platform.runLater(()->{
+			focusGroup.getTransforms().clear();
+			if(		Math.abs(selectedCsg.getManipulator().getTx())>0.1 ||
+					Math.abs(selectedCsg.getManipulator().getTy())>0.1||
+					Math.abs(selectedCsg.getManipulator().getTz())>0.1){
+				Platform.runLater(()->{
+					focusGroup.getTransforms().add(selectedCsg.getManipulator());
+					focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation));
+				});
+			}else
+				focusGroup.getTransforms().add(centering);
+			
+		});
+	}
+
+	public HashMap<CSG,MeshView> getCsgMap() {
+		return csgMap;
+	}
+
+	public void setCsgMap(HashMap<CSG,MeshView> csgMap) {
+		this.csgMap = csgMap;
+	}
+
+	public void setSelectedCsg(File script, int lineNumber) {
+		
+		ArrayList<CSG> objsFromScriptLine = new ArrayList<>();	
+		//check all visable CSGs
+		for(CSG checker:getCsgMap().keySet()){
+			for (String trace:checker.getCreationEventStackTraceList()){
+				String[] traceParts = trace.split(":");
+				//System.err.println("Seeking: "+script.getName()+" line= "+lineNumber+" checking from line: "+trace);
+				//System.err.println("TraceParts "+traceParts[0]+" and "+traceParts[1]);
+				if(traceParts[0]
+						.trim()
+						.toLowerCase()
+						.contains(
+								script
+								.getName()
+								.toLowerCase()
+								.trim()
+								)
+						)
+				{
+					//System.out.println("Script matches");
+					try{
+						int num = Integer.parseInt(traceParts[1].trim());
+						
+						if (num ==lineNumber ){
+							//System.out.println("MATCH");
+							objsFromScriptLine.add(checker);
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
 			}
-		}.start();
+		}
+		if(objsFromScriptLine.size()>0){
+			cancelSelection();
+			setSelectedCsg(objsFromScriptLine.get(0));
+			focusGroup.getTransforms().clear();
+			setSelectedCsg(objsFromScriptLine);
+		}
 	}
 }

@@ -13,7 +13,6 @@ public class Slic3rFilter extends FileFilter {
 		if(f.isDirectory()) {
 			return true;
 		}
-		String path = f.getAbsolutePath().toLowerCase();
 		if (f.getName().toLowerCase().contains("slic3r")) {
 			return true;
 		}

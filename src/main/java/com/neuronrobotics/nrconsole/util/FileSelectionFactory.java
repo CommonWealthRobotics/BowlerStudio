@@ -6,17 +6,17 @@ import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.imageprovider.StaticFileProvider;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 
 public class FileSelectionFactory {
 
-	public static File GetFile(File start, ExtensionFilter... filter) {
+	private FileSelectionFactory() {
+	}
+
+	public static File GetFile(File start, boolean save, ExtensionFilter... filter) {
 		class fileHolder{
 			private boolean done=false;
 			private File file=null;
@@ -37,10 +37,13 @@ public class FileSelectionFactory {
 		Platform.runLater(() -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());
-			
-			fileChooser.getExtensionFilters().addAll(filter);
+			if(filter!=null)
+				fileChooser.getExtensionFilters().addAll(filter);
 			fileChooser.setTitle("Bowler File Chooser");
-			file.setFile(fileChooser.showOpenDialog(BowlerStudio.getPrimaryStage()));
+			if(save)
+				file.setFile(fileChooser.showSaveDialog(BowlerStudioModularFrame.getPrimaryStage()));
+			else
+				file.setFile(fileChooser.showOpenDialog(BowlerStudioModularFrame.getPrimaryStage()));
 			file.setDone(true);
 			
 		});
@@ -49,6 +52,9 @@ public class FileSelectionFactory {
 		}
 			
 		return file.getFile();
+	}
+	public static File GetFile(File start, ExtensionFilter... filter) {
+		return GetFile(start, false,filter);
 	}
 
 }

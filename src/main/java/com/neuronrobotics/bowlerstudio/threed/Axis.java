@@ -103,9 +103,14 @@ public class Axis extends Group {
 		
 		Affine zp = new Affine();
 		zp.setTz(i/2);
+		Affine zTextAffine = new Affine();
+		zTextAffine.setTz(i/2);
+		zTextAffine.setTx(i/2);
+		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
+		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
 		zAxis.getTransforms().add(zp);
 		Label zText = new Label("+Z");
-		zText.getTransforms().add(zp);
+		zText.getTransforms().add(zTextAffine);
 		
 		
 		xAxis.setMaterial(redMaterial);

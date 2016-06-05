@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
@@ -28,7 +29,7 @@ import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
-import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
+//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
@@ -49,7 +50,7 @@ public class PluginManager {
 	
 	private BowlerAbstractDevice dev;
 	
-	private static ArrayList<DeviceSupportPluginMap> deviceSupport = new ArrayList<DeviceSupportPluginMap>();
+	private static ArrayList<DeviceSupportPluginMap> deviceSupport = new ArrayList<>();
 	private ArrayList<AbstractBowlerStudioTab> liveTabs = new ArrayList<>();
 	
 	// add tabs to the support list based on thier class
@@ -151,22 +152,22 @@ public class PluginManager {
 	
 	public Node getBowlerBrowser(){
 
-		CheckBoxTreeItem<String> rpc = new CheckBoxTreeItem<String> ("Bowler RPC"); 
-		TreeView<String> treeView =new  TreeView<String>(rpc);
+		CheckBoxTreeItem<String> rpc = new CheckBoxTreeItem<> ("Bowler RPC"); 
+		TreeView<String> treeView =new  TreeView<>(rpc);
 		treeView.setCellFactory(CheckBoxTreeCell.forTreeView());
 		
 		if(dev.getConnection()!=null){
 			rpc.setExpanded(true);
 			ArrayList<String> nameSpaceList = dev.getNamespaces();
 			for(String namespace:nameSpaceList){
-				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<String> (namespace); 
+				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<> (namespace); 
 				ns.setExpanded(false);
 				rpc.getChildren().add(ns);
 				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
-				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<String> ("GET"); 
-				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<String> ("POST"); 
-				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<String> ("ASYNC"); 
-				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<String> ("CRITICAL");
+				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<> ("GET"); 
+				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<> ("POST"); 
+				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<> ("ASYNC"); 
+				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<> ("CRITICAL");
 				get.setExpanded(false);
 				ns.getChildren().add(get);
 				post.setExpanded(false);
@@ -176,7 +177,7 @@ public class PluginManager {
 				crit.setExpanded(false);
 				ns.getChildren().add(crit);
 				for(RpcEncapsulation rpcEnc:rpcList){
-					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<String> (rpcEnc.getRpc()); 
+					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<> (rpcEnc.getRpc()); 
 					rc.setExpanded(false);
 					switch(rpcEnc.getDownstreamMethod()){
 					case ASYNCHRONOUS:
@@ -227,22 +228,26 @@ public class PluginManager {
 	}
 
 	public ArrayList<TitledPane> getPlugins() {
-		ArrayList<TitledPane> plugins = new ArrayList<TitledPane>();
+		ArrayList<TitledPane> plugins = new ArrayList<>();
 		
 		VBox pluginLauncher = new VBox(20);
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName());
+				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(),AssetFactory.loadIcon("Plugin-Icon.png"));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
-							CreatureLab.class ==c.getPlugin()
+							CreatureLab.class ==c.getPlugin()||
+							CameraTab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
 							Log.warning("Attempting Autoloading "+c);
-							launchTab( c,launcher);					
+							if(CreatureLab.class !=c.getPlugin())
+								launchTab( c,launcher);	
+							else
+								generateTab(c);// dont add the creature lab it uses the overlays
 						}
 					}else{
 						Log.warning("Not autoloading "+c);
@@ -259,11 +264,16 @@ public class PluginManager {
 				pluginLauncher.getChildren().add(launcher);
 			}
 		}
-		
-		plugins.add(new TitledPane("Device Info", new Text(dev.getClass().getSimpleName())));
+		TitledPane info = new TitledPane("Device Info", new Text(dev.getClass().getSimpleName()));
+		TitledPane protocol = new TitledPane("Bowler Protocol",  getBowlerBrowser());
+		TitledPane pluginsPane = new TitledPane("Plugins",  pluginLauncher);
+		info.setGraphic(AssetFactory.loadIcon("Info.png"));
+		protocol.setGraphic(AssetFactory.loadIcon("BowlerStudio.png"));
+		pluginsPane.setGraphic(AssetFactory.loadIcon("Plugins.png"));
+		plugins.add(info);
 		if(dev.getConnection()!=null)
-			plugins.add(new TitledPane("Bowler Protocol",  getBowlerBrowser()));
-		plugins.add(new TitledPane("Plugins",  pluginLauncher));
+			plugins.add(protocol);
+		plugins.add(pluginsPane);
 		return plugins;
 	}
 	
