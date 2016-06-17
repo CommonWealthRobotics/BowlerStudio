@@ -480,16 +480,17 @@ public class MobileBaseCadManager {
 		return get(device).simplecad;
 	}
 	
-	private synchronized CSG localGetBaseCad(MobileBase device){
+	private CSG localGetBaseCad(MobileBase device){
 
 		if(baseCad==null){
-			for(int i=0;i<getAllCad().size();i++){
-				CSG c = getAllCad().get(i);
-				if(baseCad==null)
-					baseCad=c;
-				else
-					baseCad=baseCad.union(c);
-			}
+//			for(int i=0;i<getAllCad().size();i++){
+//				CSG c = getAllCad().get(i);
+//				if(baseCad==null)
+//					baseCad=c;
+//				else
+//					baseCad=baseCad.union(c);
+//			}
+			baseCad = getAllCad().get(0);
 		}
 		
 		return baseCad;
