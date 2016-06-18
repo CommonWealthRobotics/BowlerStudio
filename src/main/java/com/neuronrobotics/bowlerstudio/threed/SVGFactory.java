@@ -37,7 +37,7 @@ import javafx.stage.Stage;
 public class SVGFactory  extends Application {
 
 	private static Pane snapshotGroup;
-
+	private static final double MMTOPX =3.5409643774783404;
 
 	@SuppressWarnings("static-access")
 	public static File exportSVG(CSG currentCsg,File defaultDir) {
@@ -80,7 +80,7 @@ public class SVGFactory  extends Application {
 		double scaleY = snHeight / realHeight;
 
 		double scale = Math.min(scaleX, scaleY);
-
+		
 		SnapshotParameters snapshotParameters = new SnapshotParameters();
 		snapshotParameters.setTransform(new Scale(scale, scale));
 		snapshotParameters.setDepthBuffer(true);
@@ -109,7 +109,7 @@ public class SVGFactory  extends Application {
 					// Tracing
 					options.put("ltres",1f);//Error treshold for straight lines.
 					options.put("qtres",1f);//Error treshold for quadratic splines.
-					options.put("pathomit",8f);//Edge node paths shorter than this will be discarded for noise reduction.
+					options.put("pathomit",2f);//Edge node paths shorter than this will be discarded for noise reduction.
 
 					// Color quantization
 					options.put("colorsampling",1f); // 1f means true ; 0f means false: starting with generated palette
@@ -118,12 +118,12 @@ public class SVGFactory  extends Application {
 					options.put("colorquantcycles",3f);//Color quantization will be repeated this many times.
 //
 					// SVG rendering
-					options.put("scale",1f);//Every coordinate will be multiplied with this, to scale the SVG.
+					options.put("scale",(float) (MMTOPX/scale));//Every coordinate will be multiplied with this, to scale the SVG.
 					options.put("simplifytolerance",0f);//
-					options.put("roundcoords",1f); // 1f means rounded to 1 decimal places, like 7.3 ; 3f means rounded to 3 places, like 7.356 ; etc.
-					options.put("lcpr",0f);//Straight line control point radius, if this is greater than zero, small circles will be drawn in the SVG. Do not use this for big/complex images.
-					options.put("qcpr",0f);//Quadratic spline control point radius, if this is greater than zero, small circles and lines will be drawn in the SVG. Do not use this for big/complex images.
-					options.put("desc",1f); // 1f means true ; 0f means false: SVG descriptions deactivated
+					options.put("roundcoords",4f); // 1f means rounded to 1 decimal places, like 7.3 ; 3f means rounded to 3 places, like 7.356 ; etc.
+					options.put("lcpr",1f);//Straight line control point radius, if this is greater than zero, small circles will be drawn in the SVG. Do not use this for big/complex images.
+					options.put("qcpr",1f);//Quadratic spline control point radius, if this is greater than zero, small circles and lines will be drawn in the SVG. Do not use this for big/complex images.
+					options.put("desc",0f); // 1f means true ; 0f means false: SVG descriptions deactivated
 					options.put("viewbox",0f); // 1f means true ; 0f means false: fixed width and height
 
 					// Selective Gauss Blur
@@ -141,7 +141,7 @@ public class SVGFactory  extends Application {
 					    palette[colorcnt][3] = (byte)255;             // A
 					}
 
-					ImageTracer.saveString(finalDir.getAbsolutePath(), ImageTracer.imageToSVG(imageName, options,palette));
+					ImageTracer.saveString(finalDir.getAbsolutePath(), ImageTracer.imageToSVG(imageName, options,null));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
