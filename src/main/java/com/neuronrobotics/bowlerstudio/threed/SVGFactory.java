@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -13,6 +14,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import jankovicsandras.imagetracer.ImageTracer;
+import jankovicsandras.imagetracer.ImageTracer.IndexedImage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -140,7 +142,12 @@ public class SVGFactory  extends Application {
 					    palette[colorcnt][2] = (byte)( -128 + colorcnt * 32); // B
 					    palette[colorcnt][3] = (byte)255;             // A
 					}
-
+					IndexedImage traces = ImageTracer.imagedataToTracedata(ImageTracer.loadImageData(imageName), options, null);
+					for(ArrayList<ArrayList<Double[]>> layer:traces.layers){
+						for(ArrayList<Double[]> feature : layer){
+							System.out.println("Feature found "+feature.size());
+						}
+					}
 					ImageTracer.saveString(finalDir.getAbsolutePath(), ImageTracer.imageToSVG(imageName, options,null));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
