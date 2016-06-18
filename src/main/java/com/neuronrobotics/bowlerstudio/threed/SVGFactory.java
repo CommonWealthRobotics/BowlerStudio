@@ -84,8 +84,8 @@ public class SVGFactory extends Application {
 			baseDirForFiles = new File(baseDirForFiles.getAbsolutePath() + ".svg");
 		String imageName = baseDirForFiles.getAbsolutePath() + ".png";
 
-		int snWidth = (int) 2084;
-		int snHeight = (int) 2048;
+		int snWidth = (int) 4096;
+		int snHeight = (int) 4096;
 
 		double realWidth = snapshotGroup.getBoundsInLocal().getWidth();
 		double realHeight = snapshotGroup.getBoundsInLocal().getHeight();
@@ -106,13 +106,13 @@ public class SVGFactory extends Application {
 			@Override
 			public void run() {
 				snapshotGroup.snapshot(snapshotParameters, snapshot);
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						launchUI();
-
-					}
-				}).start();
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						launchUI();
+//
+//					}
+//				}).start();
 
 				new Thread(new Runnable() {
 					@Override
@@ -174,20 +174,20 @@ public class SVGFactory extends Application {
 																// scale the
 																// SVG.
 							options.put("simplifytolerance", 0f);//
-							options.put("roundcoords", 4f); // 1f means rounded
+							options.put("roundcoords", 3f); // 1f means rounded
 															// to 1 decimal
 															// places, like 7.3
 															// ; 3f means
 															// rounded to 3
 															// places, like
 															// 7.356 ; etc.
-							options.put("lcpr", 1f);// Straight line control
+							options.put("lcpr", 0f);// Straight line control
 													// point radius, if this is
 													// greater than zero, small
 													// circles will be drawn in
 													// the SVG. Do not use this
 													// for big/complex images.
-							options.put("qcpr", 1f);// Quadratic spline control
+							options.put("qcpr",0f);// Quadratic spline control
 													// point radius, if this is
 													// greater than zero, small
 													// circles and lines will be
