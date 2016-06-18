@@ -19,3 +19,5 @@
 /.DS_Store
 *hs_err_pid*.log*
 *.debuggerDefaults*
+/head.svg
+/head.svg.png
