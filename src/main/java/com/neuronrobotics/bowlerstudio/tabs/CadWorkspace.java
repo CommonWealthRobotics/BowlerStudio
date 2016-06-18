@@ -61,7 +61,8 @@ public class CadWorkspace extends AbstractBowlerStudioTab {
 			int k2=rn.nextInt() % n;
 			int k3=rn.nextInt() % n;
 			Scalar color= new Scalar(  k1, k2, k3 );
-			Imgproc.drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, new Point() );
+			//Imgproc.drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, new Point() );
+			MatOfPoint acountour = contours.get(i);
 			
 			//***************************************************
 			/// Show in a window to be added
