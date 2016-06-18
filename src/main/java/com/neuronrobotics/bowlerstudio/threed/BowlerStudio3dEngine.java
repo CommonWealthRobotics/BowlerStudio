@@ -503,74 +503,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				new Thread() {
 
 					public void run() {
-						try {
-							CSG slice = currentCsg
-											.movez(-.1)
-											.intersect(new Cube(currentCsg.getMaxX()-currentCsg.getMinX(),
-																currentCsg.getMaxY()-currentCsg.getMinY(),
-																10
-													).toCSG()
-													.movex(currentCsg.getMaxX()/2-currentCsg.getMinX()/2)
-													.movey(currentCsg.getMaxY()/2-currentCsg.getMinY()/2)
-													).setColor(Color.BLACK);
-							System.out.println("Object bounds  y="+(currentCsg.getMaxY()-currentCsg.getMinY()));
-							System.out.println("Object bounds  x="+(currentCsg.getMaxX()-currentCsg.getMinX()));
-							MeshView sliceMesh =slice.getMesh();
-							Group snapshotGroup =  new Group(sliceMesh);
-							File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
-							defaultStlDir = baseDirForFiles.getParentFile();
-							if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".svg"))
-								baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".svg");
-							String imageName =baseDirForFiles.getAbsolutePath()+".png";
-							
-							int snWidth = (int) snapshotGroup.getBoundsInLocal().getWidth();
-							int snHeight = (int) snapshotGroup.getBoundsInLocal().getHeight();
-
-							double realWidth = snapshotGroup.getBoundsInLocal().getWidth();
-							double realHeight = snapshotGroup.getBoundsInLocal().getHeight();
-
-							double scaleX = snWidth / realWidth;
-							double scaleY = snHeight / realHeight;
-
-							double scale = Math.min(scaleX, scaleY);
-
-							PerspectiveCamera snCam = new PerspectiveCamera(false);
-							snCam.setTranslateZ(-200);
-
-							SnapshotParameters snapshotParameters = new SnapshotParameters();
-							snapshotParameters.setTransform(new Scale(scale, scale));
-							snapshotParameters.setCamera(snCam);
-							snapshotParameters.setDepthBuffer(true);
-							snapshotParameters.setFill(Color.TRANSPARENT);
-
-							WritableImage snapshot = new WritableImage(snWidth,
-									(int) (realHeight * scale));
-							File finalDir = baseDirForFiles;
-							Platform.runLater(()->{
-								snapshotGroup.snapshot(snapshotParameters, snapshot);
-								new Thread(()->{
-									try {
-										ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png",
-												new File(imageName));
-									} catch (IOException ex) {
-										ex.printStackTrace();
-										Log.error(ex.getMessage());
-									}
-									try {
-										ImageTracer.saveString(finalDir.getAbsolutePath(),
-										        ImageTracer.imageToSVG(imageName,null,null)
-										      );
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}).start();
-							});
+			
+						defaultStlDir =SVGFactory.exportSVG(currentCsg,defaultStlDir);
 	
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						
 					}
 				}.start();
 		    }
