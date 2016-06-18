@@ -226,7 +226,7 @@ public class SVGFactory extends Application {
 							System.out.println("Begin processing image...");
 //							IndexedImage traces = ImageTracer.imagedataToTracedata(ImageTracer.loadImageData(imageName),
 //									options, null);
-//							System.out.println("Image Done!");
+//							
 //							DXFDocument dxfdocument = new DXFDocument();
 //
 //							for (ArrayList<ArrayList<Double[]>> layer : traces.layers) {
@@ -248,7 +248,7 @@ public class SVGFactory extends Application {
 							ImageTracer.saveString(finalDir.getAbsolutePath(),
 					                ImageTracer.imageToSVG(imageName,options,palette)
 					              );
-							
+							System.out.println("SVG Export Done! "+finalDir.getAbsolutePath());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
