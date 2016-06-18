@@ -149,6 +149,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
+import jankovicsandras.imagetracer.ImageTracer;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -242,7 +243,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HashMap<MeshView,Axis> axisMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
-
+	private File defaultStlDir;
 	private TransformNR defautcameraView;
 	private static final TransformNR offsetForVisualization = new TransformNR(0,0,0,
 			new RotationNR(0, 90, 90));
@@ -485,11 +486,78 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			cm.getItems().add(parameters);
 		}
 		
+		MenuItem exportDXF = new MenuItem("Export SVG...");
+		exportDXF.setOnAction(new EventHandler<ActionEvent>() {
+		    
+
+			@Override
+		    public void handle(ActionEvent event) {
+				if(defaultStlDir==null)
+					defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				
+				new Thread() {
+
+					public void run() {
+						try {
+							File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
+							defaultStlDir = baseDirForFiles.getParentFile();
+							if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".svg"))
+								baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".svg");
+							String imageName =baseDirForFiles.getAbsolutePath()+".png";
+							int snWidth = 1024;
+							int snHeight = 1024;
+
+							double realWidth = getRoot().getBoundsInLocal().getWidth();
+							double realHeight = getRoot().getBoundsInLocal().getHeight();
+
+							double scaleX = snWidth / realWidth;
+							double scaleY = snHeight / realHeight;
+
+							double scale = Math.min(scaleX, scaleY);
+
+							PerspectiveCamera snCam = new PerspectiveCamera(false);
+							snCam.setTranslateZ(-200);
+
+							SnapshotParameters snapshotParameters = new SnapshotParameters();
+							snapshotParameters.setTransform(new Scale(scale, scale));
+							snapshotParameters.setCamera(snCam);
+							snapshotParameters.setDepthBuffer(true);
+							snapshotParameters.setFill(Color.TRANSPARENT);
+
+							WritableImage snapshot = new WritableImage(snWidth,
+									(int) (realHeight * scale));
+
+							getRoot().snapshot(snapshotParameters, snapshot);
+
+							try {
+								ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png",
+										new File(imageName));
+							} catch (IOException ex) {
+								ex.printStackTrace();
+								Log.error(ex.getMessage());
+							}
+							ImageTracer.saveString(baseDirForFiles.getAbsolutePath(),
+							        ImageTracer.imageToSVG(imageName,null,null)
+							      );
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}.start();
+		    }
+		});
+		cm.getItems().add(exportDXF);
+		
 		MenuItem export = new MenuItem("Export STL...");
 		export.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		    	if(defaultStlDir==null)
+		    		defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
@@ -498,6 +566,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					public void run() {
 						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
+						defaultStlDir = baseDirForFiles.getParentFile();
 						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
 							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
 						if(!baseDirForFiles.exists())
@@ -524,8 +593,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}.start();
 		    }
 		});
-		
 		cm.getItems().add(export);
+		
 		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
