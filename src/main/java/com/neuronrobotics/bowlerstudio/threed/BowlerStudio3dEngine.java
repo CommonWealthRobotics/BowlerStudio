@@ -47,6 +47,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.python.modules.thread.thread;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -83,6 +84,7 @@ import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -502,16 +504,30 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					public void run() {
 						try {
+							CSG slice = currentCsg
+											.movez(-.1)
+											.intersect(new Cube(currentCsg.getMaxX()-currentCsg.getMinX(),
+																currentCsg.getMaxY()-currentCsg.getMinY(),
+																10
+													).toCSG()
+													.movex(currentCsg.getMaxX()/2-currentCsg.getMinX()/2)
+													.movey(currentCsg.getMaxY()/2-currentCsg.getMinY()/2)
+													).setColor(Color.BLACK);
+							System.out.println("Object bounds  y="+(currentCsg.getMaxY()-currentCsg.getMinY()));
+							System.out.println("Object bounds  x="+(currentCsg.getMaxX()-currentCsg.getMinX()));
+							MeshView sliceMesh =slice.getMesh();
+							Group snapshotGroup =  new Group(sliceMesh);
 							File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
 							defaultStlDir = baseDirForFiles.getParentFile();
 							if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".svg"))
 								baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".svg");
 							String imageName =baseDirForFiles.getAbsolutePath()+".png";
-							int snWidth = 1024;
-							int snHeight = 1024;
+							
+							int snWidth = (int) snapshotGroup.getBoundsInLocal().getWidth();
+							int snHeight = (int) snapshotGroup.getBoundsInLocal().getHeight();
 
-							double realWidth = getRoot().getBoundsInLocal().getWidth();
-							double realHeight = getRoot().getBoundsInLocal().getHeight();
+							double realWidth = snapshotGroup.getBoundsInLocal().getWidth();
+							double realHeight = snapshotGroup.getBoundsInLocal().getHeight();
 
 							double scaleX = snWidth / realWidth;
 							double scaleY = snHeight / realHeight;
@@ -529,19 +545,28 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 							WritableImage snapshot = new WritableImage(snWidth,
 									(int) (realHeight * scale));
-
-							getRoot().snapshot(snapshotParameters, snapshot);
-
-							try {
-								ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png",
-										new File(imageName));
-							} catch (IOException ex) {
-								ex.printStackTrace();
-								Log.error(ex.getMessage());
-							}
-							ImageTracer.saveString(baseDirForFiles.getAbsolutePath(),
-							        ImageTracer.imageToSVG(imageName,null,null)
-							      );
+							File finalDir = baseDirForFiles;
+							Platform.runLater(()->{
+								snapshotGroup.snapshot(snapshotParameters, snapshot);
+								new Thread(()->{
+									try {
+										ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png",
+												new File(imageName));
+									} catch (IOException ex) {
+										ex.printStackTrace();
+										Log.error(ex.getMessage());
+									}
+									try {
+										ImageTracer.saveString(finalDir.getAbsolutePath(),
+										        ImageTracer.imageToSVG(imageName,null,null)
+										      );
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}).start();
+							});
+	
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
