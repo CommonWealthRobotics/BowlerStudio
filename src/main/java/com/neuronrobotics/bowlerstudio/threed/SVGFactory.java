@@ -41,20 +41,20 @@ public class SVGFactory  extends Application {
 
 	@SuppressWarnings("static-access")
 	public static File exportSVG(CSG currentCsg,File defaultDir) {
-		double centerX = currentCsg.getMaxX() / 2 - currentCsg.getMinX() / 2;
-		double centerY = currentCsg.getMaxY() / 2 - currentCsg.getMinY() / 2;
+		currentCsg =currentCsg
+					.toYMin()
+					.toXMin();
+					
 		CSG slice = currentCsg.movez(-.1)
 				.intersect(new Cube(currentCsg.getMaxX() - currentCsg.getMinX(),
 						currentCsg.getMaxY() - currentCsg.getMinY(), 10).toCSG()
-								.movex(centerX)
-								.movey(centerY))
-				.toXMin()
-				.toYMin()
+								.toXMin()
+								.toYMin())
 				.setColor(Color.BLACK);
 		System.out.println("Object bounds  y=" + (currentCsg.getMaxY() - currentCsg.getMinY()));
 		System.out.println("Object bounds  x=" + (currentCsg.getMaxX() - currentCsg.getMinX()));
 		MeshView sliceMesh = slice.getMesh();
-		sliceMesh.getTransforms().add(Transform.translate(centerX, centerY));
+		//sliceMesh.getTransforms().add(Transform.translate(centerX, centerY));
 		AnchorPane anchor = new AnchorPane(sliceMesh);
 		AnchorPane.setBottomAnchor(sliceMesh, (double) 0);
 		AnchorPane.setTopAnchor(sliceMesh, (double) 0);
