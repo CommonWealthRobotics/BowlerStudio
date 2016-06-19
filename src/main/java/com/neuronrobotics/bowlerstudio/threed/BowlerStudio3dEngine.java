@@ -151,7 +151,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
-import jankovicsandras.imagetracer.ImageTracer;
 
 // TODO: Auto-generated Javadoc
 /**
