@@ -20,14 +20,13 @@ import org.kabeja.svg.SVGGenerator;
 import org.kabeja.xml.SAXGenerator;
 import org.xml.sax.ContentHandler;
 
+import com.neuronrobotics.bowlerstudio.twod.ImageTracer;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
-import jankovicsandras.imagetracer.ImageTracer;
-import jankovicsandras.imagetracer.ImageTracer.IndexedImage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -59,11 +58,15 @@ public class SVGFactory extends Application {
 	}
 	@SuppressWarnings("static-access")
 	public static File exportSVG(CSG currentCsg, File defaultDir) {
-		currentCsg = currentCsg.toYMin().toXMin();
+		
+		currentCsg = currentCsg.toYMin().toXMin();// prep CSG so it is in frame in the smae orentation as the z0 plane
 
 		CSG slice = currentCsg.movez(-.1)
 				.intersect(new Cube(currentCsg.getMaxX() - currentCsg.getMinX(),
-						currentCsg.getMaxY() - currentCsg.getMinY(), 10).toCSG().toXMin().toYMin())
+						currentCsg.getMaxY() - currentCsg.getMinY(), .2)
+						.toCSG()
+						.toXMin()// allign to corner
+						.toYMin())
 				.setColor(Color.BLACK);
 		System.out.println("Object bounds  y=" + (currentCsg.getMaxY() - currentCsg.getMinY()));
 		System.out.println("Object bounds  x=" + (currentCsg.getMaxX() - currentCsg.getMinX()));
@@ -117,6 +120,7 @@ public class SVGFactory extends Application {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
+						System.out.println("Converting CSG to image");
 						try {
 							ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File(imageName));
 						} catch (IOException ex) {
@@ -133,7 +137,7 @@ public class SVGFactory extends Application {
 														// straight lines.
 							options.put("qtres", 1f);// Error treshold for
 														// quadratic splines.
-							options.put("pathomit", 2f);// Edge node paths
+							options.put("pathomit", 0.02f);// Edge node paths
 														// shorter than this
 														// will be discarded for
 														// noise reduction.
@@ -173,8 +177,8 @@ public class SVGFactory extends Application {
 																// with this, to
 																// scale the
 																// SVG.
-							options.put("simplifytolerance", 0f);//
-							options.put("roundcoords", 3f); // 1f means rounded
+							options.put("simplifytolerance", 1f);//
+							options.put("roundcoords", 2f); // 1f means rounded
 															// to 1 decimal
 															// places, like 7.3
 															// ; 3f means
@@ -217,7 +221,7 @@ public class SVGFactory extends Application {
 							// ] will be converted to [ 0 .. 255 ] in the
 							// getsvgstring function
 							byte[][] palette = new byte[8][4];
-							for (int colorcnt = 0; colorcnt < 8; colorcnt++) {
+							for (int colorcnt = 0; colorcnt < 2; colorcnt++) {
 								palette[colorcnt][0] = (byte) (-128 + colorcnt * 32); // R
 								palette[colorcnt][1] = (byte) (-128 + colorcnt * 32); // G
 								palette[colorcnt][2] = (byte) (-128 + colorcnt * 32); // B
@@ -246,7 +250,7 @@ public class SVGFactory extends Application {
 //							ProcessingManager pm = new ProcessingManager();
 //							pm.process(dxfdocument, new HashMap<Object, Object>(), "svg", new FileOutputStream(finalDir));
 							ImageTracer.saveString(finalDir.getAbsolutePath(),
-					                ImageTracer.imageToSVG(imageName,options,palette)
+					                ImageTracer.imageToSVG(imageName,options,null)
 					              );
 							System.out.println("SVG Export Done! "+finalDir.getAbsolutePath());
 						} catch (Exception e) {
