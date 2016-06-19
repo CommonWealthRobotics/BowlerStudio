@@ -120,7 +120,7 @@ public class SVGFactory extends Application {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						System.out.println("Converting CSG to image");
+						System.out.println("Converting CSG to image...");
 						try {
 							ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File(imageName));
 						} catch (IOException ex) {
@@ -220,13 +220,15 @@ public class SVGFactory extends Application {
 							// please note that signed byte values [ -128 .. 127
 							// ] will be converted to [ 0 .. 255 ] in the
 							// getsvgstring function
-							byte[][] palette = new byte[8][4];
-							for (int colorcnt = 0; colorcnt < 2; colorcnt++) {
-								palette[colorcnt][0] = (byte) (-128 + colorcnt * 32); // R
-								palette[colorcnt][1] = (byte) (-128 + colorcnt * 32); // G
-								palette[colorcnt][2] = (byte) (-128 + colorcnt * 32); // B
-								palette[colorcnt][3] = (byte) 255; // A
-							}
+							byte[][] palette = new byte[2][4];
+							palette[0][0]= 0;
+							palette[0][0]= 0;
+							palette[0][0]= 0;
+							palette[0][0]= (byte) 255;
+							palette[1][0]= (byte) 255;
+							palette[1][0]= (byte) 255;
+							palette[1][0]= (byte) 255;
+							palette[1][0]= (byte) 255;
 							System.out.println("Begin processing image...");
 //							IndexedImage traces = ImageTracer.imagedataToTracedata(ImageTracer.loadImageData(imageName),
 //									options, null);
