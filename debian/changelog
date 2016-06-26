@@ -1,14 +1,15 @@
-bowlerstudio (0.18.6-1ubuntu1~16.gbpc55151) UNRELEASED; urgency=medium
+bowlerstudio (0.18.6-1ubuntu1~23.gbpe56213) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @c55151af268e1307427f881ba9dd344488cf8c8f **
+  ** SNAPSHOT build @e5621357c744bc6baddda9a6eec0a1387b98b2d2 **
 
   [ Kevin Harrington ]
   * UNRELEASED
 
   [ madhephaestus ]
   * updating the changlog
+  * changelog
 
- -- madhephaestus <mad.hephaestus@gmail.com>  Sat, 25 Jun 2016 16:32:28 -0400
+ -- madhephaestus <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 11:43:14 -0400
 
 bowlerstudio (0.18.6-1) unstable; urgency=medium
 
