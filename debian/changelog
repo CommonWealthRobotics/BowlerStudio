@@ -1,3 +1,14 @@
+bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1) xenial; urgency=medium
+
+  ** SNAPSHOT build @533ad1e3ef178e8643a4227dd33eb510575dd4ba **
+
+  [ Kevin Harrington ]
+  ** SNAPSHOT build @533ad1e3ef178e8643a4227dd33eb510575dd4ba **
+
+  * changing release to xenial
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 23:34:47 -0400
+
 bowlerstudio (0.18.6-1ubuntu1~26.gbp19eead) 0.18.6; urgency=medium
 
   ** SNAPSHOT build @19eead97c9ad3b27a90798f63afcafa2d869eec7 **
@@ -17,7 +28,7 @@ bowlerstudio (0.18.6-1ubuntu1~26.gbp19eead) 0.18.6; urgency=medium
 
  -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 22:35:38 -0400
 
-bowlerstudio (0.18.6-1) unstable; urgency=medium
+bowlerstudio (0.18.6-1) xenial; urgency=medium
 
   * Initial release  
 
