@@ -5,6 +5,11 @@ BowlerStudio
 
 #[Download Latest](https://github.com/NeuronRobotics/BowlerStudio/releases)
 
+#Ubuntu
+	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics
+	sudo apt-get update
+	sudo apt-get install bowlerstudio
+
 #What is BowlerStudio?
 
 BowlerStudio assists you in every step of a robotics project from concept to completion. Tools enable users to:
