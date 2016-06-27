@@ -1,15 +1,16 @@
-bowlerstudio (0.18.6-1ubuntu1~23.gbpe56213) UNRELEASED; urgency=medium
+bowlerstudio (0.18.6-1ubuntu1~24.gbpb90abe) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @e5621357c744bc6baddda9a6eec0a1387b98b2d2 **
+  ** SNAPSHOT build @b90abed6ab0c5826f54d466847a9c261d8b0b9fb **
 
   [ Kevin Harrington ]
   * UNRELEASED
 
-  [ madhephaestus ]
+  [ Kevin Harrington ]
   * updating the changlog
   * changelog
+  * adding debian build files to build debs from gradle
 
- -- madhephaestus <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 11:43:14 -0400
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 22:12:01 -0400
 
 bowlerstudio (0.18.6-1) unstable; urgency=medium
 
