@@ -282,12 +282,14 @@ public class BowlerStudioModularFrame {
 				});
 
 			});
+		}else{
+			System.err.println("Connection manger");
 		}
 		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
 	
 	public void showTerminal() {
-		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false)){
+		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false) ){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
 			Platform.runLater(() -> {
 				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false) )
@@ -312,6 +314,8 @@ public class BowlerStudioModularFrame {
 				});
 
 			});
+		}else{
+			System.err.println("Terminal already open "+ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false));
 		}
 		Platform.runLater(() ->terminalDockNode.requestFocus());
 	}
@@ -333,6 +337,8 @@ public class BowlerStudioModularFrame {
 				});
 
 			});
+		}else{
+			System.err.println("Creature lab already open");
 		}
 		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 			

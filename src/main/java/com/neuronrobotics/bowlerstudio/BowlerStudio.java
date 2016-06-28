@@ -148,6 +148,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
+				ScriptingEngine.filesInGit("https://github.com/NeuronRobotics/BowlerStudioConfiguration.git");
 				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
 				String myAssets =AssetFactory.getGitSource();
