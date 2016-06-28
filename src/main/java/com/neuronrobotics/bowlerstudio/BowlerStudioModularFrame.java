@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
@@ -107,7 +108,7 @@ public class BowlerStudioModularFrame {
 	private Terminal terminal;
 
 	private DockNode terminalDockNode;
-
+	private boolean startup=false;
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -206,22 +207,40 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setRightAnchor(menue, 0.0);
 			AnchorPane.setLeftAnchor(menue, 0.0);
 			AnchorPane.setBottomAnchor(menue, 0.0);
-
-			if (ScriptingEngine.getCreds().exists()) {
-				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)){
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);//bypass the already open check for startup
-					showCreatureLab();
+			IGithubLoginListener listener = new IGithubLoginListener() {
+				
+				@Override
+				public void onLogout(String arg0) {
+					// TODO Auto-generated method stub
+					
 				}
-				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)){
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);//bypass the already open check for startup
-					showConectionManager();
+				
+				@Override
+				public void onLogin(String arg0) {
+					startup=true;
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)){
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);//bypass the already open check for startup
+						showCreatureLab();
+					}
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)){
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);//bypass the already open check for startup
+						showConectionManager();
+					}
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)){
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);//bypass the already open check for startup
+						showTerminal();
+					}
+					
+					
+					startup=false;
 				}
-				if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)){
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);//bypass the already open check for startup
-					showTerminal();
-				}
+			};
+			
+			if (ScriptingEngine.isLoginSuccess()) {
+				//force an update on startup
+				listener.onLogin(null);
 			}
-
+			ScriptingEngine.addIGithubLoginListener(listener);
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
 
@@ -239,19 +258,22 @@ public class BowlerStudioModularFrame {
 
 
 	public void showConectionManager() {
-		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showDevices")){
+		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showDevices",false)){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
 			Platform.runLater(() -> {
-				connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false) && startup)
+					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
+				else
+					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				connectionManagerDockNode.requestFocus();
 
-				if (ScriptingEngine.getCreds().exists()) {
+				if (ScriptingEngine.isLoginSuccess()) {
 				}
 		
 				connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
-						if (ScriptingEngine.getCreds().exists()) {
+						if (ScriptingEngine.isLoginSuccess()) {
 							//System.err.println("Closing devices");
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
 						}
@@ -263,24 +285,25 @@ public class BowlerStudioModularFrame {
 		}
 		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
 	}
+	
 	public void showTerminal() {
-		if (!(boolean)ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showTerminal")){
+		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false)){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
 			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
+				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false) )
 					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
 				else
 					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				terminalDockNode.requestFocus();
 
-				if (ScriptingEngine.getCreds().exists()) {
+				if (ScriptingEngine.isLoginSuccess()) {
 					
 				}
 		
 				terminalDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
-						if (ScriptingEngine.getCreds().exists()) {
+						if (ScriptingEngine.isLoginSuccess()) {
 							//System.err.println("Closing devices");
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);
 						}
@@ -293,7 +316,7 @@ public class BowlerStudioModularFrame {
 		Platform.runLater(() ->terminalDockNode.requestFocus());
 	}
 	public void showCreatureLab() {
-		if (!(boolean) ConfigurationDatabase.getParamMap("BowlerStudioConfigs").get("showCreatureLab")){
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs","showCreatureLab",false)){
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
 			Platform.runLater(() -> {
 				creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
@@ -301,7 +324,7 @@ public class BowlerStudioModularFrame {
 				creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
-						if (ScriptingEngine.getCreds().exists()) {
+						if (ScriptingEngine.isLoginSuccess()) {
 
 							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
 						}

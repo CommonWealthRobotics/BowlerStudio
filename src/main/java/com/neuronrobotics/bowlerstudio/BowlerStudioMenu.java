@@ -800,7 +800,7 @@ public class BowlerStudioMenu {
 
 				});
 
-				if (ScriptingEngine.getCreds().exists()) {
+				if (ScriptingEngine.isLoginSuccess()) {
 					HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
 					for (String s : openGits.keySet()) {
 						

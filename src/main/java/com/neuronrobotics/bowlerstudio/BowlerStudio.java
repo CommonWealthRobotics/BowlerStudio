@@ -135,12 +135,20 @@ public class BowlerStudio extends Application {
 		if (args.length == 0) {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
-
-			if (ScriptingEngine.getCreds().exists()){
+			try{
 				ScriptingEngine.runLogin();
+			}catch(java.io.IOException e){
+				//e.printStackTrace();
+				ScriptingEngine.setupAnyonmous();
+				
+			}
+			if (ScriptingEngine.isLoginSuccess()){
+				
 				if(BowlerStudio.hasNetwork())
 					ScriptingEngine.setAutoupdate(true);
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
+				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
 				String myAssets =AssetFactory.getGitSource();
 				if(BowlerStudio.hasNetwork()){
@@ -169,8 +177,8 @@ public class BowlerStudio extends Application {
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
 				
-			}else
-				ScriptingEngine.setupAnyonmous();
+			}
+			
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
@@ -394,7 +402,7 @@ public class BowlerStudio extends Application {
 			public void run(){
 				System.err.println("Closing application");
 				ConnectionManager.disconnectAll();
-				if (ScriptingEngine.getCreds().exists()) 
+				if (ScriptingEngine.isLoginSuccess()) 
 					ConfigurationDatabase.save();
 				System.exit(0);
 			}
