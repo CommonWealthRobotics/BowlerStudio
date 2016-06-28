@@ -140,6 +140,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private File currentFile = null;
 
 	private HBox controlPane;
+	private String currentGit;
 	private String currentGist;
 	private boolean isOwnedByLoggedInUser;
 	private ImageView image=new ImageView();
@@ -288,11 +289,11 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 //		setCode(new String(Files.readAllBytes(currentFile.toPath())));
 //	}
 	
-	private void loadGistLocal(String id, String file){
+	private void loadGitLocal(String id, String file){
 		//System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = ScriptingEngine.codeFromGit("https://gist.github.com/" + id+".git",file);
+			code = ScriptingEngine.codeFromGit(id,file);
 			if (code != null) {
 				setCode(code[0]);
 				currentFile = new File(code[2]);
@@ -333,17 +334,28 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(()->edit.setDisable(true));
 			Platform.runLater(()->fileListBox.getItems().clear());
 			List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
-			if(!gists.isEmpty())
-				currentGist = gists.get(0);
-			else
+			ArrayList<String> fileList;
+			if(!gists.isEmpty()){
+				currentGist=gists.get(0);
+				currentGit = "https://gist.github.com/" + currentGist+".git";
+			}else if(addr.contains("https://github.com/")){
+				
+				if (a.endsWith("/")) {
+				    a = a.substring(0, a.length() - 1);
+				}
+				currentGit =a+".git";
+				
+			}
+			else{
 				return;
+			}
+			fileList = ScriptingEngine.filesInGit(currentGit);
 			
-			ArrayList<String> fileList = ScriptingEngine.filesInGit("https://gist.github.com/" + currentGist+".git");
 //			for(String s:fileList){
 //				System.out.println("GITS: "+s);
 //			}
 			if(!fileList.isEmpty())
-				loadGistLocal(currentGist, fileList.get(0));
+				loadGitLocal(currentGit, fileList.get(0));
 			
 			Platform.runLater(()->{
 				
@@ -499,7 +511,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	@Override
 	public void changed(ObservableValue observable, Object oldValue,
 			Object newValue) {
-		loadGistLocal(currentGist, (String)newValue);
+		loadGitLocal(currentGit, (String)newValue);
 	}
 
 

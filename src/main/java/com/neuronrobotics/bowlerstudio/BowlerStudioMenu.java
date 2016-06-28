@@ -57,60 +57,60 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-
 public class BowlerStudioMenu {
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
 
-    @FXML // fx:id="CreaturesMenu"
-    private Menu CreaturesMenu; // Value injected by FXMLLoader
+	@FXML // fx:id="CreaturesMenu"
+	private Menu CreaturesMenu; // Value injected by FXMLLoader
 
-    @FXML // fx:id="GitHubRoot"
-    private Menu GitHubRoot; // Value injected by FXMLLoader
+	@FXML // fx:id="GitHubRoot"
+	private Menu GitHubRoot; // Value injected by FXMLLoader
 
-    @FXML // fx:id="MeneBarBowlerStudio"
-    private MenuBar MeneBarBowlerStudio; // Value injected by FXMLLoader
+	@FXML // fx:id="MeneBarBowlerStudio"
+	private MenuBar MeneBarBowlerStudio; // Value injected by FXMLLoader
 
-    @FXML // fx:id="addMarlinGCODEDevice"
-    private MenuItem addMarlinGCODEDevice; // Value injected by FXMLLoader
+	@FXML // fx:id="addMarlinGCODEDevice"
+	private MenuItem addMarlinGCODEDevice; // Value injected by FXMLLoader
 
-    @FXML // fx:id="clearCache"
-    private MenuItem clearCache; // Value injected by FXMLLoader
+	@FXML // fx:id="clearCache"
+	private MenuItem clearCache; // Value injected by FXMLLoader
 
-    @FXML // fx:id="createNewGist"
-    private MenuItem createNewGist; // Value injected by FXMLLoader
+	@FXML // fx:id="createNewGist"
+	private MenuItem createNewGist; // Value injected by FXMLLoader
 
-    @FXML // fx:id="logoutGithub"
-    private MenuItem logoutGithub; // Value injected by FXMLLoader
+	@FXML // fx:id="logoutGithub"
+	private MenuItem logoutGithub; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myGists"
-    private Menu myGists; // Value injected by FXMLLoader
+	@FXML // fx:id="myGists"
+	private Menu myGists; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myOrganizations"
-    private Menu myOrganizations; // Value injected by FXMLLoader
+	@FXML // fx:id="myOrganizations"
+	private Menu myOrganizations; // Value injected by FXMLLoader
 
-    @FXML // fx:id="myRepos"
-    private Menu myRepos; // Value injected by FXMLLoader
-    
-    @FXML // fx:id="showDevicesPanel"
-    private MenuItem showDevicesPanel; // Value injected by FXMLLoader
-    @FXML // fx:id="showCreatureLab"
-    private MenuItem showCreatureLab; // Value injected by FXMLLoader
-    @FXML // fx:id="showTerminal"
-    private MenuItem showTerminal;
-    
-    @FXML // fx:id="watchingRepos"
-    private Menu watchingRepos; // Value injected by FXMLLoader
+	@FXML // fx:id="myRepos"
+	private Menu myRepos; // Value injected by FXMLLoader
+
+	@FXML // fx:id="showDevicesPanel"
+	private MenuItem showDevicesPanel; // Value injected by FXMLLoader
+	@FXML // fx:id="showCreatureLab"
+	private MenuItem showCreatureLab; // Value injected by FXMLLoader
+	@FXML // fx:id="showTerminal"
+	private MenuItem showTerminal;
+
+	@FXML // fx:id="watchingRepos"
+	private Menu watchingRepos; // Value injected by FXMLLoader
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
-	public BowlerStudioMenu(BowlerStudioModularFrame  tl){
-		bowlerStudioModularFrame=tl;
+	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
+		bowlerStudioModularFrame = tl;
 	}
+
 	@FXML
 	public void onMobileBaseFromGist(ActionEvent event) {
 
@@ -135,8 +135,6 @@ public class BowlerStudioMenu {
 		MeneBarBowlerStudio = meneBarBowlerStudio;
 	}
 
-
-
 	public void loadMobilebaseFromGit(String id, String file) {
 		new Thread() {
 			public void run() {
@@ -157,10 +155,11 @@ public class BowlerStudioMenu {
 		}.start();
 
 	}
-	
+
 	public void openUrlInNewTab(URL url) {
 		bowlerStudioModularFrame.openUrlInNewTab(url);
 	}
+
 	public void setToLoggedOut() {
 		Platform.runLater(() -> {
 			myGists.getItems().clear();
@@ -168,8 +167,9 @@ public class BowlerStudioMenu {
 			logoutGithub.setText("Anonymous");
 		});
 	}
+
 	private void setToLoggedIn(final String name) {
-		//new Exception().printStackTrace();
+		// new Exception().printStackTrace();
 		FxTimer.runLater(Duration.ofMillis(100), () -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + name);
@@ -215,7 +215,7 @@ public class BowlerStudioMenu {
 								public void run() {
 									Platform.runLater(() -> {
 										Stage s = new Stage();
-										
+
 										AddFileToGistController controller = new AddFileToGistController(gist);
 										try {
 											controller.start(s);
@@ -360,7 +360,7 @@ public class BowlerStudioMenu {
 		});
 
 	}
-	
+
 	private void setUpRepoMenue(Menu repoMenue, GHRepository repo) {
 		new Thread() {
 			public void run() {
@@ -467,7 +467,7 @@ public class BowlerStudioMenu {
 			}
 		}.start();
 	}
-	
+
 	@FXML
 	public void onLoadFile(ActionEvent e) {
 		new Thread() {
@@ -533,7 +533,7 @@ public class BowlerStudioMenu {
 		Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
 
 	}
-	
+
 	@FXML
 	public void onConnectFileSourceCamera(ActionEvent event) {
 		Platform.runLater(() -> ConnectionManager.onConnectFileSourceCamera());
@@ -558,7 +558,7 @@ public class BowlerStudioMenu {
 		Platform.runLater(() -> ConnectionManager.onConnectGamePad("gamepad"));
 
 	}
-	
+
 	@FXML
 	public void onLogin(ActionEvent event) {
 		new Thread() {
@@ -711,67 +711,69 @@ public class BowlerStudioMenu {
 		}.start();
 	}
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
-        assert CreaturesMenu != null : "fx:id=\"CreaturesMenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert GitHubRoot != null : "fx:id=\"GitHubRoot\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert getMeneBarBowlerStudio() != null : "fx:id=\"MeneBarBowlerStudio\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert addMarlinGCODEDevice != null : "fx:id=\"addMarlinGCODEDevice\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert clearCache != null : "fx:id=\"clearCache\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert createNewGist != null : "fx:id=\"createNewGist\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert logoutGithub != null : "fx:id=\"logoutGithub\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert myGists != null : "fx:id=\"myGists\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-        showDevicesPanel.setOnAction(event -> {
-        	bowlerStudioModularFrame.showConectionManager();
-		});  
-        showCreatureLab.setOnAction(event -> {
-        	bowlerStudioModularFrame.showCreatureLab();;
+	@FXML // This method is called by the FXMLLoader when initialization is
+			// complete
+	void initialize() {
+		assert CreaturesMenu != null : "fx:id=\"CreaturesMenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert GitHubRoot != null : "fx:id=\"GitHubRoot\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert getMeneBarBowlerStudio() != null : "fx:id=\"MeneBarBowlerStudio\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert addMarlinGCODEDevice != null : "fx:id=\"addMarlinGCODEDevice\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert clearCache != null : "fx:id=\"clearCache\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert createNewGist != null : "fx:id=\"createNewGist\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert logoutGithub != null : "fx:id=\"logoutGithub\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert myGists != null : "fx:id=\"myGists\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		showDevicesPanel.setOnAction(event -> {
+			bowlerStudioModularFrame.showConectionManager();
 		});
-        showTerminal.setOnAction(event -> {
-        	bowlerStudioModularFrame.showTerminal();
+		showCreatureLab.setOnAction(event -> {
+			bowlerStudioModularFrame.showCreatureLab();
+			;
 		});
-        new Thread(){
-        	public void run(){
-        		ThreadUtil.wait(500);
-                try {
-        			ScriptingEngine.setAutoupdate(true);
-        			File f = ScriptingEngine.fileFromGit(
-        					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
-        																						// repo,
-        																						// change
-        																						// this
-        																						// if
-        																						// you
-        																						// fork
-        																						// this
-        																						// demo
-        					"exampleRobots.json"// File from within the Git repo
-        			);
+		showTerminal.setOnAction(event -> {
+			bowlerStudioModularFrame.showTerminal();
+		});
+		new Thread() {
+			public void run() {
+				ThreadUtil.wait(500);
+				try {
+					ScriptingEngine.setAutoupdate(true);
+					File f = ScriptingEngine.fileFromGit(
+							"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
+																								// repo,
+																								// change
+																								// this
+																								// if
+																								// you
+																								// fork
+																								// this
+																								// demo
+							"exampleRobots.json"// File from within the Git repo
+					);
 
-        			@SuppressWarnings("unchecked")
-        			HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-        					.inlineFileScriptRun(f, null);
-        			for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
-        				HashMap<String, Object> script = entry.getValue();
-        				MenuItem item = new MenuItem(entry.getKey());
-        				item.setOnAction(event -> {
-        					loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
-        				});
-        				Platform.runLater(() -> {
-        					CreaturesMenu.getItems().add(item);
-        				});
-        			}
-        		} catch (Exception e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
-        	}
-        }.start();
+					@SuppressWarnings("unchecked")
+					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+							.inlineFileScriptRun(f, null);
+					for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
+						HashMap<String, Object> script = entry.getValue();
+						MenuItem item = new MenuItem(entry.getKey());
+						item.setOnAction(event -> {
+							loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
+						});
+						Platform.runLater(() -> {
+							CreaturesMenu.getItems().add(item);
+						});
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
 
-    	addMarlinGCODEDevice.setOnAction(event->{
+		addMarlinGCODEDevice.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
 		});
 		new Thread(new Runnable() {
@@ -799,34 +801,52 @@ public class BowlerStudioMenu {
 					}
 
 				});
+				IGithubLoginListener listener = new IGithubLoginListener() {
 
+					@Override
+					public void onLogout(String arg0) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onLogin(String arg0) {
+						new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+								for (String s : openGits.keySet()) {
+
+									try {
+										ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+										File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
+										createFileTab(f);
+									} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException e) {
+										// TODO Auto-generated catch block
+										// e.printStackTrace();
+									}
+								}
+								HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
+								for (String s : openWeb.keySet()) {
+									String repoFile = (String) openWeb.get(s);
+									try {
+										bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										// e.printStackTrace();
+									}
+								}
+							}
+						}).start();
+					}
+				};
 				if (ScriptingEngine.isLoginSuccess()) {
-					HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-					for (String s : openGits.keySet()) {
-						
-						try {
-							ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
-							File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-							createFileTab(f);
-						} catch (GitAPIException | IOException|ArrayIndexOutOfBoundsException e) {
-							// TODO Auto-generated catch block
-							//e.printStackTrace();
-						}
-					}
-					HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
-					for (String s : openWeb.keySet()) {
-						String repoFile = (String) openWeb.get(s);
-						try {
-							bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							//e.printStackTrace();
-						}
-					}
-
+					listener.onLogin(null);
 				}
+				ScriptingEngine.addIGithubLoginListener(listener);
 			}
 		}).start();
-    }
+	}
 
 }
