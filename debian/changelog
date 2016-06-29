@@ -1,3 +1,32 @@
+bowlerstudio (0.18.7-1ubuntu1) xenial; urgency=medium
+
+  * Adding java-bowler 2.21.0
+  * adding the physics engine static methods back in
+  * switching to actual login sucess checking form login file existance
+  * fixing the window displays so the login updates it
+  * updating to the gradle version of the kernel
+  * use git repos when displaying files to allow for the browsing of regular github repos
+  * 0.18.7
+  * configurations on no network mode not working
+  * Loading the widgets even when the network is out
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 28 Jun 2016 10:29:07 -0400
+
+bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1ubuntu1) xenial; urgency=medium
+
+  * changing the initial release to xenial
+  * Adding java-bowler 2.21.0
+  * adding the physics engine static methods back in
+  * switching to actual login sucess checking form login file existance
+  * fixing the window displays so the login updates it
+  * updating to the gradle version of the kernel
+  * use git repos when displaying files to allow for the browsing of regular github repos
+  * 0.18.7
+  * configurations on no network mode not working
+  * Loading the widgets even when the network is out
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 28 Jun 2016 10:25:47 -0400
+
 bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1) xenial; urgency=medium
 
   ** SNAPSHOT build @533ad1e3ef178e8643a4227dd33eb510575dd4ba **
