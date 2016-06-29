@@ -1,5 +1,6 @@
-bowlerstudio (0.18.7-1ubuntu1) xenial; urgency=medium
+bowlerstudio (0.18.8-1ubuntu1) xenial; urgency=medium
 
+  [ Kevin Harrington ]
   * Adding java-bowler 2.21.0
   * adding the physics engine static methods back in
   * switching to actual login sucess checking form login file existance
@@ -10,7 +11,11 @@ bowlerstudio (0.18.7-1ubuntu1) xenial; urgency=medium
   * configurations on no network mode not working
   * Loading the widgets even when the network is out
 
- -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 28 Jun 2016 10:29:07 -0400
+  [ Kevin Harrington ]
+
+  [ Kevin Harrington ]
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 28 Jun 2016 22:52:59 -0400
 
 bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1ubuntu1) xenial; urgency=medium
 
