@@ -28,6 +28,7 @@ import net.java.games.input.Event;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
@@ -83,6 +84,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class ConnectionManager extends Tab implements IDeviceAddedListener ,EventHandler<ActionEvent> {
 
@@ -555,7 +557,18 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 	public static void addConnection() {
-		DeviceManager.addConnection();
+		Stage s = new Stage();
+		new Thread() {
+			public void run() {
+				BowlerConnectionMenu controller = new BowlerConnectionMenu();
+				try {
+					controller.start(s);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+		//DeviceManager.addConnection();
 	}
 
 

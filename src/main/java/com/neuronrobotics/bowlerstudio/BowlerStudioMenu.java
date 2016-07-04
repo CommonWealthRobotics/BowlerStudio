@@ -496,12 +496,9 @@ public class BowlerStudioMenu {
 
 	@FXML
 	public void onConnect(ActionEvent e) {
-		new Thread() {
-			public void run() {
-				setName("Load BowlerDevice Dialog Thread");
-				ConnectionManager.addConnection();
-			}
-		}.start();
+
+		ConnectionManager.addConnection();
+
 	}
 
 	@FXML
