@@ -560,6 +560,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		Stage s = new Stage();
 		new Thread() {
 			public void run() {
+				BowlerDatagram.setUseBowlerV4(true);
 				BowlerConnectionMenu controller = new BowlerConnectionMenu();
 				try {
 					controller.start(s);
