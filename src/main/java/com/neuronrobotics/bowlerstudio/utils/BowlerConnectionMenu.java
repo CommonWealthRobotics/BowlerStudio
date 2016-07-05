@@ -12,8 +12,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.InvalidConnectionException;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
@@ -130,7 +132,13 @@ public class BowlerConnectionMenu extends Application {
 			}
 			String port = portOptions.getSelectionModel().getSelectedItem().toString();
 			SerialConnection ser = new SerialConnection(port, baud);
-			DeviceManager.addConnection(ser);
+			try{
+				DeviceManager.addConnection(ser);
+			}catch (InvalidConnectionException e){
+				System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
+				BowlerStudioController.highlightException(null, e);
+				
+			}
 		}).start();
 		
 	}
