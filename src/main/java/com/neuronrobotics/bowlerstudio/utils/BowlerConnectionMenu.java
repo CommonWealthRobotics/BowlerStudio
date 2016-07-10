@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
@@ -87,6 +88,10 @@ public class BowlerConnectionMenu extends Application {
 
 	private Stage primaryStage;
 
+	private String port;
+
+	private int baud;
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() {
@@ -125,20 +130,24 @@ public class BowlerConnectionMenu extends Application {
 
 	private void runconnectSerial() {
 		new Thread(() -> {
-
-			int baud = Integer.parseInt(baudrate.getText());
-			if (baud < 0) {
-				throw new NumberFormatException();
+			for(int i=0;i<3;i++){
+				BowlerDatagram.setUseBowlerV4(true);
+				 baud = Integer.parseInt(baudrate.getText());
+				if (baud < 0) {
+					throw new NumberFormatException();
+				}
+				 port = portOptions.getSelectionModel().getSelectedItem().toString();
+				SerialConnection ser = new SerialConnection(port, baud);
+				try{
+					DeviceManager.addConnection(ser);
+					return;
+				}catch (InvalidConnectionException e){
+					System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
+					BowlerStudioController.highlightException(null, e);
+					ser.disconnect();
+				}
 			}
-			String port = portOptions.getSelectionModel().getSelectedItem().toString();
-			SerialConnection ser = new SerialConnection(port, baud);
-			try{
-				DeviceManager.addConnection(ser);
-			}catch (InvalidConnectionException e){
-				System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
-				BowlerStudioController.highlightException(null, e);
-				
-			}
+			System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
 		}).start();
 		
 	}
@@ -147,23 +156,30 @@ public class BowlerConnectionMenu extends Application {
 		new Thread(() -> {
 			int port;
 			String ip = ipSelector.getSelectionModel().getSelectedItem().toString();
+			
 			if (udpSelect.isSelected()) {
 				port = Integer.parseInt(udpPort.getText());
 				try {
 					clnt = new UDPBowlerConnection(InetAddress.getByName(ip), port);
 					DeviceManager.addConnection(clnt);
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (Exception e) {
+					System.out.println("Connection failed! "+ip+" at port "+ip+" is not responding");
+					BowlerStudioController.highlightException(null, e);
+					if(clnt!=null)
+						clnt.disconnect();
 				}
 
 			} else {
 				port = Integer.parseInt(tcpPort.getText());
+				BowlerTCPClient tcp =null;
 				try {
-					DeviceManager.addConnection(new BowlerTCPClient(ip, port));
+					tcp =new BowlerTCPClient(ip, port);
+					DeviceManager.addConnection(tcp);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Connection failed! "+ip+" at port "+ip+" is not responding");
+					BowlerStudioController.highlightException(null, e);
+					if(tcp!=null)
+						tcp.disconnect();
 				}
 			}
 
