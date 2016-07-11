@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
+import com.neuronrobotics.sdk.genericdevice.GenericDevice;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
@@ -138,11 +139,14 @@ public class BowlerConnectionMenu extends Application {
 				}
 				 port = portOptions.getSelectionModel().getSelectedItem().toString();
 				SerialConnection ser = new SerialConnection(port, baud);
+				GenericDevice gen = new GenericDevice(ser);
+				ser.connect();
+				gen.ping();
 				try{
 					DeviceManager.addConnection(ser);
 					return;
-				}catch (InvalidConnectionException e){
-					System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
+				}catch (Exception e){
+					System.out.println("false start "+port+" at baud "+baud+" is not responding");
 					BowlerStudioController.highlightException(null, e);
 					ser.disconnect();
 				}

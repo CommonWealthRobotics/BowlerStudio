@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.python.core.exceptions;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
@@ -137,7 +138,9 @@ public class DyIOchannelWidget {
 			});
 			Platform.runLater(()->{
 				channelGraph.getData().clear();
+				try{
 				channelGraph.getData().add(series);
+				}catch(Exception e){}
 				
 			});
 	
@@ -313,7 +316,7 @@ public class DyIOchannelWidget {
 	            }
 	        });
 			
-			listenerCodeBox.getChildren().setAll(sn);
+			Platform.runLater(()->listenerCodeBox.getChildren().setAll(sn));
 			
 			listenerCodeBox.setFocusTraversable(false);
 			
