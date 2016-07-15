@@ -400,7 +400,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				ArrayList<CSG> toAdd = new ArrayList<>();
 				ArrayList<CSG> toRemove = new ArrayList<>();
-				for(CSG tester:currentObjectsToCheck){
+				
+				CSG[] array=null;
+				synchronized(currentObjectsToCheck){
+					array= (CSG[]) currentObjectsToCheck.toArray();
+				}
+				for(int i=0;i<currentObjectsToCheck.size();i++){
+					CSG tester=array[i];
 					for(String p:tester.getParameters()){
 						if(p.contentEquals(key)){
 							CSG ret = tester.regenerate();

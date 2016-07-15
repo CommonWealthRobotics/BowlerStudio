@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.InvalidConnectionException;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.genericdevice.GenericDevice;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
@@ -131,58 +132,66 @@ public class BowlerConnectionMenu extends Application {
 
 	private void runconnectSerial() {
 		new Thread(() -> {
-			for(int i=0;i<3;i++){
-				BowlerDatagram.setUseBowlerV4(true);
-				 baud = Integer.parseInt(baudrate.getText());
-				if (baud < 0) {
-					throw new NumberFormatException();
-				}
-				 port = portOptions.getSelectionModel().getSelectedItem().toString();
-				SerialConnection ser = new SerialConnection(port, baud);
-				GenericDevice gen = new GenericDevice(ser);
-				ser.connect();
-				gen.ping();
-				try{
+			for (int i = 0; i < 3; i++) {
+				SerialConnection ser=null;
+				try {
+					BowlerDatagram.setUseBowlerV4(true);
+					baud = Integer.parseInt(baudrate.getText());
+					if (baud < 0) {
+						throw new NumberFormatException();
+					}
+					port = portOptions.getSelectionModel().getSelectedItem().toString();
+					int level = Log.getMinimumPrintLevel();
+					Log.enableInfoPrint();
+					 ser = new SerialConnection(port, baud);
+					GenericDevice gen = new GenericDevice(ser);
+					gen.connect();
+					gen.ping();
+					gen.getNamespaces();
+					Log.setMinimumPrintLevel(level);
+					gen.setConnection(null);
+					gen.disconnect();
 					DeviceManager.addConnection(ser);
 					return;
-				}catch (Exception e){
-					System.out.println("false start "+port+" at baud "+baud+" is not responding");
+				} catch (Exception e) {
+					System.out.println("false start " + port + " at baud " + baud + " is not responding");
 					BowlerStudioController.highlightException(null, e);
-					ser.disconnect();
+					if (ser!=null)
+						ser.disconnect();
 				}
 			}
-			System.out.println("Connection failed! "+port+" at baud "+baud+" is not responding");
+			System.out.println("Connection failed! " + port + " at baud " + baud + " is not responding");
 		}).start();
-		
+
 	}
 
 	private void runconnectNetwork() {
 		new Thread(() -> {
 			int port;
 			String ip = ipSelector.getSelectionModel().getSelectedItem().toString();
-			
+
 			if (udpSelect.isSelected()) {
 				port = Integer.parseInt(udpPort.getText());
 				try {
 					clnt = new UDPBowlerConnection(InetAddress.getByName(ip), port);
 					DeviceManager.addConnection(clnt);
 				} catch (Exception e) {
-					System.out.println("Connection failed! "+ip+" at port "+ip+" is not responding");
+					System.out.println("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
-					if(clnt!=null)
+					if (clnt != null)
 						clnt.disconnect();
 				}
 
 			} else {
 				port = Integer.parseInt(tcpPort.getText());
-				BowlerTCPClient tcp =null;
+				BowlerTCPClient tcp = null;
 				try {
-					tcp =new BowlerTCPClient(ip, port);
+					tcp = new BowlerTCPClient(ip, port);
 					DeviceManager.addConnection(tcp);
 				} catch (Exception e) {
-					System.out.println("Connection failed! "+ip+" at port "+ip+" is not responding");
+					System.out.println("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
-					if(tcp!=null)
+					if (tcp != null)
 						tcp.disconnect();
 				}
 			}
@@ -200,7 +209,7 @@ public class BowlerConnectionMenu extends Application {
 				}
 			}).start();
 		});
-		
+
 	}
 
 	private void runsearchNetwork() {
