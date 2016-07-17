@@ -8,6 +8,7 @@ import net.java.games.input.Controller;
 
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.NewGistController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -418,7 +419,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						try {
 							getMobilebase().DriveArc(toSet, toSeconds);
 						} catch (Exception e) {
-							e.printStackTrace();
+							BowlerStudioController.highlightException(null, e);
 						}
 					}
 					controlThreadRunning=false;
