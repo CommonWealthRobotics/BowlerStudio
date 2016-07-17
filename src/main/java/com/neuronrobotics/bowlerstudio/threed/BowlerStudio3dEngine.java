@@ -1132,7 +1132,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			        java.time.Duration.ofMillis(100),
 			        
 		()->{
+			try{
 			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
+			}catch (Exception e){}
 		});
 		//System.out.println("Selecting "+selectedCsg);
 		double xcenter = selectedCsg.getMaxX()/2+selectedCsg.getMinX()/2;

@@ -1,3 +1,12 @@
+bowlerstudio (0.18.8-1ubuntu2) xenial; urgency=medium
+
+  * adding the printout when a connection fails
+  * retry on serial port to force v4
+  * conecting the device not the connection to startup
+  * making the regenerate function synchronized
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 15 Jul 2016 17:31:38 -0400
+
 bowlerstudio (0.18.8-1ubuntu1) xenial; urgency=medium
 
   [ Kevin Harrington ]
