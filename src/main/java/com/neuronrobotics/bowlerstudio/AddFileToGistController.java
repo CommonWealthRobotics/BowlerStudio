@@ -78,16 +78,15 @@ public class AddFileToGistController extends Application {
 						.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
 				switch(extention.getSelectionModel().getSelectedItem()){
 				case "Groovy":
-					extentionStr=".groovy";
+					extentionStr=".groovy";break;
 				case "Clojure":
-					extentionStr=".clj";
+					extentionStr=".clj";break;
 				case "Jython":
-					extentionStr=".py";
+					extentionStr=".py";break;
 				case "Arduino":
-					extentionStr=".ino";
+					extentionStr=".ino";break;
 				case "JSON":
-					extentionStr=".json";
-					break;
+					extentionStr=".json";break;
 				}
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -109,26 +108,28 @@ public class AddFileToGistController extends Application {
 
 	@FXML
 	public void onAddFile(ActionEvent event) {
-		
-		String text = filenameField.getText();
-		if(!text.endsWith(extentionStr)){
-			text=text+extentionStr;
-		}
-		System.out.println("Adding new file"+text+" to "+gitRepo);
-		try {
-			ScriptingEngine.pushCodeToGit(gitRepo, "master", text, "//Your code here",
-					"Adding new file from BowlerStudio");
-			File nf = ScriptingEngine.fileFromGit(gitRepo, text);
-			BowlerStudio.createFileTab(nf);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		new Thread(()->{
+			Platform.runLater(() -> {
+				Stage stage = (Stage) addFileButton.getScene().getWindow();
+				stage.close();
+			});
+			String text = filenameField.getText();
+			if(!text.endsWith(extentionStr)){
+				text=text+extentionStr;
+			}
+			System.out.println("Adding new file"+text+" to "+gitRepo);
+			try {
+				ScriptingEngine.pushCodeToGit(gitRepo, "master", text, "//Your code here",
+						"Adding new file from BowlerStudio");
+				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
+				BowlerStudio.createFileTab(nf);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
 
-		Platform.runLater(() -> {
-			Stage stage = (Stage) addFileButton.getScene().getWindow();
-			stage.close();
-		});
+		}).start();
 	}
 
 	@FXML

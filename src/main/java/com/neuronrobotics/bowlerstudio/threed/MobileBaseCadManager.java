@@ -18,12 +18,15 @@ import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
+import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 
@@ -356,8 +359,25 @@ public class MobileBaseCadManager {
 						getLinktoCadMap().get(configuration).add(c);// add to the regestration storage
 					}
 					
-					if(simpleCad!=null)
+					if(simpleCad!=null){
 						simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
+						AbstractLink link = dh.getFactory().getLink(configuration);
+						link.addLinkListener(new ILinkListener() {
+							
+							@Override
+							public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+								// TODO Auto-generated method stub
+								
+							}
+							
+							@Override
+							public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+								BowlerStudio.select( base,configuration);
+								
+							}
+						});
+					}
+					
 				}
 			}
 			return dhLinks;
