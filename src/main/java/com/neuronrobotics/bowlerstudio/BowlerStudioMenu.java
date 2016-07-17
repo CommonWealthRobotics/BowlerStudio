@@ -371,20 +371,17 @@ public class BowlerStudioMenu {
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				String url = repo.getGitTransportUrl().replace("git://", "https://");
 				addFile.setOnAction(event -> {
-					new Thread() {
-						public void run() {
-							Platform.runLater(() -> {
-								Stage s = new Stage();
+					System.out.println("Adding file to : "+url);
+						Platform.runLater(() -> {
+							Stage s = new Stage();
 
-								AddFileToGistController controller = new AddFileToGistController(url);
-								try {
-									controller.start(s);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							});
-						}
-					}.start();
+							AddFileToGistController controller = new AddFileToGistController(url);
+							try {
+								controller.start(s);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
 				});
 
 				Platform.runLater(() -> {
