@@ -216,7 +216,7 @@ public class BowlerStudioMenu {
 									Platform.runLater(() -> {
 										Stage s = new Stage();
 
-										AddFileToGistController controller = new AddFileToGistController(gist);
+										AddFileToGistController controller = new AddFileToGistController(gist.getGitPushUrl());
 										try {
 											controller.start(s);
 										} catch (Exception e) {
@@ -369,12 +369,20 @@ public class BowlerStudioMenu {
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
+				String url = repo.getGitTransportUrl().replace("git://", "https://");
 				addFile.setOnAction(event -> {
 					new Thread() {
 						public void run() {
-							// TODO add the implementation of add file, make
-							// sure its modular to be reused elsewhere
+							Platform.runLater(() -> {
+								Stage s = new Stage();
 
+								AddFileToGistController controller = new AddFileToGistController(url);
+								try {
+									controller.start(s);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							});
 						}
 					}.start();
 				});
@@ -384,7 +392,7 @@ public class BowlerStudioMenu {
 					orgRepo.getItems().addAll(addFile, orgFiles);
 				});
 
-				String url = repo.getGitTransportUrl().replace("git://", "https://");
+				
 				EventHandler<Event> loadFiles = new EventHandler<Event>() {
 					boolean gistFlag = false;
 

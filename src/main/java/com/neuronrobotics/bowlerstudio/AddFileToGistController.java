@@ -45,11 +45,14 @@ public class AddFileToGistController extends Application
     @FXML
     public Button addFileButton, cancelButton;
 
-    private GHGist gistID;
+	private String gitRepo;
 
-    public AddFileToGistController(GHGist id)
+    //private GHGist gistID;
+
+    public AddFileToGistController(String gitRepo)
     {
-        this.gistID = id;
+		this.gitRepo = gitRepo;
+        //this.gistID = id;
     }
 
     @Override
@@ -75,7 +78,12 @@ public class AddFileToGistController extends Application
     @FXML
     public void onAddFile(ActionEvent event)
     {
-        GistHelper.addFileToGist(filenameField.getText(), "//Your code here", gistID);
+        try {
+			ScriptingEngine.pushCodeToGit(gitRepo, "master",filenameField.getText(),"//Your code here",  "Adding new file from BowlerStudio");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         Platform.runLater(() -> {
             Stage stage = (Stage) addFileButton.getScene().getWindow();
@@ -90,15 +98,5 @@ public class AddFileToGistController extends Application
             Stage stage = (Stage) cancelButton.getScene().getWindow();
             stage.close();
         });
-    }
-
-    public GHGist getGistID()
-    {
-        return gistID;
-    }
-
-    public void setGistID(GHGist gistID)
-    {
-        this.gistID = gistID;
     }
 }
