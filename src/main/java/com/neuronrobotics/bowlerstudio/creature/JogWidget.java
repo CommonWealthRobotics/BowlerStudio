@@ -412,7 +412,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							//System.out.println("Jogging to: "+toSet);
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
-							e.printStackTrace();
+							BowlerStudioController.highlightException(null, e);
 						}
 					}else{
 						//toSet.setZ(0);
