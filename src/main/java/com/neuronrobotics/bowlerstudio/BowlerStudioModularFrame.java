@@ -87,13 +87,13 @@ public class BowlerStudioModularFrame {
 
 	private BowlerStudioMenu menueController;
 
-	//private InvalidationListener connectionManagerRemover;
+	// private InvalidationListener connectionManagerRemover;
 
 	private CreatureLab3dController creatureLab3dController;
 
 	private DockNode creatureLab3dDockNode;
 
-	//private InvalidationListener creatureManagerRemover;
+	// private InvalidationListener creatureManagerRemover;
 
 	private BowlerStudio3dEngine jfx3dmanager;
 
@@ -104,11 +104,13 @@ public class BowlerStudioModularFrame {
 	private static BowlerStudioModularFrame bowlerStudioModularFrame;
 
 	private HashMap<Tab, DockNode> webTabs = new HashMap<>();
+	private HashMap<String, Boolean> isOpen = new HashMap<>();
 
 	private Terminal terminal;
 
 	private DockNode terminalDockNode;
-	private boolean startup=false;
+	private boolean startup = false;
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -117,10 +119,10 @@ public class BowlerStudioModularFrame {
 			assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 			dockPane = new DockPane();
 			dockImage = AssetFactory.loadAsset("BowlerStudioModularFrameIcon.png");
-//			final Tab newtab = new Tab();
-//			newtab.setText("");
-//			newtab.setClosable(false);
-//			newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
+			// final Tab newtab = new Tab();
+			// newtab.setText("");
+			// newtab.setClosable(false);
+			// newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
 			String homeURL = Tutorial.getHomeUrl();
 			setJfx3dmanager(new BowlerStudio3dEngine());
 			controller = new BowlerStudioController(getJfx3dmanager());
@@ -193,12 +195,10 @@ public class BowlerStudioModularFrame {
 			BorderPane menue = (BorderPane) menueBar.getRoot();
 			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
 			VBox cmd = (VBox) commandLine.getRoot();
-			creatureLab3dDockNode = new DockNode(threed, "Creature Lab",
-					AssetFactory.loadIcon("CreatureLab-Tab.png"));
+			creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
 			creatureLab3dDockNode.setPrefSize(400, 400);
-			
-			terminalDockNode = new DockNode(cmd, "Terminal",
-					AssetFactory.loadIcon("Command-Line.png"));
+
+			terminalDockNode = new DockNode(cmd, "Terminal", AssetFactory.loadIcon("Command-Line.png"));
 			terminalDockNode.setPrefSize(400, 400);
 
 			// Add the dock pane to the window
@@ -207,37 +207,57 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setRightAnchor(menue, 0.0);
 			AnchorPane.setLeftAnchor(menue, 0.0);
 			AnchorPane.setBottomAnchor(menue, 0.0);
+			isOpen.put("showCreatureLab", false);
+			isOpen.put("showTerminal", false);
+			isOpen.put("showDevices", false);
 			IGithubLoginListener listener = new IGithubLoginListener() {
-				
+
 				@Override
 				public void onLogout(String arg0) {
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public void onLogin(String arg0) {
-					startup=true;
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)){
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);//bypass the already open check for startup
+					startup = true;
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)) {
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);// bypass
+																											// the
+																											// already
+																											// open
+																											// check
+																											// for
+																											// startup
 						showCreatureLab();
 					}
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)){
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);//bypass the already open check for startup
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)) {
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);// bypass
+																										// the
+																										// already
+																										// open
+																										// check
+																										// for
+																										// startup
 						showConectionManager();
 					}
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)){
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);//bypass the already open check for startup
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)) {
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);// bypass
+																										// the
+																										// already
+																										// open
+																										// check
+																										// for
+																										// startup
 						showTerminal();
 					}
-					
-					
-					startup=false;
+
+					startup = false;
 				}
 			};
-			
+
 			if (ScriptingEngine.isLoginSuccess()) {
-				//force an update on startup
+				// force an update on startup
 				listener.onLogin(null);
 			}
 			ScriptingEngine.addIGithubLoginListener(listener);
@@ -254,94 +274,108 @@ public class BowlerStudioModularFrame {
 		Platform.runLater(() -> getTutorialDockNode().dock(dockPane, DockPos.LEFT));
 
 	}
-	
-
 
 	public void showConectionManager() {
-		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showDevices",false)){
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", true);
+		String key = "showDevices";
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
 			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false) && startup)
-					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
-				else
-					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
-				connectionManagerDockNode.requestFocus();
+				if (!isOpen.get(key)) {
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)
+							&& startup)
+						connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
+					else
+						connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+					connectionManagerDockNode.requestFocus();
 
-				if (ScriptingEngine.isLoginSuccess()) {
-				}
-		
-				connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
-					@Override
-					public void invalidated(Observable event) {
-						if (ScriptingEngine.isLoginSuccess()) {
-							//System.err.println("Closing devices");
-							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);
+					connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
+						@Override
+						public void invalidated(Observable event) {
+							if (ScriptingEngine.isLoginSuccess()) {
+								// System.err.println("Closing devices");
+								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
+							}
+							connectionManagerDockNode.closedProperty().removeListener(this);
+							isOpen.put(key, false);
 						}
-						connectionManagerDockNode.closedProperty().removeListener(this);
-					}
-				});
+					});
+					isOpen.put(key, true);
+				}
 
 			});
-		}else{
+		} else {
 			System.err.println("Connection manger");
 		}
-		Platform.runLater(() ->connectionManagerDockNode.requestFocus());
+		Platform.runLater(() -> connectionManagerDockNode.requestFocus());
 	}
-	
+
 	public void showTerminal() {
-		if (!(boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false) ){
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", true);
-			Platform.runLater(() -> {
-				if((boolean)ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false) )
-					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
-				else
-					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
-				terminalDockNode.requestFocus();
+		String key = "showTerminal";
 
-				if (ScriptingEngine.isLoginSuccess()) {
-					
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
+			Platform.runLater(() -> {
+				if (!isOpen.get(key)) {
+					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
+						terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
+					else
+						terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+					terminalDockNode.requestFocus();
+
+					if (ScriptingEngine.isLoginSuccess()) {
+
+					}
+
+					terminalDockNode.closedProperty().addListener(new InvalidationListener() {
+						@Override
+						public void invalidated(Observable event) {
+							if (ScriptingEngine.isLoginSuccess()) {
+								// System.err.println("Closing devices");
+								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
+							}
+							terminalDockNode.closedProperty().removeListener(this);
+							isOpen.put(key, false);
+						}
+					});
+					isOpen.put(key, true);
 				}
-		
-				terminalDockNode.closedProperty().addListener(new InvalidationListener() {
-					@Override
-					public void invalidated(Observable event) {
-						if (ScriptingEngine.isLoginSuccess()) {
-							//System.err.println("Closing devices");
-							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);
-						}
-						terminalDockNode.closedProperty().removeListener(this);
-					}
-				});
 
 			});
-		}else{
-			System.err.println("Terminal already open "+ConfigurationDatabase.getObject("BowlerStudioConfigs","showTerminal",false));
+		} else {
+			System.err.println(
+					"Terminal already open " + ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false));
 		}
-		Platform.runLater(() ->terminalDockNode.requestFocus());
+		Platform.runLater(() -> terminalDockNode.requestFocus());
 	}
-	public void showCreatureLab() {
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs","showCreatureLab",false)){
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", true);
-			Platform.runLater(() -> {
-				creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
-				creatureLab3dDockNode.requestFocus();
-				creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
-					@Override
-					public void invalidated(Observable event) {
-						if (ScriptingEngine.isLoginSuccess()) {
 
-							ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);
+	public void showCreatureLab() {
+		String key = "showCreatureLab";
+		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
+			Platform.runLater(() -> {
+				if (!isOpen.get(key)) {
+					creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
+					creatureLab3dDockNode.requestFocus();
+					creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
+						@Override
+						public void invalidated(Observable event) {
+							if (ScriptingEngine.isLoginSuccess()) {
+
+								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
+							}
+							creatureLab3dDockNode.closedProperty().removeListener(this);
+							isOpen.put(key, false);
 						}
-						creatureLab3dDockNode.closedProperty().removeListener(this);
-					}
-				});
+					});
+					isOpen.put(key, true);
+				}
 
 			});
-		}else{
+		} else {
 			System.err.println("Creature lab already open");
 		}
 		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
-			
+
 	}
 
 	public DockNode getTutorialDockNode() {
@@ -414,7 +448,7 @@ public class BowlerStudioModularFrame {
 
 	public void setSelectedTab(Tab tab) {
 		// TODO Auto-generated method stub
-		if(webTabs.get(tab)!=null)
+		if (webTabs.get(tab) != null)
 			Platform.runLater(() -> webTabs.get(tab).requestFocus());
 	}
 
