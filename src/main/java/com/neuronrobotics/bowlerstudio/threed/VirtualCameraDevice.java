@@ -22,7 +22,9 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	
 	private double zoomDepth = getDefaultZoomDepth();
 	private Affine zoomAffine = new Affine();
-
+	private Affine offset = TransformFactory.nrToAffine(
+			BowlerStudio3dEngine.getOffsetforvisualization()
+			);
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
 		this.hand = hand;
 		this.setCamera(camera);
@@ -33,18 +35,19 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public void setGlobalPositionListener(Affine affine) {
 		super.setGlobalPositionListener(affine);
 		//System.out.println("Setting camera frame transform");
-		Group manipulationFrame = new Group();
-		camera.getTransforms().add(zoomAffine);
-		zoomAffine.setTz(getZoomDepth());
 		
-		getCameraFrame().getTransforms().add(TransformFactory.nrToAffine(
-				BowlerStudio3dEngine.getOffsetforvisualization()
-						));
-		manipulationFrame.getTransforms().add(affine);
-
-		
-		manipulationFrame.getChildren().addAll(camera, hand);
-		getCameraFrame().getChildren().add(manipulationFrame);
+			Group manipulationFrame = new Group();
+			if(!camera.getTransforms().contains(zoomAffine))
+				camera.getTransforms().add(zoomAffine);
+			zoomAffine.setTz(getZoomDepth());
+			if(!getCameraFrame().getTransforms().contains(offset))
+				getCameraFrame().getTransforms().add(offset);
+			manipulationFrame.getTransforms().add(affine);
+	
+			
+			manipulationFrame.getChildren().addAll(camera, hand);
+			getCameraFrame().getChildren().add(manipulationFrame);
+			//new RuntimeException().printStackTrace();
 		
 	}
 	

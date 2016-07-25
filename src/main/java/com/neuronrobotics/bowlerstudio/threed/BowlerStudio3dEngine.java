@@ -706,6 +706,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		camera.setNearClip(.1);
 		camera.setFarClip(100000.0);
 		getSubScene().setCamera(camera);
+
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 
@@ -714,8 +715,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
-				// TODO Auto-generated method stub
-				return getVirtualcam();
+				
+				
+				return virtualcam;
 			}
 		});
 		
