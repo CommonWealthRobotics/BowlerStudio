@@ -111,8 +111,8 @@ repositories {
 
 dependencies {
 
-	//compile "com.neuronrobotics:BowlerScriptingKernel:0.20.5"
-	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.20.8.jar'])
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.20.8"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.20.8.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	compile "org.jfxtras:jfxtras-common:8.0-r4"
 	compile "org.jfxtras:jfxtras-fxml:8.0-r4"
