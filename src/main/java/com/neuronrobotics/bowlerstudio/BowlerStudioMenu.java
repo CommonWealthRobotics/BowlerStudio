@@ -824,7 +824,7 @@ public class BowlerStudioMenu {
 										ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 										File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 										createFileTab(f);
-									} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException e) {
+									} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException|ClassCastException e) {
 										// TODO Auto-generated catch block
 										// e.printStackTrace();
 									}

@@ -99,10 +99,13 @@ public class BowlerStudioController  implements
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
 			String key =t.getScripting().getGitRepo()+":"+t.getScripting().getGitFile();
+			ArrayList<String> files = new ArrayList<>();
+			files.add(t.getScripting().getGitRepo());
+			files.add(t.getScripting().getGitFile());
 			ConfigurationDatabase.setObject(
 					"studio-open-git", 
 					key, 
-					new String[]{t.getScripting().getGitRepo(),t.getScripting().getGitFile()});
+					files);
 			
 			fileTab.setContent(t);
 			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-"+ScriptingEngine.getShellType(file.getName())+".png"));
