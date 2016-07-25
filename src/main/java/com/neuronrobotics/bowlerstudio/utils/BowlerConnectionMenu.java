@@ -144,18 +144,13 @@ public class BowlerConnectionMenu extends Application {
 					int level = Log.getMinimumPrintLevel();
 					Log.enableInfoPrint();
 					 ser = new SerialConnection(port, baud);
-					GenericDevice gen = new GenericDevice(ser);
-					gen.connect();
-					gen.ping();
-					gen.getNamespaces();
-					Log.setMinimumPrintLevel(level);
-					gen.setConnection(null);
-					gen.disconnect();
+					
 					DeviceManager.addConnection(ser);
 					return;
 				} catch (Exception e) {
 					System.out.println("false start " + port + " at baud " + baud + " is not responding");
 					BowlerStudioController.highlightException(null, e);
+					e.printStackTrace();
 					if (ser!=null)
 						ser.disconnect();
 				}
