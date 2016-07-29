@@ -401,19 +401,25 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				ArrayList<CSG> toAdd = new ArrayList<>();
 				ArrayList<CSG> toRemove = new ArrayList<>();
 				
-				CSG[] array=null;
+				Object[] array=null;
 				synchronized(currentObjectsToCheck){
-					array= (CSG[]) currentObjectsToCheck.toArray();
+					array= (Object[]) currentObjectsToCheck.toArray();
 				}
 				for(int i=0;i<currentObjectsToCheck.size();i++){
-					CSG tester=array[i];
-					for(String p:tester.getParameters()){
-						if(p.contentEquals(key)){
-							CSG ret = tester.regenerate();
-							toRemove.add(tester);
-							toAdd.add(ret);
-						
+					System.out.println("Testing for Regenerating "+i+" of "+currentObjectsToCheck.size());
+					try{
+						CSG tester=(CSG)array[i];
+						for(String p:tester.getParameters()){
+							if(p.contentEquals(key) && !toRemove.contains(tester)){
+								System.out.println("Regenerating "+i+" on key "+p);
+								CSG ret = tester.regenerate();
+								toRemove.add(tester);
+								toAdd.add(ret);
+							
+							}
 						}
+					}catch(Exception ex){
+						ex.printStackTrace(System.out);
 					}
 				}
 				for(CSG add:toRemove)
@@ -477,8 +483,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
 							Set<CSG> objects = getCsgMap().keySet();
-							fireRegenerate( key,  source, objects);
 							cm.hide();// hide this menue because the new CSG talks to the new menue
+							
+							fireRegenerate( key,  source, objects);
+							
 						}
 					},		Double.parseDouble(lp.getOptions().get(1).toString()) ,
 							Double.parseDouble(lp.getOptions().get(0).toString()), 
