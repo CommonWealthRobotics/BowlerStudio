@@ -1,0 +1,186 @@
+bowlerstudio (0.18.10) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 19:25:46 -0400
+
+bowlerstudio (0.18.10) xenial; urgency=medium
+
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 19:24:53 -0400
+
+bowlerstudio (0.18.9.1) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 19:18:28 -0400
+
+bowlerstudio (0.18.9) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 19:11:24 -0400
+
+bowlerstudio (0.18.9) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 18:45:43 -0400
+
+bowlerstudio (0.18.9) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 18:44:01 -0400
+
+bowlerstudio (0.18.9) xenial; urgency=medium
+
+  * adding files to regular git
+  * adding a file extention to the new file menue
+  * Selecting links that hit limits
+  * catching drive exceptions and displaying ghtem
+  * when limit hit the limiting link should highlightitself now
+  * both local and perminant storage is consulted for loading
+  * make loading and unloading of the data from json a standard type
+  * fixed the double adding of transforms
+  * DyIO interface working with curie
+  * updating to lates kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jul 2016 17:56:29 -0400
+
+bowlerstudio (0.18.8-1ubuntu2) xenial; urgency=medium
+
+  * adding the printout when a connection fails
+  * retry on serial port to force v4
+  * conecting the device not the connection to startup
+  * making the regenerate function synchronized
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 15 Jul 2016 17:31:38 -0400
+
+bowlerstudio (0.18.8-1ubuntu1) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * Adding java-bowler 2.21.0
+  * adding the physics engine static methods back in
+  * switching to actual login sucess checking form login file existance
+  * fixing the window displays so the login updates it
+  * updating to the gradle version of the kernel
+  * use git repos when displaying files to allow for the browsing of regular github repos
+  * 0.18.7
+  * configurations on no network mode not working
+  * Loading the widgets even when the network is out
+
+  [ Kevin Harrington ]
+
+  [ Kevin Harrington ]
+
+  [ Kevin Harrington ]
+
+  [ Kevin Harrington ]
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 29 Jun 2016 09:39:56 -0400
+
+bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1ubuntu1) xenial; urgency=medium
+
+  * changing the initial release to xenial
+  * Adding java-bowler 2.21.0
+  * adding the physics engine static methods back in
+  * switching to actual login sucess checking form login file existance
+  * fixing the window displays so the login updates it
+  * updating to the gradle version of the kernel
+  * use git repos when displaying files to allow for the browsing of regular github repos
+  * 0.18.7
+  * configurations on no network mode not working
+  * Loading the widgets even when the network is out
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 28 Jun 2016 10:25:47 -0400
+
+bowlerstudio (0.18.6-1ubuntu1~33.gbp533ad1) xenial; urgency=medium
+
+  ** SNAPSHOT build @533ad1e3ef178e8643a4227dd33eb510575dd4ba **
+
+  [ Kevin Harrington ]
+  ** SNAPSHOT build @533ad1e3ef178e8643a4227dd33eb510575dd4ba **
+
+  * changing release to xenial
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 23:34:47 -0400
+
+bowlerstudio (0.18.6-1ubuntu1~26.gbp19eead) 0.18.6; urgency=medium
+
+  ** SNAPSHOT build @19eead97c9ad3b27a90798f63afcafa2d869eec7 **
+
+  [ Kevin Harrington ]
+  * xenial
+
+  [ Kevin Harrington ]
+  * updating the changlog
+  * changelog
+  * adding debian build files to build debs from gradle
+
+  [ Kevin Harrington ]
+  * ignores
+
+  [ Kevin Harrington ]
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 26 Jun 2016 22:35:38 -0400
+
+bowlerstudio (0.18.6-1) xenial; urgency=medium
+
+  * Initial release  
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 25 Jun 2016 15:23:12 -0400

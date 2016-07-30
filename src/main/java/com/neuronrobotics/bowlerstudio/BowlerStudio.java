@@ -135,12 +135,21 @@ public class BowlerStudio extends Application {
 		if (args.length == 0) {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
-
-			if (ScriptingEngine.getCreds().exists()){
+			try{
 				ScriptingEngine.runLogin();
+			}catch(java.io.IOException e){
+				//e.printStackTrace();
+				ScriptingEngine.setupAnyonmous();
+				
+			}
+			if (ScriptingEngine.isLoginSuccess()){
+				
 				if(BowlerStudio.hasNetwork())
 					ScriptingEngine.setAutoupdate(true);
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+						StudioBuildInfo.getVersion());
+				ScriptingEngine.filesInGit("https://github.com/NeuronRobotics/BowlerStudioConfiguration.git");
+				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
 				String myAssets =AssetFactory.getGitSource();
 				if(BowlerStudio.hasNetwork()){
@@ -169,8 +178,8 @@ public class BowlerStudio extends Application {
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
 				
-			}else
-				ScriptingEngine.setupAnyonmous();
+			}
+			
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
@@ -244,11 +253,21 @@ public class BowlerStudio extends Application {
 	}
 
 	
-
+	/**
+	* @author Sainath 
+	* @version 1.0
+	* @param URL url - The URL of the tab that needs to be opened
+	* @return None
+	*/
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
 	}
-
+	/**
+	* @author Sainath 
+	* @version 1.0
+	* @param String msg - message that needs to be spoken
+	* @return an integer
+	*/
 	public static int speak(String msg) {
 
 		return BowlerKernel.speak(msg);
@@ -394,7 +413,7 @@ public class BowlerStudio extends Application {
 			public void run(){
 				System.err.println("Closing application");
 				ConnectionManager.disconnectAll();
-				if (ScriptingEngine.getCreds().exists()) 
+				if (ScriptingEngine.isLoginSuccess()) 
 					ConfigurationDatabase.save();
 				System.exit(0);
 			}

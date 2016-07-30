@@ -47,6 +47,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.python.modules.thread.thread;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -83,6 +84,7 @@ import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -242,7 +244,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HashMap<MeshView,Axis> axisMap = new HashMap<>();
 	private String lastFileSelected="";
 	private int lastFileLine=0;
-
+	private File defaultStlDir;
 	private TransformNR defautcameraView;
 	private static final TransformNR offsetForVisualization = new TransformNR(0,0,0,
 			new RotationNR(0, 90, 90));
@@ -398,14 +400,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				ArrayList<CSG> toAdd = new ArrayList<>();
 				ArrayList<CSG> toRemove = new ArrayList<>();
-				for(CSG tester:currentObjectsToCheck){
-					for(String p:tester.getParameters()){
-						if(p.contentEquals(key)){
-							CSG ret = tester.regenerate();
-							toRemove.add(tester);
-							toAdd.add(ret);
-						
+				
+				Object[] array=null;
+				synchronized(currentObjectsToCheck){
+					array= (Object[]) currentObjectsToCheck.toArray();
+				}
+				for(int i=0;i<currentObjectsToCheck.size();i++){
+					System.out.println("Testing for Regenerating "+i+" of "+currentObjectsToCheck.size());
+					try{
+						CSG tester=(CSG)array[i];
+						for(String p:tester.getParameters()){
+							if(p.contentEquals(key) && !toRemove.contains(tester)){
+								System.out.println("Regenerating "+i+" on key "+p);
+								CSG ret = tester.regenerate();
+								toRemove.add(tester);
+								toAdd.add(ret);
+							
+							}
 						}
+					}catch(Exception ex){
+						ex.printStackTrace(System.out);
 					}
 				}
 				for(CSG add:toRemove)
@@ -469,8 +483,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 							//Get the set of objects to check for regeneration after the initioal regeneration cycle.
 							Set<CSG> objects = getCsgMap().keySet();
-							fireRegenerate( key,  source, objects);
 							cm.hide();// hide this menue because the new CSG talks to the new menue
+							
+							fireRegenerate( key,  source, objects);
+							
 						}
 					},		Double.parseDouble(lp.getOptions().get(1).toString()) ,
 							Double.parseDouble(lp.getOptions().get(0).toString()), 
@@ -485,11 +501,37 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			cm.getItems().add(parameters);
 		}
 		
+		MenuItem exportDXF = new MenuItem("Export SVG...");
+		exportDXF.setOnAction(new EventHandler<ActionEvent>() {
+		    
+
+			@Override
+		    public void handle(ActionEvent event) {
+				if(defaultStlDir==null)
+					defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				
+				new Thread() {
+
+					public void run() {
+			
+						defaultStlDir =SVGFactory.exportSVG(currentCsg,defaultStlDir);
+	
+						
+					}
+				}.start();
+		    }
+		});
+		cm.getItems().add(exportDXF);
+		
 		MenuItem export = new MenuItem("Export STL...");
 		export.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
 		    public void handle(ActionEvent event) {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		    	if(defaultStlDir==null)
+		    		defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
@@ -498,6 +540,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					public void run() {
 						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir,true);
+						defaultStlDir = baseDirForFiles.getParentFile();
 						if(!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
 							baseDirForFiles=new File(baseDirForFiles.getAbsolutePath()+".stl");
 						if(!baseDirForFiles.exists())
@@ -524,8 +567,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}.start();
 		    }
 		});
-		
 		cm.getItems().add(export);
+		
 		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override
@@ -671,6 +714,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		camera.setNearClip(.1);
 		camera.setFarClip(100000.0);
 		getSubScene().setCamera(camera);
+
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 
@@ -679,8 +723,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
-				// TODO Auto-generated method stub
-				return getVirtualcam();
+				
+				
+				return virtualcam;
 			}
 		});
 		
@@ -1097,7 +1142,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			        java.time.Duration.ofMillis(100),
 			        
 		()->{
+			try{
 			getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
+			}catch (Exception e){}
 		});
 		//System.out.println("Selecting "+selectedCsg);
 		double xcenter = selectedCsg.getMaxX()/2+selectedCsg.getMinX()/2;

@@ -99,10 +99,13 @@ public class BowlerStudioController  implements
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
 			String key =t.getScripting().getGitRepo()+":"+t.getScripting().getGitFile();
+			ArrayList<String> files = new ArrayList<>();
+			files.add(t.getScripting().getGitRepo());
+			files.add(t.getScripting().getGitFile());
 			ConfigurationDatabase.setObject(
 					"studio-open-git", 
 					key, 
-					new String[]{t.getScripting().getGitRepo(),t.getScripting().getGitFile()});
+					files);
 			
 			fileTab.setContent(t);
 			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-"+ScriptingEngine.getShellType(file.getName())+".png"));
@@ -176,23 +179,27 @@ public class BowlerStudioController  implements
 					}
 					
 				}
-				if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
-					String message = ex.getMessage();
-					//System.out.println(message);
-					if(message!=null && message.contains(fileEngineRunByName.getName()))
-						try {
-							int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
-							String fileSub=message.substring(indexOfFile);
-							String [] fileAndNum =fileSub .split(":");
-							String FileNum = fileAndNum[1];
-							int linNum =  Integer.parseInt(FileNum.trim());
-							widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
-						} catch (Exception e) {
-							StringWriter sw = new StringWriter();
-							PrintWriter pw = new PrintWriter(sw);
-							e.printStackTrace(pw);
-							System.out.println(sw.toString());
-						}
+				try{
+					if(widgets.get(fileEngineRunByName.getAbsolutePath())!=null){
+						String message = ex.getMessage();
+						//System.out.println(message);
+						if(message!=null && message.contains(fileEngineRunByName.getName()))
+							try {
+								int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
+								String fileSub=message.substring(indexOfFile);
+								String [] fileAndNum =fileSub .split(":");
+								String FileNum = fileAndNum[1];
+								int linNum =  Integer.parseInt(FileNum.trim());
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,Color.CYAN);
+							} catch (Exception e) {
+								StringWriter sw = new StringWriter();
+								PrintWriter pw = new PrintWriter(sw);
+								e.printStackTrace(pw);
+								System.out.println(sw.toString());
+							}
+					}
+				}catch(Exception ex){
+					
 				}
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);

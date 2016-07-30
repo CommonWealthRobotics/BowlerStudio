@@ -99,11 +99,11 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						CSG baseCad=MobileBaseCadManager.getBaseCad(base);
 						base.DriveArc(new TransformNR(), 0);
-						PhysicsEngine.clear();
+						PhysicsEngine.get().clear();
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
 						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
 						oldParts = threeD.getCsgMap().keySet();
-						BowlerStudioController.setCsg(PhysicsEngine.getCsgFromEngine());
+						BowlerStudioController.setCsg(PhysicsEngine.get().getCsgFromEngine());
 						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						
 						physicsThread = new Thread(){
@@ -115,7 +115,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 										}
 										setTakestep(false);
 										long start = System.currentTimeMillis();
-										PhysicsEngine.stepMs(loopTiming);
+										PhysicsEngine.get().stepMs(loopTiming);
 										long took = (System.currentTimeMillis() - start);
 										if (took < loopTiming)
 											ThreadUtil.wait((int) (loopTiming - took)/4);

@@ -1,0 +1,10 @@
+usr/share/bowlerstudio/BowlerStudio.jar /usr/share/bowlerstudio/
+usr/share/bowlerstudio/NeuronRobotics.ico /usr/share/bowlerstudio/
+usr/share/bowlerstudio/NeuronRobotics.png /usr/share/bowlerstudio/
+usr/share/bowlerstudio/dyio-3.14.6.xml /usr/share/bowlerstudio/
+usr/bin/bowlerstudio /usr/bin/
+usr/share/bowlerstudio/NeuronRobotics.png /usr/share/themes/base/neuronrobotics/icons/
+usr/share/bowlerstudio/BowlerStudio.desktop /usr/share/applications/
+usr/share/bowlerstudio/81-neuronrobotics.rules /etc/udev/rules.d/
+usr/share/doc/bowlerstudio/copyright /usr/share/doc/bowlerstudio/
+usr/share/doc/bowlerstudio/changelog.gz /usr/share/doc/bowlerstudio/

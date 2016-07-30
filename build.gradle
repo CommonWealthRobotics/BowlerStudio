@@ -107,12 +107,13 @@ repositories {
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
 	maven { url 'https://plugins.gradle.org/m2/' }
 	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
+	 maven { url "https://jitpack.io" }
 }
 
 dependencies {
 
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.20.0"
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.19.2.jar'])
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.20.9"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.20.8.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	compile "org.jfxtras:jfxtras-common:8.0-r4"
 	compile "org.jfxtras:jfxtras-fxml:8.0-r4"
@@ -122,7 +123,7 @@ dependencies {
 	compile "org.jfxtras:jfxtras-menu:8.0-r4"
 	compile "org.jfxtras:jfxtras-labs:8.0-r4"
 	compile 'org.dockfx:DockFX:0.1.5'
-	
+	compile 'com.github.movisens:SmartGattLib:1.7'
 	
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 
