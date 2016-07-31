@@ -1,9 +1,11 @@
 package com.neuronrobotics.bowlerstudio;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -221,10 +223,11 @@ public class BowlerStudio extends Application {
 				});
 
 			}
+			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
 				Slic3r.setExecutableLocation("/usr/bin/slic3r");
-
+				
 			} else if (NativeResource.isWindows()) {
 				String basedir = System.getenv("OPENCV_DIR");
 				if (basedir == null)
@@ -233,10 +236,35 @@ public class BowlerStudio extends Application {
 				System.err.println("OPENCV_DIR found at " + basedir);
 				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
 				Slic3r.setExecutableLocation(basedir);
-				ArduinoLoader.setARDUINOExec("C:\\Program Files (x86)\\Arduino\\arduino.exe");
+				arduino="C:\\Program Files (x86)\\Arduino\\arduino.exe";
+				if(!new File(arduino).exists()){
+					arduino="C:\\Program Files\\Arduino\\arduino.exe";
+					
+				}
+					
 				
 			}else if (NativeResource.isOSX()){
-				ArduinoLoader.setARDUINOExec("/Applications/Arduino.app/Contents/MacOS/Arduino");
+				arduino="/Applications/Arduino.app/Contents/MacOS/Arduino";
+			}
+			
+			if(!new File(arduino).exists() && !NativeResource.isLinux()){
+				String adr = arduino;
+				Platform.runLater(() -> {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Arduino is missing");
+					alert.setHeaderText("Arduino expected at: "+adr);
+					alert.initModality(Modality.APPLICATION_MODAL);
+					alert.show();
+					try {
+						openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			}else{
+				System.out.println("Arduino exec found at: "+arduino);
+				ArduinoLoader.setARDUINOExec(arduino);
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -255,8 +283,20 @@ public class BowlerStudio extends Application {
 			BowlerKernel.main(args);
 		}
 	}
-
-	
+	/**
+	 * open an external web page
+	 * @param uri 
+	 */
+	public static void openExternalWebpage(URL uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri.toURI());
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 	/**
 	* @author Sainath 
 	* @version 1.0
