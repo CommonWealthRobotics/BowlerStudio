@@ -247,25 +247,30 @@ public class BowlerStudio extends Application {
 				arduino="/Applications/Arduino.app/Contents/MacOS/Arduino";
 			}
 			
-			if(!new File(arduino).exists() && !NativeResource.isLinux()){
-				String adr = arduino;
-				Platform.runLater(() -> {
-					Alert alert = new Alert(AlertType.INFORMATION);
-					alert.setTitle("Arduino is missing");
-					alert.setHeaderText("Arduino expected at: "+adr);
-					alert.initModality(Modality.APPLICATION_MODAL);
-					alert.show();
-					try {
-						openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				});
-			}else{
-				System.out.println("Arduino exec found at: "+arduino);
-				ArduinoLoader.setARDUINOExec(arduino);
+			if(!new File(arduino).exists() && !NativeResource.isLinux() ){
+				boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep",false).toString());
+				if(!alreadyNotified){
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep",
+							true);
+					String adr = arduino;
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Arduino is missing");
+						alert.setHeaderText("Arduino expected at: "+adr);
+						alert.initModality(Modality.APPLICATION_MODAL);
+						alert.show();
+						try {
+							openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
+				}
 			}
+			System.out.println("Arduino exec found at: "+arduino);
+			ArduinoLoader.setARDUINOExec(arduino);
+			
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// This is a workaround for #8 and is only relavent on osx
