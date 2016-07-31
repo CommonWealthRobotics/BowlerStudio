@@ -18,6 +18,7 @@ import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
@@ -232,7 +233,10 @@ public class BowlerStudio extends Application {
 				System.err.println("OPENCV_DIR found at " + basedir);
 				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
 				Slic3r.setExecutableLocation(basedir);
-
+				ArduinoLoader.setARDUINOExec("C:\\Program Files (x86)\\Arduino\\arduino.exe");
+				
+			}else if (NativeResource.isOSX()){
+				ArduinoLoader.setARDUINOExec("/Applications/Arduino.app/Contents/arduino");
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
