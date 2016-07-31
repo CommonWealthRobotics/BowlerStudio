@@ -236,7 +236,7 @@ public class BowlerStudio extends Application {
 				ArduinoLoader.setARDUINOExec("C:\\Program Files (x86)\\Arduino\\arduino.exe");
 				
 			}else if (NativeResource.isOSX()){
-				ArduinoLoader.setARDUINOExec("/Applications/Arduino.app/Contents/arduino");
+				ArduinoLoader.setARDUINOExec("/Applications/Arduino.app/Contents/MacOS/Arduino");
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
