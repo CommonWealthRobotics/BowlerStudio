@@ -334,7 +334,7 @@ public class MobileBaseCadManager {
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 		}
-		CSG simpleCad;
+
 		try {
 			ICadGenerator generatorToUse=cadEngine;
 			
@@ -342,6 +342,7 @@ public class MobileBaseCadManager {
 				generatorToUse=dhCadGen.get(dh);
 			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
+				int index=i;
 				if(!bail){
 					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);
 					LinkConfiguration configuration = dh.getLinkConfiguration(i);
@@ -349,34 +350,37 @@ public class MobileBaseCadManager {
 						getLinktoCadMap().put(configuration, new ArrayList<>());
 					}else
 						getLinktoCadMap().get(configuration).clear();
-					simpleCad=null;
 					for(CSG c:tmp){
-						if(simpleCad==null)
-							simpleCad=c;
-						else
-							simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
 						dhLinks.add(c);
 						getLinktoCadMap().get(configuration).add(c);// add to the regestration storage
 					}
 					
-					if(simpleCad!=null){
-						simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
-						AbstractLink link = dh.getFactory().getLink(configuration);
-						link.addLinkListener(new ILinkListener() {
+					new Thread(()->{
+						CSG first = tmp.get(0);
+						// put at least one part in and wait for union
+						simplecad.put(dh.getDhChain().getLinks().get(index), first);
+//						CSG sc = first.union(tmp);
+//						if(sc!=null){
+//							simplecad.put(dh.getDhChain().getLinks().get(index), sc);
+//						}
+					}).start();
+					
+					
+					AbstractLink link = dh.getFactory().getLink(configuration);
+					link.addLinkListener(new ILinkListener() {
+						
+						@Override
+						public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+							// TODO Auto-generated method stub
 							
-							@Override
-							public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
-								// TODO Auto-generated method stub
-								
-							}
+						}
+						
+						@Override
+						public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+							BowlerStudio.select( base,configuration);
 							
-							@Override
-							public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
-								BowlerStudio.select( base,configuration);
-								
-							}
-						});
-					}
+						}
+					});
 					
 				}
 			}
@@ -503,16 +507,12 @@ public class MobileBaseCadManager {
 	private CSG localGetBaseCad(MobileBase device){
 
 		if(baseCad==null){
-//			for(int i=0;i<getAllCad().size();i++){
-//				CSG c = getAllCad().get(i);
-//				if(baseCad==null)
-//					baseCad=c;
-//				else
-//					baseCad=baseCad.union(c);
-//			}
 			baseCad = getAllCad().get(0);
+//			new Thread(()->{
+//				baseCad = getAllCad().get(0).union(getAllCad());
+//			}).start();
 		}
-		
+
 		return baseCad;
 	}
 
