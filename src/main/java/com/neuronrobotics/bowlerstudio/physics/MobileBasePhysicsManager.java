@@ -36,7 +36,7 @@ import javafx.scene.transform.Affine;
 
 public class MobileBasePhysicsManager {
 
-	public  static final float PhysicsGravityScalar = 100;
+	public  static final float PhysicsGravityScalar = 6;
 	private HashMap<LinkConfiguration, ArrayList<CSG>> simplecad;
 	private float lift = 20;
 	private ArrayList<ILinkListener> linkListeners = new ArrayList<>();
@@ -125,7 +125,7 @@ public class MobileBasePhysicsManager {
 		RigidBody body = baseManager.getFallRigidBody();
 		baseManager.setUpdateManager(getUpdater(body, base.getImu()));
 
-		core.getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -9.8 * PhysicsGravityScalar));
+		core.getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98* PhysicsGravityScalar));
 		core.add(baseManager);
 		for (int j = 0; j < base.getAllDHChains().size(); j++) {
 			DHParameterKinematics dh = base.getAllDHChains().get(j);
@@ -187,6 +187,7 @@ public class MobileBasePhysicsManager {
 					Transform linkLoc = new Transform();
 					TransformFactory.nrToBullet(localLink, linkLoc);
 					linkLoc.origin.z = (float) (linkLoc.origin.z - minz + lift);
+					
 					// Set the manipulator to the location from the kinematics,
 					// needs to be in UI thread to touch manipulator
 					Platform.runLater(new Runnable() {
@@ -211,7 +212,7 @@ public class MobileBasePhysicsManager {
 					// Build a hinge based on the link and mass
 					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(outCad, linkLoc, mass,
 							core);
-					hingePhysicsManager.setMuscleStrength(100000);
+					HingeCSGPhysicsManager.setMuscleStrength(10000000);
 
 					RigidBody linkSection = hingePhysicsManager.getFallRigidBody();
 
@@ -246,28 +247,27 @@ public class MobileBasePhysicsManager {
 					
 					hingePhysicsManager.setConstraint(joint6DOF);
 
-					ILinkListener ll = new ILinkListener() {
-						@Override
-						public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
-							if(!conf.isPassive()){
-								// System.out.println("
-								// value="+engineeringUnitsValue);
-								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
-
-//								 joint6DOF.setLimit( (float)
-//								 (Math.toRadians(-engineeringUnitsValue )-
-//								 LIFT_EPS),
-//								 (float) (Math.toRadians(-engineeringUnitsValue )+
-//								 LIFT_EPS));
-							}
-						}
-
-						@Override
-						public void onLinkLimit(AbstractLink source, PIDLimitEvent event) {
-							// println event
-						}
-					};
+					
 					if (!conf.isPassive()) {
+						ILinkListener ll = new ILinkListener() {
+							@Override
+							public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
+									// System.out.println("
+									// value="+engineeringUnitsValue);
+									hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
+
+//									 joint6DOF.setLimit( (float)
+//									 (Math.toRadians(-engineeringUnitsValue )-
+//									 LIFT_EPS),
+//									 (float) (Math.toRadians(-engineeringUnitsValue )+
+//									 LIFT_EPS));
+							}
+
+							@Override
+							public void onLinkLimit(AbstractLink source, PIDLimitEvent event) {
+								// println event
+							}
+						};
 						hingePhysicsManager.setController(new IClosedLoopController() {
 
 							@Override

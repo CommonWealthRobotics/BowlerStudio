@@ -14,7 +14,7 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 	private HingeConstraint constraint=null;
 	private IClosedLoopController controller=null;
 	private double target=0;
-	private float muscleStrength=(float) 1000;
+	private static float muscleStrength=(float) 1000;
 	boolean flagBroken=false;
 	private double velocity;
 	private PhysicsCore core;
@@ -29,7 +29,7 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 		if(constraint!=null&&getController()!=null &&!flagBroken){
 			velocity = getController().compute(constraint.getHingeAngle(), getTarget(),timeStep);
 			constraint.enableAngularMotor(true, (float) velocity, getMuscleStrength()*2);
-			if(constraint.getAppliedImpulse()>muscleStrength){
+			if(constraint.getAppliedImpulse()>getMuscleStrength()){
 				for(CSG c:baseCSG){
 					c.setColor(Color.WHITE);
 				}
@@ -37,7 +37,7 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 				core.remove(this);
 				setConstraint(null);
 				core.add (this);
-				System.out.println("ERROR Link Broken, Strength: "+muscleStrength+" applied impluse "+constraint.getAppliedImpulse());
+				System.out.println("ERROR Link Broken, Strength: "+getMuscleStrength()+" applied impluse "+constraint.getAppliedImpulse());
 			}
 		}else if (constraint!=null && flagBroken){
 			constraint.enableAngularMotor(false, 0, 0);
@@ -57,11 +57,11 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 	public void setTarget(double target) {
 		this.target = target;
 	}
-	public float getMuscleStrength() {
+	public static float getMuscleStrength() {
 		return muscleStrength;
 	}
-	public void setMuscleStrength(float muscleStrength) {
-		this.muscleStrength = muscleStrength;
+	public static void setMuscleStrength(float ms) {
+		muscleStrength = ms;
 	}
 	public void setMuscleStrength(double muscleStrength) {
 		setMuscleStrength((float)muscleStrength);

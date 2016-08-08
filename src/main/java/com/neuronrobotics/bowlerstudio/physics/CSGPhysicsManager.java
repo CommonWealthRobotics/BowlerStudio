@@ -93,7 +93,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	
 
 	public void update(float timeStep){		
-		fallRigidBody.getMotionState().getWorldTransform(getUpdateTransform());
+		fallRigidBody.getMotionState().getWorldTransform(updateTransform);
 		if(getUpdateManager()!=null){
 			getUpdateManager().update(timeStep);
 		}
@@ -123,9 +123,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	public Transform getUpdateTransform() {
 		return updateTransform;
 	}
-	public void setUpdateTransform(Transform updateTransform) {
-		this.updateTransform = updateTransform;
-	}
+
 	public Affine getRigidBodyLocation() {
 		return ballLocation;
 	}
