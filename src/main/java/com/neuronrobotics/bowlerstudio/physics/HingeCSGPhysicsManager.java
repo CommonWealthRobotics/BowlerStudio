@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
+import java.util.ArrayList;
+
 import com.bulletphysics.dynamics.constraintsolver.HingeConstraint;
 import com.bulletphysics.linearmath.Transform;
 import com.neuronrobotics.sdk.common.IClosedLoopController;
@@ -16,10 +18,10 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 	boolean flagBroken=false;
 	private double velocity;
 	private PhysicsCore core;
-	public HingeCSGPhysicsManager(CSG baseCSG, Transform pose, double mass,PhysicsCore core) {
+	public HingeCSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose, double mass,PhysicsCore core) {
 		super(baseCSG, pose, mass,false,core);
 		this.core = core;
-		baseCSG.setColor(Color.YELLOW);
+		//baseCSG.setColor(Color.YELLOW);
 	}
 	@Override
 	public void update(float timeStep){
@@ -28,7 +30,9 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 			velocity = getController().compute(constraint.getHingeAngle(), getTarget(),timeStep);
 			constraint.enableAngularMotor(true, (float) velocity, getMuscleStrength());
 			if(constraint.getAppliedImpulse()>muscleStrength){
-				baseCSG.setColor(Color.RED);
+				for(CSG c:baseCSG){
+					c.setColor(Color.RED);
+				}
 				flagBroken=true;
 				core.remove(this);
 				setConstraint(null);

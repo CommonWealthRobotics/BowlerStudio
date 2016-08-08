@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
+import java.util.ArrayList;
+
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -25,25 +27,16 @@ import javafx.scene.transform.Affine;
 public class CSGPhysicsManager  implements IPhysicsManager{
 	
 	private RigidBody fallRigidBody;
-	private Affine ballLocation = new Affine();
-	protected CSG baseCSG;
+	private final Affine ballLocation = new Affine();
+	protected ArrayList<CSG> baseCSG=null;
 	private Transform updateTransform = new Transform();
 	private IPhysicsUpdate updateManager = null;
-	public CSGPhysicsManager(int sphereSize, Vector3f start, double mass,PhysicsCore core){
-		this.setBaseCSG(new Sphere(sphereSize).toCSG());
-		CollisionShape fallShape = new SphereShape((float) (baseCSG.getMaxX()-baseCSG.getMinX())/2);
-		setup(fallShape,new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)),mass,core);
-	}
-	public CSGPhysicsManager(CSG baseCSG, Vector3f start, double mass,PhysicsCore core){
+
+	public CSGPhysicsManager(ArrayList<CSG> baseCSG, Vector3f start, double mass,PhysicsCore core){
 		this(baseCSG,new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)),mass,true, core);
 	}
 	
-	protected void loadCSGToPoints(CSG baseCSG,ObjectArrayList<Vector3f> arg0){
-		
-	}
-	
-	public CSGPhysicsManager(CSG baseCSG, Transform pose,  double mass, boolean adjustCenter, PhysicsCore core){
-		this.setBaseCSG(baseCSG);// force a hull of the shape to simplify physics
+	protected void loadCSGToPoints(CSG baseCSG, boolean adjustCenter,Transform pose,ObjectArrayList<Vector3f> arg0){
 		CSG finalCSG = baseCSG;
 		if(adjustCenter){
 			double xcenter = baseCSG.getMaxX()/2+baseCSG.getMinX()/2;
@@ -65,14 +58,21 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 			}
 			TransformFactory.nrToBullet(poseToMove, pose);
 		}
-		
-		
-		this.setBaseCSG(finalCSG);// force a hull of the shape to simplify physics
-		ObjectArrayList<Vector3f> arg0= new ObjectArrayList<>();
+
 		for( Polygon p:finalCSG.getPolygons()){
 			for( Vertex v:p.vertices){
 				arg0.add(new Vector3f((float)v.getX(), (float)v.getY(), (float)v.getZ()));
 			}
+		}
+	}
+	
+	public CSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose,  double mass, boolean adjustCenter, PhysicsCore core){
+		this.setBaseCSG(baseCSG);// force a hull of the shape to simplify physics
+
+		
+		ObjectArrayList<Vector3f> arg0= new ObjectArrayList<>();
+		for(CSG c:baseCSG){
+			loadCSGToPoints(c,adjustCenter,pose,arg0);
 		}
 		CollisionShape fallShape =  new com.bulletphysics.collision.shapes.ConvexHullShape(arg0);
 		setup(fallShape,pose,mass,core);
@@ -111,13 +111,13 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 		this.fallRigidBody = fallRigidBody;
 	}
 
-	public CSG getBaseCSG() {
+	public ArrayList<CSG> getBaseCSG() {
 		return baseCSG;
 	}
 
-	public void setBaseCSG(CSG baseCSG) {
-		
-		baseCSG.setManipulator(getRigidBodyLocation());
+	public void setBaseCSG(ArrayList<CSG> baseCSG) {
+		for(CSG c:baseCSG)
+			c.setManipulator(getRigidBodyLocation());
 		this.baseCSG = baseCSG;
 	}
 	public Transform getUpdateTransform() {
@@ -129,9 +129,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	public Affine getRigidBodyLocation() {
 		return ballLocation;
 	}
-	public void setBallLocation(Affine ballLocation) {
-		this.ballLocation = ballLocation;
-	}
+	
 	public IPhysicsUpdate getUpdateManager() {
 		return updateManager;
 	}

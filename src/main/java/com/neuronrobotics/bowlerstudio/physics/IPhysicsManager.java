@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
+import java.util.ArrayList;
+
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.Transform;
 
@@ -21,7 +23,7 @@ public interface IPhysicsManager {
 	 * Return the CSG that tis being modelsed
 	 * @return
 	 */
-	public CSG getBaseCSG() ;
+	public ArrayList<CSG> getBaseCSG() ;
 	/**
 	 * Return the current spatial location fo the rigid body
 	 * @return

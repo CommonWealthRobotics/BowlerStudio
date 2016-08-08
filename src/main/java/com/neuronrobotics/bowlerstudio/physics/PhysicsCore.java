@@ -142,7 +142,8 @@ public class PhysicsCore {
 	public  ArrayList<CSG> getCsgFromEngine(){
 		ArrayList<CSG> csg = new ArrayList<>();
 		for(IPhysicsManager o:getPhysicsObjects()){
-			csg.add(o.getBaseCSG());
+			for(CSG c:o.getBaseCSG())
+					csg.add(c);
 		}
 		return csg;
 	}
