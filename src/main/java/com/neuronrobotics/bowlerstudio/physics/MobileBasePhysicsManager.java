@@ -200,15 +200,16 @@ public class MobileBasePhysicsManager {
 						c.setManipulator(manipulator);
 					}
 					double mass = conf.getMassKg();
+					ArrayList<CSG> outCad=new ArrayList<>();
 					for (int x=0;x<thisLinkCad.size();x++){
 						Color color = thisLinkCad.get(x).getColor();
-						thisLinkCad.set(x, 
+						outCad.add( 
 								thisLinkCad.get(x)
 								.transformed(TransformFactory.nrToCSG(new TransformNR(step).inverse())));
-						thisLinkCad.get(x).setColor(color);
+						outCad.get(x).setColor(color);
 					}
 					// Build a hinge based on the link and mass
-					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(thisLinkCad, linkLoc, mass,
+					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(outCad, linkLoc, mass,
 							core);
 					hingePhysicsManager.setMuscleStrength(100000);
 
@@ -251,13 +252,13 @@ public class MobileBasePhysicsManager {
 							if(!conf.isPassive()){
 								// System.out.println("
 								// value="+engineeringUnitsValue);
-//								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
+								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
 
-								 joint6DOF.setLimit( (float)
-								 (Math.toRadians(-engineeringUnitsValue )-
-								 LIFT_EPS),
-								 (float) (Math.toRadians(-engineeringUnitsValue )+
-								 LIFT_EPS));
+//								 joint6DOF.setLimit( (float)
+//								 (Math.toRadians(-engineeringUnitsValue )-
+//								 LIFT_EPS),
+//								 (float) (Math.toRadians(-engineeringUnitsValue )+
+//								 LIFT_EPS));
 							}
 						}
 
@@ -267,15 +268,15 @@ public class MobileBasePhysicsManager {
 						}
 					};
 					if (!conf.isPassive()) {
-//						hingePhysicsManager.setController(new IClosedLoopController() {
-//
-//							@Override
-//							public double compute(double currentState, double target, double seconds) {
-//								double error = target - currentState;
-//								return (error / seconds) * (seconds * 10);
-//								// return 0
-//							}
-//						});
+						hingePhysicsManager.setController(new IClosedLoopController() {
+
+							@Override
+							public double compute(double currentState, double target, double seconds) {
+								double error = target - currentState;
+								return (error / seconds) * (seconds * 10);
+								// return 0
+							}
+						});
 						abstractLink.addLinkListener(ll);
 						linkListeners.add(ll);
 					}
