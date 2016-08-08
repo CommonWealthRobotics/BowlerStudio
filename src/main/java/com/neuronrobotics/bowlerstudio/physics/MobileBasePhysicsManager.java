@@ -36,7 +36,7 @@ import javafx.scene.transform.Affine;
 
 public class MobileBasePhysicsManager {
 
-	private static final float PhysicsGravityScalar = 6;
+	public  static final float PhysicsGravityScalar = 100;
 	private HashMap<LinkConfiguration, ArrayList<CSG>> simplecad;
 	private float lift = 20;
 	private ArrayList<ILinkListener> linkListeners = new ArrayList<>();
@@ -121,11 +121,11 @@ public class MobileBasePhysicsManager {
 				TransformFactory.bulletToAffine(baseCad.get(0).getManipulator(), start);
 			}
 		});
-		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, 0.1, false, core);
+		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, base.getMassKg(), false, core);
 		RigidBody body = baseManager.getFallRigidBody();
 		baseManager.setUpdateManager(getUpdater(body, base.getImu()));
 
-		core.getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98 * PhysicsGravityScalar));
+		core.getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -9.8 * PhysicsGravityScalar));
 		core.add(baseManager);
 		for (int j = 0; j < base.getAllDHChains().size(); j++) {
 			DHParameterKinematics dh = base.getAllDHChains().get(j);
@@ -251,13 +251,13 @@ public class MobileBasePhysicsManager {
 							if(!conf.isPassive()){
 								// System.out.println("
 								// value="+engineeringUnitsValue);
-								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
+//								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
 
-//								 joint6DOF.setLimit( (float)
-//								 Math.toRadians(-engineeringUnitsValue )-
-//								 LIFT_EPS,
-//								 (float) Math.toRadians(-engineeringUnitsValue )+
-//								 LIFT_EPS);
+								 joint6DOF.setLimit( (float)
+								 (Math.toRadians(-engineeringUnitsValue )-
+								 LIFT_EPS),
+								 (float) (Math.toRadians(-engineeringUnitsValue )+
+								 LIFT_EPS));
 							}
 						}
 
@@ -267,15 +267,15 @@ public class MobileBasePhysicsManager {
 						}
 					};
 					if (!conf.isPassive()) {
-						hingePhysicsManager.setController(new IClosedLoopController() {
-
-							@Override
-							public double compute(double currentState, double target, double seconds) {
-								double error = target - currentState;
-								return (error / seconds) * (seconds * 10);
-								// return 0
-							}
-						});
+//						hingePhysicsManager.setController(new IClosedLoopController() {
+//
+//							@Override
+//							public double compute(double currentState, double target, double seconds) {
+//								double error = target - currentState;
+//								return (error / seconds) * (seconds * 10);
+//								// return 0
+//							}
+//						});
 						abstractLink.addLinkListener(ll);
 						linkListeners.add(ll);
 					}

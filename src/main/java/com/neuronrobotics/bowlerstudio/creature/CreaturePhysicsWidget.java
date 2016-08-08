@@ -16,6 +16,7 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdateListener;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
@@ -99,7 +100,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						}
 						HashMap<LinkConfiguration, ArrayList<CSG>> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);
-						base.DriveArc(new TransformNR(), 0);
+						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
 						PhysicsEngine.get().clear();
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
 						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();

@@ -43,9 +43,10 @@ public class PhysicsCore {
 	private  int msTime=16;
 	
 	private  Thread physicsThread = null;
+	private int simpulationSubSteps = 4;;
 	public PhysicsCore() throws Exception {
 		// set the gravity of our world
-		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98*6));
+		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -9.8*MobileBasePhysicsManager.PhysicsGravityScalar));
 		
 		setGroundShape(new StaticPlaneShape(new Vector3f(0, 0, 10), 1));
 	}
@@ -153,7 +154,8 @@ public class PhysicsCore {
 	}
 	public  void step(float timeStep){
 		long startTime = System.currentTimeMillis();
-		 getDynamicsWorld().stepSimulation(timeStep , 5);
+		 
+		getDynamicsWorld().stepSimulation(timeStep , getSimpulationSubSteps());
 		if( (((float)(System.currentTimeMillis()- startTime))/1000.0f)>timeStep){
 			//System.out.println(" Compute took too long "+timeStep);
 		}
@@ -203,5 +205,13 @@ public class PhysicsCore {
 		}
 		getPhysicsObjects().clear();
 		
+	}
+
+	public int getSimpulationSubSteps() {
+		return simpulationSubSteps;
+	}
+
+	public void setSimpulationSubSteps(int simpulationSubSteps) {
+		this.simpulationSubSteps = simpulationSubSteps;
 	}
 }
