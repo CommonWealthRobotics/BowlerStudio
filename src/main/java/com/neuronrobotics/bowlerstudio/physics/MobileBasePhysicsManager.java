@@ -89,7 +89,9 @@ public class MobileBasePhysicsManager {
 			}
 		};
 	}
-
+	
+	
+	
 	public MobileBasePhysicsManager(MobileBase base, ArrayList<CSG> baseCad,
 			HashMap<LinkConfiguration, ArrayList<CSG>> simplecad) {
 		this(base, baseCad, simplecad, PhysicsEngine.get());
@@ -121,7 +123,7 @@ public class MobileBasePhysicsManager {
 				TransformFactory.bulletToAffine(baseCad.get(0).getManipulator(), start);
 			}
 		});
-		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, base.getMassKg(), false, core);
+		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, 0.01, false, core);
 		RigidBody body = baseManager.getFallRigidBody();
 		baseManager.setUpdateManager(getUpdater(body, base.getImu()));
 
@@ -212,7 +214,7 @@ public class MobileBasePhysicsManager {
 					// Build a hinge based on the link and mass
 					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(outCad, linkLoc, mass,
 							core);
-					HingeCSGPhysicsManager.setMuscleStrength(10000000);
+					HingeCSGPhysicsManager.setMuscleStrength(1000000);
 
 					RigidBody linkSection = hingePhysicsManager.getFallRigidBody();
 
@@ -272,9 +274,8 @@ public class MobileBasePhysicsManager {
 
 							@Override
 							public double compute(double currentState, double target, double seconds) {
-								double error = target - currentState;
-								return (error / seconds) * (seconds * 10);
-								// return 0
+								double error = target-currentState;
+								return (error/seconds)*(seconds*10);
 							}
 						});
 						abstractLink.addLinkListener(ll);

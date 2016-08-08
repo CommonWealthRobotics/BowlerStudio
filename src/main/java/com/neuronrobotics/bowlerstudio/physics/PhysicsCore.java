@@ -114,6 +114,22 @@ public class PhysicsCore {
 	public ArrayList<IPhysicsManager> getPhysicsObjects() {
 		return objects;
 	}
+	public  void setDamping (float lin_damping, float ang_damping){
+		for(IPhysicsManager m:getPhysicsObjects()){
+			m.getFallRigidBody().setDamping(lin_damping, ang_damping);
+		}
+	}
+	public  void setSleepingThresholds (float linear, float angular){
+		for(IPhysicsManager m:getPhysicsObjects()){
+			m.getFallRigidBody().setSleepingThresholds ( linear,  angular);
+		}
+	}
+
+	public  void setDeactivationTime (float deacTime){
+		for(IPhysicsManager m:getPhysicsObjects()){
+			m.getFallRigidBody().setDeactivationTime(deacTime);
+		}
+	}
 
 	public void setObjects(ArrayList<IPhysicsManager> objects) {
 		this.objects = objects;
