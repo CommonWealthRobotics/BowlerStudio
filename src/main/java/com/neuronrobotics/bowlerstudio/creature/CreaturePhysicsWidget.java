@@ -32,7 +32,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
 	Button pauseresume = new Button("Pause", AssetFactory.loadIcon("Pause.png"));
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
-	TextField msLoopTime =new TextField("200") ;
+	TextField msLoopTime =new TextField("50") ;
 	int msLoopTimeInt =0;
 	private boolean run=false;
 	private boolean takestep=false;

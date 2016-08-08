@@ -43,7 +43,7 @@ public class PhysicsCore {
 	private  int msTime=16;
 	
 	private  Thread physicsThread = null;
-	private int simpulationSubSteps = 4;;
+	private int simpulationSubSteps = 1;
 	public PhysicsCore() throws Exception {
 		// set the gravity of our world
 		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -9.8*MobileBasePhysicsManager.PhysicsGravityScalar));
