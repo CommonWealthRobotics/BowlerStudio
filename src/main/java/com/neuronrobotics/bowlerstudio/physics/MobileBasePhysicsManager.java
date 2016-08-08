@@ -245,7 +245,7 @@ public class MobileBasePhysicsManager {
 					ILinkListener ll = new ILinkListener() {
 						@Override
 						public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
-							if(conf.isPassive()){
+							if(!conf.isPassive()){
 								// System.out.println("
 								// value="+engineeringUnitsValue);
 								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
