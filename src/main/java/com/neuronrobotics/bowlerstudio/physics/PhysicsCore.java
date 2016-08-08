@@ -43,7 +43,12 @@ public class PhysicsCore {
 	private  int msTime=16;
 	
 	private  Thread physicsThread = null;
-	private int simpulationSubSteps = 5;
+	private int simulationSubSteps = 5;
+	private float lin_damping;
+	private float ang_damping;
+	private float linearSleepThreshhold;
+	private float angularSleepThreshhold;
+	private float deactivationTime;
 	public PhysicsCore() throws Exception {
 		// set the gravity of our world
 		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98*MobileBasePhysicsManager.PhysicsGravityScalar));
@@ -115,19 +120,24 @@ public class PhysicsCore {
 		return objects;
 	}
 	public  void setDamping (float lin_damping, float ang_damping){
+		this.lin_damping=(lin_damping);
+		this.ang_damping=(ang_damping);
 		for(IPhysicsManager m:getPhysicsObjects()){
 			m.getFallRigidBody().setDamping(lin_damping, ang_damping);
 		}
 	}
-	public  void setSleepingThresholds (float linear, float angular){
+	public  void setSleepingThresholds (float linearSleepThreshhold, float angularSleepThreshhold){
+		this.linearSleepThreshhold=(linearSleepThreshhold);
+		this.angularSleepThreshhold=(angularSleepThreshhold);
 		for(IPhysicsManager m:getPhysicsObjects()){
-			m.getFallRigidBody().setSleepingThresholds ( linear,  angular);
+			m.getFallRigidBody().setSleepingThresholds ( linearSleepThreshhold,  angularSleepThreshhold);
 		}
 	}
 
-	public  void setDeactivationTime (float deacTime){
+	public  void setDeactivationTime (float deactivationTime){
+		this.deactivationTime = deactivationTime;
 		for(IPhysicsManager m:getPhysicsObjects()){
-			m.getFallRigidBody().setDeactivationTime(deacTime);
+			m.getFallRigidBody().setDeactivationTime(deactivationTime);
 		}
 	}
 
@@ -171,7 +181,7 @@ public class PhysicsCore {
 	public  void step(float timeStep){
 		long startTime = System.currentTimeMillis();
 		 
-		getDynamicsWorld().stepSimulation(timeStep , getSimpulationSubSteps());
+		getDynamicsWorld().stepSimulation(timeStep , getSimulationSubSteps());
 		if( (((float)(System.currentTimeMillis()- startTime))/1000.0f)>timeStep){
 			//System.out.println(" Compute took too long "+timeStep);
 		}
@@ -220,12 +230,31 @@ public class PhysicsCore {
 		getPhysicsObjects().clear();
 		
 	}
-
-	public int getSimpulationSubSteps() {
-		return simpulationSubSteps;
+	public int getSimulationSubSteps() {
+		return simulationSubSteps;
+	}
+	public float getDeactivationTime() {
+		return deactivationTime;
 	}
 
-	public void setSimpulationSubSteps(int simpulationSubSteps) {
-		this.simpulationSubSteps = simpulationSubSteps;
+	public void setSimulationSubSteps(int simpulationSubSteps) {
+		this.simulationSubSteps = simpulationSubSteps;
 	}
+
+	public float getLin_damping() {
+		return lin_damping;
+	}
+
+	public float getAng_damping() {
+		return ang_damping;
+	}
+
+	public float getLinearSleepThreshhold() {
+		return linearSleepThreshhold;
+	}
+
+	public float getAngularSleepThreshhold() {
+		return angularSleepThreshhold;
+	}
+
 }

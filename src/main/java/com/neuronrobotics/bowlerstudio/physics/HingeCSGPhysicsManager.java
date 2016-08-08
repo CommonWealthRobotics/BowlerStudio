@@ -38,8 +38,7 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 				setConstraint(null);
 				core.add (this);
 				System.out.println("ERROR Link Broken, Strength: "+getMuscleStrength()+" applied impluse "+constraint.getAppliedImpulse());
-			}else
-				System.out.println("Impulse = "+constraint.getAppliedImpulse()+" strength = "+getMuscleStrength() );
+			}
 		}else if (constraint!=null && flagBroken){
 			constraint.enableAngularMotor(false, 0, 0);
 		}
