@@ -200,8 +200,8 @@ public class MobileBasePhysicsManager {
 					}
 					double mass = conf.getMassKg();
 					for (int x=0;x<thisLinkCad.size();x++){
-						thisLinkCad.set(i, 
-								thisLinkCad.get(i)
+						thisLinkCad.set(x, 
+								thisLinkCad.get(x)
 								.transformed(TransformFactory.nrToCSG(new TransformNR(step).inverse())));
 					}
 					// Build a hinge based on the link and mass
