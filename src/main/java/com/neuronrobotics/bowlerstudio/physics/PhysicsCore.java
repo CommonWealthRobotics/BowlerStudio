@@ -43,7 +43,7 @@ public class PhysicsCore {
 	private  int msTime=16;
 	
 	private  Thread physicsThread = null;
-	private int simpulationSubSteps = 4;
+	private int simpulationSubSteps = 5;
 	public PhysicsCore() throws Exception {
 		// set the gravity of our world
 		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98*MobileBasePhysicsManager.PhysicsGravityScalar));
@@ -171,18 +171,15 @@ public class PhysicsCore {
 	public  void step(float timeStep){
 		long startTime = System.currentTimeMillis();
 		 
-		getDynamicsWorld().stepSimulation(timeStep , getSimpulationSubSteps(),timeStep);
+		getDynamicsWorld().stepSimulation(timeStep , getSimpulationSubSteps());
 		if( (((float)(System.currentTimeMillis()- startTime))/1000.0f)>timeStep){
 			//System.out.println(" Compute took too long "+timeStep);
 		}
 		for(IPhysicsManager o: getPhysicsObjects()){
 			o.update( timeStep);
 		}
-		
-		Platform.runLater(()->{
-			for(IPhysicsManager o: getPhysicsObjects())
-				TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform());
-		});
+		for(IPhysicsManager o: getPhysicsObjects())
+			Platform.runLater(()->TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform()));
 	}
 	
 	public  void stepMs(double timeStep){

@@ -102,6 +102,7 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 
 		getChildren().add(panel);
 		abstractLink.addLinkListener(this);
+		
 	}
 	
 
@@ -256,7 +257,8 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 	@Override
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
 		// TODO Auto-generated method stub
-		setpoint.setValue(arg1);
+		if (this.isFocused())
+			setpoint.setValue(arg1);
 	}
 
 

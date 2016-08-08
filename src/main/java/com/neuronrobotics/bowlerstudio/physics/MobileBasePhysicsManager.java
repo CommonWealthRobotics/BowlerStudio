@@ -40,7 +40,7 @@ public class MobileBasePhysicsManager {
 	private HashMap<LinkConfiguration, ArrayList<CSG>> simplecad;
 	private float lift = 20;
 	private ArrayList<ILinkListener> linkListeners = new ArrayList<>();
-	public static final float LIFT_EPS = 0.0000001f;
+	public static final float LIFT_EPS = (float) Math.toRadians(0.1);
 
 	private IPhysicsUpdate getUpdater(RigidBody body, IMU base) {
 		return new IPhysicsUpdate() {
@@ -123,7 +123,7 @@ public class MobileBasePhysicsManager {
 				TransformFactory.bulletToAffine(baseCad.get(0).getManipulator(), start);
 			}
 		});
-		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, 0.01, false, core);
+		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, 0.1, false, core);
 		RigidBody body = baseManager.getFallRigidBody();
 		baseManager.setUpdateManager(getUpdater(body, base.getImu()));
 
@@ -258,11 +258,11 @@ public class MobileBasePhysicsManager {
 									// value="+engineeringUnitsValue);
 									hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
 
-//									 joint6DOF.setLimit( (float)
-//									 (Math.toRadians(-engineeringUnitsValue )-
-//									 LIFT_EPS),
-//									 (float) (Math.toRadians(-engineeringUnitsValue )+
-//									 LIFT_EPS));
+									 joint6DOF.setLimit( (float)
+									 (Math.toRadians(-engineeringUnitsValue )-
+									 LIFT_EPS),
+									 (float) (Math.toRadians(-engineeringUnitsValue )+
+									 LIFT_EPS));
 							}
 
 							@Override

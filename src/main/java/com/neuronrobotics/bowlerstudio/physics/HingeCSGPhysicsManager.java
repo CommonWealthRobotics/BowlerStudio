@@ -28,7 +28,7 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 		super.update(timeStep);
 		if(constraint!=null&&getController()!=null &&!flagBroken){
 			velocity = getController().compute(constraint.getHingeAngle(), getTarget(),timeStep);
-			constraint.enableAngularMotor(true, (float) velocity, getMuscleStrength()*2);
+			constraint.enableAngularMotor(true, (float) velocity, getMuscleStrength());
 			if(constraint.getAppliedImpulse()>getMuscleStrength()){
 				for(CSG c:baseCSG){
 					c.setColor(Color.WHITE);
@@ -38,7 +38,8 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager{
 				setConstraint(null);
 				core.add (this);
 				System.out.println("ERROR Link Broken, Strength: "+getMuscleStrength()+" applied impluse "+constraint.getAppliedImpulse());
-			}
+			}else
+				System.out.println("Impulse = "+constraint.getAppliedImpulse()+" strength = "+getMuscleStrength() );
 		}else if (constraint!=null && flagBroken){
 			constraint.enableAngularMotor(false, 0, 0);
 		}

@@ -34,8 +34,9 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
 				bullet.origin.y,
 				bullet.origin.z, out.w, out.x, out.y, out.z);
 	}
-	private static Quat4f out= new Quat4f();
+
 	public static void bulletToAffine(Affine affine,com.bulletphysics.linearmath.Transform bullet){
+		Quat4f out= new Quat4f();
 		//synchronized(out){
 			bullet.getRotation(out);
 			
