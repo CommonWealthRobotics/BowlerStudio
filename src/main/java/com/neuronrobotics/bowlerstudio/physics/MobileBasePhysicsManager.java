@@ -31,6 +31,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import Jama.Matrix;
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 public class MobileBasePhysicsManager {
@@ -200,9 +201,11 @@ public class MobileBasePhysicsManager {
 					}
 					double mass = conf.getMassKg();
 					for (int x=0;x<thisLinkCad.size();x++){
+						Color color = thisLinkCad.get(x).getColor();
 						thisLinkCad.set(x, 
 								thisLinkCad.get(x)
 								.transformed(TransformFactory.nrToCSG(new TransformNR(step).inverse())));
+						thisLinkCad.get(x).setColor(color);
 					}
 					// Build a hinge based on the link and mass
 					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(thisLinkCad, linkLoc, mass,
