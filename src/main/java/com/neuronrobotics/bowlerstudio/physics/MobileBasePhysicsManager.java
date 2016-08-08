@@ -207,7 +207,7 @@ public class MobileBasePhysicsManager {
 					// Build a hinge based on the link and mass
 					HingeCSGPhysicsManager hingePhysicsManager = new HingeCSGPhysicsManager(thisLinkCad, linkLoc, mass,
 							core);
-					hingePhysicsManager.setMuscleStrength(1000000);
+					hingePhysicsManager.setMuscleStrength(100000);
 
 					RigidBody linkSection = hingePhysicsManager.getFallRigidBody();
 
@@ -239,18 +239,23 @@ public class MobileBasePhysicsManager {
 							-(float) Math.toRadians(abstractLink.getMaxEngineeringUnits()));
 
 					lastLink = linkSection;
+					
+					hingePhysicsManager.setConstraint(joint6DOF);
 
 					ILinkListener ll = new ILinkListener() {
 						@Override
 						public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
-							// System.out.println("
-							// value="+engineeringUnitsValue);
-							hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
-							// joint6DOF.setLimit( (float)
-							// Math.toRadians(-engineeringUnitsValue )-
-							// LIFT_EPS,
-							// (float) Math.toRadians(-engineeringUnitsValue )+
-							// LIFT_EPS);
+							if(conf.isPassive()){
+								// System.out.println("
+								// value="+engineeringUnitsValue);
+								hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
+
+//								 joint6DOF.setLimit( (float)
+//								 Math.toRadians(-engineeringUnitsValue )-
+//								 LIFT_EPS,
+//								 (float) Math.toRadians(-engineeringUnitsValue )+
+//								 LIFT_EPS);
+							}
 						}
 
 						@Override

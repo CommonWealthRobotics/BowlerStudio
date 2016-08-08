@@ -121,6 +121,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 										if (took < loopTiming)
 											ThreadUtil.wait((int) (loopTiming - took)/4);
 										else{
+											if((loopTiming - took)>loopTiming*2)
 											System.out.println("ERROR Real time broken by: "+(loopTiming - took)+"ms");
 										}
 									}
