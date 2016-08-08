@@ -123,7 +123,7 @@ public class MobileBasePhysicsManager {
 				TransformFactory.bulletToAffine(baseCad.get(0).getManipulator(), start);
 			}
 		});
-		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, 0.1, false, core);
+		CSGPhysicsManager baseManager = new CSGPhysicsManager(baseCad, start, base.getMassKg(), false, core);
 		RigidBody body = baseManager.getFallRigidBody();
 		baseManager.setUpdateManager(getUpdater(body, base.getImu()));
 
@@ -220,7 +220,7 @@ public class MobileBasePhysicsManager {
 
 					hingePhysicsManager.setUpdateManager(getUpdater(linkSection, abstractLink.getImu()));
 					// // Setup some damping on the m_bodies
-					linkSection.setDamping(0.05f, 0.85f);
+					linkSection.setDamping(0.5f, 08.5f);
 					linkSection.setDeactivationTime(0.8f);
 					linkSection.setSleepingThresholds(1.6f, 2.5f);
 
@@ -258,11 +258,11 @@ public class MobileBasePhysicsManager {
 									// value="+engineeringUnitsValue);
 									hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
 
-									 joint6DOF.setLimit( (float)
-									 (Math.toRadians(-engineeringUnitsValue )-
-									 LIFT_EPS),
-									 (float) (Math.toRadians(-engineeringUnitsValue )+
-									 LIFT_EPS));
+//									 joint6DOF.setLimit( (float)
+//									 (Math.toRadians(-engineeringUnitsValue )-
+//									 LIFT_EPS),
+//									 (float) (Math.toRadians(-engineeringUnitsValue )+
+//									 LIFT_EPS));
 							}
 
 							@Override
