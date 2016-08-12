@@ -33,8 +33,8 @@ public class NewGistController extends Application {
     {      
     	FXMLLoader loader = AssetFactory.loadLayout("layout/createNewGist.fxml", true);
     	Parent root;
-    	//loader.setController(this);
-		loader.setClassLoader(getClass().getClassLoader());
+    	loader.setController(this);
+		//loader.setClassLoader(getClass().getClassLoader());
         root = loader.load();
         Platform.runLater(() -> {
             primaryStage.setTitle("Create new Gist");
