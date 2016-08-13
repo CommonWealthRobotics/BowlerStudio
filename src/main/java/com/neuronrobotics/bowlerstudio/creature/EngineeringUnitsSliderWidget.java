@@ -25,11 +25,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
 		setpoint = new Slider();
+		
 		setpoint.setMin(min);
 		setpoint.setMax(max);
 		setpoint.setValue(current);
 		setpoint.setShowTickLabels(true);
-		setpoint.setShowTickMarks(true);
+		setpoint.setShowTickMarks(false);
 		//setpoint.setSnapToTicks(true);
 		setpoint.setMajorTickUnit(50);
 		setpoint.setMinorTickCount(5);

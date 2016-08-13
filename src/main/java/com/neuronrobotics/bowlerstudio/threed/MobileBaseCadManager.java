@@ -52,11 +52,11 @@ public class MobileBaseCadManager {
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
 	private HashMap<LinkConfiguration, ArrayList<CSG>> LinktoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
-	private  HashMap<DHLink, CSG> simplecad = new HashMap<>();
+
 	private boolean cadGenerating = false;
 	private boolean showingStl=false;
 	private ArrayList<CSG> allCad;
-	private  CSG baseCad=null;
+
 	private CheckBox autoRegen;
 	private boolean bail=false;
 	
@@ -161,7 +161,6 @@ public class MobileBaseCadManager {
 			if(showingStl){
 				//skip the regen
 				for(CSG c:getBasetoCadMap().get(device)){
-					baseCad=c;
 					getAllCad().add(c);	
 				}
 			}else{
@@ -174,7 +173,6 @@ public class MobileBaseCadManager {
 					new Exception().printStackTrace();
 				ArrayList<CSG> arrayList = getBasetoCadMap().get(device);
 				arrayList.clear();
-				baseCad=null;//clear the unioned version too
 				for(CSG c:getAllCad()){
 					arrayList.add(c);	
 				}
@@ -334,7 +332,7 @@ public class MobileBaseCadManager {
 				BowlerStudioController.highlightException(getCadScript(), e);
 			}
 		}
-		CSG simpleCad;
+
 		try {
 			ICadGenerator generatorToUse=cadEngine;
 			
@@ -342,6 +340,7 @@ public class MobileBaseCadManager {
 				generatorToUse=dhCadGen.get(dh);
 			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
+
 				if(!bail){
 					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);
 					LinkConfiguration configuration = dh.getLinkConfiguration(i);
@@ -349,34 +348,25 @@ public class MobileBaseCadManager {
 						getLinktoCadMap().put(configuration, new ArrayList<>());
 					}else
 						getLinktoCadMap().get(configuration).clear();
-					simpleCad=null;
 					for(CSG c:tmp){
-						if(simpleCad==null)
-							simpleCad=c;
-						else
-							simpleCad=simpleCad.union(c).setManipulator(c.getManipulator());
 						dhLinks.add(c);
 						getLinktoCadMap().get(configuration).add(c);// add to the regestration storage
 					}
-					
-					if(simpleCad!=null){
-						simplecad.put(dh.getDhChain().getLinks().get(i), simpleCad);
-						AbstractLink link = dh.getFactory().getLink(configuration);
-						link.addLinkListener(new ILinkListener() {
+					AbstractLink link = dh.getFactory().getLink(configuration);
+					link.addLinkListener(new ILinkListener() {
+						
+						@Override
+						public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+							// TODO Auto-generated method stub
 							
-							@Override
-							public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
-								// TODO Auto-generated method stub
-								
-							}
+						}
+						
+						@Override
+						public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+							BowlerStudio.select( base,configuration);
 							
-							@Override
-							public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
-								BowlerStudio.select( base,configuration);
-								
-							}
-						});
-					}
+						}
+					});
 					
 				}
 			}
@@ -388,12 +378,7 @@ public class MobileBaseCadManager {
 
 	}
 
-	public CSG getSimpleCad(DHLink link){
-		CSG simple=simplecad.get(link);
-		if(simple==null)
-			return new Cube(5).toCSG();
-		return simple;
-	}
+
 	
 	public synchronized void generateCad() {
 		if (cadGenerating || !autoRegen.isSelected())
@@ -496,27 +481,17 @@ public class MobileBaseCadManager {
 			return cadmap.get(device);
 	}
 	
-	public static HashMap<DHLink, CSG> getSimplecad(MobileBase device) {
-		return get(device).simplecad;
+	public static HashMap<LinkConfiguration, ArrayList<CSG>> getSimplecad(MobileBase device) {
+		return get(device).LinktoCadMap;
 	}
 	
-	private CSG localGetBaseCad(MobileBase device){
+	private ArrayList<CSG> localGetBaseCad(MobileBase device){
 
-		if(baseCad==null){
-//			for(int i=0;i<getAllCad().size();i++){
-//				CSG c = getAllCad().get(i);
-//				if(baseCad==null)
-//					baseCad=c;
-//				else
-//					baseCad=baseCad.union(c);
-//			}
-			baseCad = getAllCad().get(0);
-		}
-		
-		return baseCad;
+
+		return BasetoCadMap.get(device);
 	}
 
-	public static CSG getBaseCad(MobileBase device) {
+	public static ArrayList<CSG> getBaseCad(MobileBase device) {
 		return get(device).localGetBaseCad(device);
 	}
 	public ProgressIndicator getProcesIndictor() {

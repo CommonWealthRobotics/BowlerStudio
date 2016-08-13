@@ -92,6 +92,7 @@ import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.IParametric;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
+import eu.mihosoft.vrl.v3d.parametrics.StringParameter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -101,6 +102,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -148,6 +150,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
@@ -412,10 +415,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						for(String p:tester.getParameters()){
 							if(p.contentEquals(key) && !toRemove.contains(tester)){
 								System.out.println("Regenerating "+i+" on key "+p);
-								CSG ret = tester.regenerate();
-								toRemove.add(tester);
-								toAdd.add(ret);
-							
+								try{
+									CSG ret = tester.regenerate();
+									toRemove.add(tester);
+									toAdd.add(ret);
+								}catch(Exception ex){
+									ex.printStackTrace(System.out);
+								}
 							}
 						}
 					}catch(Exception ex){
@@ -496,6 +502,36 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
 					customMenuItem.setHideOnClick(false);
 					parameters.getItems().add(customMenuItem);
+					System.err.println("Adding Length Paramater "+lp.getName());
+				}else{
+					try{
+						Parameter lp  = (Parameter)param;
+						Menu paramTypes = new Menu(lp.getName()+" "+lp.getStrValue()); 
+						
+						for(String opt:lp.getOptions()){
+							String myVal = opt;
+							MenuItem customMenuItem = new MenuItem(myVal);
+							customMenuItem.setOnAction(event->{
+								System.out.println("Updating "+lp.getName()+" to "+myVal);
+								lp.setStrValue(myVal);
+								CSGDatabase.get(lp.getName()).setStrValue(myVal);
+								for(IParameterChanged l:CSGDatabase.getParamListeners(lp.getName())){
+									l.parameterChanged(lp.getName(), lp);
+								}
+								
+								//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+								Set<CSG> objects = getCsgMap().keySet();
+								cm.hide();// hide this menue because the new CSG talks to the new menue
+								fireRegenerate( key,  source, objects);
+							});
+							paramTypes.getItems().add(customMenuItem );
+						}
+					
+						parameters.getItems().add(paramTypes);
+						System.err.println("Adding String Paramater "+lp.getName());
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
 				}
 			}
 			cm.getItems().add(parameters);

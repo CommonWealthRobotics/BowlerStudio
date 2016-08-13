@@ -112,8 +112,9 @@ repositories {
 
 dependencies {
 
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.21.0"
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.20.8.jar'])
+
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.22.1"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.22.0.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	compile "org.jfxtras:jfxtras-common:8.0-r4"
 	compile "org.jfxtras:jfxtras-fxml:8.0-r4"
@@ -122,7 +123,7 @@ dependencies {
 	compile "org.jfxtras:jfxtras-window:8.0-r4"
 	compile "org.jfxtras:jfxtras-menu:8.0-r4"
 	compile "org.jfxtras:jfxtras-labs:8.0-r4"
-	compile 'org.dockfx:DockFX:0.1.5'
+	compile 'org.dockfx:DockFX:0.1.6'
 	compile 'com.github.movisens:SmartGattLib:1.7'
 	
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])

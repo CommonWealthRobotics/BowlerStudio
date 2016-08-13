@@ -13,10 +13,12 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhLinkType;
 import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
 import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
@@ -37,7 +39,7 @@ import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
 
-public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListenerNR,IJInputEventListener {
+public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListenerNR,IJInputEventListener,IOnEngineeringUnitsChange, ILinkListener {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -49,20 +51,21 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 	private boolean stop;
 	private double seconds;
 	private String paramsKey;
+	private AbstractLink abstractLink;
 
 
 	
 	
 	
-	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2) {
+	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR d) {
 
 		this.linkIndex = linkIndex;
-		this.device = device2;
-		if(DHParameterKinematics.class.isInstance(device2)){
-			dhdevice=(DHParameterKinematics)device2;
+		this.device = d;
+		if(DHParameterKinematics.class.isInstance(device)){
+			dhdevice=(DHParameterKinematics)device;
 		}
 
-		AbstractLink abstractLink  = device2.getAbstractLink(linkIndex);
+		abstractLink = device.getAbstractLink(linkIndex);
 		
 		
 
@@ -72,29 +75,10 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
 		
-		setpoint = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
-			
-			@Override
-			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				// TODO Auto-generated method stub
-				try {
-					device2.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
-					
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				};
-			}
-			
-			@Override
-			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
-					double newAngleDegrees) {
-	    		
-			}
-		}, 
+		setpoint = new EngineeringUnitsSliderWidget(this, 
 		abstractLink.getMinEngineeringUnits(), 
 		abstractLink.getMaxEngineeringUnits(), 
-		device2.getCurrentJointSpaceVector()[linkIndex], 
+		device.getCurrentJointSpaceVector()[linkIndex], 
 		180,dhlink.getLinkType()==DhLinkType.ROTORY?"degrees":"mm");
 		
 		
@@ -117,6 +101,8 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 				0);
 
 		getChildren().add(panel);
+		abstractLink.addLinkListener(this);
+		
 	}
 	
 
@@ -238,6 +224,41 @@ public class LinkSliderWidget extends Group implements  IJointSpaceUpdateListene
 			stop=true;
 		}else
 			stop=false;
+	}
+
+
+	@Override
+	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+		// TODO Auto-generated method stub
+		try {
+			device.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+		
+	}
+	
+	@Override
+	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+			double newAngleDegrees) {
+		
+	}
+
+
+	@Override
+	public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+		// TODO Auto-generated method stub
+		if (this.isFocused())
+			setpoint.setValue(arg1);
 	}
 
 

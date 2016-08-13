@@ -804,7 +804,7 @@ public class BowlerStudioMenu {
 
 				});
 				IGithubLoginListener listener = new IGithubLoginListener() {
-
+					private boolean loggingIn=false;
 					@Override
 					public void onLogout(String arg0) {
 						// TODO Auto-generated method stub
@@ -813,6 +813,9 @@ public class BowlerStudioMenu {
 
 					@Override
 					public void onLogin(String arg0) {
+						if(loggingIn)
+							return;
+						loggingIn=true;			
 						new Thread(new Runnable() {
 
 							@Override
@@ -839,6 +842,7 @@ public class BowlerStudioMenu {
 										// e.printStackTrace();
 									}
 								}
+								loggingIn=false;	
 							}
 						}).start();
 					}

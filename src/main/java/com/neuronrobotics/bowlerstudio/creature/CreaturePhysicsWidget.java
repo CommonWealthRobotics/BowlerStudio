@@ -12,9 +12,11 @@ import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
+import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdateListener;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
@@ -94,11 +96,11 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 
 					public void run(){
 						while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
-							ThreadUtil.wait(1000);
+							ThreadUtil.wait(100);
 						}
-						HashMap<DHLink, CSG> simplecad = MobileBaseCadManager.getSimplecad(base) ;
-						CSG baseCad=MobileBaseCadManager.getBaseCad(base);
-						base.DriveArc(new TransformNR(), 0);
+						HashMap<LinkConfiguration, ArrayList<CSG>> simplecad = MobileBaseCadManager.getSimplecad(base) ;
+						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);
+						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
 						PhysicsEngine.get().clear();
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
 						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
@@ -119,6 +121,10 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 										long took = (System.currentTimeMillis() - start);
 										if (took < loopTiming)
 											ThreadUtil.wait((int) (loopTiming - took)/4);
+										else{
+											if(took>loopTiming*2)
+											System.out.println("ERROR Real time broken by: "+took+"ms");
+										}
 									}
 								}catch(Exception e){
 									
