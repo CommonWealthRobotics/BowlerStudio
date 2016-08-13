@@ -1,3 +1,44 @@
+bowlerstudio (0.19.1) xenial; urgency=medium
+
+  [ Sainath Batthala ]
+  * Documented openUrlInNewTab, speak functions in BowlerStudio.java
+
+  [ Kevin Harrington ]
+  * Update README.md
+  * Update README.md
+
+  [ Kevin Harrington ]
+  * More stable casting of the list
+  * adding better arduino support
+  * Moving Physics engine into BowlerStudio
+  * Moving the simplified cad out of the system and telling the physics engine to compute the hull directly on all the points.
+  * 0.19.0
+  * using the for loop variable, duh
+  * WOring full robot physics
+  * updating the link slider with the links current value
+  * should move link if NOT passive
+  * preserving the links color
+  * tweaking the physics engine params
+  * The cad list should not be changed by the physics, a copy should be made
+  * defaulting physics engine to fast mode
+  * param tweaking for physics engine
+  * seems to cause wild flailing now
+  * Reverting physics configuration
+  * Physics for walking is working but the driving explodes
+  * load mass from robots configuration
+  * loading objects to current object
+  * load string list parameters as combo box
+  * catch all UI exceptions
+  * use the Abstract class iinterface for non specific types
+  * loading and updating the non number parameters
+  * Each regenerate shpould get its own exception catch
+  * The value needs to be updated BEFORE the listener is called
+  * Forcing the CSGCached version update here
+  * Kernel now suports the string list parametrics for CSG's and the vitamins library for accessing lots of standrd hardware
+  * 0.19.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 13 Aug 2016 12:14:50 -0400
+
 bowlerstudio (0.18.10) xenial; urgency=medium
 
   * adding files to regular git
