@@ -92,6 +92,7 @@ import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.IParametric;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
+import eu.mihosoft.vrl.v3d.parametrics.StringParameter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import static javafx.application.Application.launch;
@@ -101,6 +102,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -494,6 +496,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							400, 
 							key);
 					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+					customMenuItem.setHideOnClick(false);
+					parameters.getItems().add(customMenuItem);
+				}else if(StringParameter.class.isInstance(param)){
+					StringParameter lp  = (StringParameter)param;
+					ComboBox<String> comboBox = new ComboBox<String>();
+					for(String opt:lp.getStringOptions()){
+						Platform.runLater(()->comboBox.getItems().add(opt));
+					}
+					comboBox.setValue(lp.getStrValue());
+					CustomMenuItem customMenuItem = new CustomMenuItem(comboBox);
 					customMenuItem.setHideOnClick(false);
 					parameters.getItems().add(customMenuItem);
 				}
