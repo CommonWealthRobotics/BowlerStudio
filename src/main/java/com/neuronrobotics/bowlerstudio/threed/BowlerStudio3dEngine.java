@@ -415,10 +415,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						for(String p:tester.getParameters()){
 							if(p.contentEquals(key) && !toRemove.contains(tester)){
 								System.out.println("Regenerating "+i+" on key "+p);
-								CSG ret = tester.regenerate();
-								toRemove.add(tester);
-								toAdd.add(ret);
-							
+								try{
+									CSG ret = tester.regenerate();
+									toRemove.add(tester);
+									toAdd.add(ret);
+								}catch(Exception ex){
+									ex.printStackTrace(System.out);
+								}
 							}
 						}
 					}catch(Exception ex){
