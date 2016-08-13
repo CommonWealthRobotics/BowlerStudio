@@ -514,6 +514,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							customMenuItem.setOnAction(event->{
 								System.out.println("Updating "+lp.getName()+" to "+myVal);
 								lp.setStrValue(myVal);
+								for(IParameterChanged l:CSGDatabase.getParamListeners(lp.getName())){
+									l.parameterChanged(lp.getName(), lp);
+								}
+								
 								//Get the set of objects to check for regeneration after the initioal regeneration cycle.
 								Set<CSG> objects = getCsgMap().keySet();
 								cm.hide();// hide this menue because the new CSG talks to the new menue
