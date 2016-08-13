@@ -498,16 +498,22 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
 					customMenuItem.setHideOnClick(false);
 					parameters.getItems().add(customMenuItem);
-				}else if(StringParameter.class.isInstance(param)){
-					StringParameter lp  = (StringParameter)param;
-					ComboBox<String> comboBox = new ComboBox<String>();
-					for(String opt:lp.getStringOptions()){
-						Platform.runLater(()->comboBox.getItems().add(opt));
+					System.err.println("Adding Length Paramater "+lp.getName());
+				}else{
+					try{
+						Parameter lp  = (Parameter)param;
+						ComboBox<String> comboBox = new ComboBox<String>();
+						for(String opt:lp.getOptions()){
+							Platform.runLater(()->comboBox.getItems().add(opt));
+						}
+						comboBox.setValue(lp.getStrValue());
+						CustomMenuItem customMenuItem = new CustomMenuItem(comboBox);
+						customMenuItem.setHideOnClick(false);
+						parameters.getItems().add(customMenuItem);
+						System.err.println("Adding String Paramater "+lp.getName());
+					}catch(Exception ex){
+						ex.printStackTrace();
 					}
-					comboBox.setValue(lp.getStrValue());
-					CustomMenuItem customMenuItem = new CustomMenuItem(comboBox);
-					customMenuItem.setHideOnClick(false);
-					parameters.getItems().add(customMenuItem);
 				}
 			}
 			cm.getItems().add(parameters);
