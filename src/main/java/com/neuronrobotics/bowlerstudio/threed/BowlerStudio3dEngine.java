@@ -150,6 +150,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
@@ -502,14 +503,24 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}else{
 					try{
 						Parameter lp  = (Parameter)param;
-						ComboBox<String> comboBox = new ComboBox<String>();
+						Menu paramTypes = new Menu(lp.getName()+" "+lp.getStrValue()); 
+						
 						for(String opt:lp.getOptions()){
-							Platform.runLater(()->comboBox.getItems().add(opt));
+							String myVal = opt;
+							MenuItem customMenuItem = new MenuItem(myVal);
+							customMenuItem.setOnAction(event->{
+								System.out.println("Updating "+lp.getName()+" to "+myVal);
+								lp.setStrValue(myVal);
+								//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+								Set<CSG> objects = getCsgMap().keySet();
+								cm.hide();// hide this menue because the new CSG talks to the new menue
+								
+								fireRegenerate( key,  source, objects);
+							});
+							paramTypes.getItems().add(customMenuItem );
 						}
-						comboBox.setValue(lp.getStrValue());
-						CustomMenuItem customMenuItem = new CustomMenuItem(comboBox);
-						customMenuItem.setHideOnClick(false);
-						parameters.getItems().add(customMenuItem);
+					
+						parameters.getItems().add(paramTypes);
 						System.err.println("Adding String Paramater "+lp.getName());
 					}catch(Exception ex){
 						ex.printStackTrace();
