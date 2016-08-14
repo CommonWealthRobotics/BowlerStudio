@@ -125,6 +125,9 @@ dependencies {
 	compile "org.jfxtras:jfxtras-labs:8.0-r4"
 	compile 'org.dockfx:DockFX:0.1.6'
 	compile 'com.github.movisens:SmartGattLib:1.7'
+	// https://mvnrepository.com/artifact/org.apache.xmlrpc/xmlrpc-client
+	compile group: 'org.apache.xmlrpc', name: 'xmlrpc-client', version: '3.1.3'
+
 	
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 
