@@ -62,6 +62,8 @@ public class Purchasing {
 						put("raise_exception", false);
 					}
 				} });
+		// https://sourceforge.net/p/openerpjavaapi/wiki/Home/
+		
 
 	}
 

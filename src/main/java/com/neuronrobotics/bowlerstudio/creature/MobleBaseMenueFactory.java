@@ -557,7 +557,8 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(conf.getType());
+							newLink.setType(conf.getTypeEnum());
+							newLink.setTypeString(conf.getTypeString());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							conf.getSlaveLinks().add(newLink);
@@ -725,7 +726,7 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getType());
+							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getTypeEnum());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							if (dh != null)

@@ -159,7 +159,7 @@ public class MobileBasePhysicsManager {
 					// use the DH parameters to calculate the offset of the link
 					// at 0 degrees
 					Matrix step;
-					if (conf.getType().isPrismatic())
+					if (conf.isPrismatic())
 						step = l.DhStepInversePrismatic(0);
 					else
 						step = l.DhStepInverseRotory(Math.toRadians(0));

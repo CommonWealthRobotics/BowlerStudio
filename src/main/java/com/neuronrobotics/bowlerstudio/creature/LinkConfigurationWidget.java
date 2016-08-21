@@ -359,7 +359,7 @@ public class LinkConfigurationWidget extends GridPane {
 				conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
 				factory.refreshHardwareLayer(conf);
 				activLink = factory.getLink(conf);
-				System.out.println("Link channel to "+conf.getType());
+				System.out.println("Link channel to "+conf.getTypeString());
 			}
 		});
 		channel.getSelectionModel().select(conf.getHardwareIndex());
@@ -373,10 +373,10 @@ public class LinkConfigurationWidget extends GridPane {
 			@Override
 			public void handle(ActionEvent event) {
 				conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
-				System.out.println("Link type changed to "+conf.getType());
+				System.out.println("Link type changed to "+conf.getTypeString());
 			}
 		});
-		comboBox.getSelectionModel().select(conf.getType().toString());
+		comboBox.getSelectionModel().select(conf.getTypeString().toString());
 		
 		
 		

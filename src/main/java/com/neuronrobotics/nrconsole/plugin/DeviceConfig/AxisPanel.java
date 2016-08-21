@@ -56,7 +56,7 @@ private SettingsListItem setScale;
 		viewPanel.add(setLinkName = new SettingsListItem("Link Name", thisLink.getName()), "cell 0 0");
 		FlowLayout flowLayout = (FlowLayout) setLinkName.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		viewPanel.add(setLinkType = new SettingsListItem("Link Type", thisLink.getType().getName()), "cell 0 1");
+		viewPanel.add(setLinkType = new SettingsListItem("Link Type", thisLink.getTypeEnum().getName()), "cell 0 1");
 		FlowLayout flowLayout_1 = (FlowLayout) setLinkType.getLayout();
 		flowLayout_1.setAlignment(FlowLayout.LEFT);
 		viewPanel.add(setHardwareIndex = new SettingsListItem("Hardware Index", thisLink.getHardwareIndex()), "cell 0 2");
@@ -115,7 +115,7 @@ private SettingsListItem setScale;
 	}
 	private void reloadSettings(){
 		setLinkName.loadValues("Link Name", thisLink.getName());
-		setLinkType.loadValues("Link Type", thisLink.getType().getName());
+		setLinkType.loadValues("Link Type", thisLink.getTypeEnum().getName());
 		setHardwareIndex.loadValues("Hardware Index", thisLink.getHardwareIndex());
 		setHomingTicksPerSecond.loadValues("Homing Ticks per Second", thisLink.getHomingTicksPerSecond());
 		setIndexLatch.loadValues("Index Latch",thisLink.getIndexLatch());
