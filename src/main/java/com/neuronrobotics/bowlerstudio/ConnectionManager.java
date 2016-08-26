@@ -598,10 +598,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			
 			// The Java 8 way to get the response value (with lambda expression).
 			result.ifPresent(letter -> {
-				FirmataBowler p = new FirmataBowler(letter);
-				p.connect();
-				String name = "firmata";
-				addConnection(p,name);
+				new Thread(()->{
+					System.out.print("\nConnecting Firmata...");
+					FirmataBowler p = new FirmataBowler(letter);
+					p.connect();
+					String name = "firmata";
+					addConnection(p,name);
+					System.out.print("Done!\n");
+				}).start();
 			});
 			
 		}

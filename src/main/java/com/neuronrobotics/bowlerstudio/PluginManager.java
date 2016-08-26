@@ -25,6 +25,7 @@ import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
 import com.neuronrobotics.bowlerstudio.tabs.DyIOControl;
+import com.neuronrobotics.bowlerstudio.tabs.FirmataTab;
 import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
@@ -37,6 +38,7 @@ import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
 import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
@@ -81,7 +83,8 @@ public class PluginManager {
 		addPlugin(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
 		//LinearPhysicsEngine
 		addPlugin(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
-
+		//Firmata
+		addPlugin(new DeviceSupportPluginMap(FirmataBowler.class, FirmataTab.class));
 	}
 	
 	public PluginManager(BowlerAbstractDevice dev){

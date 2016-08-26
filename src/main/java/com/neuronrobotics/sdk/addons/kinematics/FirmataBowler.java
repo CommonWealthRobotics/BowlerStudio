@@ -12,7 +12,7 @@ public class FirmataBowler extends NonBowlerDevice {
 
 	private FirmataDevice device;
 	public FirmataBowler(String port){
-		setFirmataDevice(new FirmataDevice("/dev/ttyUSB0"));
+		setFirmataDevice(new FirmataDevice(port));
 		
 	}
 		
@@ -22,7 +22,7 @@ public class FirmataBowler extends NonBowlerDevice {
 		try {
 			getFirmataDevice().start(); // initiate communication to the device
 			getFirmataDevice().ensureInitializationIsDone();
-		} catch (InterruptedException | IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
@@ -32,6 +32,7 @@ public class FirmataBowler extends NonBowlerDevice {
 
 	@Override
 	public void disconnectDeviceImp() {
+		System.out.println("Closing Firmata");
 		try {
 			getFirmataDevice().stop();
 		} catch (IOException e) {
@@ -43,7 +44,7 @@ public class FirmataBowler extends NonBowlerDevice {
 	@Override
 	public ArrayList<String> getNamespacesImp() {
 		// TODO Auto-generated method stub
-		return new ArrayList<>();
+		return new ArrayList<String>();
 	}
 
 	public FirmataDevice getFirmataDevice() {
