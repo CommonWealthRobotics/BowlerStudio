@@ -37,28 +37,28 @@ public class PhysicsEngine {
 	private  static PhysicsCore mainEngine;
 
 	public static void startPhysicsThread(int ms){
-		mainEngine.startPhysicsThread(ms);
+		get().startPhysicsThread(ms);
 	}
 	public static void stopPhysicsThread(){
-		mainEngine.stopPhysicsThread();
+		get().stopPhysicsThread();
 	}
 	public static void step(float timeStep){
-		mainEngine.step(timeStep);
+		get().step(timeStep);
 	}
 	
 	public static void stepMs(double timeStep){
-		mainEngine.stepMs(timeStep);
+		get().stepMs(timeStep);
 	}
 	
 	public static void add(IPhysicsManager manager){
-		mainEngine.add(manager);
+		get().add(manager);
 	}
 	
 	public static void remove(IPhysicsManager manager){
-		mainEngine.remove(manager);
+		get().remove(manager);
 	}
 	public static void clear(){
-		mainEngine.clear();
+		get().clear();
 		mainEngine=null;
 		
 	}

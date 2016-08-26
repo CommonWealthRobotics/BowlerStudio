@@ -506,29 +506,31 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}else{
 					try{
 						Parameter lp  = (Parameter)param;
-						Menu paramTypes = new Menu(lp.getName()+" "+lp.getStrValue()); 
+						if(lp!=null){
+							Menu paramTypes = new Menu(lp.getName()+" "+lp.getStrValue()); 
+							
+							for(String opt:lp.getOptions()){
+								String myVal = opt;
+								MenuItem customMenuItem = new MenuItem(myVal);
+								customMenuItem.setOnAction(event->{
+									System.out.println("Updating "+lp.getName()+" to "+myVal);
+									lp.setStrValue(myVal);
+									CSGDatabase.get(lp.getName()).setStrValue(myVal);
+									for(IParameterChanged l:CSGDatabase.getParamListeners(lp.getName())){
+										l.parameterChanged(lp.getName(), lp);
+									}
+									
+									//Get the set of objects to check for regeneration after the initioal regeneration cycle.
+									Set<CSG> objects = getCsgMap().keySet();
+									cm.hide();// hide this menue because the new CSG talks to the new menue
+									fireRegenerate( key,  source, objects);
+								});
+								paramTypes.getItems().add(customMenuItem );
+							}
 						
-						for(String opt:lp.getOptions()){
-							String myVal = opt;
-							MenuItem customMenuItem = new MenuItem(myVal);
-							customMenuItem.setOnAction(event->{
-								System.out.println("Updating "+lp.getName()+" to "+myVal);
-								lp.setStrValue(myVal);
-								CSGDatabase.get(lp.getName()).setStrValue(myVal);
-								for(IParameterChanged l:CSGDatabase.getParamListeners(lp.getName())){
-									l.parameterChanged(lp.getName(), lp);
-								}
-								
-								//Get the set of objects to check for regeneration after the initioal regeneration cycle.
-								Set<CSG> objects = getCsgMap().keySet();
-								cm.hide();// hide this menue because the new CSG talks to the new menue
-								fireRegenerate( key,  source, objects);
-							});
-							paramTypes.getItems().add(customMenuItem );
+							parameters.getItems().add(paramTypes);
+							System.err.println("Adding String Paramater "+lp.getName());
 						}
-					
-						parameters.getItems().add(paramTypes);
-						System.err.println("Adding String Paramater "+lp.getName());
 					}catch(Exception ex){
 						ex.printStackTrace();
 					}

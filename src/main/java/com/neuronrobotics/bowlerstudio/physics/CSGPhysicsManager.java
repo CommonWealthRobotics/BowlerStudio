@@ -36,8 +36,9 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 		this(baseCSG,new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)),mass,true, core);
 	}
 	
-	protected void loadCSGToPoints(CSG baseCSG, boolean adjustCenter,Transform pose,ObjectArrayList<Vector3f> arg0){
+	protected CSG loadCSGToPoints(CSG baseCSG, boolean adjustCenter,Transform pose,ObjectArrayList<Vector3f> arg0){
 		CSG finalCSG = baseCSG;
+		
 		if(adjustCenter){
 			double xcenter = baseCSG.getMaxX()/2+baseCSG.getMinX()/2;
 			double ycenter = baseCSG.getMaxY()/2+baseCSG.getMinY()/2;
@@ -64,6 +65,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 				arg0.add(new Vector3f((float)v.getX(), (float)v.getY(), (float)v.getZ()));
 			}
 		}
+		return finalCSG;
 	}
 	
 	public CSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose,  double mass, boolean adjustCenter, PhysicsCore core){
@@ -71,8 +73,11 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 
 		
 		ObjectArrayList<Vector3f> arg0= new ObjectArrayList<>();
-		for(CSG c:baseCSG){
-			loadCSGToPoints(c,adjustCenter,pose,arg0);
+		for(int i=0;i<baseCSG.size();i++){
+			
+			CSG back =loadCSGToPoints(baseCSG.get(i),adjustCenter,pose,arg0);
+			back.setManipulator(baseCSG.get(i).getManipulator());
+			baseCSG.set(i, back);
 		}
 		CollisionShape fallShape =  new com.bulletphysics.collision.shapes.ConvexHullShape(arg0);
 		setup(fallShape,pose,mass,core);
