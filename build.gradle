@@ -139,9 +139,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.abercap/odoo-java-api
 	compile group: 'com.abercap', name: 'odoo-java-api', version: '1.1.0.RELEASE'
 	//http://www.jocl.org/
-	compile group: 'org.jocl', name: 'jocl', version: '2.0.0'
+	//compile group: 'org.jocl', name: 'jocl', version: '2.0.0'
 	// https://mvnrepository.com/artifact/com.nativelibs4java/jnaerator
-	compile group: 'com.nativelibs4java', name: 'jnaerator', version: '0.11'
+	//compile group: 'com.nativelibs4java', name: 'jnaerator', version: '0.11'
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 
