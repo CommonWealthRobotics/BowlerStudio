@@ -142,6 +142,9 @@ dependencies {
 	//compile group: 'org.jocl', name: 'jocl', version: '2.0.0'
 	// https://mvnrepository.com/artifact/com.nativelibs4java/jnaerator
 	//compile group: 'com.nativelibs4java', name: 'jnaerator', version: '0.11'
+	// https://mvnrepository.com/artifact/com.github.kurbatov/firmata4j
+	compile group: 'com.github.kurbatov', name: 'firmata4j', version: '2.3.1'
+
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 

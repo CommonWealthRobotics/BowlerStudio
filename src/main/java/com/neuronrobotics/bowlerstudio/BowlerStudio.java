@@ -30,13 +30,17 @@ import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
+import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
+import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -247,31 +251,34 @@ public class BowlerStudio extends Application {
 			}else if (NativeResource.isOSX()){
 				arduino="/Applications/Arduino.app/Contents/MacOS/Arduino";
 			}
-			
-			if(!new File(arduino).exists() && !NativeResource.isLinux() ){
-				boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep",false).toString());
-				if(!alreadyNotified){
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep",
-							true);
-					String adr = arduino;
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.INFORMATION);
-						alert.setTitle("Arduino is missing");
-						alert.setHeaderText("Arduino expected at: "+adr);
-						alert.initModality(Modality.APPLICATION_MODAL);
-						alert.show();
-						try {
-							openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
+			try{
+				if(!new File(arduino).exists() && !NativeResource.isLinux() ){
+					boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep",false).toString());
+					if(!alreadyNotified){
+						ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep",
+								true);
+						String adr = arduino;
+						Platform.runLater(() -> {
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Arduino is missing");
+							alert.setHeaderText("Arduino expected at: "+adr);
+							alert.initModality(Modality.APPLICATION_MODAL);
+							alert.show();
+							try {
+								openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						});
+					}
 				}
+				System.out.println("Arduino exec found at: "+arduino);
+				ArduinoLoader.setARDUINOExec(arduino);
+				}
+			catch(Exception e){
+				
 			}
-			System.out.println("Arduino exec found at: "+arduino);
-			ArduinoLoader.setARDUINOExec(arduino);
-			
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// This is a workaround for #8 and is only relavent on osx
@@ -285,6 +292,27 @@ public class BowlerStudio extends Application {
 			
 			// Add the engine handeler for STLs
 			ScriptingEngine.addScriptingLanguage(new StlLoader());
+			LinkFactory.addLinkProvider("firmata", config->{
+				FirmataBowler dev = (FirmataBowler)DeviceManager
+						.getSpecificDevice(
+								FirmataBowler.class, 
+								config.getDeviceScriptingName()
+								);
+				if(dev!= null)
+					try {
+						return new FirmataLink(config, dev);
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				return null;
+			});
 			
 			launch(args);
 			
