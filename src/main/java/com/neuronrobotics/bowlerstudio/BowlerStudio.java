@@ -292,6 +292,7 @@ public class BowlerStudio extends Application {
 			
 			// Add the engine handeler for STLs
 			ScriptingEngine.addScriptingLanguage(new StlLoader());
+			// add a new link provider to the link factory
 			LinkFactory.addLinkProvider("firmata", config->{
 				FirmataBowler dev = (FirmataBowler)DeviceManager
 						.getSpecificDevice(

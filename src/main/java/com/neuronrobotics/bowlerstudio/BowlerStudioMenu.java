@@ -76,7 +76,8 @@ public class BowlerStudioMenu {
 
 	@FXML // fx:id="addMarlinGCODEDevice"
 	private MenuItem addMarlinGCODEDevice; // Value injected by FXMLLoader
-
+	@FXML // fx:id="addMarlinGCODEDevice"
+	private MenuItem loadFirmata; // Value injected by FXMLLoader
 	@FXML // fx:id="clearCache"
 	private MenuItem clearCache; // Value injected by FXMLLoader
 
@@ -777,6 +778,9 @@ public class BowlerStudioMenu {
 
 		addMarlinGCODEDevice.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
+		});
+		loadFirmata.setOnAction(event -> {
+			Platform.runLater(() -> ConnectionManager.onFirmata());
 		});
 		new Thread(new Runnable() {
 

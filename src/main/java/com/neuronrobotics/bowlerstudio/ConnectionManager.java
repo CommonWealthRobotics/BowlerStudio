@@ -35,6 +35,7 @@ import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.gcodebridge.GcodeDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -577,6 +578,33 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		return connectionManager;
 	}
 
+	 public static void onFirmata() {
+			Set<String> ports = NRSerialPort.getAvailableSerialPorts();
+			List<String> choices = new ArrayList<>();
+			if(ports.isEmpty())
+				return;
+			for (String s: ports){
+				choices.add(s);
+			}
+
+			
+			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+			dialog.setTitle("Firmata Device Serial Port Chooser");
+			dialog.setHeaderText("Supports Firmata");
+			dialog.setContentText("Firmata Device Port:");
+
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			
+			// The Java 8 way to get the response value (with lambda expression).
+			result.ifPresent(letter -> {
+				FirmataBowler p = new FirmataBowler(letter);
+				p.connect();
+				String name = "firmata";
+				addConnection(p,name);
+			});
+			
+		}
 
 	
 }
