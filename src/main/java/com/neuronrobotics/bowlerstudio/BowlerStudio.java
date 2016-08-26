@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
@@ -281,6 +282,9 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			// Add the engine handeler for STLs
+			ScriptingEngine.addScriptingLanguage(new StlLoader());
 			
 			launch(args);
 			
