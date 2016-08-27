@@ -293,27 +293,7 @@ public class BowlerStudio extends Application {
 			// Add the engine handeler for STLs
 			ScriptingEngine.addScriptingLanguage(new StlLoader());
 			// add a new link provider to the link factory
-			LinkFactory.addLinkProvider("firmata", config->{
-				FirmataBowler dev = (FirmataBowler)DeviceManager
-						.getSpecificDevice(
-								FirmataBowler.class, 
-								config.getDeviceScriptingName()
-								);
-				if(dev!= null)
-					try {
-						return new FirmataLink(config, dev);
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				return null;
-			});
+			FirmataLink.addLinkFactory();
 			
 			launch(args);
 			
