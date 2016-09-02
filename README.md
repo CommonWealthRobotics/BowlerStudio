@@ -1,9 +1,9 @@
 BowlerStudio
 ==========
 
-[![Join the chat at https://gitter.im/NeuronRobotics/BowlerStudio](https://badges.gitter.im/NeuronRobotics/BowlerStudio.svg)](https://gitter.im/NeuronRobotics/BowlerStudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/CommonWealthRobotics/BowlerStudio](https://badges.gitter.im/CommonWealthRobotics/BowlerStudio.svg)](https://gitter.im/NeuronRobotics/BowlerStudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-#[Download Latest](https://github.com/NeuronRobotics/BowlerStudio/releases)
+#[Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
 #Ubuntu
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
@@ -104,11 +104,11 @@ If you are a Java developmer, skip ahead to [The Build Instructions](#command-li
 
 ### Adding Tutorials
 
-All of the content for BowlerStudio Tutorials is housed on our [Neuronrobotics.github.io](https://github.com/NeuronRobotics/NeuronRobotics.github.io) web page. Fork that repository and make contributions based on the README.md file in the root of the repository. To merge the changes into the main website, send a pull request with your changes to official repository. 
+All of the content for BowlerStudio Tutorials is housed on our [Neuronrobotics.github.io](https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io) web page. Fork that repository and make contributions based on the README.md file in the root of the repository. To merge the changes into the main website, send a pull request with your changes to official repository. 
 
-Examples of tutorials that need to be added are [A simple Java Programming Introduction](https://github.com/NeuronRobotics/NeuronRobotics.github.io/issues/59). This tutorial set would go through the basic syntax of java and what all of the symbols mean and how to use them. 
+Examples of tutorials that need to be added are [A simple Java Programming Introduction](https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io/issues/59). This tutorial set would go through the basic syntax of java and what all of the symbols mean and how to use them. 
 
-Another example of a tutorial that could be added is one for [JavaCad Cheatsheet](https://github.com/NeuronRobotics/NeuronRobotics.github.io/issues/58) where you would add a 'cheat sheet' of commands to use in the JavaCad system. 
+Another example of a tutorial that could be added is one for [JavaCad Cheatsheet](https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io/issues/58) where you would add a 'cheat sheet' of commands to use in the JavaCad system. 
 
 If a tutorial is missing and not described as needed by an issue, feel free to add additional issues. 
 
