@@ -294,7 +294,7 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.addScriptingLanguage(new StlLoader());
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
-			
+			//Log.enableInfoPrint();
 			launch(args);
 			
 		} else {

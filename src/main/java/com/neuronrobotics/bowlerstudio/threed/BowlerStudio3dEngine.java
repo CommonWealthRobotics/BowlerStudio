@@ -52,6 +52,7 @@ import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
@@ -447,6 +448,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg,File source) {
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		//System.out.println(" Adding a CSG from file: "+source.getName());
 		if(getCsgMap().get(currentCsg)!= null)
 			return currentCsg.getMesh();

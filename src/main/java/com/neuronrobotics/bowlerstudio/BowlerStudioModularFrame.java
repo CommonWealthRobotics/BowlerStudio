@@ -7,61 +7,30 @@ package com.neuronrobotics.bowlerstudio;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
-
-import javax.swing.UIManager;
 
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
-import org.eclipse.jgit.api.errors.GitAPIException;
-
-import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
-import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
-import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
-import com.neuronrobotics.imageprovider.NativeResource;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
-import com.neuronrobotics.javacad.JavaCadBuildInfo;
-import com.neuronrobotics.replicator.driver.Slic3r;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.common.IDeviceAddedListener;
-import com.neuronrobotics.sdk.config.SDKBuildInfo;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jmapps.export.PanelMediaTargetFormat;
 
 public class BowlerStudioModularFrame {
 
@@ -210,57 +179,7 @@ public class BowlerStudioModularFrame {
 			isOpen.put("showCreatureLab", false);
 			isOpen.put("showTerminal", false);
 			isOpen.put("showDevices", false);
-			IGithubLoginListener listener = new IGithubLoginListener() {
-
-				@Override
-				public void onLogout(String arg0) {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onLogin(String arg0) {
-					startup = true;
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showCreatureLab", false)) {
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showCreatureLab", false);// bypass
-																											// the
-																											// already
-																											// open
-																											// check
-																											// for
-																											// startup
-						showCreatureLab();
-					}
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false)) {
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showDevices", false);// bypass
-																										// the
-																										// already
-																										// open
-																										// check
-																										// for
-																										// startup
-						showConectionManager();
-					}
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)) {
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "showTerminal", false);// bypass
-																										// the
-																										// already
-																										// open
-																										// check
-																										// for
-																										// startup
-						showTerminal();
-					}
-
-					startup = false;
-				}
-			};
-
-			if (ScriptingEngine.isLoginSuccess()) {
-				// force an update on startup
-				listener.onLogin(null);
-			}
-			ScriptingEngine.addIGithubLoginListener(listener);
+	
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
 
@@ -277,12 +196,11 @@ public class BowlerStudioModularFrame {
 
 	public void showConectionManager() {
 		String key = "showDevices";
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
+
 			Platform.runLater(() -> {
 				if (!isOpen.get(key)) {
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showTerminal", false)
-							&& startup)
+					isOpen.put(key, true);
+					if (isOpen.get( "showTerminal"))
 						connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
 					else
 						connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
@@ -291,32 +209,26 @@ public class BowlerStudioModularFrame {
 					connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
 						@Override
 						public void invalidated(Observable event) {
-							if (ScriptingEngine.isLoginSuccess()) {
-								// System.err.println("Closing devices");
-								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
-							}
 							connectionManagerDockNode.closedProperty().removeListener(this);
 							isOpen.put(key, false);
 						}
 					});
-					isOpen.put(key, true);
+					
 				}
 
 			});
-		} else {
-			System.err.println("Connection manger");
-		}
+	
 		Platform.runLater(() -> connectionManagerDockNode.requestFocus());
 	}
 
 	public void showTerminal() {
 		String key = "showTerminal";
 
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
+
 			Platform.runLater(() -> {
 				if (!isOpen.get(key)) {
-					if ((boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", "showDevices", false))
+					isOpen.put(key, true);
+					if (isOpen.get("showDevices"))
 						terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
 					else
 						terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
@@ -329,51 +241,38 @@ public class BowlerStudioModularFrame {
 					terminalDockNode.closedProperty().addListener(new InvalidationListener() {
 						@Override
 						public void invalidated(Observable event) {
-							if (ScriptingEngine.isLoginSuccess()) {
-								// System.err.println("Closing devices");
-								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
-							}
 							terminalDockNode.closedProperty().removeListener(this);
 							isOpen.put(key, false);
 						}
 					});
-					isOpen.put(key, true);
+					
 				}
 
 			});
-		} else {
-			System.err.println(
-					"Terminal already open " + ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false));
-		}
+		
 		Platform.runLater(() -> terminalDockNode.requestFocus());
 	}
 
 	public void showCreatureLab() {
 		String key = "showCreatureLab";
-		if (!(boolean) ConfigurationDatabase.getObject("BowlerStudioConfigs", key, false)) {
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", key, true);
+	
 			Platform.runLater(() -> {
 				if (!isOpen.get(key)) {
+					isOpen.put(key, true);
 					creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
 					creatureLab3dDockNode.requestFocus();
 					creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 						@Override
 						public void invalidated(Observable event) {
-							if (ScriptingEngine.isLoginSuccess()) {
-
-								ConfigurationDatabase.setObject("BowlerStudioConfigs", key, false);
-							}
 							creatureLab3dDockNode.closedProperty().removeListener(this);
 							isOpen.put(key, false);
 						}
 					});
-					isOpen.put(key, true);
+					
 				}
 
 			});
-		} else {
-			System.err.println("Creature lab already open");
-		}
+	
 		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}

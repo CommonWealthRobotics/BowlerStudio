@@ -290,7 +290,7 @@ public class BowlerStudioController  implements
 				// new RuntimeException().printStackTrace();
 				getJfx3dmanager().addObject(csg,source);
 			});
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
+			
 		} else if (Tab.class.isInstance(o)) {
 
 			addTab((Tab) o, true);

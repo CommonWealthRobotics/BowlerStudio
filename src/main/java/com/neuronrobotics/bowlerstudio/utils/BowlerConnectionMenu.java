@@ -142,7 +142,7 @@ public class BowlerConnectionMenu extends Application {
 					}
 					port = portOptions.getSelectionModel().getSelectedItem().toString();
 					int level = Log.getMinimumPrintLevel();
-					Log.enableInfoPrint();
+					//Log.enableInfoPrint();
 					 ser = new SerialConnection(port, baud);
 					
 					DeviceManager.addConnection(ser);
