@@ -161,7 +161,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
-				ScriptingEngine.filesInGit("https://github.com/NeuronRobotics/BowlerStudioConfiguration.git");
+				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
 				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
 				String myAssets =AssetFactory.getGitSource();
@@ -198,15 +198,15 @@ public class BowlerStudio extends Application {
 			BowlerStudioResourceFactory.load();
 			//load the vitimins repo so the demo is always snappy
 			ScriptingEngine.fileFromGit(
-					"https://github.com/NeuronRobotics/BowlerStudioVitamins.git", 
+					"https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", 
 					"BowlerStudioVitamins/stl/servo/smallservo.stl");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
-					"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+					"https://github.com/CommonWealthRobotics/NeuronRobotics.github.io.git", 
 					"index.html");
 			ScriptingEngine
 			.fileFromGit(
-					"https://github.com/madhephaestus/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+					"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
 				"exampleRobots.json"// File from within the Git repo
 			);
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));

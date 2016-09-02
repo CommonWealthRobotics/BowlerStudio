@@ -17,7 +17,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class Tutorial {
 	private static int WEBSERVER_PORT = 8065;
-	private static String HOME_URL = "http://neuronrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
+	private static String HOME_URL = "http://CommonWealthRobotics.com/BowlerStudio/Welcome-To-BowlerStudio/";
 	private static String HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
 	private static boolean doneLoadingTutorials;
 	private static Boolean startedLoadingTutorials = false;
@@ -33,7 +33,7 @@ public class Tutorial {
 						try {
 							
 							File indexOfTutorial = ScriptingEngine.fileFromGit(
-									"https://github.com/NeuronRobotics/NeuronRobotics.github.io.git", 
+									"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
 									"index.html");
 							
 							//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
