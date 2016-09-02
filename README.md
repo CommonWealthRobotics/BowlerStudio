@@ -7,9 +7,17 @@ BowlerStudio
 
 #Ubuntu
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
-	sudo apt-add-repository ppa:webupd8team/java -y
 	sudo apt-get update
-	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer
+	sudo apt-get remove arduino bowlerstudio 
+	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+#Debian 
+	sudo apt-get install software-properties-common python-software-properties					
+	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
+	sudo apt-get update
+	sudo apt-get remove arduino bowlerstudio 
+	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+							
 
 #What is BowlerStudio?
 
