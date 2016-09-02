@@ -215,19 +215,20 @@ public class BowlerStudioModularFrame {
 					});
 					
 				}
-
+				Platform.runLater(() -> connectionManagerDockNode.requestFocus());
 			});
 	
-		Platform.runLater(() -> connectionManagerDockNode.requestFocus());
+		
 	}
 
 	public void showTerminal() {
+		
 		String key = "showTerminal";
 
-
+		if (!isOpen.get(key)) {
+			isOpen.put(key, true);
 			Platform.runLater(() -> {
-				if (!isOpen.get(key)) {
-					isOpen.put(key, true);
+		
 					if (isOpen.get("showDevices"))
 						terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
 					else
@@ -246,11 +247,12 @@ public class BowlerStudioModularFrame {
 						}
 					});
 					
-				}
+					Platform.runLater(() -> terminalDockNode.requestFocus());
 
 			});
 		
-		Platform.runLater(() -> terminalDockNode.requestFocus());
+			
+		}
 	}
 
 	public void showCreatureLab() {
@@ -258,22 +260,26 @@ public class BowlerStudioModularFrame {
 	
 			Platform.runLater(() -> {
 				if (!isOpen.get(key)) {
-					isOpen.put(key, true);
-					creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
-					creatureLab3dDockNode.requestFocus();
-					creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
-						@Override
-						public void invalidated(Observable event) {
-							creatureLab3dDockNode.closedProperty().removeListener(this);
-							isOpen.put(key, false);
-						}
-					});
+					
+					try{
+						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
+						creatureLab3dDockNode.requestFocus();
+						creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
+							@Override
+							public void invalidated(Observable event) {
+								creatureLab3dDockNode.closedProperty().removeListener(this);
+								isOpen.put(key, false);
+							}
+						});
+						isOpen.put(key, true);
+					}catch(Exception e){
+						// keep trying to open
+						e.printStackTrace();
+					}
 					
 				}
-
+				Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 			});
-	
-		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 

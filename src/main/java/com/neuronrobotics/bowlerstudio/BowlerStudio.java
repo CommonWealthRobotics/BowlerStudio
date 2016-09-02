@@ -78,6 +78,11 @@ public class BowlerStudio extends Application {
 	private static class Console extends OutputStream {
 		
 	    public void appendText(String valueOf) {
+	    	try{
+	    		BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
+	    	}catch(NullPointerException ex){
+	    		// frame not open yet
+	    	}
 			Platform.runLater(() -> {
 				if (getLogViewRefStatic() != null)
 					getLogViewRefStatic().appendText(valueOf);
@@ -262,16 +267,22 @@ public class BowlerStudio extends Application {
 							Alert alert = new Alert(AlertType.INFORMATION);
 							alert.setTitle("Arduino is missing");
 							alert.setHeaderText("Arduino expected at: "+adr);
-							alert.initModality(Modality.APPLICATION_MODAL);
+							//alert.initModality(Modality.APPLICATION_MODAL);
 							alert.show();
+
+						});
+					}
+					new Thread() {
+						public void run() {
 							try {
 								openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						});
-					}
+						}
+					}.start();
+
 				}
 				System.out.println("Arduino exec found at: "+arduino);
 				ArduinoLoader.setARDUINOExec(arduino);
@@ -348,7 +359,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void clearConsole() {
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
+		
 		Platform.runLater(() -> {
 			if(getLogViewRefStatic()!=null)
 				getLogViewRefStatic().setText("");

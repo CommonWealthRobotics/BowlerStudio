@@ -178,7 +178,7 @@ public class MobileBasePhysicsManager {
 
 					// Transform used by the UI to render the location of the
 					// object
-					Affine manipulator =thisLinkCad.get(0).getManipulator();
+					Affine manipulator =new Affine();// make a new affine for the physics engine to service. the manipulaters in the CSG will not conflict for resources here
 					// The DH chain calculated the starting location of the link
 					// in its current configuration
 					TransformNR localLink = cached.get(i);
@@ -199,9 +199,7 @@ public class MobileBasePhysicsManager {
 						}
 					});
 					ThreadUtil.wait(16);
-					for(CSG c:thisLinkCad){
-						c.setManipulator(manipulator);
-					}
+			
 					double mass = conf.getMassKg();
 					ArrayList<CSG> outCad=new ArrayList<>();
 					for (int x=0;x<thisLinkCad.size();x++){
@@ -209,6 +207,7 @@ public class MobileBasePhysicsManager {
 						outCad.add( 
 								thisLinkCad.get(x)
 								.transformed(TransformFactory.nrToCSG(new TransformNR(step).inverse())));
+						outCad.get(x).setManipulator(manipulator);
 						outCad.get(x).setColor(color);
 					}
 					// Build a hinge based on the link and mass
