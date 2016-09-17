@@ -33,6 +33,7 @@ import com.neuronrobotics.sdk.util.IFileChangeListener;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 
@@ -468,6 +469,12 @@ public class MobileBaseCadManager {
 		return allCad;
 	}
 	public void setAllCad(ArrayList<CSG> allCad) {
+		for(CSG part:allCad)
+			for(String p:part .getParameters()){
+				CSGDatabase.addParameterListener(p,(arg0, arg1) -> {
+					generateCad();
+				});
+			}
 		this.allCad = allCad;
 	}
 	 
