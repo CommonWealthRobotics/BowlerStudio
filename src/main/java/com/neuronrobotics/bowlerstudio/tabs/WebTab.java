@@ -240,7 +240,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				? urlField.getText() 
 				: "http://" + urlField.getText();
 		if(isTutorialTab ){
-			if(		!((Current_URL.contains("neuronrobotics.com") ||
+			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
 					Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())||
 					Current_URL.contains("localhost") ))){
 				try {
