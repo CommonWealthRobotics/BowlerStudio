@@ -265,7 +265,7 @@ public class BowlerStudioModularFrame {
 					for(int i=0;i<5;i++){
 						try{
 							creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
-							creatureLab3dDockNode.requestFocus();
+		
 							creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 								@Override
 								public void invalidated(Observable event) {
