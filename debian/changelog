@@ -1,3 +1,19 @@
+bowlerstudio (0.19.3) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * Updating the readme links
+  * Changing the documention cache root to the new website server
+
+  [ Kevin Harrington ]
+  * Update README.md
+
+  [ Kevin Harrington ]
+  * updating JCSG, GRAPES
+  * adding a parameter listener for all objects
+  * 0.19.3
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 17 Sep 2016 10:54:36 -0400
+
 bowlerstudio (0.19.2) xenial; urgency=medium
 
   * Adding Apache XML RPC Client for accessing Odoo servers
