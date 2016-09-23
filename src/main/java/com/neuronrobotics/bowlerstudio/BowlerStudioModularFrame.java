@@ -19,6 +19,8 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -260,23 +262,25 @@ public class BowlerStudioModularFrame {
 	
 			Platform.runLater(() -> {
 				if (!isOpen.get(key)) {
-					
-					try{
-						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
-						creatureLab3dDockNode.requestFocus();
-						creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
-							@Override
-							public void invalidated(Observable event) {
-								creatureLab3dDockNode.closedProperty().removeListener(this);
-								isOpen.put(key, false);
-							}
-						});
-						isOpen.put(key, true);
-					}catch(Exception e){
-						// keep trying to open
-						e.printStackTrace();
+					for(int i=0;i<5;i++){
+						try{
+							creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
+							creatureLab3dDockNode.requestFocus();
+							creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
+								@Override
+								public void invalidated(Observable event) {
+									creatureLab3dDockNode.closedProperty().removeListener(this);
+									isOpen.put(key, false);
+								}
+							});
+							isOpen.put(key, true);
+							break;
+						}catch(Exception e){
+							// keep trying to open
+							e.printStackTrace();
+							ThreadUtil.wait(500);
+						}
 					}
-					
 				}
 				Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 			});
