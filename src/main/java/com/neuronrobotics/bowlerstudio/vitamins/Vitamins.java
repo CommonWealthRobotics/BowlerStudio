@@ -158,14 +158,14 @@ public class Vitamins {
 		String jsonString = makeJson(type); 
 		try{
 			ScriptingEngine.pushCodeToGit(
-					getGitRpoDatabase() ,// git repo, change this if you fork this demo
+					getGitRepoDatabase() ,// git repo, change this if you fork this demo
 				"master", // branch or tag
 				getRootFolder()+type+".json", // local path to the file in git
 				jsonString, // content of the file
 				"Pushing changed Database");//commit message
 			
 		}catch(org.eclipse.jgit.api.errors.TransportException ex){
-			System.out.println("You need to fork "+getGitRpoDatabase() +" to have permission to save");
+			System.out.println("You need to fork "+defaultgitRpoDatabase +" to have permission to save");
 			System.out.println("You do not have permission to push to this repo, change the GIT repo to your fork with setGitRpoDatabase(String gitRpoDatabase) ");
 			throw ex;
 		}
@@ -222,7 +222,7 @@ public class Vitamins {
 			try {
 				f = ScriptingEngine
 										.fileFromGit(
-												getGitRpoDatabase(),// git repo, change this if you fork this demo
+												getGitRepoDatabase(),// git repo, change this if you fork this demo
 											getRootFolder()+type+".json"// File from within the Git repo
 										);
 				inPut = FileUtils.openInputStream(f);
@@ -269,7 +269,7 @@ public class Vitamins {
 		try {
 			folder = ScriptingEngine
 					.fileFromGit(
-							getGitRpoDatabase() ,// git repo, change this if you fork this demo
+							getGitRepoDatabase() ,// git repo, change this if you fork this demo
 						getRootFolder() + "hobbyServo.json"
 					);
 			File[] listOfFiles = folder.getParentFile().listFiles();
@@ -299,8 +299,16 @@ public class Vitamins {
 		return types;
 	}
 	
-	
-	public static String getGitRpoDatabase() throws IOException {
+//	@Deprecated
+//	public static String getGitRpoDatabase() throws IOException {
+//		return getGitRepoDatabase();
+//	}
+//	@Deprecated
+//	public static void setGitRpoDatabase(String gitRpoDatabase) {
+//		setGitRepoDatabase(gitRpoDatabase);
+//	}
+//	
+	public static String getGitRepoDatabase() throws IOException {
 		if(!checked){
 			checked=true;
 			if(ScriptingEngine.getLoginID()!=null){
@@ -315,23 +323,27 @@ public class Vitamins {
 						
 						String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
 						//System.out.println("Using my version of Viamins: "+myAssets);
-						setGitRpoDatabase(myAssets);
+						setGitRepoDatabase(myAssets);
 					}
 				}
 			}
 		}
 		return gitRpoDatabase;
 	}
-	public static void setGitRpoDatabase(String gitRpoDatabase) {
+	public static void setGitRepoDatabase(String gitRpoDatabase) {
 		Vitamins.gitRpoDatabase = gitRpoDatabase;
+		databaseSet.clear();
+		fileLastLoaded.clear();
+		
 	}
 
 	public static String getJsonRootDir() {
 		return jsonRootDir;
 	}
 
-	public static void setJsonRootDir(String jsonRootDir) {
+	public static void setJsonRootDir(String jsonRootDir) throws IOException {
 		Vitamins.jsonRootDir = jsonRootDir;
+		setGitRepoDatabase(getGitRepoDatabase());
 	}
 	
 	

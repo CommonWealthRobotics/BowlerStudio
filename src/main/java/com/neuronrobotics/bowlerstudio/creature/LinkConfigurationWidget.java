@@ -504,7 +504,7 @@ public class LinkConfigurationWidget extends GridPane {
 			GHRepository repo = github.getUser("madhephaestus").getRepository("Hardware-Dimensions");
 			GHRepository forked =repo.fork();
 			System.out.println("Vitamins forked to "+forked.getGitTransportUrl());
-			Vitamins.setGitRpoDatabase("https://github.com/"+github.getMyself().getLogin()+"/Hardware-Dimensions.git");
+			Vitamins.setGitRepoDatabase("https://github.com/"+github.getMyself().getLogin()+"/Hardware-Dimensions.git");
 			System.out.println("Loading new files");
 			//
 
