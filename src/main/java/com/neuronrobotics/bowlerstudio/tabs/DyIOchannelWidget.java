@@ -10,6 +10,7 @@ import org.python.core.exceptions;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.common.Log;
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.sdk.dyio.DyIOChannel;
 import com.neuronrobotics.sdk.dyio.DyIOChannelEvent;
@@ -104,10 +105,17 @@ public class DyIOchannelWidget {
 				if(currentMode==DyIOChannelMode.SERVO_OUT && timeSlider.getValue()>.1){
 					new Thread(){
 						public void run(){
-							setName("Setting servo Pos");
-							srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
-							if(srv.getChannel().getCachedMode())
-								srv.getChannel().flush();
+							Platform.runLater(()->setName("Setting servo Pos"));
+							//int ll = Log.getMinimumPrintLevel();
+							try{
+								//Log.enableInfoPrint();
+								srv.SetPosition((int) positionSlider.getValue(), timeSlider.getValue());
+								if(srv.getChannel().getCachedMode())
+									srv.getChannel().flush();
+							}catch(Exception ex){
+								ex.printStackTrace();
+							}
+							//Log.setMinimumPrintLevel(ll);
 						}
 					}.start();
 					
