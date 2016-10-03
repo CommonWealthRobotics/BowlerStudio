@@ -873,4 +873,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 		}).start();
 	}
 
+    @FXML
+    void onRefresh(ActionEvent event) {
+    	setToLoggedIn();
+    }
+
 }
