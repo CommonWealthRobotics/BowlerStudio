@@ -20,7 +20,7 @@ public class GistHelper
 {
     private GistHelper() {}
 
-    public static void createNewGist(String filename, String description, boolean isPublic)
+    public static String createNewGist(String filename, String description, boolean isPublic)
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException
         //Setup gist
@@ -31,10 +31,10 @@ public class GistHelper
         builder.public_(isPublic);
 
         //Make gist
-        createGistFromBuilder(builder, filename);
+        return createGistFromBuilder(builder, filename);
     }
 
-    public static void addFileToGist(String filename, String content, GHGist gistID)
+    public static String addFileToGist(String filename, String content, GHGist gistID)
     {
         GitHub gitHub = ScriptingEngine.getGithub();
         try
@@ -53,25 +53,26 @@ public class GistHelper
             builder.file(filename, content);
 
             //Make new gist with old filename
-            createGistFromBuilder(builder, oldGist.getFiles().values().iterator().next().getFileName());
+            return createGistFromBuilder(builder, oldGist.getFiles().values().iterator().next().getFileName());
 
-            //Remove old gist
-            oldGist.delete();
+            
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private static void createGistFromBuilder(GHGistBuilder builder, String filename)
+    private static String createGistFromBuilder(GHGistBuilder builder, String filename)
     {
         GHGist gist;
         try
         {
             gist = builder.create();
-            String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
-            BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
+            //String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
+            
+            //BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
             System.out.println("Creating repo");
             while (true)
             {
@@ -90,10 +91,12 @@ public class GistHelper
             }
 
             System.out.println("Creating gist at " + filename);
+            return gist.getGitPullUrl();
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+        return null;
     }
 }

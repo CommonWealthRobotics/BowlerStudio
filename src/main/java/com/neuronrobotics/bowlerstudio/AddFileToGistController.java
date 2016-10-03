@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,12 +40,17 @@ public class AddFileToGistController extends Application {
 	private ImageView langaugeIcon; // Value injected by FXMLLoader
 	private String extentionStr = ".groovy";
 	private String gitRepo;
+    @FXML
+    private TextArea description;
+
+	private MenuRefreshEvent refreshevent;
 
 	// private GHGist gistID;
 
-	public AddFileToGistController(String gitRepo) {
+	public AddFileToGistController(String gitRepo,MenuRefreshEvent event) {
 		this.gitRepo = gitRepo;
 		// this.gistID = id;
+		this.refreshevent = event;
 	}
 
 	@Override
@@ -117,12 +123,22 @@ public class AddFileToGistController extends Application {
 			if(!text.endsWith(extentionStr)){
 				text=text+extentionStr;
 			}
+			
+			String message = description.getText();
+			if(message == null || message.length()==0){
+				message = "Adding new file from BowlerStudio";
+			}
+			
+			if(gitRepo==null){
+				gitRepo=GistHelper.createNewGist(text, message, true);
+			}
 			System.out.println("Adding new file"+text+" to "+gitRepo);
 			try {
 				ScriptingEngine.pushCodeToGit(gitRepo, "master", text, "//Your code here",
-						"Adding new file from BowlerStudio");
+						message);
 				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
 				BowlerStudio.createFileTab(nf);
+				refreshevent.setToLoggedIn();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -57,7 +57,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class BowlerStudioMenu {
+public class BowlerStudioMenu implements MenuRefreshEvent{
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -107,6 +107,9 @@ public class BowlerStudioMenu {
 	private Menu watchingRepos; // Value injected by FXMLLoader
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
+
+	private String name;
+	private BowlerStudioMenu selfRef = this;
 
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
@@ -168,8 +171,12 @@ public class BowlerStudioMenu {
 			logoutGithub.setText("Anonymous");
 		});
 	}
-
+	public void setToLoggedIn(){
+		setToLoggedIn(name);
+	}
+	
 	private void setToLoggedIn(final String name) {
+		this.name = name;
 		// new Exception().printStackTrace();
 		FxTimer.runLater(Duration.ofMillis(100), () -> {
 			logoutGithub.disableProperty().set(false);
@@ -217,9 +224,10 @@ public class BowlerStudioMenu {
 									Platform.runLater(() -> {
 										Stage s = new Stage();
 
-										AddFileToGistController controller = new AddFileToGistController(gist.getGitPushUrl());
+										AddFileToGistController controller = new AddFileToGistController(gist.getGitPushUrl(),selfRef);
 										try {
 											controller.start(s);
+
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
@@ -310,6 +318,10 @@ public class BowlerStudioMenu {
 						}
 						// Now load the users GIT repositories
 						// github.getMyOrganizations();
+						Platform.runLater(() ->myOrganizations.getItems().clear());
+						Platform.runLater(() ->myRepos.getItems().clear());
+						Platform.runLater(() ->watchingRepos.getItems().clear());
+
 						Map<String, GHOrganization> orgs = github.getMyOrganizations();
 						for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
 							// System.out.println("Org: "+org);
@@ -376,7 +388,7 @@ public class BowlerStudioMenu {
 						Platform.runLater(() -> {
 							Stage s = new Stage();
 
-							AddFileToGistController controller = new AddFileToGistController(url);
+							AddFileToGistController controller = new AddFileToGistController(url,selfRef);
 							try {
 								controller.start(s);
 							} catch (Exception e) {
@@ -635,9 +647,11 @@ public class BowlerStudioMenu {
 		Stage s = new Stage();
 		new Thread() {
 			public void run() {
-				NewGistController controller = new NewGistController();
+				AddFileToGistController controller = new AddFileToGistController(null,selfRef);
+				
 				try {
 					controller.start(s);
+					setToLoggedIn(name);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
