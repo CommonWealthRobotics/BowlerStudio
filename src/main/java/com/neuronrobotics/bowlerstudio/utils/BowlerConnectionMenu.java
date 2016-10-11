@@ -239,6 +239,7 @@ public class BowlerConnectionMenu extends Application {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/BowlerConnectionMenu.fxml", true);
 		Parent root;
 		loader.setController(this);
+		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 

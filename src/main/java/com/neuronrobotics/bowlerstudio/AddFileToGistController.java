@@ -58,6 +58,7 @@ public class AddFileToGistController extends Application {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/addFileToGist.fxml", true);
 		Parent root;
 		loader.setController(this);
+		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 		extention.getItems().clear();
