@@ -87,6 +87,7 @@ public class BowlerStudio extends Application {
 				if (getLogViewRefStatic() != null)
 					getLogViewRefStatic().appendText(valueOf);
 			});
+			System.err.print(valueOf);
 	    }
 	
 	    public void write(int b) throws IOException {
