@@ -840,16 +840,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 							@Override
 							public void run() {
 								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-								String [] set = (String[]) openGits.keySet().toArray();
+								Object [] set = openGits.keySet().toArray();
 								for (int i=0;i<set.length;i++) {
-									String s = set[i];
-									try {
-										ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
-										File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-										createFileTab(f);
-									} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException|ClassCastException e) {
-										// TODO Auto-generated catch block
-										// e.printStackTrace();
+									if(String.class.isInstance(set[i])){
+										String s = (String) set[i];
+										try {
+											ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+											File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
+											createFileTab(f);
+										} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException|ClassCastException e) {
+											// TODO Auto-generated catch block
+											// e.printStackTrace();
+										}
 									}
 								}
 								HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");

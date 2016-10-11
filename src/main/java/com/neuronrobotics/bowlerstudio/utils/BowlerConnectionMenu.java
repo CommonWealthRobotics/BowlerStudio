@@ -97,6 +97,7 @@ public class BowlerConnectionMenu extends Application {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() {
+		System.err.println("Initializing conection Dialog");
 		assert baudrate != null : "fx:id=\"baudrate\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
 		assert connectNetwork != null : "fx:id=\"connectNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
 		assert connectSerial != null : "fx:id=\"connectSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
@@ -238,6 +239,7 @@ public class BowlerConnectionMenu extends Application {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/BowlerConnectionMenu.fxml", true);
 		Parent root;
 		loader.setController(this);
+		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 
 		Platform.runLater(() -> {
