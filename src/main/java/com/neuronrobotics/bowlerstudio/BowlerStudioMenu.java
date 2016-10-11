@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -839,8 +840,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 							@Override
 							public void run() {
 								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-								for (String s : openGits.keySet()) {
-
+								String [] set = (String[]) openGits.keySet().toArray();
+								for (int i=0;i<set.length;i++) {
+									String s = set[i];
 									try {
 										ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 										File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
