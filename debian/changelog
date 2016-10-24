@@ -1,3 +1,33 @@
+bowlerstudio (0.19.5) xenial; urgency=medium
+
+  * 0.19.4
+  * checking for valid tutorial URL as commonwealth not NR
+  * retry opening tab
+  * removing the focus request and relying on the one below
+  * When setting a database value the internal caches should be cleared, ofrcing a reloading of the database files.
+  * Adding try catch in flush widget to prevent thread lock
+  * Adding an event path for refreshing the menus on adding a file.
+  * adding the refreshing of the menues when a file is created or from a menu option
+  * do not use iterators with a threaded opening
+  * adding an err printout of all console prints
+  * Adding the configuration to BowlerConnection allowing it to use the classloader when loading from FXML
+  * close #1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 11 Oct 2016 15:10:01 -0400
+
+bowlerstudio (0.19.4) xenial; urgency=medium
+
+  * 0.19.4
+  * checking for valid tutorial URL as commonwealth not NR
+  * retry opening tab
+  * removing the focus request and relying on the one below
+  * When setting a database value the internal caches should be cleared, ofrcing a reloading of the database files.
+  * Adding try catch in flush widget to prevent thread lock
+  * Adding an event path for refreshing the menus on adding a file.
+  * adding the refreshing of the menues when a file is created or from a menu option
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 05 Oct 2016 19:17:37 -0400
+
 bowlerstudio (0.19.3) xenial; urgency=medium
 
   [ Kevin Harrington ]
