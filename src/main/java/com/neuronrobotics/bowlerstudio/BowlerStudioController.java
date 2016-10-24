@@ -205,6 +205,7 @@ public class BowlerStudioController  implements
 				PrintWriter pw = new PrintWriter(sw);
 				ex.printStackTrace(pw);
 				System.out.println(sw.toString());
+				ex.printStackTrace();
 			}
 		}.start();
 

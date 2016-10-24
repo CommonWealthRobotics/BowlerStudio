@@ -16,6 +16,7 @@ import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import eu.mihosoft.vrl.v3d.parametrics.StringParameter;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import javafx.scene.paint.Color;
@@ -62,7 +63,7 @@ public class Vitamins {
 				fileLastLoaded.put(resource.getAbsolutePath(), STL.file(resource.toPath()) );
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BowlerStudio.printStackTrace(e);
 			}
 		}
 		return fileLastLoaded.get(resource.getAbsolutePath()).clone() ;
@@ -81,8 +82,7 @@ public class Vitamins {
 			try{
 				fileLastLoaded.put(key, get( type, id) );
 			}catch(Exception e){
-				e.printStackTrace();
-				e.printStackTrace(System.out);
+				BowlerStudio.printStackTrace(e);
 				
 				gitRpoDatabase = defaultgitRpoDatabase;
 				databaseSet.clear();
@@ -96,8 +96,10 @@ public class Vitamins {
 		//System.err.println("Loading "+vitToGet);
 		return vitToGet;
 	}
-	
 	public static CSG get(String type,String id) throws Exception{
+		return get(type,id,0);
+	}
+	public static CSG get(String type,String id, int depthGauge) throws Exception{
 		String key = type+id;
 
 		try{
@@ -124,11 +126,14 @@ public class Vitamins {
 				return null;
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+			BowlerStudio.printStackTrace(e);
 			gitRpoDatabase = defaultgitRpoDatabase;
 			databaseSet.clear();
 			fileLastLoaded.clear();
-			return get( type, id);
+			if(depthGauge<2)
+				return get( type, id, depthGauge+1);
+			else
+				return null;
 		}
 	}
 	
@@ -250,7 +255,7 @@ public class Vitamins {
 				}
 				
 			} catch (Exception e) {
-				e.printStackTrace();
+				BowlerStudio.printStackTrace(e);
 				databaseSet.put(type, new HashMap<String,HashMap<String,Object>>());
 			}
 		}
@@ -281,7 +286,7 @@ public class Vitamins {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			BowlerStudio.printStackTrace(e);
 		} 
 		return types;
 	}
