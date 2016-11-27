@@ -263,7 +263,7 @@ public class BowlerStudioModularFrame {
 		String key = "showCreatureLab";
 		if (!isOpen.get(key)) {
 			new Thread(() -> {
-				ThreadUtil.wait(500);
+				ThreadUtil.wait(100);
 
 				Platform.runLater(() -> {
 					try {
@@ -271,10 +271,11 @@ public class BowlerStudioModularFrame {
 						isOpen.put(key, true);
 					} catch (Exception e) {
 						// keep trying to open
-						e.printStackTrace();
+						//e.printStackTrace();
 						if (depth < 3) {
 							showCreatureLab(depth + 1);
-						}
+						}else
+							BowlerStudio.printStackTrace(e);//fail and show user
 					}
 				});
 
