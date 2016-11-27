@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import javafx.application.Platform;
+
 /*
  *      Axis.java 1.0 98/11/25
  *
@@ -56,6 +58,12 @@ import javafx.scene.transform.Affine;
  */
 public class Axis extends Group {
 	
+	private Box xAxis;
+	private Box yAxis;
+	private Box zAxis;
+	private Label xText;
+	private Label yText;
+	private Label zText;
 	/**
 	 * Instantiates a new axis.
 	 */
@@ -84,21 +92,21 @@ public class Axis extends Group {
 		blueMaterial.setDiffuseColor(Color.DARKBLUE);
 		blueMaterial.setSpecularColor(Color.BLUE);
 
-		final Box xAxis = new Box(i, 2, 2);
-		final Box yAxis = new Box(2, i, 2);
-		final Box zAxis = new Box(2, 2, i);
+		xAxis = new Box(i, 2, 2);
+		yAxis = new Box(2, i, 2);
+		zAxis = new Box(2, 2, i);
 		
 		
 		Affine xp = new Affine();
 		xp.setTx(i/2);
 		xAxis.getTransforms().add(xp);
-		Label xText = new Label("+X");
+		xText = new Label("+X");
 		xText.getTransforms().add(xp);
 		
 		Affine yp = new Affine();
 		yp.setTy(i/2);
 		yAxis.getTransforms().add(yp);
-		Label yText = new Label("+Y");
+		yText = new Label("+Y");
 		yText.getTransforms().add(yp);
 		
 		Affine zp = new Affine();
@@ -109,15 +117,22 @@ public class Axis extends Group {
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
 		zAxis.getTransforms().add(zp);
-		Label zText = new Label("+Z");
+		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
 		
 		
 		xAxis.setMaterial(redMaterial);
 		yAxis.setMaterial(greenMaterial);
 		zAxis.setMaterial(blueMaterial);
-		
-		getChildren().addAll(xAxis,yAxis,zAxis,xText,yText,zText);
+		show();
 	}
+	
+	public void show(){
+		Platform.runLater(()->getChildren().addAll(xAxis,yAxis,zAxis,xText,yText,zText));
+	}
+	public void hide(){
+		Platform.runLater(()->getChildren().removeAll(xAxis,yAxis,zAxis,xText,yText,zText));
+	}
+	
 
 } // end of class Axis

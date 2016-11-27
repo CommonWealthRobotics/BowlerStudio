@@ -338,6 +338,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		    else
 		    	hideAxis();
 		});
+		
+		
 		controls.getChildren().addAll(home,ruler);
 		return new Group(controls);
 	}
@@ -905,9 +907,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	
 	public void showAxis(){
 		Platform.runLater(()->axisGroup.getChildren().add(gridGroup));
+		for(MeshView a: axisMap.keySet()){
+			axisMap.get(a).show();
+		}
 	}
 	public void hideAxis(){
 		Platform.runLater(()->axisGroup.getChildren().remove(gridGroup));
+		for(MeshView a: axisMap.keySet()){
+			axisMap.get(a).hide();
+		}
 	}
 
 	public void cancelSelection() {
