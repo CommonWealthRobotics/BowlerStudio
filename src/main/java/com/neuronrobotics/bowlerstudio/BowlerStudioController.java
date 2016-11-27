@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +14,7 @@ import java.util.Map.Entry;
 
 import javax.swing.text.BadLocationException;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-//import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.eclipse.jgit.api.errors.GitAPIException;
+
 
 //import org.bytedeco.javacpp.DoublePointer;
 
@@ -39,12 +30,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.geometry.Side;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -52,16 +38,14 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
-import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
+@SuppressWarnings("restriction")
 public class BowlerStudioController  implements
 		IScriptEventListener {
 
@@ -69,7 +53,6 @@ public class BowlerStudioController  implements
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2686618188618431477L;
 	private ConnectionManager connectionManager;
 	private BowlerStudio3dEngine jfx3dmanager;
 	private AbstractImageProvider vrCamera;
@@ -212,33 +195,8 @@ public class BowlerStudioController  implements
 		
 	}
 	
-
-//	// Custom function for creation of New Tabs.
-//	private void createAndSelectNewTab(final BowlerStudioController tabPane,
-//			final String title) {
-//
-//
-//			Platform.runLater(() -> {
-//				try {
-//					if(ScriptingEngine.getLoginID() != null)
-//						
-//						addTab(new ScriptingGistTab(title,getHomeUrl(), true), false);
-//				} catch (IOException | InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			});
-//
-//
-//	}
 	
 
-	private Tab createTab() throws IOException, InterruptedException {
-		final WebTab tab = new WebTab(null,
-				 null);
-
-		return tab;
-	}
 
 	public void addTab(Tab tab, boolean closable) {
 
@@ -305,7 +263,7 @@ public class BowlerStudioController  implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public void onScriptFinished(Object result, Object Previous,File source) {
 		Log.warning("Loading script results " + result + " previous "
@@ -418,6 +376,26 @@ public class BowlerStudioController  implements
 
 	public void setJfx3dmanager(BowlerStudio3dEngine jfx3dmanager) {
 		this.jfx3dmanager = jfx3dmanager;
+	}
+
+
+	public boolean isDoneLoadingTutorials() {
+		return doneLoadingTutorials;
+	}
+
+
+	public void setDoneLoadingTutorials(boolean doneLoadingTutorials) {
+		this.doneLoadingTutorials = doneLoadingTutorials;
+	}
+
+
+	public ConnectionManager getConnectionManager() {
+		return connectionManager;
+	}
+
+
+	public void setConnectionManager(ConnectionManager connectionManager) {
+		this.connectionManager = connectionManager;
 	}
 
 	
