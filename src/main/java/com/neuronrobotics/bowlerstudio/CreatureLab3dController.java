@@ -16,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.ScrollPane;
@@ -57,7 +58,7 @@ public class CreatureLab3dController {
     	
     }
     
-	public void setOverlayLeft(TreeView<String> content) {
+	public void setOverlayLeft(Node content) {
 		Platform.runLater(() -> {
 
 			overlayScrollPanel.setFitToHeight(true);

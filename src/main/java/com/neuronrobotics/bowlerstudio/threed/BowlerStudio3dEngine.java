@@ -330,6 +330,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			getFlyingCamera().updatePositions();
 		});
+		
+		Button clear = new Button("Clear");
+		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
+		clear.setOnAction(event -> {
+			clearUserNode();
+			removeObjects();
+		});
 		CheckBox ruler = new CheckBox("Show Ruler");
 		ruler.setSelected(true);
 		ruler.setOnAction((event) -> {
@@ -342,7 +349,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		
 		
-		controls.getChildren().addAll(home,ruler);
+		controls.getChildren().addAll(home,ruler,clear);
 		return new Group(controls);
 	}
 
@@ -677,13 +684,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		return current;
 	}
 	
-	public void addTo3d(Node e){
-		
-	}
-	
-	public void removeFrom3d(Node e){
-		
-	}
 
 	private void prepAllItems(ObservableList<MenuItem> items, EventHandler<MouseEvent> exited,
 			EventHandler<MouseEvent> entered) {
