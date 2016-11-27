@@ -228,6 +228,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private final Group lookGroup = new Group();
 	/** The look group. */
 	private final Group focusGroup = new Group();
+	/** The user group. */
+	private final Group userGroup = new Group();
 	/** The scene. */
 	private SubScene scene;
 
@@ -899,10 +901,20 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		gridGroup.getChildren().addAll(yText, zText, xText, ground);
 		showAxis();
-		axisGroup.getChildren().addAll(focusGroup);
+		axisGroup.getChildren().addAll(focusGroup,userGroup);
 		world.getChildren().addAll(lookGroup,axisGroup);
 		
 
+	}
+	public void addUserNode(Node n){
+		Platform.runLater(()->userGroup.getChildren().add(n));
+	}
+
+	public void removeUserNode(Node n){
+		Platform.runLater(()->userGroup.getChildren().remove(n));
+	}
+	public void clearUserNode(){
+		Platform.runLater(()->userGroup.getChildren().clear());
 	}
 	
 	public void showAxis(){
