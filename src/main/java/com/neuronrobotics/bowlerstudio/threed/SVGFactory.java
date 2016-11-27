@@ -1,30 +1,14 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import org.kabeja.dxf.DXFDocument;
-import org.kabeja.dxf.DXFLayer;
-import org.kabeja.dxf.DXFPolyline;
-import org.kabeja.dxf.DXFVertex;
-import org.kabeja.dxf.helpers.Point;
-import org.kabeja.io.StreamGenerator;
-import org.kabeja.processing.ProcessingManager;
-import org.kabeja.svg.SVGGenerator;
-import org.kabeja.xml.SAXGenerator;
-import org.xml.sax.ContentHandler;
-
 import com.neuronrobotics.bowlerstudio.twod.ImageTracer;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import javafx.application.Application;
@@ -32,7 +16,6 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
@@ -42,12 +25,11 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
+@SuppressWarnings("restriction")
 public class SVGFactory extends Application {
 
 	private static Pane snapshotGroup;
