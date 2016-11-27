@@ -222,12 +222,11 @@ public class BowlerStudioController  implements
 			return true;
 		} 
 		if (Node.class.isInstance(p)) {
-			Platform.runLater(() -> {
-				getJfx3dmanager().clearUserNode();
-			});
+			getJfx3dmanager().clearUserNode();
+			
 			return true;
 		} 
-		
+		ThreadUtil.wait(20);
 		return false;
 	}
 	

@@ -181,7 +181,7 @@ public class BowlerStudioModularFrame {
 			isOpen.put("showCreatureLab", false);
 			isOpen.put("showTerminal", false);
 			isOpen.put("showDevices", false);
-	
+
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
 
@@ -199,91 +199,96 @@ public class BowlerStudioModularFrame {
 	public void showConectionManager() {
 		String key = "showDevices";
 
-			Platform.runLater(() -> {
-				if (!isOpen.get(key)) {
-					isOpen.put(key, true);
-					if (isOpen.get( "showTerminal"))
-						connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
-					else
-						connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
-					connectionManagerDockNode.requestFocus();
+		Platform.runLater(() -> {
+			if (!isOpen.get(key)) {
+				isOpen.put(key, true);
+				if (isOpen.get("showTerminal"))
+					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
+				else
+					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				connectionManagerDockNode.requestFocus();
 
-					connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
-						@Override
-						public void invalidated(Observable event) {
-							connectionManagerDockNode.closedProperty().removeListener(this);
-							isOpen.put(key, false);
-						}
-					});
-					
-				}
-				Platform.runLater(() -> connectionManagerDockNode.requestFocus());
-			});
-	
-		
+				connectionManagerDockNode.closedProperty().addListener(new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						connectionManagerDockNode.closedProperty().removeListener(this);
+						isOpen.put(key, false);
+					}
+				});
+
+			}
+			Platform.runLater(() -> connectionManagerDockNode.requestFocus());
+		});
+
 	}
 
 	public void showTerminal() {
-		
+
 		String key = "showTerminal";
 
 		if (!isOpen.get(key)) {
 			isOpen.put(key, true);
 			Platform.runLater(() -> {
-		
-					if (isOpen.get("showDevices"))
-						terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
-					else
-						terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
-					terminalDockNode.requestFocus();
 
-					if (ScriptingEngine.isLoginSuccess()) {
+				if (isOpen.get("showDevices"))
+					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
+				else
+					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
+				terminalDockNode.requestFocus();
 
+				if (ScriptingEngine.isLoginSuccess()) {
+
+				}
+
+				terminalDockNode.closedProperty().addListener(new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						terminalDockNode.closedProperty().removeListener(this);
+						isOpen.put(key, false);
 					}
+				});
 
-					terminalDockNode.closedProperty().addListener(new InvalidationListener() {
-						@Override
-						public void invalidated(Observable event) {
-							terminalDockNode.closedProperty().removeListener(this);
-							isOpen.put(key, false);
-						}
-					});
-					
-					Platform.runLater(() -> terminalDockNode.requestFocus());
+				Platform.runLater(() -> terminalDockNode.requestFocus());
 
 			});
-		
-			
+
 		}
 	}
 
 	public void showCreatureLab() {
+		showCreatureLab(0);
+	}
+
+	public void showCreatureLab(int depth) {
 		String key = "showCreatureLab";
-	
-			Platform.runLater(() -> {
-				if (!isOpen.get(key)) {
-					for(int i=0;i<5;i++){
-						try{
-							creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
-		
-							creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
-								@Override
-								public void invalidated(Observable event) {
-									creatureLab3dDockNode.closedProperty().removeListener(this);
-									isOpen.put(key, false);
-								}
-							});
-							isOpen.put(key, true);
-							break;
-						}catch(Exception e){
-							// keep trying to open
-							e.printStackTrace();
-							ThreadUtil.wait(500);
+		if (!isOpen.get(key)) {
+			new Thread(() -> {
+				ThreadUtil.wait(500);
+
+				Platform.runLater(() -> {
+					try {
+						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
+						isOpen.put(key, true);
+					} catch (Exception e) {
+						// keep trying to open
+						e.printStackTrace();
+						if (depth < 3) {
+							showCreatureLab(depth + 1);
 						}
 					}
-				}
-				Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
-			});
+				});
+
+				Platform.runLater(() -> creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
+					@Override
+					public void invalidated(Observable event) {
+						creatureLab3dDockNode.closedProperty().removeListener(this);
+						isOpen.put(key, false);
+					}
+				}));
+
+			}).start();
+		}
+		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 
