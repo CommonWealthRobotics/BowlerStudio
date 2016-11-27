@@ -145,7 +145,8 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 		
-				
+		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
+		
 
 		if (args.length == 0) {
 			// ScriptingEngine.logout();

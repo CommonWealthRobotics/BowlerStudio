@@ -1027,13 +1027,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ScrollEvent t) {
 				if (ScrollEvent.SCROLL == t.getEventType()) {
 
-					// double zoomFactor = (t.getDeltaY());
+					 double zoomFactor = (t.getDeltaY())*getVirtualcam().getZoomDepth()/3000;
 					//
 					// double z = camera.getTranslateY();
 					// double newZ = z + zoomFactor;
 					// camera.setTranslateY(newZ);
-					// System.out.println("Z = "+newZ);
-					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + t.getDeltaY());
+					 System.out.println("Z = "+zoomFactor);
+					
+					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 				}
 				t.consume();
 			}
