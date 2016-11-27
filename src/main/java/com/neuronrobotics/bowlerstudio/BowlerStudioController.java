@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -272,8 +273,8 @@ public class BowlerStudioController  implements
 		// loaded
 
 		ThreadUtil.wait(20);
-		if (ArrayList.class.isInstance(Previous)) {
-			ArrayList<Object> c = (ArrayList<Object>) Previous;
+		if (List.class.isInstance(Previous)) {
+			List<Object> c = (List<Object>) Previous;
 			for (int i = 0; i < c.size(); i++) {
 				removeObject(c.get(i));
 			}
@@ -281,8 +282,8 @@ public class BowlerStudioController  implements
 			removeObject(Previous);
 		}
 		//Check if a CSG is coming in and clear the screen first
-		if (ArrayList.class.isInstance(result)) {
-			ArrayList<Object> c = (ArrayList<Object>) result;
+		if (List.class.isInstance(result)) {
+			List<Object> c = (List<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
 				if (CSG.class.isInstance(c.get(i))){
 					Platform.runLater(() -> {
@@ -298,8 +299,8 @@ public class BowlerStudioController  implements
 				});
 			}
 		}
-		if (ArrayList.class.isInstance(result)) {
-			ArrayList<Object> c = (ArrayList<Object>) result;
+		if (List.class.isInstance(result)) {
+			List<Object> c = (List<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
 				//Log.warning("Loading array Lists with removals " + c.get(i));
 				addObject(c.get(i),  source);
