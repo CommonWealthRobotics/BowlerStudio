@@ -1032,7 +1032,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// double z = camera.getTranslateY();
 					// double newZ = z + zoomFactor;
 					// camera.setTranslateY(newZ);
-					 System.out.println("Z = "+zoomFactor);
+					 //System.out.println("Z = "+zoomFactor);
 					
 					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 				}
