@@ -269,13 +269,16 @@ public class BowlerStudioModularFrame {
 					try {
 						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
 						isOpen.put(key, true);
-					} catch (Exception e) {
+					} catch (NullPointerException e) {
 						// keep trying to open
 						//e.printStackTrace();
 						if (depth < 3) {
 							showCreatureLab(depth + 1);
 						}else
 							BowlerStudio.printStackTrace(e);//fail and show user
+					} catch (Exception e) {
+						
+						BowlerStudio.printStackTrace(e);//fail and show user
 					}
 				});
 
@@ -288,8 +291,8 @@ public class BowlerStudioModularFrame {
 				}));
 
 			}).start();
-		}
-		Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
+		}else
+			Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 
