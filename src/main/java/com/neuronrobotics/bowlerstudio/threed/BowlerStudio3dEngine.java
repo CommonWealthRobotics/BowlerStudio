@@ -1015,7 +1015,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				} else if (me.isMiddleButtonDown()) {
 
 				} else if (me.isSecondaryButtonDown()) {
-					double depth = 100/getVirtualcam().getZoomDepth() ;
+					double depth = -100/getVirtualcam().getZoomDepth() ;
 					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1/depth,
 							mouseDeltaY * modifierFactor * modifier * 1/depth, 0, new RotationNR()), 0);
 				}
@@ -1027,7 +1027,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ScrollEvent t) {
 				if (ScrollEvent.SCROLL == t.getEventType()) {
 
-					 double zoomFactor = (t.getDeltaY())*getVirtualcam().getZoomDepth()/3000;
+					 double zoomFactor =- (t.getDeltaY())*getVirtualcam().getZoomDepth()/3000;
 					//
 					// double z = camera.getTranslateY();
 					// double newZ = z + zoomFactor;
