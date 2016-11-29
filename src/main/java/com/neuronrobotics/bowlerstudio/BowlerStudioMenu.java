@@ -685,6 +685,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 					public void run() {
 						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/");
 						deleteFolder(cache);
+						System.exit(0);
 					}
 				}.start();
 			} else {
