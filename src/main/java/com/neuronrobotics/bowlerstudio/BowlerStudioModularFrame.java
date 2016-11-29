@@ -262,6 +262,7 @@ public class BowlerStudioModularFrame {
 	public void showCreatureLab(int depth) {
 		String key = "showCreatureLab";
 		if (!isOpen.get(key)) {
+			isOpen.put(key, true);
 			new Thread(() -> {
 				ThreadUtil.wait(100);
 
@@ -269,17 +270,20 @@ public class BowlerStudioModularFrame {
 					try {
 						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
 						isOpen.put(key, true);
+						return;
 					} catch (NullPointerException e) {
 						// keep trying to open
 						//e.printStackTrace();
-						if (depth < 3) {
+						isOpen.put(key, false);
+						if (depth < 2) {
 							showCreatureLab(depth + 1);
 						}else
 							BowlerStudio.printStackTrace(e);//fail and show user
 					} catch (Exception e) {
-						
+						isOpen.put(key, false);
 						BowlerStudio.printStackTrace(e);//fail and show user
 					}
+					
 				});
 
 				Platform.runLater(() -> creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
@@ -291,8 +295,9 @@ public class BowlerStudioModularFrame {
 				}));
 
 			}).start();
-		}else
-			Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
+		}
+//		else
+//			Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 
