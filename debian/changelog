@@ -1,3 +1,300 @@
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 23:19:44 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 23:15:58 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 23:14:05 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 23:07:07 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 22:35:28 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 22:28:22 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 22:26:12 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 21:59:08 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 21:55:03 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 21:42:42 -0500
+
+bowlerstudio (0.20.0) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.19.6
+
+  [ Kevin Harrington ]
+  * catch error s and exceptions
+  * cleanup
+  * clean warnings
+  * The zoom level and enable/disable grid
+  * Adding the axis to the hide feature
+  * Adding the ability for scripts to display to 3d window
+  * Loading of image nodes ttested working
+  * when an image is loaded the creature lab should display
+  * Faster turn over for loading creaturelav
+  * if any other exceptiuon besides the expected one comes up, print right away
+  * Adding the ability to clear the screen
+  * Making the zoom scale by distance to avoid jumpy navigation
+  * remove print
+  * Exiting the application after clearing cache
+  * Using the open flag to prevent multiple openings
+  * Reversing the motion directions
+  * Adding the bezier extrude
+  * Fixing the JavaCad depancy tree.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 29 Nov 2016 21:41:07 -0500
+
 bowlerstudio (0.19.5) xenial; urgency=medium
 
   * 0.19.4
