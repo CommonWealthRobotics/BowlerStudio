@@ -61,6 +61,7 @@ public class MobileBasePhysicsManager {
 
 				body.getGravity(gravity);
 				body.getOrientation(orentation);
+				
 
 				TransformFactory.nrToBullet(new TransformNR(gravity.x, gravity.y, gravity.z, new RotationNR()),
 						gravTrans);

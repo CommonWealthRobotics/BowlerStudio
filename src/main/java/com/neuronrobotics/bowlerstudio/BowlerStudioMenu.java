@@ -58,7 +58,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class BowlerStudioMenu implements MenuRefreshEvent{
+public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -172,10 +172,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 			logoutGithub.setText("Anonymous");
 		});
 	}
-	public void setToLoggedIn(){
+
+	public void setToLoggedIn() {
 		setToLoggedIn(name);
 	}
-	
+
 	private void setToLoggedIn(final String name) {
 		this.name = name;
 		// new Exception().printStackTrace();
@@ -225,7 +226,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 									Platform.runLater(() -> {
 										Stage s = new Stage();
 
-										AddFileToGistController controller = new AddFileToGistController(gist.getGitPushUrl(),selfRef);
+										AddFileToGistController controller = new AddFileToGistController(
+												gist.getGitPushUrl(), selfRef);
 										try {
 											controller.start(s);
 
@@ -319,9 +321,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 						}
 						// Now load the users GIT repositories
 						// github.getMyOrganizations();
-						Platform.runLater(() ->myOrganizations.getItems().clear());
-						Platform.runLater(() ->myRepos.getItems().clear());
-						Platform.runLater(() ->watchingRepos.getItems().clear());
+						Platform.runLater(() -> myOrganizations.getItems().clear());
+						Platform.runLater(() -> myRepos.getItems().clear());
+						Platform.runLater(() -> watchingRepos.getItems().clear());
 
 						Map<String, GHOrganization> orgs = github.getMyOrganizations();
 						for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
@@ -385,17 +387,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				String url = repo.getGitTransportUrl().replace("git://", "https://");
 				addFile.setOnAction(event -> {
-					System.out.println("Adding file to : "+url);
-						Platform.runLater(() -> {
-							Stage s = new Stage();
+					System.out.println("Adding file to : " + url);
+					Platform.runLater(() -> {
+						Stage s = new Stage();
 
-							AddFileToGistController controller = new AddFileToGistController(url,selfRef);
-							try {
-								controller.start(s);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						});
+						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
+						try {
+							controller.start(s);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
 				});
 
 				Platform.runLater(() -> {
@@ -403,7 +405,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 					orgRepo.getItems().addAll(addFile, orgFiles);
 				});
 
-				
 				EventHandler<Event> loadFiles = new EventHandler<Event>() {
 					boolean gistFlag = false;
 
@@ -648,8 +649,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 		Stage s = new Stage();
 		new Thread() {
 			public void run() {
-				AddFileToGistController controller = new AddFileToGistController(null,selfRef);
-				
+				AddFileToGistController controller = new AddFileToGistController(null, selfRef);
+
 				try {
 					controller.start(s);
 					setToLoggedIn(name);
@@ -824,7 +825,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 
 				});
 				IGithubLoginListener listener = new IGithubLoginListener() {
-					private boolean loggingIn=false;
+					private boolean loggingIn = false;
+
 					@Override
 					public void onLogout(String arg0) {
 						// TODO Auto-generated method stub
@@ -833,25 +835,30 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 
 					@Override
 					public void onLogin(String arg0) {
-						if(loggingIn)
+						if (loggingIn)
 							return;
-						loggingIn=true;			
+						loggingIn = true;
 						new Thread(new Runnable() {
 
 							@Override
 							public void run() {
 								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-								Object [] set = openGits.keySet().toArray();
-								for (int i=0;i<set.length;i++) {
-									if(String.class.isInstance(set[i])){
+								Object[] set = openGits.keySet().toArray();
+								for (int i = 0; i < set.length; i++) {
+									if (String.class.isInstance(set[i])) {
 										String s = (String) set[i];
 										try {
 											ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 											File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-											createFileTab(f);
-										} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException|ClassCastException e) {
+											if (createFileTab(f) == null) {
+												openGits.remove(s);
+												System.err.println("Removing missing "+s);
+											}
+										} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException
+												| ClassCastException e) {
 											// TODO Auto-generated catch block
-											// e.printStackTrace();
+											e.printStackTrace();
+											openGits.clear();
 										}
 									}
 								}
@@ -865,7 +872,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 										// e.printStackTrace();
 									}
 								}
-								loggingIn=false;	
+								loggingIn = false;
 							}
 						}).start();
 					}
@@ -878,9 +885,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent{
 		}).start();
 	}
 
-    @FXML
-    void onRefresh(ActionEvent event) {
-    	setToLoggedIn();
-    }
+	@FXML
+	void onRefresh(ActionEvent event) {
+		setToLoggedIn();
+	}
 
 }

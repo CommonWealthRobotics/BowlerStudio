@@ -14,6 +14,7 @@ import com.bulletphysics.dynamics.constraintsolver.TypedConstraint;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import com.bulletphysics.util.ObjectArrayList;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 //import com.neuronrobotics.sdk.addons.kinematics.gui.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
@@ -84,6 +85,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	}
 	public void setup(CollisionShape fallShape,Transform pose, double mass, PhysicsCore core ){
 		// setup the motion state for the ball
+		System.out.println("Starting Object at "+pose);
 		DefaultMotionState fallMotionState = new DefaultMotionState(
 				pose);
 		// This we're going to give mass so it responds to gravity
@@ -93,14 +95,18 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 				fallInertia);
 		fallRigidBodyCI.additionalDamping = true;
 		setFallRigidBody(new RigidBody(fallRigidBodyCI));
-		update(40);
+		//update(40);
 	}
 	
 
 	public void update(float timeStep){		
 		fallRigidBody.getMotionState().getWorldTransform(updateTransform);
 		if(getUpdateManager()!=null){
-			getUpdateManager().update(timeStep);
+			try{
+				getUpdateManager().update(timeStep);
+			}catch(Exception e){
+				BowlerStudio.printStackTrace(e);
+			}
 		}
 	}
 	

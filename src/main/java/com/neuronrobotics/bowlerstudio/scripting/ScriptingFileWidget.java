@@ -104,6 +104,7 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -466,17 +467,14 @@ public class ScriptingFileWidget extends BorderPane implements
 		}
 		if(!langaugeType.getIsTextFile())
 			return;
-		if (watcher != null) {
-			watcher.close();
-		}
 		 try {
-			 watcher = new FileChangeWatcher(currentFile);
+			 watcher = FileChangeWatcher.watch(currentFile);
 			 watcher.addIFileChangeListener(this);
-			 watcher.start();
 		 } catch (IOException e) {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
 		 }
+		 
 	}
 
 	private void updateFile() {

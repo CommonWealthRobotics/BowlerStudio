@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,6 +39,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
+import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -48,6 +50,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.FileChangeWatcher;
+import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
@@ -55,8 +58,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	
 	private BowlerAbstractDevice pm;
 
-	private FileChangeWatcher driveEngineWitcher;
-	private HashMap<DHParameterKinematics, FileChangeWatcher> dhKinematicsFileWatchers = new HashMap<>();
 	private IDriveEngine defaultDriveEngine;
 	// private DhInverseSolver defaultDHSolver;
 	private Menu localMenue;
@@ -242,28 +243,17 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			code = ScriptingEngine.fileFromGit(device.getGitDhEngine()[0], device.getGitDhEngine()[1]);
 			DhInverseSolver defaultDHSolver = (DhInverseSolver) ScriptingEngine.inlineFileScriptRun(code, null);
 
-			if (dhKinematicsFileWatchers.get(device) != null) {
-				dhKinematicsFileWatchers.get(device).close();
-			}
-			FileChangeWatcher w;
-			try {
-				w = new FileChangeWatcher(code);
-				dhKinematicsFileWatchers.put(device, w);
-				File c = code;
-				w.addIFileChangeListener((fileThatChanged, event) -> {
-					try {
-						System.out.println("D-H Solver changed, updating "+device.getScriptingName());
-						DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineFileScriptRun(c, null);
-						device.setInverseSolver(d);
-					} catch (Exception ex) {
-						BowlerStudioController.highlightException(c, ex);
-					}
-				});
-				w.start();
-				
-			} catch (IOException e) {
-				BowlerStudioController.highlightException(code, e);
-			}
+			File c= code;
+			FileWatchDeviceWrapper.watch(device, code, (fileThatChanged, event) -> {
+
+				try {
+					System.out.println("D-H Solver changed, updating "+device.getScriptingName());
+					DhInverseSolver d = (DhInverseSolver) ScriptingEngine.inlineFileScriptRun(c, null);
+					device.setInverseSolver(d);
+				} catch (Exception ex) {
+					BowlerStudioController.highlightException(c, ex);
+				}
+			});
 
 			device.setInverseSolver(defaultDHSolver);
 			return code;
@@ -295,17 +285,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			BowlerStudioController.highlightException(code, e);
 		}
 
-		if (driveEngineWitcher != null)
-			driveEngineWitcher.close();
 
-		try {
-			driveEngineWitcher = new FileChangeWatcher(code);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		File c = code;
-		driveEngineWitcher.addIFileChangeListener((fileThatChanged, event) -> {
+		FileWatchDeviceWrapper.watch(device, code, (fileThatChanged, event) -> {
 
 			try {
 
@@ -316,7 +298,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 
 		});
-		driveEngineWitcher.start();
+		
+		
 		try {
 			defaultDriveEngine = (IDriveEngine) ScriptingEngine.inlineFileScriptRun(c, null);
 			device.setWalkingDriveEngine(defaultDriveEngine);

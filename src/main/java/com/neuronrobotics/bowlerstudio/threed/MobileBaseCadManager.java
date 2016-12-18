@@ -18,6 +18,7 @@ import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -46,8 +47,6 @@ public class MobileBaseCadManager {
 	private MobileBase base;
 	private ProgressIndicator pi;
 	private File cadScript;
-	private FileChangeWatcher watcher;
-	private HashMap<DHParameterKinematics, FileChangeWatcher> dhCadWatchers = new HashMap<>();
 
 	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
@@ -60,7 +59,19 @@ public class MobileBaseCadManager {
 
 	private CheckBox autoRegen;
 	private boolean bail=false;
-	
+	private IFileChangeListener cadWatcher = new IFileChangeListener() {
+
+		@Override
+		public void onFileChange(File fileThatChanged, WatchEvent event) {
+			try {
+				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
+				generateCad();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	};
 	
 	public MobileBaseCadManager(MobileBase base,ProgressIndicator pi,CheckBox autoRegen){
 		this.autoRegen = autoRegen;
@@ -90,43 +101,8 @@ public class MobileBaseCadManager {
 	public void setCadScript(File cadScript) {
 		if (cadScript == null)
 			return;
-		if (watcher != null) {
-
-			watcher.close();
-		}
-		try {
-			watcher = new FileChangeWatcher(cadScript);
-			watcher.addIFileChangeListener(new IFileChangeListener() {
-
-				@Override
-				public void onFileChange(File fileThatChanged, WatchEvent event) {
-					try {
-						cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
-						generateCad();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-			watcher.start();
-			base.addConnectionEventListener(new IDeviceConnectionEventListener() {
-				
-				@Override
-				public void onDisconnect(BowlerAbstractDevice arg0) {
-					if (watcher != null) {
-						watcher.close();
-					}
-					//System.out.println("Mobile Base disconnected, closing file watcher");
-				}
-				
-				@Override
-				public void onConnect(BowlerAbstractDevice arg0) {}
-			});
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		FileWatchDeviceWrapper.watch(base, cadScript, cadWatcher);
+		
 		this.cadScript = cadScript;
 	}
 
@@ -415,10 +391,7 @@ public class MobileBaseCadManager {
 		}
 	}
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
-		if (watcher != null) {
-			watcher.close();
-		}
+		
 	}
 	public void setGitCadEngine(String gitsId, String file, DHParameterKinematics dh)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
@@ -430,24 +403,8 @@ public class MobileBaseCadManager {
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(code, e);
 		}
-
-		if (dhCadWatchers.get(dh) != null) {
-			dhCadWatchers.get(dh).close();
-		}
-		FileChangeWatcher w = new FileChangeWatcher(code);
-		dhCadWatchers.put(dh, w);
-		dh.addConnectionEventListener(new IDeviceConnectionEventListener() {
-			
-			@Override
-			public void onDisconnect(BowlerAbstractDevice arg0) {
-				dhCadWatchers.get(dh).close();
-				//System.out.println(dh.getScriptingName()+ " DH disconnected, closing file watcher");
-			}
-			
-			@Override
-			public void onConnect(BowlerAbstractDevice arg0) {}
-		});
-		w.addIFileChangeListener((fileThatChanged, event) -> {
+		
+		FileWatchDeviceWrapper.watch(dh, code, (fileThatChanged, event) -> {
 			try {
 				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
 				dhCadGen.put(dh, d);
@@ -456,8 +413,6 @@ public class MobileBaseCadManager {
 				BowlerStudioController.highlightException(code, ex);
 			}
 		});
-		w.start();
-
 	}
 	
 	public void setGitCadEngine(String gitsId, String file, MobileBase device)
