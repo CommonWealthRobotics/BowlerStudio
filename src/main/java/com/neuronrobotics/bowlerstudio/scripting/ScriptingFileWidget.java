@@ -506,6 +506,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	public void save() {
 		// TODO Auto-generated method stub
 		try {
+			System.out.println("Writing file contents");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(
 					currentFile));
 			writer.write(getCode());

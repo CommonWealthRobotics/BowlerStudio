@@ -67,64 +67,39 @@ public class FileChangeWatcher {
 	private static boolean runThread = true;
 
 	private static HashMap<String, FileChangeWatcher> activeListener = new HashMap<String, FileChangeWatcher>();
-	private static Thread watcherThread = null;
+	private Thread watcherThread = null;
 	static {
 		startThread();
 
 	}
+
 	/**
 	 * start the watcher thread
 	 */
 	public static void startThread() {
 		runThread = true;
-		watcherThread = new Thread() {
-			public void run() {
-				setName("File Watcher Thread");
-				new Exception("Starting File Watcher Thread").printStackTrace();
-				
-				while (runThread) {
-					for (String key : activeListener.keySet()) {
-						try {
-							FileChangeWatcher w = activeListener.get(key);
-							if (!w.run) {
-								activeListener.remove(key);
-								System.out.println("Removing File: "+w.getFileToWatch().getAbsolutePath());
-								break;
-							}
-							System.err.println("Checking File: "+w.getFileToWatch().getAbsolutePath());
-							w.run();
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				new Exception("File Watcher Thread Died").printStackTrace();
-			}
-		};
-		watcherThread.start();
+
 	}
+
 	/**
 	 * stop the watcher thread
 	 */
 	public static void stopThread() {
 		runThread = false;
 	}
+
 	/**
 	 * clear the listeners
 	 */
 	public static void clearAll() {
 		activeListener.clear();
 	}
-	
+
 	/**
 	 * Start watching a file
-	 * @param fileToWatch a file that should be watched
+	 * 
+	 * @param fileToWatch
+	 *            a file that should be watched
 	 * @return the watcher object for this file
 	 * @throws IOException
 	 */
@@ -133,7 +108,7 @@ public class FileChangeWatcher {
 		String path = fileToWatch.getAbsolutePath();
 		if (activeListener.get(path) == null) {
 			activeListener.put(path, new FileChangeWatcher(fileToWatch));
-			System.err.println("Adding file to listening "+fileToWatch.getAbsolutePath());
+			System.err.println("Adding file to listening " + fileToWatch.getAbsolutePath());
 		}
 		return activeListener.get(path);
 	}
@@ -160,6 +135,30 @@ public class FileChangeWatcher {
 		} else {
 			register(dir);
 		}
+		watcherThread = new Thread() {
+			public void run() {
+				setName("File Watcher Thread");
+				new Exception("Starting File Watcher Thread").printStackTrace();
+
+				while (run) {
+					try {
+						System.err.println("Checking File: " + getFileToWatch().getAbsolutePath());
+						watch();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				new Exception("File Watcher Thread Died").printStackTrace();
+			}
+		};
+		watcherThread.start();
 	}
 
 	/**
@@ -242,10 +241,11 @@ public class FileChangeWatcher {
 			}
 		});
 	}
+
 	/**
 	 * Perfom the watch execution
 	 */
-	public void run() {
+	public void watch() {
 
 		// wait for key to be signalled
 		WatchKey key;
@@ -279,9 +279,9 @@ public class FileChangeWatcher {
 				}
 				// print out event
 				// System.out.format("%s: %s\n", event.kind().name(), child);
-				System.err.println("File Changed: "+getFileToWatch().getAbsolutePath());
+				System.err.println("File Changed: " + getFileToWatch().getAbsolutePath());
 				for (int i = 0; i < listeners.size(); i++) {
-					
+
 					listeners.get(i).onFileChange(child.toFile(), event);
 					Thread.sleep(50);// pad out the events to avoid file box
 										// overwrites
@@ -338,6 +338,7 @@ public class FileChangeWatcher {
 	 * Close.
 	 */
 	public void close() {
+		new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
 		this.run = false;
 		try {
 			watcher.close();
@@ -345,6 +346,7 @@ public class FileChangeWatcher {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		activeListener.remove(fileToWatch.getAbsolutePath());
 	}
 
 }

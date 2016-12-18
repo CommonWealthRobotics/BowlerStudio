@@ -909,25 +909,7 @@ public class MobleBaseMenueFactory {
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		File code = ScriptingEngine.fileFromGit(gitsId, file);
 		ScriptingFileWidget wid = BowlerStudio.createFileTab(code);
-		wid.addIScriptEventListener(new IScriptEventListener() {
-
-			@Override
-			public void onScriptFinished(Object result, Object pervious, File source) {
-
-			}
-
-			@Override
-			public void onScriptError(Exception except, File source) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onScriptChanged(String previous, String current, File source) {
-				// TODO Auto-generated method stub
-
-			}
-		});
+	
 	}
 
 }
