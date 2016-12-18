@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
-import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 public class FileWatchDeviceWrapper {

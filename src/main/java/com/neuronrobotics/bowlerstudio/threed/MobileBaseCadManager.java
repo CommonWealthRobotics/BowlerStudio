@@ -28,7 +28,6 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
-import com.neuronrobotics.sdk.util.FileChangeWatcher;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -64,6 +63,7 @@ public class MobileBaseCadManager {
 		@Override
 		public void onFileChange(File fileThatChanged, WatchEvent event) {
 			try {
+				System.out.println("Re-loading Cad Base Engine");
 				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
 				generateCad();
 			} catch (Exception e) {
@@ -362,6 +362,7 @@ public class MobileBaseCadManager {
 			return;
 		cadGenerating = true;
 		// new RuntimeException().printStackTrace();
+		new Exception().printStackTrace();
 		new Thread(()->{
 			System.out.print("\r\nGenerating cad...");
 			// new Exception().printStackTrace();
@@ -405,6 +406,8 @@ public class MobileBaseCadManager {
 		}
 		
 		FileWatchDeviceWrapper.watch(dh, code, (fileThatChanged, event) -> {
+			System.out.println("Re-loading Cad Limb Engine");
+
 			try {
 				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
 				dhCadGen.put(dh, d);
@@ -427,7 +430,7 @@ public class MobileBaseCadManager {
 		for(CSG part:allCad)
 			for(String p:part .getParameters()){
 				CSGDatabase.addParameterListener(p,(arg0, arg1) -> {
-					generateCad();
+					//generateCad(); //TODO Undo this after debugging
 				});
 			}
 		this.allCad = allCad;
