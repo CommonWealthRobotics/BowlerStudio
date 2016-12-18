@@ -245,7 +245,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		sn.setOnMouseEntered(new EventHandler<javafx.scene.input.MouseEvent>() {
 			@Override
 			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				//sn.requestFocus();
+				sn.requestFocus();
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {

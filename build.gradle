@@ -132,6 +132,8 @@ dependencies {
 	//compile "org.jfxtras:jfxtras-window:8.0-r4"
 	//compile "org.jfxtras:jfxtras-menu:8.0-r4"
 	//compile "org.jfxtras:jfxtras-labs:8.0-r4"
+		
+	//https://bintray.com/clearcontrol/ClearControl/DockFX
 	compile 'org.dockfx:DockFX:0.1.7'
 	//compile 'com.github.movisens:SmartGattLib:1.7'
 	// https://mvnrepository.com/artifact/org.apache.xmlrpc/xmlrpc-client
