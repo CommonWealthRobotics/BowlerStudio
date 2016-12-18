@@ -89,10 +89,14 @@ public class BowlerStudio extends Application {
 					getLogViewRefStatic().appendText(valueOf);
 			});
 			System.err.print(valueOf);
+			
 	    }
 	
 	    public void write(int b) throws IOException {
 	        appendText(String.valueOf((char)b));
+	        if((char)b =='Y'){
+				new Exception("Yo found: ").printStackTrace();
+			}
 	    }
 	}
 	public static OutputStream getOut() {

@@ -330,7 +330,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			getFlyingCamera().updatePositions();
 		});
-		
+
 		Button clear = new Button("Clear");
 		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
 		clear.setOnAction(event -> {
@@ -340,16 +340,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		CheckBox ruler = new CheckBox("Show Ruler");
 		ruler.setSelected(true);
 		ruler.setOnAction((event) -> {
-		    boolean selected = ruler.isSelected();
-		    //System.out.println("CheckBox Action (selected: " + selected + ")");
-		    if(selected)
-		    	showAxis();
-		    else
-		    	hideAxis();
+			boolean selected = ruler.isSelected();
+			// System.out.println("CheckBox Action (selected: " + selected +
+			// ")");
+			if (selected)
+				showAxis();
+			else
+				hideAxis();
 		});
-		
-		
-		controls.getChildren().addAll(home,ruler,clear);
+
+		controls.getChildren().addAll(home, ruler, clear);
 		return new Group(controls);
 	}
 
@@ -683,7 +683,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// Log.warning("Adding new axis");
 		return current;
 	}
-	
 
 	private void prepAllItems(ObservableList<MenuItem> items, EventHandler<MouseEvent> exited,
 			EventHandler<MouseEvent> entered) {
@@ -898,36 +897,38 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		ground = new Group();
 		ground.getTransforms().add(groundPlacment);
 		focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
-		
+
 		gridGroup.getChildren().addAll(yText, zText, xText, ground);
 		showAxis();
-		axisGroup.getChildren().addAll(focusGroup,userGroup);
-		world.getChildren().addAll(lookGroup,axisGroup);
-		
+		axisGroup.getChildren().addAll(focusGroup, userGroup);
+		world.getChildren().addAll(lookGroup, axisGroup);
 
 	}
-	public void addUserNode(Node n){
+
+	public void addUserNode(Node n) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 
-		Platform.runLater(()->userGroup.getChildren().add(n));
+		Platform.runLater(() -> userGroup.getChildren().add(n));
 	}
 
-	public void removeUserNode(Node n){
-		Platform.runLater(()->userGroup.getChildren().remove(n));
+	public void removeUserNode(Node n) {
+		Platform.runLater(() -> userGroup.getChildren().remove(n));
 	}
-	public void clearUserNode(){
-		Platform.runLater(()->userGroup.getChildren().clear());
+
+	public void clearUserNode() {
+		Platform.runLater(() -> userGroup.getChildren().clear());
 	}
-	
-	public void showAxis(){
-		Platform.runLater(()->axisGroup.getChildren().add(gridGroup));
-		for(MeshView a: axisMap.keySet()){
+
+	public void showAxis() {
+		Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
+		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).show();
 		}
 	}
-	public void hideAxis(){
-		Platform.runLater(()->axisGroup.getChildren().remove(gridGroup));
-		for(MeshView a: axisMap.keySet()){
+
+	public void hideAxis() {
+		Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
+		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).hide();
 		}
 	}
@@ -1015,9 +1016,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				} else if (me.isMiddleButtonDown()) {
 
 				} else if (me.isSecondaryButtonDown()) {
-					double depth = -100/getVirtualcam().getZoomDepth() ;
-					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1/depth,
-							mouseDeltaY * modifierFactor * modifier * 1/depth, 0, new RotationNR()), 0);
+					double depth = -100 / getVirtualcam().getZoomDepth();
+					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
+							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()), 0);
 				}
 			}
 		});
@@ -1027,13 +1028,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ScrollEvent t) {
 				if (ScrollEvent.SCROLL == t.getEventType()) {
 
-					 double zoomFactor =- (t.getDeltaY())*getVirtualcam().getZoomDepth()/3000;
+					double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 3000;
 					//
 					// double z = camera.getTranslateY();
 					// double newZ = z + zoomFactor;
 					// camera.setTranslateY(newZ);
-					 //System.out.println("Z = "+zoomFactor);
-					
+					// System.out.println("Z = "+zoomFactor);
+
 					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 				}
 				t.consume();
@@ -1048,31 +1049,33 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	private void selectObjectsSourceFile(CSG source) {
-		BowlerStudioController.getBowlerStudio().clearHighlits();
-		debuggerList.clear();
-		debuggerIndex = 0;
+		new Thread(() -> {
+			BowlerStudioController.getBowlerStudio().clearHighlits();
+			debuggerList.clear();
+			debuggerIndex = 0;
 
-		for (String ex : source.getCreationEventStackTraceList()) {
+			for (String ex : source.getCreationEventStackTraceList()) {
 
-			String fileName = getFilenameFromTrace(ex);
-			int linNum = getLineNumbereFromTrace(ex);
+				String fileName = getFilenameFromTrace(ex);
+				int linNum = getLineNumbereFromTrace(ex);
 
-			boolean duplicate = false;
-			for (String have : debuggerList) {
-				if (getFilenameFromTrace(have).contentEquals(fileName) && getLineNumbereFromTrace(have) == linNum)
-					duplicate = true;
+				boolean duplicate = false;
+				for (String have : debuggerList) {
+					if (getFilenameFromTrace(have).contentEquals(fileName) && getLineNumbereFromTrace(have) == linNum)
+						duplicate = true;
+				}
+				if (!duplicate)
+					debuggerList.add(0, ex);
+
+				lastFileSelected = fileName;
+				lastFileLine = linNum;
+
+				BowlerStudioController.getBowlerStudio().setHighlight(locateFile(fileName, source), linNum,
+						java.awt.Color.PINK);
+
 			}
-			if (!duplicate)
-				debuggerList.add(0, ex);
-
-			lastFileSelected = fileName;
-			lastFileLine = linNum;
-
-			BowlerStudioController.getBowlerStudio().setHighlight(locateFile(fileName, source), linNum,
-					java.awt.Color.PINK);
-
-		}
-		debuggerIndex = debuggerList.size() - 1;
+			debuggerIndex = debuggerList.size() - 1;
+		}).start();
 		// Platform.runLater(()->{
 		// fwd.disableProperty().set(false);
 		// back.disableProperty().set(true);

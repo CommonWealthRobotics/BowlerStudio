@@ -68,30 +68,17 @@ public class FileChangeWatcher {
 
 	private static HashMap<String, FileChangeWatcher> activeListener = new HashMap<String, FileChangeWatcher>();
 	private Thread watcherThread = null;
-	static {
-		startThread();
 
-	}
 
-	/**
-	 * start the watcher thread
-	 */
-	public static void startThread() {
-		runThread = true;
 
-	}
-
-	/**
-	 * stop the watcher thread
-	 */
-	public static void stopThread() {
-		runThread = false;
-	}
 
 	/**
 	 * clear the listeners
 	 */
 	public static void clearAll() {
+		for(String key:activeListener.keySet()){
+			activeListener.get(key).close();
+		}
 		activeListener.clear();
 	}
 
@@ -138,7 +125,7 @@ public class FileChangeWatcher {
 		watcherThread = new Thread() {
 			public void run() {
 				setName("File Watcher Thread");
-				new Exception("Starting File Watcher Thread").printStackTrace();
+				//new Exception("Starting File Watcher Thread").printStackTrace();
 
 				while (run) {
 					try {
@@ -155,7 +142,7 @@ public class FileChangeWatcher {
 						e.printStackTrace();
 					}
 				}
-				new Exception("File Watcher Thread Died").printStackTrace();
+				//new Exception("File Watcher Thread Died").printStackTrace();
 			}
 		};
 		watcherThread.start();
@@ -182,6 +169,9 @@ public class FileChangeWatcher {
 	public void removeIFileChangeListener(IFileChangeListener l) {
 		if (listeners.contains(l)) {
 			listeners.remove(l);
+		}
+		if(listeners.size()==0){
+			close() ;
 		}
 	}
 
@@ -254,6 +244,8 @@ public class FileChangeWatcher {
 		} catch (InterruptedException x) {
 			return;
 		}
+		if(!run)
+			return;
 
 		Path dir = keys.get(key);
 		if (dir == null) {
@@ -338,7 +330,7 @@ public class FileChangeWatcher {
 	 * Close.
 	 */
 	public void close() {
-		new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
+		//new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
 		this.run = false;
 		try {
 			watcher.close();

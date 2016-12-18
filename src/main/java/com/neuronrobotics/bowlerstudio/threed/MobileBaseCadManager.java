@@ -362,7 +362,7 @@ public class MobileBaseCadManager {
 			return;
 		cadGenerating = true;
 		// new RuntimeException().printStackTrace();
-		new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 		new Thread(()->{
 			System.out.print("\r\nGenerating cad...");
 			// new Exception().printStackTrace();

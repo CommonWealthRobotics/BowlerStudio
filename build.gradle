@@ -122,8 +122,8 @@ repositories {
 dependencies {
 	//compile "com.neuronrobotics:JavaCad:0.8.2"
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	//compile "com.neuronrobotics:BowlerScriptingKernel:0.25.0"
-	compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.25.0.jar'])
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.25.1"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs')
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	//compile "org.jfxtras:jfxtras-common:8.0-r4"
 	//compile "org.jfxtras:jfxtras-fxml:8.0-r4"
@@ -144,6 +144,8 @@ dependencies {
 	//compile group: 'com.nativelibs4java', name: 'jnaerator', version: '0.11'
 	// https://mvnrepository.com/artifact/com.github.kurbatov/firmata4j
 	compile group: 'com.github.kurbatov', name: 'firmata4j', version: '2.3.1'
+	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
+	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.0'
 
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
