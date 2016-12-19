@@ -146,8 +146,11 @@ dependencies {
 	//compile group: 'com.nativelibs4java', name: 'jnaerator', version: '0.11'
 	// https://mvnrepository.com/artifact/com.github.kurbatov/firmata4j
 	compile group: 'com.github.kurbatov', name: 'firmata4j', version: '2.3.1'
+		
 	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
 	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.0'
+		
+	compile "com.neuronrobotics:java-bowler:3.23.0"
 
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
