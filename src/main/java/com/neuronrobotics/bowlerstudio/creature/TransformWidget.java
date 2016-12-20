@@ -47,10 +47,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		
 		RotationNR rot = initialState.getRotation();
 		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationElevation()), 100,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, Math.toDegrees(rot.getRotationElevation()), 50,"degrees");
 		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
-		getColumnConstraints().add(new ColumnConstraints(15)); // translate text
-	    getColumnConstraints().add(new ColumnConstraints(130)); // translate values
+		getColumnConstraints().add(new ColumnConstraints(40)); // translate text
+	    getColumnConstraints().add(new ColumnConstraints(160)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
 	    getColumnConstraints().add(new ColumnConstraints(40)); // rotate text
 	    setHgap(20);// gab between elements
