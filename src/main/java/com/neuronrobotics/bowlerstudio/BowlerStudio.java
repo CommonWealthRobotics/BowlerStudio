@@ -87,6 +87,7 @@ public class BowlerStudio extends Application {
 			Platform.runLater(() -> {
 				if (getLogViewRefStatic() != null)
 					getLogViewRefStatic().appendText(valueOf);
+				
 			});
 			System.err.print(valueOf);
 			

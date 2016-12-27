@@ -106,6 +106,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 				getUpdateManager().update(timeStep);
 			}catch(Exception e){
 				BowlerStudio.printStackTrace(e);
+				throw e;
 			}
 		}
 	}
