@@ -854,8 +854,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												openGits.remove(s);
 												System.err.println("Removing missing "+s);
 											}
-										} catch (GitAPIException | IOException | ArrayIndexOutOfBoundsException
-												| ClassCastException e) {
+										} catch (Exception e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 											openGits.clear();
