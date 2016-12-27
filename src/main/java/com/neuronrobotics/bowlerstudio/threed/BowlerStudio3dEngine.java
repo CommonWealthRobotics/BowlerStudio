@@ -251,7 +251,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private int lastFileLine = 0;
 	private File defaultStlDir;
 	private TransformNR defautcameraView;
-	private static final TransformNR offsetForVisualization = new TransformNR(0, 0, 0, new RotationNR(0, 90, 90));
+	private static final TransformNR offsetForVisualization = new TransformNR(0, 0, 0, new RotationNR(0, 89.99, 89.99));
 
 	private Button back;
 
