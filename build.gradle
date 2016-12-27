@@ -122,8 +122,8 @@ repositories {
 dependencies {
 	//compile "com.neuronrobotics:JavaCad:0.8.2"
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.25.2"
-	//compile fileTree (dir: '../bowler-script-kernel/build/libs')
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.25.4"
+	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.25.4.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	//compile "org.jfxtras:jfxtras-common:8.0-r4"
 	//compile "org.jfxtras:jfxtras-fxml:8.0-r4"
@@ -150,7 +150,6 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
 	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.0'
 		
-	compile "com.neuronrobotics:java-bowler:3.23.0"
 
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
