@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import com.bulletphysics.dynamics.constraintsolver.HingeConstraint;
 import com.bulletphysics.dynamics.vehicle.RaycastVehicle;
+import com.bulletphysics.dynamics.vehicle.WheelInfo;
 import com.bulletphysics.linearmath.Transform;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.IClosedLoopController;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -12,38 +14,39 @@ import javafx.application.Platform;
 import javafx.scene.paint.Color;
 
 public class WheelCSGPhysicsManager extends CSGPhysicsManager{
-	private HingeConstraint constraint=null;
 	private IClosedLoopController controller=null;
 	private double target=0;
 	private static float muscleStrength=(float) 1000;
 	boolean flagBroken=false;
 	private double velocity;
 	private RaycastVehicle vehicle;
-	public WheelCSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose, double mass,PhysicsCore c, RaycastVehicle v) {
+	private int wheelIndex;
+	private WheelInfo wheel;
+	public WheelCSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose, double mass,PhysicsCore c, RaycastVehicle v, int wheelIndex) {
 		super(baseCSG, pose, mass,false,c);
 		this.vehicle = v;
-
+		this.wheelIndex = wheelIndex;
+		setWheelInfo(vehicle.getWheelInfo(wheelIndex));
+		
 	}
 
 	@Override
 	public void update(float timeStep){		
 		super.update(timeStep);
-		if(constraint!=null&&getController()!=null &&!flagBroken){
-			velocity = getController().compute(constraint.getHingeAngle(), getTarget(),timeStep);
-			constraint.enableAngularMotor(true, (float) velocity, getMotorStrength());
-			if(constraint.getAppliedImpulse()>getMotorStrength()){
-				for(CSG c1:baseCSG){
-					c1.setColor(Color.WHITE);
-				}
-				flagBroken=true;
-				getCore().remove(this);
-				getCore().add (this);
-				System.out.println("ERROR Link Broken, Strength: "+getMotorStrength()+" applied impluse "+constraint.getAppliedImpulse());
+		if(getController()!=null){
+			velocity = getController().compute(getWheelInfo().deltaRotation, getTarget(),timeStep);
+			if(Math.abs(velocity)>0.0001){
+				vehicle.applyEngineForce((float) velocity, wheelIndex);
+				vehicle.setBrake(0.f, wheelIndex);
+			}else{
+				vehicle.applyEngineForce(0.f, wheelIndex);
+				vehicle.setBrake(1000.f, wheelIndex);
 			}
-		}else if (constraint!=null && flagBroken){
-			constraint.enableAngularMotor(false, 0, 0);
 		}
-		//System.out.println("Constraint = "+constraint+" controller= "+getController()+" broken= "+flagBroken);
+		vehicle.updateWheelTransform(wheelIndex, true);
+		TransformNR trans = TransformFactory.bulletToNr(vehicle.getWheelInfo(wheelIndex).worldTransform);
+		//copy in the current wheel location
+		TransformFactory.nrToBullet(trans, getUpdateTransform());
 	}
 
 	public double getTarget() {
@@ -66,6 +69,14 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager{
 	}
 	public void setController(IClosedLoopController controller) {
 		this.controller = controller;
+	}
+
+	public WheelInfo getWheelInfo() {
+		return wheel;
+	}
+
+	public void setWheelInfo(WheelInfo wheel) {
+		this.wheel = wheel;
 	}
 
 }

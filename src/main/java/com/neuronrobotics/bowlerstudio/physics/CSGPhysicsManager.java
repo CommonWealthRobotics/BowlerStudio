@@ -86,8 +86,9 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	}
 	public void setup(CollisionShape fallShape,Transform pose, double mass, PhysicsCore core ){
 		this.setCore(core);
+		
 		// setup the motion state for the ball
-		System.out.println("Starting Object at "+pose);
+		System.out.println("Starting Object at "+TransformFactory.bulletToNr(pose));
 		DefaultMotionState fallMotionState = new DefaultMotionState(
 				pose);
 		// This we're going to give mass so it responds to gravity
