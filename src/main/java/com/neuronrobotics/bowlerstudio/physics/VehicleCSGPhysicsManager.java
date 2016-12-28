@@ -27,6 +27,8 @@ import com.bulletphysics.dynamics.vehicle.VehicleTuning;
 import com.bulletphysics.dynamics.vehicle.WheelInfo;
 import com.bulletphysics.linearmath.Transform;
 import com.bulletphysics.util.ObjectArrayList;
+import com.neuronrobotics.sdk.common.IClosedLoopController;
+
 import javax.vecmath.Vector3f;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -76,7 +78,6 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager{
 	public VehicleRaycaster vehicleRayCaster;
 	private RaycastVehicle vehicle;
 
-
 	public VehicleCSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose, double mass, boolean adjustCenter,
 			PhysicsCore core) {
 		super(baseCSG, pose, mass, adjustCenter, core);
@@ -103,5 +104,6 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager{
 	public void setVehicle(RaycastVehicle vehicle) {
 		this.vehicle = vehicle;
 	}
+
 
 }
