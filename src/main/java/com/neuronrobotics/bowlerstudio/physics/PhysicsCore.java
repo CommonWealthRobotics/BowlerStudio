@@ -24,7 +24,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
 
 public class PhysicsCore {
-	
+
 	private BroadphaseInterface broadphase = new DbvtBroadphase();
 	private DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
 	private CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
@@ -34,24 +34,25 @@ public class PhysicsCore {
 	private DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver,
 			collisionConfiguration);
 	// setup our collision shapes
-	private CollisionShape groundShape =null;
-	
-	private ArrayList<IPhysicsManager> objects =new ArrayList<>();
+	private CollisionShape groundShape = null;
+
+	private ArrayList<IPhysicsManager> objects = new ArrayList<>();
 	private RigidBody groundRigidBody;
-	
-	private  boolean runEngine = false;
-	private  int msTime=16;
-	
-	private  Thread physicsThread = null;
+
+	private boolean runEngine = false;
+	private int msTime = 16;
+
+	private Thread physicsThread = null;
 	private int simulationSubSteps = 5;
 	private float lin_damping;
 	private float ang_damping;
 	private float linearSleepThreshhold;
 	private float angularSleepThreshhold;
 	private float deactivationTime;
+
 	public PhysicsCore() throws Exception {
 		// set the gravity of our world
-		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98*MobileBasePhysicsManager.PhysicsGravityScalar));
+		getDynamicsWorld().setGravity(new Vector3f(0, 0, (float) -98 * MobileBasePhysicsManager.PhysicsGravityScalar));
 
 		setGroundShape(new StaticPlaneShape(new Vector3f(0, 0, 10), 1));
 	}
@@ -59,7 +60,6 @@ public class PhysicsCore {
 	public BroadphaseInterface getBroadphase() {
 		return broadphase;
 	}
-
 
 	public void setBroadphase(BroadphaseInterface broadphase) {
 		this.broadphase = broadphase;
@@ -101,9 +101,11 @@ public class PhysicsCore {
 		return groundShape;
 	}
 
-	public void setGroundShape(CollisionShape cs ){
-		if(groundRigidBody!=null){
-			getDynamicsWorld().removeRigidBody(groundRigidBody); // add our ground to the
+	public void setGroundShape(CollisionShape cs) {
+		if (groundRigidBody != null) {
+			getDynamicsWorld().removeRigidBody(groundRigidBody); // add our
+																	// ground to
+																	// the
 		}
 		this.groundShape = cs;
 		// setup the motion state
@@ -119,24 +121,26 @@ public class PhysicsCore {
 	public ArrayList<IPhysicsManager> getPhysicsObjects() {
 		return objects;
 	}
-	public  void setDamping (float lin_damping, float ang_damping){
-		this.lin_damping=(lin_damping);
-		this.ang_damping=(ang_damping);
-		for(IPhysicsManager m:getPhysicsObjects()){
+
+	public void setDamping(float lin_damping, float ang_damping) {
+		this.lin_damping = (lin_damping);
+		this.ang_damping = (ang_damping);
+		for (IPhysicsManager m : getPhysicsObjects()) {
 			m.getFallRigidBody().setDamping(lin_damping, ang_damping);
 		}
 	}
-	public  void setSleepingThresholds (float linearSleepThreshhold, float angularSleepThreshhold){
-		this.linearSleepThreshhold=(linearSleepThreshhold);
-		this.angularSleepThreshhold=(angularSleepThreshhold);
-		for(IPhysicsManager m:getPhysicsObjects()){
-			m.getFallRigidBody().setSleepingThresholds ( linearSleepThreshhold,  angularSleepThreshhold);
+
+	public void setSleepingThresholds(float linearSleepThreshhold, float angularSleepThreshhold) {
+		this.linearSleepThreshhold = (linearSleepThreshhold);
+		this.angularSleepThreshhold = (angularSleepThreshhold);
+		for (IPhysicsManager m : getPhysicsObjects()) {
+			m.getFallRigidBody().setSleepingThresholds(linearSleepThreshhold, angularSleepThreshhold);
 		}
 	}
 
-	public  void setDeactivationTime (float deactivationTime){
+	public void setDeactivationTime(float deactivationTime) {
 		this.deactivationTime = deactivationTime;
-		for(IPhysicsManager m:getPhysicsObjects()){
+		for (IPhysicsManager m : getPhysicsObjects()) {
 			m.getFallRigidBody().setDeactivationTime(deactivationTime);
 		}
 	}
@@ -144,21 +148,22 @@ public class PhysicsCore {
 	public void setObjects(ArrayList<IPhysicsManager> objects) {
 		this.objects = objects;
 	}
-	public void startPhysicsThread(int ms){
-		msTime=ms;
-		if(physicsThread==null){
-			runEngine=true;
-			physicsThread=new Thread(()->{
-				while(runEngine){
-					try{
+
+	public void startPhysicsThread(int ms) {
+		msTime = ms;
+		if (physicsThread == null) {
+			runEngine = true;
+			physicsThread = new Thread(() -> {
+				while (runEngine) {
+					try {
 						long start = System.currentTimeMillis();
 						stepMs(msTime);
 						long took = (System.currentTimeMillis() - start);
 						if (took < msTime)
 							ThreadUtil.wait((int) (msTime - took));
 						else
-							System.out.println("Real time physics broken: "+took);
-					}catch(Exception E){
+							System.out.println("Real time physics broken: " + took);
+					} catch (Exception E) {
 						E.printStackTrace();
 					}
 				}
@@ -166,82 +171,98 @@ public class PhysicsCore {
 			physicsThread.start();
 		}
 	}
-	public  ArrayList<CSG> getCsgFromEngine(){
+
+	public ArrayList<CSG> getCsgFromEngine() {
 		ArrayList<CSG> csg = new ArrayList<>();
-		for(IPhysicsManager o:getPhysicsObjects()){
-			for(CSG c:o.getBaseCSG())
-					csg.add(c);
+		for (IPhysicsManager o : getPhysicsObjects()) {
+			for (CSG c : o.getBaseCSG())
+				csg.add(c);
 		}
 		return csg;
 	}
-	public void stopPhysicsThread(){
-		physicsThread=null;
-		runEngine=false;
+
+	public void stopPhysicsThread() {
+		physicsThread = null;
+		runEngine = false;
 	}
-	public  void step(float timeStep){
+
+	public void step(float timeStep) {
 		long startTime = System.currentTimeMillis();
-		 
-		getDynamicsWorld().stepSimulation(timeStep , getSimulationSubSteps());
-		if( (((float)(System.currentTimeMillis()- startTime))/1000.0f)>timeStep){
-			//System.out.println(" Compute took too long "+timeStep);
+
+		getDynamicsWorld().stepSimulation(timeStep, getSimulationSubSteps());
+		if ((((float) (System.currentTimeMillis() - startTime)) / 1000.0f) > timeStep) {
+			// System.out.println(" Compute took too long "+timeStep);
 		}
-		for(IPhysicsManager o: getPhysicsObjects()){
-			o.update( timeStep);
+		for (IPhysicsManager o : getPhysicsObjects()) {
+			o.update(timeStep);
 		}
-		for(IPhysicsManager o: getPhysicsObjects())
-			Platform.runLater(()->TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform()));
+		for (IPhysicsManager o : getPhysicsObjects())
+			Platform.runLater(() -> TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform()));
 	}
-	
-	public  void stepMs(double timeStep){
+
+	public void stepMs(double timeStep) {
 		step((float) (timeStep / 1000.0));
 	}
-	
-	public  void add(IPhysicsManager manager){
-		if(! getPhysicsObjects().contains(manager)){
-			 getPhysicsObjects().add(manager);
-			 getDynamicsWorld().addRigidBody(manager.getFallRigidBody());
-			if(HingeCSGPhysicsManager.class.isInstance(manager)){
-				if(((HingeCSGPhysicsManager) manager).getConstraint()!=null)
-					 getDynamicsWorld().addConstraint(((HingeCSGPhysicsManager) manager).getConstraint(), true);
+
+	public void add(IPhysicsManager manager) {
+		if (!getPhysicsObjects().contains(manager)) {
+			getPhysicsObjects().add(manager);
+			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
+				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
+					getDynamicsWorld().addConstraint(((HingeCSGPhysicsManager) manager).getConstraint(), true);
 			}
-			if(VehicleCSGPhysicsManager.class.isInstance(manager)){
-				 getDynamicsWorld().addVehicle(((VehicleCSGPhysicsManager)manager).getVehicle());
+			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().addVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-		}
-	}
-	
-	public  void remove(IPhysicsManager manager){
-		if( getPhysicsObjects().contains(manager)){
-			 getPhysicsObjects().remove(manager);
-			 getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
-			if(HingeCSGPhysicsManager.class.isInstance(manager)){
-				if(((HingeCSGPhysicsManager) manager).getConstraint()!=null)
-					 getDynamicsWorld().removeConstraint(((HingeCSGPhysicsManager) manager).getConstraint());
-			}
-			if(VehicleCSGPhysicsManager.class.isInstance(manager)){
-				 getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager)manager).getVehicle());
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().addRigidBody(manager.getFallRigidBody());
 			}
 		}
 	}
-	public  void clear(){
-		stopPhysicsThread();
-		ThreadUtil.wait((int) (msTime*2));
-		for(IPhysicsManager manager:getPhysicsObjects()){
-			getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
-			if(HingeCSGPhysicsManager.class.isInstance(manager)){
-				if(((HingeCSGPhysicsManager) manager).getConstraint()!=null)
+
+	public void remove(IPhysicsManager manager) {
+		if (getPhysicsObjects().contains(manager)) {
+			getPhysicsObjects().remove(manager);
+			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
+				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
 					getDynamicsWorld().removeConstraint(((HingeCSGPhysicsManager) manager).getConstraint());
 			}
-			if(VehicleCSGPhysicsManager.class.isInstance(manager)){
-				 getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager)manager).getVehicle());
+			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
+			}
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
+			}
+		}
+	}
+
+	public void clear() {
+		stopPhysicsThread();
+		ThreadUtil.wait((int) (msTime * 2));
+		for (IPhysicsManager manager : getPhysicsObjects()) {
+			getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
+			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
+				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
+					getDynamicsWorld().removeConstraint(((HingeCSGPhysicsManager) manager).getConstraint());
+			}
+			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
+			}
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
 			}
 		}
 		getPhysicsObjects().clear();
-		
+
 	}
+
 	public int getSimulationSubSteps() {
 		return simulationSubSteps;
 	}
+
 	public float getDeactivationTime() {
 		return deactivationTime;
 	}

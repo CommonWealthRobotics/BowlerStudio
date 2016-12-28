@@ -32,6 +32,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	protected ArrayList<CSG> baseCSG=null;
 	private Transform updateTransform = new Transform();
 	private IPhysicsUpdate updateManager = null;
+	private PhysicsCore core;
 
 	public CSGPhysicsManager(ArrayList<CSG> baseCSG, Vector3f start, double mass,PhysicsCore core){
 		this(baseCSG,new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)),mass,true, core);
@@ -84,6 +85,7 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 		setup(fallShape,pose,mass,core);
 	}
 	public void setup(CollisionShape fallShape,Transform pose, double mass, PhysicsCore core ){
+		this.setCore(core);
 		// setup the motion state for the ball
 		System.out.println("Starting Object at "+pose);
 		DefaultMotionState fallMotionState = new DefaultMotionState(
@@ -145,6 +147,14 @@ public class CSGPhysicsManager  implements IPhysicsManager{
 	}
 	public void setUpdateManager(IPhysicsUpdate updateManager) {
 		this.updateManager = updateManager;
+	}
+
+	public PhysicsCore getCore() {
+		return core;
+	}
+
+	public void setCore(PhysicsCore core) {
+		this.core = core;
 	}
 
 
