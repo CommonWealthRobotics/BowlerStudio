@@ -95,7 +95,8 @@ public class BowlerStudio extends Application {
 	
 	    public void write(int b) throws IOException {
 	        appendText(String.valueOf((char)b));
-
+//	        if(b=='[')
+//	        	new RuntimeException().printStackTrace();
 	    }
 	}
 	public static OutputStream getOut() {
