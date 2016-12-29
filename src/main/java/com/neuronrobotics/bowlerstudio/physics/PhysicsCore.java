@@ -207,6 +207,10 @@ public class PhysicsCore {
 	public void add(IPhysicsManager manager) {
 		if (!getPhysicsObjects().contains(manager)) {
 			getPhysicsObjects().add(manager);
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().addRigidBody(manager.getFallRigidBody());
+			}
 			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
 				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
 					getDynamicsWorld().addConstraint(((HingeCSGPhysicsManager) manager).getConstraint(), true);
@@ -214,16 +218,18 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().addVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			if (!WheelCSGPhysicsManager.class.isInstance(manager)
-					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
-				getDynamicsWorld().addRigidBody(manager.getFallRigidBody());
-			}
+			
 		}
 	}
 
 	public void remove(IPhysicsManager manager) {
 		if (getPhysicsObjects().contains(manager)) {
 			getPhysicsObjects().remove(manager);
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				
+				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
+			}
 			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
 				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
 					getDynamicsWorld().removeConstraint(((HingeCSGPhysicsManager) manager).getConstraint());
@@ -231,10 +237,7 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			if (!WheelCSGPhysicsManager.class.isInstance(manager)
-					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
-				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
-			}
+			
 		}
 	}
 
@@ -242,7 +245,10 @@ public class PhysicsCore {
 		stopPhysicsThread();
 		ThreadUtil.wait((int) (msTime * 2));
 		for (IPhysicsManager manager : getPhysicsObjects()) {
-			getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
+			if (!WheelCSGPhysicsManager.class.isInstance(manager)
+					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
+				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
+			}
 			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
 				if (((HingeCSGPhysicsManager) manager).getConstraint() != null)
 					getDynamicsWorld().removeConstraint(((HingeCSGPhysicsManager) manager).getConstraint());
@@ -250,10 +256,7 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			if (!WheelCSGPhysicsManager.class.isInstance(manager)
-					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
-				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
-			}
+			
 		}
 		getPhysicsObjects().clear();
 
