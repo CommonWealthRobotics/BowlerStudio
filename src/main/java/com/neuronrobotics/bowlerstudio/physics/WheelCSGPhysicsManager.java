@@ -2,16 +2,15 @@ package com.neuronrobotics.bowlerstudio.physics;
 
 import java.util.ArrayList;
 
-import com.bulletphysics.dynamics.constraintsolver.HingeConstraint;
 import com.bulletphysics.dynamics.vehicle.RaycastVehicle;
 import com.bulletphysics.dynamics.vehicle.WheelInfo;
 import com.bulletphysics.linearmath.Transform;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.IClosedLoopController;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
-import javafx.application.Platform;
-import javafx.scene.paint.Color;
 
 public class WheelCSGPhysicsManager extends CSGPhysicsManager{
 	private IClosedLoopController controller=null;
@@ -20,33 +19,33 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager{
 	boolean flagBroken=false;
 	private double velocity;
 	private RaycastVehicle vehicle;
-	private int wheelIndex;
-	private WheelInfo wheel;
+	private final int wheelIndex;
 	public WheelCSGPhysicsManager(ArrayList<CSG> baseCSG, Transform pose, double mass,PhysicsCore c, RaycastVehicle v, int wheelIndex) {
 		super(baseCSG, pose, mass,false,c);
 		this.vehicle = v;
-		this.wheelIndex = wheelIndex;
-		setWheelInfo(vehicle.getWheelInfo(wheelIndex));
-		
+		this.wheelIndex = wheelIndex;	
 	}
 
 	@Override
-	public void update(float timeStep){		
-		super.update(timeStep);
-		if(getController()!=null){
-			velocity = getController().compute(getWheelInfo().deltaRotation, getTarget(),timeStep);
-			if(Math.abs(velocity)>0.0001){
-				vehicle.applyEngineForce((float) velocity, wheelIndex);
-				vehicle.setBrake(0.f, wheelIndex);
-			}else{
-				vehicle.applyEngineForce(0.f, wheelIndex);
-				vehicle.setBrake(1000.f, wheelIndex);
+	public void update(float timeStep){	
+		//cut out the falling body update
+		if(getUpdateManager()!=null){
+			try{
+				getUpdateManager().update(timeStep);
+			}catch(Exception e){
+				BowlerStudio.printStackTrace(e);
+				throw e;
 			}
 		}
-		vehicle.updateWheelTransform(wheelIndex, true);
-		TransformNR trans = TransformFactory.bulletToNr(vehicle.getWheelInfo(wheelIndex).worldTransform);
+		if(getController()!=null){
+			velocity = getController().compute(getWheelInfo().deltaRotation, getTarget(),timeStep);
+			
+		}
+		vehicle.updateWheelTransform(getWheelIndex(), true);
+		TransformNR trans = TransformFactory.bulletToNr(vehicle.getWheelInfo(getWheelIndex()).worldTransform);
 		//copy in the current wheel location
 		TransformFactory.nrToBullet(trans, getUpdateTransform());
+		ThreadUtil.wait(16);
 	}
 
 	public double getTarget() {
@@ -72,11 +71,13 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager{
 	}
 
 	public WheelInfo getWheelInfo() {
-		return wheel;
+		return vehicle.getWheelInfo(getWheelIndex());
 	}
 
-	public void setWheelInfo(WheelInfo wheel) {
-		this.wheel = wheel;
+	public int getWheelIndex() {
+		return wheelIndex;
 	}
+
+	
 
 }
