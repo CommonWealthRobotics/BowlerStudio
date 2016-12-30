@@ -4,29 +4,6 @@ package com.neuronrobotics.bowlerstudio;
  * You can copy and paste this code into your favorite IDE
  **/
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
-
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-import org.reactfx.util.FxTimer;
-
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -42,21 +19,27 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import eu.mihosoft.vrl.v3d.Polygon;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.*;
+import org.reactfx.util.FxTimer;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.*;
 
 public class BowlerStudioMenu implements MenuRefreshEvent {
 
@@ -647,18 +630,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	@FXML
 	public void onCreatenewGist(ActionEvent event) {
 		Stage s = new Stage();
-		new Thread() {
-			public void run() {
-				AddFileToGistController controller = new AddFileToGistController(null, selfRef);
+		new Thread(() ->
+        {
+            AddFileToGistController controller = new AddFileToGistController(null, selfRef);
 
-				try {
-					controller.start(s);
-					setToLoggedIn(name);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+            try {
+                controller.start(s);
+                setToLoggedIn(name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 	}
 
 	@FXML
@@ -682,19 +664,37 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK) {
-				new Thread() {
-					public void run() {
-						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/");
-						deleteFolder(cache);
-						System.exit(0);
-					}
-				}.start();
+				new Thread(() ->
+                {
+                    File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/");
+                    deleteFolder(cache);
+                    System.exit(0);
+                }).start();
 			} else {
 				System.out.println("Nothing was deleted");
 			}
 		});
 
 	}
+
+    @FXML
+    public void changeAssetRepoButtonPressed(ActionEvent event)
+    {
+        Stage s = new Stage();
+        new Thread(() ->
+        {
+            ChangeAssetRepoController controller = new ChangeAssetRepoController();
+
+            try
+            {
+                controller.start(s);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
 	private static void deleteFolder(File folder) {
 
