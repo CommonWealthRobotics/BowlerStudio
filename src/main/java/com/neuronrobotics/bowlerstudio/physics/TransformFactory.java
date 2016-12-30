@@ -68,7 +68,6 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
 		nrToBullet(nr,bullet);
 	}
 	public static eu.mihosoft.vrl.v3d.Transform  nrToCSG(TransformNR nr){
-		Matrix vals =nr.getMatrixTransform();
 		Quat4d q1 = new Quat4d();
 		q1.w=nr.getRotation().getRotationMatrix2QuaturnionW();
 		q1.x=nr.getRotation().getRotationMatrix2QuaturnionX();

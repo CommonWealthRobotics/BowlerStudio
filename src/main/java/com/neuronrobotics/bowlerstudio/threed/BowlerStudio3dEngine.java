@@ -53,7 +53,6 @@ import org.reactfx.util.FxTimer;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
-import com.neuronrobotics.bowlerstudio.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
@@ -889,6 +888,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		zp.setTx(25);
 		zp.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
+		
 		Label zText = new Label("+Z");
 		zText.getTransforms().add(zp);
 		Affine groundPlacment = new Affine();
