@@ -29,11 +29,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField ty;
 //	private TextField tz;
 	private TransformNR initialState;
-	private TransformNR offset =new TransformNR();
 	
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
-		this.initialState = offset.times(is);
+		this.initialState = is;
 		this.onChange = onChange;
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
@@ -46,9 +45,27 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
 		
 		RotationNR rot = initialState.getRotation();
-		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationTilt()), 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, Math.toDegrees(rot.getRotationElevation()), 50,"degrees");
-		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, Math.toDegrees(rot.getRotationAzimuth()), 100,"degrees");
+		double  t=0;
+		try{
+			t=Math.toDegrees(rot.getRotationTilt());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		double  e=0;
+		try{
+			e=Math.toDegrees(rot.getRotationElevation());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		double  a=0;
+		try{
+			a=Math.toDegrees(rot.getRotationAzimuth());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 50,"degrees");
+		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100,"degrees");
 		getColumnConstraints().add(new ColumnConstraints(40)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(160)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(50)); // units
@@ -108,7 +125,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 						));
 
 		
-		return offset.inverse().times(tmp);
+		return tmp;
 	}
 
 	@Override
@@ -129,7 +146,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	}
 
 	public void updatePose(TransformNR p) {
-		TransformNR pose = offset.times(p);
+		TransformNR pose = p;
 		
 		Platform.runLater(() -> {
 			tx.setValue(pose.getX());
@@ -137,9 +154,27 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			tz.setValue(pose.getZ());
 		});
 		RotationNR rot = pose.getRotation();
-		tilt.setValue(Math.toDegrees(rot.getRotationTilt()));
-		elevation .setValue(Math.toDegrees(rot.getRotationElevation()));
-		azimeth .setValue(Math.toDegrees(rot.getRotationAzimuth()));
+		double  t=0;
+		try{
+			t=Math.toDegrees(rot.getRotationTilt());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		double  e=0;
+		try{
+			e=Math.toDegrees(rot.getRotationElevation());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		double  a=0;
+		try{
+			a=Math.toDegrees(rot.getRotationAzimuth());
+		}catch(Exception ex){
+			//ex.printStackTrace();
+		}
+		tilt.setValue(t);
+		elevation .setValue(e);
+		azimeth .setValue(a);
 	}
 
 }
