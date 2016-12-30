@@ -37,6 +37,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +154,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.util.Duration;
+//import javafx.util.Duration;
 import javafx.scene.Node;
 
 // TODO: Auto-generated Javadoc
@@ -250,7 +251,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private int lastFileLine = 0;
 	private File defaultStlDir;
 	private TransformNR defautcameraView;
-	//private static final TransformNR offsetForVisualization = new TransformNR(0, 0, 0, new RotationNR(0,0, 0));
+	// private static final TransformNR offsetForVisualization = new
+	// TransformNR(0, 0, 0, new RotationNR(0,0, 0));
 
 	private Button back;
 
@@ -263,6 +265,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	double color = 0;
 
 	private List<CSG> selectedSet = null;
+	private TransformNR perviousTarget = new TransformNR();
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -785,8 +788,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//TODO reorent the start camera
-		//moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, -127, 24)), 0);
+		// TODO reorent the start camera
+		// moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, -127, 24)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
 	}
 
@@ -833,7 +836,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// groundMove.setTz(-3);
 					groundMove.setTx(-ground.getHeight() / 2);
 					groundMove.setTy(-ground.getWidth() / 2);
-					
 
 					Affine zRuler = new Affine();
 					double scale = 0.25;
@@ -888,7 +890,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		zp.setTx(25);
 		zp.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		
+
 		Label zText = new Label("+Z");
 		zText.getTransforms().add(zp);
 		Affine groundPlacment = new Affine();
@@ -931,18 +933,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).hide();
 		}
-	}
-
-	public void cancelSelection() {
-		Platform.runLater(() -> focusGroup.getTransforms().clear());
-		for (CSG key : getCsgMap().keySet()) {
-
-			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
-		}
-
-		selectedSet = null;
-		this.selectedCsg = null;
-		// new Exception().printStackTrace();
 	}
 
 	/**
@@ -1008,15 +998,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// - mouseDeltaX * modifierFactor * modifier * 2.0); // +
 					// cameraXform.rx.setAngle(cameraXform.rx.getAngle()
 					// + mouseDeltaY * modifierFactor * modifier * 2.0); // -
-					//RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX * modifierFactor * modifier * 2.0);
-					//RotationNR roy = RotationNR.getRotationY(mouseDeltaY * modifierFactor * modifier * 2.);
-					TransformNR trans = new TransformNR(0, 0, 0,new RotationNR(
-							mouseDeltaY * modifierFactor * modifier * 2.0,
-							mouseDeltaX * modifierFactor * modifier * 2.0, 
-							0
-							
-							) );
-					
+					// RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX *
+					// modifierFactor * modifier * 2.0);
+					// RotationNR roy = RotationNR.getRotationY(mouseDeltaY *
+					// modifierFactor * modifier * 2.);
+					TransformNR trans = new TransformNR(0, 0, 0,
+							new RotationNR(mouseDeltaY * modifierFactor * modifier * 2.0,
+									mouseDeltaX * modifierFactor * modifier * 2.0, 0
+
+							));
+
 					if (me.isPrimaryButtonDown()) {
 						moveCamera(trans, 0);
 					}
@@ -1175,12 +1166,35 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		this.flyingCamera = flyingCamera;
 	}
 
-//	public static TransformNR getOffsetforvisualization() {
-//		return offsetForVisualization;
-//	}
+	// public static TransformNR getOffsetforvisualization() {
+	// return offsetForVisualization;
+	// }
 
 	public CSG getSelectedCsg() {
 		return selectedCsg;
+	}
+
+	public void cancelSelection() {
+		// Platform.runLater(() -> focusGroup.getTransforms().clear());
+		for (CSG key : getCsgMap().keySet()) {
+
+			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+		}
+
+		selectedSet = null;
+		this.selectedCsg = null;
+		// new Exception().printStackTrace();
+		TransformNR startSelectNr = perviousTarget.copy();
+		TransformNR targetNR = new TransformNR();
+		Affine interpolator = new Affine();
+		TransformFactory.nrToAffine(startSelectNr, interpolator);
+		Platform.runLater(() -> {
+			focusGroup.getTransforms().clear();
+			focusGroup.getTransforms().add(interpolator);
+
+			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, new Affine(), new Affine());
+
+		});
 	}
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
@@ -1205,13 +1219,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 	}
 
-	public void setSelectedCsg(CSG selectedCsg) {
-		if (selectedCsg == this.selectedCsg)
+	public void setSelectedCsg(CSG scg) {
+		if (scg == this.selectedCsg)
 			return;
+		Affine startSelect = new Affine();
+		if (selectedCsg != null)
+			startSelect = selectedCsg.getManipulator();
+		// cancelSelection();
 
-		cancelSelection();
+		for (CSG key : getCsgMap().keySet()) {
+
+			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+		}
+
+		selectedSet = null;
+		this.selectedCsg = null;
 		// System.err.println("Selecting one");
-		this.selectedCsg = selectedCsg;
+		this.selectedCsg = scg;
 
 		FxTimer.runLater(java.time.Duration.ofMillis(100),
 
@@ -1249,19 +1273,88 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		rotationOnlyCOmponentOfManipulator.setZ(0);
 		TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
 
+		// Platform.runLater(() -> {
+		// focusGroup.getTransforms().clear();
+		// if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+		// || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+		// || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+		// Platform.runLater(() -> {
+		// focusGroup.getTransforms().add(selectedCsg.getManipulator());
+		// focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation));
+		// });
+		//
+		// } else
+		// focusGroup.getTransforms().add(centering);
+		//
+		// });
+		System.err.println("Camera intrpolation start");
+		TransformNR startSelectNr = perviousTarget.copy();
+		TransformNR targetNR;// =
+								// TransformFactory.affineToNr(selectedCsg.getManipulator());
+		if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1 || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+				|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+			targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
+		} else {
+			targetNR = TransformFactory.affineToNr(centering);
+		}
+		Affine interpolator = new Affine();
+		interpolator.setTx(startSelectNr.getX());
+		interpolator.setTy(startSelectNr.getY());
+		interpolator.setTz(startSelectNr.getZ());
 		Platform.runLater(() -> {
 			focusGroup.getTransforms().clear();
-			if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-					|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-					|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-				Platform.runLater(() -> {
-					focusGroup.getTransforms().add(selectedCsg.getManipulator());
-					focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation));
-				});
-			} else
-				focusGroup.getTransforms().add(centering);
 
+			focusGroup.getTransforms().add(interpolator);
+
+			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, TransformFactory.nrToAffine(reverseRotation),
+					centering);
 		});
+
+	}
+
+	private void focusInterpolate(TransformNR start, TransformNR target, int depth, int targetDepth,
+			Affine interpolator, Affine correction, Affine centering) {
+		double depthScale = -(double) depth / (double) targetDepth;
+		double xIncrement = ((start.getX() - target.getX()) * depthScale) + start.getX();
+		double yIncrement = ((start.getY() - target.getY()) * depthScale) + start.getY();
+		double zIncrement = ((start.getZ() - target.getZ()) * depthScale) + start.getZ();
+
+		Platform.runLater(() -> {
+			interpolator.setTx(xIncrement);
+			interpolator.setTy(yIncrement);
+			interpolator.setTz(zIncrement);
+		});
+		System.err
+				.println("Interpolation step " + depth + " x " + xIncrement + " y " + yIncrement + " z " + zIncrement);
+		if (depth < targetDepth) {
+			FxTimer.runLater(Duration.ofMillis(16), () -> {
+				focusInterpolate(start, target, depth + 1, targetDepth, interpolator, correction, centering);
+			});
+		} else {
+			System.err.println("Camera intrpolation done");
+			Platform.runLater(() -> {
+				focusGroup.getTransforms().clear();
+				try{
+					if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+							|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+							|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+						//Platform.runLater(() -> {
+							focusGroup.getTransforms().add(selectedCsg.getManipulator());
+							focusGroup.getTransforms().add(correction);
+						//});
+	
+					} else
+						//Platform.runLater(() -> {
+							focusGroup.getTransforms().add(centering);
+						//});
+				}catch (Exception ex){
+					
+				}
+
+			});
+			perviousTarget = target.copy();
+		}
+
 	}
 
 	public HashMap<CSG, MeshView> getCsgMap() {
@@ -1299,7 +1392,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 		if (objsFromScriptLine.size() > 0) {
-			cancelSelection();
 			setSelectedCsg(objsFromScriptLine.get(0));
 			focusGroup.getTransforms().clear();
 			setSelectedCsg(objsFromScriptLine);
