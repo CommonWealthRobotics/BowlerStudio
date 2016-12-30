@@ -3,8 +3,8 @@ package com.neuronrobotics.bowlerstudio.threed;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
-import com.neuronrobotics.sdk.addons.kinematics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
@@ -18,37 +18,34 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	private static final int DEFAULT_ZOOM_DEPTH = -1500;
 	private PerspectiveCamera camera;
 	private Group hand;
-	private Group cameraFrame = new Group();
+	private final Group cameraFrame = new Group();
 	
 	private double zoomDepth = getDefaultZoomDepth();
 	private Affine zoomAffine = new Affine();
-	private Affine offset = TransformFactory.nrToAffine(
-			BowlerStudio3dEngine.getOffsetforvisualization()
+	private static final Affine offset = TransformFactory.nrToAffine(
+			new TransformNR(0, 0, 0, new RotationNR(0,0,0))
 			);
+	private Group manipulationFrame;
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
 		this.hand = hand;
 		this.setCamera(camera);
 		setScriptingName("virtualCameraDevice");
+	//System.out.println("Setting camera frame transform");
 		
+		manipulationFrame = new Group();
+			camera.getTransforms().add(zoomAffine);
+
+		cameraFrame.getTransforms().add(getOffset());
+		manipulationFrame.getChildren().addAll(camera, hand);
+		cameraFrame.getChildren().add(manipulationFrame);
+		//new RuntimeException().printStackTrace();
+		setZoomDepth(DEFAULT_ZOOM_DEPTH);
 	}
 	@Override
 	public void setGlobalPositionListener(Affine affine) {
 		super.setGlobalPositionListener(affine);
-		//System.out.println("Setting camera frame transform");
-		
-			Group manipulationFrame = new Group();
-			if(!camera.getTransforms().contains(zoomAffine))
-				camera.getTransforms().add(zoomAffine);
-			zoomAffine.setTz(getZoomDepth());
-			if(!getCameraFrame().getTransforms().contains(offset))
-				getCameraFrame().getTransforms().add(offset);
-			manipulationFrame.getTransforms().add(affine);
-	
-			
-			manipulationFrame.getChildren().addAll(camera, hand);
-			getCameraFrame().getChildren().add(manipulationFrame);
-			//new RuntimeException().printStackTrace();
-		
+		manipulationFrame.getTransforms().clear();
+		manipulationFrame.getTransforms().add(affine);
 	}
 	
 	@Override
@@ -83,9 +80,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	public Group getCameraFrame() {
 		return cameraFrame;
 	}
-	public void setCameraFrame(Group cameraFrame) {
-		this.cameraFrame = cameraFrame;
-	}
+
 	public double getZoomDepth() {
 		return zoomDepth;
 	}
@@ -103,6 +98,9 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	}
 	public static int getDefaultZoomDepth() {
 		return DEFAULT_ZOOM_DEPTH;
+	}
+	public static Affine getOffset() {
+		return offset;
 	}
 
 }

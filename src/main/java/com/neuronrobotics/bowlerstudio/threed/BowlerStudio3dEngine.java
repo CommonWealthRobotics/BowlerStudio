@@ -251,7 +251,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private int lastFileLine = 0;
 	private File defaultStlDir;
 	private TransformNR defautcameraView;
-	private static final TransformNR offsetForVisualization = new TransformNR(0, 0, 0, new RotationNR(0, 89.99, 89.99));
+	//private static final TransformNR offsetForVisualization = new TransformNR(0, 0, 0, new RotationNR(0,0, 0));
 
 	private Button back;
 
@@ -328,6 +328,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
+			getVirtualcam().setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
 			getFlyingCamera().updatePositions();
 		});
 
@@ -613,7 +614,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							try {
 								baseDirForFiles.createNewFile();
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 						try {
@@ -747,7 +747,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * Builds the scene.
 	 */
 	private void buildScene() {
-		world.rx.setAngle(-90);// point z upwards
+		world.ry.setAngle(-90);// point z upwards
 		world.ry.setAngle(180);// arm out towards user
 		getRoot().getChildren().add(world);
 	}
@@ -784,11 +784,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		try {
 			setFlyingCamera(new VirtualCameraMobileBase());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		moveCamera(new TransformNR(0, 0, 0, new RotationNR(24, -127, 0)), 0);
+		//TODO reorent the start camera
+		//moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, -127, 24)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
 	}
 
@@ -835,6 +834,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// groundMove.setTz(-3);
 					groundMove.setTx(-ground.getHeight() / 2);
 					groundMove.setTy(-ground.getWidth() / 2);
+					
+
 					Affine zRuler = new Affine();
 					double scale = 0.25;
 					// zRuler.setTx(-130*scale);
@@ -869,7 +870,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 					});
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -991,7 +991,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				mouseOldY = mousePosY;
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
-				mouseDeltaX = (mousePosX - mouseOldX);
+				mouseDeltaX =- (mousePosX - mouseOldX);
 				mouseDeltaY = (mousePosY - mouseOldY);
 
 				double modifier = 1.0;
@@ -1008,16 +1008,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// - mouseDeltaX * modifierFactor * modifier * 2.0); // +
 					// cameraXform.rx.setAngle(cameraXform.rx.getAngle()
 					// + mouseDeltaY * modifierFactor * modifier * 2.0); // -
+					//RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX * modifierFactor * modifier * 2.0);
+					//RotationNR roy = RotationNR.getRotationY(mouseDeltaY * modifierFactor * modifier * 2.);
+					TransformNR trans = new TransformNR(0, 0, 0,new RotationNR(
+							0,
+							mouseDeltaX * modifierFactor * modifier * 2.0, 
+							mouseDeltaY * modifierFactor * modifier * 2.0
+							
+							) );
+					
 					if (me.isPrimaryButtonDown()) {
-						moveCamera(new TransformNR(0, 0, 0, new RotationNR(mouseDeltaY * modifierFactor * modifier * 2.,
-								-mouseDeltaX * modifierFactor * modifier * 2.0, 0//
-						)), 0);
+						moveCamera(trans, 0);
 					}
 				} else if (me.isMiddleButtonDown()) {
 
 				} else if (me.isSecondaryButtonDown()) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
-					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
+					moveCamera(new TransformNR(-mouseDeltaX * modifierFactor * modifier * 1 / depth,
 							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()), 0);
 				}
 			}
@@ -1028,7 +1035,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ScrollEvent t) {
 				if (ScrollEvent.SCROLL == t.getEventType()) {
 
-					double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 3000;
+					double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
 					//
 					// double z = camera.getTranslateY();
 					// double newZ = z + zoomFactor;
@@ -1168,9 +1175,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		this.flyingCamera = flyingCamera;
 	}
 
-	public static TransformNR getOffsetforvisualization() {
-		return offsetForVisualization;
-	}
+//	public static TransformNR getOffsetforvisualization() {
+//		return offsetForVisualization;
+//	}
 
 	public CSG getSelectedCsg() {
 		return selectedCsg;

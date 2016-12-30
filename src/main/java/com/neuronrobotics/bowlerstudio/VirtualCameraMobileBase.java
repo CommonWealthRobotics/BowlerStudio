@@ -36,27 +36,33 @@ public class VirtualCameraMobileBase extends MobileBase {
 			
 			@Override
 			public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
-				TransformNR pureTrans = newPose.copy();
-				pureTrans.setRotation(new RotationNR());
-				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
-				
-				double az = Math.toDegrees(newPose.getRotation().getRotationAzimuth()+global.getRotation().getRotationAzimuth());
-				double el = Math.toDegrees(newPose.getRotation().getRotationElevation()+global.getRotation().getRotationElevation());
-				double tl = Math.toDegrees(newPose.getRotation().getRotationTilt()+global.getRotation().getRotationTilt());
-				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
-				global = new TransformNR(global.getX(),
-						global.getY(),
-						global.getZ(),
-						new RotationNR(	tl,
-										az, 
-										0//el
-										));
-				// New target calculated appliaed to global offset
-				source.setGlobalToFiducialTransform(global);
-				int debug = Log.getMinimumPrintLevel();
-				Log.enableWarningPrint();
-				//System.out.println(this.getClass().getSimpleName()+"Setting camera to: "+global);
-				Log.setMinimumPrintLevel(debug);
+				try{
+					TransformNR pureTrans = newPose.copy();
+					pureTrans.setRotation(new RotationNR());
+					TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
+					
+					double az = Math.toDegrees(newPose.getRotation().getRotationAzimuth()+global.getRotation().getRotationAzimuth());
+					double el = Math.toDegrees(newPose.getRotation().getRotationElevation()+global.getRotation().getRotationElevation());
+					double tl = Math.toDegrees(newPose.getRotation().getRotationTilt()+global.getRotation().getRotationTilt());
+					if(el>=89.0){
+						el=89.0;
+					}if(el<=-89.0){
+						el=-89.0;
+					}
+					//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
+					global = new TransformNR(global.getX(),
+							global.getY(),
+							global.getZ(),
+							new RotationNR(	tl,
+											az, 
+											el//el
+											));
+					//System.err.println("Camera = "+global.getRotation());
+					// New target calculated appliaed to global offset
+					source.setGlobalToFiducialTransform(global);
+				}catch (Exception ex){
+					ex.printStackTrace();
+				}
 			}
 		});
 		

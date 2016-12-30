@@ -29,7 +29,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField ty;
 //	private TextField tz;
 	private TransformNR initialState;
-	private TransformNR offset =BowlerStudio3dEngine.getOffsetforvisualization().inverse();
+	private TransformNR offset =new TransformNR();
 	
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
