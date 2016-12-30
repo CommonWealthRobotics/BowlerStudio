@@ -20,6 +20,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -148,13 +149,24 @@ public class BowlerStudio extends Application {
 			}
 			if (ScriptingEngine.isLoginSuccess()){
 				
-				if(BowlerStudio.hasNetwork())
+				if(BowlerStudio.hasNetwork()){
 					ScriptingEngine.setAutoupdate(true);
+					
+				}
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
-				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
+				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "currentVersion",
+						StudioBuildInfo.getVersion());
+				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
+					System.err.println("\n\nnew version\n\n");
+					File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
+					AssetFactory.deleteFolder(dir);// clear out old assets
+				}else{
+					System.err.println("Studio version is the same");
+				}
 				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
+				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
 				String myAssets =AssetFactory.getGitSource();
 				if(BowlerStudio.hasNetwork()){
 						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();

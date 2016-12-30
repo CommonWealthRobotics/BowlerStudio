@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.assets;
 
+import com.neuronrobotics.bowlerstudio.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,7 @@ public class AssetFactory {
 	static{
 
 			try {
+				
 				loadAllAssets();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -135,7 +137,7 @@ public class AssetFactory {
 		loadAllAssets();
 	}
 	private static void loadAllAssets() throws Exception{
-		ArrayList<String> files = ScriptingEngine.filesInGit(gitSource);
+		ArrayList<String> files = ScriptingEngine.filesInGit(gitSource,StudioBuildInfo.getVersion(), null);
 		for(String file:files){
 			loadAsset(file);
 		}
@@ -145,5 +147,18 @@ public class AssetFactory {
 	}
 	public static void setAssetRepoBranch(String assetRepoBranch) {
 		AssetFactory.assetRepoBranch = assetRepoBranch;
+	}
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
 	}
 }
