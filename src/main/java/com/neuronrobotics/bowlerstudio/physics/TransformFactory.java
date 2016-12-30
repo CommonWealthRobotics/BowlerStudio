@@ -1,7 +1,10 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Quat4d;
 import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3d;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -66,40 +69,30 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
 	}
 	public static eu.mihosoft.vrl.v3d.Transform  nrToCSG(TransformNR nr){
 		Matrix vals =nr.getMatrixTransform();
-		double [] elemenents = new double[]{ 
-			vals.get(0, 0),
-			vals.get(0, 1),
-			vals.get(0, 2),
-			vals.get(0, 3),
-			
-			vals.get(1, 0),
-			vals.get(1, 1),
-			vals.get(1, 2),
-			vals.get(1, 3),
-			
-			vals.get(2, 0),
-			vals.get(2, 1),
-			vals.get(2, 2),
-			vals.get(2, 3),
-			
-			vals.get(3, 0),
-			vals.get(3, 1),
-			vals.get(3, 2),
-			vals.get(3, 3),
-		};
+		Quat4d q1 = new Quat4d();
+		q1.w=nr.getRotation().getRotationMatrix2QuaturnionW();
+		q1.x=nr.getRotation().getRotationMatrix2QuaturnionX();
+		q1.y=nr.getRotation().getRotationMatrix2QuaturnionY();
+		q1.z=nr.getRotation().getRotationMatrix2QuaturnionZ();
+		Vector3d t1=new Vector3d();
+		t1.x=nr.getX();
+		t1.y=nr.getY();
+		t1.z=nr.getZ();
+		double s=1.0;
 		
 		
-		Matrix4d rotation=	new Matrix4d(elemenents);
+		Matrix4d rotation=	new Matrix4d(q1,t1,s);
 		return new eu.mihosoft.vrl.v3d.Transform(rotation);
 	}
 	
 	public static TransformNR csgToNR(eu.mihosoft.vrl.v3d.Transform csg){
 		Matrix4d rotation = csg.getInternalMatrix();
-		Matrix start= new TransformNR().getMatrixTransform();
-		for(int i=0;i<4;i++)
-			for(int j=0;j<4;j++)
-				start.set(i, j, rotation.getElement(i, j));
-		return new TransformNR();
+		Quat4d q1 = new Quat4d();
+		rotation.get(q1);
+		Vector3d t1=new Vector3d();
+		rotation.get(t1);
+		
+		return new TransformNR(t1.x,t1.y,t1.z, new RotationNR(q1.w,q1.x,q1.y,q1.z));
 	}
 	
 }
