@@ -1011,9 +1011,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					//RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX * modifierFactor * modifier * 2.0);
 					//RotationNR roy = RotationNR.getRotationY(mouseDeltaY * modifierFactor * modifier * 2.);
 					TransformNR trans = new TransformNR(0, 0, 0,new RotationNR(
-							0,
-							mouseDeltaX * modifierFactor * modifier * 2.0, 
-							mouseDeltaY * modifierFactor * modifier * 2.0
+							mouseDeltaX * modifierFactor * modifier * 2.0,
+							mouseDeltaY * modifierFactor * modifier * 2.0, 
+							0
 							
 							) );
 					

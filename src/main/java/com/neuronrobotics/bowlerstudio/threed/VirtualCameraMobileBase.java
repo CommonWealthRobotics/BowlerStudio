@@ -45,6 +45,10 @@ public class VirtualCameraMobileBase extends MobileBase {
 						global.getRotation());
 				
 				RotationNR finalRot = newPose.times(globalRot).getRotation();
+				RotationNR 	HandMadeRot =new RotationNR(	tl,
+						az, 
+						el//el
+						);
 				if(el>=89.0){
 					el=89.0;
 				}if(el<=-89.0){
@@ -54,10 +58,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 				global = new TransformNR(global.getX(),
 						global.getY(),
 						global.getZ(),
-						new RotationNR(	tl,
-										az, 
-										el//el
-										));
+						finalRot);
 				//System.err.println("Camera = "+global.getRotation());
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);

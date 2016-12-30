@@ -832,7 +832,11 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(advanced) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+				try{
+					widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+				}catch(Exception ex){
+					BowlerStudio.printStackTrace(ex);
+				}
 			}
 
 		});
