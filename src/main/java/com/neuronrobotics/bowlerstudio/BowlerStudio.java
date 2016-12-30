@@ -183,7 +183,7 @@ public class BowlerStudio extends Application {
 							(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 									myAssets),
 							(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-									"master")
+									StudioBuildInfo.getVersion())
 							);
 				}else{
 					System.err.println("Studio version is the same");
