@@ -991,7 +991,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				mouseOldY = mousePosY;
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
-				mouseDeltaX =- (mousePosX - mouseOldX);
+				mouseDeltaX = (mousePosX - mouseOldX);
 				mouseDeltaY = (mousePosY - mouseOldY);
 
 				double modifier = 1.0;
@@ -1011,8 +1011,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					//RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX * modifierFactor * modifier * 2.0);
 					//RotationNR roy = RotationNR.getRotationY(mouseDeltaY * modifierFactor * modifier * 2.);
 					TransformNR trans = new TransformNR(0, 0, 0,new RotationNR(
-							mouseDeltaX * modifierFactor * modifier * 2.0,
-							mouseDeltaY * modifierFactor * modifier * 2.0, 
+							mouseDeltaY * modifierFactor * modifier * 2.0,
+							mouseDeltaX * modifierFactor * modifier * 2.0, 
 							0
 							
 							) );
@@ -1024,7 +1024,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 				} else if (me.isSecondaryButtonDown()) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
-					moveCamera(new TransformNR(-mouseDeltaX * modifierFactor * modifier * 1 / depth,
+					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
 							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()), 0);
 				}
 			}

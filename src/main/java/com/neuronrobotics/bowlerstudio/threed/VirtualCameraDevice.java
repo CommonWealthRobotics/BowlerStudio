@@ -23,7 +23,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	private double zoomDepth = getDefaultZoomDepth();
 	private Affine zoomAffine = new Affine();
 	private static final Affine offset = TransformFactory.nrToAffine(
-			new TransformNR(0, 0, 0, new RotationNR(0,0,0))
+			new TransformNR(0, 0, 0, new RotationNR(180,0,0))
 			);
 	private Group manipulationFrame;
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){

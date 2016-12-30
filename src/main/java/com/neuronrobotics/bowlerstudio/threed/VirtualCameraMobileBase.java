@@ -17,6 +17,12 @@ import com.neuronrobotics.sdk.common.Log;
 public class VirtualCameraMobileBase extends MobileBase {
 	
 	private final static class IDriveEngineImplementation implements IDriveEngine {
+		double az =0;
+		double el =0;
+		double tl =0;
+		double azOffset =0;
+		double elOffset =0;
+		double tlOffset =0;
 		@Override
 		public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
 			// TODO Auto-generated method stub
@@ -35,31 +41,22 @@ public class VirtualCameraMobileBase extends MobileBase {
 				TransformNR pureTrans = newPose.copy();
 				pureTrans.setRotation(new RotationNR());
 				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
-				
-				double az = Math.toDegrees(newPose.getRotation().getRotationAzimuth()+global.getRotation().getRotationAzimuth());
-				double el = Math.toDegrees(newPose.getRotation().getRotationElevation()+global.getRotation().getRotationElevation());
-				double tl = Math.toDegrees(newPose.getRotation().getRotationTilt()+global.getRotation().getRotationTilt());
-				TransformNR globalRot=new TransformNR(0,
-						0,
-						0,
-						global.getRotation());
-				
-				RotationNR finalRot = newPose.times(globalRot).getRotation();
-				RotationNR 	HandMadeRot =new RotationNR(	tl,
-						az, 
-						el//el
-						);
-				if(el>=89.0){
-					el=89.0;
-				}if(el<=-89.0){
-					el=-89.0;
-				}
+				double azNew = newPose.getRotation().getRotationAzimuth();
+				double elNew = newPose.getRotation().getRotationElevation();
+				double tlNew =	newPose.getRotation().getRotationTilt();
+				az = Math.toDegrees(azNew)+az;
+				el = Math.toDegrees(elNew)+el;
+				tl = Math.toDegrees(tlNew)+tl;
+				//RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
 				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
 				global = new TransformNR(global.getX(),
-						global.getY(),
-						global.getZ(),
-						finalRot);
-				//System.err.println("Camera = "+global.getRotation());
+							global.getY(),
+							global.getZ(),
+							new RotationNR(	tlOffset+tl,
+											azOffset+az, 
+											elOffset+el//el
+											));
+				//System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 			}catch (Exception ex){
