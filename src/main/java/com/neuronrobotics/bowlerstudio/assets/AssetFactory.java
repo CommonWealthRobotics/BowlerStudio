@@ -134,6 +134,7 @@ public class AssetFactory {
 		System.err.println("Using my version of assets: "+gitSource+":"+assetRepoBranch);
 		setAssetRepoBranch( assetRepoBranch);
 		AssetFactory.gitSource = gitSource;
+		cache.clear();
 		loadAllAssets();
 	}
 	private static void loadAllAssets() throws Exception{
@@ -147,6 +148,7 @@ public class AssetFactory {
 	}
 	public static void setAssetRepoBranch(String assetRepoBranch) {
 		AssetFactory.assetRepoBranch = assetRepoBranch;
+		
 	}
 	public static void deleteFolder(File folder) {
 	    File[] files = folder.listFiles();
