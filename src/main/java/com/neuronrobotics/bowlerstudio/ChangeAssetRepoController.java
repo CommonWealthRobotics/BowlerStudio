@@ -51,7 +51,8 @@ public class ChangeAssetRepoController extends Application {
 	public void onChangeRepo(ActionEvent event)
     {
         ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo",
-                repoField.getText());
+                repoField.getText()
+                .replaceAll("git://", "https://"));
         Stage stage = (Stage) changeRepoButton.getScene().getWindow();
         stage.close();
     }

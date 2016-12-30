@@ -155,40 +155,43 @@ public class BowlerStudio extends Application {
 				}
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
-				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "currentVersion",
+				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 						StudioBuildInfo.getVersion());
 				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
 					System.err.println("\n\nnew version\n\n");
 					File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
 					AssetFactory.deleteFolder(dir);// clear out old assets
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
+							StudioBuildInfo.getVersion());
+					String myAssets =AssetFactory.getGitSource();
+					if(BowlerStudio.hasNetwork()){
+							org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
+							GHMyself self = github.getMyself();
+							Map<String, GHRepository> myPublic = self.getAllRepositories();
+							for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
+								if(entry.getKey().contentEquals(AssetFactory.repo)){
+									GHRepository ghrepo= entry.getValue();
+									myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
+								
+								}
+							
+							}
+							
+					}
+					
+					AssetFactory.setGitSource(
+							(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+									myAssets),
+							(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+									"master")
+							);
 				}else{
 					System.err.println("Studio version is the same");
 				}
 				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 						StudioBuildInfo.getVersion());
 				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
-				String myAssets =AssetFactory.getGitSource();
-				if(BowlerStudio.hasNetwork()){
-						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
-						GHMyself self = github.getMyself();
-						Map<String, GHRepository> myPublic = self.getAllRepositories();
-						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
-							if(entry.getKey().contentEquals(AssetFactory.repo)){
-								GHRepository ghrepo= entry.getValue();
-								myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
-								
-								
-							}
-						
-						}
-						
-				}
-				AssetFactory.setGitSource(
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-								myAssets),
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-								"master")
-						);
+			
 				
 				// to set a new repo
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
