@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -1175,7 +1176,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void cancelSelection() {
-		// Platform.runLater(() -> focusGroup.getTransforms().clear());
 		for (CSG key : getCsgMap().keySet()) {
 
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
@@ -1189,13 +1189,21 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		Affine interpolator = new Affine();
 		TransformFactory.nrToAffine(startSelectNr, interpolator);
 		Platform.runLater(() -> {
-			focusGroup.getTransforms().clear();
+			
+			ObservableList<Transform> allTrans = focusGroup.getTransforms();
+			 List<Object> toRemove = Arrays.asList(allTrans.toArray());
+			for(Object t:toRemove){
+				allTrans.remove(t);
+			}
+			
 			focusGroup.getTransforms().add(interpolator);
 
 			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, new Affine(), new Affine());
 
 		});
 	}
+	
+	
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
@@ -1222,10 +1230,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSelectedCsg(CSG scg) {
 		if (scg == this.selectedCsg)
 			return;
-		Affine startSelect = new Affine();
-		if (selectedCsg != null)
-			startSelect = selectedCsg.getManipulator();
-		// cancelSelection();
 
 		for (CSG key : getCsgMap().keySet()) {
 
@@ -1233,7 +1237,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 
 		selectedSet = null;
-		this.selectedCsg = null;
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
 
@@ -1299,11 +1302,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		Affine interpolator = new Affine();
 		Affine correction=TransformFactory.nrToAffine(reverseRotation);
-		interpolator.setTx(startSelectNr.getX());
-		interpolator.setTy(startSelectNr.getY());
-		interpolator.setTz(startSelectNr.getZ());
+		
 		Platform.runLater(() -> {
-			focusGroup.getTransforms().clear();			
+			interpolator.setTx(startSelectNr.getX());
+			interpolator.setTy(startSelectNr.getY());
+			interpolator.setTz(startSelectNr.getZ());
+			ObservableList<Transform> allTrans = focusGroup.getTransforms();
+			 List<Object> toRemove = Arrays.asList(allTrans.toArray());
+			for(Object t:toRemove){
+				allTrans.remove(t);
+			}
 			focusGroup.getTransforms().add(interpolator);
 			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, correction,
 					centering);
@@ -1392,7 +1400,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		if (objsFromScriptLine.size() > 0) {
 			setSelectedCsg(objsFromScriptLine.get(0));
-			focusGroup.getTransforms().clear();
+			Platform.runLater(() -> {
+				ObservableList<Transform> allTrans = focusGroup.getTransforms();
+				 List<Object> toRemove = Arrays.asList(allTrans.toArray());
+				for(Object t:toRemove){
+					allTrans.remove(t);
+				}
+			});
 			setSelectedCsg(objsFromScriptLine);
 		}
 	}
