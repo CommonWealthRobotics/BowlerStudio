@@ -1208,12 +1208,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
 		selectedSet = selectedCsg;
-		// setSelectedCsg(selectedCsg.get(0));
 		for (int in = 1; in < selectedCsg.size(); in++) {
 			int i = in;
 			MeshView mesh = getCsgMap().get(selectedCsg.get(i));
 			if (mesh != null)
-				FxTimer.runLater(java.time.Duration.ofMillis(100),
+				FxTimer.runLater(java.time.Duration.ofMillis(20),
 
 						() -> {
 							// mesh.setMaterial(new PhongMaterial(new Color(
@@ -1400,13 +1399,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		if (objsFromScriptLine.size() > 0) {
 			setSelectedCsg(objsFromScriptLine.get(0));
-			Platform.runLater(() -> {
-				ObservableList<Transform> allTrans = focusGroup.getTransforms();
-				 List<Object> toRemove = Arrays.asList(allTrans.toArray());
-				for(Object t:toRemove){
-					allTrans.remove(t);
-				}
-			});
 			setSelectedCsg(objsFromScriptLine);
 		}
 	}
