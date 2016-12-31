@@ -1303,24 +1303,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		interpolator.setTy(startSelectNr.getY());
 		interpolator.setTz(startSelectNr.getZ());
 		Platform.runLater(() -> {
-			focusGroup.getTransforms().clear();
-			try{
-				if ( selectedCsg!=null&&
-						Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-						|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-						|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-					//Platform.runLater(() -> {
-						focusGroup.getTransforms().add(interpolator);
-						//focusGroup.getTransforms().add(correction);
-					//});
-
-				} else
-					focusGroup.getTransforms().add(interpolator);
-			}catch (Exception ex){
-				
-			}
-			
-
+			focusGroup.getTransforms().clear();			
+			focusGroup.getTransforms().add(interpolator);
 			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, correction,
 					centering);
 		});
