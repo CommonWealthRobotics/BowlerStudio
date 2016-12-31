@@ -1287,7 +1287,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// focusGroup.getTransforms().add(centering);
 		//
 		// });
-		System.err.println("Camera intrpolation start");
+		//System.err.println("Camera intrpolation start");
 		TransformNR startSelectNr = perviousTarget.copy();
 		TransformNR targetNR;// =
 								// TransformFactory.affineToNr(selectedCsg.getManipulator());
@@ -1298,15 +1298,29 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			targetNR = TransformFactory.affineToNr(centering);
 		}
 		Affine interpolator = new Affine();
+		Affine correction=TransformFactory.nrToAffine(reverseRotation);
 		interpolator.setTx(startSelectNr.getX());
 		interpolator.setTy(startSelectNr.getY());
 		interpolator.setTz(startSelectNr.getZ());
 		Platform.runLater(() -> {
 			focusGroup.getTransforms().clear();
+			try{
+				if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+						|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+						|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+					//Platform.runLater(() -> {
+						focusGroup.getTransforms().add(interpolator);
+						focusGroup.getTransforms().add(correction);
+					//});
 
-			focusGroup.getTransforms().add(interpolator);
+				} else
+					focusGroup.getTransforms().add(interpolator);
+			}catch (Exception ex){
+				
+			}
+			
 
-			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, TransformFactory.nrToAffine(reverseRotation),
+			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, correction,
 					centering);
 		});
 
@@ -1324,14 +1338,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			interpolator.setTy(yIncrement);
 			interpolator.setTz(zIncrement);
 		});
-		System.err
-				.println("Interpolation step " + depth + " x " + xIncrement + " y " + yIncrement + " z " + zIncrement);
+		//System.err.println("Interpolation step " + depth + " x " + xIncrement + " y " + yIncrement + " z " + zIncrement);
 		if (depth < targetDepth) {
 			FxTimer.runLater(Duration.ofMillis(16), () -> {
 				focusInterpolate(start, target, depth + 1, targetDepth, interpolator, correction, centering);
 			});
 		} else {
-			System.err.println("Camera intrpolation done");
+			//System.err.println("Camera intrpolation done");
 			Platform.runLater(() -> {
 				focusGroup.getTransforms().clear();
 				try{
@@ -1353,6 +1366,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			});
 			perviousTarget = target.copy();
+			perviousTarget.setRotation(new RotationNR());
 		}
 
 	}
