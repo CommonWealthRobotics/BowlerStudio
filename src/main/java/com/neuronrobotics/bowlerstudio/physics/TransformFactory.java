@@ -70,8 +70,8 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
 	public static eu.mihosoft.vrl.v3d.Transform  nrToCSG(TransformNR nr){
 		Quat4d q1 = new Quat4d();
 		q1.w=nr.getRotation().getRotationMatrix2QuaturnionW();
-		q1.x=nr.getRotation().getRotationMatrix2QuaturnionX();
-		q1.y=nr.getRotation().getRotationMatrix2QuaturnionY();
+		q1.x=-nr.getRotation().getRotationMatrix2QuaturnionX();
+		q1.y=-nr.getRotation().getRotationMatrix2QuaturnionY();
 		q1.z=nr.getRotation().getRotationMatrix2QuaturnionZ();
 		Vector3d t1=new Vector3d();
 		t1.x=nr.getX();
@@ -91,7 +91,7 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
 		Vector3d t1=new Vector3d();
 		rotation.get(t1);
 		
-		return new TransformNR(t1.x,t1.y,t1.z, new RotationNR(q1.w,q1.x,q1.y,q1.z));
+		return new TransformNR(t1.x,t1.y,t1.z, new RotationNR(q1.w,-q1.x,-q1.y,q1.z));
 	}
 	
 }
