@@ -122,7 +122,7 @@ repositories {
 dependencies {
 	//compile "com.neuronrobotics:JavaCad:0.8.2"
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile "com.neuronrobotics:BowlerScriptingKernel:0.26.2"
+	compile "com.neuronrobotics:BowlerScriptingKernel:0.26.3"
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.25.4.jar'])
 	testCompile group: 'junit', name: 'junit', version: '4.10'
 	//compile "org.jfxtras:jfxtras-common:8.0-r4"
