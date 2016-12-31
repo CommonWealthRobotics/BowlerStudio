@@ -1331,7 +1331,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} else {
 			//System.err.println("Camera intrpolation done");
 			Platform.runLater(() -> {
-				focusGroup.getTransforms().clear();
+				focusGroup.getTransforms().remove(interpolator);
 				try{
 					if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
 							|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
