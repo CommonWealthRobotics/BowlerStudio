@@ -790,7 +790,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			e.printStackTrace();
 		}
 		// TODO reorent the start camera
-		// moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, -127, 24)), 0);
+		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90-127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
 	}
 
@@ -1190,11 +1190,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		TransformFactory.nrToAffine(startSelectNr, interpolator);
 		Platform.runLater(() -> {
 			
-			ObservableList<Transform> allTrans = focusGroup.getTransforms();
-			 List<Object> toRemove = Arrays.asList(allTrans.toArray());
-			for(Object t:toRemove){
-				allTrans.remove(t);
-			}
+			removeAllFocusTransforms();
 			
 			focusGroup.getTransforms().add(interpolator);
 
@@ -1239,7 +1235,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
 
-		FxTimer.runLater(java.time.Duration.ofMillis(100),
+		FxTimer.runLater(java.time.Duration.ofMillis(20),
 
 				() -> {
 					try {
@@ -1306,11 +1302,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			interpolator.setTx(startSelectNr.getX());
 			interpolator.setTy(startSelectNr.getY());
 			interpolator.setTz(startSelectNr.getZ());
-			ObservableList<Transform> allTrans = focusGroup.getTransforms();
-			 List<Object> toRemove = Arrays.asList(allTrans.toArray());
-			for(Object t:toRemove){
-				allTrans.remove(t);
-			}
+			removeAllFocusTransforms();
 			focusGroup.getTransforms().add(interpolator);
 			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator, correction,
 					centering);
@@ -1338,7 +1330,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} else {
 			//System.err.println("Camera intrpolation done");
 			Platform.runLater(() -> {
-				focusGroup.getTransforms().remove(interpolator);
+				removeAllFocusTransforms();
 				try{
 					if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
 							|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
@@ -1361,6 +1353,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			perviousTarget.setRotation(new RotationNR());
 		}
 
+	}
+
+	private void removeAllFocusTransforms() {
+		ObservableList<Transform> allTrans = focusGroup.getTransforms();
+		 List<Object> toRemove = Arrays.asList(allTrans.toArray());
+		for(Object t:toRemove){
+			allTrans.remove(t);
+		}
 	}
 
 	public HashMap<CSG, MeshView> getCsgMap() {
