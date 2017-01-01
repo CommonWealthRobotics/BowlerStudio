@@ -971,7 +971,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
 			
 		}
-		FxTimer.runLater(Duration.ofMillis(30), () -> {
+		FxTimer.runLater(Duration.ofMillis(60), () -> {
 			autoSpin();
 		});
 	}
