@@ -273,6 +273,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private long lastSelectedTime=System.currentTimeMillis();
 
+	private long timeForAutospin = 5000;;
+
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -351,7 +353,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		spin.setSelected(true);
 		spin.setOnAction((event) -> {
 			spinSelected = spin.isSelected();
-			
+			resetMouseTime();
 		});
 		CheckBox ruler = new CheckBox("Show Ruler");
 		ruler.setSelected(true);
@@ -953,12 +955,20 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 	
 	private void autoSpin(){
-		long timeForAutospin = 10000;
+		
 		long diff = System.currentTimeMillis() - getLastMosueMovementTime();
 		
 		if(diff>timeForAutospin && spinSelected){
 			//TODO start spinning
-			moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5, 0)), 0);
+			double scale = 1;
+			long finaSpeedScale =  timeForAutospin+(timeForAutospin/2);
+			if(diff<finaSpeedScale){
+				double finaSpeedDiff = ((double)(finaSpeedScale- diff));
+				double sineScale = 1-(finaSpeedDiff/((double)(timeForAutospin/2)));
+				scale = Math.sin(sineScale * Math.PI);
+				
+			}
+			moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
 			
 		}
 		FxTimer.runLater(Duration.ofMillis(30), () -> {
@@ -989,10 +999,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						//reset only if an object is not being selected
 						if (lastClickedDifference < offset) {
 							cancelSelection();
-							System.err.println("Cancel event detected");
+							//System.err.println("Cancel event detected");
 						}		
 					}else{
-						System.err.println("too soon after a select "+differenceIntime+" from "+lastSelectedTime);
+						//System.err.println("too soon after a select "+differenceIntime+" from "+lastSelectedTime);
 					}
 				});
 				lastClickedTimeLocal= System.currentTimeMillis();
@@ -1274,7 +1284,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
 		lastSelectedTime = System.currentTimeMillis();
-		System.err.println("Selecting a CSG");
+		//System.err.println("Selecting a CSG");
 		
 		selectedSet = null;
 		// System.err.println("Selecting one");
