@@ -271,6 +271,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private boolean spinSelected=true;
 
+	private long lastSelectedTime=System.currentTimeMillis();
+
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
@@ -683,7 +685,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					}
 					lastClickedTime = System.currentTimeMillis();
-					// event.consume();
 				}
 
 			}
@@ -976,19 +977,24 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void handleMouse(SubScene scene) {
 
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			long lastClickedTime = 0;
-
+			long lastClickedTimeLocal = 0;
+			long offset = 500;
 			@Override
 			public void handle(MouseEvent event) {
 				resetMouseTime();
-				if (!event.isConsumed()) {
-					if (System.currentTimeMillis() - lastClickedTime < 500) {
-						cancelSelection();
+				long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
+				FxTimer.runLater(Duration.ofMillis(200), () -> {
+					if(differenceIntime>offset){
+						//reset only if an object is not being selected
+						if (System.currentTimeMillis() - lastClickedTimeLocal < 500) {
+							cancelSelection();
+							System.err.println("Cancel event detected");
+						}		
+					}else{
+						System.err.println("too soon after a select "+differenceIntime+" from "+lastSelectedTime);
 					}
-
-					// System.out.println("Cancel event detected");
-				}
-				lastClickedTime = System.currentTimeMillis();
+				});
+				lastClickedTimeLocal= System.currentTimeMillis();
 			}
 
 		});
@@ -1216,11 +1222,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		selectedSet = null;
 		this.selectedCsg = null;
-		// new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 		TransformNR startSelectNr = perviousTarget.copy();
 		TransformNR targetNR = new TransformNR();
 		Affine interpolator = new Affine();
 		TransformFactory.nrToAffine(startSelectNr, interpolator);
+		
 		Platform.runLater(() -> {
 			
 			removeAllFocusTransforms();
@@ -1265,7 +1272,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
-
+		lastSelectedTime = System.currentTimeMillis();
+		
 		selectedSet = null;
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
@@ -1355,7 +1363,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}catch (Exception ex){
 				
 			}
-			focusInterpolate(startSelectNr, targetNR, 0, 60, interpolator);
+			focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
 		});
 		resetMouseTime();
 	}
@@ -1368,13 +1376,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private void focusInterpolate(TransformNR start, TransformNR target, int depth, int targetDepth,
 			Affine interpolator) {
-		double depthScale = (double) depth / (double) targetDepth;
+		double depthScale = 1-(double) depth / (double) targetDepth;
 		double sinunsoidalScale = Math.sin(depthScale*(Math.PI/2));
 		
 		//double xIncrement =target.getX()- ((start.getX() - target.getX()) * depthScale) + start.getX();
-		double xIncrement =start.getX() + ((start.getX() - target.getX()) * sinunsoidalScale)-target.getX();
-		double yIncrement =start.getY() + ((start.getY() - target.getY()) * sinunsoidalScale)-target.getY();
-		double zIncrement =start.getZ() + ((start.getZ() - target.getZ()) * sinunsoidalScale)-target.getZ();
+		double difference = start.getX() - target.getX();
+		double scaledDifference = (difference * sinunsoidalScale); 
+		
+		double xIncrement = scaledDifference ;
+		double yIncrement =((start.getY() - target.getY()) * sinunsoidalScale);
+		double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
 
 		Platform.runLater(() -> {
 			interpolator.setTx(xIncrement);

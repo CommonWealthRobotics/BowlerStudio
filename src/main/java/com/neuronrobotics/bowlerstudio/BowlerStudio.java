@@ -145,7 +145,7 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 			try{
 				ScriptingEngine.runLogin();
-			}catch(java.io.IOException e){
+			}catch(Exception e){
 				//e.printStackTrace();
 				ScriptingEngine.setupAnyonmous();
 				
