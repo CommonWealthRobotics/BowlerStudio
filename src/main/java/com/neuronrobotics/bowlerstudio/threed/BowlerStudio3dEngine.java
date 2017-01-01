@@ -965,7 +965,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			if(diff<finaSpeedScale){
 				double finaSpeedDiff = ((double)(finaSpeedScale- diff));
 				double sineScale = (finaSpeedDiff/((double)(timeForAutospin/2)));
-				scale = Math.sin(sineScale * (Math.PI/2));
+				scale = 1-Math.sin(sineScale * (Math.PI/2));
 				
 			}
 			moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
