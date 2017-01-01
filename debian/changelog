@@ -1,3 +1,65 @@
+bowlerstudio (0.20.2) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.21.1
+  * removing junk files
+  * Changing the use of the file watcher
+  * Moving change watcher inot local code to ensure thread management works with the javafx conventions
+  * Update to single thread per file watchers
+  * After much hunting i think the magic Yo is gone
+  * Request focus is needed even with new RSyntax
+  * remove the debug hook
+  * Close #2
+  * Adding blocks to elevation to conform to the bounding standards set by the rotation object.
+  * updateing the transform object to Apache-commons-math3
+  * The camera rotation cna not be a singularity!
+  * catch any exception and clear gits
+  * Updating the kernel to use more strict java-bowle rotation bounding.
+  * Adding a vehicle wrapper to the control class
+  * adding a wheel wrapper
+  * Fixing the link widjet so it displays current value
+  * adding a weel module to the physics engine
+  * putting the physics components back intot he update wrapping function
+  * Adding the looping mechanism
+  * move wheel updates into mobile base physics for user control
+  * use the wheel transform to compute the location of the new wheel.
+  * only add and remove ridgid bodys if they are not parts of vehicles.
+  * adding the rotation test for the conversion to bullet and affine
+
+  [ Octogonapus ]
+  * Added way to change asset repo #9
+
+  [ Kevin Harrington ]
+  * CSG rotation to CSG was broken and now works
+  * Attempting to update the camera, WIP
+  * 0.20.2
+  * Adding a mechanism to clear out the assets based on the current version check
+  * updated the script access to the camera adjustments
+  * load the URL from the database for assets before loading asset files
+  * default value
+  * Verified that the asset change repo is working
+  * Updating Java-Bowler
+  * Use ZYX order for the tests
+  * making the degenerate angle of all 0 is displayed as all 0
+  * Camera rotation for the new rontation schema has been fully integrated
+  * updated the kernel with robust angle error checking
+  * Switched the rotation button action
+  * Fixing the transform orentation hack
+  * Adding focus interpolation
+  * smoother camer transitions
+  * Smooth camera transition between manipulated scgs and regular csgs.
+  * simpler no-transform loading
+  * remove the interpolator
+  * by moving the motions into the removal, the transitions are a bit smoother.
+  * smooth transition for selection from a file
+  * Assing the starting camera rotation back in
+  * The x and y rotations needed inversion to be constistant with the rest of the rotations.
+  * Updating kernel to include rotation with qutaurning values swapped
+  * removing work around
+  * Auto spin the camera when the mouse input goes idle for 10 seconds. A user check box disables this
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 31 Dec 2016 11:27:26 -0500
+
 bowlerstudio (0.20.0) xenial; urgency=medium
 
   [ Kevin Harrington ]
