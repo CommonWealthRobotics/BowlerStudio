@@ -978,15 +978,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			long lastClickedTimeLocal = 0;
-			long offset = 500;
+			long offset = 200;
 			@Override
 			public void handle(MouseEvent event) {
 				resetMouseTime();
-				long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
-				FxTimer.runLater(Duration.ofMillis(200), () -> {
-					if(differenceIntime>offset){
+				long lastClickedDifference= (System.currentTimeMillis() - lastClickedTimeLocal);
+				FxTimer.runLater(Duration.ofMillis(100), () -> {
+					long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
+					if(differenceIntime>2000){
 						//reset only if an object is not being selected
-						if (System.currentTimeMillis() - lastClickedTimeLocal < 500) {
+						if (lastClickedDifference < offset) {
 							cancelSelection();
 							System.err.println("Cancel event detected");
 						}		
@@ -1273,6 +1274,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
 		lastSelectedTime = System.currentTimeMillis();
+		System.err.println("Selecting a CSG");
 		
 		selectedSet = null;
 		// System.err.println("Selecting one");
