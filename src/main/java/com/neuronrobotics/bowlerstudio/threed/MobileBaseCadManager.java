@@ -363,19 +363,23 @@ public class MobileBaseCadManager {
 		cadGenerating = true;
 		// new RuntimeException().printStackTrace();
 		//new Exception().printStackTrace();
-		new Thread(()->{
-			System.out.print("\r\nGenerating cad...");
-			// new Exception().printStackTrace();
-			MobileBase device = base;
-			try{
-				setAllCad(generateBody(device));
-			}catch(Exception e){
-				BowlerStudioController.highlightException(getCadScript(), e);
+		new Thread(){
+			@Override
+			public void run() {
+				System.out.print("\r\nGenerating cad...");
+				setName("MobileBaseCadManager Generating cad Thread ");
+				// new Exception().printStackTrace();
+				MobileBase device = base;
+				try{
+					setAllCad(generateBody(device));
+				}catch(Exception e){
+					BowlerStudioController.highlightException(getCadScript(), e);
+				}
+				System.out.print("Done!\r\n");
+				BowlerStudioController.setCsg(MobileBaseCadManager.this,getCadScript());
+				cadGenerating = false;
 			}
-			System.out.print("Done!\r\n");
-			BowlerStudioController.setCsg(this,getCadScript());
-			cadGenerating = false;
-		}).start();
+		}.start();
 	}
 	private void setDefaultLinkLevelCadEngine() throws Exception {
 		String[] cad;

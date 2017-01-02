@@ -17,9 +17,7 @@ import com.neuronrobotics.sdk.common.Log;
 public class VirtualCameraMobileBase extends MobileBase {
 	
 	private final static class IDriveEngineImplementation implements IDriveEngine {
-		double az =0;
-		double el =0;
-		double tl =0;
+
 		double azOffset =0;
 		double elOffset =0;
 		double tlOffset =0;
@@ -41,12 +39,12 @@ public class VirtualCameraMobileBase extends MobileBase {
 				TransformNR pureTrans = newPose.copy();
 				pureTrans.setRotation(new RotationNR());
 				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
-				double azNew = newPose.getRotation().getRotationAzimuth();
-				double elNew = newPose.getRotation().getRotationElevation();
-				double tlNew =	newPose.getRotation().getRotationTilt();
-				az = Math.toDegrees(azNew)+az;
-				el = Math.toDegrees(elNew)+el;
-				tl = Math.toDegrees(tlNew)+tl;
+				double azNew = newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth() ;
+				double elNew = newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation();
+				double tlNew =	newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt();
+				double az = Math.toDegrees(azNew)%360;
+				double el = Math.toDegrees(elNew);
+				double tl = Math.toDegrees(tlNew)%360;
 				//RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
 				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
 				global = new TransformNR(global.getX(),

@@ -317,8 +317,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			Stage s = new Stage();
 			new Thread() {
 				public void run() {
-					String find = textArea.getSelectedText().toLowerCase();
-					
+			
 					FindTextWidget controller = new FindTextWidget();
 					controller.setTextArea(textArea);
 					try {

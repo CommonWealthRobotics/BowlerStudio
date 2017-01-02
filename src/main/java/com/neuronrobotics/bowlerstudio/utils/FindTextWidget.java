@@ -144,6 +144,8 @@ public class FindTextWidget extends Application {
 		new Thread(() -> {
 			String find = findBox.getText();
 			String replace = replaceBox.getText();
+			if(replace==null)
+				replace="";
 			String current = textArea.getText();
 			int intLengthOfRemove = find.length();
 

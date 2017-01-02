@@ -17,7 +17,6 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
@@ -478,6 +477,10 @@ public class BowlerStudio extends Application {
 				@Override
 				public void onDeviceRemoved(BowlerAbstractDevice arg0) {}
 			});
+			Log.enableDebugPrint(false);
+			//Log.enableWarningPrint();
+			//Log.enableDebugPrint();
+			//Log.enableErrorPrint();
 			System.out.println("BowlerStudio First Version: " + firstVer);
 			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());

@@ -197,7 +197,13 @@ public class PhysicsCore {
 			o.update(timeStep);
 		}
 		for (IPhysicsManager o : getPhysicsObjects())
-			Platform.runLater(() -> TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform()));
+			Platform.runLater(() -> {
+				try {
+					TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform());
+				} catch (Exception e) {
+
+				}
+			});
 	}
 
 	public void stepMs(double timeStep) {
@@ -218,7 +224,7 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().addVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			
+
 		}
 	}
 
@@ -227,7 +233,7 @@ public class PhysicsCore {
 			getPhysicsObjects().remove(manager);
 			if (!WheelCSGPhysicsManager.class.isInstance(manager)
 					&& !VehicleCSGPhysicsManager.class.isInstance(manager)) {
-				
+
 				getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
 			}
 			if (HingeCSGPhysicsManager.class.isInstance(manager)) {
@@ -237,7 +243,7 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			
+
 		}
 	}
 
@@ -256,7 +262,7 @@ public class PhysicsCore {
 			if (VehicleCSGPhysicsManager.class.isInstance(manager)) {
 				getDynamicsWorld().removeVehicle(((VehicleCSGPhysicsManager) manager).getVehicle());
 			}
-			
+
 		}
 		getPhysicsObjects().clear();
 

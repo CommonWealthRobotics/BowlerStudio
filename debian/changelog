@@ -1,3 +1,17 @@
+bowlerstudio (0.20.3) xenial; urgency=medium
+
+  * Reverse the interpolation for smoother transition
+  * removing the cancel from all clicks
+  * fixing the cancle detection
+  * adding an acceleration to the camera spin
+  * the sin scaling should be across Pi/2
+  * Sinusoidal scaling is now working
+  * slower spin interpolation
+  * Basif fin and replace widgit loading on ctrl f signel
+  * close #17 Find Replace Widget
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 02 Jan 2017 00:13:49 -0500
+
 bowlerstudio (0.20.2) xenial; urgency=medium
 
   [ Kevin Harrington ]

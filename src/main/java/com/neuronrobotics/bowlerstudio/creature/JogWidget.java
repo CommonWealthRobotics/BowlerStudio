@@ -407,7 +407,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				if(controlThreadRunning){
 					if(getMobilebase()==null){
 						try {
-							Log.enableDebugPrint();
+							//Log.enableDebugPrint();
 							//System.out.println("Jogging to: "+toSet);
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
