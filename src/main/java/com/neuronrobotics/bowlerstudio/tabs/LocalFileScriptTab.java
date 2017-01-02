@@ -148,7 +148,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
-		textArea.setText(getScripting().getCode());
+		SwingUtilities.invokeLater(() -> textArea.setText(getScripting().getCode()));
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -294,10 +294,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		if (current.length() > 3 && !textArea.getText().contentEquals(current)) {// no
 																					// empty
 																					// writes
-			Platform.runLater(() -> {
-				// System.out.println("Setting all text");
-				textArea.setText(current);
-			});
+			SwingUtilities.invokeLater(() -> textArea.setText(current));
+
 		}
 	}
 
