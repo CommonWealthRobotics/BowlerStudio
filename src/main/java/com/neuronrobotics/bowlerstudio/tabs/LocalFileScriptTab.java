@@ -57,6 +57,7 @@ import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.BowlerDatagram;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.sun.javafx.stage.WindowHelper;
@@ -68,6 +69,8 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
+import com.neuronrobotics.bowlerstudio.utils.FindTextWidget;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -88,7 +91,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private Highlighter highlighter;
 
 	private HighlightPainter painter;
-	private int pos = 0;
 	private int lineSelected = 0;
 
 	private class MySwingNode extends SwingNode {
@@ -121,7 +123,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public LocalFileScriptTab(File file) throws IOException {
-		
+
 		setScripting(new ScriptingFileWidget(file));
 		setSpacing(5);
 		l = this;
@@ -254,65 +256,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 						textArea.getInputMap().put(keystroke, "f");
 						textArea.getActionMap().put("f", new AbstractAction() {
 							public void actionPerformed(ActionEvent e) {
-								try {
-									// System.out.println("Got ctrl f "+
-									// textArea.getSelectedText());
-									// Get the text to find...convert it to lower
-									// case for eaiser comparision
-									String find = textArea.getSelectedText().toLowerCase();
-									// Focus the text area, otherwise the
-									// highlighting won't show up
-									textArea.requestFocusInWindow();
-									// Make sure we have a valid search term
-									if (find != null && find.length() > 0) {
-										Document document = textArea.getDocument();
-										int findLength = find.length();
-										try {
-											boolean found = false;
-											// Rest the search position if we're at
-											// the end of the document
-											if (pos + findLength > document.getLength()) {
-												pos = 0;
-											}
-											// While we haven't reached the end...
-											// "<=" Correction
-											while (pos + findLength <= document.getLength()) {
-												// Extract the text from teh
-												// docuemnt
-												String match = document.getText(pos, findLength).toLowerCase();
-												// Check to see if it matches or
-												// request
-												if (match.equals(find)) {
-													found = true;
-													break;
-												}
-												pos++;
-											}
+								
+								findTextWidget();
 
-											// Did we find something...
-											if (found) {
-												// Get the rectangle of the where
-												// the text would be visible...
-												Rectangle viewRect = textArea.modelToView(pos);
-												// Scroll to make the rectangle
-												// visible
-												textArea.scrollRectToVisible(viewRect);
-												// Highlight the text
-												textArea.setCaretPosition(pos + findLength);
-												textArea.moveCaretPosition(pos);
-												// Move the search position beyond
-												// the current match
-												pos += findLength;
-											}
-
-										} catch (Exception exp) {
-											exp.printStackTrace();
-										}
-
-									}
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
 							}
 						});
 					}
@@ -349,7 +295,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 																					// empty
 																					// writes
 			Platform.runLater(() -> {
-				//System.out.println("Setting all text");
+				// System.out.println("Setting all text");
 				textArea.setText(current);
 			});
 		}
@@ -368,6 +314,26 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	}
 
+	public void findTextWidget() {
+		Platform.runLater(() -> {
+			Stage s = new Stage();
+			new Thread() {
+				public void run() {
+					String find = textArea.getSelectedText().toLowerCase();
+					
+					FindTextWidget controller = new FindTextWidget();
+					controller.setTextArea(textArea);
+					try {
+						controller.start(s);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		});
+		// DeviceManager.addConnection();
+	}
+
 	@Override
 	public void handle(WindowEvent event) {
 		// TODO Auto-generated method stub
@@ -383,7 +349,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void setHighlight(int lineNumber, Color color) throws BadLocationException {
-		if(textArea==null){
+		if (textArea == null) {
 			return;
 		}
 		painter = new DefaultHighlighter.DefaultHighlightPainter(color);
@@ -393,8 +359,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		try {
 
 			textArea.moveCaretPosition(startIndex);
-		} catch (Error|Exception ex) {
-			 ex.printStackTrace();
+		} catch (Error | Exception ex) {
+			ex.printStackTrace();
 		}
 		textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
 
