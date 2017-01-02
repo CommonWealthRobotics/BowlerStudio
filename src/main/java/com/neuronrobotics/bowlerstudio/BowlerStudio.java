@@ -18,10 +18,13 @@ import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.ByteList;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
@@ -64,24 +67,49 @@ public class BowlerStudio extends Application {
 	private BowlerStudioModularFrame modularFrame;
 	private static 	String firstVer = "";
 	private static class Console extends OutputStream {
-		
+		private static final int LengthOfOutputLog = 1000;
+		ByteList incoming = new ByteList();
+		Thread update = new Thread(()->{
+			while(true){
+				ThreadUtil.wait(150);
+				String text = incoming.asString();
+				incoming.clear();
+				appendText(text);
+			}
+			
+		});
+		public Console(){
+			update.start();
+		}
 	    public void appendText(String valueOf) {
 	    	try{
 	    		BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
 	    	}catch(NullPointerException ex){
 	    		// frame not open yet
 	    	}
-			Platform.runLater(() -> {
-				if (getLogViewRefStatic() != null)
-					getLogViewRefStatic().appendText(valueOf);
-				
-			});
+	    	if (getLogViewRefStatic() != null){
+		    	String text =getLogViewRefStatic().getText();
+		    	if(text.length()>LengthOfOutputLog){
+		    		
+		    		Platform.runLater(() -> {
+		    			getLogViewRefStatic().deleteText(0, text.length()-LengthOfOutputLog);
+
+		    			Platform.runLater(() ->getLogViewRefStatic().appendText(valueOf));
+						
+					});
+		    	}else{
+					Platform.runLater(() -> {
+							getLogViewRefStatic().appendText(valueOf);
+						
+					});
+		    	}
+	    	}
 			System.err.print(valueOf);
-			
 	    }
 	
 	    public void write(int b) throws IOException {
-	        appendText(String.valueOf((char)b));
+	    	incoming.add(b);
+	        //appendText(String.valueOf((char)b));
 //	        if(b=='[')
 //	        	new RuntimeException().printStackTrace();
 	    }
