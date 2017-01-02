@@ -988,7 +988,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			long lastClickedTimeLocal = 0;
-			long offset = 200;
+			long offset = 500;
 			@Override
 			public void handle(MouseEvent event) {
 				resetMouseTime();
