@@ -169,6 +169,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	private static final long serialVersionUID = 6744581340628622682L;
 
+	private static final TransformNR autoSpinSpeed = new TransformNR(0, 0, 0, new RotationNR(0, 0.5, 0));
+
 	/** The root. */
 	private final Group root = new Group();
 
@@ -966,9 +968,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				double finaSpeedDiff = ((double)(finaSpeedScale- diff));
 				double sineScale = (finaSpeedDiff/((double)(timeForAutospin/2)));
 				scale = 1-Math.sin(sineScale * (Math.PI/2));
-				
+				moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
+			}else{
+				moveCamera(autoSpinSpeed, 0);
 			}
-			moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
+			
 			
 		}
 		FxTimer.runLater(Duration.ofMillis(60), () -> {
@@ -1054,8 +1058,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// RotationNR roy = RotationNR.getRotationY(mouseDeltaY *
 					// modifierFactor * modifier * 2.);
 					TransformNR trans = new TransformNR(0, 0, 0,
-							new RotationNR(mouseDeltaY * modifierFactor * modifier * 2.0,
-									mouseDeltaX * modifierFactor * modifier * 2.0, 0
+							new RotationNR(
+									mouseDeltaY * modifierFactor * modifier * 2.0,
+									mouseDeltaX * modifierFactor * modifier * 2.0,
+									0
 
 							));
 

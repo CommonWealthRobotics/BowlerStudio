@@ -21,6 +21,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 		double azOffset =0;
 		double elOffset =0;
 		double tlOffset =0;
+		TransformNR pureTrans = new TransformNR();
 		@Override
 		public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
 			// TODO Auto-generated method stub
@@ -36,23 +37,16 @@ public class VirtualCameraMobileBase extends MobileBase {
 		@Override
 		public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
 			try{
-				TransformNR pureTrans = newPose.copy();
-				pureTrans.setRotation(new RotationNR());
+				pureTrans.setX(newPose.getX());
+				pureTrans.setY(newPose.getY());
+				pureTrans.setZ(newPose.getZ());
+															
 				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
-				double azNew = newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth() ;
-				double elNew = newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation();
-				double tlNew =	newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt();
-				double az = Math.toDegrees(azNew)%360;
-				double el = Math.toDegrees(elNew);
-				double tl = Math.toDegrees(tlNew)%360;
 				//RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
 				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
-				global = new TransformNR(global.getX(),
-							global.getY(),
-							global.getZ(),
-							new RotationNR(	tlOffset+tl,
-											azOffset+az, 
-											elOffset+el//el
+				global.setRotation(	new RotationNR(	tlOffset+(Math.toDegrees(newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())%360),
+											azOffset+(Math.toDegrees(newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth())%360), 
+											elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
 											));
 				//System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
 				// New target calculated appliaed to global offset
