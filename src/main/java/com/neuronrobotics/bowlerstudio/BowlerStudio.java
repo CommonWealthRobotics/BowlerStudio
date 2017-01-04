@@ -177,6 +177,7 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.setupAnyonmous();
 				
 			}
+			String myAssets =AssetFactory.getGitSource();
 			if (ScriptingEngine.isLoginSuccess()){
 				
 				if(BowlerStudio.hasNetwork()){
@@ -199,7 +200,7 @@ public class BowlerStudio extends Application {
 				}else{
 					System.err.println("Studio version is the same");
 				}
-				String myAssets =AssetFactory.getGitSource();
+				
 				if(BowlerStudio.hasNetwork()){
 						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
 						GHMyself self = github.getMyself();
@@ -214,14 +215,7 @@ public class BowlerStudio extends Application {
 						}
 						
 				}
-				AssetFactory.setGitSource(
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-								myAssets),
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-								StudioBuildInfo.getVersion())
-						);
-				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
-						StudioBuildInfo.getVersion());
+				
 				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
 			
 				
@@ -231,6 +225,12 @@ public class BowlerStudio extends Application {
 				
 			}
 			
+			AssetFactory.setGitSource(
+					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+							myAssets),
+					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+							StudioBuildInfo.getVersion())
+					);
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
