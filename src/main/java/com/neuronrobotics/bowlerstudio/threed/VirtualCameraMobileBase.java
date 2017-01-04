@@ -49,9 +49,10 @@ public class VirtualCameraMobileBase extends MobileBase {
 //				Rotation g = global.getRotation().getStorage();
 //				Rotation nr =n.compose(g, RotationNR.getConvention());
 				
-				global.setRotation(	new RotationNR(	tlOffset+(Math.toDegrees(newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())%360),
-											azOffset+(Math.toDegrees(newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth())%360), 
-											elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
+				global.setRotation(	new RotationNR(	
+						tlOffset+(Math.toDegrees(newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())%360),
+						azOffset+(Math.toDegrees(newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth())%360), 
+						elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
 											));
 //				 global.getRotation().setStorage(nr);
 				//System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
