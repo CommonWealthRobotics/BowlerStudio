@@ -50,11 +50,18 @@ public class ChangeAssetRepoController extends Application {
 	@FXML
 	public void onChangeRepo(ActionEvent event)
     {
-        ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo",
-                repoField.getText()
-                .replaceAll("git://", "https://"));
+		String repo =  repoField.getText()
+                .replaceAll("git://", "https://");
+		new Thread(()->{
+	        ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo",
+	        		repo);
+			ConfigurationDatabase.save();
+
+		}).start();
+
         Stage stage = (Stage) changeRepoButton.getScene().getWindow();
         stage.close();
+        
     }
 
 	@FXML

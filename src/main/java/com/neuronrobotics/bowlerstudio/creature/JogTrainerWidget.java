@@ -98,16 +98,21 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
     @FXML
     void configure(ActionEvent event) {
     	primaryStage.close();
-    	//linkval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"));
-    	ConfigurationDatabase.setObject(paramsKey, "jogLink", linkval.getText());
-       // xval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x"));
-    	ConfigurationDatabase.setObject(paramsKey, "jogKinx", xval.getText());
-        //yval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y"));
-    	ConfigurationDatabase.setObject(paramsKey, "jogKiny", yval.getText());
-        //zval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz"));
-    	ConfigurationDatabase.setObject(paramsKey, "jogKinz", zval.getText());
-        //rzval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider"));
-    	ConfigurationDatabase.setObject(paramsKey, "jogKinslider", rzval.getText());
+    	new Thread(()->{
+        	//linkval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"));
+        	ConfigurationDatabase.setObject(paramsKey, "jogLink", linkval.getText());
+           // xval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x"));
+        	ConfigurationDatabase.setObject(paramsKey, "jogKinx", xval.getText());
+            //yval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y"));
+        	ConfigurationDatabase.setObject(paramsKey, "jogKiny", yval.getText());
+            //zval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz"));
+        	ConfigurationDatabase.setObject(paramsKey, "jogKinz", zval.getText());
+            //rzval.setText((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider"));
+        	ConfigurationDatabase.setObject(paramsKey, "jogKinslider", rzval.getText());
+			ConfigurationDatabase.save();
+
+		}).start();
+
     	gameController.removeListeners(this);
     }
     @FXML
