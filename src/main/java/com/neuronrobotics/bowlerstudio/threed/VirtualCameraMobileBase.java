@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -44,10 +45,15 @@ public class VirtualCameraMobileBase extends MobileBase {
 				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
 				//RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
 				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
+//				Rotation n = newPose.getRotation().getStorage();
+//				Rotation g = global.getRotation().getStorage();
+//				Rotation nr =n.compose(g, RotationNR.getConvention());
+				
 				global.setRotation(	new RotationNR(	tlOffset+(Math.toDegrees(newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())%360),
 											azOffset+(Math.toDegrees(newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth())%360), 
 											elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
 											));
+//				 global.getRotation().setStorage(nr);
 				//System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
