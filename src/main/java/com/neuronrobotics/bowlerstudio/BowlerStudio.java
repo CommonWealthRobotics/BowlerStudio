@@ -194,8 +194,9 @@ public class BowlerStudio extends Application {
 					AssetFactory.deleteFolder(dir);// clear out old assets
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
 							StudioBuildInfo.getVersion());
-					
-					
+					// force the mainline in when a version update happens 
+					// this prevents developers from ending up with unsuable version of BowlerStudio
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 					
 				}else{
 					System.err.println("Studio version is the same");
