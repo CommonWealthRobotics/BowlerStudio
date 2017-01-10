@@ -79,6 +79,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		return new String[0];
 	}
 
+	@SuppressWarnings({ "restriction", "restriction" })
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		setGraphic(AssetFactory.loadIcon("CreatureLab-Tab.png"));
