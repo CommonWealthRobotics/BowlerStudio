@@ -41,6 +41,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 	private Set<CSG> oldParts=null;
 	private MobileBase base;
 
+	@SuppressWarnings("restriction")
 	public CreaturePhysicsWidget(MobileBase base){
 
 		this.base = base;
@@ -79,13 +80,14 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 		runstop.setOnAction(event->{
 			if(isRun()){
 				stop();
-				new Thread(){
-					public void run(){
-						ThreadUtil.wait(50);
-						System.gc();// clean up any objects created by the physics engine
-					}
-				}.start();
+//				new Thread(){
+//					public void run(){
+//						ThreadUtil.wait(50);
+//						System.gc();// clean up any objects created by the physics engine
+//					}
+//				}.start();
 			}else{
+				System.gc();// clean up any objects created by the physics engine
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
 				runstop.setText("Stop");
 				msLoopTime.setDisable(true);
