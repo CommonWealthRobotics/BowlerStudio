@@ -67,7 +67,7 @@ public class BowlerStudio extends Application {
 	private BowlerStudioModularFrame modularFrame;
 	private static 	String firstVer = "";
 	private static class Console extends OutputStream {
-		private static final int LengthOfOutputLog = 1000;
+		private static final int LengthOfOutputLog = 5000;
 		ByteList incoming = new ByteList();
 		Thread update = new Thread(()->{
 			while(true){
