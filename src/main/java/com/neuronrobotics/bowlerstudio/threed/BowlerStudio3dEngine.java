@@ -271,11 +271,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private List<CSG> selectedSet = null;
 	private TransformNR perviousTarget = new TransformNR();
 
-	private boolean spinSelected=true;
+	
 
 	private long lastSelectedTime=System.currentTimeMillis();
 
-	private long timeForAutospin = 5000;;
+	private long timeForAutospin = 5000;
+
+	private CheckBox spin;;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -351,10 +353,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			clearUserNode();
 			removeObjects();
 		});
-		CheckBox spin = new CheckBox("Idle Spin");
-		spin.setSelected(true);
+		spin = new CheckBox("Idle Spin");
+		spin.setSelected(false);
 		spin.setOnAction((event) -> {
-			spinSelected = spin.isSelected();
 			resetMouseTime();
 		});
 		CheckBox ruler = new CheckBox("Show Ruler");
@@ -960,7 +961,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		long diff = System.currentTimeMillis() - getLastMosueMovementTime();
 		
-		if(diff>timeForAutospin && spinSelected){
+		if(diff>timeForAutospin && spin.isSelected()){
 			//TODO start spinning
 			double scale = 1;
 			long finaSpeedScale =  timeForAutospin+(timeForAutospin/2);
