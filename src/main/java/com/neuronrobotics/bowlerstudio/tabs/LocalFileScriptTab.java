@@ -104,8 +104,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		 */
 		@Override
 		public double minWidth(double height) {
-
-			return 200;
+			try{
+				return super.minWidth( height) ;
+			}catch(Exception e){
+				return 200;
+			}
+			
 		}
 
 		/**
@@ -118,7 +122,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		 */
 		@Override
 		public double minHeight(double width) {
-			return 200;
+			try{
+				return super.minHeight( width) ;
+			}catch(Exception e){
+				return 200;
+			}
 		}
 	}
 
@@ -233,40 +241,27 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		sp = new RTextScrollPane(textArea);
 
 		sn = new MySwingNode();
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				sn.setContent(sp);
-
-			}
-		});
+		SwingUtilities.invokeLater(() -> sn.setContent(sp));
 
 		getScripting().setFocusTraversable(false);
 
 		getChildren().setAll(sn, getScripting());
-		sn.setOnMouseEntered(new EventHandler<javafx.scene.input.MouseEvent>() {
-			@Override
-			public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-				sn.requestFocus();
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						textArea.requestFocusInWindow();
-						KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
-						textArea.getInputMap().put(keystroke, "f");
-						textArea.getActionMap().put("f", new AbstractAction() {
-							public void actionPerformed(ActionEvent e) {
-								
-								findTextWidget();
+		sn.setOnMouseEntered(mouseEvent -> {
+			sn.requestFocus();
+			SwingUtilities.invokeLater(() -> {
+				textArea.requestFocusInWindow();
 
-							}
-						});
-					}
+			});
+		});
+		KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
+		textArea.getInputMap().put(keystroke, "f");
+		textArea.getActionMap().put("f", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 
-				});
+				findTextWidget();
+
 			}
 		});
-
 		highlighter = textArea.getHighlighter();
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
@@ -317,7 +312,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			Stage s = new Stage();
 			new Thread() {
 				public void run() {
-			
+
 					FindTextWidget controller = new FindTextWidget();
 					controller.setTextArea(textArea);
 					try {
