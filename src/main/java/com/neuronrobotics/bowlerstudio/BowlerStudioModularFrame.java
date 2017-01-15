@@ -184,6 +184,9 @@ public class BowlerStudioModularFrame {
 
 			// focus on the tutorial to start
 			Platform.runLater(() -> getTutorialDockNode().requestFocus());
+			connectionManagerDockNode.onMouseClickedProperty().addListener((a,b,c)->{
+				System.err.println("Cloick");
+			});
 
 		} catch (Exception | Error e) {
 			e.printStackTrace();
@@ -353,6 +356,7 @@ public class BowlerStudioModularFrame {
 					newTab.getOnCloseRequest().handle(null);
 				}
 			});
+
 			webTabs.put(newTab, dn);
 			Platform.runLater(() -> {
 				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());

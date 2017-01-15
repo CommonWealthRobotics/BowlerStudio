@@ -1,8 +1,11 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -84,7 +87,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private ScriptingFileWidget scripting;
 
 	IScriptEventListener l = null;
-	private RSyntaxTextArea textArea = new RSyntaxTextArea(100, 150);
+
 	private MySwingNode sn;
 	private RTextScrollPane sp;
 
@@ -92,6 +95,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private HighlightPainter painter;
 	private int lineSelected = 0;
+
+	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(100, 150);
+
+	private final File file;
 
 	private class MySwingNode extends SwingNode {
 		/**
@@ -104,12 +111,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		 */
 		@Override
 		public double minWidth(double height) {
-			try{
-				return super.minWidth( height) ;
-			}catch(Exception e){
+			try {
+				return super.minWidth(height);
+			} catch (Exception e) {
 				return 200;
 			}
-			
+
 		}
 
 		/**
@@ -122,16 +129,54 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		 */
 		@Override
 		public double minHeight(double width) {
-			try{
-				return super.minHeight( width) ;
-			}catch(Exception e){
+			try {
+				return super.minHeight(width);
+			} catch (Exception e) {
 				return 200;
 			}
 		}
 	}
 
+	public class MyRSyntaxTextArea extends RSyntaxTextArea implements ComponentListener {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public MyRSyntaxTextArea() {
+			this.addComponentListener(this);
+		}
+
+		public MyRSyntaxTextArea(int i, int j) {
+			super(i, j);
+		}
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+		}
+
+		public void componentResized(ComponentEvent e) {
+			System.err.println("componentResized");
+		}
+
+		public void componentHidden(ComponentEvent e) {
+			System.err.println("componentHidden");
+		}
+
+		public void componentMoved(ComponentEvent e) {
+			System.err.println("componentMoved");
+		}
+
+		public void componentShown(ComponentEvent e) {
+			System.err.println("componentShown");
+		}
+
+	}
+
 	public LocalFileScriptTab(File file) throws IOException {
 
+		this.file = file;
 		setScripting(new ScriptingFileWidget(file));
 		setSpacing(5);
 		l = this;
@@ -241,18 +286,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		sp = new RTextScrollPane(textArea);
 
 		sn = new MySwingNode();
+
 		SwingUtilities.invokeLater(() -> sn.setContent(sp));
 
 		getScripting().setFocusTraversable(false);
 
 		getChildren().setAll(sn, getScripting());
 		sn.setOnMouseEntered(mouseEvent -> {
-			sn.requestFocus();
-			SwingUtilities.invokeLater(() -> {
-				textArea.requestFocusInWindow();
-
-			});
+			resizeEvent();
 		});
+		// textArea
 		KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
 		textArea.getInputMap().put(keystroke, "f");
 		textArea.getActionMap().put("f", new AbstractAction() {
@@ -266,7 +309,38 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
 		highlighter.removeAllHighlights();
-
+		focusedProperty().addListener((w, o, n)->{
+			System.err.println("Focused "+file);
+		});
+		
+		widthProperty().addListener((w, o, n) -> {
+			//c.resizeChart((int) n.intValue(), (int) pane.getHeight());
+			//System.err.println("Width resized "+file);
+			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
+			
+			resizeEvent();
+		});
+		heightProperty().addListener((w, o, n) -> {
+			//c.resizeChart((int) pane.getWidth(), (int) n.intValue());
+			//System.err.println("height resized "+file);
+			resizeEvent();
+			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
+		});
+	}
+	
+	private void resizeEvent(){	
+		SwingUtilities.invokeLater(() -> {
+			sp.setSize((int)sp.getWidth()-1, (int)sp.getHeight()-1);
+			textArea.requestFocusInWindow();
+			textArea.invalidate();
+			textArea.repaint();
+			sp.invalidate();
+			sp.repaint();
+			Platform.runLater(()->{
+				sn.requestFocus();
+			});
+		});
+		//System.err.println("resize "+file);
 	}
 
 	@Override
