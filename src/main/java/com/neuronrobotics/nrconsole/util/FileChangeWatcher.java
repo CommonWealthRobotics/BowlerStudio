@@ -241,7 +241,7 @@ public class FileChangeWatcher {
 		WatchKey key;
 		try {
 			key = watcher.take();
-		} catch (InterruptedException x) {
+		} catch (Exception x) {
 			return;
 		}
 		if(!run)
