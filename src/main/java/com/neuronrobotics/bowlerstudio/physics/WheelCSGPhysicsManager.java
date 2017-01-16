@@ -38,14 +38,13 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager{
 			}
 		}
 		if(getController()!=null){
-			velocity = getController().compute(getWheelInfo().deltaRotation, getTarget(),timeStep);
+			velocity = getController().compute(getWheelInfo().rotation, getTarget(),timeStep);
 			
 		}
 		vehicle.updateWheelTransform(getWheelIndex(), true);
 		TransformNR trans = TransformFactory.bulletToNr(vehicle.getWheelInfo(getWheelIndex()).worldTransform);
 		//copy in the current wheel location
 		TransformFactory.nrToBullet(trans, getUpdateTransform());
-		ThreadUtil.wait(16);
 	}
 
 	public double getTarget() {
