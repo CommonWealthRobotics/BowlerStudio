@@ -29,7 +29,12 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager{
 		vehicleRayCaster = new DefaultVehicleRaycaster(core.getDynamicsWorld());
 		setVehicle(new RaycastVehicle(getTuning(), getFallRigidBody(), vehicleRayCaster));
 	}
-
+	@Override
+	public void update(float timeStep){		
+		super.update(timeStep);
+		vehicle.updateVehicle(timeStep);
+	}
+	
 
 	public RaycastVehicle getVehicle() {
 		return vehicle;
