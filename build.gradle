@@ -269,7 +269,7 @@ dependencies {
 
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
-	compile fileTree (dir: 'library/bowler-script-kernel/libs/', includes: ['*.jar'])
+	compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
 
 }
 
