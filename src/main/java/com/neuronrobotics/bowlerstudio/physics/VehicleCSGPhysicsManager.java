@@ -7,6 +7,8 @@ import com.bulletphysics.dynamics.vehicle.RaycastVehicle;
 import com.bulletphysics.dynamics.vehicle.VehicleRaycaster;
 import com.bulletphysics.dynamics.vehicle.VehicleTuning;
 import com.bulletphysics.linearmath.Transform;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+
 import eu.mihosoft.vrl.v3d.CSG;
 
 public class VehicleCSGPhysicsManager extends CSGPhysicsManager{
@@ -30,9 +32,18 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager{
 		setVehicle(new RaycastVehicle(getTuning(), getFallRigidBody(), vehicleRayCaster));
 	}
 	@Override
-	public void update(float timeStep){		
-		super.update(timeStep);
+	public void update(float timeStep){	
+		getFallRigidBody().getMotionState().getWorldTransform(getUpdateTransform());
+		if(getUpdateManager()!=null){
+			try{
+				getUpdateManager().update(timeStep);
+			}catch(Exception e){
+				BowlerStudio.printStackTrace(e);
+				throw e;
+			}
+		}
 		vehicle.updateVehicle(timeStep);
+		
 	}
 	
 

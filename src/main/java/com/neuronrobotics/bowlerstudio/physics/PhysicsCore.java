@@ -196,14 +196,15 @@ public class PhysicsCore {
 		for (IPhysicsManager o : getPhysicsObjects()) {
 			o.update(timeStep);
 		}
-		for (IPhysicsManager o : getPhysicsObjects())
-			Platform.runLater(() -> {
+		
+		Platform.runLater(() -> {
+			for (IPhysicsManager o : getPhysicsObjects())
 				try {
 					TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform());
 				} catch (Exception e) {
 
 				}
-			});
+		});
 	}
 
 	public void stepMs(double timeStep) {
