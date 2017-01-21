@@ -21,3 +21,5 @@
 *.debuggerDefaults*
 /*.svg
 /*.svg.png
+/.combined.png-autosave.kra
+/combined.png
