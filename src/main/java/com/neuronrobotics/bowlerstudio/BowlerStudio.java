@@ -204,7 +204,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 					
 				}
-				renderSplashFrame(splashGraphics, 15,"Loading Configurations");
+				renderSplashFrame(splashGraphics, 15,"Loading Settings");
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
 				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
@@ -390,12 +390,12 @@ public class BowlerStudio extends Application {
 	static void renderSplashFrame(Graphics2D g, int frame, String message) {
 		
 		if (splashGraphics != null && splash.isVisible()) {
-			System.out.println(" Splash Rendering "+frame);
+			System.out.println(" Splash Rendering "+frame+" "+message);
 			g.setComposite(AlphaComposite.Clear);
-			g.fillRect(70, 270, 200, 40);
+			g.fillRect(65, 270, 200, 40);
 			g.setPaintMode();
 			g.setColor(Color.WHITE);
-			g.drawString(frame+"% "+message, 70, 280);
+			g.drawString(frame+"% "+message, 65, 280);
 			splash.update();
 		}
 	}
