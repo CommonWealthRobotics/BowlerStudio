@@ -1,3 +1,35 @@
+bowlerstudio (0.20.4) xenial; urgency=medium
+
+  * Wider margin for cancle double click
+  * buffered output stream for log with tail clipping
+  * reduce the memory footprint of the camera spin.
+  * higher efficency camera
+  * making the camera use static objects wherever possible
+  * Load the ASSETS FORM THE CORRECT REPOSITORY
+  * force the mainline version in when the version updates
+  * save changes when they are made to the configurations
+  * changing asset print
+  * deeper read-back buffer
+  * moving the garbage collect to the start side
+  * Auto spin should not be enabled by default
+  * attempting to run the swingnode bounds
+  * more robust rerendering
+  * moving kernel to submodule
+  * compile the submodule version of kernel
+  * Adding imports
+  * adding the vehicle update
+  * return on any error
+  * using wheel position as opposed to its delta
+  * adding dependancies
+  * fixed the import of kernel jars
+  * removing old splash
+  * adding new splash
+  * cleaning up image assets
+  * upating javacad
+  * updating javacad
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 23 Jan 2017 20:33:04 -0500
+
 bowlerstudio (0.20.3) xenial; urgency=medium
 
   * Reverse the interpolation for smoother transition
