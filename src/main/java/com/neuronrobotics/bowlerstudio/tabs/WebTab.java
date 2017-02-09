@@ -1,40 +1,22 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
-import javax.usb.UsbDisconnectedException;
-
 import org.reactfx.util.FxTimer;
 
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -44,7 +26,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -71,7 +52,6 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private TextField urlField;
 	//private String currentAddress;
 	private ScriptingWebWidget scripting;
-    final static SplashScreen splash = SplashScreen.getSplashScreen();
     private Graphics2D splashGraphics;
     private static boolean firstBoot=true;
 
@@ -109,11 +89,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		//webEngine.setUserAgent("bowlerstudio");
 		if(Url!=null)
 			Current_URL=Url;
-	    if (splash != null) {
-	    	try{
-	        splashGraphics = splash.createGraphics();
-	    	}catch (IllegalStateException e){}
-	    }
+
 	    
 		
 		loaded=false;
@@ -145,10 +121,10 @@ public class WebTab extends Tab implements EventHandler<Event>{
     			
 		    }else{
 		    	loaded=false;
-		    	if(splashGraphics!=null && splash.isVisible()){
-		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
-		            //splash.update();
-		    	}
+//		    	if(splashGraphics!=null && splash.isVisible()){
+//		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
+//		            //splash.update();
+//		    	}
 		    	//System.err.println("Not Done Loading to: "+webEngine.getLocation());
 		    }
 		}));
@@ -279,10 +255,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private void finishLoadingComponents(){
 		//System.err.println("Finalizing: "+webEngine.getLocation());
 		try{
-			if(splashGraphics!=null && splash.isVisible()){
-	    		splash.close();
-	    		splashGraphics=null;
-	    	}
+
 			if(getScripting()!=null){
 				//when navagating to a new file, stop the script that is running
 				getScripting().stop();
