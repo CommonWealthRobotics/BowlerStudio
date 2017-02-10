@@ -127,6 +127,12 @@ public class BowlerStudio extends Application {
 	}
 
 	static {
+	    if (splash != null) {
+	    	try{
+	        splashGraphics = splash.createGraphics();
+	    	}catch (IllegalStateException e){}
+	    }
+	    renderSplashFrame(splashGraphics,2,"Testing Internet Connection");
 		// These must be changed before anything starts
 		PrintStream ps = new PrintStream(getOut());
 		// System.setErr(ps);
@@ -178,13 +184,9 @@ public class BowlerStudio extends Application {
 		
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 		
-	    if (splash != null) {
-	    	try{
-	        splashGraphics = splash.createGraphics();
-	    	}catch (IllegalStateException e){}
-	    }
 
-	    renderSplashFrame(splashGraphics, 0,"Attempting to Log In...");
+
+	    renderSplashFrame(splashGraphics,5,"Attempting to Log In...");
 		if (args.length == 0) {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
@@ -373,18 +375,18 @@ public class BowlerStudio extends Application {
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			//Log.enableInfoPrint();
-			renderSplashFrame(splashGraphics, 95,"Launching Application");
+			renderSplashFrame(splashGraphics, 100, "Done Loading!");
+			//ThreadUtil.wait(100);
+			if(splashGraphics!=null && splash.isVisible()){
+	    		splash.close();
+	    		splashGraphics=null;
+	    	}
 			launch(args);
 			
 		} else {
 			BowlerKernel.main(args);
 		}
-		renderSplashFrame(splashGraphics, 100, "Done Loading!");
-		ThreadUtil.wait(100);
-		if(splashGraphics!=null && splash.isVisible()){
-    		splash.close();
-    		splashGraphics=null;
-    	}
+
 	}
 
 	static void renderSplashFrame(Graphics2D g, int frame, String message) {
