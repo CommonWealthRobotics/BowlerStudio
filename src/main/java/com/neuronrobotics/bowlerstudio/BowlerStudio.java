@@ -127,27 +127,11 @@ public class BowlerStudio extends Application {
 	}
 
 	static {
-	    if (splash != null) {
-	    	try{
-	        splashGraphics = splash.createGraphics();
-	    	}catch (IllegalStateException e){}
-	    }
-	    renderSplashFrame(2,"Testing Internet Connection");
 		// These must be changed before anything starts
 		PrintStream ps = new PrintStream(getOut());
 		// System.setErr(ps);
 		System.setOut(ps);
-		try {
-			final URL url = new URL("http://github.com");
-			final URLConnection conn = url.openConnection();
-			conn.connect();
-			conn.getInputStream();
-			setHasnetwork(true);
-		} catch (Exception e) {
-			// we assuming we have no access to the server and run off of the
-			// cached gists.
-			setHasnetwork(false);
-		}
+
 	}
 
 	public static void select(MobileBase base) {
@@ -181,10 +165,24 @@ public class BowlerStudio extends Application {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-		
+	    if (splash != null) {
+	    	try{
+	        splashGraphics = splash.createGraphics();
+	    	}catch (IllegalStateException e){}
+	    }
+	    renderSplashFrame(2,"Testing Internet Connection");
+		try {
+			final URL url = new URL("http://github.com");
+			final URLConnection conn = url.openConnection();
+			conn.connect();
+			conn.getInputStream();
+			setHasnetwork(true);
+		} catch (Exception e) {
+			// we assuming we have no access to the server and run off of the
+			// cached gists.
+			setHasnetwork(false);
+		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-		
-
 
 	    renderSplashFrame(5,"Attempting to Log In...");
 		if (args.length == 0) {
