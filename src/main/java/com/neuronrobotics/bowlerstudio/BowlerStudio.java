@@ -132,7 +132,7 @@ public class BowlerStudio extends Application {
 	        splashGraphics = splash.createGraphics();
 	    	}catch (IllegalStateException e){}
 	    }
-	    renderSplashFrame(splashGraphics,2,"Testing Internet Connection");
+	    renderSplashFrame(2,"Testing Internet Connection");
 		// These must be changed before anything starts
 		PrintStream ps = new PrintStream(getOut());
 		// System.setErr(ps);
@@ -186,7 +186,7 @@ public class BowlerStudio extends Application {
 		
 
 
-	    renderSplashFrame(splashGraphics,5,"Attempting to Log In...");
+	    renderSplashFrame(5,"Attempting to Log In...");
 		if (args.length == 0) {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
@@ -197,7 +197,7 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.setupAnyonmous();
 				
 			}
-		    renderSplashFrame(splashGraphics, 10,"Login OK!");
+		    renderSplashFrame( 10,"Login OK!");
 
 			String myAssets =AssetFactory.getGitSource();
 			if (ScriptingEngine.isLoginSuccess()){
@@ -206,13 +206,13 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 					
 				}
-				renderSplashFrame(splashGraphics, 15,"Loading Settings");
+				renderSplashFrame( 15,"Loading Settings");
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
 				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 						StudioBuildInfo.getVersion());
 				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
-					renderSplashFrame(splashGraphics, 20,"Updating Image Assets");
+					renderSplashFrame( 20,"Updating Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
 					File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
@@ -228,7 +228,7 @@ public class BowlerStudio extends Application {
 				}
 				
 				if(BowlerStudio.hasNetwork()){
-					renderSplashFrame(splashGraphics, 25,"Populating Menu");
+					renderSplashFrame( 25,"Populating Menu");
 
 						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
 						GHMyself self = github.getMyself();
@@ -252,7 +252,7 @@ public class BowlerStudio extends Application {
 				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
 				
 			}
-			renderSplashFrame(splashGraphics, 50,"Downloading Images");
+			renderSplashFrame( 50,"Downloading Images");
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 							myAssets),
@@ -262,17 +262,17 @@ public class BowlerStudio extends Application {
 			// Download and Load all of the assets
 			AssetFactory.loadAsset("BowlerStudio.png");
 			BowlerStudioResourceFactory.load();
-			renderSplashFrame(splashGraphics, 60,"Downloading Vitamins");
+			renderSplashFrame( 60,"Downloading Vitamins");
 			//load the vitimins repo so the demo is always snappy
 			ScriptingEngine.fileFromGit(
 					"https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", 
 					"BowlerStudioVitamins/stl/servo/smallservo.stl");
-			renderSplashFrame(splashGraphics, 70,"Downloading tutorials");
+			renderSplashFrame( 70,"Downloading tutorials");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
 					"https://github.com/CommonWealthRobotics/NeuronRobotics.github.io.git", 
 					"index.html");
-			renderSplashFrame(splashGraphics, 80,"Loding Example Robots");
+			renderSplashFrame( 80,"Loding Example Robots");
 			ScriptingEngine
 			.fileFromGit(
 					"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
@@ -369,13 +369,13 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			renderSplashFrame(splashGraphics, 90,"Loading STL Loader");
+			renderSplashFrame( 90,"Loading STL Loader");
 			// Add the engine handeler for STLs
 			ScriptingEngine.addScriptingLanguage(new StlLoader());
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			//Log.enableInfoPrint();
-			renderSplashFrame(splashGraphics, 100, "Done Loading!");
+			renderSplashFrame( 100, "Done Loading!");
 			//ThreadUtil.wait(100);
 			if(splashGraphics!=null && splash.isVisible()){
 	    		splash.close();
@@ -389,15 +389,15 @@ public class BowlerStudio extends Application {
 
 	}
 
-	static void renderSplashFrame(Graphics2D g, int frame, String message) {
+	public static void renderSplashFrame( int frame, String message) {
 		
 		if (splashGraphics != null && splash.isVisible()) {
 			System.out.println(" Splash Rendering "+frame+" "+message);
-			g.setComposite(AlphaComposite.Clear);
-			g.fillRect(65, 270, 200, 40);
-			g.setPaintMode();
-			g.setColor(Color.WHITE);
-			g.drawString(frame+"% "+message, 65, 280);
+			splashGraphics.setComposite(AlphaComposite.Clear);
+			splashGraphics.fillRect(65, 270, 200, 40);
+			splashGraphics.setPaintMode();
+			splashGraphics.setColor(Color.WHITE);
+			splashGraphics.drawString(frame+"% "+message, 65, 280);
 			splash.update();
 		}
 	}
