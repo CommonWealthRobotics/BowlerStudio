@@ -77,7 +77,8 @@ public class BowlerStudio extends Application {
 				ThreadUtil.wait(150);
 				String text = incoming.asString();
 				incoming.clear();
-				appendText(text);
+				if(text!=null&& text.length()>0)
+					appendText(text);
 			}
 
 		});
@@ -184,18 +185,20 @@ public class BowlerStudio extends Application {
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 
-	    renderSplashFrame(5,"Attempting to Log In...");
+	   
 		if (args.length == 0) {
+			 renderSplashFrame(5,"Attempting to Log In...");
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 			try{
 				ScriptingEngine.runLogin();
+				renderSplashFrame( 10,"Login OK!");
 			}catch(Exception e){
 				//e.printStackTrace();
 				ScriptingEngine.setupAnyonmous();
-				
+				renderSplashFrame( 10,"No Login Found");
 			}
-		    renderSplashFrame( 10,"Login OK!");
+		    
 
 			String myAssets =AssetFactory.getGitSource();
 			if (ScriptingEngine.isLoginSuccess()){
@@ -210,7 +213,7 @@ public class BowlerStudio extends Application {
 				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 						StudioBuildInfo.getVersion());
 				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
-					renderSplashFrame( 20,"Updating Image Assets");
+					renderSplashFrame( 20,"Downloading Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
 					File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
