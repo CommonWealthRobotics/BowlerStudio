@@ -1,3 +1,14 @@
+bowlerstudio (0.20.5) xenial; urgency=medium
+
+  * adding loading progress info
+  * splash loading working
+  * more loading info
+  * public splash rendering
+  * leaving only the print stream in the static declaration
+  * Text should only be appended when there is text to append.
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 10 Feb 2017 22:58:23 -0500
+
 bowlerstudio (0.20.4) xenial; urgency=medium
 
   * Wider margin for cancle double click
