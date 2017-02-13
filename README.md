@@ -156,8 +156,8 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
 	sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
 	sudo apt-get update -qq
-	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni slic3r libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils oracle-java8-set-default openjdk-8-jdk
-	sudo apt-get install  -y --force-yes bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni slic3r libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils openjdk-8-jdk bowlerstudio arduino-ide
+	sudo apt-get install  -y --force-yes oracle-java8-set-default
 	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
 #####All Unix  
    
