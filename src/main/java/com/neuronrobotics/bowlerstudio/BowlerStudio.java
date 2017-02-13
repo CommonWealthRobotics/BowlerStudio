@@ -271,7 +271,7 @@ public class BowlerStudio extends Application {
 			renderSplashFrame( 70,"Downloading tutorials");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
-					"https://github.com/CommonWealthRobotics/NeuronRobotics.github.io.git", 
+					"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
 					"index.html");
 			renderSplashFrame( 80,"Loding Example Robots");
 			ScriptingEngine
