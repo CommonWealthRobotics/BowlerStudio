@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
-import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Quat4f;
@@ -8,17 +7,13 @@ import javax.vecmath.Vector3d;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.sun.javafx.geom.transform.Affine3D;
-import com.sun.javafx.geom.transform.BaseTransform;
-
-import Jama.Matrix;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 
 // TODO: Auto-generated Javadoc
 /**
  * A factory for creating Transform objects.
  */
+@SuppressWarnings("restriction")
 public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.TransformFactory{
 	
 	public static void nrToBullet(TransformNR nr,com.bulletphysics.linearmath.Transform bullet){
