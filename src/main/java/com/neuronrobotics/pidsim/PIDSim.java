@@ -19,7 +19,7 @@ public class PIDSim {
 			0);//kd
     
     public PIDSim(LinearPhysicsEngine eng) {
-    	graphingPanel = new GraphingPanel(this,constants, "Neuron Robotics PIDSim");
+    	graphingPanel = new GraphingPanel(this,constants, "CommonWealthRobotics PIDSim");
     	phy=eng;
     }
     

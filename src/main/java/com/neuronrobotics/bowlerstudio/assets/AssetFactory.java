@@ -132,6 +132,7 @@ public class AssetFactory {
 	}
 	public static void setGitSource(String gitSource,String assetRepoBranch) throws Exception {
 		System.err.println("Assets from: "+gitSource+"#"+assetRepoBranch);
+		new Exception().printStackTrace();
 		setAssetRepoBranch( assetRepoBranch);
 		AssetFactory.gitSource = gitSource;
 		cache.clear();
