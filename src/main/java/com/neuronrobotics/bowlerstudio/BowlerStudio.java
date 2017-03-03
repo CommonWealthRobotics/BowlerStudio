@@ -40,6 +40,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHRepository;
 
@@ -216,8 +219,7 @@ public class BowlerStudio extends Application {
 					renderSplashFrame( 20,"Downloading Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
-					File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
-					AssetFactory.deleteFolder(dir);// clear out old assets
+					removeAssets();
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
 							StudioBuildInfo.getVersion());
 					// force the mainline in when a version update happens 
@@ -261,7 +263,17 @@ public class BowlerStudio extends Application {
 							StudioBuildInfo.getVersion())
 					);
 			// Download and Load all of the assets
-			AssetFactory.loadAsset("BowlerStudio.png");
+			try{
+				AssetFactory.loadAsset("BowlerStudio.png");
+			}catch(Exception ex){
+				removeAssets();
+				AssetFactory.setGitSource(
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+								myAssets),
+						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+								StudioBuildInfo.getVersion())
+						);
+			}
 			BowlerStudioResourceFactory.load();
 			renderSplashFrame( 60,"Downloading Vitamins");
 			//load the vitimins repo so the demo is always snappy
@@ -388,6 +400,12 @@ public class BowlerStudio extends Application {
 			BowlerKernel.main(args);
 		}
 
+	}
+	
+	private static void removeAssets() throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception{
+		System.err.println("Clearing assets");
+		File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
+		AssetFactory.deleteFolder(dir);// clear out old assets
 	}
 
 	public static void renderSplashFrame( int frame, String message) {
