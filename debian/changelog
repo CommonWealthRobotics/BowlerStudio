@@ -1,3 +1,32 @@
+bowlerstudio (0.20.7) xenial; urgency=medium
+
+  * 14.04 instructions update
+  * Update README.md
+  * updating the tutorials URL at boot time
+  * updating bowler kernel
+  * new version
+  * updating kernel
+  * updating the URL's
+  * removing the exception printing
+  * update javacad
+  * 0.20.7
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 06 Mar 2017 11:50:52 -0500
+
+bowlerstudio (0.20.6) xenial; urgency=medium
+
+  * 14.04 instructions update
+  * Update README.md
+  * updating the tutorials URL at boot time
+  * updating bowler kernel
+  * new version
+  * updating kernel
+  * updating the URL's
+  * removing the exception printing
+  * update javacad
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 06 Mar 2017 11:13:57 -0500
+
 bowlerstudio (0.20.5) xenial; urgency=medium
 
   * adding loading progress info
