@@ -761,7 +761,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				try {
 					ScriptingEngine.setAutoupdate(true);
 					File f = ScriptingEngine.fileFromGit(
-							"https://github.com/madhephaestus/BowlerStudioExampleRobots.git", // git
+							"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 																								// repo,
 																								// change
 																								// this
