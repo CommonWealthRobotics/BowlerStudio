@@ -53,6 +53,7 @@ public class AddFileToGistController extends Application {
 		this.refreshevent = event;
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/addFileToGist.fxml", true);

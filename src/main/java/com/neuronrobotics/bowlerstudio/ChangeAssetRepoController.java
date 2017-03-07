@@ -27,6 +27,7 @@ public class ChangeAssetRepoController extends Application {
 
 	public ChangeAssetRepoController() {}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/changeAssetRepo.fxml", true);

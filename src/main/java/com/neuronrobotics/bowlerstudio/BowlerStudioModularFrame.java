@@ -20,6 +20,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.video.OSUtil;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -82,6 +83,7 @@ public class BowlerStudioModularFrame {
 	private DockNode terminalDockNode;
 	private boolean startup = false;
 
+	@SuppressWarnings("restriction")
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -127,7 +129,11 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setBottomAnchor(dockPane, 0.0);
 
 			// test the look and feel with both Caspian and Modena
-			Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+			if(OSUtil.isOSX())
+				Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
+			else
+				Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+				
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
 			// library's internal Default.css stylesheet

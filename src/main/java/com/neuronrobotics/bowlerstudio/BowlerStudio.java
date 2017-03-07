@@ -24,6 +24,7 @@ import com.neuronrobotics.sdk.common.IDeviceAddedListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -167,7 +168,7 @@ public class BowlerStudio extends Application {
 	 *            the command line arguments
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 	    if (splash != null) {
 	    	try{
@@ -264,8 +265,12 @@ public class BowlerStudio extends Application {
 					);
 			// Download and Load all of the assets
 			try{
+				renderSplashFrame( 53,"Loading Images");
+
 				AssetFactory.loadAsset("BowlerStudio.png");
 			}catch(Exception ex){
+				renderSplashFrame( 54,"Re-Loading Images");
+
 				removeAssets();
 				AssetFactory.setGitSource(
 						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
@@ -274,6 +279,7 @@ public class BowlerStudio extends Application {
 								StudioBuildInfo.getVersion())
 						);
 			}
+			renderSplashFrame( 56,"Loading resources");
 			BowlerStudioResourceFactory.load();
 			renderSplashFrame( 60,"Downloading Vitamins");
 			//load the vitimins repo so the demo is always snappy
@@ -533,6 +539,7 @@ public class BowlerStudio extends Application {
 		BowlerStudio.creatureLab3dController = creatureLab3dController;
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
@@ -554,7 +561,10 @@ public class BowlerStudio extends Application {
 			}
 
 			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+
 			File f = AssetFactory.loadFile("layout/default.css");
+			if(f==null||! f.exists())
+				throw new RuntimeException("Style sheet does not exist");
 			scene.getStylesheets().clear();
 			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 

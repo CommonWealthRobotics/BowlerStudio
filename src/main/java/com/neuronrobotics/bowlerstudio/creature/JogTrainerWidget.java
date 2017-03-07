@@ -120,6 +120,7 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
     	if(TextField.class.isInstance(event.getSource()))
     		selected = (TextField) event.getSource();
     }
+	@SuppressWarnings("restriction")
 	@Override
     public void start(Stage primaryStage) throws Exception
     {      

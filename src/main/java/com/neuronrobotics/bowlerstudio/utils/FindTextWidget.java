@@ -195,6 +195,7 @@ public class FindTextWidget extends Application {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;

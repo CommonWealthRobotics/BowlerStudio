@@ -40,13 +40,17 @@ public class BowlerStudioResourceFactory {
 		return fxmlLoaders.get(channelIndex);
 	}
 
+	@SuppressWarnings("restriction")
 	public static void load() throws Exception {
 		try {
+			BowlerStudio.renderSplashFrame( 57,"Loading DyIO");
 			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
-			//mainPanel.setController(new DyIOPanel());
+			mainPanel.setController(new DyIOPanel());
 			mainPanel.setClassLoader(DyIOPanel.class.getClassLoader());
+			BowlerStudio.renderSplashFrame( 58,"Loading GitHub");
+
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
-			//githubLogin.setController(new GithubLoginFX());
+			githubLogin.setController(new GithubLoginFX());
 			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
 			// TODO Auto-generated catch block
@@ -85,7 +89,7 @@ public class BowlerStudioResourceFactory {
 			FXMLLoader fxmlLoader;
 			try {
 				fxmlLoader = AssetFactory.loadLayout("layout/DyIOChannelContorol.fxml", true);
-				//fxmlLoader.setController(new DyIOchannelWidget());
+				fxmlLoader.setController(new DyIOchannelWidget());
 				fxmlLoader.setClassLoader(DyIOchannelWidget.class.getClassLoader());
 				try {
 					fxmlLoader.load();
