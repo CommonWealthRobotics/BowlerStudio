@@ -361,7 +361,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		scripting.addIScriptEventListener(controller);
 	}
 
-	public static void setController(BowlerStudioController controller) {
+	public static void setBSController(BowlerStudioController controller) {
 		WebTab.controller = controller;
 		
 	}

@@ -128,7 +128,8 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
 		FXMLLoader loader = AssetFactory.loadLayout("layout/jogTrainerWidget.fxml", true);
     	Parent root;
     	loader.setController(this);
-		loader.setClassLoader(JogTrainerWidget.class.getClassLoader());
+		// This is needed when loading on MAC
+		loader.setClassLoader(getClass().getClassLoader());
         root = loader.load();
         Platform.runLater(() -> {
             primaryStage.setTitle("Configure the controller");

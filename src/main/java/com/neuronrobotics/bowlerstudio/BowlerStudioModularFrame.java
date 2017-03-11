@@ -99,7 +99,7 @@ public class BowlerStudioModularFrame {
 			String homeURL = Tutorial.getHomeUrl();
 			setJfx3dmanager(new BowlerStudio3dEngine());
 			controller = new BowlerStudioController(getJfx3dmanager());
-			WebTab.setController(controller);
+			WebTab.setBSController(controller);
 
 			WebTab webtab = null;
 			try {
