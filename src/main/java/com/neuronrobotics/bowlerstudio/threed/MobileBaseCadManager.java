@@ -227,14 +227,16 @@ public class MobileBaseCadManager {
 			DHParameterKinematics l = limbs.get(i);
 			for (CSG csg : getDHtoCadMap().get(l)) {
 				csg = csg.prepForManufacturing();
-				if(legAssembly==null)
-					legAssembly=csg;
-				else{
-					legAssembly = legAssembly
-							.union(csg
-									.movey(.5+legAssembly.getMaxY()+Math.abs(csg.getMinY()))
-									)
-							;
+				if(csg !=null){
+					if(legAssembly==null)
+						legAssembly=csg;
+					else{
+						legAssembly = legAssembly
+								.union(csg
+										.movey(.5+legAssembly.getMaxY()+Math.abs(csg.getMinY()))
+										)
+								;
+					}
 				}
 //				legAssembly.setManufactuing(new PrepForManufacturing() {
 //					public CSG prep(CSG arg0) {
