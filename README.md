@@ -165,6 +165,10 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
    
     cd BowlerStudio
     
+    git submodule init
+    
+    git submodule update
+    
     gradle jar
     
     java -jar build/libs/BowlerStudio.jar
