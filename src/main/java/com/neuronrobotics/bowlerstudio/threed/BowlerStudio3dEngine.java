@@ -605,7 +605,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 					public void run() {
 						try {
-							defaultStlDir = SVGFactory.exportSVG(currentCsg.prepForManufacturing(), defaultStlDir);
+							CSG newObject = currentCsg.prepForManufacturing();
+							BowlerStudioController.setCsg(newObject, source);
+							defaultStlDir = SVGFactory.exportSVG(newObject, defaultStlDir);
 						} catch (Exception e1) {
 							BowlerStudioController.highlightException(source, e1);
 						}
@@ -641,8 +643,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 								e1.printStackTrace();
 							}
 						try {
+							CSG newObject = currentCsg.prepForManufacturing();
+							BowlerStudioController.setCsg(newObject, source);
 							FileUtil.write(Paths.get(baseDirForFiles.getAbsolutePath()),
-									currentCsg.prepForManufacturing().toStlString());
+									newObject.toStlString());
 							System.out.println("Exported STL to" + baseDirForFiles.getAbsolutePath());
 						} catch (Exception e) {
 							BowlerStudioController.highlightException(source, e);
