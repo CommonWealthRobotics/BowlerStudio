@@ -172,13 +172,16 @@ dependencies {
 	
 	
 	
-	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
-	println("OPENCV_DIR="+basedir);
+	String basedir =System.getenv("OPENCV_DIR")+"/java/opencv-249.jar";
+	
 	if(isWindows()){
-
+	 	basedir =System.getenv("OPENCV_DIR")+"\\java\\opencv-249.jar";
+		println("OPENCV_DIR="+basedir);
 		compile files(basedir)
 	}
 	if(isOSX()){
+		basedir =System.getenv("OPENCV_DIR")+"../../java/opencv-249.jar";
+		println("OPENCV_DIR="+basedir);
 		if(System.getenv("OPENCV_DIR")!=null)
 			compile files(basedir)
 		else
