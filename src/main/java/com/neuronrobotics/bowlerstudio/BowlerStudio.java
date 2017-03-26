@@ -147,8 +147,12 @@ public class BowlerStudio extends Application {
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
 		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-				.setSelectedCsg(limCad.get(limCad.size() - 1));
+		try{
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+					.setSelectedCsg(limCad.get(limCad.size() - 1));
+		}catch (NullPointerException ex){
+			// initialization has no csgs yet
+		}
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 
