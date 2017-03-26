@@ -247,10 +247,10 @@ public class PluginManager {
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
 							Log.warning("Attempting Autoloading "+c);
-							if(CreatureLab.class !=c.getPlugin())
+							//if(CreatureLab.class !=c.getPlugin())
 								launchTab( c,launcher);	
-							else
-								generateTab(c);// dont add the creature lab it uses the overlays
+							//else
+							//	generateTab(c);// dont add the creature lab it uses the overlays
 						}
 					}else{
 						Log.warning("Not autoloading "+c);
