@@ -145,10 +145,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		AnchorPane treebox= tab. getTreeBox();
 		treebox.getChildren().clear();
 		treebox.getChildren().add(tree);
-		AnchorPane.setTopAnchor(treebox, 0.0);
-		AnchorPane.setLeftAnchor(treebox, 0.0);
-     	AnchorPane.setRightAnchor(treebox, 0.0);
-     	AnchorPane.setBottomAnchor(treebox, 0.0);
+		AnchorPane.setTopAnchor(tree, 0.0);
+		AnchorPane.setLeftAnchor(tree, 0.0);
+     	AnchorPane.setRightAnchor(tree, 0.0);
+     	AnchorPane.setBottomAnchor(tree, 0.0);
 		
 		rootItem.setExpanded(true);
 		HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
