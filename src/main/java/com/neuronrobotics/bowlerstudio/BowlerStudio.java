@@ -147,8 +147,12 @@ public class BowlerStudio extends Application {
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
 		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-				.setSelectedCsg(limCad.get(limCad.size() - 1));
+		try{
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+					.setSelectedCsg(limCad.get(limCad.size() - 1));
+		}catch (NullPointerException ex){
+			// initialization has no csgs yet
+		}
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 
@@ -486,38 +490,38 @@ public class BowlerStudio extends Application {
 		});
 	}
 
-	public static void setOverlayLeft(Node tree) {
-		BowlerStudio.creatureLab3dController.setOverlayLeft(tree);
-	}
+//	public static void setOverlayLeft(Node tree) {
+//		BowlerStudio.creatureLab3dController.setOverlayLeft(tree);
+//	}
 
-	public static void clearOverlayLeft() {
-		BowlerStudio.creatureLab3dController.clearOverlayLeft();
-	}
+//	public static void clearOverlayLeft() {
+//		BowlerStudio.creatureLab3dController.clearOverlayLeft();
+//	}
 
-	public static void setOverlayTop(Group content) {
-		BowlerStudio.creatureLab3dController.setOverlayTop(content);
-		;
-	}
+//	public static void setOverlayTop(Group content) {
+//		BowlerStudio.creatureLab3dController.setOverlayTop(content);
+//		;
+//	}
+//
+//	public static void clearOverlayTop() {
+//		BowlerStudio.creatureLab3dController.clearOverlayTop();
+//	}
 
-	public static void clearOverlayTop() {
-		BowlerStudio.creatureLab3dController.clearOverlayTop();
-	}
+//	public static void setOverlayTopRight(Group content) {
+//		BowlerStudio.creatureLab3dController.setOverlayTopRight(content);
+//	}
 
-	public static void setOverlayTopRight(Group content) {
-		BowlerStudio.creatureLab3dController.setOverlayTopRight(content);
-	}
+//	public static void clearOverlayTopRight() {
+//		BowlerStudio.creatureLab3dController.clearOverlayTopRight();
+//	}
+//
+//	public static void setOverlayBottomRight(Group content) {
+//		BowlerStudio.creatureLab3dController.setOverlayBottomRight(content);
+//	}
 
-	public static void clearOverlayTopRight() {
-		BowlerStudio.creatureLab3dController.clearOverlayTopRight();
-	}
-
-	public static void setOverlayBottomRight(Group content) {
-		BowlerStudio.creatureLab3dController.setOverlayBottomRight(content);
-	}
-
-	public static void clearOverlayBottomRight() {
-		BowlerStudio.creatureLab3dController.clearOverlayBottomRight();
-	}
+//	public static void clearOverlayBottomRight() {
+//		BowlerStudio.creatureLab3dController.clearOverlayBottomRight();
+//	}
 
 	public static boolean hasNetwork() {
 		return hasnetwork;
