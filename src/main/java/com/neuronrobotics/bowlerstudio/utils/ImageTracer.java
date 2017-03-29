@@ -37,7 +37,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to http://unlicense.org/
 
  */
-package com.neuronrobotics.bowlerstudio.twod;
+package com.neuronrobotics.bowlerstudio.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;

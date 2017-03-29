@@ -60,6 +60,7 @@ import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.utils.SVGFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;

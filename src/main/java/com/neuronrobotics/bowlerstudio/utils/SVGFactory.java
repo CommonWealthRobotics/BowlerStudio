@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import com.neuronrobotics.bowlerstudio.twod.ImageTracer;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
