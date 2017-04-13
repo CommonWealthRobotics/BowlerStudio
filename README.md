@@ -3,14 +3,14 @@ BowlerStudio
 
 [![Join the chat at https://gitter.im/CommonWealthRobotics/BowlerStudio](https://badges.gitter.im/CommonWealthRobotics/BowlerStudio.svg)](https://gitter.im/NeuronRobotics/BowlerStudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-#[Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
+# [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
-#Ubuntu
+## Ubuntu
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
 	sudo apt-get update
 	sudo apt-get remove arduino bowlerstudio 
 	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
-#Debian 
+## Debian 
 	sudo apt-get install software-properties-common python-software-properties					
 	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
@@ -19,7 +19,7 @@ BowlerStudio
 	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
 							
 
-#What is BowlerStudio?
+# What is BowlerStudio?
 
 BowlerStudio assists you in every step of a robotics project from concept to completion. Tools enable users to:
 * Interface with motors, sensors, and other electronics hardware.
@@ -31,7 +31,7 @@ BowlerStudio assists you in every step of a robotics project from concept to com
 
 ==========
 
-##The Nitty-Gritty Version
+## The Nitty-Gritty Version
 
 BowlerStudio Robotics development IDE is based on
 * [JCSG](https://github.com/miho/JCSG)
@@ -140,14 +140,14 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
 
-#####Ubuntu 16.04 Dependancies
+##### Ubuntu 16.04 Dependencies
 
     sudo add-apt-repository ppa:webupd8team/java
    
     sudo apt-get update
    
     sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java slic3r libopencv2.4-jni
-##### Ubuntu 14.04, install extra dependancies
+##### Ubuntu 14.04, install extra dependencies
 	sudo add-apt-repository ppa:cwchien/gradle -y
 	sudo apt-add-repository ppa:webupd8team/java -y
 	sudo apt-add-repository ppa:rsalveti/3d-printing -y
@@ -159,7 +159,7 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni slic3r libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils openjdk-8-jdk bowlerstudio arduino-ide
 	sudo apt-get install  -y --force-yes oracle-java8-set-default
 	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
-#####All Unix  
+##### All Unix  
    
     git clone https://github.com/NeuronRobotics/BowlerStudio.git
    
