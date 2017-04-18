@@ -293,6 +293,7 @@ public class BowlerStudio extends Application {
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
 					"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
+					"master",// the default branch is source, so this needs to be specified
 					"index.html");
 			renderSplashFrame( 80,"Loding Example Robots");
 			ScriptingEngine
