@@ -246,7 +246,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											System.out.println("Loading files for " + description);
 											ArrayList<String> listofFiles;
 											try {
-												listofFiles = ScriptingEngine.filesInGit(gist.getGitPushUrl(), "master",
+												listofFiles = ScriptingEngine.filesInGit(gist.getGitPushUrl(), ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
 														null);
 
 											} catch (Exception e1) {
@@ -421,7 +421,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 										"Loading files for " + repo.getFullName() + " " + repo.getDescription());
 								ArrayList<String> listofFiles;
 								try {
-									listofFiles = ScriptingEngine.filesInGit(url, "master", null);
+									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
 									System.out.println("Clone Done for " + url + listofFiles.size() + " files");
 								} catch (Exception e1) {
 									e1.printStackTrace();

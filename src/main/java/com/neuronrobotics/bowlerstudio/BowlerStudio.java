@@ -256,8 +256,7 @@ public class BowlerStudio extends Application {
 			
 				
 				// to set a new repo
-				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
-				//ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", "master");
+				
 				
 			}
 			renderSplashFrame( 50,"Downloading Images");
@@ -414,7 +413,7 @@ public class BowlerStudio extends Application {
 	
 	private static void removeAssets() throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception{
 		System.err.println("Clearing assets");
-		File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),"master", "Home.png").getParentFile();
+		File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),ScriptingEngine.getFullBranch(AssetFactory.getGitSource()), "Home.png").getParentFile();
 		AssetFactory.deleteFolder(dir);// clear out old assets
 	}
 

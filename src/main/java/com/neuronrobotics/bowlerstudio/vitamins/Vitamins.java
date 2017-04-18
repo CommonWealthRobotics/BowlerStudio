@@ -164,7 +164,7 @@ public class Vitamins {
 		try{
 			ScriptingEngine.pushCodeToGit(
 					getGitRepoDatabase() ,// git repo, change this if you fork this demo
-				"master", // branch or tag
+					ScriptingEngine.getFullBranch(getGitRepoDatabase()), // branch or tag
 				getRootFolder()+type+".json", // local path to the file in git
 				jsonString, // content of the file
 				"Pushing changed Database");//commit message

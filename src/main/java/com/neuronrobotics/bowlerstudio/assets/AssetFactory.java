@@ -21,7 +21,7 @@ public class AssetFactory {
 	private static String gitSource = "https://github.com/madhephaestus/" + repo + ".git";
 	private static HashMap<String , Image> cache =new HashMap<>();
 	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
-	private static String assetRepoBranch = "master";
+	private static String assetRepoBranch = "";
 	private static boolean checked =false;
 	static{
 

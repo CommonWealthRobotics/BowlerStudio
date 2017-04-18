@@ -136,7 +136,7 @@ public class AddFileToGistController extends Application {
 			}
 			System.out.println("Adding new file"+text+" to "+gitRepo);
 			try {
-				ScriptingEngine.pushCodeToGit(gitRepo, "master", text, "//Your code here",
+				ScriptingEngine.pushCodeToGit(gitRepo, ScriptingEngine.getFullBranch(gitRepo), text, "//Your code here",
 						message);
 				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
 				BowlerStudio.createFileTab(nf);

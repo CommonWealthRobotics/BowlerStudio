@@ -71,7 +71,7 @@ public class Purchasing {
 		try{
 			ScriptingEngine.pushCodeToGit(
 					getGitRpoDatabase() ,// git repo, change this if you fork this demo
-				"master", // branch or tag
+					ScriptingEngine.getFullBranch(getGitRpoDatabase()), // branch or tag
 				getRootFolder()+type+".json", // local path to the file in git
 				jsonString, // content of the file
 				"Pushing changed Database");//commit message

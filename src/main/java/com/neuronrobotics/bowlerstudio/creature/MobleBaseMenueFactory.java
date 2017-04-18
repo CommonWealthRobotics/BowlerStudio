@@ -109,7 +109,7 @@ public class MobleBaseMenueFactory {
 					newFileCode=new String[]{""};
 				if(!WalkingEngine[0].contentEquals(newFileCode[0])){
 					System.out.println("Copy Content to "+targetGit+"/"+filename);
-					ScriptingEngine.pushCodeToGit(targetGit, "master", filename, WalkingEngine[0], "copy file content");
+					ScriptingEngine.pushCodeToGit(targetGit, ScriptingEngine.getFullBranch(targetGit), filename, WalkingEngine[0], "copy file content");
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -319,7 +319,7 @@ public class MobleBaseMenueFactory {
 							
 								String xml = device.getXml();
 								
-								ScriptingEngine.pushCodeToGit(gitURL, "master", filename, xml, "new Robot content");
+								ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, xml, "new Robot content");
 
 								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
 
