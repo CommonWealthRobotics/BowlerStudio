@@ -381,6 +381,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	}
 
+	@SuppressWarnings("restriction")
 	public void findTextWidget() {
 		Platform.runLater(() -> {
 			Stage s = new Stage();
