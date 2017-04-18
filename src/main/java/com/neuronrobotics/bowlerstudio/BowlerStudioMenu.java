@@ -221,9 +221,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								}
 							}.start());
 							Platform.runLater(() -> {
-								// tmpGist.getItems().addAll(addFile,
-								// loadWebGist);
-								tmpGist.getItems().add(loadWebGist);
+								tmpGist.getItems().addAll(addFile,
+								 loadWebGist);
 							});
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
@@ -367,8 +366,22 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				Menu orgRepo = new Menu(repo.getFullName());
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
-				MenuItem addFile = new MenuItem("Add file to Git Repo...");
+				MenuItem updateRepo = new MenuItem("Update Repo...");
 				String url = repo.getGitTransportUrl().replace("git://", "https://");
+				updateRepo.setOnAction(event -> {
+//					System.out.println("Adding file to : " + url);
+//					Platform.runLater(() -> {
+//						Stage s = new Stage();
+//
+//						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
+//						try {
+//							controller.start(s);
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//					});
+				});
+				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				addFile.setOnAction(event -> {
 					System.out.println("Adding file to : " + url);
 					Platform.runLater(() -> {
@@ -382,10 +395,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						}
 					});
 				});
-
 				Platform.runLater(() -> {
 					orgFiles.getItems().add(loading);
-					orgRepo.getItems().addAll(addFile, orgFiles);
+					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles);
 				});
 
 				EventHandler<Event> loadFiles = new EventHandler<Event>() {
@@ -848,6 +860,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									if (String.class.isInstance(set[i])) {
 										String s = (String) set[i];
 										try {
+											@SuppressWarnings("unchecked")
 											ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 											File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 											if (createFileTab(f) == null) {

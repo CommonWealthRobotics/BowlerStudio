@@ -26,7 +26,7 @@ public class AssetFactory {
 	static{
 
 			try {
-				
+				assetRepoBranch = ScriptingEngine.getFullBranch(gitSource);
 				loadAllAssets();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
