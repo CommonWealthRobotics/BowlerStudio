@@ -3,16 +3,15 @@
  */
 package junit.bowlerstudio;
 
-import static org.junit.Assert.*;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import static org.junit.Assert.fail;
 
 /**
  * @author hephaestus
@@ -32,7 +31,6 @@ public class VitaminsTests {
 		try {
 			ScriptingEngine.runLogin();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		if(!ScriptingEngine.isLoginSuccess())
@@ -66,7 +64,6 @@ public class VitaminsTests {
 //			try {
 //				Vitamins.saveDatabase(vitaminsType);
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 		}

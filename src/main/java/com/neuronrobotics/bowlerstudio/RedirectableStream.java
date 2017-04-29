@@ -52,24 +52,22 @@
  */
 package com.neuronrobotics.bowlerstudio;
 
+import javafx.application.Platform;
+import javafx.scene.control.TextArea;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.scene.control.TextArea;
 
 /**
- *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class RedirectableStream extends PrintStream {
-
     public static PrintStream ORIGINAL_SOUT = System.out;
     public static PrintStream ORIGINAL_SERR = System.err;
 
@@ -82,9 +80,8 @@ public class RedirectableStream extends PrintStream {
         super(out);
         this.views.clear();
 
-        for (TextArea textArea : views) {
+        for (TextArea textArea : views)
             addView(textArea);
-        }
 
         setRedirectToStdOut(true);
     }
@@ -92,9 +89,7 @@ public class RedirectableStream extends PrintStream {
     @Override
     public synchronized void write(byte[] buf, int off, int len) {
         if (isRedirectToUi()) {
-
             invokeAndWait(() -> {
-
                 int i = 0;
                 for (TextArea view : views) {
 
@@ -108,6 +103,7 @@ public class RedirectableStream extends PrintStream {
                             e.printStackTrace();
                         }
                     }
+
                     i++;
                 }
             });
@@ -128,16 +124,13 @@ public class RedirectableStream extends PrintStream {
 //            });
         }
 
-        if (isRedirectToStdOut()) {
+        if (isRedirectToStdOut())
             super.write(buf, off, len);
-        }
     }
 
     public final void addView(TextArea view) {
         views.add(view);
-        filters.add((OutputFilter) (String s) -> {
-            return true;
-        });
+        filters.add((String s) -> true);
     }
 
     public void setFilter(TextArea view, OutputFilter filter) {
@@ -174,9 +167,9 @@ public class RedirectableStream extends PrintStream {
     }
 
     private static void invokeAndWait(Runnable r) {
-        if (Platform.isFxApplicationThread()) {
+        if (Platform.isFxApplicationThread())
             r.run();
-        } else {
+        else {
             FutureTask<Boolean> task = new FutureTask<>(r, true);
 
             Platform.runLater(task);

@@ -1,20 +1,16 @@
 package com.neuronrobotics.pidsim;
 
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.*;
+import jxl.write.Number;
+import jxl.write.biff.RowsExceededException;
+import org.jfree.data.xy.XYDataItem;
+import org.jfree.data.xy.XYSeries;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
-
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.write.Label;
-import jxl.write.Number;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
-
-import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYSeries;
 
 public class ExcelWriter {
 	private WorkbookSettings wbSettings = new WorkbookSettings();
@@ -48,7 +44,6 @@ public class ExcelWriter {
 			workbook.createSheet("Data", 0);
 			excelSheet = workbook.getSheet(0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -63,7 +58,6 @@ public class ExcelWriter {
 			try {
 				cache = data.createCopy(0, data.getItemCount() - 1);
 			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
@@ -74,11 +68,7 @@ public class ExcelWriter {
 				addNumber(lineOffset+1, col, i.getYValue());
 				col++;
 			}
-		} catch (RowsExceededException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (WriteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		lineOffset+=2;
@@ -89,7 +79,6 @@ public class ExcelWriter {
 			workbook.write();
 			workbook.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -1,21 +1,15 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
 public class BowlerStudioFXMLController {
-
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -203,7 +197,8 @@ public class BowlerStudioFXMLController {
         // handle the event here
     }
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    @FXML
+        // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert BowlerStudioMenue != null : "fx:id=\"BowlerStudioMenue\" was not injected: check your FXML file 'Main.fxml'.";
         assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'Main.fxml'.";
@@ -227,9 +222,6 @@ public class BowlerStudioFXMLController {
         assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'Main.fxml'.";
         assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'Main.fxml'.";
         assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'Main.fxml'.";
-
         // Initialize your logic here: all @FXML variables will have been injected
-
     }
-
 }

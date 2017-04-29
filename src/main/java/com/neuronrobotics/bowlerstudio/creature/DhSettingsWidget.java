@@ -1,17 +1,14 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.application.Platform;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
-
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 
 
 public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeringUnitsChange {
@@ -105,9 +102,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	}
 
 	@Override
-	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
-			double newAngleDegrees) {
-		// TODO Auto-generated method stub
+	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		if(externalListener!=null)
 			externalListener.onSliderDoneMoving(source, newAngleDegrees);
 	}

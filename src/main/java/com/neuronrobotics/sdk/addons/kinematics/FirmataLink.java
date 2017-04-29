@@ -1,12 +1,11 @@
 package com.neuronrobotics.sdk.addons.kinematics;
 
-import java.io.IOException;
-
+import com.neuronrobotics.sdk.common.DeviceManager;
 import org.firmata4j.IOEvent;
 import org.firmata4j.Pin;
 import org.firmata4j.PinEventListener;
 
-import com.neuronrobotics.sdk.common.DeviceManager;
+import java.io.IOException;
 
 public class FirmataLink extends AbstractLink implements  PinEventListener{
 
@@ -23,13 +22,11 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 
 	@Override
 	public void cacheTargetValueDevice() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void flushAllDevice(double arg0) {
-		// TODO Auto-generated method stub
 		flushDevice(arg0);
 	}
 
@@ -69,14 +66,7 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 				if(dev!= null)
 					try {
 						return new FirmataLink(config, dev);
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
+					} catch (IllegalArgumentException | IOException | InterruptedException e) {
 						e.printStackTrace();
 					}
 				return null;

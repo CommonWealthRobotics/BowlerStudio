@@ -1,43 +1,21 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.time.Duration;
-
-import org.reactfx.util.FxTimer;
-
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.DhLinkType;
-import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
-import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
-import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.addons.kinematics.*;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
-import net.java.games.input.Event;
+import org.reactfx.util.FxTimer;
+
+import java.time.Duration;
 
 public class LinkSliderWidget extends Group
 		implements  IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener {
@@ -56,20 +34,16 @@ public class LinkSliderWidget extends Group
 	private EngineeringUnitsSliderWidget slide;
 
 	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR d) {
-
 		this.linkIndex = linkIndex;
 		this.device = d;
-		if (DHParameterKinematics.class.isInstance(device)) {
+		if (DHParameterKinematics.class.isInstance(device))
 			dhdevice = (DHParameterKinematics) device;
-		}
 
 		abstractLink = device.getAbstractLink(linkIndex);
 
 		TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
 		name.setMaxWidth(100.0);
-		name.setOnAction(event -> {
-			abstractLink.getLinkConfiguration().setName(name.getText());
-		});
+		name.setOnAction(event -> abstractLink.getLinkConfiguration().setName(name.getText()));
 
 		setpoint = new EngineeringUnitsSliderWidget(this, 
 													abstractLink.getMinEngineeringUnits(),
@@ -122,28 +96,21 @@ public class LinkSliderWidget extends Group
 //
 //	@Override
 //	public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
-//		// TODO Auto-generated method stub
 //		System.out.println("targe update");
 //	}
 //
 //	@Override
 //	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-//		// TODO Auto-generated method stub
 //		System.out.println("limit update");
 //
 //	}
 
 	private void controllerLoop() {
 		seconds = .1;
-		if (getGameController() != null || stop == false) {
-
-			if (!stop) {
+		if (getGameController() != null || !stop) {
+			if (!stop)
 				jogTHreadHandle.setToSet(slider + setpoint.getValue(), seconds);
-			}
-
-			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), () -> {
-				controllerLoop();
-			});
+			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), this::controllerLoop);
 		}
 	}
 
@@ -162,7 +129,6 @@ public class LinkSliderWidget extends Group
 						device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
 						setpoint.setValue(newValue);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					controlThreadRunning = false;
@@ -172,12 +138,10 @@ public class LinkSliderWidget extends Group
 		}
 
 		public void setToSet(double newValue, double toSeconds) {
-
 			this.newValue = newValue;
 			this.toSeconds = toSeconds;
 			controlThreadRunning = true;
 		}
-
 	}
 
 	public void setGameController(BowlerJInputDevice controller) {
@@ -210,46 +174,31 @@ public class LinkSliderWidget extends Group
 
 		if (Math.abs(slider) < .01)
 			slider = 0;
-		if (slider == 0) {
-			// System.out.println("Stoping on="+comp.getName());
-			stop = true;
-		} else
-			stop = false;
+		// System.out.println("Stoping on="+comp.getName());
+		stop = slider == 0;
 	}
 
 	@Override
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-		// TODO Auto-generated method stub
 		try {
 			device.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
-
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		;
-
 	}
 
 	@Override
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-
 	}
 
 	@Override
 	public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
-		// TODO Auto-generated method stub
 		try {
 			setpoint.setValue(arg1);
-		} catch (ArrayIndexOutOfBoundsException ex) {
-			return;
-		}
+		} catch (ArrayIndexOutOfBoundsException ignored) {}
 	}
-
 }

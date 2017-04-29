@@ -1,24 +1,18 @@
 package com.neuronrobotics.nrconsole.util;
 
-import java.io.File;
-import java.util.Optional;
-
-import org.eclipse.jgit.api.Git;
-import org.jfree.util.Log;
-
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
+import org.eclipse.jgit.api.Git;
+import org.jfree.util.Log;
+
+import java.io.File;
+import java.util.Optional;
 
 public class CommitWidget {
 	public static void commit(File currentFile, String code){
@@ -93,7 +87,6 @@ public class CommitWidget {
 						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message);
 						    git.close();
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 			    	}

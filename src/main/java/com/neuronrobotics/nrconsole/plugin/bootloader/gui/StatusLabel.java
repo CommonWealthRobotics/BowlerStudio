@@ -1,12 +1,9 @@
 package com.neuronrobotics.nrconsole.plugin.bootloader.gui;
 
-import java.net.MalformedURLException;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
+
+import javax.swing.*;
+import java.net.MalformedURLException;
 
 public class StatusLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
@@ -42,10 +39,8 @@ public class StatusLabel extends JLabel {
 		    if (imgURL != null) 
 		        return new ImageIcon(imgURL);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

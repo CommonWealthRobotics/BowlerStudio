@@ -1,12 +1,9 @@
 package com.neuronrobotics.nrconsole.plugin.DeviceConfig;
 
-import java.text.NumberFormat;
-
-import javax.swing.GroupLayout;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import java.text.NumberFormat;
 
 public class Slic3rAll extends SettingsPanel implements SettingsChangeListener{
 	private JLabel lblNozzleDiameter;
@@ -123,9 +120,7 @@ public class Slic3rAll extends SettingsPanel implements SettingsChangeListener{
 		tfSupportMaterialInterSpeedPercent.setValue(master.getSetting(21).getValue());
 		tfFirstLayerSpeedPercent.setValue(master.getSetting(22).getValue());
 		}
-		
 	}
-
 
 	@Override
 	public void initComponents() {

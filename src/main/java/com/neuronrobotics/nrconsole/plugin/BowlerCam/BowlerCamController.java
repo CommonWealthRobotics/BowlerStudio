@@ -13,13 +13,10 @@ public class BowlerCamController extends AbstractBowlerStudioTab{
 
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String[] getMyNameSpaces() {
-		// TODO Auto-generated method stub
 		return new String[] {"neuronrobotics.bowlercam.*"};
 	}
 
@@ -40,8 +37,6 @@ public class BowlerCamController extends AbstractBowlerStudioTab{
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

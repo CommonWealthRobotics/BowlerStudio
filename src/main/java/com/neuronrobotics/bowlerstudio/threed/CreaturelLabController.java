@@ -5,11 +5,12 @@ package com.neuronrobotics.bowlerstudio.threed;
  * You can copy and paste this code into your favorite IDE
  **/
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
 public class CreaturelLabController {
@@ -38,8 +39,8 @@ public class CreaturelLabController {
     @FXML // fx:id="viewContainer"
     private AnchorPane viewContainer; // Value injected by FXMLLoader
 
-
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    @FXML
+        // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
         assert DriveControlsAnchor != null : "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
@@ -47,10 +48,6 @@ public class CreaturelLabController {
         assert jfx3dControls != null : "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'CreatureLab.fxml'.";
         assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'CreatureLab.fxml'.";
         assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-
         // Initialize your logic here: all @FXML variables will have been injected
-        
-
     }
-
 }

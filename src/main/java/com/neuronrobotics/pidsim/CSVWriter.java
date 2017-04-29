@@ -1,12 +1,12 @@
 package com.neuronrobotics.pidsim;
 
+import org.jfree.data.xy.XYDataItem;
+import org.jfree.data.xy.XYSeries;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYSeries;
 
 public class CSVWriter {
 
@@ -21,7 +21,6 @@ public class CSVWriter {
 		try {
 			fstream = new FileWriter(f.getAbsolutePath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -35,7 +34,6 @@ public class CSVWriter {
 		try {
 			cache = data.createCopy(0, data.getItemCount() - 1);
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -56,7 +54,6 @@ public class CSVWriter {
 		try {
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

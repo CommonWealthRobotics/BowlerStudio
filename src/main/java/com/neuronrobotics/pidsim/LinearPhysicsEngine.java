@@ -1,8 +1,8 @@
 package com.neuronrobotics.pidsim;
 
-import java.util.ArrayList;
-
 import com.neuronrobotics.sdk.common.NonBowlerDevice;
+
+import java.util.ArrayList;
 
 public class LinearPhysicsEngine extends NonBowlerDevice {
 	/**
@@ -153,7 +153,6 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 
 	@Override
 	public ArrayList<String> getNamespacesImp() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

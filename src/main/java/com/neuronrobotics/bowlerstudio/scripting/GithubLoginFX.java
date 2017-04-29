@@ -1,111 +1,108 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.stage.Stage;
-
-
 
 public class GithubLoginFX implements javafx.fxml.Initializable {
+    @FXML
+    private TextField username;
+    @FXML
+    private
+    PasswordField password;
 
-	@FXML
-	private TextField username;
-	@FXML PasswordField password;
-	
-	private boolean done=false;
-	
-	private String [] creds = new String[]{"",""};
-	private Stage stage;
-	private Parent root;
-	private Scene scene;
+    private boolean done = false;
+    private String[] creds = new String[]{"", ""};
+    private Stage stage;
+    private Parent root;
+    private Scene scene;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		
-		reset();
-	}
-	
-	public void reset(){
-		done=false;
-		setCreds(new String[]{"",""});
-		password.clear();
-		getUsername().clear();
-		
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        reset();
+    }
 
-	}
+    public void reset() {
+        done = false;
+        setCreds(new String[]{"", ""});
+        password.clear();
+        getUsername().clear();
+    }
 
-	@FXML public void anonMode() {
-		setCreds(null);
-		try {
-			// this should make anon mode stick
-			ScriptingEngine.setupAnyonmous();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finish();
-	}
-	private void finish(){
-		stage.close();
-		stage.hide();
-		done=true;
-	}
+    @FXML
+    public void anonMode() {
+        setCreds(null);
+        try {
+            // this should make anon mode stick
+            ScriptingEngine.setupAnyonmous();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finish();
+    }
 
-	@FXML public void login() {
-		getCreds()[0]= getUsername().getText();
-		getCreds()[1]= password.getText();
-		if(getCreds()[0]==null||getCreds()[1]==null){
-			setCreds(null);
-		}else if(getCreds()[0].equals("")||getCreds()[1].equals("")){
-			setCreds(null);
-		}
-		
-		finish();
-	}
+    private void finish() {
+        stage.close();
+        stage.hide();
+        done = true;
+    }
 
-	@FXML public void focusOnPw() {
-		password.requestFocus();
-	}
+    @FXML
+    public void login() {
+        getCreds()[0] = getUsername().getText();
+        getCreds()[1] = password.getText();
 
-	public boolean isDone() {
-		return done;
-	}
+        if (getCreds()[0] == null || getCreds()[1] == null)
+            setCreds(null);
+        else if (getCreds()[0].equals("") || getCreds()[1].equals(""))
+            setCreds(null);
 
-	public void setDone(boolean done) {
-		this.done = done;
-	}
+        finish();
+    }
 
-	public String [] getCreds() {
-		return creds;
-	}
+    @FXML
+    public void focusOnPw() {
+        password.requestFocus();
+    }
 
-	public void setCreds(String [] creds) {
-		this.creds = creds;
-	}
+    public boolean isDone() {
+        return done;
+    }
 
-	public void setStage(Stage stage, Parent root) {
-		this.stage = stage;
-		if(this.root==null){
-			this.root = root;
-			scene=  new Scene(root);
-		}
-		stage.setScene(scene);  
-	}
+    public void setDone(boolean done) {
+        this.done = done;
+    }
 
-	public TextField getUsername() {
-		return username;
-	}
+    public String[] getCreds() {
+        return creds;
+    }
 
-	public void setUsername(TextField username) {
-		this.username = username;
-	}
+    public void setCreds(String[] creds) {
+        this.creds = creds;
+    }
 
+    public void setStage(Stage stage, Parent root) {
+        this.stage = stage;
+        if (this.root == null) {
+            this.root = root;
+            scene = new Scene(root);
+        }
+        stage.setScene(scene);
+    }
 
+    public TextField getUsername() {
+        return username;
+    }
+
+    public void setUsername(TextField username) {
+        this.username = username;
+    }
 }

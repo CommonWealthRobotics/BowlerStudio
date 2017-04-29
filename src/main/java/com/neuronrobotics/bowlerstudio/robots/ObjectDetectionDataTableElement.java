@@ -1,45 +1,43 @@
 package com.neuronrobotics.bowlerstudio.robots;
 
-import java.util.ArrayList;
-
 import com.neuronrobotics.imageprovider.Detection;
 import com.neuronrobotics.imageprovider.IObjectDetector;
 
+import java.util.ArrayList;
+
 public class ObjectDetectionDataTableElement {
+    private IObjectDetector detector;
+    private String name;
+    private ArrayList<Detection> detections = new ArrayList<Detection>();
+    private int storeTime = 10;
 
-	private IObjectDetector detector;
-	private String name;
-	private ArrayList<Detection> detections = new ArrayList<Detection>();
-	private int storeTime=10;
-	
-	public ObjectDetectionDataTableElement(IObjectDetector detector, String Name){
-		this.setDetector(detector);
-		setName(Name);
-	}
-	
-	public void addDetection(Detection d){
-		if(d!=null){
-			detections.add(d);
-		}
-		//pop out old elements
-		if(detections.size()>storeTime)
-			detections.remove(detections.size()-1);
-	}
+    public ObjectDetectionDataTableElement(IObjectDetector detector, String Name) {
+        this.setDetector(detector);
+        setName(Name);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void addDetection(Detection d) {
+        if (d != null)
+            detections.add(d);
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        //pop out old elements
+        if (detections.size() > storeTime)
+            detections.remove(detections.size() - 1);
+    }
 
-	public IObjectDetector getDetector() {
-		return detector;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDetector(IObjectDetector detector) {
-		this.detector = detector;
-	}
-	
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public IObjectDetector getDetector() {
+        return detector;
+    }
+
+    public void setDetector(IObjectDetector detector) {
+        this.detector = detector;
+    }
 }

@@ -1,15 +1,9 @@
 package com.neuronrobotics.pidsim;
 
-import javafx.embed.swing.SwingNode;
-import javafx.scene.control.ScrollPane;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-
-import net.miginfocom.swing.MigLayout;
-
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import javafx.embed.swing.SwingNode;
+import javafx.scene.control.ScrollPane;
 
 public class PidLab extends AbstractBowlerStudioTab {
 	LinearPhysicsEngine engine;
@@ -17,8 +11,6 @@ public class PidLab extends AbstractBowlerStudioTab {
 	
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -42,8 +34,6 @@ public class PidLab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

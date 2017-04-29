@@ -17,30 +17,20 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.ByteList;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.common.IDeviceAddedListener;
-import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.*;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.video.OSUtil;
-
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -59,436 +49,388 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class BowlerStudio extends Application {
+    private static TextArea log;
+    private static Stage primaryStage;
+    private static Scene scene;
+    private static FXMLLoader fxmlLoader;
+    private static boolean hasnetwork;
+    private static Console out;
+    private static TextArea logViewRefStatic = null;
+    private static CreatureLab3dController creatureLab3dController;
+    private BowlerStudioModularFrame modularFrame;
+    private static String firstVer = "";
+    private static Graphics2D splashGraphics;
+    private final static SplashScreen splash = SplashScreen.getSplashScreen();
 
-	private static TextArea log;
-	private static Stage primaryStage;
-	private static Scene scene;
-	private static FXMLLoader fxmlLoader;
-	private static boolean hasnetwork;
-	private static Console out;
-	private static TextArea logViewRefStatic = null;
-	private static CreatureLab3dController creatureLab3dController;
-	private BowlerStudioModularFrame modularFrame;
-	private static String firstVer = "";
-	private static Graphics2D splashGraphics;
-	final static SplashScreen splash = SplashScreen.getSplashScreen();
+    private static class Console extends OutputStream {
+        private static final int LengthOfOutputLog = 5000;
+        ByteList incoming = new ByteList();
+        Thread update = new Thread(() -> {
+            while (true) {
+                ThreadUtil.wait(150);
+                String text = incoming.asString();
+                incoming.clear();
+                if (text != null && text.length() > 0)
+                    appendText(text);
+            }
+        });
 
-	private static class Console extends OutputStream {
-		private static final int LengthOfOutputLog = 5000;
-		ByteList incoming = new ByteList();
-		Thread update = new Thread(() -> {
-			while (true) {
-				ThreadUtil.wait(150);
-				String text = incoming.asString();
-				incoming.clear();
-				if(text!=null&& text.length()>0)
-					appendText(text);
-			}
+        public Console() {
+            update.start();
+        }
 
-		});
+        public void appendText(String valueOf) {
+            try {
+                BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
+            } catch (NullPointerException ex) {
+                // frame not open yet
+            }
+            if (getLogViewRefStatic() != null) {
+                String text = getLogViewRefStatic().getText();
+                if (text.length() > LengthOfOutputLog) {
+                    Platform.runLater(() -> {
+                        getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
 
-		public Console() {
-			update.start();
-		}
+                        Platform.runLater(() -> getLogViewRefStatic().appendText(valueOf));
 
-		public void appendText(String valueOf) {
-			try {
-				BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
-			} catch (NullPointerException ex) {
-				// frame not open yet
-			}
-			if (getLogViewRefStatic() != null) {
-				String text = getLogViewRefStatic().getText();
-				if (text.length() > LengthOfOutputLog) {
+                    });
+                } else
+                    Platform.runLater(() -> getLogViewRefStatic().appendText(valueOf));
+            }
+            System.err.print(valueOf);
+        }
 
-					Platform.runLater(() -> {
-						getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
+        public void write(int b) throws IOException {
+            incoming.add(b);
+            // appendText(String.valueOf((char)b));
+            // if(b=='[')
+            // new RuntimeException().printStackTrace();
+        }
+    }
 
-						Platform.runLater(() -> getLogViewRefStatic().appendText(valueOf));
+    public static OutputStream getOut() {
+        if (out == null)
+            out = new Console();
+        return out;
+    }
 
-					});
-				} else {
-					Platform.runLater(() -> {
-						getLogViewRefStatic().appendText(valueOf);
+    static {
+        // These must be changed before anything starts
+        PrintStream ps = new PrintStream(getOut());
+        // System.setErr(ps);
+        System.setOut(ps);
+    }
 
-					});
-				}
-			}
-			System.err.print(valueOf);
-		}
+    public static void select(MobileBase base) {
+        ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+    }
 
-		public void write(int b) throws IOException {
-			incoming.add(b);
-			// appendText(String.valueOf((char)b));
-			// if(b=='[')
-			// new RuntimeException().printStackTrace();
-		}
-	}
+    public static void select(MobileBase base, DHParameterKinematics limb) {
+        ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
+        try {
+            BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+                                    .setSelectedCsg(limCad.get(limCad.size() - 1));
+        } catch (NullPointerException ex) {
+            // initialization has no csgs yet
+        }
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+    }
 
-	public static OutputStream getOut() {
-		if (out == null)
-			out = new Console();
-		return out;
-	}
+    public static void select(MobileBase base, LinkConfiguration limb) {
+        ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+                                .setSelectedCsg(limCad.get(limCad.size() - 1));
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+    }
 
-	static {
-		// These must be changed before anything starts
-		PrintStream ps = new PrintStream(getOut());
-		// System.setErr(ps);
-		System.setOut(ps);
+    public static void select(File script, int lineNumber) {
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
+    }
 
-	}
+    /**
+     * @param args the command line arguments
+     * @throws Exception
+     */
+    @SuppressWarnings({"unchecked", "restriction"})
+    public static void main(String[] args) throws Exception {
+        if (splash != null) {
+            try {
+                splashGraphics = splash.createGraphics();
+            } catch (IllegalStateException ignored) {
+            }
+        }
 
-	public static void select(MobileBase base) {
-		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
-	}
+        renderSplashFrame(2, "Testing Internet Connection");
 
-	public static void select(MobileBase base, DHParameterKinematics limb) {
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
-		try{
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-					.setSelectedCsg(limCad.get(limCad.size() - 1));
-		}catch (NullPointerException ex){
-			// initialization has no csgs yet
-		}
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-	}
+        try {
+            final URL url = new URL("http://github.com");
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            conn.getInputStream();
+            setHasnetwork(true);
+        } catch (Exception e) {
+            // we assuming we have no access to the server and run off of the
+            // cached gists.
+            setHasnetwork(false);
+        }
 
-	public static void select(MobileBase base, LinkConfiguration limb) {
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-				.setSelectedCsg(limCad.get(limCad.size() - 1));
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-	}
+        CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 
-	public static void select(File script, int lineNumber) {
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
-	}
+        if (args.length == 0) {
+            renderSplashFrame(5, "Attempting to Log In...");
+            // ScriptingEngine.logout();
+            ScriptingEngine.setLoginManager(new GitHubLoginManager());
+            try {
+                ScriptingEngine.runLogin();
+                renderSplashFrame(10, "Login OK!");
+            } catch (Exception e) {
+                //e.printStackTrace();
+                ScriptingEngine.setupAnyonmous();
+                renderSplashFrame(10, "No Login Found");
+            }
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 * @throws Exception
-	 */
-	@SuppressWarnings({ "unchecked", "restriction" })
-	public static void main(String[] args) throws Exception {
-	    if (splash != null) {
-	    	try{
-	        splashGraphics = splash.createGraphics();
-	    	}catch (IllegalStateException e){}
-	    }
-	    renderSplashFrame(2,"Testing Internet Connection");
-		try {
-			final URL url = new URL("http://github.com");
-			final URLConnection conn = url.openConnection();
-			conn.connect();
-			conn.getInputStream();
-			setHasnetwork(true);
-		} catch (Exception e) {
-			// we assuming we have no access to the server and run off of the
-			// cached gists.
-			setHasnetwork(false);
-		}
-		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
+            String myAssets = AssetFactory.getGitSource();
+            if (ScriptingEngine.isLoginSuccess()) {
 
-	   
-		if (args.length == 0) {
-			 renderSplashFrame(5,"Attempting to Log In...");
-			// ScriptingEngine.logout();
-			ScriptingEngine.setLoginManager(new GitHubLoginManager());
-			try{
-				ScriptingEngine.runLogin();
-				renderSplashFrame( 10,"Login OK!");
-			}catch(Exception e){
-				//e.printStackTrace();
-				ScriptingEngine.setupAnyonmous();
-				renderSplashFrame( 10,"No Login Found");
-			}
-		    
+                if (BowlerStudio.hasNetwork())
+                    ScriptingEngine.setAutoupdate(true);
 
-			String myAssets =AssetFactory.getGitSource();
-			if (ScriptingEngine.isLoginSuccess()){
-				
-				if(BowlerStudio.hasNetwork()){
-					ScriptingEngine.setAutoupdate(true);
-					
-				}
-				renderSplashFrame( 15,"Loading Settings");
-				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-						StudioBuildInfo.getVersion());
-				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-						StudioBuildInfo.getVersion());
-				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
-					renderSplashFrame( 20,"Downloading Image Assets");
+                renderSplashFrame(15, "Loading Settings");
+                firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+                                                                    StudioBuildInfo.getVersion());
+                String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+                                                                              StudioBuildInfo.getVersion());
+                if (!lastVersion.contentEquals(StudioBuildInfo.getVersion())) {
+                    renderSplashFrame(20, "Downloading Image Assets");
 
-					System.err.println("\n\nnew version\n\n");
-					removeAssets();
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
-							StudioBuildInfo.getVersion());
-					// force the mainline in when a version update happens 
-					// this prevents developers from ending up with unsuable version of BowlerStudio
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
-					ConfigurationDatabase.save();
-				}else{
-					System.err.println("Studio version is the same");
-				}
-				
-				if(BowlerStudio.hasNetwork()){
-					renderSplashFrame( 25,"Populating Menu");
+                    System.err.println("\n\nnew version\n\n");
+                    removeAssets();
+                    ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
+                                                    StudioBuildInfo.getVersion());
+                    // force the mainline in when a version update happens
+                    // this prevents developers from ending up with unsuable version of BowlerStudio
+                    ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+                    ConfigurationDatabase.save();
+                } else
+                    System.err.println("Studio version is the same");
 
-						org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
-						GHMyself self = github.getMyself();
-						Map<String, GHRepository> myPublic = self.getAllRepositories();
-						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()){
-							if(entry.getKey().contentEquals(AssetFactory.repo)){
-								GHRepository ghrepo= entry.getValue();
-								myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
-							
-							}
-						
-						}
-						
-				}
-				
-				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
-			
-				
-				// to set a new repo
-				
-				
-			}
-			renderSplashFrame( 50,"Downloading Images");
-			AssetFactory.setGitSource(
-					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-							myAssets),
-					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-							StudioBuildInfo.getVersion())
-					);
-			// Download and Load all of the assets
-			try{
-				renderSplashFrame( 53,"Loading Images");
+                if (BowlerStudio.hasNetwork()) {
+                    renderSplashFrame(25, "Populating Menu");
 
-				AssetFactory.loadAsset("BowlerStudio.png");
-			}catch(Exception ex){
-				renderSplashFrame( 54,"Re-Loading Images");
+                    org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
+                    GHMyself self = github.getMyself();
+                    Map<String, GHRepository> myPublic = self.getAllRepositories();
+                    for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+                        if (entry.getKey().contentEquals(AssetFactory.repo)) {
+                            GHRepository ghrepo = entry.getValue();
+                            myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
+                        }
+                    }
+                }
 
-				removeAssets();
-				AssetFactory.setGitSource(
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-								myAssets),
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-								StudioBuildInfo.getVersion())
-						);
-			}
-			renderSplashFrame( 56,"Loading resources");
-			BowlerStudioResourceFactory.load();
-			renderSplashFrame( 60,"Downloading Vitamins");
-			//load the vitimins repo so the demo is always snappy
-			ScriptingEngine.fileFromGit(
-					"https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", 
-					"BowlerStudioVitamins/stl/servo/smallservo.stl");
-			renderSplashFrame( 70,"Downloading tutorials");
-			// load tutorials repo
-			ScriptingEngine.fileFromGit(
-					"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
-					"master",// the default branch is source, so this needs to be specified
-					"index.html");
-			renderSplashFrame( 80,"Loding Example Robots");
-			ScriptingEngine
-			.fileFromGit(
-					"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
-				"exampleRobots.json"// File from within the Git repo
-			);
-			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
-			
-			
+                ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
+            }
+            renderSplashFrame(50, "Downloading Images");
+            AssetFactory.setGitSource(
+                    (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+                                                             myAssets),
+                    (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+                                                             StudioBuildInfo.getVersion()));
+            // Download and Load all of the assets
+            try {
+                renderSplashFrame(53, "Loading Images");
 
-			// System.out.println("Loading assets ");
+                AssetFactory.loadAsset("BowlerStudio.png");
+            } catch (Exception ex) {
+                renderSplashFrame(54, "Re-Loading Images");
+                removeAssets();
+                AssetFactory.setGitSource(
+                        (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+                                                                 myAssets),
+                        (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+                                                                 StudioBuildInfo.getVersion()));
+            }
 
-			// System.out.println("Loading Main.fxml");
+            renderSplashFrame(56, "Loading resources");
+            BowlerStudioResourceFactory.load();
+            renderSplashFrame(60, "Downloading Vitamins");
+            //load the vitimins repo so the demo is always snappy
+            ScriptingEngine.fileFromGit(
+                    "https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git",
+                    "BowlerStudioVitamins/stl/servo/smallservo.stl");
+            renderSplashFrame(70, "Downloading tutorials");
+            // load tutorials repo
+            ScriptingEngine.fileFromGit(
+                    "https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
+                    "master",// the default branch is source, so this needs to be specified
+                    "index.html");
+            renderSplashFrame(80, "Loding Example Robots");
+            ScriptingEngine
+                    .fileFromGit(
+                            "https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",// git repo, change this if you fork this demo
+                            "exampleRobots.json");// File from within the Git repo);
+            CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 
-			try {
-				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
-			} catch (Exception |Error e ) {
-				// e.printStackTrace();
-				// opencvOk=false;
-				Platform.runLater(() -> {
-					Alert alert = new Alert(AlertType.INFORMATION);
-					alert.setTitle("OpenCV missing");
-					alert.setHeaderText("Opencv library is missing");
-					alert.setContentText(e.getMessage());
-					alert.initModality(Modality.APPLICATION_MODAL);
-					alert.show();
-					e.printStackTrace(System.out);
-				});
+            try {
+                OpenCVJNILoader.load(); // Loads the JNI (java native interface)
+            } catch (Exception | Error e) {
+                // e.printStackTrace();
+                // opencvOk=false;
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("OpenCV missing");
+                    alert.setHeaderText("Opencv library is missing");
+                    alert.setContentText(e.getMessage());
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.show();
+                    e.printStackTrace(System.out);
+                });
+            }
 
-			}
-			String arduino = "arduino";
-			if (NativeResource.isLinux()) {
+            String arduino = "arduino";
+            if (NativeResource.isLinux())
+                Slic3r.setExecutableLocation("/usr/bin/slic3r");
+            else if (NativeResource.isWindows()) {
+                String basedir = System.getenv("OPENCV_DIR");
+                if (basedir == null)
+                    throw new RuntimeException(
+                            "OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
+                System.err.println("OPENCV_DIR found at " + basedir);
+                basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
+                Slic3r.setExecutableLocation(basedir);
+                arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
 
-				Slic3r.setExecutableLocation("/usr/bin/slic3r");
-				
-			} else if (NativeResource.isWindows()) {
-				String basedir = System.getenv("OPENCV_DIR");
-				if (basedir == null)
-					throw new RuntimeException(
-							"OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-				System.err.println("OPENCV_DIR found at " + basedir);
-				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
-				Slic3r.setExecutableLocation(basedir);
-				arduino="C:\\Program Files (x86)\\Arduino\\arduino.exe";
-				if(!new File(arduino).exists()){
-					arduino="C:\\Program Files\\Arduino\\arduino.exe";
-					
-				}
-					
-				
-			}else if (NativeResource.isOSX()){
-				arduino="/Applications/Arduino.app/Contents/MacOS/Arduino";
-			}
-			try{
-				if(!new File(arduino).exists() && !NativeResource.isLinux() ){
-					boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep",false).toString());
-					if(!alreadyNotified){
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep",
-								true);
-						String adr = arduino;
-						Platform.runLater(() -> {
-							Alert alert = new Alert(AlertType.INFORMATION);
-							alert.setTitle("Arduino is missing");
-							alert.setHeaderText("Arduino expected at: "+adr);
-							//alert.initModality(Modality.APPLICATION_MODAL);
-							alert.show();
+                if (!new File(arduino).exists())
+                    arduino = "C:\\Program Files\\Arduino\\arduino.exe";
+            } else if (NativeResource.isOSX())
+                arduino = "/Applications/Arduino.app/Contents/MacOS/Arduino";
 
-						});
-					}
-					new Thread() {
-						public void run() {
-							try {
-								openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}.start();
+            try {
+                if (!new File(arduino).exists() && !NativeResource.isLinux()) {
+                    boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep", false).toString());
+                    if (!alreadyNotified) {
+                        ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep",
+                                                        true);
+                        String adr = arduino;
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(AlertType.INFORMATION);
+                            alert.setTitle("Arduino is missing");
+                            alert.setHeaderText("Arduino expected at: " + adr);
+                            //alert.initModality(Modality.APPLICATION_MODAL);
+                            alert.show();
 
-				}
-				System.out.println("Arduino exec found at: "+arduino);
-				ArduinoLoader.setARDUINOExec(arduino);
-				}
-			catch(Exception e){
-				
-			}
-			try {
-				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				// This is a workaround for #8 and is only relavent on osx
-				// it causes the SwingNodes not to load if not called way ahead
-				// of time
-				javafx.scene.text.Font.getFamilies();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			renderSplashFrame( 90,"Loading STL Loader");
-			// Add the engine handeler for STLs
-			ScriptingEngine.addScriptingLanguage(new StlLoader());
-			// add a new link provider to the link factory
-			FirmataLink.addLinkFactory();
-			//Log.enableInfoPrint();
-			renderSplashFrame( 100, "Done Loading!");
-			//ThreadUtil.wait(100);
-			if(splashGraphics!=null && splash.isVisible()){
-	    		splash.close();
-	    		splashGraphics=null;
-	    	}
-			launch(args);
-			
-		} else {
-			BowlerKernel.main(args);
-		}
+                        });
+                    }
+                    new Thread(() -> {
+                        try {
+                            openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+                System.out.println("Arduino exec found at: " + arduino);
+                ArduinoLoader.setARDUINOExec(arduino);
+            } catch (Exception ignored) {
+            }
 
-	}
-	
-	private static void removeAssets() throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception{
-		System.err.println("Clearing assets");
-		File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),ScriptingEngine.getFullBranch(AssetFactory.getGitSource()), "Home.png").getParentFile();
-		AssetFactory.deleteFolder(dir);// clear out old assets
-	}
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                // This is a workaround for #8 and is only relavent on osx
+                // it causes the SwingNodes not to load if not called way ahead
+                // of time
+                javafx.scene.text.Font.getFamilies();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            renderSplashFrame(90, "Loading STL Loader");
+            // Add the engine handeler for STLs
+            ScriptingEngine.addScriptingLanguage(new StlLoader());
+            // add a new link provider to the link factory
+            FirmataLink.addLinkFactory();
+            //Log.enableInfoPrint();
+            renderSplashFrame(100, "Done Loading!");
+            //ThreadUtil.wait(100);
+            if (splashGraphics != null && splash.isVisible()) {
+                splash.close();
+                splashGraphics = null;
+            }
+            launch(args);
+        } else
+            BowlerKernel.main(args);
+    }
 
-	public static void renderSplashFrame( int frame, String message) {
-		
-		if (splashGraphics != null && splash.isVisible()) {
-			System.out.println(" Splash Rendering "+frame+" "+message);
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(frame+"% "+message, 65, 280);
-			splash.update();
-		}
-	}
+    private static void removeAssets() throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception {
+        System.err.println("Clearing assets");
+        File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(), ScriptingEngine.getFullBranch(AssetFactory.getGitSource()), "Home.png").getParentFile();
+        AssetFactory.deleteFolder(dir);// clear out old assets
+    }
 
-	/**
-	 * open an external web page
-	 * 
-	 * @param uri
-	 */
-	public static void openExternalWebpage(URL uri) {
-		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-			try {
-				desktop.browse(uri.toURI());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public static void renderSplashFrame(int frame, String message) {
+        if (splashGraphics != null && splash.isVisible()) {
+            System.out.println(" Splash Rendering " + frame + " " + message);
+            splashGraphics.setComposite(AlphaComposite.Clear);
+            splashGraphics.fillRect(65, 270, 200, 40);
+            splashGraphics.setPaintMode();
+            splashGraphics.setColor(Color.WHITE);
+            splashGraphics.drawString(frame + "% " + message, 65, 280);
+            splash.update();
+        }
+    }
 
-	/**
-	 * @author Sainath
-	 * @version 1.0
-	 * @param url
-	 *            - The URL of the tab that needs to be opened
-	 * @return None
-	 */
-	public static void openUrlInNewTab(URL url) {
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
-	}
+    /**
+     * open an external web page
+     *
+     * @param uri
+     */
+    public static void openExternalWebpage(URL uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri.toURI());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/**
-	 * @author Sainath
-	 * @version 1.0
-	 * @param msg
-	 *            - message that needs to be spoken
-	 * @return an integer
-	 */
-	public static int speak(String msg) {
+    /**
+     * @param url - The URL of the tab that needs to be opened
+     * @author Sainath
+     */
+    public static void openUrlInNewTab(URL url) {
+        BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
+    }
 
-		return BowlerKernel.speak(msg);
-	}
+    /**
+     * @param msg - message that needs to be spoken
+     * @return an integer
+     * @author Sainath
+     */
+    public static int speak(String msg) {
+        return BowlerKernel.speak(msg);
+    }
 
-	public static ScriptingFileWidget createFileTab(File file) {
-		return BowlerStudioModularFrame.getBowlerStudioModularFrame().createFileTab(file);
-	}
+    public static ScriptingFileWidget createFileTab(File file) {
+        return BowlerStudioModularFrame.getBowlerStudioModularFrame().createFileTab(file);
+    }
 
-	public static Scene getScene() {
-		return scene;
-	}
+    public static Scene getScene() {
+        return scene;
+    }
 
-	public static void setScene(Scene s) {
-		scene = s;
-	}
+    public static void setScene(Scene s) {
+        scene = s;
+    }
 
-	public static void clearConsole() {
-
-		Platform.runLater(() -> {
-			if (getLogViewRefStatic() != null)
-				getLogViewRefStatic().setText("");
-		});
-	}
+    public static void clearConsole() {
+        Platform.runLater(() -> {
+            if (getLogViewRefStatic() != null)
+                getLogViewRefStatic().setText("");
+        });
+    }
 
 //	public static void setOverlayLeft(Node tree) {
 //		BowlerStudio.creatureLab3dController.setOverlayLeft(tree);
@@ -523,114 +465,108 @@ public class BowlerStudio extends Application {
 //		BowlerStudio.creatureLab3dController.clearOverlayBottomRight();
 //	}
 
-	public static boolean hasNetwork() {
-		return hasnetwork;
-	}
+    public static boolean hasNetwork() {
+        return hasnetwork;
+    }
 
-	public static void setHasnetwork(boolean hasnetwork) {
-		BowlerStudio.hasnetwork = hasnetwork;
-	}
+    public static void setHasnetwork(boolean hasnetwork) {
+        BowlerStudio.hasnetwork = hasnetwork;
+    }
 
-	public static TextArea getLogViewRefStatic() {
-		return logViewRefStatic;
-	}
+    public static TextArea getLogViewRefStatic() {
+        return logViewRefStatic;
+    }
 
-	public static void setLogViewRefStatic(TextArea logViewRefStatic) {
-		BowlerStudio.logViewRefStatic = logViewRefStatic;
-	}
+    public static void setLogViewRefStatic(TextArea logViewRefStatic) {
+        BowlerStudio.logViewRefStatic = logViewRefStatic;
+    }
 
-	public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
-		BowlerStudio.creatureLab3dController = creatureLab3dController;
-	}
+    public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
+        BowlerStudio.creatureLab3dController = creatureLab3dController;
+    }
 
-	@SuppressWarnings("restriction")
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+    @SuppressWarnings("restriction")
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        BowlerStudioModularFrame.setPrimaryStage(primaryStage);
+        // Initialize your logic here: all @FXML variables will have been
+        // injected
+        FXMLLoader mainControllerPanel;
 
-		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
-		// Initialize your logic here: all @FXML variables will have been
-		// injected
-		FXMLLoader mainControllerPanel;
+        try {
+            mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
+            BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
+            mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
+            mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 
-		try {
-			mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
-			BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
-			mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
-			mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
-			try {
-				mainControllerPanel.load();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            try {
+                mainControllerPanel.load();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+            Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 
-			File f = AssetFactory.loadFile("layout/default.css");
-			if(f==null||! f.exists())
-				throw new RuntimeException("Style sheet does not exist");
-			scene.getStylesheets().clear();
-			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+            File f = AssetFactory.loadFile("layout/default.css");
+            if (!f.exists())
+                throw new RuntimeException("Style sheet does not exist");
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 
-			primaryStage.setTitle("Bowler Studio");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-			primaryStage.setOnCloseRequest(arg0 -> {
-				// ThreadUtil.wait(100);
-				closeBowlerStudio();
+            primaryStage.setTitle("Bowler Studio");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            primaryStage.setOnCloseRequest(arg0 -> {
+                // ThreadUtil.wait(100);
+                closeBowlerStudio();
+            });
+            primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+            primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 
-			});
-			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
-			primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+            primaryStage.setResizable(true);
 
-			primaryStage.setResizable(true);
+            DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
 
-			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+                @Override
+                public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
+                    System.err.println("Device connected: " + arg0);
+                    BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
+                }
 
-				@Override
-				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
-					System.err.println("Device connected: " + arg0);
-					BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
-				}
+                @Override
+                public void onDeviceRemoved(BowlerAbstractDevice arg0) {
+                }
+            });
 
-				@Override
-				public void onDeviceRemoved(BowlerAbstractDevice arg0) {
-				}
-			});
-			Log.enableDebugPrint(false);
-			// Log.enableWarningPrint();
-			// Log.enableDebugPrint();
-			// Log.enableErrorPrint();
-			System.out.println("BowlerStudio First Version: " + firstVer);
-			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-			System.out.println("Welcome to BowlerStudio!");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            Log.enableDebugPrint(false);
+            // Log.enableWarningPrint();
+            // Log.enableDebugPrint();
+            // Log.enableErrorPrint();
+            System.out.println("BowlerStudio First Version: " + firstVer);
+            System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+            System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+            System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+            System.out.println("Welcome to BowlerStudio!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	}
+    public static void closeBowlerStudio() {
+        new Thread(() -> {
+            System.err.println("Closing application");
+            ConnectionManager.disconnectAll();
+            if (ScriptingEngine.isLoginSuccess())
+                ConfigurationDatabase.save();
+            System.exit(0);
+        }).start();
+    }
 
-	public static void closeBowlerStudio() {
-		new Thread() {
-			public void run() {
-				System.err.println("Closing application");
-				ConnectionManager.disconnectAll();
-				if (ScriptingEngine.isLoginSuccess())
-					ConfigurationDatabase.save();
-				System.exit(0);
-			}
-		}.start();
-	}
+    public static void printStackTrace(Exception e) {
+        printStackTrace(e, null);
+    }
 
-	public static void printStackTrace(Exception e) {
-		printStackTrace(e, null);
-	}
-
-	public static void printStackTrace(Exception e, File sourceFile) {
-		BowlerStudioController.highlightException(sourceFile, e);
-	}
-
+    public static void printStackTrace(Exception e, File sourceFile) {
+        BowlerStudioController.highlightException(sourceFile, e);
+    }
 }

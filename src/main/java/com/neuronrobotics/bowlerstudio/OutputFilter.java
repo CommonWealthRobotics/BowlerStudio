@@ -7,10 +7,9 @@
 package com.neuronrobotics.bowlerstudio;
 
 /**
- *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @FunctionalInterface
 public interface OutputFilter {
-    public boolean onMatch(String s);
+    boolean onMatch(String s);
 }

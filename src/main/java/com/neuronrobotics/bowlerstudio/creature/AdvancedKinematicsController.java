@@ -13,19 +13,15 @@ public class AdvancedKinematicsController  extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String[] getMyNameSpaces() {
-		// TODO Auto-generated method stub
 		return new String[]{"bcs.cartesian.*"};
 	}
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
-		// TODO Auto-generated method stub
 		AbstractKinematicsNR kin = (AbstractKinematicsNR)pm;
 		gui.setKinematicsModel(kin);
 		SwingNode sn = new SwingNode();
@@ -40,8 +36,5 @@ public class AdvancedKinematicsController  extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
-		
 	}
-
 }

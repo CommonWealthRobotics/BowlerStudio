@@ -1,6 +1,12 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
 import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
+import javafx.scene.transform.Affine;
 
 /*
  *      Axis.java 1.0 98/11/25
@@ -31,7 +37,6 @@ import javafx.application.Platform;
  * facility. Licensee represents and warrants that it will not use or
  * redistribute the Software for such purposes.
  */
-
 /*
  * Getting Started with the Java 3D API
  * written in Java 3D
@@ -44,95 +49,78 @@ import javafx.application.Platform;
  *   2. Using LineArray to draw 3D lines.
  */
 
-import javafx.scene.Group;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Affine;
-
-// TODO: Auto-generated Javadoc
-/**
- * The Class Axis.
- */
 public class Axis extends Group {
-	
-	private Box xAxis;
-	private Box yAxis;
-	private Box zAxis;
-	private Label xText;
-	private Label yText;
-	private Label zText;
-	/**
-	 * Instantiates a new axis.
-	 */
-	public Axis() {
-		this(50);
-	}
-	// //////////////////////////////////////////
-	//
-	// create axis visual object
-	/**
-	 * Instantiates a new axis.
-	 *
-	 * @param i the i
-	 */
-	//
-	public Axis(int i) {
-		final PhongMaterial redMaterial = new PhongMaterial();
-		redMaterial.setDiffuseColor(Color.DARKRED);
-		redMaterial.setSpecularColor(Color.RED);
+    private Box xAxis;
+    private Box yAxis;
+    private Box zAxis;
+    private Label xText;
+    private Label yText;
+    private Label zText;
 
-		final PhongMaterial greenMaterial = new PhongMaterial();
-		greenMaterial.setDiffuseColor(Color.DARKGREEN);
-		greenMaterial.setSpecularColor(Color.GREEN);
+    /**
+     * Instantiates a new axis.
+     */
+    public Axis() {
+        this(50);
+    }
 
-		final PhongMaterial blueMaterial = new PhongMaterial();
-		blueMaterial.setDiffuseColor(Color.DARKBLUE);
-		blueMaterial.setSpecularColor(Color.BLUE);
+    /**
+     * Instantiates a new axis.
+     *
+     * @param i the i
+     */
+    //
+    public Axis(int i) {
+        final PhongMaterial redMaterial = new PhongMaterial();
+        redMaterial.setDiffuseColor(Color.DARKRED);
+        redMaterial.setSpecularColor(Color.RED);
 
-		xAxis = new Box(i, 2, 2);
-		yAxis = new Box(2, i, 2);
-		zAxis = new Box(2, 2, i);
-		
-		
-		Affine xp = new Affine();
-		xp.setTx(i/2);
-		xAxis.getTransforms().add(xp);
-		xText = new Label("+X");
-		xText.getTransforms().add(xp);
-		
-		Affine yp = new Affine();
-		yp.setTy(i/2);
-		yAxis.getTransforms().add(yp);
-		yText = new Label("+Y");
-		yText.getTransforms().add(yp);
-		
-		Affine zp = new Affine();
-		zp.setTz(i/2);
-		Affine zTextAffine = new Affine();
-		zTextAffine.setTz(i/2);
-		zTextAffine.setTx(i/2);
-		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
-		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zAxis.getTransforms().add(zp);
-		zText = new Label("+Z");
-		zText.getTransforms().add(zTextAffine);
-		
-		
-		xAxis.setMaterial(redMaterial);
-		yAxis.setMaterial(greenMaterial);
-		zAxis.setMaterial(blueMaterial);
-		show();
-	}
-	
-	public void show(){
-		Platform.runLater(()->getChildren().addAll(xAxis,yAxis,zAxis,xText,yText,zText));
-	}
-	public void hide(){
-		Platform.runLater(()->getChildren().removeAll(xAxis,yAxis,zAxis,xText,yText,zText));
-	}
-	
+        final PhongMaterial greenMaterial = new PhongMaterial();
+        greenMaterial.setDiffuseColor(Color.DARKGREEN);
+        greenMaterial.setSpecularColor(Color.GREEN);
 
-} // end of class Axis
+        final PhongMaterial blueMaterial = new PhongMaterial();
+        blueMaterial.setDiffuseColor(Color.DARKBLUE);
+        blueMaterial.setSpecularColor(Color.BLUE);
+
+        xAxis = new Box(i, 2, 2);
+        yAxis = new Box(2, i, 2);
+        zAxis = new Box(2, 2, i);
+
+        Affine xp = new Affine();
+        xp.setTx(i / 2);
+        xAxis.getTransforms().add(xp);
+        xText = new Label("+X");
+        xText.getTransforms().add(xp);
+
+        Affine yp = new Affine();
+        yp.setTy(i / 2);
+        yAxis.getTransforms().add(yp);
+        yText = new Label("+Y");
+        yText.getTransforms().add(yp);
+
+        Affine zp = new Affine();
+        zp.setTz(i / 2);
+        Affine zTextAffine = new Affine();
+        zTextAffine.setTz(i / 2);
+        zTextAffine.setTx(i / 2);
+        zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
+        zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
+        zAxis.getTransforms().add(zp);
+        zText = new Label("+Z");
+        zText.getTransforms().add(zTextAffine);
+
+        xAxis.setMaterial(redMaterial);
+        yAxis.setMaterial(greenMaterial);
+        zAxis.setMaterial(blueMaterial);
+        show();
+    }
+
+    public void show() {
+        Platform.runLater(() -> getChildren().addAll(xAxis, yAxis, zAxis, xText, yText, zText));
+    }
+
+    public void hide() {
+        Platform.runLater(() -> getChildren().removeAll(xAxis, yAxis, zAxis, xText, yText, zText));
+    }
+}

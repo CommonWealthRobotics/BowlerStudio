@@ -6,5 +6,5 @@ public interface IPhysicsUpdate {
 	 * This event is stored in the CSG manager and called by the update function.
 	 * @param timeStep
 	 */
-	public void update(float timeStep);
+	void update(float timeStep);
 }
