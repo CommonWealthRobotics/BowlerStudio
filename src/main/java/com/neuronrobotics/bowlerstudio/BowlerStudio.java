@@ -218,9 +218,22 @@ public class BowlerStudio extends Application {
 				renderSplashFrame( 15,"Loading Settings");
 				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 						StudioBuildInfo.getVersion());
-				String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-						StudioBuildInfo.getVersion());
-				if(!lastVersion.contentEquals(StudioBuildInfo.getVersion())){
+				//String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+				//		StudioBuildInfo.getVersion());
+				String assetURI = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+				String lastVersion = ScriptingEngine.getBranch(assetURI);
+				if(lastVersion==null){
+					System.err.println("deleting currupt Asset Repo "+assetURI);
+					ScriptingEngine.deleteRepo(assetURI);
+					ScriptingEngine.filesInGit(assetURI);
+					lastVersion = ScriptingEngine.getBranch(assetURI);
+				}
+				System.err.println("Asset Repo "+assetURI);
+				System.err.println("Asset current ver "+lastVersion);
+
+				System.err.println("Asset intended ver "+StudioBuildInfo.getVersion());
+
+				if(!lastVersion.contains(StudioBuildInfo.getVersion())){
 					renderSplashFrame( 20,"Downloading Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
@@ -229,11 +242,12 @@ public class BowlerStudio extends Application {
 							StudioBuildInfo.getVersion());
 					// force the mainline in when a version update happens 
 					// this prevents developers from ending up with unsuable version of BowlerStudio
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", assetURI);
 					ConfigurationDatabase.save();
 				}else{
 					System.err.println("Studio version is the same");
 				}
+				
 				
 				if(BowlerStudio.hasNetwork()){
 					renderSplashFrame( 25,"Populating Menu");

@@ -23,17 +23,6 @@ public class AssetFactory {
 	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
 	private static String assetRepoBranch = "";
 	private static boolean checked =false;
-	static{
-
-			try {
-				assetRepoBranch = ScriptingEngine.getFullBranch(gitSource);
-				loadAllAssets();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-	}
 
 	private AssetFactory() {
 	}
