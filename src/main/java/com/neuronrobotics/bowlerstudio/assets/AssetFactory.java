@@ -23,6 +23,17 @@ public class AssetFactory {
 	private static HashMap<String , FXMLLoader> loaders =new HashMap<>();
 	private static String assetRepoBranch = "";
 	private static boolean checked =false;
+//	static{
+//
+//			try {
+//				assetRepoBranch = ScriptingEngine.getFullBranch(gitSource);
+//				loadAllAssets();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//	}
 
 	private AssetFactory() {
 	}
@@ -42,7 +53,7 @@ public class AssetFactory {
 		return loadLayout(file, false);
 	}
 	
-	public static File loadFile(String file) throws Exception {
+	public static synchronized File loadFile(String file) throws Exception {
 		
 		return ScriptingEngine
 		.fileFromGit(
@@ -127,7 +138,7 @@ public class AssetFactory {
 		cache.clear();
 		loadAllAssets();
 	}
-	private static void loadAllAssets() throws Exception{
+	public static void loadAllAssets() throws Exception{
 		ArrayList<String> files = ScriptingEngine.filesInGit(gitSource,StudioBuildInfo.getVersion(), null);
 		for(String file:files){
 			loadAsset(file);

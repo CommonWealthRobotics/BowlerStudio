@@ -225,7 +225,7 @@ public class BowlerStudio extends Application {
 				if(lastVersion==null){
 					System.err.println("deleting currupt Asset Repo "+assetURI);
 					ScriptingEngine.deleteRepo(assetURI);
-					ScriptingEngine.filesInGit(assetURI);
+					ScriptingEngine.filesInGit(assetURI,StudioBuildInfo.getVersion(),null);
 					lastVersion = ScriptingEngine.getBranch(assetURI);
 				}
 				System.err.println("Asset Repo "+assetURI);
@@ -244,10 +244,13 @@ public class BowlerStudio extends Application {
 					// this prevents developers from ending up with unsuable version of BowlerStudio
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", assetURI);
 					ConfigurationDatabase.save();
+					
+					
 				}else{
 					System.err.println("Studio version is the same");
 				}
-				
+				AssetFactory.setAssetRepoBranch(StudioBuildInfo.getVersion());
+				AssetFactory.loadAllAssets();
 				
 				if(BowlerStudio.hasNetwork()){
 					renderSplashFrame( 25,"Populating Menu");
