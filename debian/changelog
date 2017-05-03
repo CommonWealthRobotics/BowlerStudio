@@ -1,3 +1,16 @@
+bowlerstudio (0.20.9) xenial; urgency=medium
+
+  * removing junk annotation
+  * updating the kernel to use branches
+  * removing hard coded "master"
+  * making the tutorial access master rather than the default "source"
+  * updaing kernel
+  * updating kernel
+  * Updating JCSG
+  * 0.20.9
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 28 Apr 2017 00:25:03 -0400
+
 bowlerstudio (0.20.8) xenial; urgency=medium
 
   [ Kevin Harrington ]
