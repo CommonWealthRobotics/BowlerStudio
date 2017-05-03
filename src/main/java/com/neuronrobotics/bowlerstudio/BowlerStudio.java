@@ -209,6 +209,7 @@ public class BowlerStudio extends Application {
 		    
 
 			String myAssets =AssetFactory.getGitSource();
+			
 			if (ScriptingEngine.isLoginSuccess()){
 				
 				if(BowlerStudio.hasNetwork()){
@@ -220,15 +221,15 @@ public class BowlerStudio extends Application {
 						StudioBuildInfo.getVersion());
 				//String lastVersion = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
 				//		StudioBuildInfo.getVersion());
-				String assetURI = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
-				String lastVersion = ScriptingEngine.getBranch(assetURI);
+				myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", "https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+				String lastVersion = ScriptingEngine.getBranch(myAssets);
 				if(lastVersion==null){
-					System.err.println("deleting currupt Asset Repo "+assetURI);
-					ScriptingEngine.deleteRepo(assetURI);
-					ScriptingEngine.filesInGit(assetURI,StudioBuildInfo.getVersion(),null);
-					lastVersion = ScriptingEngine.getBranch(assetURI);
+					System.err.println("deleting currupt Asset Repo "+myAssets);
+					ScriptingEngine.deleteRepo(myAssets);
+					ScriptingEngine.filesInGit(myAssets,StudioBuildInfo.getVersion(),null);
+					lastVersion = ScriptingEngine.getBranch(myAssets);
 				}
-				System.err.println("Asset Repo "+assetURI);
+				System.err.println("Asset Repo "+myAssets);
 				System.err.println("Asset current ver "+lastVersion);
 
 				System.err.println("Asset intended ver "+StudioBuildInfo.getVersion());
@@ -237,20 +238,18 @@ public class BowlerStudio extends Application {
 					renderSplashFrame( 20,"Downloading Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
-					removeAssets();
+					removeAssets(myAssets);
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
 							StudioBuildInfo.getVersion());
 					// force the mainline in when a version update happens 
 					// this prevents developers from ending up with unsuable version of BowlerStudio
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", assetURI);
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", myAssets);
 					ConfigurationDatabase.save();
 					
 					
 				}else{
 					System.err.println("Studio version is the same");
 				}
-				AssetFactory.setAssetRepoBranch(StudioBuildInfo.getVersion());
-				AssetFactory.loadAllAssets();
 				
 				if(BowlerStudio.hasNetwork()){
 					renderSplashFrame( 25,"Populating Menu");
@@ -291,13 +290,8 @@ public class BowlerStudio extends Application {
 			}catch(Exception ex){
 				renderSplashFrame( 54,"Re-Loading Images");
 
-				removeAssets();
-				AssetFactory.setGitSource(
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-								myAssets),
-						(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-								StudioBuildInfo.getVersion())
-						);
+				removeAssets(myAssets);
+				
 			}
 			renderSplashFrame( 56,"Loading resources");
 			BowlerStudioResourceFactory.load();
@@ -429,10 +423,15 @@ public class BowlerStudio extends Application {
 
 	}
 	
-	private static void removeAssets() throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception{
+	private static void removeAssets(String myAssets) throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception{
 		System.err.println("Clearing assets");
-		File dir = ScriptingEngine.fileFromGit(AssetFactory.getGitSource(),ScriptingEngine.getFullBranch(AssetFactory.getGitSource()), "Home.png").getParentFile();
-		AssetFactory.deleteFolder(dir);// clear out old assets
+		ScriptingEngine.deleteRepo(myAssets);
+		AssetFactory.setGitSource(
+				(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
+						myAssets),
+				(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
+						StudioBuildInfo.getVersion())
+				);
 	}
 
 	public static void renderSplashFrame( int frame, String message) {
