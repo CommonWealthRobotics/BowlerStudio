@@ -53,7 +53,7 @@ public class AssetFactory {
 		return loadLayout(file, false);
 	}
 	
-	public static synchronized File loadFile(String file) throws Exception {
+	public static File loadFile(String file) throws Exception {
 		
 		return ScriptingEngine
 		.fileFromGit(

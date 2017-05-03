@@ -359,7 +359,7 @@ public class MobileBaseCadManager {
 
 
 	
-	public synchronized void generateCad() {
+	public void generateCad() {
 		if (cadGenerating || !autoRegen.isSelected())
 			return;
 		cadGenerating = true;

@@ -25,9 +25,9 @@ public class Tutorial {
 		
 		if(!doneLoadingTutorials ){
 			if(!startedLoadingTutorials){
-				synchronized(startedLoadingTutorials){
+				//synchronized(startedLoadingTutorials){
 					startedLoadingTutorials = true;
-				}
+				//}
 				new Thread(){
 					public void run(){
 						try {

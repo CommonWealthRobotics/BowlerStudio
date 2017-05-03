@@ -448,9 +448,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				ArrayList<CSG> toRemove = new ArrayList<>();
 
 				Object[] array = null;
-				synchronized (currentObjectsToCheck) {
+				//synchronized (currentObjectsToCheck) {
 					array = (Object[]) currentObjectsToCheck.toArray();
-				}
+				//}
 				for (int i = 0; i < currentObjectsToCheck.size(); i++) {
 					System.out.println("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
 					try {
