@@ -1,3 +1,11 @@
+bowlerstudio (0.21.0) xenial; urgency=medium
+
+  * adding additional libraries to the imports
+  * removing synchronization in any UI accessed threads
+  * updating javacad
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 04 May 2017 09:52:30 -0400
+
 bowlerstudio (0.20.9) xenial; urgency=medium
 
   * removing junk annotation
