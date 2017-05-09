@@ -726,7 +726,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML
 	public void onMobileBaseFromGit(ActionEvent event) {
-		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git",
+		PromptForGit.prompt("Select a Creature From a Git", "https://github.com/madhephaestus/carl-the-hexapod.git",
 				(gitsId, file) -> {
 					loadMobilebaseFromGit(gitsId, file);
 				});
