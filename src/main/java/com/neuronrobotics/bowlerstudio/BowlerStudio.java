@@ -300,9 +300,8 @@ public class BowlerStudio extends Application {
 			BowlerStudioResourceFactory.load();
 			renderSplashFrame( 60,"Downloading Vitamins");
 			//load the vitimins repo so the demo is always snappy
-			ScriptingEngine.fileFromGit(
-					"https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", 
-					"BowlerStudioVitamins/stl/servo/smallservo.stl");
+			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
+			ScriptingEngine.pull("https://github.com/madhephaestus/DefaultHaarCascade.git", null);
 			renderSplashFrame( 70,"Downloading tutorials");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit(
