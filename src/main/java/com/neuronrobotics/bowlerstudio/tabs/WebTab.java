@@ -280,7 +280,8 @@ public class WebTab extends Tab implements EventHandler<Event>{
 									ex.printStackTrace();
 									myTab.setText("Web");
 								}
-								finishedLoadingScriptingWidget=true;
+								loadCode();
+								
 							});
 						}
 						else
@@ -292,18 +293,20 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					finishedLoadingScriptingWidget=true;
 				}
 				
-				while(!finishedLoadingScriptingWidget){
-					ThreadUtil.wait(10);
-				}
-				System.out.println("Loading code from "+Current_URL);
-				try {
-					getScripting().loadCodeFromGist(Current_URL, webEngine);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
 			}
 		}.start();
+	}
+	
+	private void loadCode(){
+		new Thread(()->{
+			System.out.println("Downloading code from "+Current_URL);
+			try {
+				getScripting().loadCodeFromGist(Current_URL, webEngine);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}).start();
 	}
 	
     public String goBack()
