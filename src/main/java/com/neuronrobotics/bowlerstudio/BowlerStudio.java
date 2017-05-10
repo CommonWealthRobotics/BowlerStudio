@@ -192,7 +192,10 @@ public class BowlerStudio extends Application {
 			setHasnetwork(false);
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-
+		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
+			// Remove the default printing
+			
+		});
 	   
 		if (args.length == 0) {
 			 renderSplashFrame(5,"Attempting to Log In...");
