@@ -339,9 +339,7 @@ public class ScriptingFileWidget extends BorderPane implements
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
-					Platform.runLater(() -> {
-						append("\n" + currentFile + " Completed\n");
-					});
+
 					scriptResult = obj;
 					reset();
 

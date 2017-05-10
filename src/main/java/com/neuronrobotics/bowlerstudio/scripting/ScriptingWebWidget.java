@@ -404,9 +404,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
-					Platform.runLater(() -> {
-						append("\n" + currentFile + " Completed\n");
-					});
+
 					scriptResult = obj;
 					reset();
 
