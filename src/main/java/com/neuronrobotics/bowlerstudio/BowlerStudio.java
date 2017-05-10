@@ -411,12 +411,9 @@ public class BowlerStudio extends Application {
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			//Log.enableInfoPrint();
-			renderSplashFrame( 100, "Done Loading!");
+			renderSplashFrame( 92, "Done Application");
 			//ThreadUtil.wait(100);
-			if(splashGraphics!=null && splash.isVisible()){
-	    		splash.close();
-	    		splashGraphics=null;
-	    	}
+			
 			launch(args);
 			
 		} else {
@@ -435,7 +432,12 @@ public class BowlerStudio extends Application {
 						StudioBuildInfo.getVersion())
 				);
 	}
-
+	public static void closeSplash(){
+		if(splashGraphics!=null && splash.isVisible()){
+    		splash.close();
+    		splashGraphics=null;
+    	}
+	}
 	public static void renderSplashFrame( int frame, String message) {
 		
 		if (splashGraphics != null && splash.isVisible()) {
@@ -581,6 +583,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			renderSplashFrame( 93, "Main Controller Loaded");
 
 			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 
@@ -624,6 +627,7 @@ public class BowlerStudio extends Application {
 			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 			System.out.println("Welcome to BowlerStudio!");
+			closeSplash();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

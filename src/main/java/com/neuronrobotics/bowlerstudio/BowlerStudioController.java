@@ -119,7 +119,7 @@ public class BowlerStudioController  implements
 	}
 	
 	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
-		System.out.println("Highlighting line "+lineNumber+" in "+fileEngineRunByName);
+		//System.out.println("Highlighting line "+lineNumber+" in "+fileEngineRunByName);
 		if(openFiles.get(fileEngineRunByName.getAbsolutePath())==null){
 			createFileTab(fileEngineRunByName);
 			ThreadUtil.wait(100);
