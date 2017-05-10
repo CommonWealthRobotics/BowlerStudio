@@ -77,16 +77,19 @@ public class BowlerStudio extends Application {
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
 		ByteList incoming = new ByteList();
-		Thread update = new Thread(() -> {
-			while (true) {
-				ThreadUtil.wait(150);
-				String text = incoming.asString();
-				incoming.clear();
-				if(text!=null&& text.length()>0)
-					appendText(text);
+		Thread update = new Thread(){
+			public void run(){
+				while (true) {
+					ThreadUtil.wait(150);
+					String text = incoming.asString();
+					incoming.clear();
+					if(text!=null&& text.length()>0)
+						appendText(text);
+				}	
 			}
+			
 
-		});
+		};
 
 		public Console() {
 			update.start();
@@ -103,9 +106,10 @@ public class BowlerStudio extends Application {
 				if (text.length() > LengthOfOutputLog) {
 
 					Platform.runLater(() -> {
+						
 						getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
 
-						Platform.runLater(() -> getLogViewRefStatic().appendText(valueOf));
+						getLogViewRefStatic().appendText(valueOf);
 
 					});
 				} else {
