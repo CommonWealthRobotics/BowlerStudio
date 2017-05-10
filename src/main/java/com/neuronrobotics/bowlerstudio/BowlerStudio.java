@@ -655,10 +655,18 @@ public class BowlerStudio extends Application {
 	public static void printStackTrace(Exception e, File sourceFile) {
 		BowlerStudioController.highlightException(sourceFile, e);
 	}
-	public static void println(CSG toDisplay){
+	public static void println(CSG ... toDisplay){ 
 		BowlerStudioController.setCsg(Arrays.asList(toDisplay));
 	}
-	public static void print(CSG toDisplay){
-		BowlerStudioController.addCsg(toDisplay);
+	public static void println(ArrayList<CSG>  toDisplay){ 
+		BowlerStudioController.setCsg(toDisplay);
+	}
+	public static void print(CSG ... toDisplay){
+		for(CSG c : Arrays.asList(toDisplay))
+			BowlerStudioController.addCsg(c);
+	}
+	public static void print(ArrayList<CSG>  toDisplay){
+		for(CSG c : toDisplay)
+			BowlerStudioController.addCsg(c);
 	}
 }
