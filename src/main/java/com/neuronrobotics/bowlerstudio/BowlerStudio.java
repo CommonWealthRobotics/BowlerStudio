@@ -56,6 +56,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class BowlerStudio extends Application {
@@ -654,5 +655,10 @@ public class BowlerStudio extends Application {
 	public static void printStackTrace(Exception e, File sourceFile) {
 		BowlerStudioController.highlightException(sourceFile, e);
 	}
-
+	public static void println(CSG toDisplay){
+		BowlerStudioController.setCsg(Arrays.asList(toDisplay));
+	}
+	public static void print(CSG toDisplay){
+		BowlerStudioController.addCsg(toDisplay);
+	}
 }
