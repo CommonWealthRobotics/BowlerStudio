@@ -3,19 +3,7 @@ package com.neuronrobotics.bowlerstudio.utils;
  * Sample Skeleton for 'findWidget.fxml' Controller Class
  */
 
-import java.awt.Rectangle;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -25,8 +13,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import java.awt.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class FindTextWidget extends Application {
 

@@ -1,36 +1,13 @@
 package com.neuronrobotics.bowlerstudio;
 
 
-import java.util.ArrayList;
-
-import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBoxTreeItem;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
 import com.neuronrobotics.bowlerstudio.creature.DhLab;
-import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
-import com.neuronrobotics.bowlerstudio.tabs.CameraTab;
-import com.neuronrobotics.bowlerstudio.tabs.DyIOControl;
-import com.neuronrobotics.bowlerstudio.tabs.FirmataTab;
-import com.neuronrobotics.bowlerstudio.tabs.SalientTab;
+import com.neuronrobotics.bowlerstudio.tabs.*;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
-//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
@@ -47,6 +24,21 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.util.ArrayList;
+
+//import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
 
 public class PluginManager {
 	
@@ -237,7 +229,7 @@ public class PluginManager {
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(),AssetFactory.loadIcon("Plugin-Icon.png"));
+				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||

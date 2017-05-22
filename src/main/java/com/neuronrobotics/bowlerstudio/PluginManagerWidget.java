@@ -1,14 +1,8 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.util.ArrayList;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
-
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -17,6 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+
+import java.util.ArrayList;
 
 public class PluginManagerWidget extends TitledPane {
 	private PluginManager manager;
@@ -31,7 +27,7 @@ public class PluginManagerWidget extends TitledPane {
 		this.manager = m;
 		ArrayList<TitledPane> plugins = manager.getPlugins();
 		accordion.getPanes().addAll(plugins);
-		disconnectTHis = new Button("Disconnect "+manager.getName(),AssetFactory.loadIcon("Disconnect-Device.png"));
+		disconnectTHis = new Button("Disconnect "+manager.getName(), AssetFactory.loadIcon("Disconnect-Device.png"));
 
 		disconnectTHis.setOnMousePressed(	event -> {
 			new Thread(){

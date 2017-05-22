@@ -1,13 +1,12 @@
 package com.neuronrobotics.bowlerstudio.twod;
 
-import java.util.ArrayList;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-
 import eu.mihosoft.vrl.v3d.Polygon;
 import javafx.scene.Group;
 import javafx.scene.control.Tab;
 import javafx.scene.text.Text;
+
+import java.util.ArrayList;
 
 public class TwoDCad extends Tab {
 	

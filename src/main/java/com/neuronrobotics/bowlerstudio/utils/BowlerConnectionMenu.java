@@ -1,45 +1,32 @@
 package com.neuronrobotics.bowlerstudio.utils;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.sdk.common.BowlerDatagram;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.network.BowlerTCPClient;
+import com.neuronrobotics.sdk.network.UDPBowlerConnection;
+import com.neuronrobotics.sdk.serial.SerialConnection;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.net.InetAddress;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 /**
  * Sample Skeleton for "BowlerConnectionMenue.fxml" Controller Class
  * You can copy and paste this code into your favorite IDE
  **/
-
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.common.BowlerDatagram;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.common.InvalidConnectionException;
-import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.genericdevice.GenericDevice;
-import com.neuronrobotics.sdk.network.BowlerTCPClient;
-import com.neuronrobotics.sdk.network.UDPBowlerConnection;
-import com.neuronrobotics.sdk.serial.SerialConnection;
-import com.neuronrobotics.sdk.util.IProgressMonitorListener;
-import com.neuronrobotics.sdk.util.ProcessMonitor;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 public class BowlerConnectionMenu extends Application {
 

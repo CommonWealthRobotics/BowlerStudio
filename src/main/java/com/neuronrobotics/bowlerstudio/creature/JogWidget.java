@@ -1,14 +1,5 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.time.Duration;
-import java.util.HashMap;
-
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-
-import org.reactfx.util.FxTimer;
-
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -23,24 +14,24 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
+import net.java.games.input.Component;
+import net.java.games.input.Controller;
+import org.reactfx.util.FxTimer;
+
+import java.time.Duration;
+import java.util.HashMap;
 
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
 	double defauletSpeed=0.40;
 	private AbstractKinematicsNR kin;
 	private MobileBase mobilebase=null;
-	Button px = new Button("",AssetFactory.loadIcon("Plus-X.png"));
+	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("",AssetFactory.loadIcon("Minus-X.png"));
 	Button py = new Button("",AssetFactory.loadIcon("Plus-Y.png"));
 	Button ny = new Button("",AssetFactory.loadIcon("Minus-Y.png"));
