@@ -1,3 +1,21 @@
+bowlerstudio (0.21.1) xenial; urgency=medium
+
+  * updating the default creature URL
+  * updating kernel
+  * updating kernel
+  * removing excessive prints
+  * stagerring code loading
+  * removing the CSG pringing
+  * pulling repos rather thatn loading a file
+  * moving the physics engine into the kernel
+  * adding the print and println function to bowlerstudio static api
+  * Adding the permutations of the call
+  * changing to standard thread
+  * updating kernel
+  * updating kernel version
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 10 May 2017 08:59:01 -0400
+
 bowlerstudio (0.21.0) xenial; urgency=medium
 
   * adding additional libraries to the imports
