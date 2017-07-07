@@ -120,6 +120,8 @@ repositories {
 }
 
 dependencies {
+	compile group:'org.hid4java', name:'hid4java', version:'0.5.0'
+
 	compile 'gov.nist.math:jama:1.0.2'
 
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
@@ -134,7 +136,6 @@ dependencies {
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
 	compile 'org.kohsuke.stapler:stapler:1.237'
-
 	
 	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.0.1.201506240215-r'
 	
@@ -165,7 +166,7 @@ dependencies {
 			
 	compile "com.neuronrobotics:JavaCad:0.10.1"
 	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	compile "com.neuronrobotics:java-bowler:3.24.3"
+	compile "com.neuronrobotics:java-bowler:3.25.0"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.23.3-jar-with-dependencies.jar'])
 	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JavaCad-0.8.2.jar'])
 	compile "com.neuronrobotics:WalnutiQ:2.3.3"
