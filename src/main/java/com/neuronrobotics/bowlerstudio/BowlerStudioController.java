@@ -1,39 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
 
-import eu.mihosoft.vrl.v3d.CSG;
-
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.swing.text.BadLocationException;
-
-
-
-//import org.bytedeco.javacpp.DoublePointer;
-
-
-
-
-
-
-
-
-
-
-
-
-import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.stage.Stage;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
@@ -46,6 +12,24 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import eu.mihosoft.vrl.v3d.CSG;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.stage.Stage;
+
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+//import org.bytedeco.javacpp.DoublePointer;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioController  implements
@@ -93,7 +77,7 @@ public class BowlerStudioController  implements
 					files);
 			
 			fileTab.setContent(t);
-			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-"+ScriptingEngine.getShellType(file.getName())+".png"));
+			fileTab.setGraphic(AssetFactory.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png"));
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(),  t);
 			fileTab.setOnCloseRequest(event->{
