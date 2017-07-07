@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -48,9 +49,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-
-import org.hid4java.*;
-import org.hid4java.event.HidServicesEvent;
 
 public class BowlerStudio extends Application {
 
@@ -171,63 +169,6 @@ public class BowlerStudio extends Application {
 	 */
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
-		HidServices hidServices = HidManager.getHidServices();
-
-		hidServices.addHidServicesListener(new HidServicesListener() {
-
-			@Override
-			public void hidFailure(HidServicesEvent event) {
-				// TODO Auto-generated method stub
-				System.err.println(event);
-
-			}
-
-			@Override
-			public void hidDeviceDetached(HidServicesEvent event) {
-				// TODO Auto-generated method stub
-				System.err.println(event);
-
-			}
-
-			@Override
-			public void hidDeviceAttached(HidServicesEvent event) {
-				// TODO Auto-generated method stub
-				System.err.println(event);
-
-			}
-		});
-		// Provide a list of attached devices
-		for (HidDevice hidDevice : hidServices.getAttachedHidDevices()) {
-			System.out.println("Device: " + hidDevice);
-			if (hidDevice.isVidPidSerial(0x3742, 0x7, null)) {
-				System.out.println("Found! " + hidDevice);
-				hidDevice.open();
-				// Send the Initialise message
-				byte[] message = new byte[64];
-				message[0] = 0x3f;
-				message[1] = 0x23;
-				message[2] = 0x23;
-
-				int val = hidDevice.write(message, 64, (byte) 0);
-
-				if (val != -1) {
-					System.out.println("down number [" + val + "]");
-				} else {
-					System.err.println(hidDevice.getLastErrorMessage());
-				}
-				int read = hidDevice.read(message);
-				System.out.println("up number [" + read + "]");
-
-				for (int i = 0; i < read; i++) {
-					System.out.println("up val [" + message[i] + "]");
-
-				}
-				hidDevice.close();
-			}
-		}
-
-		// Clean shutdown
-		hidServices.shutdown();
 
 		if (splash != null) {
 			try {
@@ -252,7 +193,7 @@ public class BowlerStudio extends Application {
 			// Remove the default printing
 
 		});
-
+		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Attempting to Log In...");
 			// ScriptingEngine.logout();
