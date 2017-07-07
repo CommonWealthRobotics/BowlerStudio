@@ -133,6 +133,10 @@ public class BowlerStudio extends Application {
 		System.setOut(ps);
 
 	}
+	
+	public static void loadMobilebaseFromGit(String id, String file){
+		BowlerStudioModularFrame.getBowlerStudioModularFrame().loadMobilebaseFromGit(id,file);
+	}
 
 	public static void select(MobileBase base) {
 		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);

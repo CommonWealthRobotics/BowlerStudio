@@ -197,6 +197,9 @@ public class BowlerStudioModularFrame {
 		}
 
 	}
+	public void loadMobilebaseFromGit(String id, String file){
+		menueController.loadMobilebaseFromGit(id, file);
+	}
 
 	private void addTutorial() {
 		Platform.runLater(() -> getTutorialDockNode().dock(dockPane, DockPos.LEFT));
