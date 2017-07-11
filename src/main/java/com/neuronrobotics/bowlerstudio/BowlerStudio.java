@@ -32,6 +32,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -134,8 +136,13 @@ public class BowlerStudio extends Application {
 
 	}
 	
-	public static void loadMobilebaseFromGit(String id, String file){
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().loadMobilebaseFromGit(id,file);
+	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception{
+		String xmlContent = ScriptingEngine.codeFromGit(id, file)[0];
+		MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+
+		mb.setGitSelfSource(new String[] { id, file });
+		//ConnectionManager.addConnection(mb, mb.getScriptingName());
+		return mb;
 	}
 
 	public static void select(MobileBase base) {

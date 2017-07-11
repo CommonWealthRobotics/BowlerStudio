@@ -368,7 +368,7 @@ public class MobileBaseCadManager {
 		new Thread(){
 			@Override
 			public void run() {
-				System.out.print("\r\nGenerating cad...");
+				System.out.print("\r\nGenerating CAD...");
 				setName("MobileBaseCadManager Generating cad Thread ");
 				// new Exception().printStackTrace();
 				MobileBase device = base;
@@ -377,7 +377,7 @@ public class MobileBaseCadManager {
 				}catch(Exception e){
 					BowlerStudioController.highlightException(getCadScript(), e);
 				}
-				System.out.print("Done!\r\n");
+				System.out.print("Done Generating CAD!\r\n");
 				BowlerStudioController.setCsg(MobileBaseCadManager.this,getCadScript());
 				cadGenerating = false;
 			}
