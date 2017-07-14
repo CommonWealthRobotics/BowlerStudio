@@ -86,7 +86,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private MenuItem showCreatureLab; // Value injected by FXMLLoader
 	@FXML // fx:id="showTerminal"
 	private MenuItem showTerminal;
-
+	@FXML // fx:id="watchingRepos"
+	private Menu WindowMenu;
 	@FXML // fx:id="watchingRepos"
 	private Menu watchingRepos; // Value injected by FXMLLoader
 
@@ -895,6 +896,28 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				ScriptingEngine.addIGithubLoginListener(listener);
 			}
 		}).start();
+		//WindowMenu
+		int [] fonts = new int [] { 10,12,14,16,18,20,24,28,32,36,40};
+		Menu fontSelect = new Menu();
+		int defSize = (int) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
+				12);
+		for(int i=0;i<fonts.length;i++){
+			int myFoneNum = fonts[i];
+			RadioMenuItem ftmp = new RadioMenuItem(myFoneNum+" pt");
+			
+			if(defSize==myFoneNum){
+				ftmp.setSelected(true);
+			}else
+				ftmp.setSelected(false);
+			ftmp.setOnAction((event)->{
+				if(ftmp.isSelected()){
+					BowlerStudioController.getBowlerStudio().setFontSize(myFoneNum);
+				}
+			});
+			fontSelect.getItems().add(ftmp);
+			
+		}
+		WindowMenu.getItems().add(fontSelect);
 	}
 
 	@FXML
