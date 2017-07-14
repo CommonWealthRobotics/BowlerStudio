@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -58,6 +59,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(100, 150);
 
 	private final File file;
+
+	private Font myFont;
 
 	private class MySwingNode extends SwingNode {
 		/**
@@ -264,6 +267,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			}
 		});
+		
+		myFont = textArea.getFont();
 		highlighter = textArea.getHighlighter();
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
@@ -394,5 +399,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	public void clearHighlits() {
 		highlighter.removeAllHighlights();
+	}
+	public int getFontSize(){
+		return myFont.getSize();
+	}
+	public void setFontSize(int size){
+		myFont = new Font(myFont.getName(), myFont.getStyle(), size);
+		textArea.setFont(myFont);
 	}
 }

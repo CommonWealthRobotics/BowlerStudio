@@ -1,3 +1,20 @@
+bowlerstudio (0.21.2) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.21.2 update
+  * updating kernel
+
+  [ Octogonapus ]
+  * Removed AssetFactory from local src and importing the version from the kernel instead
+
+  [ Kevin Harrington ]
+  * updating java-bowler
+  * using the studio build info from the kernel
+  * load a mobile base form git
+  * Cleanly catching the caso of generated class
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 11 Jul 2017 09:49:54 -0400
+
 bowlerstudio (0.21.1) xenial; urgency=medium
 
   * updating the default creature URL

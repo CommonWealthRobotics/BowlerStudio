@@ -49,11 +49,22 @@ public class BowlerStudioController  implements
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference=this;
 		this.setJfx3dmanager(jfx3dmanager);
-
+		size=(int) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
+				12);
 		
 	}
 	private HashMap<String,Tab> openFiles = new HashMap<>();
 	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
+	private int size;
+	
+	public void setFontSize(int size){
+		this.size = size;
+		for (String key:widgets.keySet()){
+			widgets.get(key).setFontSize(size);
+		}
+		ConfigurationDatabase.setObject("BowlerStudioConfigs", "fontsize",size);
+	}
+	
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
 		if(openFiles.get(file.getAbsolutePath())!=null && widgets.get(file.getAbsolutePath())!=null){
@@ -67,6 +78,7 @@ public class BowlerStudioController  implements
 		try {
 			Log.warning("Loading local file from: "+file.getAbsolutePath());
 			LocalFileScriptTab t  =new LocalFileScriptTab( file);
+			t.setFontSize(size);
 			String key =t.getScripting().getGitRepo()+":"+t.getScripting().getGitFile();
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());

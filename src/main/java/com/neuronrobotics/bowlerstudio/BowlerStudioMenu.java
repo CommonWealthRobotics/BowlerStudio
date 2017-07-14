@@ -253,7 +253,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() != 1)
+											if (tmpGist.getItems().size() != 2)
 												return;// menue populated by
 														// another thread
 											for (String s : listofFiles) {
@@ -434,7 +434,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								}
 
 								for (String s : listofFiles) {
-									// System.out.println("Adding file: "+s);
+									System.err.println("Adding file: "+s);
 									MenuItem tmp = new MenuItem(s);
 									tmp.setOnAction(event -> {
 										new Thread() {
