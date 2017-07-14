@@ -111,6 +111,16 @@ public class MobleBaseMenueFactory {
 
 		boolean creatureIsOwnedByUser = false;
 		
+		TreeItem<String> editXml = new TreeItem<String>("Edit Robot XML..", AssetFactory.loadIcon("Script-Tab-RobotXML.png"));
+		callbackMapForTreeitems.put(editXml, () -> {
+			try {
+				File code = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+				BowlerStudio.createFileTab(code);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation", AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
@@ -138,6 +148,14 @@ public class MobleBaseMenueFactory {
 				e.printStackTrace();
 			}
 		}
+		
+		
+
+		if (creatureIsOwnedByUser) {
+			rootItem.getChildren().addAll(publish);
+
+		}
+		
 		TreeItem<String> legs = loadLimbs(device, view, device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 		TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
@@ -322,7 +340,6 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 		TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 		callbackMapForTreeitems.put(setCAD, () -> {
 			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
@@ -435,8 +452,7 @@ public class MobleBaseMenueFactory {
 		rootItem.getChildren().addAll(physics,regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
-			owner.getChildren().addAll(publish, editWalking, editCAD, resetWalking, setCAD);
-			rootItem.getChildren().add(owner);
+			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
 		}
 	}
 
@@ -821,7 +837,7 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(addLink, advanced, remove);
 		if (creatureIsOwnedByUser) {
-			TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
+			//TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From Git", dh.getGitCadEngine()[0], (gitsId, file) -> {
@@ -869,9 +885,8 @@ public class MobleBaseMenueFactory {
 					e.printStackTrace();
 				}
 			});
-			owner.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
+			dhItem.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
 
-			dhItem.getChildren().add(owner);
 		}
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();
