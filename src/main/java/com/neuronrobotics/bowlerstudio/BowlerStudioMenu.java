@@ -898,9 +898,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		}).start();
 		//WindowMenu
 		int [] fonts = new int [] { 10,12,14,16,18,20,24,28,32,36,40};
-		Menu fontSelect = new Menu();
-		int defSize = (int) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
-				12);
+		Menu fontSelect = new Menu("Font Size");
+		ToggleGroup toggleGroup = new ToggleGroup();
+		int defSize = ((Double) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
+				12)).intValue();
 		for(int i=0;i<fonts.length;i++){
 			int myFoneNum = fonts[i];
 			RadioMenuItem ftmp = new RadioMenuItem(myFoneNum+" pt");
@@ -914,6 +915,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					BowlerStudioController.getBowlerStudio().setFontSize(myFoneNum);
 				}
 			});
+			ftmp.setToggleGroup(toggleGroup);
 			fontSelect.getItems().add(ftmp);
 			
 		}
