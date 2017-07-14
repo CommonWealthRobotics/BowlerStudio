@@ -587,6 +587,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		cm.getItems().add(export);
 
+		MenuItem hide = new MenuItem("Hide Object");
+		hide.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				resetMouseTime();
+				removeObject(currentCsg);
+				
+			}
+		});
+		cm.getItems().add(hide);
 		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
