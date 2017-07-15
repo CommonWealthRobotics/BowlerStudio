@@ -34,8 +34,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import org.apache.commons.io.IOUtils;
+import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.PatchFormatException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHRepository;
@@ -66,6 +68,7 @@ public class BowlerStudio extends Application {
 	private static String firstVer = "";
 	private static Graphics2D splashGraphics;
 	final static SplashScreen splash = SplashScreen.getSplashScreen();
+	private static Stage primaryStage2;
 
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
@@ -385,16 +388,16 @@ public class BowlerStudio extends Application {
 							alert.setHeaderText("Arduino expected at: " + adr);
 							// alert.initModality(Modality.APPLICATION_MODAL);
 							alert.show();
-							new Thread() {
-								public void run() {
-									try {
-										openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-							}.start();
+//							new Thread() {
+//								public void run() {
+//									try {
+//										openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+//									} catch (Exception e) {
+//										// TODO Auto-generated catch block
+//										e.printStackTrace();
+//									}
+//								}
+//							}.start();
 						});
 						
 					}
@@ -404,7 +407,7 @@ public class BowlerStudio extends Application {
 				System.out.println("Arduino exec found at: " + arduino);
 				ArduinoLoader.setARDUINOExec(arduino);
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -578,6 +581,7 @@ public class BowlerStudio extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+		primaryStage2 = primaryStage;
 		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
 		// Initialize your logic here: all @FXML variables will have been
 		// injected
@@ -604,9 +608,25 @@ public class BowlerStudio extends Application {
 			scene.getStylesheets().clear();
 			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 
+			
 			primaryStage.setTitle("Bowler Studio");
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
+			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
+			Application.setUserAgentStylesheet(stylesheet);		
+	
+			// initialize the default styles for the dock pane and undocked
+			// nodes using the DockFX
+			// library's internal Default.css stylesheet
+			// unlike other custom control libraries this allows the user to
+			// override them globally
+			// using the style manager just as they can with internal JavaFX
+			// controls
+			// this must be called after the primary stage is shown
+			// https://bugs.openjdk.java.net/browse/JDK-8132900
+			DockPane.initializeDefaultUserAgentStylesheet();
+			
 			primaryStage.setOnCloseRequest(arg0 -> {
 				// ThreadUtil.wait(100);
 				closeBowlerStudio();
@@ -647,6 +667,9 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void closeBowlerStudio() {
+		Platform.runLater(()->{
+			 primaryStage2.hide();
+		});
 		new Thread() {
 			public void run() {
 				System.err.println("Closing application");
@@ -656,6 +679,7 @@ public class BowlerStudio extends Application {
 				System.exit(0);
 			}
 		}.start();
+	
 	}
 
 	public static void printStackTrace(Exception e) {

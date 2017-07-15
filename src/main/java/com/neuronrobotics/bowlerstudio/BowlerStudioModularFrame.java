@@ -125,19 +125,7 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setLeftAnchor(dockPane, 0.0);
 			AnchorPane.setBottomAnchor(dockPane, 0.0);
 
-			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
-			Application.setUserAgentStylesheet(stylesheet);		
-	
-			// initialize the default styles for the dock pane and undocked
-			// nodes using the DockFX
-			// library's internal Default.css stylesheet
-			// unlike other custom control libraries this allows the user to
-			// override them globally
-			// using the style manager just as they can with internal JavaFX
-			// controls
-			// this must be called after the primary stage is shown
-			// https://bugs.openjdk.java.net/browse/JDK-8132900
-			DockPane.initializeDefaultUserAgentStylesheet();
+
 			FXMLLoader WindowLoader3d;
 			WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
 			creatureLab3dController = new CreatureLab3dController(getJfx3dmanager());
