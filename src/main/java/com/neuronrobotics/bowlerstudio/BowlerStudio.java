@@ -69,6 +69,7 @@ public class BowlerStudio extends Application {
 	private static Graphics2D splashGraphics;
 	final static SplashScreen splash = SplashScreen.getSplashScreen();
 	private static Stage primaryStage2;
+	private static File layoutFile;
 
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
@@ -427,7 +428,9 @@ public class BowlerStudio extends Application {
 			// Log.enableInfoPrint();
 			renderSplashFrame(92, "Done Application");
 			// ThreadUtil.wait(100);
-
+			layoutFile = AssetFactory.loadFile("layout/default.css");
+			if (layoutFile == null || !layoutFile.exists())
+				throw new RuntimeException("Style sheet does not exist");
 			launch(args);
 
 		} else {
@@ -602,19 +605,21 @@ public class BowlerStudio extends Application {
 
 			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 
-			File f = AssetFactory.loadFile("layout/default.css");
-			if (f == null || !f.exists())
-				throw new RuntimeException("Style sheet does not exist");
+
 			scene.getStylesheets().clear();
-			scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+			scene.getStylesheets().add("file:///" + layoutFile.getAbsolutePath().replace("\\", "/"));
 
 			
 			primaryStage.setTitle("Bowler Studio");
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
-			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
-			Application.setUserAgentStylesheet(stylesheet);		
+			try {
+				String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
+				Application.setUserAgentStylesheet(stylesheet);		
+			}catch(Exception |Error e) {
+				e.printStackTrace();
+			}
 	
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
