@@ -99,7 +99,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	private static final long serialVersionUID = 6744581340628622682L;
 
-	private static final TransformNR autoSpinSpeed = new TransformNR(0, 0, 0, new RotationNR(0, 0.5, 0));
+	private static final TransformNR autoSpinSpeed = new TransformNR(0, 0, 0, new RotationNR(0, 0.25, 0));
 
 	/** The root. */
 	private final Group root = new Group();
@@ -902,25 +902,28 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 	
 	private void autoSpin(){
-		
-		long diff = System.currentTimeMillis() - getLastMosueMovementTime();
-		
-		if(diff>timeForAutospin && spin.isSelected()){
-			//TODO start spinning
-			double scale = 1;
-			long finaSpeedScale =  timeForAutospin+(timeForAutospin/2);
-			if(diff<finaSpeedScale){
-				double finaSpeedDiff = ((double)(finaSpeedScale- diff));
-				double sineScale = (finaSpeedDiff/((double)(timeForAutospin/2)));
-				scale = 1-Math.sin(sineScale * (Math.PI/2));
-				moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
-			}else{
-				moveCamera(autoSpinSpeed, 0);
+		try {
+			long diff = System.currentTimeMillis() - getLastMosueMovementTime();
+			
+			if(diff>timeForAutospin && spin.isSelected()){
+				//TODO start spinning
+				double scale = 0.5;
+				long finaSpeedScale =  timeForAutospin+(timeForAutospin/2);
+				if(diff<finaSpeedScale){
+					double finaSpeedDiff = ((double)(finaSpeedScale- diff));
+					double sineScale = (finaSpeedDiff/((double)(timeForAutospin/2)));
+					scale = 1-Math.sin(sineScale * (Math.PI/2));
+					moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
+				}else{
+					moveCamera(autoSpinSpeed, 0);
+				}
+				
+				
 			}
-			
-			
+		}catch(Exception | Error e) {
+			e.printStackTrace();
 		}
-		FxTimer.runLater(Duration.ofMillis(60), () -> {
+		FxTimer.runLater(Duration.ofMillis(30), () -> {
 			autoSpin();
 		});
 	}
