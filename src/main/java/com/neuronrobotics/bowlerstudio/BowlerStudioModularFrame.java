@@ -85,7 +85,6 @@ public class BowlerStudioModularFrame {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
-		try {
 			assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 			assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 			dockPane = new DockPane();
@@ -126,12 +125,9 @@ public class BowlerStudioModularFrame {
 			AnchorPane.setLeftAnchor(dockPane, 0.0);
 			AnchorPane.setBottomAnchor(dockPane, 0.0);
 
-			// test the look and feel with both Caspian and Modena
-			if(OSUtil.isOSX())
-				Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
-			else
-				Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
-				
+			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
+			Application.setUserAgentStylesheet(stylesheet);		
+	
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
 			// library's internal Default.css stylesheet
@@ -192,9 +188,6 @@ public class BowlerStudioModularFrame {
 				System.err.println("Cloick");
 			});
 
-		} catch (Exception | Error e) {
-			e.printStackTrace();
-		}
 
 	}
 	public void loadMobilebaseFromGit(String id, String file){

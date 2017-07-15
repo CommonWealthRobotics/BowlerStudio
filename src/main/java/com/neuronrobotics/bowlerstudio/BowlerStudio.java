@@ -346,7 +346,7 @@ public class BowlerStudio extends Application {
 					alert.setContentText(e.getMessage());
 					alert.initModality(Modality.APPLICATION_MODAL);
 					alert.show();
-					e.printStackTrace(System.out);
+					//e.printStackTrace(System.out);
 				});
 
 			}
@@ -385,19 +385,20 @@ public class BowlerStudio extends Application {
 							alert.setHeaderText("Arduino expected at: " + adr);
 							// alert.initModality(Modality.APPLICATION_MODAL);
 							alert.show();
-
+							new Thread() {
+								public void run() {
+									try {
+										openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							}.start();
 						});
+						
 					}
-					new Thread() {
-						public void run() {
-							try {
-								openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}.start();
+					
 
 				}
 				System.out.println("Arduino exec found at: " + arduino);

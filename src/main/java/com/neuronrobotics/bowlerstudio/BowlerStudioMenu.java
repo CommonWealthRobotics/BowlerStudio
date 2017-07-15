@@ -342,7 +342,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							if (ownerMenue.get(g.getOwnerName()) == null) {
 								ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 								Platform.runLater(() -> {
-									watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+									try {
+										watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+									}catch(Exception e) {
+										
+									}
 								});
 							}
 							setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
