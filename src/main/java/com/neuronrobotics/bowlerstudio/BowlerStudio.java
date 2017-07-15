@@ -349,7 +349,7 @@ public class BowlerStudio extends Application {
 					alert.setHeaderText("Opencv library is missing");
 					alert.setContentText(e.getMessage());
 					alert.initModality(Modality.APPLICATION_MODAL);
-					alert.show();
+					//alert.show();
 					//e.printStackTrace(System.out);
 				});
 
@@ -388,7 +388,7 @@ public class BowlerStudio extends Application {
 							alert.setTitle("Arduino is missing");
 							alert.setHeaderText("Arduino expected at: " + adr);
 							// alert.initModality(Modality.APPLICATION_MODAL);
-							alert.show();
+							//alert.show();
 //							new Thread() {
 //								public void run() {
 //									try {
