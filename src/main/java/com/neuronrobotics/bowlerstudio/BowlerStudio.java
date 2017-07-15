@@ -182,6 +182,7 @@ public class BowlerStudio extends Application {
 	 *            the command line arguments
 	 * @throws Exception
 	 */
+	
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 
@@ -192,6 +193,14 @@ public class BowlerStudio extends Application {
 			}
 		}
 		renderSplashFrame(2, "Testing Internet Connection");
+		
+		try {
+			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
+			setUserAgentStylesheet(stylesheet);		
+		}catch(Exception |Error e) {
+			e.printStackTrace();
+		}
+
 		try {
 			final URL url = new URL("http://github.com");
 			final URLConnection conn = url.openConnection();
@@ -267,30 +276,14 @@ public class BowlerStudio extends Application {
 				} else {
 					System.err.println("Studio version is the same");
 				}
+				System.err.println("Populating menu");
 
 				if (BowlerStudio.hasNetwork()) {
 					renderSplashFrame(25, "Populating Menu");
-
-					org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
-					GHMyself self = github.getMyself();
-					Map<String, GHRepository> myPublic = self.getAllRepositories();
-					for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
-						if (entry.getKey().contentEquals(AssetFactory.repo)) {
-							GHRepository ghrepo = entry.getValue();
-							myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
-
-						}
-
-					}
-
 				}
-
-				ScriptingEngine.filesInGit("https://github.com/CommonWealthRobotics/BowlerStudioConfiguration.git");
-
-				// to set a new repo
-
 			}
 			renderSplashFrame(50, "Downloading Images");
+			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
 					StudioBuildInfo.getVersion());
 			AssetFactory.setGitSource(
@@ -454,7 +447,7 @@ public class BowlerStudio extends Application {
 			splashGraphics = null;
 		}
 	}
-
+	@SuppressWarnings("restriction")
 	public static void renderSplashFrame(int frame, String message) {
 
 		if (splashGraphics != null && splash.isVisible()) {
@@ -464,7 +457,9 @@ public class BowlerStudio extends Application {
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
 			splashGraphics.drawString(frame + "% " + message, 65, 280);
-			splash.update();
+			//Platform.runLater(() -> {
+				splash.update();
+			//});
 		}
 	}
 
@@ -605,22 +600,17 @@ public class BowlerStudio extends Application {
 
 			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 
+			String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
 
 			scene.getStylesheets().clear();
-			scene.getStylesheets().add("file:///" + layoutFile.getAbsolutePath().replace("\\", "/"));
+			scene.getStylesheets().add(nwfile);
+			System.err.println("Loading CSS from "+nwfile);
+			
+			primaryStage.setScene(scene);
 
 			
-			primaryStage.setTitle("Bowler Studio");
-			primaryStage.setScene(scene);
 			primaryStage.show();
 			
-			try {
-				String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
-				Application.setUserAgentStylesheet(stylesheet);		
-			}catch(Exception |Error e) {
-				e.printStackTrace();
-			}
-	
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
 			// library's internal Default.css stylesheet
@@ -671,6 +661,7 @@ public class BowlerStudio extends Application {
 
 	}
 
+	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
 		Platform.runLater(()->{
 			 primaryStage2.hide();

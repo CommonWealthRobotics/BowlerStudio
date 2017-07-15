@@ -115,17 +115,17 @@ public class BowlerStudioResourceFactory {
 			}
 
 		}
-		try {
-			mainPanel.load();
-		} catch (IOException ex) {
-			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-		try {
-			githubLogin.load();
-		} catch (IOException e) {
-			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, e);
-		}
+//		try {
+//			mainPanel.load();
+//		} catch (IOException ex) {
+//			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//
+//		try {
+//			githubLogin.load();
+//		} catch (IOException e) {
+//			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, e);
+//		}
 
 	}// stub to force a load from the static in a specific thread
 
