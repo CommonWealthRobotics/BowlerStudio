@@ -287,6 +287,8 @@ public class BowlerStudio extends Application {
 
 			}
 			renderSplashFrame(50, "Downloading Images");
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
+					StudioBuildInfo.getVersion());
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",

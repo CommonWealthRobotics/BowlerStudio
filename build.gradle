@@ -187,7 +187,7 @@ dependencies {
 			compile files(basedir)
 		else
 			//If you set your OPENCV_DIR environment variable, then we wouldnt have to do hacky things
-			compile files('/Volumes/Snow Leopard/Applications/BowlerStudio.app/Contents/MacOS/opencv249build/bin/opencv-249.jar')
+			compile files('/Applications/BowlerStudio.app/Contents/MacOS/opencv249build/bin/opencv-249.jar')
 	}
 	if(isLinux()){
 		//compile files('/usr/share/java/opencv-249.jar')

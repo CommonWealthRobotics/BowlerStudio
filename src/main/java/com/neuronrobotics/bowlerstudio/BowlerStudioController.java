@@ -49,7 +49,7 @@ public class BowlerStudioController  implements
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference=this;
 		this.setJfx3dmanager(jfx3dmanager);
-		size=((Double) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
+		size=((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
 				12)).intValue();
 		
 	}
