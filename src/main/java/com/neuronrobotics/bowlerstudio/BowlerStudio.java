@@ -195,7 +195,9 @@ public class BowlerStudio extends Application {
 		renderSplashFrame(2, "Testing Internet Connection");
 		
 		try {
-			String stylesheet ="MODENA";//"MODENA" or "CASPIAN"
+			
+			String stylesheet =Application.STYLESHEET_MODENA;//"MODENA" or "CASPIAN"
+			System.setProperty("javax.userAgentStylesheetUrl", stylesheet);
 			setUserAgentStylesheet(stylesheet);		
 		}catch(Exception |Error e) {
 			e.printStackTrace();
