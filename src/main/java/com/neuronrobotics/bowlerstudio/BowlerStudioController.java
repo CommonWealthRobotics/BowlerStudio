@@ -215,7 +215,9 @@ public class BowlerStudioController  implements
 
 
 	private boolean removeObject(Object p) {
-		if (CSG.class.isInstance(p) || Node.class.isInstance(p)) {
+		if (	CSG.class.isInstance(p) || 
+				Node.class.isInstance(p)||
+				Polygon.class.isInstance(p)) {
 			Platform.runLater(() -> {
 				getJfx3dmanager().removeObjects();
 				getJfx3dmanager().clearUserNode();
