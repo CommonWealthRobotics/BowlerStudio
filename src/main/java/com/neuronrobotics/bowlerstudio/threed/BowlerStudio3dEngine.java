@@ -300,7 +300,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				hideAxis();
 		});
 
-		controls.getChildren().addAll(home, ruler,spin, clear);
+		controls.getChildren().addAll(home, clear,ruler,spin);
 		return new Group(controls);
 	}
 
@@ -587,6 +587,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		cm.getItems().add(export);
 
+		MenuItem toWireframe = new MenuItem("To Wire Frame");
+		toWireframe.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				resetMouseTime();
+				removeObject(currentCsg);
+				BowlerStudioController.getBowlerStudio().addObject(currentCsg.getPolygons(), source);
+				
+			}
+		});
+		cm.getItems().add(toWireframe);
+		
 		MenuItem hide = new MenuItem("Hide Object");
 		hide.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -597,6 +609,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		});
 		cm.getItems().add(hide);
+		
 		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

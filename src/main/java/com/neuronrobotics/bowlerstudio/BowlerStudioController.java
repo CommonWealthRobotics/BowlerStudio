@@ -214,22 +214,15 @@ public class BowlerStudioController  implements
 	}
 
 
-
-
-
 	private boolean removeObject(Object p) {
-		if (CSG.class.isInstance(p)) {
+		if (CSG.class.isInstance(p) || Node.class.isInstance(p)) {
 			Platform.runLater(() -> {
 				getJfx3dmanager().removeObjects();
+				getJfx3dmanager().clearUserNode();
 			});
 			return true;
 		} 
-		if (Node.class.isInstance(p)) {
-			getJfx3dmanager().clearUserNode();
-			
-			return true;
-		} 
-		ThreadUtil.wait(20);
+		//ThreadUtil.wait(20);
 		return false;
 	}
 	
@@ -272,7 +265,7 @@ public class BowlerStudioController  implements
 			
 		});
 	}
-	private void addObject(Object o, File source) {
+	public void addObject(Object o, File source) {
 		
 		if (List.class.isInstance(o)) {
 			List<Object> c = (List<Object>) o;
@@ -331,14 +324,9 @@ public class BowlerStudioController  implements
 				+ Previous);
 		// this is added in the script engine when the connection manager is
 		// loaded
-
-		ThreadUtil.wait(20);
-		
 		clearObjects(Previous);
-		
-		//Check if a CSG is coming in and clear the screen first
 		clearObjects(result);
-		
+		ThreadUtil.wait(40);
 		if (List.class.isInstance(result)) {
 			List<Object> c = (List<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
@@ -352,9 +340,10 @@ public class BowlerStudioController  implements
 	
 	private void clearObjects(Object o){
 		if (List.class.isInstance(o)) {
+			@SuppressWarnings("unchecked")
 			List<Object> c = (List<Object>) o;
 			for (int i = 0; i < c.size(); i++) {
-				removeObject(c.get(i));
+				clearObjects(c.get(i));
 			}
 		} else {
 			removeObject(o);
