@@ -59,9 +59,9 @@ import javafx.scene.transform.Affine;
  */
 public class Axis extends Group {
 	
-	private Line xAxis;
-	private Line yAxis;
-	private Line zAxis;
+	private Line3D xAxis;
+	private Line3D yAxis;
+	private Line3D zAxis;
 	private Label xText;
 	private Label yText;
 	private Label zText;
@@ -82,35 +82,33 @@ public class Axis extends Group {
 	//
 	public Axis(int i) {
 
-		xAxis = new Line(0,0,i,0);
-		yAxis = new Line(0,0,0,i);
-		zAxis = new Line(0,0,i,0);
+	
 		
 		
 		Affine xp = new Affine();
-		//xp.setTx(i/2);
-		//xAxis.getTransforms().add(xp);
+		xp.setTx(i/2);
 		xText = new Label("+X");
 		xText.getTransforms().add(xp);
 		
 		Affine yp = new Affine();
-		//yp.setTy(i/2);
-		//yAxis.getTransforms().add(yp);
+		yp.setTy(i/2);
 		yText = new Label("+Y");
 		yText.getTransforms().add(yp);
 		
-		Affine zp = new Affine();
 		//zp.setTz(i/2);
-		zp.appendRotation(-90, 0, 0, 0, 0, 1, 0);
 		Affine zTextAffine = new Affine();
 		zTextAffine.setTz(i/2);
 		zTextAffine.setTx(i/2);
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zAxis.getTransforms().add(zp);
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
+		//zText.smoothProperty().set(false);
 		
+		
+		xAxis = new Line3D(i,0,0);
+		yAxis = new Line3D(0,i,0);
+		zAxis = new Line3D(0,0,i);
 		int strokWidth=1;
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);

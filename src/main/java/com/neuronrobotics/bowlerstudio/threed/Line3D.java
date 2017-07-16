@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
 import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.transform.Affine;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
@@ -21,6 +22,13 @@ public class Line3D  extends Line {
 	public Line3D(Vector3d start, Vector3d end){
 		this(start.x,start.y,start.z,
 				end.x,end.y,end.z	);
+	}
+	
+	public Line3D(
+            double endX,
+            double endY,
+            double endZ){
+		this(0,0,0,endX,endY,endZ);
 	}
 	
 	public Line3D(double startX,
@@ -61,7 +69,8 @@ public class Line3D  extends Line {
 		getTransforms().add(zTrans);
 		getTransforms().add(zp);
 		getTransforms().add(xy);
-		
+		smoothProperty().set(false);
+		setStrokeLineCap(StrokeLineCap.BUTT);
 	}
 	
 	public double getEndZ() {
