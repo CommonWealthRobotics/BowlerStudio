@@ -50,6 +50,8 @@ import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.FileUtil;
+import eu.mihosoft.vrl.v3d.Polygon;
+import eu.mihosoft.vrl.v3d.Vertex;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
@@ -593,7 +595,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ActionEvent event) {
 				resetMouseTime();
 				removeObject(currentCsg);
-				BowlerStudioController.getBowlerStudio().addObject(currentCsg.getPolygons(), source);
+				for (Polygon p:currentCsg.getPolygons()){
+					List<Vertex> vertices = p.vertices;
+					for(int i=1;i<vertices.size();i++){
+						Line3D line = new Line3D(vertices.get(i-1),vertices.get(i));
+						line.setStrokeWidth(01);
+						line.setStroke(javafx.scene.paint.Color.WHITE);
+						line.getTransforms().add(0,currentCsg.getManipulator());
+						BowlerStudioController.getBowlerStudio().addObject(line, source);
+
+					}
+				}
 				
 			}
 		});
