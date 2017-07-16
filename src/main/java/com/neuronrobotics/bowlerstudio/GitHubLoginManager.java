@@ -60,7 +60,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 		}
 		// setContent(root);
 		while (!githublogin.isDone()) {
-			System.err.println("Waiting for user login");
+			//System.err.println("Waiting for user login");
 
 			ThreadUtil.wait(1000);
 		}
