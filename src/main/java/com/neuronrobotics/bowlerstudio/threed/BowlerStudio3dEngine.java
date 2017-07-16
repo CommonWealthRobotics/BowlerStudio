@@ -841,24 +841,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}
 			}
 		}.start();
-		Affine xp = new Affine();
-		xp.setTx(25);
-		Label xText = new Label("+X");
-		xText.getTransforms().add(xp);
 
-		Affine yp = new Affine();
-		yp.setTy(25);
-		Label yText = new Label("+Y");
-		yText.getTransforms().add(yp);
-
-		Affine zp = new Affine();
-		zp.setTz(25);
-		zp.setTx(25);
-		zp.appendRotation(-90, 0, 0, 0, 1, 0, 0);
-		zp.appendRotation(180, 0, 0, 0, 0, 0, 1);
-
-		Label zText = new Label("+Z");
-		zText.getTransforms().add(zp);
 		Affine groundPlacment = new Affine();
 		groundPlacment.setTz(-1);
 		// ground.setOpacity(.5);
@@ -866,7 +849,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		ground.getTransforms().add(groundPlacment);
 		focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
-		gridGroup.getChildren().addAll(yText, zText, xText, ground);
+		gridGroup.getChildren().addAll(new Axis(), ground);
 		showAxis();
 		axisGroup.getChildren().addAll(focusGroup, userGroup);
 		world.getChildren().addAll(lookGroup, axisGroup);

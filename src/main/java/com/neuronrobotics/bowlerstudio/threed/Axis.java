@@ -49,6 +49,7 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Affine;
 
@@ -58,9 +59,9 @@ import javafx.scene.transform.Affine;
  */
 public class Axis extends Group {
 	
-	private Box xAxis;
-	private Box yAxis;
-	private Box zAxis;
+	private Line xAxis;
+	private Line yAxis;
+	private Line zAxis;
 	private Label xText;
 	private Label yText;
 	private Label zText;
@@ -92,9 +93,9 @@ public class Axis extends Group {
 		blueMaterial.setDiffuseColor(Color.DARKBLUE);
 		blueMaterial.setSpecularColor(Color.BLUE);
 
-		xAxis = new Box(i, 2, 2);
-		yAxis = new Box(2, i, 2);
-		zAxis = new Box(2, 2, i);
+		xAxis = new Line(0,0,i,0);
+		yAxis = new Line(0,0,0,i);
+		zAxis = new Line(0,0,i,0);
 		
 		
 		Affine xp = new Affine();
@@ -110,7 +111,8 @@ public class Axis extends Group {
 		yText.getTransforms().add(yp);
 		
 		Affine zp = new Affine();
-		zp.setTz(i/2);
+		//zp.setTz(i/2);
+		zp.appendRotation(90, 0, 0, 0, 0, 1, 0);
 		Affine zTextAffine = new Affine();
 		zTextAffine.setTz(i/2);
 		zTextAffine.setTx(i/2);
@@ -120,10 +122,16 @@ public class Axis extends Group {
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
 		
+		int strokWidth=2;
+		xAxis.setStrokeWidth(strokWidth);
+		xAxis.setStroke(Color.RED);
 		
-		xAxis.setMaterial(redMaterial);
-		yAxis.setMaterial(greenMaterial);
-		zAxis.setMaterial(blueMaterial);
+		yAxis.setStrokeWidth(strokWidth);
+		yAxis.setStroke(Color.GREEN);
+		
+		zAxis.setStrokeWidth(strokWidth);
+		zAxis.setStroke(Color.BLUE);
+		
 		show();
 	}
 	
