@@ -2,11 +2,26 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Affine;
+import eu.mihosoft.vrl.v3d.Vector3d;
+import eu.mihosoft.vrl.v3d.Vertex;
 
 public class Line3D  extends Line {
 	
 	private double endZ = 0;
 	private double startZ=0;
+	
+	public Line3D(Vertex start, Vertex end){
+		this(start.pos,
+				end.pos	);
+	}
+	public Line3D(double [] start, double[] end){
+		this(start[0],start[1],start[2],
+				end[0],end[1],end[2]	);
+	}
+	public Line3D(Vector3d start, Vector3d end){
+		this(start.x,start.y,start.z,
+				end.x,end.y,end.z	);
+	}
 	
 	public Line3D(double startX,
             double startY,

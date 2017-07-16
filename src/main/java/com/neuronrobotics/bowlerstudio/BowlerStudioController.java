@@ -7,19 +7,24 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.threed.Line3D;
 import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Polygon;
+import eu.mihosoft.vrl.v3d.Vertex;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
-import java.awt.*;
+
+import java.awt.Color;
+//import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -293,6 +298,17 @@ public class BowlerStudioController  implements
 		else if (Node.class.isInstance(o)) {
 
 			addNode((Node) o);
+
+		}else if (Polygon.class.isInstance(o)) {
+			Polygon p = (Polygon) o;
+			List<Vertex> vertices = p.vertices;
+			for(int i=1;i<vertices.size();i++){
+				Line3D line = new Line3D(vertices.get(i-1),vertices.get(i));
+				line.setStrokeWidth(01);
+				line.setStroke(javafx.scene.paint.Color.WHITE);
+				addNode(line);
+			}
+
 
 		}
 		

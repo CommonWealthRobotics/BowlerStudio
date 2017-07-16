@@ -88,20 +88,20 @@ public class Axis extends Group {
 		
 		
 		Affine xp = new Affine();
-		xp.setTx(i/2);
-		xAxis.getTransforms().add(xp);
+		//xp.setTx(i/2);
+		//xAxis.getTransforms().add(xp);
 		xText = new Label("+X");
 		xText.getTransforms().add(xp);
 		
 		Affine yp = new Affine();
-		yp.setTy(i/2);
-		yAxis.getTransforms().add(yp);
+		//yp.setTy(i/2);
+		//yAxis.getTransforms().add(yp);
 		yText = new Label("+Y");
 		yText.getTransforms().add(yp);
 		
 		Affine zp = new Affine();
 		//zp.setTz(i/2);
-		zp.appendRotation(90, 0, 0, 0, 0, 1, 0);
+		zp.appendRotation(-90, 0, 0, 0, 0, 1, 0);
 		Affine zTextAffine = new Affine();
 		zTextAffine.setTz(i/2);
 		zTextAffine.setTx(i/2);
@@ -111,7 +111,7 @@ public class Axis extends Group {
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
 		
-		int strokWidth=2;
+		int strokWidth=1;
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);
 		
