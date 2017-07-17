@@ -64,11 +64,10 @@ public class Line3D  extends Line {
 		zTrans.setTy(startY);
 		zTrans.setTz(startZ);
 
-
-
 		getTransforms().add(zTrans);
 		getTransforms().add(zp);
 		getTransforms().add(xy);
+		
 		smoothProperty().set(false);
 		setStrokeLineCap(StrokeLineCap.BUTT);
 	}

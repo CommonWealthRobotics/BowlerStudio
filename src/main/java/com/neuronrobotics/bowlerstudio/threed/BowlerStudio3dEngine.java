@@ -846,6 +846,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
 
 					Affine xp = new Affine();
+					Affine downset = new Affine();
+					downset.setTz(0.1);
 					xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
@@ -854,11 +856,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
 						ImageView groundView = new ImageView(ground);
-						groundView.getTransforms().add(groundMove);
+						groundView.getTransforms().addAll(groundMove,downset);
 						groundView.setOpacity(0.3);
-						zrulerImage.getTransforms().add(zRuler);
-						rulerImage.getTransforms().add(xp);
-						yrulerImage.getTransforms().add(yRuler);
+						zrulerImage.getTransforms().addAll(zRuler,downset);
+						rulerImage.getTransforms().addAll(xp,downset);
+						yrulerImage.getTransforms().addAll(yRuler,downset);
 						gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 					});
 				} catch (Exception e) {

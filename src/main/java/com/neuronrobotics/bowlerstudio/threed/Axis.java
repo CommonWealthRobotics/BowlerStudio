@@ -105,10 +105,10 @@ public class Axis extends Group {
 		zText.getTransforms().add(zTextAffine);
 		//zText.smoothProperty().set(false);
 		
-		
-		xAxis = new Line3D(i,0,0);
-		yAxis = new Line3D(0,i,0);
-		zAxis = new Line3D(0,0,i);
+		double inset = 0.5;
+		xAxis = new Line3D(0,inset,0,i,inset,0);
+		yAxis = new Line3D(inset,0,0,inset,i,0);
+		zAxis = new Line3D(inset,0,0,inset,0,i);
 		int strokWidth=1;
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);
