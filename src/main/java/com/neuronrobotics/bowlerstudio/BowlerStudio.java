@@ -279,8 +279,7 @@ public class BowlerStudio extends Application {
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-							StudioBuildInfo.getVersion()));
+					StudioBuildInfo.getVersion());
 			// Download and Load all of the assets
 			try {
 				renderSplashFrame(53, "Loading Images");
@@ -427,8 +426,7 @@ public class BowlerStudio extends Application {
 		System.err.println("Clearing assets");
 		ScriptingEngine.deleteRepo(myAssets);
 		AssetFactory.setGitSource((String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-				(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
-						StudioBuildInfo.getVersion()));
+				StudioBuildInfo.getVersion());
 	}
 
 	public static void closeSplash() {
@@ -661,7 +659,14 @@ public class BowlerStudio extends Application {
 
 				});
 				primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
-				primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+				Platform.runLater(()->{
+					try {
+						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});;
 
 				primaryStage.setResizable(true);
 
