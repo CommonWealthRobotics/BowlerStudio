@@ -95,7 +95,7 @@ public class BowlerStudio extends Application {
 
 		@SuppressWarnings("restriction")
 		public void appendText(String valueOf) {
-			if(BowlerStudioModularFrame.getBowlerStudioModularFrame()==null){
+			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
 				return;
 			}
 			try {
@@ -575,117 +575,120 @@ public class BowlerStudio extends Application {
 		try { // do this ...
 			Thread thread = Thread.currentThread();
 			if (thread.getContextClassLoader() == null) {
-				System.err.println("Class Is Missing! (OSX) " );
+				System.err.println("Class Is Missing! (OSX) ");
 				thread.setContextClassLoader(getClass().getClassLoader()); // a
-																					// valid
-																					// ClassLoader
-																					// from
-																					// somewhere
-																					// else
+																			// valid
+																			// ClassLoader
+																			// from
+																			// somewhere
+																			// else
 			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
 		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
-		try {
-
-			String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
-																// "CASPIAN"
-			System.setProperty("javax.userAgentStylesheetUrl", stylesheet);
-			setUserAgentStylesheet(stylesheet);
-		} catch (Exception | Error e) {
-			e.printStackTrace();
-		}
-		// These must be changed before anything starts
-		PrintStream ps = new PrintStream(getOut());
-		// System.setErr(ps);
-		System.setOut(ps);
-		renderSplashFrame(93, "Loading resources");
-		try {
-			BowlerStudioResourceFactory.load();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		primaryStage2 = primaryStage;
-		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
-		// Initialize your logic here: all @FXML variables will have been
-		// injected
-		FXMLLoader mainControllerPanel;
-
-		try {
-			mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
-			BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
-			mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
-			mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+		new Thread(() -> {
 			try {
-				mainControllerPanel.load();
+
+				String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
+																	// "CASPIAN"
+				// System.setProperty("javax.userAgentStylesheetUrl",
+				// stylesheet);
+				setUserAgentStylesheet(stylesheet);
+			} catch (Exception | Error e) {
+				e.printStackTrace();
+			}
+			// These must be changed before anything starts
+			PrintStream ps = new PrintStream(getOut());
+			// System.setErr(ps);
+			System.setOut(ps);
+			renderSplashFrame(93, "Loading resources");
+			try {
+				BowlerStudioResourceFactory.load();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			primaryStage2 = primaryStage;
+			BowlerStudioModularFrame.setPrimaryStage(primaryStage);
+			// Initialize your logic here: all @FXML variables will have been
+			// injected
+			FXMLLoader mainControllerPanel;
+
+			try {
+				mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
+				BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
+				mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
+				mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+				try {
+					mainControllerPanel.load();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				renderSplashFrame(94, "Main Controller Loaded");
+
+				Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+
+				String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
+
+				scene.getStylesheets().clear();
+				scene.getStylesheets().add(nwfile);
+				System.err.println("Loading CSS from " + nwfile);
+
+				primaryStage.setScene(scene);
+
+				primaryStage.show();
+
+				// initialize the default styles for the dock pane and undocked
+				// nodes using the DockFX
+				// library's internal Default.css stylesheet
+				// unlike other custom control libraries this allows the user to
+				// override them globally
+				// using the style manager just as they can with internal JavaFX
+				// controls
+				// this must be called after the primary stage is shown
+				// https://bugs.openjdk.java.net/browse/JDK-8132900
+				DockPane.initializeDefaultUserAgentStylesheet();
+
+				primaryStage.setOnCloseRequest(arg0 -> {
+					// ThreadUtil.wait(100);
+					closeBowlerStudio();
+
+				});
+				primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+				primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+
+				primaryStage.setResizable(true);
+
+				DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+
+					@Override
+					public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
+						System.err.println("Device connected: " + arg0);
+						BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
+					}
+
+					@Override
+					public void onDeviceRemoved(BowlerAbstractDevice arg0) {
+					}
+				});
+				Log.enableDebugPrint(false);
+				// Log.enableWarningPrint();
+				// Log.enableDebugPrint();
+				// Log.enableErrorPrint();
+				System.out.println("BowlerStudio First Version: " + firstVer);
+				System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+				System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+				System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+				System.out.println("Welcome to BowlerStudio!");
+				closeSplash();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			renderSplashFrame(94, "Main Controller Loaded");
-
-			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
-
-			String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
-
-			scene.getStylesheets().clear();
-			scene.getStylesheets().add(nwfile);
-			System.err.println("Loading CSS from " + nwfile);
-
-			primaryStage.setScene(scene);
-
-			primaryStage.show();
-
-			// initialize the default styles for the dock pane and undocked
-			// nodes using the DockFX
-			// library's internal Default.css stylesheet
-			// unlike other custom control libraries this allows the user to
-			// override them globally
-			// using the style manager just as they can with internal JavaFX
-			// controls
-			// this must be called after the primary stage is shown
-			// https://bugs.openjdk.java.net/browse/JDK-8132900
-			DockPane.initializeDefaultUserAgentStylesheet();
-
-			primaryStage.setOnCloseRequest(arg0 -> {
-				// ThreadUtil.wait(100);
-				closeBowlerStudio();
-
-			});
-			primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
-			primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
-
-			primaryStage.setResizable(true);
-
-			DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
-
-				@Override
-				public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
-					System.err.println("Device connected: " + arg0);
-					BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
-				}
-
-				@Override
-				public void onDeviceRemoved(BowlerAbstractDevice arg0) {
-				}
-			});
-			Log.enableDebugPrint(false);
-			// Log.enableWarningPrint();
-			// Log.enableDebugPrint();
-			// Log.enableErrorPrint();
-			System.out.println("BowlerStudio First Version: " + firstVer);
-			System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-			System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-			System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-			System.out.println("Welcome to BowlerStudio!");
-			closeSplash();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		}).start();
 
 	}
 
