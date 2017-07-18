@@ -901,7 +901,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			}
 		}).start();
 		//WindowMenu
-		int [] fonts = new int [] { 10,12,14,16,18,20,24,28,32,36,40};
+		int [] fonts = new int [] { 6,8,10,12,14,16,18,20,24,28,32,36,40};
 		Menu fontSelect = new Menu("Font Size");
 		ToggleGroup toggleGroup = new ToggleGroup();
 		int defSize = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
