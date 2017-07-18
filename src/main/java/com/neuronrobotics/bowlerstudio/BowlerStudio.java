@@ -439,7 +439,7 @@ public class BowlerStudio extends Application {
 	public static void renderSplashFrame(int frame, String message) {
 
 		if (splashGraphics != null && splash.isVisible()) {
-			System.out.println(" Splash Rendering " + frame + " " + message);
+			System.err.println(" Splash Rendering " + frame + " " + message);
 			splashGraphics.setComposite(AlphaComposite.Clear);
 			splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
