@@ -57,6 +57,7 @@ public class Terminal {
 	private boolean running = false;
 	private Thread scriptRunner = null;
 
+	@SuppressWarnings("restriction")
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() {
@@ -169,6 +170,7 @@ public class Terminal {
 
 		scriptRunner = new Thread() {
 
+			@SuppressWarnings("restriction")
 			public void run() {
 
 				try {

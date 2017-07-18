@@ -25,6 +25,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+@SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
 
 	private static TextArea log;
@@ -91,11 +93,16 @@ public class BowlerStudio extends Application {
 			update.start();
 		}
 
+		@SuppressWarnings("restriction")
 		public void appendText(String valueOf) {
+			if(BowlerStudioModularFrame.getBowlerStudioModularFrame()==null){
+				return;
+			}
 			try {
 				BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
-			} catch (NullPointerException ex) {
+			} catch (Exception ex) {
 				// frame not open yet
+				ex.printStackTrace();
 			}
 			if (getLogViewRefStatic() != null) {
 				String text = getLogViewRefStatic().getText();
@@ -132,20 +139,12 @@ public class BowlerStudio extends Application {
 		return out;
 	}
 
-	static {
-		// These must be changed before anything starts
-		PrintStream ps = new PrintStream(getOut());
-		// System.setErr(ps);
-		System.setOut(ps);
-
-	}
-	
-	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception{
+	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception {
 		String xmlContent = ScriptingEngine.codeFromGit(id, file)[0];
 		MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
 
 		mb.setGitSelfSource(new String[] { id, file });
-		//ConnectionManager.addConnection(mb, mb.getScriptingName());
+		// ConnectionManager.addConnection(mb, mb.getScriptingName());
 		return mb;
 	}
 
@@ -182,10 +181,10 @@ public class BowlerStudio extends Application {
 	 *            the command line arguments
 	 * @throws Exception
 	 */
-	
+
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
-
+		new JFXPanel();
 		if (splash != null) {
 			try {
 				splashGraphics = splash.createGraphics();
@@ -193,15 +192,6 @@ public class BowlerStudio extends Application {
 			}
 		}
 		renderSplashFrame(2, "Testing Internet Connection");
-		
-		try {
-			
-			String stylesheet =Application.STYLESHEET_MODENA;//"MODENA" or "CASPIAN"
-			System.setProperty("javax.userAgentStylesheetUrl", stylesheet);
-			setUserAgentStylesheet(stylesheet);		
-		}catch(Exception |Error e) {
-			e.printStackTrace();
-		}
 
 		try {
 			final URL url = new URL("http://github.com");
@@ -286,8 +276,7 @@ public class BowlerStudio extends Application {
 			}
 			renderSplashFrame(50, "Downloading Images");
 			// force the current version in to the version number
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch",
-					StudioBuildInfo.getVersion());
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinBranch",
@@ -303,8 +292,7 @@ public class BowlerStudio extends Application {
 				removeAssets(myAssets);
 
 			}
-			renderSplashFrame(56, "Loading resources");
-			BowlerStudioResourceFactory.load();
+
 			renderSplashFrame(60, "Downloading Vitamins");
 			// load the vitimins repo so the demo is always snappy
 			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
@@ -344,8 +332,8 @@ public class BowlerStudio extends Application {
 					alert.setHeaderText("Opencv library is missing");
 					alert.setContentText(e.getMessage());
 					alert.initModality(Modality.APPLICATION_MODAL);
-					//alert.show();
-					//e.printStackTrace(System.out);
+					// alert.show();
+					// e.printStackTrace(System.out);
 				});
 
 			}
@@ -383,21 +371,21 @@ public class BowlerStudio extends Application {
 							alert.setTitle("Arduino is missing");
 							alert.setHeaderText("Arduino expected at: " + adr);
 							// alert.initModality(Modality.APPLICATION_MODAL);
-							//alert.show();
-//							new Thread() {
-//								public void run() {
-//									try {
-//										openExternalWebpage(new URL("https://www.arduino.cc/en/Main/Software"));
-//									} catch (Exception e) {
-//										// TODO Auto-generated catch block
-//										e.printStackTrace();
-//									}
-//								}
-//							}.start();
+							// alert.show();
+							// new Thread() {
+							// public void run() {
+							// try {
+							// openExternalWebpage(new
+							// URL("https://www.arduino.cc/en/Main/Software"));
+							// } catch (Exception e) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+							// }
+							// }
+							// }.start();
 						});
-						
+
 					}
-					
 
 				}
 				System.out.println("Arduino exec found at: " + arduino);
@@ -426,7 +414,7 @@ public class BowlerStudio extends Application {
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists())
 				throw new RuntimeException("Style sheet does not exist");
-			launch(args);
+			launch();
 
 		} else {
 			BowlerKernel.main(args);
@@ -449,7 +437,7 @@ public class BowlerStudio extends Application {
 			splashGraphics = null;
 		}
 	}
-	@SuppressWarnings("restriction")
+
 	public static void renderSplashFrame(int frame, String message) {
 
 		if (splashGraphics != null && splash.isVisible()) {
@@ -459,9 +447,9 @@ public class BowlerStudio extends Application {
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
 			splashGraphics.drawString(frame + "% " + message, 65, 280);
-			//Platform.runLater(() -> {
-				splash.update();
-			//});
+			// Platform.runLater(() -> {
+			splash.update();
+			// });
 		}
 	}
 
@@ -508,14 +496,17 @@ public class BowlerStudio extends Application {
 		return BowlerStudioModularFrame.getBowlerStudioModularFrame().createFileTab(file);
 	}
 
+	@SuppressWarnings("restriction")
 	public static Scene getScene() {
 		return scene;
 	}
 
+	@SuppressWarnings("restriction")
 	public static void setScene(Scene s) {
 		scene = s;
 	}
 
+	@SuppressWarnings("restriction")
 	public static void clearConsole() {
 
 		Platform.runLater(() -> {
@@ -565,11 +556,12 @@ public class BowlerStudio extends Application {
 		BowlerStudio.hasnetwork = hasnetwork;
 	}
 
+	@SuppressWarnings("restriction")
 	public static TextArea getLogViewRefStatic() {
 		return logViewRefStatic;
 	}
 
-	public static void setLogViewRefStatic(TextArea logViewRefStatic) {
+	public static void setLogViewRefStatic(@SuppressWarnings("restriction") TextArea logViewRefStatic) {
 		BowlerStudio.logViewRefStatic = logViewRefStatic;
 	}
 
@@ -579,7 +571,42 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings("restriction")
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
+		try { // do this ...
+			Thread thread = Thread.currentThread();
+			if (thread.getContextClassLoader() == null) {
+				System.err.println("Class Is Missing! (OSX) " );
+				thread.setContextClassLoader(getClass().getClassLoader()); // a
+																					// valid
+																					// ClassLoader
+																					// from
+																					// somewhere
+																					// else
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
+		try {
+
+			String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
+																// "CASPIAN"
+			System.setProperty("javax.userAgentStylesheetUrl", stylesheet);
+			setUserAgentStylesheet(stylesheet);
+		} catch (Exception | Error e) {
+			e.printStackTrace();
+		}
+		// These must be changed before anything starts
+		PrintStream ps = new PrintStream(getOut());
+		// System.setErr(ps);
+		System.setOut(ps);
+		renderSplashFrame(93, "Loading resources");
+		try {
+			BowlerStudioResourceFactory.load();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		primaryStage2 = primaryStage;
 		BowlerStudioModularFrame.setPrimaryStage(primaryStage);
@@ -598,7 +625,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			renderSplashFrame(93, "Main Controller Loaded");
+			renderSplashFrame(94, "Main Controller Loaded");
 
 			Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 
@@ -606,13 +633,12 @@ public class BowlerStudio extends Application {
 
 			scene.getStylesheets().clear();
 			scene.getStylesheets().add(nwfile);
-			System.err.println("Loading CSS from "+nwfile);
-			
+			System.err.println("Loading CSS from " + nwfile);
+
 			primaryStage.setScene(scene);
 
-			
 			primaryStage.show();
-			
+
 			// initialize the default styles for the dock pane and undocked
 			// nodes using the DockFX
 			// library's internal Default.css stylesheet
@@ -623,7 +649,7 @@ public class BowlerStudio extends Application {
 			// this must be called after the primary stage is shown
 			// https://bugs.openjdk.java.net/browse/JDK-8132900
 			DockPane.initializeDefaultUserAgentStylesheet();
-			
+
 			primaryStage.setOnCloseRequest(arg0 -> {
 				// ThreadUtil.wait(100);
 				closeBowlerStudio();
@@ -665,8 +691,8 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
-		Platform.runLater(()->{
-			 primaryStage2.hide();
+		Platform.runLater(() -> {
+			primaryStage2.hide();
 		});
 		new Thread() {
 			public void run() {
@@ -677,7 +703,7 @@ public class BowlerStudio extends Application {
 				System.exit(0);
 			}
 		}.start();
-	
+
 	}
 
 	public static void printStackTrace(Exception e) {
