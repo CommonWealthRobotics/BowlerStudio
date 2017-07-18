@@ -1,3 +1,33 @@
+bowlerstudio (0.21.3) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * adding fonts menues
+  * setting the font size is working
+  * cleaner creature lab menues
+  * adding menu option to hide objects in assemblies
+
+  [ Student ]
+  * Cleaning the loading path in MacOS
+  * cleaner fault state launches
+  * setting the stylesheet after the platform is shown
+  * try catch around user agent
+  * slower camera spin
+  * updateing dockfx to 12
+  * moving the Application stylesheet loading
+  * fiddeling with the loading of the user agent sheets
+
+  [ Kevin Harrington ]
+  * converting axis to lines not boxes
+  * 3d line generation
+  * 3d line interface
+  * more complete removal of stale objects
+  * include polygon to the removel datatypes
+  * adding smoother lines and sharper end terminaion
+  * adding the polygon to wireframe conversion to add the manipulator
+  * inset the axis
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 17 Jul 2017 11:46:13 -0400
+
 bowlerstudio (0.21.2) xenial; urgency=medium
 
   [ Kevin Harrington ]
