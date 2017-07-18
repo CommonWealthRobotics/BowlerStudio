@@ -94,7 +94,7 @@ public class Line3D  extends Cylinder {
 		this.startZ = startZ;
 	}
 	public void setStrokeWidth(double radius){
-		setRadius(radius);
+		setRadius(radius/2);
 	}
 	public void setStroke(Color color) {
 		Platform.runLater(() -> setMaterial(new PhongMaterial(color)));
