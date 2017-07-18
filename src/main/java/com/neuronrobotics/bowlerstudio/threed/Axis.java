@@ -109,7 +109,7 @@ public class Axis extends Group {
 		xAxis = new Line3D(0,inset,0,i,inset,0);
 		yAxis = new Line3D(inset,0,0,inset,i,0);
 		zAxis = new Line3D(inset,0,0,inset,0,i);
-		int strokWidth=1;
+		double strokWidth=0.1;
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);
 		

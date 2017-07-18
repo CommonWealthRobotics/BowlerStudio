@@ -1,12 +1,14 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
-import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeLineCap;
+import javafx.application.Platform;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Affine;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
 
-public class Line3D  extends Line {
+public class Line3D  extends Cylinder {
 	
 	private double endZ = 0;
 	private double startZ=0;
@@ -37,26 +39,32 @@ public class Line3D  extends Line {
             double endX,
             double endY,
             double endZ){
+		super(0.1,
+				Math.sqrt(	Math.pow(endX-startX, 2)+
+						Math.pow(endY-startY, 2)+
+						Math.pow(endZ-startZ, 2))
+				);
 		double xdiff = endX-startX;
 		double ydiff = endY-startY;
 		double zdiff = endZ-startZ;
 		
-		double lineLen = Math.sqrt(	Math.pow(xdiff, 2)+
-									Math.pow(ydiff, 2)+
-									Math.pow(zdiff, 2)
-				);
+		double lineLen = getHeight();
+		
 		double xyProjection = Math.sqrt(	Math.pow(xdiff, 2)+
 				Math.pow(ydiff, 2)
 				);
-		setStartX(0.0f);
-		setStartY(0.0f);
-		setEndX(lineLen);
-		setEndY(0);
 		
 		double rotZ =  Math.toDegrees(Math.atan2(xdiff, ydiff));
 		double rotY =  Math.toDegrees(Math.atan2(xyProjection, zdiff));
 		Affine xy = new Affine();
 		xy.appendRotation(-90-rotY, 0, 0, 0, 0, 1, 0);
+		
+		Affine orent = new Affine();
+		orent.appendRotation(90, 0, 0, 0, 0, 0, 1);
+		
+		Affine orent2 = new Affine();
+		orent.setTx(lineLen/2);
+		
 		Affine zp = new Affine();
 		zp.appendRotation(-90-rotZ, 0, 0, 0, 0, 0, 1);
 		Affine zTrans = new Affine();
@@ -64,12 +72,13 @@ public class Line3D  extends Line {
 		zTrans.setTy(startY);
 		zTrans.setTz(startZ);
 
+		
 		getTransforms().add(zTrans);
 		getTransforms().add(zp);
 		getTransforms().add(xy);
-		
-		smoothProperty().set(false);
-		setStrokeLineCap(StrokeLineCap.BUTT);
+
+		getTransforms().add(orent);
+		getTransforms().add(orent2);
 	}
 	
 	public double getEndZ() {
@@ -83,6 +92,12 @@ public class Line3D  extends Line {
 	}
 	public void setStartZ(double startZ) {
 		this.startZ = startZ;
+	}
+	public void setStrokeWidth(double radius){
+		setRadius(radius);
+	}
+	public void setStroke(Color color) {
+		Platform.runLater(() -> setMaterial(new PhongMaterial(color)));
 	}
 	
 }

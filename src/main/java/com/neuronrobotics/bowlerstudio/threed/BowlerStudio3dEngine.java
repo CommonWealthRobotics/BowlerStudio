@@ -599,7 +599,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					List<Vertex> vertices = p.vertices;
 					for(int i=1;i<vertices.size();i++){
 						Line3D line = new Line3D(vertices.get(i-1),vertices.get(i));
-						line.setStrokeWidth(01);
+						line.setStrokeWidth(0.1);
 						line.setStroke(javafx.scene.paint.Color.WHITE);
 						line.getTransforms().add(0,currentCsg.getManipulator());
 						BowlerStudioController.getBowlerStudio().addObject(line, source);
