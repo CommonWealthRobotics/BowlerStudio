@@ -184,7 +184,7 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
-		//new JFXPanel();
+		new JFXPanel();
 		if (splash != null) {
 			try {
 				splashGraphics = splash.createGraphics();
@@ -572,21 +572,21 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) {
-//		try { // do this ...
-//			Thread thread = Thread.currentThread();
-//			if (thread.getContextClassLoader() == null) {
-//				System.err.println("Class Is Missing! (OSX) " );
-//				thread.setContextClassLoader(getClass().getClassLoader()); // a
-//																					// valid
-//																					// ClassLoader
-//																					// from
-//																					// somewhere
-//																					// else
-//			}
-//		} catch (SecurityException e) {
-//			e.printStackTrace();
-//		}
-//		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
+		try { // do this ...
+			Thread thread = Thread.currentThread();
+			if (thread.getContextClassLoader() == null) {
+				System.err.println("Class Is Missing! (OSX) " );
+				thread.setContextClassLoader(getClass().getClassLoader()); // a
+																					// valid
+																					// ClassLoader
+																					// from
+																					// somewhere
+																					// else
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
 		try {
 
 			String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
