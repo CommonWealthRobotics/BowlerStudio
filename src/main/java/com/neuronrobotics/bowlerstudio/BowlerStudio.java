@@ -541,7 +541,8 @@ public class BowlerStudio extends Application {
 		try { // do this ...
 			Thread thread = Thread.currentThread();
 			if (thread.getContextClassLoader() == null) {
-				System.err.println("Class Is Missing! (OSX) ");
+				//seriously Apple??
+				System.err.println("ContextClassLoader Is Missing! (OSX) ");
 				thread.setContextClassLoader(getClass().getClassLoader()); // a
 																			// valid
 																			// ClassLoader
