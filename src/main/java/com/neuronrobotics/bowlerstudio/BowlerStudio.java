@@ -627,8 +627,9 @@ public class BowlerStudio extends Application {
 					closeBowlerStudio();
 
 				});
-				primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
 				Platform.runLater(()->{
+					primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+
 					try {
 						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 					} catch (Exception e) {
