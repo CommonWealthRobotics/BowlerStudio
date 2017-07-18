@@ -636,21 +636,24 @@ public class BowlerStudio extends Application {
 				scene.getStylesheets().clear();
 				scene.getStylesheets().add(nwfile);
 				System.err.println("Loading CSS from " + nwfile);
+				Platform.runLater(()->{
 
-				primaryStage.setScene(scene);
+					primaryStage.setScene(scene);
+					System.err.println("Showing main applicaiton");
+					primaryStage.show();
+					// initialize the default styles for the dock pane and undocked
+					// nodes using the DockFX
+					// library's internal Default.css stylesheet
+					// unlike other custom control libraries this allows the user to
+					// override them globally
+					// using the style manager just as they can with internal JavaFX
+					// controls
+					// this must be called after the primary stage is shown
+					// https://bugs.openjdk.java.net/browse/JDK-8132900
+					DockPane.initializeDefaultUserAgentStylesheet();
+				});
 
-				primaryStage.show();
 
-				// initialize the default styles for the dock pane and undocked
-				// nodes using the DockFX
-				// library's internal Default.css stylesheet
-				// unlike other custom control libraries this allows the user to
-				// override them globally
-				// using the style manager just as they can with internal JavaFX
-				// controls
-				// this must be called after the primary stage is shown
-				// https://bugs.openjdk.java.net/browse/JDK-8132900
-				DockPane.initializeDefaultUserAgentStylesheet();
 
 				primaryStage.setOnCloseRequest(arg0 -> {
 					// ThreadUtil.wait(100);

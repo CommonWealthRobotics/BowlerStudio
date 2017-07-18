@@ -229,8 +229,9 @@ public class BowlerStudioModularFrame {
 	public void showTerminal() {
 
 		String key = "showTerminal";
-		if (isOpen.get(key) == null) {
+		if (isOpen.get(key) == null || getTutorialDockNode()==null ||terminalDockNode==null) {
 			isOpen.put(key, false);
+			return;
 		}
 		if (isOpen.get("showDevices") == null) {
 			isOpen.put("showDevices", false);
