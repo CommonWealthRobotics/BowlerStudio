@@ -10,8 +10,6 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.video.OSUtil;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -32,8 +30,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
-
+@SuppressWarnings("restriction")
 public class BowlerStudioModularFrame {
+
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -81,7 +80,8 @@ public class BowlerStudioModularFrame {
 	private DockNode terminalDockNode;
 	private boolean startup = false;
 
-	@SuppressWarnings("restriction")
+	private WebTab webtab;
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
@@ -98,17 +98,26 @@ public class BowlerStudioModularFrame {
 		controller = new BowlerStudioController(getJfx3dmanager());
 		WebTab.setBSController(controller);
 
-		WebTab webtab = null;
+		 webtab = null;
 		try {
 
-			webtab = new WebTab("Tutorial", homeURL, true);
+			Platform.runLater(()->{
+				try {
+					webtab = new WebTab("Tutorial", homeURL, true);
+					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
+					getTutorialDockNode().setPrefSize(1024, 730);
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			});;
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
-		getTutorialDockNode().setPrefSize(1024, 730);
+		
 
 		connectionManagerDockNode = new DockNode(ConnectionManager.getConnectionManager().getContent(),
 				ConnectionManager.getConnectionManager().getText(),
@@ -188,7 +197,12 @@ public class BowlerStudioModularFrame {
 
 	public void showConectionManager() {
 		String key = "showDevices";
-
+		if (isOpen.get(key) == null) {
+			isOpen.put(key, false);
+		}
+		if (isOpen.get("showTerminal") == null) {
+			isOpen.put("showTerminal", false);
+		}
 		Platform.runLater(() -> {
 			if (!isOpen.get(key)) {
 				isOpen.put(key, true);
@@ -217,7 +231,9 @@ public class BowlerStudioModularFrame {
 		String key = "showTerminal";
 		if (isOpen.get(key) == null) {
 			isOpen.put(key, false);
-
+		}
+		if (isOpen.get("showDevices") == null) {
+			isOpen.put("showDevices", false);
 		}
 		if (!isOpen.get(key)) {
 			isOpen.put(key, true);
