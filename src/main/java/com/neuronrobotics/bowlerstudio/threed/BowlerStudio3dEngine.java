@@ -822,11 +822,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				try {
 					Image ruler = AssetFactory.loadAsset("ruler.png");
-					Image ground = AssetFactory.loadAsset("ground.png");
+					Image groundLocal = AssetFactory.loadAsset("ground.png");
 					Affine groundMove = new Affine();
 					// groundMove.setTz(-3);
-					groundMove.setTx(-ground.getHeight() / 2);
-					groundMove.setTy(-ground.getWidth() / 2);
+					groundMove.setTx(-groundLocal.getHeight() / 2);
+					groundMove.setTy(-groundLocal.getWidth() / 2);
 
 					Affine zRuler = new Affine();
 					double scale = 0.25;
@@ -855,13 +855,25 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ImageView rulerImage = new ImageView(ruler);
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
-						ImageView groundView = new ImageView(ground);
+						ImageView groundView = new ImageView(groundLocal);
 						groundView.getTransforms().addAll(groundMove,downset);
 						groundView.setOpacity(0.3);
 						zrulerImage.getTransforms().addAll(zRuler,downset);
 						rulerImage.getTransforms().addAll(xp,downset);
 						yrulerImage.getTransforms().addAll(yRuler,downset);
 						gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
+
+						Affine groundPlacment = new Affine();
+						groundPlacment.setTz(-1);
+						// ground.setOpacity(.5);
+						ground = new Group();
+						ground.getTransforms().add(groundPlacment);
+						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
+
+						gridGroup.getChildren().addAll(new Axis(), ground);
+						showAxis();
+						axisGroup.getChildren().addAll(focusGroup, userGroup);
+						world.getChildren().addAll(lookGroup, axisGroup);
 					});
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -869,17 +881,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}.start();
 
-		Affine groundPlacment = new Affine();
-		groundPlacment.setTz(-1);
-		// ground.setOpacity(.5);
-		ground = new Group();
-		ground.getTransforms().add(groundPlacment);
-		focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
-
-		gridGroup.getChildren().addAll(new Axis(), ground);
-		showAxis();
-		axisGroup.getChildren().addAll(focusGroup, userGroup);
-		world.getChildren().addAll(lookGroup, axisGroup);
 
 	}
 
@@ -898,7 +899,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void showAxis() {
-		Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
+		Platform.runLater(() -> 
+		axisGroup.getChildren().add(gridGroup));
 		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).show();
 		}
