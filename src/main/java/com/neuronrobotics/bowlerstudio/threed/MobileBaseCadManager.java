@@ -229,22 +229,28 @@ public class MobileBaseCadManager {
 			
 			for (int j=0;i<getDHtoCadMap().get(l).size();j++) {
 				CSG csg = getDHtoCadMap().get(l).get(j);
-				csg = csg.prepForManufacturing();
-				if(csg !=null){
-					CSG tmp=csg
-							.toXMax()
-							.toYMax();
-							
-					legAssembly.add(tmp.movey(.5+legAssembly.get(legAssembly.size()-1).getMaxY()+Math.abs(csg.getMinY())));
-					File dir = new File(
-							baseDirForFiles.getAbsolutePath() + "/" + 
-							base.getScriptingName() + "/" + 
-							l.getScriptingName());
-					if (!dir.exists())
-						dir.mkdirs();
-					File stl = new File(dir.getAbsolutePath() + "/Leg_" + i +"_Part_"+j+ ".stl");
-					FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
-					allCadStl.add(stl);
+				try{
+					csg = csg.prepForManufacturing();
+					if(csg !=null){
+						CSG tmp=csg
+								.toXMax()
+								.toYMax();
+						if(legAssembly.size()>0)		
+							legAssembly.add(tmp.movey(.5+legAssembly.get(legAssembly.size()-1).getMaxY()+Math.abs(csg.getMinY())));
+						else
+							legAssembly.add(tmp);
+						File dir = new File(
+								baseDirForFiles.getAbsolutePath() + "/" + 
+								base.getScriptingName() + "/" + 
+								l.getScriptingName());
+						if (!dir.exists())
+							dir.mkdirs();
+						File stl = new File(dir.getAbsolutePath() + "/Leg_" + i +"_Part_"+j+ ".stl");
+						FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
+						allCadStl.add(stl);
+					}
+				}catch(Exception ex){
+					BowlerStudio.printStackTrace(ex, getCadScript());
 				}
 //				legAssembly.setManufactuing(new PrepForManufacturing() {
 //					public CSG prep(CSG arg0) {
