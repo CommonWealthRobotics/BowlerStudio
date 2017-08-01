@@ -20,6 +20,7 @@ import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
+import com.neuronrobotics.sdk.addons.kinematics.DHChain;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
@@ -132,7 +133,7 @@ public class MobileBaseCadManager {
 				}
 			}
 		}
-		getProcesIndictor().setProgress(0.3);
+		getProcesIndictor().setProgress(0.1);
 		try {
 			getAllCad().clear();
 			if(showingStl){
@@ -168,29 +169,29 @@ public class MobileBaseCadManager {
 		getProcesIndictor().setProgress(0.4);
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
-		double i = 0;
+		int i = 0;
 		for (DHParameterKinematics l : limbs) {
 			if(getDHtoCadMap().get(l)==null){
 				getDHtoCadMap().put(l, new ArrayList<CSG>());
 			}
 			ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
+			int j=0;
 			if(showingStl || !device.isAvailable()){
 				for (CSG csg : arrayList) {
 					getAllCad().add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
+					setProgress( base,(int)i,(int) j);
+					j+=1;
 				}
 			}else{
 				
 				arrayList.clear();
 				ArrayList<CSG> linksCad = generateCad(l);
-				double j=0;
+				
 				for (CSG csg : linksCad) {
 					getAllCad().add(csg);
 					arrayList.add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
-					double progress = (1.0 - (((numLimbs*linksCad.size()) - i-j) / (numLimbs*linksCad.size()))) / 2;
-					// System.out.println(progress);
-					getProcesIndictor().setProgress(0.5 + progress);
 					j+=1;
 				}
 				
@@ -210,7 +211,15 @@ public class MobileBaseCadManager {
 //		return PhysicsEngine.getCsgFromEngine();
 		return getAllCad();
 	}
-
+	private void setProgress(MobileBase base,int limb, int link){
+		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+		double numLimbs = limbs.size();
+		DHParameterKinematics dh =limbs.get(limb);
+		double partsTotal = numLimbs*dh.getNumberOfLinks();
+		double progress = ((double)((limb*dh.getNumberOfLinks())+link) )/ partsTotal;
+		System.out.println("Cad progress " +progress+" limb "+limb+" link "+link+" total parts "+partsTotal);
+		getProcesIndictor().setProgress(0.333 + (2*(progress/3)));
+	}
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
 		ArrayList<File> allCadStl = new ArrayList<>();
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
@@ -224,30 +233,32 @@ public class MobileBaseCadManager {
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
 			getProcesIndictor().setProgress( progress);
 			
-			ArrayList<CSG> legAssembly=new ArrayList<>();
 			DHParameterKinematics l = limbs.get(i);
-			
-			for (int j=0;i<getDHtoCadMap().get(l).size();j++) {
-				CSG csg = getDHtoCadMap().get(l).get(j);
+			ArrayList<CSG> parts =getDHtoCadMap().get(l);
+			for (int j=0;j<parts.size();j++) {
+				CSG csg = parts.get(j);
 				try{
 					csg = csg.prepForManufacturing();
 					if(csg !=null){
 						CSG tmp=csg
 								.toXMax()
 								.toYMax();
-						if(legAssembly.size()>0)		
-							legAssembly.add(tmp.movey(.5+legAssembly.get(legAssembly.size()-1).getMaxY()+Math.abs(csg.getMinY())));
+						if(totalAssembly.size()>0)		
+							totalAssembly.add(tmp.movey(.5+totalAssembly.get(totalAssembly.size()-1).getMaxY()+Math.abs(csg.getMinY())));
 						else
-							legAssembly.add(tmp);
+							totalAssembly.add(tmp);
 						File dir = new File(
 								baseDirForFiles.getAbsolutePath() + "/" + 
 								base.getScriptingName() + "/" + 
 								l.getScriptingName());
 						if (!dir.exists())
 							dir.mkdirs();
-						File stl = new File(dir.getAbsolutePath() + "/Leg_" + i +"_Part_"+j+ ".stl");
+						File stl = new File(dir.getAbsolutePath() + "/limb_" + i +"_Part_"+j+ ".stl");
 						FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
 						allCadStl.add(stl);
+						//totalAssembly.add(tmp);
+						BowlerStudioController.setCsg(totalAssembly,getCadScript());
+						setProgress( base,i, j);
 					}
 				}catch(Exception ex){
 					BowlerStudio.printStackTrace(ex, getCadScript());
@@ -261,8 +272,7 @@ public class MobileBaseCadManager {
 //			offset = -2-((legAssembly.get(legAssembly.size()-1).getMaxX()+legAssembly.get(legAssembly.size()-1).getMinX())*i);
 //			legAssembly=legAssembly.movex(offset);
 
-			totalAssembly.addAll(legAssembly);
-			BowlerStudioController.setCsg(totalAssembly,getCadScript());
+			
 		
 		}
 		
@@ -324,7 +334,14 @@ public class MobileBaseCadManager {
 			if (dhCadGen.get(dh) != null) {
 				generatorToUse=dhCadGen.get(dh);
 			}
+			int j=0;
+			for(DHParameterKinematics dhtest:getMobileBase().getAllDHChains()){
+				if(dhtest==dh)
+					break;
+				j++;
+			}
 			for(int i=0;i<dh.getNumberOfLinks();i++){
+				setProgress( base,(int)j,(int) i);				
 
 				if(!bail){
 					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);

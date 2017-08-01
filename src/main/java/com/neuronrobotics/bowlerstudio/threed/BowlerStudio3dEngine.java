@@ -511,7 +511,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							}
 
 							parameters.getItems().add(paramTypes);
-							System.err.println("Adding String Paramater " + lp.getName());
+							//System.err.println("Adding String Paramater " + lp.getName());
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
