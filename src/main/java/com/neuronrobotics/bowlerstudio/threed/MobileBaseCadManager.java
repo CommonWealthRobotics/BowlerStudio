@@ -183,19 +183,21 @@ public class MobileBaseCadManager {
 				
 				arrayList.clear();
 				ArrayList<CSG> linksCad = generateCad(l);
-				
+				double j=0;
 				for (CSG csg : linksCad) {
 					getAllCad().add(csg);
 					arrayList.add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
+					double progress = (1.0 - (((numLimbs*linksCad.size()) - i-j) / (numLimbs*linksCad.size()))) / 2;
+					// System.out.println(progress);
+					getProcesIndictor().setProgress(0.5 + progress);
+					j+=1;
 				}
 				
 			}
 
 			i += 1;
-			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
-			// System.out.println(progress);
-			getProcesIndictor().setProgress(0.5 + progress);
+			
 		}
 
 		
@@ -211,7 +213,6 @@ public class MobileBaseCadManager {
 
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles) throws IOException {
 		ArrayList<File> allCadStl = new ArrayList<>();
-		int leg = 0;
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
 		int i;
@@ -223,20 +224,27 @@ public class MobileBaseCadManager {
 			double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
 			getProcesIndictor().setProgress( progress);
 			
-			CSG legAssembly=null;
+			ArrayList<CSG> legAssembly=new ArrayList<>();
 			DHParameterKinematics l = limbs.get(i);
-			for (CSG csg : getDHtoCadMap().get(l)) {
+			
+			for (int j=0;i<getDHtoCadMap().get(l).size();j++) {
+				CSG csg = getDHtoCadMap().get(l).get(j);
 				csg = csg.prepForManufacturing();
 				if(csg !=null){
-					if(legAssembly==null)
-						legAssembly=csg;
-					else{
-						legAssembly = legAssembly
-								.union(csg
-										.movey(.5+legAssembly.getMaxY()+Math.abs(csg.getMinY()))
-										)
-								;
-					}
+					CSG tmp=csg
+							.toXMax()
+							.toYMax();
+							
+					legAssembly.add(tmp.movey(.5+legAssembly.get(legAssembly.size()-1).getMaxY()+Math.abs(csg.getMinY())));
+					File dir = new File(
+							baseDirForFiles.getAbsolutePath() + "/" + 
+							base.getScriptingName() + "/" + 
+							l.getScriptingName());
+					if (!dir.exists())
+						dir.mkdirs();
+					File stl = new File(dir.getAbsolutePath() + "/Leg_" + i +"_Part_"+j+ ".stl");
+					FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
+					allCadStl.add(stl);
 				}
 //				legAssembly.setManufactuing(new PrepForManufacturing() {
 //					public CSG prep(CSG arg0) {
@@ -244,20 +252,12 @@ public class MobileBaseCadManager {
 //					}
 //				});
 			}
-			offset = -2-((legAssembly.getMaxX()+legAssembly.getMinX())*i);
-			legAssembly=legAssembly.movex(offset);
-			File dir = new File(
-					baseDirForFiles.getAbsolutePath() + "/" + 
-					base.getScriptingName() + "/" + 
-					l.getScriptingName());
-			if (!dir.exists())
-				dir.mkdirs();
-			File stl = new File(dir.getAbsolutePath() + "/Leg_" + leg + ".stl");
-			FileUtil.write(Paths.get(stl.getAbsolutePath()), legAssembly.toStlString());
-			allCadStl.add(stl);
-			totalAssembly.add(legAssembly);
+//			offset = -2-((legAssembly.get(legAssembly.size()-1).getMaxX()+legAssembly.get(legAssembly.size()-1).getMinX())*i);
+//			legAssembly=legAssembly.movex(offset);
+
+			totalAssembly.addAll(legAssembly);
 			BowlerStudioController.setCsg(totalAssembly,getCadScript());
-			leg++;
+		
 		}
 		
 		int link = 0;
