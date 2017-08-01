@@ -104,12 +104,12 @@ public class Axis extends Group {
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
 		//zText.smoothProperty().set(false);
-		
-		double inset = 0.5;
+		double strokWidth=0.1;
+		double inset = 0;
 		xAxis = new Line3D(0,inset,0,i,inset,0);
 		yAxis = new Line3D(inset,0,0,inset,i,0);
 		zAxis = new Line3D(inset,0,0,inset,0,i);
-		double strokWidth=0.1;
+		
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);
 		

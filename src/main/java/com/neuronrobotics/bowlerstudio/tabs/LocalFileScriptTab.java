@@ -56,7 +56,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private HighlightPainter painter;
 	private int lineSelected = 0;
 
-	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(100, 150);
+	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(200,300);
 
 	private final File file;
 
@@ -163,7 +163,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
-		SwingUtilities.invokeLater(() -> textArea.setText(getScripting().getCode()));
+
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -289,6 +289,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			//System.err.println("height resized "+file);
 			resizeEvent();
 			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
+		});
+		SwingUtilities.invokeLater(() -> {
+			if(getScripting()!=null && getScripting().getCode()!=null)
+				textArea.setText(getScripting().getCode());
+		
 		});
 	}
 	
