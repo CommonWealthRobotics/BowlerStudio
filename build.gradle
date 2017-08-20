@@ -274,6 +274,13 @@ dependencies {
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 	compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
+	//kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.3"
+    compile "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.1.3"
+    compile "org.jetbrains.kotlin:kotlin-script-util:1.1.3"
+    compile "org.jetbrains.kotlin:kotlin-script-runtime:1.1.3"
+    compile "org.jetbrains.kotlin:kotlin-runtime:1.1.3"
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.1.3"
 
 }
 

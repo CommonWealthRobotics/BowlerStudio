@@ -59,17 +59,40 @@ public class MobileBaseCadManager {
 
 	private CheckBox autoRegen;
 	private boolean bail=false;
-	private IFileChangeListener cadWatcher = new IFileChangeListener() {
+	private IFileChangeListener cadBaseGeneratorFileWatcher = new IFileChangeListener() {
 
 		@Override
 		public void onFileChange(File fileThatChanged, WatchEvent event) {
 			try {
 				System.out.println("Re-loading Cad Base Engine");
+				getBasetoCadMap().clear();
 				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
 				generateCad();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+		}
+	};
+	private class LinkFileChangeListener implements  IFileChangeListener{
+		
+		private File code;
+		private DHParameterKinematics dh;
+		public LinkFileChangeListener(File code, DHParameterKinematics dh){
+			this.code=code;
+			this.dh=dh;
+		}
+		@Override
+		public void onFileChange(File fileThatChanged, WatchEvent event) {
+			System.out.println("Re-loading Cad Limb Engine");
+
+			try {
+				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
+				dhCadGen.clear();
+				dhCadGen.put(dh, d);
+				generateCad();
+			} catch (Exception ex) {
+				BowlerStudioController.highlightException(code, ex);
 			}
 		}
 	};
@@ -102,7 +125,7 @@ public class MobileBaseCadManager {
 	public void setCadScript(File cadScript) {
 		if (cadScript == null)
 			return;
-		FileWatchDeviceWrapper.watch(base, cadScript, cadWatcher);
+		FileWatchDeviceWrapper.watch(base, cadScript, cadBaseGeneratorFileWatcher);
 		
 		this.cadScript = cadScript;
 	}
@@ -115,54 +138,60 @@ public class MobileBaseCadManager {
 		
 		
 		MobileBase device = base;
+		getAllCad().clear();
 		if(getBasetoCadMap().get(device)==null){
 			getBasetoCadMap().put(device, new ArrayList<CSG>());
-		}
-		
-		if (cadEngine == null) {
-			try {
-				setDefaultLinkLevelCadEngine();
-			} catch (Exception e) {
-				BowlerStudioController.highlightException(null, e);
-			}
-			if (getCadScript() != null) {
+			if (cadEngine == null) {
 				try {
-					cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+					setDefaultLinkLevelCadEngine();
 				} catch (Exception e) {
-					BowlerStudioController.highlightException(getCadScript(), e);
+					BowlerStudioController.highlightException(null, e);
+				}
+				if (getCadScript() != null) {
+					try {
+						cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+					} catch (Exception e) {
+						BowlerStudioController.highlightException(getCadScript(), e);
+					}
 				}
 			}
-		}
-		getProcesIndictor().setProgress(0.1);
-		try {
-			getAllCad().clear();
-			if(showingStl){
-				//skip the regen
-				for(CSG c:getBasetoCadMap().get(device)){
-					getAllCad().add(c);	
-				}
-			}else{
-				if(!bail){
-					ArrayList<CSG>  newcad  = cadEngine.generateBody(device);
-					for(CSG c:newcad){
+			getProcesIndictor().setProgress(0.1);
+			try {
+				
+				if(showingStl){
+					//skip the regen
+					for(CSG c:getBasetoCadMap().get(device)){
 						getAllCad().add(c);	
 					}
-				}else
-					new Exception().printStackTrace();
-				ArrayList<CSG> arrayList = getBasetoCadMap().get(device);
-				arrayList.clear();
-				for(CSG c:getAllCad()){
-					arrayList.add(c);	
+				}else{
+					if(!bail){
+						ArrayList<CSG>  newcad  = cadEngine.generateBody(device);
+						for(CSG c:newcad){
+							getAllCad().add(c);	
+						}
+					}else
+						new Exception().printStackTrace();
+					ArrayList<CSG> arrayList = getBasetoCadMap().get(device);
+					arrayList.clear();
+					for(CSG c:getAllCad()){
+						arrayList.add(c);	
+					}
+					new Thread(()->{
+						localGetBaseCad( device);// load the cad union in a thread to make it ready for physics
+					}).start();
 				}
-				new Thread(()->{
-					localGetBaseCad( device);// load the cad union in a thread to make it ready for physics
-				}).start();
+			} catch (Exception e) {
+				BowlerStudioController.highlightException(getCadScript(), e);
 			}
-		} catch (Exception e) {
-			BowlerStudioController.highlightException(getCadScript(), e);
+			System.out.println("Displaying Body");
+			getProcesIndictor().setProgress(0.35);
+		}else{
+			for(CSG c:getBasetoCadMap().get(device)){
+				getAllCad().add(c);	
+			}
 		}
-		System.out.println("Displaying Body");
-		getProcesIndictor().setProgress(0.35);
+		
+		
 		// clears old robot and places base
 		BowlerStudioController.setCsg(getBasetoCadMap().get(device),getCadScript());
 		System.out.println("Rendering limbs");
@@ -170,33 +199,29 @@ public class MobileBaseCadManager {
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
 		int i = 0;
+		int j=0;
 		for (DHParameterKinematics l : limbs) {
 			if(getDHtoCadMap().get(l)==null){
 				getDHtoCadMap().put(l, new ArrayList<CSG>());
+
 			}
-			ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
-			int j=0;
 			if(showingStl || !device.isAvailable()){
+				ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
 				for (CSG csg : arrayList) {
 					getAllCad().add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
 					setProgress( base,(int)i,(int) j);
 					j+=1;
 				}
-			}else{
-				
-				arrayList.clear();
+			}else{	
 				ArrayList<CSG> linksCad = generateCad(l);
-				
 				for (CSG csg : linksCad) {
 					getAllCad().add(csg);
-					arrayList.add(csg);
 					BowlerStudioController.addCsg(csg,getCadScript());
 					j+=1;
 				}
 				
 			}
-
 			i += 1;
 			
 		}
@@ -319,7 +344,8 @@ public class MobileBaseCadManager {
 	 */
 	public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
 		ArrayList<CSG> dhLinks = new ArrayList<>();
-
+		ArrayList<CSG> arrayList = getDHtoCadMap().get(dh);
+		arrayList.clear();
 		if (cadEngine == null) {
 			try {
 				setDefaultLinkLevelCadEngine();
@@ -344,14 +370,16 @@ public class MobileBaseCadManager {
 				setProgress( base,(int)j,(int) i);				
 
 				if(!bail){
-					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);
+					
 					LinkConfiguration configuration = dh.getLinkConfiguration(i);
 					if(getLinktoCadMap().get(configuration)==null){
 						getLinktoCadMap().put(configuration, new ArrayList<>());
-					}else
-						getLinktoCadMap().get(configuration).clear();
+
+					}
+					ArrayList<CSG> tmp=generatorToUse.generateCad(dh, i);
 					for(CSG c:tmp){
 						dhLinks.add(c);
+						arrayList.add(c);
 						getLinktoCadMap().get(configuration).add(c);// add to the regestration storage
 					}
 					AbstractLink link = dh.getFactory().getLink(configuration);
@@ -372,6 +400,8 @@ public class MobileBaseCadManager {
 					
 				}
 			}
+			dhLinks.addAll(arrayList);
+
 			return dhLinks;
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(getCadScript(), e);
@@ -434,17 +464,7 @@ public class MobileBaseCadManager {
 			BowlerStudioController.highlightException(code, e);
 		}
 		
-		FileWatchDeviceWrapper.watch(dh, code, (fileThatChanged, event) -> {
-			System.out.println("Re-loading Cad Limb Engine");
-
-			try {
-				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
-				dhCadGen.put(dh, d);
-				generateCad();
-			} catch (Exception ex) {
-				BowlerStudioController.highlightException(code, ex);
-			}
-		});
+		FileWatchDeviceWrapper.watch(dh, code, new LinkFileChangeListener(code, dh));
 	}
 	
 	public void setGitCadEngine(String gitsId, String file, MobileBase device)
