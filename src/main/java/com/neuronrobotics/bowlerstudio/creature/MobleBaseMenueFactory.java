@@ -196,8 +196,50 @@ public class MobleBaseMenueFactory {
 			creatureLab.generateCad();
 
 		});
-		TreeItem<String> printable = new TreeItem<String>("Printable Cad",AssetFactory.loadIcon("Printable-Cad.png"));
+		TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",AssetFactory.loadIcon("Printable-Cad.png"));
 	
+		callbackMapForTreeitems.put(kinematics, () -> {
+			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+			if (!defaultStlDir.exists()) {
+				defaultStlDir.mkdirs();
+			}
+			Platform.runLater(()->{
+				DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select Output Directory For .STL files");
+
+				chooser.setInitialDirectory(defaultStlDir);
+				File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+				new Thread() {
+
+					public void run() {
+						MobileBaseCadManager baseManager = MobileBaseCadManager.get(device) ;
+						if (baseDirForFiles == null) {
+							return;
+						}
+						ArrayList<File> files;
+						try {
+							files = baseManager.generateStls((MobileBase) device, baseDirForFiles,true);
+							Platform.runLater(() -> {
+								Alert alert = new Alert(AlertType.INFORMATION);
+								alert.setTitle("Stl Export Success!");
+								alert.setHeaderText("Stl Export Success");
+								alert.setContentText(
+										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
+								alert.setWidth(500);
+								alert.initModality(Modality.APPLICATION_MODAL);
+								alert.show();
+							});
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+						}
+
+					}
+				}.start();
+			});
+		
+		});
+		TreeItem<String> printable = new TreeItem<String>("Printable Cad",AssetFactory.loadIcon("Printable-Cad.png"));
+		
 		callbackMapForTreeitems.put(printable, () -> {
 			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 			if (!defaultStlDir.exists()) {
@@ -218,7 +260,7 @@ public class MobleBaseMenueFactory {
 						}
 						ArrayList<File> files;
 						try {
-							files = baseManager.generateStls((MobileBase) device, baseDirForFiles);
+							files = baseManager.generateStls((MobileBase) device, baseDirForFiles,false);
 							Platform.runLater(() -> {
 								Alert alert = new Alert(AlertType.INFORMATION);
 								alert.setTitle("Stl Export Success!");
@@ -238,7 +280,6 @@ public class MobleBaseMenueFactory {
 			});
 		
 		});
-
 		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(() -> {
@@ -449,7 +490,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(physics,regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
+		rootItem.getChildren().addAll(physics,regnerate, printable,kinematics,item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
