@@ -256,11 +256,23 @@ public class MobileBaseCadManager {
 									+ Math.abs(csg.getMinY())));
 						else
 							totalAssembly.add(tmp);
+						LinkConfiguration conf=null;
+						for(LinkConfiguration c:  LinktoCadMap.keySet()){
+							for(CSG cadTest:LinktoCadMap.get(c)){
+								if(cadTest==parts.get(j)){
+									conf=c;
+								}
+							}
+						}
+						String linkNum ="_Link_x";
+						if(conf!=null){
+							linkNum="_Link_"+conf.getLinkIndex()+"";
+						}
 						File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/"
 								+ l.getScriptingName());
 						if (!dir.exists())
 							dir.mkdirs();
-						File stl = new File(dir.getAbsolutePath() + "/limb_" + i + "_Part_" + j + ".stl");
+						File stl = new File(dir.getAbsolutePath() + "/limb_" + i + "_Part_" + j +linkNum+ ".stl");
 						FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
 						allCadStl.add(stl);
 						// totalAssembly.add(tmp);

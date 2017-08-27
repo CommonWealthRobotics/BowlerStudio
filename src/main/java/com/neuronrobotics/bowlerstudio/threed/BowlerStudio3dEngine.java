@@ -603,7 +603,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						line.setStroke(javafx.scene.paint.Color.WHITE);
 						line.getTransforms().add(0,currentCsg.getManipulator());
 						BowlerStudioController.getBowlerStudio().addObject(line, source);
-
 					}
 				}
 				
