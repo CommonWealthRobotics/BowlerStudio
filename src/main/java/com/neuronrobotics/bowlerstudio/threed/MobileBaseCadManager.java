@@ -223,6 +223,18 @@ public class MobileBaseCadManager {
 				.println("Cad progress " + progress + " limb " + limb + " link " + link + " total parts " + partsTotal);
 		getProcesIndictor().setProgress(0.333 + (2 * (progress / 3)));
 	}
+	
+	public LinkConfiguration getLinkConfiguration(CSG cad){
+		LinkConfiguration conf=null;
+		for(LinkConfiguration c:  LinktoCadMap.keySet()){
+			for(CSG cadTest:LinktoCadMap.get(c)){
+				if(cadTest==cad){
+					conf=c;
+				}
+			}
+		}
+		return conf;
+	}
 
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles, boolean kinematic) throws IOException {
 		ArrayList<File> allCadStl = new ArrayList<>();
@@ -256,18 +268,10 @@ public class MobileBaseCadManager {
 									+ Math.abs(csg.getMinY())));
 						else
 							totalAssembly.add(tmp);
-						LinkConfiguration conf=null;
-						for(LinkConfiguration c:  LinktoCadMap.keySet()){
-							for(CSG cadTest:LinktoCadMap.get(c)){
-								if(cadTest==parts.get(j)){
-									conf=c;
-								}
-							}
-						}
-						String linkNum ="_Link_x";
-						if(conf!=null){
-							linkNum="_Link_"+conf.getLinkIndex()+"";
-						}
+						LinkConfiguration conf= getLinkConfiguration(parts.get(j));
+
+						String linkNum="_Link_"+conf.getLinkIndex()+"";
+						
 						File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/"
 								+ l.getScriptingName());
 						if (!dir.exists())
