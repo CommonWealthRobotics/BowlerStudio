@@ -1,6 +1,8 @@
-### Installed Version 
+### URL of code demonstrating the error: 
 
-### OS type and version number
+See these instrunctions for demonstration code: https://github.com/WPIRoboticsEngineering/RBE3001_nucleo_firmware#reporting-issues-with-the-template-code
+
+### Description of the problem demonstrated in the example
 
 ### Expected behavior
 
