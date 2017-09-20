@@ -62,6 +62,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		this(title,Url,false);
 	}
 	
+	@SuppressWarnings("restriction")
 	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
 		if(isTutorialTab){
@@ -166,7 +167,12 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			loadUrl(Tutorial.getHomeUrl());
+			try {
+				loadUrl(Tutorial.getHomeUrl());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 
 		// Layout logic
