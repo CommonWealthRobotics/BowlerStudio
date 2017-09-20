@@ -28,7 +28,7 @@ public class VitaminsTests {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		try {
 			ScriptingEngine.runLogin();
 		} catch (IOException e2) {
@@ -70,6 +70,8 @@ public class VitaminsTests {
 //				e.printStackTrace();
 //			}
 		}
+		Vitamins.get("capScrew", "M3");
+		
 	}
 
 }
