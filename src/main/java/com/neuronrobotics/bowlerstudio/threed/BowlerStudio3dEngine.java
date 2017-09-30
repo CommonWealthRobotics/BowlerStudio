@@ -1218,22 +1218,24 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
 		selectedSet = selectedCsg;
-		for (int in = 1; in < selectedCsg.size(); in++) {
-			int i = in;
-			MeshView mesh = getCsgMap().get(selectedCsg.get(i));
-			if (mesh != null)
-				FxTimer.runLater(java.time.Duration.ofMillis(20),
-
-						() -> {
-							// mesh.setMaterial(new PhongMaterial(new Color(
-							// 1,
-							// (selectedCsg.get(i).getColor().getGreen())*0.6,
-							// (selectedCsg.get(i).getColor().getBlue())*0.6,
-							// selectedCsg.get(i).getColor().getOpacity())));
-							mesh.setMaterial(new PhongMaterial(Color.GOLD));
-						});
-
-		}
+		try{
+			for (int in = 1; in < selectedCsg.size(); in++) {
+				int i = in;
+				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
+				if (mesh != null)
+					FxTimer.runLater(java.time.Duration.ofMillis(20),
+	
+							() -> {
+								// mesh.setMaterial(new PhongMaterial(new Color(
+								// 1,
+								// (selectedCsg.get(i).getColor().getGreen())*0.6,
+								// (selectedCsg.get(i).getColor().getBlue())*0.6,
+								// selectedCsg.get(i).getColor().getOpacity())));
+								mesh.setMaterial(new PhongMaterial(Color.GOLD));
+							});
+	
+			}
+		}catch(java.lang.NullPointerException ex0 ){}// if a selection is called before the limb is loaded
 		resetMouseTime();
 	}
 

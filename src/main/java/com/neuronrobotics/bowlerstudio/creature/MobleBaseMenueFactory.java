@@ -743,7 +743,9 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
+			try{
 			BowlerStudio.select( base,conf);
+			}catch(java.lang.NullPointerException e){}//selecting before limb loaded
 		});
 
 		link.getChildren().addAll(design);
@@ -852,7 +854,7 @@ public class MobleBaseMenueFactory {
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							if (dh != null)
-								dh.addNewLink(newLink, new DHLink(0, 0, 0, 0));
+								dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
 							try {
 								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
