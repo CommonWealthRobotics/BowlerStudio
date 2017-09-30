@@ -841,7 +841,14 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getTypeEnum());
+							ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory().getLinkConfigurations();
+
+							int numOfLinks = linkConfigurations.size();
+							
+							LinkType typeOfLink = linkConfigurations.get(numOfLinks-1).getTypeEnum();
+							if(typeOfLink ==null)
+								typeOfLink=LinkType.VIRTUAL;
+							newLink.setType(typeOfLink);
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							if (dh != null)
