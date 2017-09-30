@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "restriction" })
 public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object>{
 
 	private boolean running = false;
@@ -213,9 +213,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		String[] code;
 		try {
 			code = ScriptingEngine.codeFromGit(id,file);
+			
 			if (code != null) {
 				setCode(code[0]);
-				currentFile = new File(code[2]);
+				currentFile = ScriptingEngine.fileFromGit(id,file);
 			}
 			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 			Platform.runLater(() -> {
@@ -388,8 +389,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		};
 
 		try {
-			if (loadGist)
-				loadCodeFromGist(addr, engine);
+//			if (loadGist)
+//				loadCodeFromGist(addr, engine);
 
 			scriptRunner.start();
 		} catch (Exception e) {
@@ -426,7 +427,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 
 	@Override
-	public void changed(ObservableValue observable, Object oldValue,
+	public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, Object oldValue,
 			Object newValue) {
 		loadGitLocal(currentGit, (String)newValue);
 	}
