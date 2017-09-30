@@ -33,6 +33,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+@SuppressWarnings("restriction")
 public class LinkConfigurationWidget extends GridPane {
 	
 //	private int index;
@@ -42,7 +43,7 @@ public class LinkConfigurationWidget extends GridPane {
 	private EngineeringUnitsSliderWidget lowerBound;
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
-	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory){
+	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,EngineeringUnitsSliderWidget setpointSLider){
 //		this.index = index;
 //		this.congiuration = congiuration;
 		conf = congiuration;
@@ -292,11 +293,14 @@ public class LinkConfigurationWidget extends GridPane {
 			public void onSliderMoving(EngineeringUnitsSliderWidget source,
 					double newAngleDegrees) {
 				conf.setLowerLimit(newAngleDegrees);
+				double eng =0;
 				if(conf.getScale()>0)
-					activLink.setTargetEngineeringUnits(activLink.getMinEngineeringUnits());
+					eng=(activLink.getMinEngineeringUnits());
 				else
-					activLink.setTargetEngineeringUnits(activLink.getMaxEngineeringUnits());
+					eng=(activLink.getMaxEngineeringUnits());
+				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
+				setpointSLider.setLowerBound(eng);
 			}
 			
 			@Override
@@ -313,11 +317,14 @@ public class LinkConfigurationWidget extends GridPane {
 				public void onSliderMoving(EngineeringUnitsSliderWidget source,
 						double newAngleDegrees) {
 					conf.setUpperLimit(newAngleDegrees);
-					if(conf.getScale()>0)
-						activLink.setTargetEngineeringUnits(activLink.getMaxEngineeringUnits());
+					double eng =0;
+					if(conf.getScale()<0)
+						eng=(activLink.getMinEngineeringUnits());
 					else
-						activLink.setTargetEngineeringUnits(activLink.getMinEngineeringUnits());
+						eng=(activLink.getMaxEngineeringUnits());
+					activLink.setTargetEngineeringUnits(eng);
 					activLink.flush(0);
+					setpointSLider.setLowerBound(eng);
 				}
 				
 				@Override
@@ -325,6 +332,7 @@ public class LinkConfigurationWidget extends GridPane {
 						double newAngleDegrees) {
 					activLink.setTargetEngineeringUnits(0);
 					activLink.flush(0);
+
 				}
 			}, 0, 255, conf.getUpperLimit(), 150, "device units", true);
 

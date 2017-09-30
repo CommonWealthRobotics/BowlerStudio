@@ -28,6 +28,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
+@SuppressWarnings("restriction")
 public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
@@ -88,7 +89,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 
 		if(dhdevice!=null)
 			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice,externalListener)));
-		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(abstractLink.getLinkConfiguration(), device2.getFactory())));
+		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(abstractLink.getLinkConfiguration(), device2.getFactory(),setpoint)));
 		
 		GridPane panel = new GridPane();
 		
