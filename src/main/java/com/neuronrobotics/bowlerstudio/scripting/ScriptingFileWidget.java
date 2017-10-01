@@ -23,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.eclipse.jgit.api.Git;
 import org.reactfx.util.FxTimer;
@@ -149,18 +150,30 @@ public class ScriptingFileWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
-		double lengthScalar = 8;
-		fileNameBox.textProperty().addListener(new ChangeListener<String>() {
-		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		    	fileNameBox.setPrefWidth(fileNameBox.getText().length() * lengthScalar); // why 7? Totally trial number.
-		    }
+		double lengthScalar = fileNameBox.getFont().getSize()*1.5; 
+		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
+		    // Do this in a Platform.runLater because of Textfield has no padding at first time and so on
+		    Platform.runLater(() -> {
+		        Text text = new Text(currText);
+		        text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
+		        double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+		                + fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of the TextField
+		                + lengthScalar; // Add some spacing
+		        fileNameBox.setPrefWidth(width); // Set the width
+		        fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a little bit
+		    });
 		});
-		fileListBox.textProperty().addListener(new ChangeListener<String>() {
-		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		    	fileListBox.setPrefWidth(fileListBox.getText().length() * lengthScalar); // why 7? Totally trial number.
-		    }
+		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
+		    // Do this in a Platform.runLater because of Textfield has no padding at first time and so on
+		    Platform.runLater(() -> {
+		        Text text = new Text(currText);
+		        text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
+		        double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+		                + fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of the TextField
+		                + lengthScalar; // Add some spacing
+		        fileListBox.setPrefWidth(width); // Set the width
+		        fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a little bit
+		    });
 		});
 
 		controlPane.getChildren().add(runfx);
