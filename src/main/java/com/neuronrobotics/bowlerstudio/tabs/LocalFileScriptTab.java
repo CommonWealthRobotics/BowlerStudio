@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -291,8 +292,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
 		});
 		SwingUtilities.invokeLater(() -> {
-			if(getScripting()!=null && getScripting().getCode()!=null)
-				textArea.setText(getScripting().getCode());
+			if(getScripting()!=null && getScripting().getCode()!=null){
+				onScriptChanged(null,getScripting().getCode(),file);
+			}
 		
 		});
 	}
@@ -326,13 +328,17 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptChanged(String previous, String current, File source) {
-		// Cursor place = codeArea.getCursor();
+		int place = textArea.getCaretPosition();
+		//System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
 		if (current.length() > 3 && !textArea.getText().contentEquals(current)) {// no
 																					// empty
 																					// writes
-			SwingUtilities.invokeLater(() -> textArea.setText(current));
+			SwingUtilities.invokeLater(() ->{
+				textArea.setText(current);
+				SwingUtilities.invokeLater(() -> textArea.setCaretPosition(place));
+			});
 
 		}
 	}
