@@ -12,6 +12,8 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -147,7 +149,19 @@ public class ScriptingFileWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
-		
+		double lengthScalar = 8;
+		fileNameBox.textProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    	fileNameBox.setPrefWidth(fileNameBox.getText().length() * lengthScalar); // why 7? Totally trial number.
+		    }
+		});
+		fileListBox.textProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    	fileListBox.setPrefWidth(fileListBox.getText().length() * lengthScalar); // why 7? Totally trial number.
+		    }
+		});
 
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(image);
