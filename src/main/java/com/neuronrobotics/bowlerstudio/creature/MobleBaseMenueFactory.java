@@ -603,22 +603,24 @@ public class MobleBaseMenueFactory {
 		return apps;
 	}
 
+	@SuppressWarnings("restriction")
 	private static void setHardwareConfig(MobileBase base,LinkConfiguration conf, LinkFactory factory, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems,LinkSliderWidget widget) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),AssetFactory.loadIcon("Hardware-Config.png"));
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory)));
+				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory, widget.getSetpoint())));
 			}
 			BowlerStudio.select( base,conf);
 		});
 		rootItem.getChildren().add(hwConf);
 	}
 
+	@SuppressWarnings("restriction")
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -646,7 +648,7 @@ public class MobleBaseMenueFactory {
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
-			setHardwareConfig(base,co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
+			setHardwareConfig(base,co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems,lsw);
 		}
 
 		TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),AssetFactory.loadIcon("Add-Slave-Links.png"));
@@ -680,7 +682,7 @@ public class MobleBaseMenueFactory {
 							slaveFactory.getLink(newLink);
 							try {
 								setHardwareConfig(base,newLink, slaveFactory, slaves, callbackMapForTreeitems,
-										widgetMapForTreeitems);
+										widgetMapForTreeitems,lsw);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -743,12 +745,14 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
+			try{
 			BowlerStudio.select( base,conf);
+			}catch(java.lang.NullPointerException e){}//selecting before limb loaded
 		});
 
 		link.getChildren().addAll(design);
 
-		setHardwareConfig(base,conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		setHardwareConfig(base,conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems,lsw);
 
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);
@@ -841,11 +845,20 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getTypeEnum());
+							ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory().getLinkConfigurations();
+
+							int numOfLinks = linkConfigurations.size();
+							
+							LinkType typeOfLink = linkConfigurations.get(numOfLinks-1).getTypeEnum();
+							
+							if(typeOfLink ==null)
+								typeOfLink=LinkType.VIRTUAL;
+							newLink.setType(typeOfLink);
+							newLink.setTypeString(typeOfLink.toString());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							if (dh != null)
-								dh.addNewLink(newLink, new DHLink(0, 0, 0, 0));
+								dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
 							try {
 								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,

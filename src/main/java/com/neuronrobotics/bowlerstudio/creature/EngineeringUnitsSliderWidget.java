@@ -10,6 +10,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+@SuppressWarnings("restriction")
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number>{
 	private TextField setpointValue;
 	private Slider setpoint;
@@ -76,6 +77,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		add(	new Text(unitsString), 
 				2, 
 				0);
+	}
+	public void setUpperBound(double newBound){
+		setpoint.setMax(newBound);
+	}
+	public void setLowerBound(double newBound){
+		setpoint.setMin(newBound);
 	}
 	@Override
 	public void changed(ObservableValue<? extends Number> observable,
