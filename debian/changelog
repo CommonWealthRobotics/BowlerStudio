@@ -1,3 +1,32 @@
+bowlerstudio (0.23.0) xenial; urgency=medium
+
+  * convert lines to cylindar
+  * make thicknesses match the line equivalent
+  * smaller stroke
+  * dump all the STL;s into a single directory as single parts
+  * stagger teh loading to avoid collisions
+  * deal with the inititail case
+  * Much improved progress monitor for cad generation
+  * 0.22.1
+  * Adding a menu item to generate Kinematic STL's
+  * adding the link number into the file name
+  * Adding the link to CSG mapper as a function making teh export of named files easier.
+  * Update ISSUE_TEMPLATE.md
+  * Update ISSUE_TEMPLATE.md
+  * Tutorial loading of GIT should happen outside of the internal thread to ensure loaded git before moving on
+  * more testing of vitamins
+  * updating to 0.23.0
+  * Loading file from gist in web was broken
+  * Ensure new links have a type
+  * Loading link of non-zero radius
+  * type and type string need to beset, this should be handled by the library
+  * when the hardware limits are reset, the slider for the link should be reset
+  * Text field should auto size to the file and Git url
+  * compute the box size using the font
+  * carrot moves to the start of a file
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 01 Oct 2017 15:05:02 -0400
+
 bowlerstudio (0.21.3) xenial; urgency=medium
 
   [ Kevin Harrington ]

@@ -328,7 +328,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptChanged(String previous, String current, File source) {
-		int place = textArea.getCaretPosition();
+		//int place = textArea.getCaretPosition();
 		//System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
@@ -337,7 +337,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 																					// writes
 			SwingUtilities.invokeLater(() ->{
 				textArea.setText(current);
-				SwingUtilities.invokeLater(() -> textArea.setCaretPosition(place));
+				if(previous==null)
+					SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
 			});
 
 		}

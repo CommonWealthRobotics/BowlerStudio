@@ -109,6 +109,7 @@ public class MobileBaseCadManager {
 	}
 
 	public ArrayList<CSG> generateBody(MobileBase base) {
+		
 		getProcesIndictor().setProgress(0);
 		setAllCad(new ArrayList<>());
 		// DHtoCadMap = new HashMap<>();
