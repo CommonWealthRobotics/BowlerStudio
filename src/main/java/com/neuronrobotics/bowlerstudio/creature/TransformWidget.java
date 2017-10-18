@@ -64,15 +64,15 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			ex.printStackTrace();
 		}
 		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -89.9, 89.9, e, 50,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100,"degrees");
 		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimeth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(40)); // translate text
-	    getColumnConstraints().add(new ColumnConstraints(160)); // translate values
-	    getColumnConstraints().add(new ColumnConstraints(50)); // units
-	    getColumnConstraints().add(new ColumnConstraints(40)); // rotate text
+		getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+	    getColumnConstraints().add(new ColumnConstraints(200)); // translate values
+	    getColumnConstraints().add(new ColumnConstraints(60)); // units
+	    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
 	    setHgap(20);// gab between elements
 	    
 	    

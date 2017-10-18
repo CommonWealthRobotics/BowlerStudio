@@ -44,11 +44,11 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setMax(max);
 		setpoint.setValue(current);
 		setpoint.setShowTickLabels(true);
-		setpoint.setShowTickMarks(false);
+		setpoint.setShowTickMarks(true);
 		//setpoint.setSnapToTicks(true);
-		setpoint.setMajorTickUnit(range/50);
+		setpoint.setMajorTickUnit(range);
 		setpoint.setMinorTickCount(5);
-		setpoint.setBlockIncrement(range/100);
+		//setpoint.setBlockIncrement(range/100);
 		setpointValue = new TextField(getFormatted(current));
 		setpointValue.setOnAction(event -> {
 			Platform.runLater(() -> {
@@ -82,8 +82,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.valueProperty().addListener(this);
 		
 		String unitsString = "("+units+")";
-		getColumnConstraints().add(new ColumnConstraints(width+10)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(unitsString.length()*7)); // column 2 is 100 wide
 		
 		
@@ -147,7 +147,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public  String getFormatted(double value){
 		if(intCast)
 			return String.valueOf((int)value);
-	    return String.format("%4.3f%n", (double)value);
+	    return String.format("%8.2f", (double)value);
 	}
 	public IOnEngineeringUnitsChange getListener() {
 		if(listener==null)

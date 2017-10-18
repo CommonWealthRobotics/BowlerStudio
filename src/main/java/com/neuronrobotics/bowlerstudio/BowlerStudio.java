@@ -149,9 +149,15 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base) {
-		ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+		try {
+
+			ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
+		} catch (Exception ex) {
+			System.err.println("Base not loaded yet");
+		}
+
 	}
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
@@ -159,17 +165,22 @@ public class BowlerStudio extends Application {
 		try {
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
 					.setSelectedCsg(limCad.get(limCad.size() - 1));
-		} catch (NullPointerException ex) {
+		} catch (Exception ex) {
 			// initialization has no csgs yet
 		}
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 
 	public static void select(MobileBase base, LinkConfiguration limb) {
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-				.setSelectedCsg(limCad.get(limCad.size() - 1));
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+		try {
+
+			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+					.setSelectedCsg(limCad.get(limCad.size() - 1));
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
+		} catch (Exception ex) {
+			System.err.println("Limb not loaded yet");
+		}
 	}
 
 	public static void select(File script, int lineNumber) {
@@ -275,7 +286,7 @@ public class BowlerStudio extends Application {
 					renderSplashFrame(25, "Populating Menu");
 				}
 			}
-			
+
 			renderSplashFrame(50, "Downloading Images");
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
@@ -516,7 +527,6 @@ public class BowlerStudio extends Application {
 		});
 	}
 
-
 	public static boolean hasNetwork() {
 		return hasnetwork;
 	}
@@ -544,7 +554,7 @@ public class BowlerStudio extends Application {
 		try { // do this ...
 			Thread thread = Thread.currentThread();
 			if (thread.getContextClassLoader() == null) {
-				//seriously Apple??
+				// seriously Apple??
 				System.err.println("ContextClassLoader Is Missing! (OSX) ");
 				thread.setContextClassLoader(getClass().getClassLoader()); // a
 																			// valid
@@ -606,31 +616,32 @@ public class BowlerStudio extends Application {
 				scene.getStylesheets().clear();
 				scene.getStylesheets().add(nwfile);
 				System.err.println("Loading CSS from " + nwfile);
-				Platform.runLater(()->{
+				Platform.runLater(() -> {
 
 					primaryStage.setScene(scene);
 					System.err.println("Showing main applicaiton");
 					primaryStage.show();
-					// initialize the default styles for the dock pane and undocked
+					// initialize the default styles for the dock pane and
+					// undocked
 					// nodes using the DockFX
 					// library's internal Default.css stylesheet
-					// unlike other custom control libraries this allows the user to
+					// unlike other custom control libraries this allows the
+					// user to
 					// override them globally
-					// using the style manager just as they can with internal JavaFX
+					// using the style manager just as they can with internal
+					// JavaFX
 					// controls
 					// this must be called after the primary stage is shown
 					// https://bugs.openjdk.java.net/browse/JDK-8132900
 					DockPane.initializeDefaultUserAgentStylesheet();
 				});
 
-
-
 				primaryStage.setOnCloseRequest(arg0 -> {
 					// ThreadUtil.wait(100);
 					closeBowlerStudio();
 
 				});
-				Platform.runLater(()->{
+				Platform.runLater(() -> {
 					primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
 
 					try {
@@ -639,7 +650,8 @@ public class BowlerStudio extends Application {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				});;
+				});
+				;
 
 				primaryStage.setResizable(true);
 

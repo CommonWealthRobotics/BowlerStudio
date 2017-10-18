@@ -640,7 +640,11 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 lsw.setGameController(controller); 
 			 }
-			 BowlerStudio.select( base,conf);
+			 try{
+				 BowlerStudio.select( base,conf);
+			 }catch(Exception ex){
+				 System.err.println("Linb not loaded yet");
+			 }
 			 //select( base, dh);
 			// activate controller
 		});
@@ -875,14 +879,14 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> PlaceLimb = new TreeItem<>("Place Root Of Limb",AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
+		TreeItem<String> PlaceLimb = new TreeItem<>("Move Root Of Limb",AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
 		callbackMapForTreeitems.put(PlaceLimb, () -> {
 			if (widgetMapForTreeitems.get(PlaceLimb) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
 				try{
-					widgetMapForTreeitems.put(PlaceLimb,new Group( new TransformWidget("Place Limb", 
+					widgetMapForTreeitems.put(PlaceLimb,new Group( new TransformWidget("Move place where limb is attached to body", 
 							dh.getRobotToFiducialTransform(), new IOnTransformChange() {
 						
 						@Override
