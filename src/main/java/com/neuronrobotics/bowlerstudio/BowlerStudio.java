@@ -149,6 +149,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base) {
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
 		try {
 
 			ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
@@ -157,10 +158,12 @@ public class BowlerStudio extends Application {
 		} catch (Exception ex) {
 			System.err.println("Base not loaded yet");
 		}
+		
 
 	}
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
 		try {
 	
 			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
@@ -177,6 +180,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base, LinkConfiguration limb) {
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
 		try {
 
 			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
@@ -189,6 +193,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(File script, int lineNumber) {
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
 		try {
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
 		} catch (Exception ex) {

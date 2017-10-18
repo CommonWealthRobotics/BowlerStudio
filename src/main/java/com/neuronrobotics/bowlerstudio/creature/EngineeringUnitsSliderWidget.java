@@ -53,21 +53,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpointValue.setOnAction(event -> {
 			Platform.runLater(() -> {
 				double val =Double.parseDouble(setpointValue.getText());
-				setpoint.valueProperty().removeListener(this);
-				if(val>setpoint.getMax()){
-					if(isAllowResize())
-						setpoint.setMax(val);
-					else
-						val=setpoint.getMax();
-				}if(val<setpoint.getMin()){
-					if(isAllowResize())
-						setpoint.setMin(val);
-					else
-						val=setpoint.getMin();
-				}
-				setpoint.setValue(val);
-				setpointValue.setText(getFormatted(setpoint.getValue()));
-				setpoint.valueProperty().addListener(this);
+				setValue(val);
 				getListener().onSliderMoving(this,setpoint.getValue());
 				getListener().onSliderDoneMoving(this,val);
 			});
@@ -133,6 +119,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 					else
 						val=setpoint.getMin();
 				}
+				double range = Math.abs(setpoint.getMax()-setpoint.getMin());
+				setpoint.setMajorTickUnit(range);
 				setpoint.setValue(val);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);

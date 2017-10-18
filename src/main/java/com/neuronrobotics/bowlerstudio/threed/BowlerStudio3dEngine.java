@@ -209,7 +209,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private long timeForAutospin = 5000;
 
-	private CheckBox spin;;
+	private CheckBox spin;
+
+	private CheckBox autoHighilight;;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -301,9 +303,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			else
 				hideAxis();
 		});
-
-		controls.getChildren().addAll(home, clear,ruler,spin);
+		autoHighilight = new CheckBox("Auto Highlight");
+		autoHighilight.setSelected(true);
+		controls.getChildren().addAll(home, clear,ruler,autoHighilight,spin);
 		return new Group(controls);
+	}
+	
+	public boolean isAutoHightlight(){
+		return autoHighilight.isSelected();
 	}
 
 	public Group getDebuggerBox() {
