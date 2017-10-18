@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -306,8 +307,12 @@ public class LinkConfigurationWidget extends GridPane {
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 					double newAngleDegrees) {
-				activLink.setTargetEngineeringUnits(0);
-				activLink.flush(0);
+				try{
+					activLink.setTargetEngineeringUnits(0);
+					activLink.flush(0);
+				}catch(Exception ex){
+					BowlerStudio.printStackTrace(ex);
+				}
 			}
 		}, 0, 255, conf.getLowerLimit(), 150, "device units", true);
 
