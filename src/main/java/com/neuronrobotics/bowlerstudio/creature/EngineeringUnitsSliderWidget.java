@@ -29,15 +29,26 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		this.setListener(listener);
 		setpoint = new Slider();
 		
+		if(min>max){
+			double minStart = min;
+			min=max;
+			max=minStart;
+		}
+		double range = Math.abs(max-min);
+		if(range<1){
+			min=-100;
+			max = 100;
+			range=200;
+		}
 		setpoint.setMin(min);
 		setpoint.setMax(max);
 		setpoint.setValue(current);
 		setpoint.setShowTickLabels(true);
 		setpoint.setShowTickMarks(false);
 		//setpoint.setSnapToTicks(true);
-		setpoint.setMajorTickUnit(50);
+		setpoint.setMajorTickUnit(range/50);
 		setpoint.setMinorTickCount(5);
-		setpoint.setBlockIncrement(10);
+		setpoint.setBlockIncrement(range/100);
 		setpointValue = new TextField(getFormatted(current));
 		setpointValue.setOnAction(event -> {
 			Platform.runLater(() -> {

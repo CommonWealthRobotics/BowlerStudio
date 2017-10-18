@@ -355,20 +355,20 @@ public class BowlerStudioModularFrame {
 		if (webTabs.get(newTab) != null) {
 			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
-			DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
-			dn.closedProperty().addListener(event -> {
-				System.err.println("Closing tab: " + newTab.getText());
-				webTabs.remove(newTab);
-				if (newTab.getOnCloseRequest() != null) {
-
-					newTab.getOnCloseRequest().handle(null);
-				}
-			});
-
-			webTabs.put(newTab, dn);
 			Platform.runLater(() -> {
+				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
+				dn.closedProperty().addListener(event -> {
+					System.err.println("Closing tab: " + newTab.getText());
+					webTabs.remove(newTab);
+					if (newTab.getOnCloseRequest() != null) {
+	
+						newTab.getOnCloseRequest().handle(null);
+					}
+				});
+	
+				webTabs.put(newTab, dn);
 				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
-				// dn.setFloating(true);
+				
 			});
 		}
 	}
