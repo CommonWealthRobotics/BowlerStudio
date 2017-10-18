@@ -12,6 +12,7 @@ import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.*;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
@@ -874,7 +875,42 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
+		TreeItem<String> PlaceLimb = new TreeItem<>("Place Root Of Limb",AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
+		callbackMapForTreeitems.put(PlaceLimb, () -> {
+			if (widgetMapForTreeitems.get(PlaceLimb) == null) {
+				// create the widget for the leg when looking at it for the
+				// first time
+				try{
+					widgetMapForTreeitems.put(PlaceLimb,new Group( new TransformWidget("Place Limb", 
+							dh.getRobotToFiducialTransform(), new IOnTransformChange() {
+						
+						@Override
+						public void onTransformFinished(TransformNR newTrans) {
+							// Force a cad regeneration
+							creatureLab.onSliderDoneMoving(null, 0);
+						}
+						
+						@Override
+						public void onTransformChaging(TransformNR newTrans) {
+							Log.debug("Limb to base"+newTrans.toString());
+							dh.setRobotToFiducialTransform(newTrans);
+							dh.getCurrentTaskSpaceTransform();
+							//this calls the render update function attachec as the on jointspace update	
+							double[] joint=dh.getCurrentJointSpaceVector();
+							dh.getChain().getChain(joint);
+							Platform.runLater(()->dh.onJointSpaceUpdate(dh, joint));
+						}
+					}
+					)));
+				}catch(Exception ex){
+					BowlerStudio.printStackTrace(ex);
+				}
+			}
+
+		});
+		dhItem.getChildren().addAll( PlaceLimb);
+		
 		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",AssetFactory.loadIcon("Advanced-Configuration.png"));
 
 		callbackMapForTreeitems.put(advanced, () -> {
