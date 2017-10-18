@@ -161,14 +161,19 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
-		ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
 		try {
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-					.setSelectedCsg(limCad.get(limCad.size() - 1));
+	
+			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
+			try {
+				BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+						.setSelectedCsg(limCad.get(limCad.size() - 1));
+			} catch (Exception ex) {
+				// initialization has no csgs yet
+			}
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 		} catch (Exception ex) {
-			// initialization has no csgs yet
+			System.err.println("Limb not loaded yet");
 		}
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
 	}
 
 	public static void select(MobileBase base, LinkConfiguration limb) {
@@ -184,7 +189,11 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(File script, int lineNumber) {
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
+		try {
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
+		} catch (Exception ex) {
+			System.err.println("File not found");
+		}
 	}
 
 	/**
