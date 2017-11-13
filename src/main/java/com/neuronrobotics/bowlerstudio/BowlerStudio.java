@@ -80,10 +80,14 @@ public class BowlerStudio extends Application {
 			public void run() {
 				while (true) {
 					ThreadUtil.wait(150);
-					String text = incoming.asString();
-					incoming.clear();
-					if (text != null && text.length() > 0)
-						appendText(text);
+					try{
+						String text = incoming.asString();
+						incoming.clear();
+						if (text != null && text.length() > 0)
+							appendText(text);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 				}
 			}
 

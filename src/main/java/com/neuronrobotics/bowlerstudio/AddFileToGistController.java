@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -70,8 +71,11 @@ public class AddFileToGistController extends Application {
 		}
 		extention.getSelectionModel().select("Groovy");
 		Image icon;
+		String asset = "Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png";
+		
 		try {
-			icon = AssetFactory.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png");
+			
+			icon = AssetFactory.loadAsset(asset);
 			langaugeIcon.setImage(icon);
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
@@ -82,19 +86,17 @@ public class AddFileToGistController extends Application {
 			try {
 
 				langaugeIcon.setImage(AssetFactory
-						.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
-				switch(extention.getSelectionModel().getSelectedItem()){
-				case "Groovy":
-					extentionStr=".groovy";break;
-				case "Clojure":
-					extentionStr=".clj";break;
-				case "Jython":
-					extentionStr=".py";break;
-				case "Arduino":
-					extentionStr=".ino";break;
-				case "JSON":
-					extentionStr=".json";break;
+						.loadAsset(asset));
+				String key = extention.getSelectionModel().getSelectedItem();
+				IScriptingLanguage l  = ScriptingEngine
+						.getLangaugesMap()
+						.get(key);
+				if(l!=null){
+					extentionStr= "."+l.getFileExtenetion()
+							.get(0);
 				}
+				else
+					extentionStr=".groovy";
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

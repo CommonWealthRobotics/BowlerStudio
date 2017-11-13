@@ -1,3 +1,15 @@
+bowlerstudio (0.23.1) xenial; urgency=medium
+
+  * Fixing the bounding and rotation problem in the Transform widget when close to Euler singularities.
+  * 0.23.1
+  * Engineering units sliders should be more sane about the ticks
+  * adding the place limb widget to the menu
+  * Making the Transform widget more readable
+  * exception handeling on file selection
+  * only auto-highlight when the check box is checked
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Oct 2017 14:55:40 -0400
+
 bowlerstudio (0.23.0) xenial; urgency=medium
 
   * convert lines to cylindar
