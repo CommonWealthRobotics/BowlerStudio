@@ -46,7 +46,6 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
-	private FileChangeWatcher watcher;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	//Label fileLabel = new Label();
 	private Object scriptResult;
@@ -430,8 +429,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(!langaugeType.getIsTextFile())
 			return;
 		 try {
-			 watcher = FileChangeWatcher.watch(currentFile);
-			 watcher.addIFileChangeListener(this);
+			 getWatcher().addIFileChangeListener(this);
 		 } catch (IOException e) {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
@@ -484,36 +482,47 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(updateneeded)
 			return;
 		updateneeded=true;
-		watcher.removeIFileChangeListener(this);
-		FxTimer.runLater(
-				Duration.ofMillis(500) ,() -> {
-					updateneeded=false;
-					// TODO Auto-generated method stub
-					if (fileThatChanged.getAbsolutePath().contains(
-							currentFile.getAbsolutePath())) {
+		try {
+			getWatcher().removeIFileChangeListener(this);
+			FxTimer.runLater(
+					Duration.ofMillis(500) ,() -> {
+						updateneeded=false;
+						// TODO Auto-generated method stub
+						if (fileThatChanged.getAbsolutePath().contains(
+								currentFile.getAbsolutePath())) {
 
-						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
-								+ " changed");
-						Platform.runLater(() -> {
-							try {
-								String content = new String(Files.readAllBytes(Paths
-										.get(fileThatChanged.getAbsolutePath())));
-								if(content.length()>2)// ensures tha the file contents never get wiped out on the user
-									setCode(content);
-							} catch (UnsupportedEncodingException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
-							}
-							watcher.addIFileChangeListener(this);
-						});
+							System.out.println("Code in " + fileThatChanged.getAbsolutePath()
+									+ " changed");
+							Platform.runLater(() -> {
+								try {
+									String content = new String(Files.readAllBytes(Paths
+											.get(fileThatChanged.getAbsolutePath())));
+									if(content.length()>2)// ensures tha the file contents never get wiped out on the user
+										setCode(content);
+								} catch (UnsupportedEncodingException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								}
+								try {
+									getWatcher().addIFileChangeListener(this);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							});
 
-					} else {
-						// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-					}
-		});
+						} else {
+							// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+						}
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		
 	}
@@ -536,6 +545,19 @@ public class ScriptingFileWidget extends BorderPane implements
 			return currentFile.getName();
 		else
 			return "Web";
+	}
+
+	public FileChangeWatcher getWatcher() throws IOException {
+		return FileChangeWatcher.watch(currentFile);
+	}
+	public void close(){
+		try {
+			getWatcher().removeIFileChangeListener(this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

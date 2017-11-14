@@ -170,9 +170,9 @@ public class FileChangeWatcher {
 		if (listeners.contains(l)) {
 			listeners.remove(l);
 		}
-		if(listeners.size()==0){
-			close() ;
-		}
+//		if(listeners.size()==0){
+//			close() ;
+//		}
 	}
 
 	/**
@@ -330,7 +330,7 @@ public class FileChangeWatcher {
 	 * Close.
 	 */
 	public void close() {
-		//new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
+		new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
 		this.run = false;
 		try {
 			watcher.close();

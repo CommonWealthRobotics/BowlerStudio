@@ -103,6 +103,8 @@ public class BowlerStudioController  implements
 				ConfigurationDatabase.removeObject(
 						"studio-open-git", 
 						key);
+				t.getScripting().close();
+				System.out.println("Closing "+file.getAbsolutePath());
 			});
 			return t.getScripting();
 		} catch (IOException e) {
