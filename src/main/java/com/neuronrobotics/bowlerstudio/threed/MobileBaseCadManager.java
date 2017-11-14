@@ -277,7 +277,8 @@ public class MobileBaseCadManager {
 								+ l.getScriptingName());
 						if (!dir.exists())
 							dir.mkdirs();
-						File stl = new File(dir.getAbsolutePath() + "/limb_" + i + "_Part_" + j +linkNum+ ".stl");
+						String name = csg.getName();
+						File stl = new File(dir.getAbsolutePath() + "/"+name+"_limb_" + i + "_Part_" + j +linkNum+ ".stl");
 						FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
 						allCadStl.add(stl);
 						// totalAssembly.add(tmp);
