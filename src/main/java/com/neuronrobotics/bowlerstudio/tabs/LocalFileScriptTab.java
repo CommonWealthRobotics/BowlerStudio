@@ -332,6 +332,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		//System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
+		
 		if (current.length() > 3 && !textArea.getText().contentEquals(current)) {// no
 																					// empty
 																					// writes

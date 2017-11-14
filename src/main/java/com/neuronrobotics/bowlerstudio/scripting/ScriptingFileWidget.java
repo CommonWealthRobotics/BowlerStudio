@@ -11,6 +11,8 @@ import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -35,6 +37,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 @SuppressWarnings("unused")
@@ -254,6 +257,24 @@ public class ScriptingFileWidget extends BorderPane implements
 
 
 	private void start() {
+		try{
+			if(!currentFile.getName().contentEquals("csgDatabase.json")){
+				String[] gitID = ScriptingEngine.findGitTagFromFile(currentFile);
+				String remoteURI=gitID[0];
+				ArrayList<String> f = ScriptingEngine.filesInGit(remoteURI);
+				for (String s:f){
+					if(s.contentEquals("csgDatabase.json")){
+						File dbFile = ScriptingEngine.fileFromGit(gitID[0], s);
+						if(!CSGDatabase.getDbFile().equals(dbFile))
+							CSGDatabase.setDbFile(dbFile);
+						CSGDatabase.saveDatabase();
+					}
+				}
+			}
+		}catch(Exception e){
+			//ignore CSG database
+			e.printStackTrace();
+		}
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
 		try {
@@ -470,6 +491,7 @@ public class ScriptingFileWidget extends BorderPane implements
 					// TODO Auto-generated method stub
 					if (fileThatChanged.getAbsolutePath().contains(
 							currentFile.getAbsolutePath())) {
+
 						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
 								+ " changed");
 						Platform.runLater(() -> {

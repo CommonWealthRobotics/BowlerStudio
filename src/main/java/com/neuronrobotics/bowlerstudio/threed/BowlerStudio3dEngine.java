@@ -417,6 +417,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					Platform.runLater(() -> {
 						addObject(ret, source);
 					});
+				System.out.println("Saving CSG database");
+				CSGDatabase.saveDatabase();
 			}
 		}.start();
 	}
@@ -457,16 +459,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 								@Override
 								public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-									new Thread() {
-										public void run() {
 											try {
 												currentCsg.setParameterNewValue(key, newAngleDegrees);
 
 											} catch (Exception ex) {
 												BowlerStudioController.highlightException(source, ex);
 											}
-										}
-									}.start();
+										
 								}
 
 								@Override
@@ -480,7 +479,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 									fireRegenerate(key, source, objects);
 									resetMouseTime();
-
+									
 								}
 							}, Double.parseDouble(lp.getOptions().get(1).toString()),
 							Double.parseDouble(lp.getOptions().get(0).toString()), lp.getMM(), 400, key);

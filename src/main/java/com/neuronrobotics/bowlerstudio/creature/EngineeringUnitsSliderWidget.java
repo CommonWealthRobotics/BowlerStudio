@@ -54,7 +54,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			Platform.runLater(() -> {
 				double val =Double.parseDouble(setpointValue.getText());
 				setValue(val);
-				getListener().onSliderMoving(this,setpoint.getValue());
+				getListener().onSliderMoving(this,val);
 				getListener().onSliderDoneMoving(this,val);
 			});
 		});
