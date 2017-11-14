@@ -254,6 +254,7 @@ public class MobileBaseCadManager {
 			ArrayList<CSG> parts = getDHtoCadMap().get(l);
 			for (int j = 0; j < parts.size(); j++) {
 				CSG csg = parts.get(j);
+				String name = csg.getName();
 				try {
 					CSG tmp;
 					if (!kinematic)
@@ -271,14 +272,14 @@ public class MobileBaseCadManager {
 							totalAssembly.add(tmp);
 						LinkConfiguration conf= getLinkConfiguration(parts.get(j));
 
-						String linkNum="_Link_"+conf.getLinkIndex()+"";
+						String linkNum=conf.getLinkIndex()+"_Link_";
 						
 						File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/"
 								+ l.getScriptingName());
 						if (!dir.exists())
 							dir.mkdirs();
-						String name = csg.getName();
-						File stl = new File(dir.getAbsolutePath() + "/"+name+"_limb_" + i + "_Part_" + j +linkNum+ ".stl");
+						System.out.println("Making STL for "+name);
+						File stl = new File(dir.getAbsolutePath() + "/"+linkNum+name+"_limb_" + i + "_Part_" + j + ".stl");
 						FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
 						allCadStl.add(stl);
 						// totalAssembly.add(tmp);
@@ -303,7 +304,7 @@ public class MobileBaseCadManager {
 		int link = 0;
 		// now we genrate the base pieces
 		for (CSG csg : getBasetoCadMap().get(base)) {
-
+			String name = csg.getName();
 			try {
 				if (!kinematic)
 					csg = csg.prepForManufacturing();
@@ -314,7 +315,7 @@ public class MobileBaseCadManager {
 					File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/");
 					if (!dir.exists())
 						dir.mkdirs();
-					File stl = new File(dir.getAbsolutePath() + "/Body_part_" + link + ".stl");
+					File stl = new File(dir.getAbsolutePath() + "/"+name+"_Body_part_" + link + ".stl");
 					FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.toStlString());
 					allCadStl.add(stl);
 					totalAssembly.add(csg);
