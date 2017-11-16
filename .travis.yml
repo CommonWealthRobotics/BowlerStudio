@@ -1,12 +1,4 @@
 language: java
-jdk:
-  - oraclejdk8
-  
-before_install:
-  - "export DISPLAY=:99.0"
-  - "export TERM=dumb"
-  - "sh -e /etc/init.d/xvfb start"
-
 install:
   - sudo add-apt-repository ppa:cwchien/gradle -y
   - sudo apt-add-repository ppa:webupd8team/java -y
@@ -14,12 +6,17 @@ install:
   - sudo apt-get update -qq
   - sudo apt-get install -y --force-yes gradle libopencv2.4-jni  libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils
   - sudo ln /dev/null /dev/raw1394
-    - TERM=dumb ./gradlew --refresh-dependencies --stacktrace
-
+  
+  
 script:
-    - TERM=dumb ./gradlew build --stacktrace
+  - gradle compileJava   
+cache:
+  directories:
+  - $HOME/.m2
 
-after_failure:
-  - "cat ./build/test-results/*.xml"
+jdk:
+  - oraclejdk8
+
+# for running tests on Travis CI container infrastructure for faster builds
 sudo: true
 dist: trusty
