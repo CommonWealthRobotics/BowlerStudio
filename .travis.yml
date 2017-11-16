@@ -15,3 +15,5 @@ script:
 
 after_failure:
   - "cat ./build/test-results/*.xml"
+sudo: true
+dist: trusty
