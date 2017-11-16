@@ -305,7 +305,11 @@ public class BowlerStudioController  implements
 				line.setStroke(javafx.scene.paint.Color.WHITE);
 				addNode(line);
 			}
-
+			//Connecting line
+			Line3D line = new Line3D(vertices.get(0),vertices.get(vertices.size()-1));
+			line.setStrokeWidth(0.1);
+			line.setStroke(javafx.scene.paint.Color.YELLOW);
+			addNode(line);
 
 		}
 		
