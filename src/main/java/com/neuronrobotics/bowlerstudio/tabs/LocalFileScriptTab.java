@@ -151,6 +151,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
 			break;
 		default:
+			type = SyntaxConstants.SYNTAX_STYLE_NONE;
+			break;
 		case "Groovy":
 			type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
 			break;

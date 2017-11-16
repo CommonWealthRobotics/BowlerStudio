@@ -211,7 +211,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.3'
 	compile 'org.apache.httpcomponents:httpclient:4.5.1'
 	//compile 'cz.advel.jbullet:jbullet:20101010-1'
-	compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
+	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'// replaced by local jar because jbullet maven went down
 	//compile "alda:alda:1.0.0-rc14"
 	
 	//Deep Learning 4 j and dependancies
