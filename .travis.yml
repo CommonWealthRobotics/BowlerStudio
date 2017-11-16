@@ -1,11 +1,11 @@
 language: java
 install:
-  - sudo add-apt-repository ppa:cwchien/gradle -y
-  - sudo apt-add-repository ppa:webupd8team/java -y
-  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
-  - sudo apt-get update 
-  - sudo apt-get install -y --force-yes gradle libopencv2.4-jni  libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils
-  - sudo ln /dev/null /dev/raw1394
+  - sudo add-apt-repository ppa:webupd8team/java
+  - sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
+  - sudo apt-get update
+  - sudo apt-get remove arduino bowlerstudio 
+  - sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+  
   
   
 script:
@@ -19,4 +19,4 @@ jdk:
 
 # for running tests on Travis CI container infrastructure for faster builds
 sudo: true
-dist: trusty
+dist: xenial
