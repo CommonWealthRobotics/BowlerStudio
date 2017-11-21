@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -14,7 +15,10 @@ import org.python.core.exceptions;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
+import com.neuronrobotics.bowlerstudio.creature.IgenerateBed;
+import com.neuronrobotics.bowlerstudio.creature.IgenerateBody;
+import com.neuronrobotics.bowlerstudio.creature.IgenerateCad;
+//import com.neuronrobotics.bowlerstudio.creature.ICadGenerator;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -35,6 +39,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.svg.SVGExporter;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 
@@ -43,12 +48,12 @@ public class MobileBaseCadManager {
 	// static
 	private static HashMap<MobileBase, MobileBaseCadManager> cadmap = new HashMap<>();
 	// static
-	private ICadGenerator cadEngine;
+	private Object cadEngine;
 	private MobileBase base;
 	private ProgressIndicator pi;
 	private File cadScript;
 
-	private HashMap<DHParameterKinematics, ICadGenerator> dhCadGen = new HashMap<>();
+	private HashMap<DHParameterKinematics, Object> dhCadGen = new HashMap<>();
 	private HashMap<DHParameterKinematics, ArrayList<CSG>> DHtoCadMap = new HashMap<>();
 	private HashMap<LinkConfiguration, ArrayList<CSG>> LinktoCadMap = new HashMap<>();
 	private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new HashMap<>();
@@ -65,7 +70,7 @@ public class MobileBaseCadManager {
 		public void onFileChange(File fileThatChanged, WatchEvent event) {
 			try {
 				System.out.println("Re-loading Cad Base Engine");
-				cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
+				cadEngine =  ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
 				generateCad();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -107,7 +112,27 @@ public class MobileBaseCadManager {
 
 		this.cadScript = cadScript;
 	}
-
+	private IgenerateBody getIgenerateBody(){
+		if(IgenerateBody.class.isInstance(cadEngine)){
+			return (IgenerateBody)cadEngine;
+		}
+		throw new RuntimeException("Cad engine does not implement IgenerateBody");
+	}
+	private IgenerateCad getIgenerateCad(){
+		if(IgenerateBody.class.isInstance(cadEngine)){
+			return (IgenerateCad)cadEngine;
+		}
+		throw new RuntimeException("Cad engine does not implement IgenerateCad");
+	}
+	private IgenerateBed getIgenerateBed(){
+		if(IgenerateBody.class.isInstance(cadEngine)){
+			return (IgenerateBed)cadEngine;
+		}
+		throw new RuntimeException("Cad engine does not implement IgenerateBed");
+	}
+	
+	
+	
 	public ArrayList<CSG> generateBody(MobileBase base) {
 		
 		getProcesIndictor().setProgress(0);
@@ -129,7 +154,7 @@ public class MobileBaseCadManager {
 			}
 			if (getCadScript() != null) {
 				try {
-					cadEngine = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
+					cadEngine =ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
 				} catch (Exception e) {
 					BowlerStudioController.highlightException(getCadScript(), e);
 				}
@@ -145,7 +170,7 @@ public class MobileBaseCadManager {
 				}
 			} else {
 				if (!bail) {
-					ArrayList<CSG> newcad = cadEngine.generateBody(device);
+					ArrayList<CSG> newcad = getIgenerateBody().generateBody(device);
 					for (CSG c : newcad) {
 						getAllCad().add(c);
 					}
@@ -236,8 +261,22 @@ public class MobileBaseCadManager {
 		}
 		return conf;
 	}
-
 	public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles, boolean kinematic) throws IOException {
+		IgenerateBed bed = getIgenerateBed();
+		if(bed == null ||kinematic){
+			return _generateStls(base, baseDirForFiles, kinematic); 
+		}
+		System.out.println("Found arrangeBed API in CAD engine");
+		List<CSG> totalAssembly = bed.arrangeBed(base) ;
+		BowlerStudioController.setCsg(totalAssembly , getCadScript());
+		File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() );
+		if (!dir.exists())
+			dir.mkdirs();
+		
+		return CadFileExporter.generateManufacturingParts(totalAssembly, baseDirForFiles);
+	}
+	
+	private ArrayList<File> _generateStls(MobileBase base, File baseDirForFiles, boolean kinematic) throws IOException {
 		ArrayList<File> allCadStl = new ArrayList<>();
 		ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
 		double numLimbs = limbs.size();
@@ -363,10 +402,11 @@ public class MobileBaseCadManager {
 		}
 
 		try {
-			ICadGenerator generatorToUse = cadEngine;
-
+			IgenerateCad generatorToUse = getIgenerateCad();
 			if (dhCadGen.get(dh) != null) {
-				generatorToUse = dhCadGen.get(dh);
+				Object object = dhCadGen.get(dh);
+				if(IgenerateCad.class.isInstance(object))
+					generatorToUse = (IgenerateCad)object;
 			}
 			int j = 0;
 			for (DHParameterKinematics dhtest : getMobileBase().getAllDHChains()) {
@@ -466,7 +506,7 @@ public class MobileBaseCadManager {
 		dh.setGitCadEngine(new String[] { gitsId, file });
 		File code = ScriptingEngine.fileFromGit(gitsId, file);
 		try {
-			ICadGenerator defaultDHSolver = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
+			Object defaultDHSolver = ScriptingEngine.inlineFileScriptRun(code, null);
 			dhCadGen.put(dh, defaultDHSolver);
 		} catch (Exception e) {
 			BowlerStudioController.highlightException(code, e);
@@ -476,7 +516,7 @@ public class MobileBaseCadManager {
 			System.out.println("Re-loading Cad Limb Engine");
 
 			try {
-				ICadGenerator d = (ICadGenerator) ScriptingEngine.inlineFileScriptRun(code, null);
+				Object d = ScriptingEngine.inlineFileScriptRun(code, null);
 				dhCadGen.put(dh, d);
 				generateCad();
 			} catch (Exception ex) {

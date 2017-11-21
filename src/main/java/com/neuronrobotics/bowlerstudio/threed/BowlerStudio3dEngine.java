@@ -203,15 +203,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private List<CSG> selectedSet = null;
 	private TransformNR perviousTarget = new TransformNR();
 
-	
-
-	private long lastSelectedTime=System.currentTimeMillis();
+	private long lastSelectedTime = System.currentTimeMillis();
 
 	private long timeForAutospin = 5000;
 
 	private CheckBox spin;
 
-	private CheckBox autoHighilight;;
+	private CheckBox autoHighilight;
+
+	private Button export;;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -281,6 +281,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().updatePositions();
 		});
 
+		export = new Button("Export...");
+		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
+		export.setOnAction(event -> {
+			if (!getCsgMap().isEmpty()) {
+				exportAll();
+				Platform.runLater(() -> {
+					export.setDisable(true);
+				});
+			} else {
+				System.out.println("Nothing to export!");
+			}
+		});
 		Button clear = new Button("Clear");
 		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
 		clear.setOnAction(event -> {
@@ -305,11 +317,32 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		autoHighilight = new CheckBox("Auto Highlight");
 		autoHighilight.setSelected(true);
-		controls.getChildren().addAll(home, clear,ruler,autoHighilight,spin);
+		controls.getChildren().addAll(home, export, clear, ruler, autoHighilight, spin);
 		return new Group(controls);
 	}
-	
-	public boolean isAutoHightlight(){
+
+	private void exportAll() {
+		new Thread() {
+			public void run() {
+				setName("Exporting the CAD objects");
+				ArrayList<CSG> csgs = new ArrayList<CSG>(getCsgMap().keySet());
+				System.out.println("Exporting " + csgs.size() + " parts");
+				File baseDirForFiles = FileSelectionFactory.GetDirectory(defaultStlDir);
+				try {
+					CadFileExporter.generateManufacturingParts(csgs, baseDirForFiles);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				Platform.runLater(() -> {
+					export.setDisable(false);
+				});
+			}
+		}.start();
+	}
+
+	public boolean isAutoHightlight() {
 		return autoHighilight.isSelected();
 	}
 
@@ -386,9 +419,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				ArrayList<CSG> toRemove = new ArrayList<>();
 
 				Object[] array = null;
-				//synchronized (currentObjectsToCheck) {
-					array = (Object[]) currentObjectsToCheck.toArray();
-				//}
+				// synchronized (currentObjectsToCheck) {
+				array = (Object[]) currentObjectsToCheck.toArray();
+				// }
 				for (int i = 0; i < currentObjectsToCheck.size(); i++) {
 					System.out.println("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
 					try {
@@ -459,13 +492,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 								@Override
 								public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-											try {
-												currentCsg.setParameterNewValue(key, newAngleDegrees);
+									try {
+										currentCsg.setParameterNewValue(key, newAngleDegrees);
 
-											} catch (Exception ex) {
-												BowlerStudioController.highlightException(source, ex);
-											}
-										
+									} catch (Exception ex) {
+										BowlerStudioController.highlightException(source, ex);
+									}
+
 								}
 
 								@Override
@@ -479,7 +512,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 									fireRegenerate(key, source, objects);
 									resetMouseTime();
-									
+
 								}
 							}, Double.parseDouble(lp.getOptions().get(1).toString()),
 							Double.parseDouble(lp.getOptions().get(0).toString()), lp.getMM(), 400, key);
@@ -517,7 +550,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							}
 
 							parameters.getItems().add(paramTypes);
-							//System.err.println("Adding String Paramater " + lp.getName());
+							// System.err.println("Adding String Paramater " +
+							// lp.getName());
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -532,27 +566,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			@Override
 			public void handle(ActionEvent event) {
-				resetMouseTime();
-				if (defaultStlDir == null)
-					defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-				if (!defaultStlDir.exists()) {
-					defaultStlDir.mkdirs();
-				}
-
-				new Thread() {
-
-					public void run() {
-						try {
-							CSG newObject = currentCsg.prepForManufacturing();
-							BowlerStudioController.setCsg(newObject, source);
-							defaultStlDir = SVGFactory.exportSVG(newObject, defaultStlDir);
-						} catch (Exception e1) {
-							BowlerStudioController.highlightException(source, e1);
-						}
-
-					}
-				}.start();
+				currentCsg.addExportFormat("svg");
+				exportManufacturingPart(currentCsg, source);
 			}
+
 		});
 		cm.getItems().add(exportDXF);
 
@@ -560,37 +577,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		export.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				resetMouseTime();
-				if (defaultStlDir == null)
-					defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-				if (!defaultStlDir.exists()) {
-					defaultStlDir.mkdirs();
-				}
-
-				new Thread() {
-
-					public void run() {
-						File baseDirForFiles = FileSelectionFactory.GetFile(defaultStlDir, true);
-						defaultStlDir = baseDirForFiles.getParentFile();
-						if (!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".stl"))
-							baseDirForFiles = new File(baseDirForFiles.getAbsolutePath() + ".stl");
-						if (!baseDirForFiles.exists())
-							try {
-								baseDirForFiles.createNewFile();
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-						try {
-							CSG newObject = currentCsg.prepForManufacturing();
-							BowlerStudioController.setCsg(newObject, source);
-							FileUtil.write(Paths.get(baseDirForFiles.getAbsolutePath()),
-									newObject.toStlString());
-							System.out.println("Exported STL to" + baseDirForFiles.getAbsolutePath());
-						} catch (Exception e) {
-							BowlerStudioController.highlightException(source, e);
-						}
-					}
-				}.start();
+				currentCsg.addExportFormat("stl");
+				exportManufacturingPart(currentCsg, source);
 			}
 		});
 		cm.getItems().add(export);
@@ -601,32 +589,32 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(ActionEvent event) {
 				resetMouseTime();
 				removeObject(currentCsg);
-				for (Polygon p:currentCsg.getPolygons()){
+				for (Polygon p : currentCsg.getPolygons()) {
 					List<Vertex> vertices = p.vertices;
-					for(int i=1;i<vertices.size();i++){
-						Line3D line = new Line3D(vertices.get(i-1),vertices.get(i));
+					for (int i = 1; i < vertices.size(); i++) {
+						Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
 						line.setStrokeWidth(0.1);
 						line.setStroke(javafx.scene.paint.Color.WHITE);
-						line.getTransforms().add(0,currentCsg.getManipulator());
+						line.getTransforms().add(0, currentCsg.getManipulator());
 						BowlerStudioController.getBowlerStudio().addObject(line, source);
 					}
 				}
-				
+
 			}
 		});
 		cm.getItems().add(toWireframe);
-		
+
 		MenuItem hide = new MenuItem("Hide Object");
 		hide.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				resetMouseTime();
 				removeObject(currentCsg);
-				
+
 			}
 		});
 		cm.getItems().add(hide);
-		
+
 		MenuItem cut = new MenuItem("Read Source");
 		cut.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -680,6 +668,29 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		lookGroup.getChildren().add(axis);
 		// Log.warning("Adding new axis");
 		return current;
+	}
+
+	public void exportManufacturingPart(CSG currentCsg, File source) {
+		resetMouseTime();
+		if (defaultStlDir == null)
+			defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		if (!defaultStlDir.exists()) {
+			defaultStlDir.mkdirs();
+		}
+
+		new Thread() {
+
+			public void run() {
+				try {
+
+					defaultStlDir = CadFileExporter.generateManufacturingParts(Arrays.asList(currentCsg),
+							FileSelectionFactory.GetFile(defaultStlDir, true)).get(0);
+				} catch (Exception e1) {
+					BowlerStudioController.highlightException(source, e1);
+				}
+
+			}
+		}.start();
 	}
 
 	private void prepAllItems(ObservableList<MenuItem> items, EventHandler<MouseEvent> exited,
@@ -785,7 +796,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			e.printStackTrace();
 		}
 		// TODO reorent the start camera
-		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90-127, 24, 0)), 0);
+		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
 	}
 
@@ -861,11 +872,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
 						ImageView groundView = new ImageView(groundLocal);
-						groundView.getTransforms().addAll(groundMove,downset);
+						groundView.getTransforms().addAll(groundMove, downset);
 						groundView.setOpacity(0.3);
-						zrulerImage.getTransforms().addAll(zRuler,downset);
-						rulerImage.getTransforms().addAll(xp,downset);
-						yrulerImage.getTransforms().addAll(yRuler,downset);
+						zrulerImage.getTransforms().addAll(zRuler, downset);
+						rulerImage.getTransforms().addAll(xp, downset);
+						yrulerImage.getTransforms().addAll(yRuler, downset);
 						gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
 						Affine groundPlacment = new Affine();
@@ -886,7 +897,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}.start();
 
-
 	}
 
 	public void addUserNode(Node n) {
@@ -904,8 +914,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void showAxis() {
-		Platform.runLater(() -> 
-		axisGroup.getChildren().add(gridGroup));
+		Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
 		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).show();
 		}
@@ -917,27 +926,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			axisMap.get(a).hide();
 		}
 	}
-	
-	private void autoSpin(){
+
+	private void autoSpin() {
 		try {
 			long diff = System.currentTimeMillis() - getLastMosueMovementTime();
-			
-			if(diff>timeForAutospin && spin.isSelected()){
-				//TODO start spinning
+
+			if (diff > timeForAutospin && spin.isSelected()) {
+				// TODO start spinning
 				double scale = 0.5;
-				long finaSpeedScale =  timeForAutospin+(timeForAutospin/2);
-				if(diff<finaSpeedScale){
-					double finaSpeedDiff = ((double)(finaSpeedScale- diff));
-					double sineScale = (finaSpeedDiff/((double)(timeForAutospin/2)));
-					scale = 1-Math.sin(sineScale * (Math.PI/2));
-					moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5*scale, 0)), 0);
-				}else{
+				long finaSpeedScale = timeForAutospin + (timeForAutospin / 2);
+				if (diff < finaSpeedScale) {
+					double finaSpeedDiff = ((double) (finaSpeedScale - diff));
+					double sineScale = (finaSpeedDiff / ((double) (timeForAutospin / 2)));
+					scale = 1 - Math.sin(sineScale * (Math.PI / 2));
+					moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5 * scale, 0)), 0);
+				} else {
 					moveCamera(autoSpinSpeed, 0);
 				}
-				
-				
+
 			}
-		}catch(Exception | Error e) {
+		} catch (Exception | Error e) {
 			e.printStackTrace();
 		}
 		FxTimer.runLater(Duration.ofMillis(30), () -> {
@@ -956,23 +964,25 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			long lastClickedTimeLocal = 0;
 			long offset = 500;
+
 			@Override
 			public void handle(MouseEvent event) {
 				resetMouseTime();
-				long lastClickedDifference= (System.currentTimeMillis() - lastClickedTimeLocal);
+				long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
 					long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
-					if(differenceIntime>2000){
-						//reset only if an object is not being selected
+					if (differenceIntime > 2000) {
+						// reset only if an object is not being selected
 						if (lastClickedDifference < offset) {
 							cancelSelection();
-							//System.err.println("Cancel event detected");
-						}		
-					}else{
-						//System.err.println("too soon after a select "+differenceIntime+" from "+lastSelectedTime);
+							// System.err.println("Cancel event detected");
+						}
+					} else {
+						// System.err.println("too soon after a select
+						// "+differenceIntime+" from "+lastSelectedTime);
 					}
 				});
-				lastClickedTimeLocal= System.currentTimeMillis();
+				lastClickedTimeLocal = System.currentTimeMillis();
 			}
 
 		});
@@ -988,7 +998,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				else
 					captureMouse = false;
 				resetMouseTime();
-				
+
 			}
 		});
 		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -1200,16 +1210,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		selectedSet = null;
 		this.selectedCsg = null;
-		//new Exception().printStackTrace();
+		// new Exception().printStackTrace();
 		TransformNR startSelectNr = perviousTarget.copy();
 		TransformNR targetNR = new TransformNR();
 		Affine interpolator = new Affine();
 		TransformFactory.nrToAffine(startSelectNr, interpolator);
-		
+
 		Platform.runLater(() -> {
-			
+
 			removeAllFocusTransforms();
-			
+
 			focusGroup.getTransforms().add(interpolator);
 
 			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
@@ -1217,19 +1227,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		resetMouseTime();
 	}
-	
-	
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
 		selectedSet = selectedCsg;
-		try{
+		try {
 			for (int in = 1; in < selectedCsg.size(); in++) {
 				int i = in;
 				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
 				if (mesh != null)
 					FxTimer.runLater(java.time.Duration.ofMillis(20),
-	
+
 							() -> {
 								// mesh.setMaterial(new PhongMaterial(new Color(
 								// 1,
@@ -1238,9 +1246,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 								// selectedCsg.get(i).getColor().getOpacity())));
 								mesh.setMaterial(new PhongMaterial(Color.GOLD));
 							});
-	
+
 			}
-		}catch(java.lang.NullPointerException ex0 ){}// if a selection is called before the limb is loaded
+		} catch (java.lang.NullPointerException ex0) {
+		} // if a selection is called before the limb is loaded
 		resetMouseTime();
 	}
 
@@ -1253,8 +1262,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
 		lastSelectedTime = System.currentTimeMillis();
-		//System.err.println("Selecting a CSG");
-		
+		// System.err.println("Selecting a CSG");
+
 		selectedSet = null;
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
@@ -1309,7 +1318,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// focusGroup.getTransforms().add(centering);
 		//
 		// });
-		//System.err.println("Camera intrpolation start");
+		// System.err.println("Camera intrpolation start");
 		TransformNR startSelectNr = perviousTarget.copy();
 		TransformNR targetNR;// =
 								// TransformFactory.affineToNr(selectedCsg.getManipulator());
@@ -1320,29 +1329,29 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			targetNR = TransformFactory.affineToNr(centering);
 		}
 		Affine interpolator = new Affine();
-		Affine correction=TransformFactory.nrToAffine(reverseRotation);
-		
+		Affine correction = TransformFactory.nrToAffine(reverseRotation);
+
 		Platform.runLater(() -> {
-			interpolator.setTx(startSelectNr.getX()- targetNR.getX());
-			interpolator.setTy(startSelectNr.getY()- targetNR.getY());
-			interpolator.setTz(startSelectNr.getZ()- targetNR.getZ());
+			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
+			interpolator.setTy(startSelectNr.getY() - targetNR.getY());
+			interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
 			removeAllFocusTransforms();
 			focusGroup.getTransforms().add(interpolator);
-			try{
+			try {
 				if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
 						|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
 						|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-					//Platform.runLater(() -> {
-						focusGroup.getTransforms().add(selectedCsg.getManipulator());
-						focusGroup.getTransforms().add(correction);
-					//});
+					// Platform.runLater(() -> {
+					focusGroup.getTransforms().add(selectedCsg.getManipulator());
+					focusGroup.getTransforms().add(correction);
+					// });
 
 				} else
-					//Platform.runLater(() -> {
-						focusGroup.getTransforms().add(centering);
-					//});
-			}catch (Exception ex){
-				
+					// Platform.runLater(() -> {
+					focusGroup.getTransforms().add(centering);
+				// });
+			} catch (Exception ex) {
+
 			}
 			focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
 		});
@@ -1350,22 +1359,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	private void resetMouseTime() {
-		//System.err.println("Resetting mouse");
+		// System.err.println("Resetting mouse");
 		this.lastMosueMovementTime = System.currentTimeMillis();
-		
+
 	}
 
 	private void focusInterpolate(TransformNR start, TransformNR target, int depth, int targetDepth,
 			Affine interpolator) {
-		double depthScale = 1-(double) depth / (double) targetDepth;
-		double sinunsoidalScale = Math.sin(depthScale*(Math.PI/2));
-		
-		//double xIncrement =target.getX()- ((start.getX() - target.getX()) * depthScale) + start.getX();
+		double depthScale = 1 - (double) depth / (double) targetDepth;
+		double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
+
+		// double xIncrement =target.getX()- ((start.getX() - target.getX()) *
+		// depthScale) + start.getX();
 		double difference = start.getX() - target.getX();
-		double scaledDifference = (difference * sinunsoidalScale); 
-		
-		double xIncrement = scaledDifference ;
-		double yIncrement =((start.getY() - target.getY()) * sinunsoidalScale);
+		double scaledDifference = (difference * sinunsoidalScale);
+
+		double xIncrement = scaledDifference;
+		double yIncrement = ((start.getY() - target.getY()) * sinunsoidalScale);
 		double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
 
 		Platform.runLater(() -> {
@@ -1373,13 +1383,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			interpolator.setTy(yIncrement);
 			interpolator.setTz(zIncrement);
 		});
-		//System.err.println("Interpolation step " + depth + " x " + xIncrement + " y " + yIncrement + " z " + zIncrement);
+		// System.err.println("Interpolation step " + depth + " x " + xIncrement
+		// + " y " + yIncrement + " z " + zIncrement);
 		if (depth < targetDepth) {
 			FxTimer.runLater(Duration.ofMillis(16), () -> {
 				focusInterpolate(start, target, depth + 1, targetDepth, interpolator);
 			});
 		} else {
-			//System.err.println("Camera intrpolation done");
+			// System.err.println("Camera intrpolation done");
 			Platform.runLater(() -> {
 				focusGroup.getTransforms().remove(interpolator);
 			});
@@ -1391,8 +1402,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private void removeAllFocusTransforms() {
 		ObservableList<Transform> allTrans = focusGroup.getTransforms();
-		 List<Object> toRemove = Arrays.asList(allTrans.toArray());
-		for(Object t:toRemove){
+		List<Object> toRemove = Arrays.asList(allTrans.toArray());
+		for (Object t : toRemove) {
 			allTrans.remove(t);
 		}
 	}
@@ -1440,6 +1451,5 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public long getLastMosueMovementTime() {
 		return lastMosueMovementTime;
 	}
-
 
 }

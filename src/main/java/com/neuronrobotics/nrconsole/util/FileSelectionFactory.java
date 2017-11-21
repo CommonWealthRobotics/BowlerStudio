@@ -36,6 +36,7 @@ public class FileSelectionFactory {
 		final fileHolder file=new fileHolder();
 		Platform.runLater(() -> {
 			FileChooser fileChooser = new FileChooser();
+			
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());
 			if(filter!=null)
 				fileChooser.getExtensionFilters().addAll(filter);
@@ -55,6 +56,14 @@ public class FileSelectionFactory {
 	}
 	public static File GetFile(File start, ExtensionFilter... filter) {
 		return GetFile(start, false,filter);
+	}
+
+	public static File GetDirectory(File defaultStlDir) {
+		// TODO Auto-generated method stub
+		File tmp= GetFile(defaultStlDir,false,null);
+		if(tmp.isDirectory())
+			return tmp;
+		else return tmp.getParentFile();
 	}
 
 }
