@@ -280,7 +280,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(()->{
 				
 				for(String s:fileList){
-					fileListBox.getItems().add(s);
+					if(!s.contains("csgDatabase.json "))// filter out configuration files from the list
+						fileListBox.getItems().add(s);
 				}
 				if(!fileList.isEmpty()){
 					fileListBox.setValue(fileList.get(0));
