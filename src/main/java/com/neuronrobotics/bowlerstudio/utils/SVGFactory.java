@@ -22,10 +22,8 @@ public class SVGFactory{
 
 		if (!baseDirForFiles.getAbsolutePath().toLowerCase().endsWith(".svg"))
 			baseDirForFiles = new File(baseDirForFiles.getAbsolutePath() + ".svg");
-		List<Polygon> polygons = Slice.slice(currentCsg, new Transform(), 0);
-		
 		try {
-			SVGExporter.export(polygons, baseDirForFiles);
+			SVGExporter.export(currentCsg, baseDirForFiles);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
