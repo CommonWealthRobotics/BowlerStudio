@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
  * All rights reserved. Use is subject to license terms.
@@ -33,6 +35,7 @@ package com.neuronrobotics.bowlerstudio.threed;
  */
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioFXMLController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
@@ -44,6 +47,7 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+//import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
@@ -281,7 +285,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().updatePositions();
 		});
 
-		export = new Button("Export...");
+		export = new Button("Export All...");
 		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
@@ -293,6 +297,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				System.out.println("Nothing to export!");
 			}
 		});
+		final Tooltip tooltip = new Tooltip();
+		tooltip.setText(
+		    "\nExport all of the parts on the screen\n" +
+		    "to manufacturing. STL and SVG\n"  
+		);
+		export.setTooltip(tooltip);
 		Button clear = new Button("Clear");
 		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
 		clear.setOnAction(event -> {
@@ -327,14 +337,21 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				setName("Exporting the CAD objects");
 				ArrayList<CSG> csgs = new ArrayList<CSG>(getCsgMap().keySet());
 				System.out.println("Exporting " + csgs.size() + " parts");
-				File baseDirForFiles = FileSelectionFactory.GetDirectory(defaultStlDir);
+				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
-					CadFileExporter.generateManufacturingParts(csgs, baseDirForFiles);
+					ArrayList<File> files = CadFileExporter.generateManufacturingParts(csgs, baseDirForFiles);
+					for(File f:files){
+						System.out.println("Exported " + f.getAbsolutePath());
+
+					}
+					System.out.println("Success! " + files.size() + " parts exported");
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					BowlerStudio.printStackTrace(e);
 				}
-
+				
+				
 				Platform.runLater(() -> {
 					export.setDisable(false);
 				});
@@ -672,19 +689,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public void exportManufacturingPart(CSG currentCsg, File source) {
 		resetMouseTime();
-		if (defaultStlDir == null)
-			defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-		if (!defaultStlDir.exists()) {
-			defaultStlDir.mkdirs();
-		}
 
 		new Thread() {
 
 			public void run() {
 				try {
 
-					defaultStlDir = CadFileExporter.generateManufacturingParts(Arrays.asList(currentCsg),
-							FileSelectionFactory.GetFile(defaultStlDir, true)).get(0);
+					setDefaultStlDir(CadFileExporter.generateManufacturingParts(Arrays.asList(currentCsg),
+							FileSelectionFactory.GetDirectory(getDefaultStlDir())).get(0));
 				} catch (Exception e1) {
 					BowlerStudioController.highlightException(source, e1);
 				}
@@ -1450,6 +1462,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public long getLastMosueMovementTime() {
 		return lastMosueMovementTime;
+	}
+
+	/**
+	 * @return the defaultStlDir
+	 */
+	public File getDefaultStlDir() {
+		if (defaultStlDir == null)
+			defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		if (!defaultStlDir.exists()) {
+			defaultStlDir.mkdirs();
+		}
+
+		return defaultStlDir;
+	}
+
+	/**
+	 * @param defaultStlDir the defaultStlDir to set
+	 */
+	public void setDefaultStlDir(File defaultStlDir) {
+		this.defaultStlDir = defaultStlDir;
 	}
 
 }

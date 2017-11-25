@@ -345,6 +345,7 @@ public class ScriptingFileWidget extends BorderPane implements
 							BowlerStudioController.highlightException(currentFile, new Exception(ex));
 						}
 					}catch(Exception e){
+						e.printStackTrace();
 						BowlerStudioController.highlightException(currentFile, new Exception(ex));
 					}
 

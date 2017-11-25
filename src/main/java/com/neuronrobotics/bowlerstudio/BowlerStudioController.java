@@ -299,16 +299,18 @@ public class BowlerStudioController  implements
 		}else if (Polygon.class.isInstance(o)) {
 			Polygon p = (Polygon) o;
 			List<Vertex> vertices = p.vertices;
+			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random()*0.5+0.5,Math.random()*0.5+0.5,Math.random()*0.5+0.5,1);
+			double stroke = 0.5;
 			for(int i=1;i<vertices.size();i++){
 				Line3D line = new Line3D(vertices.get(i-1),vertices.get(i));
-				line.setStrokeWidth(0.1);
-				line.setStroke(javafx.scene.paint.Color.WHITE);
+				line.setStrokeWidth(stroke);
+				line.setStroke(color);
 				addNode(line);
 			}
 			//Connecting line
 			Line3D line = new Line3D(vertices.get(0),vertices.get(vertices.size()-1));
-			line.setStrokeWidth(0.1);
-			line.setStroke(javafx.scene.paint.Color.YELLOW);
+			line.setStrokeWidth(stroke);
+			line.setStroke(color);
 			addNode(line);
 
 		}
