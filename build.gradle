@@ -240,7 +240,6 @@ dependencies {
 	//Firmata
 	compile 'com.github.kurbatov:firmata4j:2.3.4.1'
 
-	//compile "com.neuronrobotics:JavaCad:0.8.2"
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 	compile project(':libraries:bowler-script-kernel')
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.25.4.jar'])
