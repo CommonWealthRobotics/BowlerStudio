@@ -269,8 +269,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			else{
 				return;
 			}
-			fileList = ScriptingEngine.filesInGit(currentGit);
-			
+			ArrayList<String> tmp = ScriptingEngine.filesInGit(currentGit);
+			fileList=new ArrayList<>();
+			for(String s:tmp){
+				if(!s.contains("csgDatabase.json"))// filter out configuration files from the list
+					fileList.add(s);
+			}
 //			for(String s:fileList){
 //				System.out.println("GITS: "+s);
 //			}
@@ -280,7 +284,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(()->{
 				
 				for(String s:fileList){
-					if(!s.contains("csgDatabase.json "))// filter out configuration files from the list
 						fileListBox.getItems().add(s);
 				}
 				if(!fileList.isEmpty()){
