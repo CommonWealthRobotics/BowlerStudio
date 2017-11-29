@@ -115,9 +115,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			super(i, j);
 		}
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-		}
 
 		public void componentResized(ComponentEvent e) {
 			System.err.println("componentResized");
