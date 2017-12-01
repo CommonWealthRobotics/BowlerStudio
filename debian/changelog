@@ -1,3 +1,26 @@
+bowlerstudio (0.25.0) xenial; urgency=medium
+
+  * updaing kernel to one that builds in travis
+  * Updaing gradle permissions
+  * adding the opencv depenancies
+  * same travis as working kernel
+  * update travis
+  * try xenial verison
+  * command line flags for quiet
+  * adding connecting line to the polygon display
+  * updating the SVGFactory to call the built in slicer
+  * Filter out the csgDatabase.json file from the gist run
+  * adding JCSG with new slicer
+  * adding a cad EXPORT path
+  * javacad update
+  * updating the loading of objects to manufacturing files
+  * updating JCSG
+  * adding the hotfix script
+  * updating the syntax highlighting
+  * never edit the csgDatabse.json
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 29 Nov 2017 18:56:53 -0500
+
 bowlerstudio (0.24.0) xenial; urgency=medium
 
   * Updating a database value if found in the root of a repository.
