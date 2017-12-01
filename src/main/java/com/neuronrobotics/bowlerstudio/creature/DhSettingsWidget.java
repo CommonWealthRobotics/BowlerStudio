@@ -45,7 +45,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 
 		
 		radius= new EngineeringUnitsSliderWidget(this,
-				60,
+				0,
 				200,
 				dhLink.getRadius(),
 				180," mm ");
