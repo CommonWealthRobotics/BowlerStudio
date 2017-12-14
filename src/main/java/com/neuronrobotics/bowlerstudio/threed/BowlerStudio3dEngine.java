@@ -817,9 +817,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *
 	 * @return the camera field of view property
 	 */
-	public DoubleProperty getCameraFieldOfViewProperty() {
-		return camera.fieldOfViewProperty();
-	}
+//	public DoubleProperty getCameraFieldOfViewProperty() {
+//		return camera.fieldOfViewProperty();
+//	}
 
 	/**
 	 * Builds the axes.
