@@ -77,6 +77,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
@@ -605,7 +606,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			@Override
 			public void handle(ActionEvent event) {
 				resetMouseTime();
-				removeObject(currentCsg);
+				if(current.getDrawMode() ==DrawMode.FILL ){
+				  toWireframe.setText("To Solid Fill");
+				  current.setDrawMode(DrawMode.LINE);
+				}
+				else{
+				  current.setDrawMode(DrawMode.FILL);
+				  toWireframe.setText("To Wire Frame");
+				}
+				/*
 				for (Polygon p : currentCsg.getPolygons()) {
 					List<Vertex> vertices = p.vertices;
 					for (int i = 1; i < vertices.size(); i++) {
@@ -616,6 +625,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						BowlerStudioController.getBowlerStudio().addObject(line, source);
 					}
 				}
+				*/
 
 			}
 		});
