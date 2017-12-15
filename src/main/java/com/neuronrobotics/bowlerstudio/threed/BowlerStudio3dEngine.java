@@ -614,19 +614,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				  current.setDrawMode(DrawMode.FILL);
 				  toWireframe.setText("To Wire Frame");
 				}
-				/*
-				for (Polygon p : currentCsg.getPolygons()) {
-					List<Vertex> vertices = p.vertices;
-					for (int i = 1; i < vertices.size(); i++) {
-						Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
-						line.setStrokeWidth(0.1);
-						line.setStroke(javafx.scene.paint.Color.WHITE);
-						line.getTransforms().add(0, currentCsg.getManipulator());
-						BowlerStudioController.getBowlerStudio().addObject(line, source);
-					}
-				}
-				*/
-
 			}
 		});
 		cm.getItems().add(toWireframe);
