@@ -38,6 +38,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioFXMLController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -340,7 +341,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				System.out.println("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
-					ArrayList<File> files = CadFileExporter.generateManufacturingParts(csgs, baseDirForFiles);
+					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(csgs, baseDirForFiles);
 					for(File f:files){
 						System.out.println("Exported " + f.getAbsolutePath());
 
@@ -692,7 +693,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				try {
 
-					setDefaultStlDir(CadFileExporter.generateManufacturingParts(Arrays.asList(currentCsg),
+					setDefaultStlDir(new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(Arrays.asList(currentCsg),
 							FileSelectionFactory.GetDirectory(getDefaultStlDir())).get(0));
 				} catch (Exception e1) {
 					BowlerStudioController.highlightException(source, e1);

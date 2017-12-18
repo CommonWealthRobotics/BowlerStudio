@@ -2,13 +2,14 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.Line3D;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 //import org.bytedeco.javacpp.DoublePointer;
 
@@ -61,6 +63,43 @@ public class BowlerStudioController  implements
 	private HashMap<String,Tab> openFiles = new HashMap<>();
 	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
 	private int size;
+	
+	private static IMobileBaseUI mbui = new IMobileBaseUI() {
+      
+      @Override
+      public void setSelectedCsg(List<CSG> selectedCsg) {
+        BowlerStudioController.getBowlerStudio().jfx3dmanager.setSelectedCsg(selectedCsg);
+      }
+      
+      @Override
+      public void setCsg(List<CSG> toadd, File source) {
+        // TODO Auto-generated method stub
+        BowlerStudioController.setCsg(toadd);
+      }
+      
+      @Override
+      public void progressUpdate() {
+        // TODO Auto-generated method stub
+        
+      }
+      
+      @Override
+      public void highlightException(File fileEngineRunByName, Exception ex) {
+        highlightException(fileEngineRunByName, ex);
+      }
+      
+      @Override
+      public Set<CSG> getVisableCSGs() {
+        // TODO Auto-generated method stub
+        return BowlerStudioController.getBowlerStudio().jfx3dmanager.getCsgMap().keySet();
+      }
+      
+      @Override
+      public void addCsg(List<CSG> toadd, File source) {
+        // TODO Auto-generated method stub
+        
+      }
+    };
 	
 	public void setFontSize(int size){
 		this.size = size;
@@ -448,6 +487,11 @@ public class BowlerStudioController  implements
 	public void setConnectionManager(ConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
 	}
+
+  public static IMobileBaseUI getMobileBaseUI() {
+    return mbui;
+  }
+
 
 	
 

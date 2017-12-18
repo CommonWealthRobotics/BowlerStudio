@@ -5,11 +5,11 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
@@ -153,7 +153,10 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
+		  MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
+		}
+		/*
 		try {
 
 			ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
@@ -162,12 +165,15 @@ public class BowlerStudio extends Application {
 		} catch (Exception ex) {
 			System.err.println("Base not loaded yet");
 		}
-		
+		*/
 
 	}
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
+		  MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
+		}
+		/*
 		try {
 	
 			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
@@ -181,10 +187,14 @@ public class BowlerStudio extends Application {
 		} catch (Exception ex) {
 			System.err.println("Limb not loaded yet");
 		}
+		*/
 	}
 
 	public static void select(MobileBase base, LinkConfiguration limb) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
+		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
+		  MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
+		}
+		/*
 		try {
 
 			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
@@ -194,6 +204,7 @@ public class BowlerStudio extends Application {
 		} catch (Exception ex) {
 			System.err.println("Limb not loaded yet");
 		}
+		*/
 	}
 
 	public static void select(File script, int lineNumber) {

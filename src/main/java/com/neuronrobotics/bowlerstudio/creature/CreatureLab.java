@@ -6,8 +6,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
-import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
+import com.neuronrobotics.bowlerstudio.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
@@ -180,7 +179,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		HBox progress = new HBox(10);
 		pi = new ProgressIndicator(0);
 		progress.getChildren().addAll(new Label("Cad Progress:"), pi, autoRegen);
-		baseManager = new MobileBaseCadManager(device, pi, autoRegen);
+		baseManager = new MobileBaseCadManager(device, BowlerStudioController.getMobileBaseUI());
 
 		progress.setStyle("-fx-background-color: #FFFFFF;");
 		progress.setOpacity(.7);
