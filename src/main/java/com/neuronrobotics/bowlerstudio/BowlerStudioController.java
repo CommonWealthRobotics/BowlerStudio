@@ -76,12 +76,7 @@ public class BowlerStudioController  implements
         // TODO Auto-generated method stub
         BowlerStudioController.setCsg(toadd);
       }
-      
-      @Override
-      public void progressUpdate() {
-        // TODO Auto-generated method stub
-        
-      }
+     
       
       @Override
       public void highlightException(File fileEngineRunByName, Exception ex) {
@@ -97,7 +92,8 @@ public class BowlerStudioController  implements
       @Override
       public void addCsg(List<CSG> toadd, File source) {
         // TODO Auto-generated method stub
-        
+        for(CSG b:toadd)
+          BowlerStudioController.addCsg(b);
       }
     };
 	

@@ -64,6 +64,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		this.pm = pm;
 		autoRegen.setSelected(true);
 		autoRegen.setOnAction(event -> {
+		    baseManager.setAutoRegen(autoRegen.isSelected());
 			if (autoRegen.isSelected()) {
 				generateCad();
 			}
@@ -180,7 +181,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		pi = new ProgressIndicator(0);
 		progress.getChildren().addAll(new Label("Cad Progress:"), pi, autoRegen);
 		baseManager = new MobileBaseCadManager(device, BowlerStudioController.getMobileBaseUI());
-
+		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+		
 		progress.setStyle("-fx-background-color: #FFFFFF;");
 		progress.setOpacity(.7);
 		progress.setPrefSize(325, 50);
