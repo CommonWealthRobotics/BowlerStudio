@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -144,12 +145,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception {
-		String xmlContent = ScriptingEngine.codeFromGit(id, file)[0];
-		MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-
-		mb.setGitSelfSource(new String[] { id, file });
-		// ConnectionManager.addConnection(mb, mb.getScriptingName());
-		return mb;
+		return MobileBaseLoader.fromGit(id, file);
 	}
 
 	public static void select(MobileBase base) {

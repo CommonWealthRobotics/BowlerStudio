@@ -80,7 +80,7 @@ public class BowlerStudioController  implements
       
       @Override
       public void highlightException(File fileEngineRunByName, Exception ex) {
-        highlightException(fileEngineRunByName, ex);
+        BowlerStudioController.highlightException(fileEngineRunByName, ex);
       }
       
       @Override

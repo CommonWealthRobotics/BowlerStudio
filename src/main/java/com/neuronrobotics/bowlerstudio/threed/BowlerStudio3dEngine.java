@@ -1241,7 +1241,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
 		selectedSet = selectedCsg;
+		setSelectedCsg(selectedCsg.get(0));
 		try {
+		    
 			for (int in = 1; in < selectedCsg.size(); in++) {
 				int i = in;
 				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
@@ -1278,7 +1280,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
 
-		FxTimer.runLater(java.time.Duration.ofMillis(20),
+		FxTimer.runLater(java.time.Duration.ofMillis(1),
 
 				() -> {
 					try {
