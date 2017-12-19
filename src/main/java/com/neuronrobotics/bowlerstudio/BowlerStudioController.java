@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -65,35 +67,35 @@ public class BowlerStudioController  implements
 	private int size;
 	
 	private static IMobileBaseUI mbui = new IMobileBaseUI() {
-      
-      @Override
-      public void setSelectedCsg(List<CSG> selectedCsg) {
-        BowlerStudioController.getBowlerStudio().jfx3dmanager.setSelectedCsg(selectedCsg);
-      }
-      
-      @Override
-      public void setCsg(List<CSG> toadd, File source) {
-        // TODO Auto-generated method stub
-        BowlerStudioController.setCsg(toadd);
-      }
      
       
       @Override
       public void highlightException(File fileEngineRunByName, Exception ex) {
         BowlerStudioController.highlightException(fileEngineRunByName, ex);
       }
-      
+
+
       @Override
-      public Set<CSG> getVisableCSGs() {
-        // TODO Auto-generated method stub
+      public void setAllCSG(Collection<CSG> toAdd, File source) {
+        BowlerStudioController.setCsg(new ArrayList<>(toAdd));
+      }
+
+      @Override
+      public void addCSG(Collection<CSG> toAdd, File source) {
+     // TODO Auto-generated method stub
+        for(CSG b:toAdd)
+          BowlerStudioController.addCsg(b);
+      }
+
+      @Override
+      public Set<CSG> getVisibleCSGs() {
         return BowlerStudioController.getBowlerStudio().jfx3dmanager.getCsgMap().keySet();
       }
-      
+
       @Override
-      public void addCsg(List<CSG> toadd, File source) {
-        // TODO Auto-generated method stub
-        for(CSG b:toadd)
-          BowlerStudioController.addCsg(b);
+      public void setSelectedCsg(Collection<CSG> selectedCsg) {
+        BowlerStudioController.getBowlerStudio().jfx3dmanager.setSelectedCsg(new ArrayList<>(selectedCsg));
+
       }
     };
 	
