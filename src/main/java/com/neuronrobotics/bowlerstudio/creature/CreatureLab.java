@@ -180,10 +180,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
     HBox progress = new HBox(10);
     pi = new ProgressIndicator(0);
-    progress.getChildren().addAll(new Label("Cad Progress:"), pi, autoRegen);
     baseManager = new MobileBaseCadManager(device, BowlerStudioController.getMobileBaseUI());
-    
     pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+
+    progress.getChildren().addAll(new Label("Cad Progress:"), pi, autoRegen);
 
     progress.setStyle("-fx-background-color: #FFFFFF;");
     progress.setOpacity(.7);
