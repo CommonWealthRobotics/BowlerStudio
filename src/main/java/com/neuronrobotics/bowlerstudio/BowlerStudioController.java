@@ -170,7 +170,7 @@ public class BowlerStudioController  implements
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber,color);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
