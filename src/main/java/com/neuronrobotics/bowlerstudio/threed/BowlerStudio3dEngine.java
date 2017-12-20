@@ -38,6 +38,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioFXMLController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -77,6 +78,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
@@ -339,7 +341,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				System.out.println("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
-					ArrayList<File> files = CadFileExporter.generateManufacturingParts(csgs, baseDirForFiles);
+					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(csgs, baseDirForFiles);
 					for(File f:files){
 						System.out.println("Exported " + f.getAbsolutePath());
 
@@ -605,18 +607,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			@Override
 			public void handle(ActionEvent event) {
 				resetMouseTime();
-				removeObject(currentCsg);
-				for (Polygon p : currentCsg.getPolygons()) {
-					List<Vertex> vertices = p.vertices;
-					for (int i = 1; i < vertices.size(); i++) {
-						Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
-						line.setStrokeWidth(0.1);
-						line.setStroke(javafx.scene.paint.Color.WHITE);
-						line.getTransforms().add(0, currentCsg.getManipulator());
-						BowlerStudioController.getBowlerStudio().addObject(line, source);
-					}
+				if(current.getDrawMode() ==DrawMode.FILL ){
+				  toWireframe.setText("To Solid Fill");
+				  current.setDrawMode(DrawMode.LINE);
 				}
-
+				else{
+				  current.setDrawMode(DrawMode.FILL);
+				  toWireframe.setText("To Wire Frame");
+				}
 			}
 		});
 		cm.getItems().add(toWireframe);
@@ -695,7 +693,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				try {
 
-					setDefaultStlDir(CadFileExporter.generateManufacturingParts(Arrays.asList(currentCsg),
+					setDefaultStlDir(new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(Arrays.asList(currentCsg),
 							FileSelectionFactory.GetDirectory(getDefaultStlDir())).get(0));
 				} catch (Exception e1) {
 					BowlerStudioController.highlightException(source, e1);
@@ -817,9 +815,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *
 	 * @return the camera field of view property
 	 */
-	public DoubleProperty getCameraFieldOfViewProperty() {
-		return camera.fieldOfViewProperty();
-	}
+//	public DoubleProperty getCameraFieldOfViewProperty() {
+//		return camera.fieldOfViewProperty();
+//	}
 
 	/**
 	 * Builds the axes.
@@ -1243,7 +1241,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
 		selectedSet = selectedCsg;
+		setSelectedCsg(selectedCsg.get(0));
 		try {
+		    
 			for (int in = 1; in < selectedCsg.size(); in++) {
 				int i = in;
 				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
@@ -1280,7 +1280,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// System.err.println("Selecting one");
 		this.selectedCsg = scg;
 
-		FxTimer.runLater(java.time.Duration.ofMillis(20),
+		FxTimer.runLater(java.time.Duration.ofMillis(1),
 
 				() -> {
 					try {

@@ -2,13 +2,14 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.Line3D;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
@@ -30,9 +31,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 //import org.bytedeco.javacpp.DoublePointer;
 
@@ -61,6 +65,39 @@ public class BowlerStudioController  implements
 	private HashMap<String,Tab> openFiles = new HashMap<>();
 	private HashMap<String,LocalFileScriptTab> widgets = new HashMap<>();
 	private int size;
+	
+	private static IMobileBaseUI mbui = new IMobileBaseUI() {
+     
+      
+      @Override
+      public void highlightException(File fileEngineRunByName, Exception ex) {
+        BowlerStudioController.highlightException(fileEngineRunByName, ex);
+      }
+
+
+      @Override
+      public void setAllCSG(Collection<CSG> toAdd, File source) {
+        BowlerStudioController.setCsg(new ArrayList<>(toAdd));
+      }
+
+      @Override
+      public void addCSG(Collection<CSG> toAdd, File source) {
+     // TODO Auto-generated method stub
+        for(CSG b:toAdd)
+          BowlerStudioController.addCsg(b);
+      }
+
+      @Override
+      public Set<CSG> getVisibleCSGs() {
+        return BowlerStudioController.getBowlerStudio().jfx3dmanager.getCsgMap().keySet();
+      }
+
+      @Override
+      public void setSelectedCsg(Collection<CSG> selectedCsg) {
+        BowlerStudioController.getBowlerStudio().jfx3dmanager.setSelectedCsg(new ArrayList<>(selectedCsg));
+
+      }
+    };
 	
 	public void setFontSize(int size){
 		this.size = size;
@@ -133,7 +170,7 @@ public class BowlerStudioController  implements
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber,color);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -448,6 +485,11 @@ public class BowlerStudioController  implements
 	public void setConnectionManager(ConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
 	}
+
+  public static IMobileBaseUI getMobileBaseUI() {
+    return mbui;
+  }
+
 
 	
 

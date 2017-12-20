@@ -5,7 +5,6 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
@@ -94,8 +93,8 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 					
 
 					public void run(){
-						while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
-							ThreadUtil.wait(100);
+						while(MobileBaseCadManager.get( base).getProcesIndictor().get()<1){
+							ThreadUtil.wait(10);
 						}
 						HashMap<LinkConfiguration, ArrayList<CSG>> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);

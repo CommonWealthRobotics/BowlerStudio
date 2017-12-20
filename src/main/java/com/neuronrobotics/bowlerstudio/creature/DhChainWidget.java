@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.nrconsole.util.GroovyFilter;
 import com.neuronrobotics.nrconsole.util.XmlFilter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
