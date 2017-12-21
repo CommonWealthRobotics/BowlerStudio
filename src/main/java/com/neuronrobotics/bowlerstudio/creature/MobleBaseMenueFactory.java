@@ -45,62 +45,7 @@ public class MobleBaseMenueFactory {
 	
 	
 	public static String [] copyGitFile(String sourceGit, String targetGit, String filename){
-		
-		String[] WalkingEngine;
-		try {
-			WalkingEngine = ScriptingEngine.codeFromGit(sourceGit, filename);
-			try {
-				if( null==ScriptingEngine.fileFromGit(targetGit, filename)){
-					
-					ScriptingEngine.createFile(targetGit, filename, "copy file");
-					while (true) {
-						try {
-							ScriptingEngine.fileFromGit(targetGit, filename);
-							break;
-						} catch (Exception e) {
-
-						}
-						ThreadUtil.wait(500);
-						Log.warn(targetGit +"/"+filename+ " not built yet");
-					}
-					
-				}
-			} catch (InvalidRemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransportException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String[] newFileCode;
-			try {
-				newFileCode = ScriptingEngine.codeFromGit(targetGit, filename);
-				if(newFileCode==null)
-					newFileCode=new String[]{""};
-				if(!WalkingEngine[0].contentEquals(newFileCode[0])){
-					System.out.println("Copy Content to "+targetGit+"/"+filename);
-					ScriptingEngine.pushCodeToGit(targetGit, ScriptingEngine.getFullBranch(targetGit), filename, WalkingEngine[0], "copy file content");
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
-		return new String[]{targetGit,filename};
+		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
 
 	
