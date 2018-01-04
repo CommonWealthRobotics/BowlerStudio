@@ -313,7 +313,12 @@ public class BowlerStudio extends Application {
 				}
 			}
 
-			renderSplashFrame(50, "Downloading Images");
+			renderSplashFrame(50, "Downloading tutorials");
+            // load tutorials repo
+            ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
+                    "master", // the default branch is source, so this needs to
+                                // be specified
+                    "index.html");
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
@@ -336,12 +341,7 @@ public class BowlerStudio extends Application {
 			// load the vitimins repo so the demo is always snappy
 			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 			ScriptingEngine.pull("https://github.com/madhephaestus/DefaultHaarCascade.git", null);
-			renderSplashFrame(70, "Downloading tutorials");
-			// load tutorials repo
-			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
-					"master", // the default branch is source, so this needs to
-								// be specified
-					"index.html");
+			
 			renderSplashFrame(80, "Loding Example Robots");
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 																													// repo,
