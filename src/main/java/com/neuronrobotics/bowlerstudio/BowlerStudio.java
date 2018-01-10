@@ -453,7 +453,11 @@ public class BowlerStudio extends Application {
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists())
 				throw new RuntimeException("Style sheet does not exist");
-			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git", "hotfix.groovy", null);
+			try{
+			  ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git", "hotfix.groovy", null);
+			}catch(Exception e){
+			  
+			}
 			launch();
 
 		} else {
