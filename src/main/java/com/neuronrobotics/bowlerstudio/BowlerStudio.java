@@ -322,19 +322,19 @@ public class BowlerStudio extends Application {
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
+			renderSplashFrame(53, "Loading Images");
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 					StudioBuildInfo.getVersion());
 			// Download and Load all of the assets
 			try {
-				renderSplashFrame(53, "Loading Images");
-
+				
 				AssetFactory.loadAsset("BowlerStudio.png");
 			} catch (Exception ex) {
 				renderSplashFrame(54, "Re-Loading Images");
 
 				removeAssets(myAssets);
-
+				AssetFactory.loadAllAssets();
 			}
 
 			renderSplashFrame(60, "Downloading Vitamins");
