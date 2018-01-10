@@ -1,3 +1,31 @@
+bowlerstudio (0.25.1) xenial; urgency=medium
+
+  * moving lower bound to 0
+  * kernel update
+  * fixing the cold-start issue for the image assets
+  * kernel
+  * getter vor camera view
+  * User draw modes for wireframe
+  * removed stale code
+  * stale imports
+  * moving MobileBaseCadManager and FIle Watcher into kernel
+  * updating kernel to use abstracted interface
+  * Moving script loading of movbile bases into kernel
+  * implementing updated API
+  * library update
+  * 0.31.0 kernel
+  * ordering for clarity
+  * updating kernel
+  * kernel
+  * updated library
+  * movign git file copy to kernel
+  * loading messages more accurate
+  * use javacad intermediate jar in kernel
+  * updating JavaCad
+  * catch exceptions of hotfixes
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 09 Jan 2018 23:57:10 -0500
+
 bowlerstudio (0.25.0) xenial; urgency=medium
 
   * updaing kernel to one that builds in travis
