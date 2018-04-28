@@ -1,120 +1,39 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
-
-import org.python.util.PythonInterpreter;
-import org.python.core.*;
-import org.reactfx.util.FxTimer;
-
-import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.web.WebEngine;
-import javafx.stage.Stage;
-import javafx.stage.FileChooser.ExtensionFilter;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.io.FilenameUtils;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.controlsfx.control.action.AbstractAction;
-import org.controlsfx.control.action.Action;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-import org.kohsuke.github.GHRelease;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-
-import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.PluginManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.OpenCVImageProvider;
-import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.pid.GenericPIDDevice;
-
-import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.sdk.addons.kinematics.xml.*;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
 
-import eu.mihosoft.vrl.v3d.*;
-import eu.mihosoft.vrl.v3d.samples.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "restriction" })
 public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object>{
 
 	private boolean running = false;
@@ -294,9 +213,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		String[] code;
 		try {
 			code = ScriptingEngine.codeFromGit(id,file);
+			
 			if (code != null) {
 				setCode(code[0]);
-				currentFile = new File(code[2]);
+				currentFile = ScriptingEngine.fileFromGit(id,file);
 			}
 			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 			Platform.runLater(() -> {
@@ -349,8 +269,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			else{
 				return;
 			}
-			fileList = ScriptingEngine.filesInGit(currentGit);
-			
+			ArrayList<String> tmp = ScriptingEngine.filesInGit(currentGit);
+			fileList=new ArrayList<>();
+			for(String s:tmp){
+				if(!s.contains("csgDatabase.json"))// filter out configuration files from the list
+					fileList.add(s);
+			}
 //			for(String s:fileList){
 //				System.out.println("GITS: "+s);
 //			}
@@ -360,7 +284,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			Platform.runLater(()->{
 				
 				for(String s:fileList){
-					fileListBox.getItems().add(s);
+						fileListBox.getItems().add(s);
 				}
 				if(!fileList.isEmpty()){
 					fileListBox.setValue(fileList.get(0));
@@ -404,9 +328,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
-					Platform.runLater(() -> {
-						append("\n" + currentFile + " Completed\n");
-					});
+
 					scriptResult = obj;
 					reset();
 
@@ -471,8 +393,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		};
 
 		try {
-			if (loadGist)
-				loadCodeFromGist(addr, engine);
+//			if (loadGist)
+//				loadCodeFromGist(addr, engine);
 
 			scriptRunner.start();
 		} catch (Exception e) {
@@ -509,7 +431,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 
 	@Override
-	public void changed(ObservableValue observable, Object oldValue,
+	public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, Object oldValue,
 			Object newValue) {
 		loadGitLocal(currentGit, (String)newValue);
 	}

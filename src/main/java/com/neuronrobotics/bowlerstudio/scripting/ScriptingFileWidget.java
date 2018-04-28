@@ -1,121 +1,43 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
+import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+import com.neuronrobotics.nrconsole.util.CommitWidget;
+import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
+import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.IFileChangeListener;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
-import org.python.util.PythonInterpreter;
-import org.python.core.*;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser.ExtensionFilter;
+import org.eclipse.jgit.api.Git;
 import org.reactfx.util.FxTimer;
 
-import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.nio.charset.Charset;
+import java.awt.*;
+import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.web.WebEngine;
-import javafx.stage.Stage;
-import javafx.util.Pair;
-import javafx.stage.FileChooser.ExtensionFilter;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.io.FilenameUtils;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.controlsfx.control.action.AbstractAction;
-import org.controlsfx.control.action.Action;
-import org.eclipse.jgit.api.Git;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-import org.kohsuke.github.GHRelease;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-
-import com.kenai.jaffl.provider.jffi.SymbolNotFoundError;
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.PluginManager;
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.imageprovider.AbstractImageProvider;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
-import com.neuronrobotics.nrconsole.util.CommitWidget;
-import com.neuronrobotics.nrconsole.util.FileChangeWatcher;
-import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.FileWatchDeviceWrapper;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.replicator.driver.BowlerBoardDevice;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.pid.GenericPIDDevice;
-import com.neuronrobotics.sdk.util.IFileChangeListener;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.sdk.addons.kinematics.xml.*;
-
+import java.util.Scanner;
 
 
 @SuppressWarnings("unused")
@@ -124,7 +46,6 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
-	private FileChangeWatcher watcher;
 	private Dimension codeDimentions = new Dimension(1168, 768);
 	//Label fileLabel = new Label();
 	private Object scriptResult;
@@ -231,7 +152,31 @@ public class ScriptingFileWidget extends BorderPane implements
 		setPadding(new Insets(1, 0, 3, 10));
 
 		controlPane = new HBox(20);
-		
+		double lengthScalar = fileNameBox.getFont().getSize()*1.5; 
+		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
+		    // Do this in a Platform.runLater because of Textfield has no padding at first time and so on
+		    Platform.runLater(() -> {
+		        Text text = new Text(currText);
+		        text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
+		        double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+		                + fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of the TextField
+		                + lengthScalar; // Add some spacing
+		        fileNameBox.setPrefWidth(width); // Set the width
+		        fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a little bit
+		    });
+		});
+		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
+		    // Do this in a Platform.runLater because of Textfield has no padding at first time and so on
+		    Platform.runLater(() -> {
+		        Text text = new Text(currText);
+		        text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
+		        double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+		                + fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of the TextField
+		                + lengthScalar; // Add some spacing
+		        fileListBox.setPrefWidth(width); // Set the width
+		        fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a little bit
+		    });
+		});
 
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(image);
@@ -311,6 +256,24 @@ public class ScriptingFileWidget extends BorderPane implements
 
 
 	private void start() {
+		try{
+			if(!currentFile.getName().contentEquals("csgDatabase.json")){
+				String[] gitID = ScriptingEngine.findGitTagFromFile(currentFile);
+				String remoteURI=gitID[0];
+				ArrayList<String> f = ScriptingEngine.filesInGit(remoteURI);
+				for (String s:f){
+					if(s.contentEquals("csgDatabase.json")){
+						File dbFile = ScriptingEngine.fileFromGit(gitID[0], s);
+						if(!CSGDatabase.getDbFile().equals(dbFile))
+							CSGDatabase.setDbFile(dbFile);
+						CSGDatabase.saveDatabase();
+					}
+				}
+			}
+		}catch(Exception e){
+			//ignore CSG database
+			e.printStackTrace();
+		}
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
 		try {
@@ -339,9 +302,7 @@ public class ScriptingFileWidget extends BorderPane implements
 					for (IScriptEventListener l : listeners) {
 						l.onScriptFinished(obj, scriptResult,currentFile);
 					}
-					Platform.runLater(() -> {
-						append("\n" + currentFile + " Completed\n");
-					});
+
 					scriptResult = obj;
 					reset();
 
@@ -384,6 +345,7 @@ public class ScriptingFileWidget extends BorderPane implements
 							BowlerStudioController.highlightException(currentFile, new Exception(ex));
 						}
 					}catch(Exception e){
+						e.printStackTrace();
 						BowlerStudioController.highlightException(currentFile, new Exception(ex));
 					}
 
@@ -468,8 +430,7 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(!langaugeType.getIsTextFile())
 			return;
 		 try {
-			 watcher = FileChangeWatcher.watch(currentFile);
-			 watcher.addIFileChangeListener(this);
+			 getWatcher().addIFileChangeListener(this);
 		 } catch (IOException e) {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
@@ -522,35 +483,47 @@ public class ScriptingFileWidget extends BorderPane implements
 		if(updateneeded)
 			return;
 		updateneeded=true;
-		watcher.removeIFileChangeListener(this);
-		FxTimer.runLater(
-				Duration.ofMillis(500) ,() -> {
-					updateneeded=false;
-					// TODO Auto-generated method stub
-					if (fileThatChanged.getAbsolutePath().contains(
-							currentFile.getAbsolutePath())) {
-						System.out.println("Code in " + fileThatChanged.getAbsolutePath()
-								+ " changed");
-						Platform.runLater(() -> {
-							try {
-								String content = new String(Files.readAllBytes(Paths
-										.get(fileThatChanged.getAbsolutePath())));
-								if(content.length()>2)// ensures tha the file contents never get wiped out on the user
-									setCode(content);
-							} catch (UnsupportedEncodingException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
-							}
-							watcher.addIFileChangeListener(this);
-						});
+		try {
+			getWatcher().removeIFileChangeListener(this);
+			FxTimer.runLater(
+					Duration.ofMillis(500) ,() -> {
+						updateneeded=false;
+						// TODO Auto-generated method stub
+						if (fileThatChanged.getAbsolutePath().contains(
+								currentFile.getAbsolutePath())) {
 
-					} else {
-						// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
-					}
-		});
+							System.out.println("Code in " + fileThatChanged.getAbsolutePath()
+									+ " changed");
+							Platform.runLater(() -> {
+								try {
+									String content = new String(Files.readAllBytes(Paths
+											.get(fileThatChanged.getAbsolutePath())));
+									if(content.length()>2)// ensures tha the file contents never get wiped out on the user
+										setCode(content);
+								} catch (UnsupportedEncodingException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								}
+								try {
+									getWatcher().addIFileChangeListener(this);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							});
+
+						} else {
+							// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+" changed");
+						}
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		
 	}
@@ -573,6 +546,19 @@ public class ScriptingFileWidget extends BorderPane implements
 			return currentFile.getName();
 		else
 			return "Web";
+	}
+
+	public FileChangeWatcher getWatcher() throws IOException {
+		return FileChangeWatcher.watch(currentFile);
+	}
+	public void close(){
+		try {
+			getWatcher().removeIFileChangeListener(this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -1,19 +1,13 @@
 package com.neuronrobotics.bowlerstudio.threed;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.sdk.addons.kinematics.DrivingType;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
+
+import java.io.FileInputStream;
+import java.util.ArrayList;
 
 public class VirtualCameraMobileBase extends MobileBase {
 	
@@ -67,7 +61,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 	private static ArrayList<VirtualCameraMobileBase> bases= new ArrayList<VirtualCameraMobileBase>(); 
 	public  VirtualCameraMobileBase() throws Exception{
 		//super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
-		super (new FileInputStream( AssetFactory.loadFile("layout/flyingCamera.xml")));
+		super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
 		//setDriveType(DrivingType.WALKING);
 		
 		setWalkingDriveEngine(getDriveEngine());

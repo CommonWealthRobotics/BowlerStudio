@@ -4,25 +4,12 @@ package com.neuronrobotics.bowlerstudio;
  * You can copy and paste this code into your favorite IDE
  **/
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.ResourceBundle;
-
-import org.dockfx.DockNode;
-import org.dockfx.DockPane;
-import org.dockfx.DockPos;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.video.OSUtil;
-
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -34,8 +21,18 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.dockfx.DockNode;
+import org.dockfx.DockPane;
+import org.dockfx.DockPos;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+@SuppressWarnings("restriction")
 public class BowlerStudioModularFrame {
+
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -83,121 +80,114 @@ public class BowlerStudioModularFrame {
 	private DockNode terminalDockNode;
 	private boolean startup = false;
 
-	@SuppressWarnings("restriction")
+	private WebTab webtab;
+
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
+		assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
+		assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
+		dockPane = new DockPane();
+		dockImage = AssetFactory.loadAsset("BowlerStudioModularFrameIcon.png");
+		// final Tab newtab = new Tab();
+		// newtab.setText("");
+		// newtab.setClosable(false);
+		// newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
+		String homeURL = Tutorial.getHomeUrl();
+		setJfx3dmanager(new BowlerStudio3dEngine());
+		controller = new BowlerStudioController(getJfx3dmanager());
+		WebTab.setBSController(controller);
+
+		 webtab = null;
 		try {
-			assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
-			assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
-			dockPane = new DockPane();
-			dockImage = AssetFactory.loadAsset("BowlerStudioModularFrameIcon.png");
-			// final Tab newtab = new Tab();
-			// newtab.setText("");
-			// newtab.setClosable(false);
-			// newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
-			String homeURL = Tutorial.getHomeUrl();
-			setJfx3dmanager(new BowlerStudio3dEngine());
-			controller = new BowlerStudioController(getJfx3dmanager());
-			WebTab.setBSController(controller);
 
-			WebTab webtab = null;
-			try {
-
-				webtab = new WebTab("Tutorial", homeURL, true);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
-			getTutorialDockNode().setPrefSize(1024, 730);
-
-			connectionManagerDockNode = new DockNode(ConnectionManager.getConnectionManager().getContent(),
-					ConnectionManager.getConnectionManager().getText(),
-					ConnectionManager.getConnectionManager().getGraphic());
-			connectionManagerDockNode.setPrefSize(200, 700);
-
-			// Initial docked setup
-			addTutorial();
-
-			// Add the dock pane to the window
-			editorContainer.getChildren().add(dockPane);
-			AnchorPane.setTopAnchor(dockPane, 0.0);
-			AnchorPane.setRightAnchor(dockPane, 0.0);
-			AnchorPane.setLeftAnchor(dockPane, 0.0);
-			AnchorPane.setBottomAnchor(dockPane, 0.0);
-
-			// test the look and feel with both Caspian and Modena
-			if(OSUtil.isOSX())
-				Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
-			else
-				Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+			Platform.runLater(()->{
+				try {
+					webtab = new WebTab("Tutorial", homeURL, true);
+					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
+					getTutorialDockNode().setPrefSize(1024, 730);
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
-			// initialize the default styles for the dock pane and undocked
-			// nodes using the DockFX
-			// library's internal Default.css stylesheet
-			// unlike other custom control libraries this allows the user to
-			// override them globally
-			// using the style manager just as they can with internal JavaFX
-			// controls
-			// this must be called after the primary stage is shown
-			// https://bugs.openjdk.java.net/browse/JDK-8132900
-			DockPane.initializeDefaultUserAgentStylesheet();
-			FXMLLoader WindowLoader3d;
-			WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
-			creatureLab3dController = new CreatureLab3dController(getJfx3dmanager());
-			BowlerStudio.setCreatureLab3d(creatureLab3dController);
-			WindowLoader3d.setController(creatureLab3dController);
-			WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
-			FXMLLoader commandLine;
-			commandLine = AssetFactory.loadLayout("layout/Terminal.fxml");
-			terminal = new Terminal();
-			commandLine.setController(terminal);
-			commandLine.setClassLoader(Terminal.class.getClassLoader());
-			FXMLLoader menueBar;
-			menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
-			menueController = new BowlerStudioMenu(this);
-			menueBar.setController(menueController);
-			menueBar.setClassLoader(BowlerStudioMenu.class.getClassLoader());
-
-			try {
-				menueBar.load();
-				WindowLoader3d.load();
-				commandLine.load();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			BorderPane menue = (BorderPane) menueBar.getRoot();
-			BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
-			VBox cmd = (VBox) commandLine.getRoot();
-			creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
-			creatureLab3dDockNode.setPrefSize(400, 400);
-
-			terminalDockNode = new DockNode(cmd, "Terminal", AssetFactory.loadIcon("Command-Line.png"));
-			terminalDockNode.setPrefSize(400, 400);
-
-			// Add the dock pane to the window
-			menurAnchor.getChildren().add(menue);
-			AnchorPane.setTopAnchor(menue, 0.0);
-			AnchorPane.setRightAnchor(menue, 0.0);
-			AnchorPane.setLeftAnchor(menue, 0.0);
-			AnchorPane.setBottomAnchor(menue, 0.0);
-			isOpen.put("showCreatureLab", false);
-			isOpen.put("showTerminal", false);
-			isOpen.put("showDevices", false);
-
-			// focus on the tutorial to start
-			Platform.runLater(() -> getTutorialDockNode().requestFocus());
-			connectionManagerDockNode.onMouseClickedProperty().addListener((a,b,c)->{
-				System.err.println("Cloick");
-			});
-
-		} catch (Exception | Error e) {
-			e.printStackTrace();
+			});;
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
+		
+
+		connectionManagerDockNode = new DockNode(ConnectionManager.getConnectionManager().getContent(),
+				ConnectionManager.getConnectionManager().getText(),
+				ConnectionManager.getConnectionManager().getGraphic());
+		connectionManagerDockNode.setPrefSize(200, 700);
+
+		// Initial docked setup
+		addTutorial();
+
+		// Add the dock pane to the window
+		editorContainer.getChildren().add(dockPane);
+		AnchorPane.setTopAnchor(dockPane, 0.0);
+		AnchorPane.setRightAnchor(dockPane, 0.0);
+		AnchorPane.setLeftAnchor(dockPane, 0.0);
+		AnchorPane.setBottomAnchor(dockPane, 0.0);
+
+		FXMLLoader WindowLoader3d;
+		WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
+		creatureLab3dController = new CreatureLab3dController(getJfx3dmanager());
+		BowlerStudio.setCreatureLab3d(creatureLab3dController);
+		WindowLoader3d.setController(creatureLab3dController);
+		WindowLoader3d.setClassLoader(CreatureLab3dController.class.getClassLoader());
+		FXMLLoader commandLine;
+		commandLine = AssetFactory.loadLayout("layout/Terminal.fxml");
+		terminal = new Terminal();
+		commandLine.setController(terminal);
+		commandLine.setClassLoader(Terminal.class.getClassLoader());
+		FXMLLoader menueBar;
+		menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
+		menueController = new BowlerStudioMenu(this);
+		menueBar.setController(menueController);
+		menueBar.setClassLoader(BowlerStudioMenu.class.getClassLoader());
+
+		try {
+			menueBar.load();
+			WindowLoader3d.load();
+			commandLine.load();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BorderPane menue = (BorderPane) menueBar.getRoot();
+		BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
+		VBox cmd = (VBox) commandLine.getRoot();
+		creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
+		creatureLab3dDockNode.setPrefSize(400, 400);
+
+		terminalDockNode = new DockNode(cmd, "Terminal", AssetFactory.loadIcon("Command-Line.png"));
+		terminalDockNode.setPrefSize(400, 400);
+
+		// Add the dock pane to the window
+		menurAnchor.getChildren().add(menue);
+		AnchorPane.setTopAnchor(menue, 0.0);
+		AnchorPane.setRightAnchor(menue, 0.0);
+		AnchorPane.setLeftAnchor(menue, 0.0);
+		AnchorPane.setBottomAnchor(menue, 0.0);
+		isOpen.put("showCreatureLab", false);
+		isOpen.put("showTerminal", false);
+		isOpen.put("showDevices", false);
+
+		// focus on the tutorial to start
+		Platform.runLater(() -> getTutorialDockNode().requestFocus());
+		connectionManagerDockNode.onMouseClickedProperty().addListener((a, b, c) -> {
+			System.err.println("Cloick");
+		});
+
+	}
+
+	public void loadMobilebaseFromGit(String id, String file) {
+		menueController.loadMobilebaseFromGit(id, file);
 	}
 
 	private void addTutorial() {
@@ -207,7 +197,12 @@ public class BowlerStudioModularFrame {
 
 	public void showConectionManager() {
 		String key = "showDevices";
-
+		if (isOpen.get(key) == null) {
+			isOpen.put(key, false);
+		}
+		if (isOpen.get("showTerminal") == null) {
+			isOpen.put("showTerminal", false);
+		}
 		Platform.runLater(() -> {
 			if (!isOpen.get(key)) {
 				isOpen.put(key, true);
@@ -234,7 +229,13 @@ public class BowlerStudioModularFrame {
 	public void showTerminal() {
 
 		String key = "showTerminal";
-
+		if (isOpen.get(key) == null || getTutorialDockNode()==null ||terminalDockNode==null) {
+			isOpen.put(key, false);
+			return;
+		}
+		if (isOpen.get("showDevices") == null) {
+			isOpen.put("showDevices", false);
+		}
 		if (!isOpen.get(key)) {
 			isOpen.put(key, true);
 			Platform.runLater(() -> {
@@ -282,17 +283,18 @@ public class BowlerStudioModularFrame {
 						return;
 					} catch (NullPointerException e) {
 						// keep trying to open
-						//e.printStackTrace();
+						// e.printStackTrace();
 						isOpen.put(key, false);
 						if (depth < 2) {
 							showCreatureLab(depth + 1);
-						}else
-							BowlerStudio.printStackTrace(e);//fail and show user
+						} else
+							BowlerStudio.printStackTrace(e);// fail and show
+															// user
 					} catch (Exception e) {
 						isOpen.put(key, false);
-						BowlerStudio.printStackTrace(e);//fail and show user
+						BowlerStudio.printStackTrace(e);// fail and show user
 					}
-					
+
 				});
 
 				Platform.runLater(() -> creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
@@ -305,8 +307,8 @@ public class BowlerStudioModularFrame {
 
 			}).start();
 		}
-//		else
-//			Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
+		// else
+		// Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 
@@ -353,20 +355,20 @@ public class BowlerStudioModularFrame {
 		if (webTabs.get(newTab) != null) {
 			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
-			DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
-			dn.closedProperty().addListener(event -> {
-				System.err.println("Closing tab: " + newTab.getText());
-				webTabs.remove(newTab);
-				if (newTab.getOnCloseRequest() != null) {
-
-					newTab.getOnCloseRequest().handle(null);
-				}
-			});
-
-			webTabs.put(newTab, dn);
 			Platform.runLater(() -> {
+				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
+				dn.closedProperty().addListener(event -> {
+					System.err.println("Closing tab: " + newTab.getText());
+					webTabs.remove(newTab);
+					if (newTab.getOnCloseRequest() != null) {
+	
+						newTab.getOnCloseRequest().handle(null);
+					}
+				});
+	
+				webTabs.put(newTab, dn);
 				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
-				// dn.setFloating(true);
+				
 			});
 		}
 	}

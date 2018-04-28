@@ -1,3 +1,190 @@
+bowlerstudio (0.25.1) xenial; urgency=medium
+
+  * moving lower bound to 0
+  * kernel update
+  * fixing the cold-start issue for the image assets
+  * kernel
+  * getter vor camera view
+  * User draw modes for wireframe
+  * removed stale code
+  * stale imports
+  * moving MobileBaseCadManager and FIle Watcher into kernel
+  * updating kernel to use abstracted interface
+  * Moving script loading of movbile bases into kernel
+  * implementing updated API
+  * library update
+  * 0.31.0 kernel
+  * ordering for clarity
+  * updating kernel
+  * kernel
+  * updated library
+  * movign git file copy to kernel
+  * loading messages more accurate
+  * use javacad intermediate jar in kernel
+  * updating JavaCad
+  * catch exceptions of hotfixes
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 09 Jan 2018 23:57:10 -0500
+
+bowlerstudio (0.25.0) xenial; urgency=medium
+
+  * updaing kernel to one that builds in travis
+  * Updaing gradle permissions
+  * adding the opencv depenancies
+  * same travis as working kernel
+  * update travis
+  * try xenial verison
+  * command line flags for quiet
+  * adding connecting line to the polygon display
+  * updating the SVGFactory to call the built in slicer
+  * Filter out the csgDatabase.json file from the gist run
+  * adding JCSG with new slicer
+  * adding a cad EXPORT path
+  * javacad update
+  * updating the loading of objects to manufacturing files
+  * updating JCSG
+  * adding the hotfix script
+  * updating the syntax highlighting
+  * never edit the csgDatabse.json
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 29 Nov 2017 18:56:53 -0500
+
+bowlerstudio (0.24.0) xenial; urgency=medium
+
+  * Updating a database value if found in the root of a repository.
+  * FIxing the file watcher file state upate.
+  * updating JavaCad
+  * using CSG names to make STL files
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 14 Nov 2017 21:59:50 -0500
+
+bowlerstudio (0.23.1) xenial; urgency=medium
+
+  * Fixing the bounding and rotation problem in the Transform widget when close to Euler singularities.
+  * 0.23.1
+  * Engineering units sliders should be more sane about the ticks
+  * adding the place limb widget to the menu
+  * Making the Transform widget more readable
+  * exception handeling on file selection
+  * only auto-highlight when the check box is checked
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Oct 2017 14:55:40 -0400
+
+bowlerstudio (0.23.0) xenial; urgency=medium
+
+  * convert lines to cylindar
+  * make thicknesses match the line equivalent
+  * smaller stroke
+  * dump all the STL;s into a single directory as single parts
+  * stagger teh loading to avoid collisions
+  * deal with the inititail case
+  * Much improved progress monitor for cad generation
+  * 0.22.1
+  * Adding a menu item to generate Kinematic STL's
+  * adding the link number into the file name
+  * Adding the link to CSG mapper as a function making teh export of named files easier.
+  * Update ISSUE_TEMPLATE.md
+  * Update ISSUE_TEMPLATE.md
+  * Tutorial loading of GIT should happen outside of the internal thread to ensure loaded git before moving on
+  * more testing of vitamins
+  * updating to 0.23.0
+  * Loading file from gist in web was broken
+  * Ensure new links have a type
+  * Loading link of non-zero radius
+  * type and type string need to beset, this should be handled by the library
+  * when the hardware limits are reset, the slider for the link should be reset
+  * Text field should auto size to the file and Git url
+  * compute the box size using the font
+  * carrot moves to the start of a file
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 01 Oct 2017 15:05:02 -0400
+
+bowlerstudio (0.21.3) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * adding fonts menues
+  * setting the font size is working
+  * cleaner creature lab menues
+  * adding menu option to hide objects in assemblies
+
+  [ Student ]
+  * Cleaning the loading path in MacOS
+  * cleaner fault state launches
+  * setting the stylesheet after the platform is shown
+  * try catch around user agent
+  * slower camera spin
+  * updateing dockfx to 12
+  * moving the Application stylesheet loading
+  * fiddeling with the loading of the user agent sheets
+
+  [ Kevin Harrington ]
+  * converting axis to lines not boxes
+  * 3d line generation
+  * 3d line interface
+  * more complete removal of stale objects
+  * include polygon to the removel datatypes
+  * adding smoother lines and sharper end terminaion
+  * adding the polygon to wireframe conversion to add the manipulator
+  * inset the axis
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 17 Jul 2017 11:46:13 -0400
+
+bowlerstudio (0.21.2) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * 0.21.2 update
+  * updating kernel
+
+  [ Octogonapus ]
+  * Removed AssetFactory from local src and importing the version from the kernel instead
+
+  [ Kevin Harrington ]
+  * updating java-bowler
+  * using the studio build info from the kernel
+  * load a mobile base form git
+  * Cleanly catching the caso of generated class
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 11 Jul 2017 09:49:54 -0400
+
+bowlerstudio (0.21.1) xenial; urgency=medium
+
+  * updating the default creature URL
+  * updating kernel
+  * updating kernel
+  * removing excessive prints
+  * stagerring code loading
+  * removing the CSG pringing
+  * pulling repos rather thatn loading a file
+  * moving the physics engine into the kernel
+  * adding the print and println function to bowlerstudio static api
+  * Adding the permutations of the call
+  * changing to standard thread
+  * updating kernel
+  * updating kernel version
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 10 May 2017 08:59:01 -0400
+
+bowlerstudio (0.21.0) xenial; urgency=medium
+
+  * adding additional libraries to the imports
+  * removing synchronization in any UI accessed threads
+  * updating javacad
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 04 May 2017 09:52:30 -0400
+
+bowlerstudio (0.20.9) xenial; urgency=medium
+
+  * removing junk annotation
+  * updating the kernel to use branches
+  * removing hard coded "master"
+  * making the tutorial access master rather than the default "source"
+  * updaing kernel
+  * updating kernel
+  * Updating JCSG
+  * 0.20.9
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 28 Apr 2017 00:25:03 -0400
+
 bowlerstudio (0.20.8) xenial; urgency=medium
 
   [ Kevin Harrington ]

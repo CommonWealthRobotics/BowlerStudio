@@ -22,6 +22,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 	public GitHubLoginManager(){
 
 	}
+	@SuppressWarnings("restriction")
 	@Override
 	public String[] prompt(String username) {
 		if (AnonSelected){
@@ -59,7 +60,9 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 		}
 		// setContent(root);
 		while (!githublogin.isDone()) {
-			ThreadUtil.wait(100);
+			//System.err.println("Waiting for user login");
+
+			ThreadUtil.wait(1000);
 		}
 		creds = githublogin.getCreds();
 		//System.err.println(" login = "+creds);

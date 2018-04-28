@@ -40,36 +40,39 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //		tx.setOnAction(this);
 //		ty.setOnAction(this);
 //		tz.setOnAction(this);
-		tx = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getX(), 100,"mm");
-		ty = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getY(), 100,"mm");
-		tz = new EngineeringUnitsSliderWidget(this, -200, 200, initialState.getZ(), 100,"mm");
+		tx = new EngineeringUnitsSliderWidget(this,  initialState.getX(), 100,"mm");
+		ty = new EngineeringUnitsSliderWidget(this,  initialState.getY(), 100,"mm");
+		tz = new EngineeringUnitsSliderWidget(this,  initialState.getZ(), 100,"mm");
 		
 		RotationNR rot = initialState.getRotation();
 		double  t=0;
 		try{
 			t=Math.toDegrees(rot.getRotationTilt());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		double  e=0;
 		try{
 			e=Math.toDegrees(rot.getRotationElevation());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		double  a=0;
 		try{
 			a=Math.toDegrees(rot.getRotationAzimuth());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 50,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100,"degrees");
 		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100,"degrees");
-		getColumnConstraints().add(new ColumnConstraints(40)); // translate text
-	    getColumnConstraints().add(new ColumnConstraints(160)); // translate values
-	    getColumnConstraints().add(new ColumnConstraints(50)); // units
-	    getColumnConstraints().add(new ColumnConstraints(40)); // rotate text
+		tilt.setAllowResize(false);
+		elevation.setAllowResize(false);
+		azimeth.setAllowResize(false);
+		getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+	    getColumnConstraints().add(new ColumnConstraints(200)); // translate values
+	    getColumnConstraints().add(new ColumnConstraints(60)); // units
+	    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
 	    setHgap(20);// gab between elements
 	    
 	    
@@ -148,29 +151,29 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public void updatePose(TransformNR p) {
 		TransformNR pose = p;
 		
-		Platform.runLater(() -> {
-			tx.setValue(pose.getX());
-			ty.setValue(pose.getY());
-			tz.setValue(pose.getZ());
-		});
+		
+		tx.setValue(pose.getX());
+		ty.setValue(pose.getY());
+		tz.setValue(pose.getZ());
+		
 		RotationNR rot = pose.getRotation();
 		double  t=0;
 		try{
 			t=Math.toDegrees(rot.getRotationTilt());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		double  e=0;
 		try{
 			e=Math.toDegrees(rot.getRotationElevation());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		double  a=0;
 		try{
 			a=Math.toDegrees(rot.getRotationAzimuth());
 		}catch(Exception ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		tilt.setValue(t);
 		elevation .setValue(e);

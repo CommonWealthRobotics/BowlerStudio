@@ -1,21 +1,11 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
-import java.awt.Graphics2D;
-import java.awt.SplashScreen;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Duration;
-import org.reactfx.util.FxTimer;
-
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -33,6 +23,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import org.reactfx.util.FxTimer;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Duration;
 
 public class WebTab extends Tab implements EventHandler<Event>{
 	
@@ -65,6 +62,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		this(title,Url,false);
 	}
 	
+	@SuppressWarnings("restriction")
 	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
 		if(isTutorialTab){
@@ -169,7 +167,12 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		});
 		homeButton.setOnAction(arg0 -> {
 			// TODO Auto-generated method stub
-			loadUrl(Tutorial.getHomeUrl());
+			try {
+				loadUrl(Tutorial.getHomeUrl());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 
 		// Layout logic
@@ -280,7 +283,8 @@ public class WebTab extends Tab implements EventHandler<Event>{
 									ex.printStackTrace();
 									myTab.setText("Web");
 								}
-								finishedLoadingScriptingWidget=true;
+								loadCode();
+								
 							});
 						}
 						else
@@ -292,18 +296,20 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					finishedLoadingScriptingWidget=true;
 				}
 				
-				while(!finishedLoadingScriptingWidget){
-					ThreadUtil.wait(10);
-				}
-				System.out.println("Loading code from "+Current_URL);
-				try {
-					getScripting().loadCodeFromGist(Current_URL, webEngine);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
 			}
 		}.start();
+	}
+	
+	private void loadCode(){
+		new Thread(()->{
+			System.out.println("Downloading code from "+Current_URL);
+			try {
+				getScripting().loadCodeFromGist(Current_URL, webEngine);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}).start();
 	}
 	
     public String goBack()

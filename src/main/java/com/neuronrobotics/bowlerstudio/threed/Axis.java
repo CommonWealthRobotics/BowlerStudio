@@ -49,6 +49,7 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Affine;
 
@@ -58,9 +59,9 @@ import javafx.scene.transform.Affine;
  */
 public class Axis extends Group {
 	
-	private Box xAxis;
-	private Box yAxis;
-	private Box zAxis;
+	private Line3D xAxis;
+	private Line3D yAxis;
+	private Line3D zAxis;
 	private Label xText;
 	private Label yText;
 	private Label zText;
@@ -80,50 +81,44 @@ public class Axis extends Group {
 	 */
 	//
 	public Axis(int i) {
-		final PhongMaterial redMaterial = new PhongMaterial();
-		redMaterial.setDiffuseColor(Color.DARKRED);
-		redMaterial.setSpecularColor(Color.RED);
 
-		final PhongMaterial greenMaterial = new PhongMaterial();
-		greenMaterial.setDiffuseColor(Color.DARKGREEN);
-		greenMaterial.setSpecularColor(Color.GREEN);
-
-		final PhongMaterial blueMaterial = new PhongMaterial();
-		blueMaterial.setDiffuseColor(Color.DARKBLUE);
-		blueMaterial.setSpecularColor(Color.BLUE);
-
-		xAxis = new Box(i, 2, 2);
-		yAxis = new Box(2, i, 2);
-		zAxis = new Box(2, 2, i);
+	
 		
 		
 		Affine xp = new Affine();
 		xp.setTx(i/2);
-		xAxis.getTransforms().add(xp);
 		xText = new Label("+X");
 		xText.getTransforms().add(xp);
 		
 		Affine yp = new Affine();
 		yp.setTy(i/2);
-		yAxis.getTransforms().add(yp);
 		yText = new Label("+Y");
 		yText.getTransforms().add(yp);
 		
-		Affine zp = new Affine();
-		zp.setTz(i/2);
+		//zp.setTz(i/2);
 		Affine zTextAffine = new Affine();
 		zTextAffine.setTz(i/2);
 		zTextAffine.setTx(i/2);
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zAxis.getTransforms().add(zp);
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
+		//zText.smoothProperty().set(false);
+		double strokWidth=0.1;
+		double inset = 0;
+		xAxis = new Line3D(0,inset,0,i,inset,0);
+		yAxis = new Line3D(inset,0,0,inset,i,0);
+		zAxis = new Line3D(inset,0,0,inset,0,i);
 		
+		xAxis.setStrokeWidth(strokWidth);
+		xAxis.setStroke(Color.RED);
 		
-		xAxis.setMaterial(redMaterial);
-		yAxis.setMaterial(greenMaterial);
-		zAxis.setMaterial(blueMaterial);
+		yAxis.setStrokeWidth(strokWidth);
+		yAxis.setStroke(Color.GREEN);
+		
+		zAxis.setStrokeWidth(strokWidth);
+		zAxis.setStroke(Color.BLUE);
+		
 		show();
 	}
 	

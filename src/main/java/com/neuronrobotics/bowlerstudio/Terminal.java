@@ -4,6 +4,25 @@ package com.neuronrobotics.bowlerstudio;
  * You can copy and paste this code into your favorite IDE
  **/
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,34 +30,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
-import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 
 public class Terminal {
 
@@ -66,6 +57,7 @@ public class Terminal {
 	private boolean running = false;
 	private Thread scriptRunner = null;
 
+	@SuppressWarnings("restriction")
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() {
@@ -178,6 +170,7 @@ public class Terminal {
 
 		scriptRunner = new Thread() {
 
+			@SuppressWarnings("restriction")
 			public void run() {
 
 				try {

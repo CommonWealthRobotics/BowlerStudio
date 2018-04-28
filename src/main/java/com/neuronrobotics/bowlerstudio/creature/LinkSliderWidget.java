@@ -39,6 +39,7 @@ import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
 
+@SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group
 		implements  IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener {
 	private AbstractKinematicsNR device;
@@ -53,7 +54,7 @@ public class LinkSliderWidget extends Group
 	private double seconds;
 	private String paramsKey;
 	private AbstractLink abstractLink;
-	private EngineeringUnitsSliderWidget slide;
+	//private EngineeringUnitsSliderWidget slide;
 
 	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR d) {
 
@@ -71,12 +72,12 @@ public class LinkSliderWidget extends Group
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
 
-		setpoint = new EngineeringUnitsSliderWidget(this, 
+		setSetpoint(new EngineeringUnitsSliderWidget(this, 
 													abstractLink.getMinEngineeringUnits(),
 													abstractLink.getMaxEngineeringUnits(), 
 													device.getCurrentJointSpaceVector()[linkIndex],
 													180,
-													dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm");
+													dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
 
 		GridPane panel = new GridPane();
 
@@ -94,12 +95,19 @@ public class LinkSliderWidget extends Group
 
 		panel.add(new Text("#" + linkIndex), 0, 0);
 		panel.add(name, 1, 0);
-		panel.add(setpoint, 2, 0);
+		panel.add(getSetpoint(), 2, 0);
 
 		getChildren().add(panel);
 		abstractLink.addLinkListener(this);
 		//device.addJointSpaceListener(this);
 
+	}
+	
+	public void setUpperBound(double newBound){
+		getSetpoint().setUpperBound(newBound);
+	}
+	public void setLowerBound(double newBound){
+		getSetpoint().setLowerBound(newBound);
 	}
 
 	// public void changed(ObservableValue<? extends Boolean> observableValue,
@@ -138,7 +146,7 @@ public class LinkSliderWidget extends Group
 		if (getGameController() != null || stop == false) {
 
 			if (!stop) {
-				jogTHreadHandle.setToSet(slider + setpoint.getValue(), seconds);
+				jogTHreadHandle.setToSet(slider + getSetpoint().getValue(), seconds);
 			}
 
 			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), () -> {
@@ -160,7 +168,7 @@ public class LinkSliderWidget extends Group
 				if (controlThreadRunning) {
 					try {
 						device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
-						setpoint.setValue(newValue);
+						getSetpoint().setValue(newValue);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -221,7 +229,7 @@ public class LinkSliderWidget extends Group
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		// TODO Auto-generated method stub
 		try {
-			device.setDesiredJointAxisValue(linkIndex, setpoint.getValue(), 0);
+			device.setDesiredJointAxisValue(linkIndex, getSetpoint().getValue(), 0);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -246,10 +254,18 @@ public class LinkSliderWidget extends Group
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
 		// TODO Auto-generated method stub
 		try {
-			setpoint.setValue(arg1);
+			getSetpoint().setValue(arg1);
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			return;
 		}
+	}
+
+	public EngineeringUnitsSliderWidget getSetpoint() {
+		return setpoint;
+	}
+
+	public void setSetpoint(EngineeringUnitsSliderWidget setpoint) {
+		this.setpoint = setpoint;
 	}
 
 }

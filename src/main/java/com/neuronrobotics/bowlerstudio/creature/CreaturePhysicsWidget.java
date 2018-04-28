@@ -1,17 +1,10 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
@@ -21,12 +14,15 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListener {
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
@@ -97,8 +93,8 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 					
 
 					public void run(){
-						while(MobileBaseCadManager.get( base).getProcesIndictor().getProgress()<1){
-							ThreadUtil.wait(100);
+						while(MobileBaseCadManager.get( base).getProcesIndictor().get()<1){
+							ThreadUtil.wait(10);
 						}
 						HashMap<LinkConfiguration, ArrayList<CSG>> simplecad = MobileBaseCadManager.getSimplecad(base) ;
 						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);

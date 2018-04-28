@@ -10,45 +10,51 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+@SuppressWarnings("restriction")
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number>{
 	private TextField setpointValue;
 	private Slider setpoint;
 	private IOnEngineeringUnitsChange listener;
 	private boolean intCast=false;
-
-	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units, boolean intCast){
+	private boolean allowResize=true;
+	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener,double min, double max,  double current, double width, String units, boolean intCast){
 		this(listener, min, max, current, width, units);
 		this.intCast = intCast;
-		
 	}
+	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener,  double current, double width, String units){
+		this(listener, current/2, current*2, current, width, units);
 	
+	}
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
 		setpoint = new Slider();
 		
+		if(min>max){
+			double minStart = min;
+			min=max;
+			max=minStart;
+		}
+		double range = Math.abs(max-min);
+		if(range<1){
+			min=-100;
+			max = 100;
+			range=200;
+		}
 		setpoint.setMin(min);
 		setpoint.setMax(max);
 		setpoint.setValue(current);
 		setpoint.setShowTickLabels(true);
-		setpoint.setShowTickMarks(false);
+		setpoint.setShowTickMarks(true);
 		//setpoint.setSnapToTicks(true);
-		setpoint.setMajorTickUnit(50);
+		setpoint.setMajorTickUnit(range);
 		setpoint.setMinorTickCount(5);
-		setpoint.setBlockIncrement(10);
+		//setpoint.setBlockIncrement(range/100);
 		setpointValue = new TextField(getFormatted(current));
 		setpointValue.setOnAction(event -> {
 			Platform.runLater(() -> {
 				double val =Double.parseDouble(setpointValue.getText());
-				setpoint.valueProperty().removeListener(this);
-				if(val>setpoint.getMax()){
-					setpoint.setMax(val);
-				}if(val<setpoint.getMin()){
-					setpoint.setMin(val);
-				}
-				setpoint.setValue(val);
-				setpointValue.setText(getFormatted(setpoint.getValue()));
-				setpoint.valueProperty().addListener(this);
-				getListener().onSliderMoving(this,setpoint.getValue());
+				setValue(val);
+				getListener().onSliderMoving(this,val);
 				getListener().onSliderDoneMoving(this,val);
 			});
 		});
@@ -62,8 +68,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.valueProperty().addListener(this);
 		
 		String unitsString = "("+units+")";
-		getColumnConstraints().add(new ColumnConstraints(width+10)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(60)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(unitsString.length()*7)); // column 2 is 100 wide
 		
 		
@@ -76,6 +82,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		add(	new Text(unitsString), 
 				2, 
 				0);
+	}
+	public void setUpperBound(double newBound){
+		setpoint.setMax(newBound);
+	}
+	public void setLowerBound(double newBound){
+		setpoint.setMin(newBound);
 	}
 	@Override
 	public void changed(ObservableValue<? extends Number> observable,
@@ -92,14 +104,24 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	
 	public void setValue(double value){
+		
 		Platform.runLater(() -> {
 				setpoint.valueProperty().removeListener(this);
-				if(value>setpoint.getMax()){
-					setpoint.setMax(value);
-				}if(value<setpoint.getMin()){
-					setpoint.setMin(value);
+				double val = value;
+				if(val>setpoint.getMax()){
+					if(isAllowResize())
+						setpoint.setMax(val);
+					else
+						val=setpoint.getMax();
+				}if(val<setpoint.getMin()){
+					if(isAllowResize())
+						setpoint.setMin(val);
+					else
+						val=setpoint.getMin();
 				}
-				setpoint.setValue(value);
+				double range = Math.abs(setpoint.getMax()-setpoint.getMin());
+				setpoint.setMajorTickUnit(range);
+				setpoint.setValue(val);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);
 		});
@@ -113,7 +135,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public  String getFormatted(double value){
 		if(intCast)
 			return String.valueOf((int)value);
-	    return String.format("%4.3f%n", (double)value);
+	    return String.format("%8.2f", (double)value);
 	}
 	public IOnEngineeringUnitsChange getListener() {
 		if(listener==null)
@@ -138,5 +160,11 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 	public void setListener(IOnEngineeringUnitsChange listener) {
 		this.listener = listener;
+	}
+	public boolean isAllowResize() {
+		return allowResize;
+	}
+	public void setAllowResize(boolean allowResize) {
+		this.allowResize = allowResize;
 	}
 }

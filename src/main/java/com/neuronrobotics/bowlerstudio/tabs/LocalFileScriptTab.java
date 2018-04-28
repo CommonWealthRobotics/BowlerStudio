@@ -1,8 +1,9 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -11,27 +12,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.security.AccessControlContext;
-import java.time.Duration;
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.fxmisc.richtext.CodeArea;
-import org.reactfx.Change;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
-
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
 
 import javax.swing.AbstractAction;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
@@ -40,46 +27,21 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingNode;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import org.fxmisc.richtext.StyleSpansBuilder;
-
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.BowlerDatagram;
-import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.javafx.stage.WindowHelper;
-import com.sun.javafx.tk.TKStage;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.PluginManager;
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.bowlerstudio.utils.FindTextWidget;
 
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
@@ -96,9 +58,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private HighlightPainter painter;
 	private int lineSelected = 0;
 
-	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(100, 150);
+	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(200, 300);
 
 	private final File file;
+
+	private Font myFont;
+
+	private static HashMap<String, String> langaugeMapping = new HashMap<>();
 
 	private class MySwingNode extends SwingNode {
 		/**
@@ -152,10 +118,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			super(i, j);
 		}
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-		}
-
 		public void componentResized(ComponentEvent e) {
 			System.err.println("componentResized");
 		}
@@ -173,7 +135,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 
 	}
-
+	public static void setExtentionSyntaxType(String shellType,String syntax){
+		langaugeMapping.put(shellType, syntax);
+	}
 	public LocalFileScriptTab(File file) throws IOException {
 
 		this.file = file;
@@ -183,25 +147,43 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		getScripting().addIScriptEventListener(l);
 		String type;
-		switch (ScriptingEngine.getShellType(file.getName())) {
+
+		String shellType = ScriptingEngine.getShellType(file.getName());
+		switch (shellType) {
 		case "Clojure":
 			type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
 			break;
 		default:
+			type=langaugeMapping.get(shellType);
+			if(type == null){
+				type = SyntaxConstants.SYNTAX_STYLE_NONE;
+				if (shellType.toLowerCase().contains("arduino")) {
+					type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
+				}
+			}
+		case "JSON":
+			type = SyntaxConstants.SYNTAX_STYLE_JSON;
+			break;
+		case "ArduingScriptingLangauge":
+			type = SyntaxConstants.SYNTAX_STYLE_LISP;
+			break;
+		case "Arduino":
+			type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
+			break;
 		case "Groovy":
 			type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
 			break;
 		case "Jython":
 			type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
 			break;
-		case "RobotXML":
+		case "MobilBaseXML":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
 			break;
 
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
-		SwingUtilities.invokeLater(() -> textArea.setText(getScripting().getCode()));
+
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -305,42 +287,50 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			}
 		});
+
+		myFont = textArea.getFont();
 		highlighter = textArea.getHighlighter();
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
 		highlighter.removeAllHighlights();
-		focusedProperty().addListener((w, o, n)->{
-			System.err.println("Focused "+file);
+		focusedProperty().addListener((w, o, n) -> {
+			System.err.println("Focused " + file);
 		});
-		
+
 		widthProperty().addListener((w, o, n) -> {
-			//c.resizeChart((int) n.intValue(), (int) pane.getHeight());
-			//System.err.println("Width resized "+file);
-			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
-			
+			// c.resizeChart((int) n.intValue(), (int) pane.getHeight());
+			// System.err.println("Width resized "+file);
+			// SwingUtilities.invokeLater(() -> sn.setContent(sp));
+
 			resizeEvent();
 		});
 		heightProperty().addListener((w, o, n) -> {
-			//c.resizeChart((int) pane.getWidth(), (int) n.intValue());
-			//System.err.println("height resized "+file);
+			// c.resizeChart((int) pane.getWidth(), (int) n.intValue());
+			// System.err.println("height resized "+file);
 			resizeEvent();
-			//SwingUtilities.invokeLater(() -> sn.setContent(sp));
+			// SwingUtilities.invokeLater(() -> sn.setContent(sp));
+		});
+		SwingUtilities.invokeLater(() -> {
+			if (getScripting() != null && getScripting().getCode() != null) {
+				onScriptChanged(null, getScripting().getCode(), file);
+			}
+
 		});
 	}
-	
-	private void resizeEvent(){	
+
+	private void resizeEvent() {
 		SwingUtilities.invokeLater(() -> {
-			sp.setSize((int)sp.getWidth()-1, (int)sp.getHeight()-1);
+			sp.setSize((int) sp.getWidth() - 1, (int) sp.getHeight() - 1);
 			textArea.requestFocusInWindow();
 			textArea.invalidate();
 			textArea.repaint();
 			sp.invalidate();
 			sp.repaint();
-			Platform.runLater(()->{
+			Platform.runLater(() -> {
 				sn.requestFocus();
 			});
 		});
-		//System.err.println("resize "+file);
+		// System.err.println("resize "+file);
 	}
 
 	@Override
@@ -357,13 +347,19 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptChanged(String previous, String current, File source) {
-		// Cursor place = codeArea.getCursor();
+		// int place = textArea.getCaretPosition();
+		// System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
+
 		if (current.length() > 3 && !textArea.getText().contentEquals(current)) {// no
 																					// empty
 																					// writes
-			SwingUtilities.invokeLater(() -> textArea.setText(current));
+			SwingUtilities.invokeLater(() -> {
+				textArea.setText(current);
+				if (previous == null)
+					SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
+			});
 
 		}
 	}
@@ -435,5 +431,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	public void clearHighlits() {
 		highlighter.removeAllHighlights();
+	}
+
+	public int getFontSize() {
+		return myFont.getSize();
+	}
+
+	public void setFontSize(int size) {
+		myFont = new Font(myFont.getName(), myFont.getStyle(), size);
+		textArea.setFont(myFont);
 	}
 }

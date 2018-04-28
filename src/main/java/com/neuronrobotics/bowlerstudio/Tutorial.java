@@ -11,6 +11,8 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -21,22 +23,23 @@ public class Tutorial {
 	private static String HOME_Local_URL = "http://localhost:"+WEBSERVER_PORT+"/BowlerStudio/Welcome-To-BowlerStudio/";
 	private static boolean doneLoadingTutorials;
 	private static Boolean startedLoadingTutorials = false;
-	public static String getHomeUrl(){
-		
+	public static String getHomeUrl() throws Exception{
+		File i=null;
+		do{
+			i= ScriptingEngine.fileFromGit(
+				"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
+				"master",// the default branch is source, so this needs to be specified
+				"index.html");
+		}while(!i.exists());
+		File indexOfTutorial=i;
 		if(!doneLoadingTutorials ){
 			if(!startedLoadingTutorials){
-				synchronized(startedLoadingTutorials){
+				//synchronized(startedLoadingTutorials){
 					startedLoadingTutorials = true;
-				}
+				//}
 				new Thread(){
 					public void run(){
-						try {
-							
-							File indexOfTutorial = ScriptingEngine.fileFromGit(
-									"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
-									"master",// the default branch is source, so this needs to be specified
-									"index.html");
-							
+
 							//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
 							Server server = new Server();
 							ServerConnector connector = new ServerConnector(server);  
@@ -62,10 +65,6 @@ public class Tutorial {
 								e.printStackTrace();
 							}
 		
-						} catch (GitAPIException | IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
 						
 					}
 				}.start();

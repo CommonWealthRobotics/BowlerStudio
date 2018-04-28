@@ -1,13 +1,26 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.nrconsole.util.CommitWidget;
+import com.neuronrobotics.nrconsole.util.PromptForGit;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
+import com.neuronrobotics.sdk.addons.kinematics.*;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -17,47 +30,13 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.scene.Group;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
-
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.threed.MobileBaseCadManager;
-import com.neuronrobotics.nrconsole.util.CommitWidget;
-import com.neuronrobotics.nrconsole.util.PromptForGit;
-import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.kinematics.DHChain;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
-import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import eu.mihosoft.vrl.v3d.CSG;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class MobleBaseMenueFactory {
 
@@ -66,62 +45,7 @@ public class MobleBaseMenueFactory {
 	
 	
 	public static String [] copyGitFile(String sourceGit, String targetGit, String filename){
-		
-		String[] WalkingEngine;
-		try {
-			WalkingEngine = ScriptingEngine.codeFromGit(sourceGit, filename);
-			try {
-				if( null==ScriptingEngine.fileFromGit(targetGit, filename)){
-					
-					ScriptingEngine.createFile(targetGit, filename, "copy file");
-					while (true) {
-						try {
-							ScriptingEngine.fileFromGit(targetGit, filename);
-							break;
-						} catch (Exception e) {
-
-						}
-						ThreadUtil.wait(500);
-						Log.warn(targetGit +"/"+filename+ " not built yet");
-					}
-					
-				}
-			} catch (InvalidRemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransportException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String[] newFileCode;
-			try {
-				newFileCode = ScriptingEngine.codeFromGit(targetGit, filename);
-				if(newFileCode==null)
-					newFileCode=new String[]{""};
-				if(!WalkingEngine[0].contentEquals(newFileCode[0])){
-					System.out.println("Copy Content to "+targetGit+"/"+filename);
-					ScriptingEngine.pushCodeToGit(targetGit, ScriptingEngine.getFullBranch(targetGit), filename, WalkingEngine[0], "copy file content");
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
-		return new String[]{targetGit,filename};
+		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
 
 	
@@ -132,7 +56,17 @@ public class MobleBaseMenueFactory {
 
 		boolean creatureIsOwnedByUser = false;
 		
-		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
+		TreeItem<String> editXml = new TreeItem<String>("Edit Robot XML..", AssetFactory.loadIcon("Script-Tab-RobotXML.png"));
+		callbackMapForTreeitems.put(editXml, () -> {
+			try {
+				File code = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+				BowlerStudio.createFileTab(code);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		TreeItem<String> physics = new TreeItem<String>("Physics Simulation", AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
 				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
@@ -159,6 +93,14 @@ public class MobleBaseMenueFactory {
 				e.printStackTrace();
 			}
 		}
+		
+		
+
+		if (creatureIsOwnedByUser) {
+			rootItem.getChildren().addAll(publish);
+
+		}
+		
 		TreeItem<String> legs = loadLimbs(device, view, device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 		TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
@@ -199,8 +141,50 @@ public class MobleBaseMenueFactory {
 			creatureLab.generateCad();
 
 		});
-		TreeItem<String> printable = new TreeItem<String>("Printable Cad",AssetFactory.loadIcon("Printable-Cad.png"));
+		TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",AssetFactory.loadIcon("Printable-Cad.png"));
 	
+		callbackMapForTreeitems.put(kinematics, () -> {
+			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+			if (!defaultStlDir.exists()) {
+				defaultStlDir.mkdirs();
+			}
+			Platform.runLater(()->{
+				DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select Output Directory For .STL files");
+
+				chooser.setInitialDirectory(defaultStlDir);
+				File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+				new Thread() {
+
+					public void run() {
+						MobileBaseCadManager baseManager = MobileBaseCadManager.get(device) ;
+						if (baseDirForFiles == null) {
+							return;
+						}
+						ArrayList<File> files;
+						try {
+							files = baseManager.generateStls((MobileBase) device, baseDirForFiles,true);
+							Platform.runLater(() -> {
+								Alert alert = new Alert(AlertType.INFORMATION);
+								alert.setTitle("Stl Export Success!");
+								alert.setHeaderText("Stl Export Success");
+								alert.setContentText(
+										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
+								alert.setWidth(500);
+								alert.initModality(Modality.APPLICATION_MODAL);
+								alert.show();
+							});
+						} catch (Exception e) {
+							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+						}
+
+					}
+				}.start();
+			});
+		
+		});
+		TreeItem<String> printable = new TreeItem<String>("Printable Cad",AssetFactory.loadIcon("Printable-Cad.png"));
+		
 		callbackMapForTreeitems.put(printable, () -> {
 			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 			if (!defaultStlDir.exists()) {
@@ -221,7 +205,7 @@ public class MobleBaseMenueFactory {
 						}
 						ArrayList<File> files;
 						try {
-							files = baseManager.generateStls((MobileBase) device, baseDirForFiles);
+							files = baseManager.generateStls((MobileBase) device, baseDirForFiles,false);
 							Platform.runLater(() -> {
 								Alert alert = new Alert(AlertType.INFORMATION);
 								alert.setTitle("Stl Export Success!");
@@ -241,7 +225,6 @@ public class MobleBaseMenueFactory {
 			});
 		
 		});
-
 		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(() -> {
@@ -343,7 +326,6 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
-		TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 		TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 		callbackMapForTreeitems.put(setCAD, () -> {
 			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
@@ -453,11 +435,10 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(physics,regnerate, printable,item, addleg,addFixed,addsteerable, makeCopy);
+		rootItem.getChildren().addAll(physics,regnerate, printable,kinematics,item, addleg,addFixed,addsteerable, makeCopy);
 
 		if (creatureIsOwnedByUser) {
-			owner.getChildren().addAll(publish, editWalking, editCAD, resetWalking, setCAD);
-			rootItem.getChildren().add(owner);
+			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
 		}
 	}
 
@@ -567,22 +548,24 @@ public class MobleBaseMenueFactory {
 		return apps;
 	}
 
+	@SuppressWarnings("restriction")
 	private static void setHardwareConfig(MobileBase base,LinkConfiguration conf, LinkFactory factory, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems,LinkSliderWidget widget) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),AssetFactory.loadIcon("Hardware-Config.png"));
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory)));
+				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory, widget.getSetpoint())));
 			}
 			BowlerStudio.select( base,conf);
 		});
 		rootItem.getChildren().add(hwConf);
 	}
 
+	@SuppressWarnings("restriction")
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
@@ -601,7 +584,11 @@ public class MobleBaseMenueFactory {
 			 if(controller!=null){
 				 lsw.setGameController(controller); 
 			 }
-			 BowlerStudio.select( base,conf);
+			 try{
+				 BowlerStudio.select( base,conf);
+			 }catch(Exception ex){
+				 System.err.println("Linb not loaded yet");
+			 }
 			 //select( base, dh);
 			// activate controller
 		});
@@ -610,7 +597,7 @@ public class MobleBaseMenueFactory {
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
-			setHardwareConfig(base,co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
+			setHardwareConfig(base,co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems,lsw);
 		}
 
 		TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),AssetFactory.loadIcon("Add-Slave-Links.png"));
@@ -644,7 +631,7 @@ public class MobleBaseMenueFactory {
 							slaveFactory.getLink(newLink);
 							try {
 								setHardwareConfig(base,newLink, slaveFactory, slaves, callbackMapForTreeitems,
-										widgetMapForTreeitems);
+										widgetMapForTreeitems,lsw);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -707,12 +694,14 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
+			try{
 			BowlerStudio.select( base,conf);
+			}catch(java.lang.NullPointerException e){}//selecting before limb loaded
 		});
 
 		link.getChildren().addAll(design);
 
-		setHardwareConfig(base,conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		setHardwareConfig(base,conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems,lsw);
 
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);
@@ -805,11 +794,20 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(dh.getFactory().getLinkConfigurations().get(0).getTypeEnum());
+							ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory().getLinkConfigurations();
+
+							int numOfLinks = linkConfigurations.size();
+							
+							LinkType typeOfLink = linkConfigurations.get(numOfLinks-1).getTypeEnum();
+							
+							if(typeOfLink ==null)
+								typeOfLink=LinkType.VIRTUAL;
+							newLink.setType(typeOfLink);
+							newLink.setTypeString(typeOfLink.toString());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
 							if (dh != null)
-								dh.addNewLink(newLink, new DHLink(0, 0, 0, 0));
+								dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
 							try {
 								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
@@ -825,7 +823,42 @@ public class MobleBaseMenueFactory {
 			});
 		});
 
+		TreeItem<String> PlaceLimb = new TreeItem<>("Move Root Of Limb",AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
+		callbackMapForTreeitems.put(PlaceLimb, () -> {
+			if (widgetMapForTreeitems.get(PlaceLimb) == null) {
+				// create the widget for the leg when looking at it for the
+				// first time
+				try{
+					widgetMapForTreeitems.put(PlaceLimb,new Group( new TransformWidget("Move place where limb is attached to body", 
+							dh.getRobotToFiducialTransform(), new IOnTransformChange() {
+						
+						@Override
+						public void onTransformFinished(TransformNR newTrans) {
+							// Force a cad regeneration
+							creatureLab.onSliderDoneMoving(null, 0);
+						}
+						
+						@Override
+						public void onTransformChaging(TransformNR newTrans) {
+							Log.debug("Limb to base"+newTrans.toString());
+							dh.setRobotToFiducialTransform(newTrans);
+							dh.getCurrentTaskSpaceTransform();
+							//this calls the render update function attachec as the on jointspace update	
+							double[] joint=dh.getCurrentJointSpaceVector();
+							dh.getChain().getChain(joint);
+							Platform.runLater(()->dh.onJointSpaceUpdate(dh, joint));
+						}
+					}
+					)));
+				}catch(Exception ex){
+					BowlerStudio.printStackTrace(ex);
+				}
+			}
+
+		});
+		dhItem.getChildren().addAll( PlaceLimb);
+		
 		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",AssetFactory.loadIcon("Advanced-Configuration.png"));
 
 		callbackMapForTreeitems.put(advanced, () -> {
@@ -842,7 +875,7 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(addLink, advanced, remove);
 		if (creatureIsOwnedByUser) {
-			TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
+			//TreeItem<String> owner = new TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...",AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From Git", dh.getGitCadEngine()[0], (gitsId, file) -> {
@@ -890,9 +923,8 @@ public class MobleBaseMenueFactory {
 					e.printStackTrace();
 				}
 			});
-			owner.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
+			dhItem.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
 
-			dhItem.getChildren().add(owner);
 		}
 		rootItem.getChildren().add(dhItem);
 		double[] vect = dh.getCurrentJointSpaceVector();

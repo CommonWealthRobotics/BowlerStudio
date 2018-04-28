@@ -10,7 +10,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
 import com.neuronrobotics.bowlerstudio.twod.TwoDCadFactory;
-import com.neuronrobotics.imageprovider.CHDKImageProvider;
+//import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
@@ -86,7 +86,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private MenuItem showCreatureLab; // Value injected by FXMLLoader
 	@FXML // fx:id="showTerminal"
 	private MenuItem showTerminal;
-
+	@FXML // fx:id="watchingRepos"
+	private Menu WindowMenu;
 	@FXML // fx:id="watchingRepos"
 	private Menu watchingRepos; // Value injected by FXMLLoader
 
@@ -253,7 +254,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() != 1)
+											if (tmpGist.getItems().size() != 2)
 												return;// menue populated by
 														// another thread
 											for (String s : listofFiles) {
@@ -341,7 +342,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							if (ownerMenue.get(g.getOwnerName()) == null) {
 								ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 								Platform.runLater(() -> {
-									watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+									try {
+										watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+									}catch(Exception e) {
+										
+									}
 								});
 							}
 							setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
@@ -434,7 +439,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								}
 
 								for (String s : listofFiles) {
-									// System.out.println("Adding file: "+s);
+									System.err.println("Adding file: "+s);
 									MenuItem tmp = new MenuItem(s);
 									tmp.setOnAction(event -> {
 										new Thread() {
@@ -529,14 +534,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML
 	public void onConnectCHDKCamera(ActionEvent event) {
-		Platform.runLater(() -> {
-			try {
-				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+//		Platform.runLater(() -> {
+//			try {
+//				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		});
 	}
 
 	@FXML
@@ -726,7 +731,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML
 	public void onMobileBaseFromGit(ActionEvent event) {
-		PromptForGit.prompt("Select a Creature From a Git", "https://gist.github.com/bcb4760a449190206170.git",
+		PromptForGit.prompt("Select a Creature From a Git", "https://github.com/madhephaestus/carl-the-hexapod.git",
 				(gitsId, file) -> {
 					loadMobilebaseFromGit(gitsId, file);
 				});
@@ -869,7 +874,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											}
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
-											e.printStackTrace();
+											//e.printStackTrace();
 											openGits.clear();
 										}
 									}
@@ -895,6 +900,30 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				ScriptingEngine.addIGithubLoginListener(listener);
 			}
 		}).start();
+		//WindowMenu
+		int [] fonts = new int [] { 6,8,10,12,14,16,18,20,24,28,32,36,40};
+		Menu fontSelect = new Menu("Font Size");
+		ToggleGroup toggleGroup = new ToggleGroup();
+		int defSize = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize",
+				12)).intValue();
+		for(int i=0;i<fonts.length;i++){
+			int myFoneNum = fonts[i];
+			RadioMenuItem ftmp = new RadioMenuItem(myFoneNum+" pt");
+			
+			if(defSize==myFoneNum){
+				ftmp.setSelected(true);
+			}else
+				ftmp.setSelected(false);
+			ftmp.setOnAction((event)->{
+				if(ftmp.isSelected()){
+					BowlerStudioController.getBowlerStudio().setFontSize(myFoneNum);
+				}
+			});
+			ftmp.setToggleGroup(toggleGroup);
+			fontSelect.getItems().add(ftmp);
+			
+		}
+		WindowMenu.getItems().add(fontSelect);
 	}
 
 	@FXML

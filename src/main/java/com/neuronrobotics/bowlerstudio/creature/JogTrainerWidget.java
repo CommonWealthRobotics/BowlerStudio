@@ -4,14 +4,10 @@ package com.neuronrobotics.bowlerstudio.creature;
  * You can copy and paste this code into your favorite IDE
  **/
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,6 +22,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.java.games.input.Component;
 import net.java.games.input.Event;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
 public class JogTrainerWidget extends Application implements IJInputEventListener {

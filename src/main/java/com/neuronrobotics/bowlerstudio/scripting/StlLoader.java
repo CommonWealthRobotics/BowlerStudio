@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 
@@ -25,19 +26,15 @@ public class StlLoader implements IScriptingLanguage {
 		// TODO Auto-generated method stub
 		return "Stl";
 	}
-
-	@Override
-	public boolean isSupportedFileExtenetion(String filename) {
-		if (filename.toLowerCase().endsWith(".stl")) {
-			return true;
-		}		
-		return false;
-	}
-
 	@Override
 	public boolean getIsTextFile() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	@Override
+	public ArrayList<String> getFileExtenetion() {
+		// TODO Auto-generated method stub
+		return new ArrayList<>(Arrays.asList("stl"));
 	}
 
 }
