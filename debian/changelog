@@ -1,3 +1,12 @@
+bowlerstudio (0.25.4) xenial; urgency=medium
+
+  [ hephaestus ]
+  * xenial
+
+  [ Kevin Harrington ]
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 22 May 2018 20:10:39 -0400
+
 bowlerstudio (0.25.3) xenial; urgency=medium
 
   * kernel
