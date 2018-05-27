@@ -1,3 +1,12 @@
+bowlerstudio (0.25.5) xenial; urgency=medium
+
+  * kernel
+  * 0.25.5
+  * process percentage realistic
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 25 May 2018 22:50:28 -0400
+
 bowlerstudio (0.25.4) xenial; urgency=medium
 
   [ hephaestus ]
