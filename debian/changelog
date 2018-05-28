@@ -1,3 +1,9 @@
+bowlerstudio (0.25.6) xenial; urgency=medium
+
+  * slower jogging
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 27 May 2018 19:49:40 -0400
+
 bowlerstudio (0.25.5) xenial; urgency=medium
 
   * kernel

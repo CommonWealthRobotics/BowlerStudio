@@ -120,8 +120,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void addConnection(BowlerAbstractDevice newDevice, String name) {
+		if(DeviceManager.getSpecificDevice(name)==newDevice) {
+			System.out.println("Device "+name+" is already in the manager");
+		}
 		DeviceManager.addConnection(newDevice, name);
-
 	}
 
 	@Override
