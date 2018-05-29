@@ -499,7 +499,7 @@ public class MobleBaseMenueFactory {
 					public void run() {
 						System.out.println("Your new limb: " + result.get());
 						newDevice.setScriptingName(result.get());
-						DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
+						ConnectionManager.addConnection(newDevice, newDevice.getScriptingName());
 						deviceList.add(newDevice);
 						for (LinkConfiguration conf : newDevice.getLinkConfigurations()) {
 							try {
