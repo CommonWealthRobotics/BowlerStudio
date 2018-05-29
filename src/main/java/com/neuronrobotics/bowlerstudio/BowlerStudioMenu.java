@@ -133,7 +133,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					if(file.toLowerCase().endsWith(".xml")) {
 						mb = MobileBaseLoader.fromGit(id, file);
 					}else {
-						mb=(MobileBase) ScriptingEngine.inlineGistScriptRun(id, file, null);
+						mb=(MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
 					}
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 					
