@@ -1,3 +1,12 @@
+bowlerstudio (0.25.7) xenial; urgency=medium
+
+  * Filter devices for existance in the device manager already
+  * use the built in UI with filter
+  * bugfix
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 28 May 2018 21:25:23 -0400
+
 bowlerstudio (0.25.6) xenial; urgency=medium
 
   * slower jogging
