@@ -106,17 +106,15 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 repositories {
 	mavenCentral()
+	jcenter()
 	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
 	maven { url 'https://clojars.org/repo' }
-	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
-	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
-	maven { url 'https://plugins.gradle.org/m2/' }
-	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
-	 maven { url "https://jitpack.io" }
+	//com.neuronrobotics hosting point
+	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
+	 
 }
 
 dependencies {
