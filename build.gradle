@@ -114,7 +114,13 @@ repositories {
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
 	//com.neuronrobotics hosting point
 	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
-	 
+	maven { url 'https://plugins.gradle.org/m2/' }
+	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
+	maven { url "https://jitpack.io" }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
+	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+	
 }
 
 dependencies {
