@@ -940,7 +940,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void autoSpin() {
 		try {
 			long diff = System.currentTimeMillis() - getLastMosueMovementTime();
-
+			if(spin!=null)
 			if (diff > timeForAutospin && spin.isSelected()) {
 				// TODO start spinning
 				double scale = 0.5;
@@ -956,7 +956,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			}
 		} catch (Exception | Error e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		FxTimer.runLater(Duration.ofMillis(30), () -> {
 			autoSpin();
