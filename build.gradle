@@ -170,7 +170,7 @@ dependencies {
 			
     compile "com.neuronrobotics:JavaCad:0.14.0"
 	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	compile "com.neuronrobotics:java-bowler:3.25.1"
+	compile "com.neuronrobotics:java-bowler:3.25.2"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.23.3-jar-with-dependencies.jar'])
 	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JavaCad-0.8.2.jar'])
 	compile "com.neuronrobotics:WalnutiQ:2.3.3"
