@@ -2,6 +2,3 @@
 	path = libraries/bowler-script-kernel
 	url = https://github.com/CommonWealthRobotics/bowler-script-kernel.git
 
-[submodule "libraries/java-bowler"]
-	path = libraries/java-bowler
-	url = https://github.com/NeuronRobotics/java-bowler.git
