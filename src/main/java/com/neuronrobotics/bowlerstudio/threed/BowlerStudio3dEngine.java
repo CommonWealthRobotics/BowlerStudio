@@ -777,8 +777,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void buildCamera() {
 
 		CSG cylinder = new Cylinder(0, // Radius at the top
-				5, // Radius at the bottom
-				20, // Height
+				2.5, // Radius at the bottom
+				10, // Height
 				(int) 20 // resolution
 		).toCSG().roty(90).setColor(Color.BLACK);
 
@@ -808,6 +808,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// TODO reorent the start camera
 		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
+		
 	}
 
 	/**
