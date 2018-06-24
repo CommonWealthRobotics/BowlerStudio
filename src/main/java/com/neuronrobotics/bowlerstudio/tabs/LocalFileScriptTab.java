@@ -320,7 +320,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void resizeEvent() {
 		SwingUtilities.invokeLater(() -> {
-			sp.setSize((int) sp.getWidth() - 1, (int) sp.getHeight() - 1);
+			sp.setSize((int) sp.getWidth() , (int) sp.getHeight());
 			textArea.requestFocusInWindow();
 			textArea.invalidate();
 			textArea.repaint();
