@@ -13,6 +13,7 @@ import com.neuronrobotics.bowlerstudio.threed.Line3D;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.NonBowlerDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Polygon;
@@ -30,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -323,15 +326,18 @@ public class BowlerStudioController  implements
 				// new RuntimeException().printStackTrace();
 				getJfx3dmanager().addObject(csg,source);
 			});
+			return;
 			
 		} else if (Tab.class.isInstance(o)) {
 
 			addTab((Tab) o, true);
+			return;
 
 		}
 		else if (Node.class.isInstance(o)) {
 
 			addNode((Node) o);
+			return;
 
 		}else if (Polygon.class.isInstance(o)) {
 			Polygon p = (Polygon) o;
@@ -349,14 +355,96 @@ public class BowlerStudioController  implements
 			line.setStrokeWidth(stroke);
 			line.setStroke(color);
 			addNode(line);
-
-		}
-		
-		if (BowlerAbstractDevice.class.isInstance(o)) {
+			return;
+		}else if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
 			ConnectionManager.addConnection((BowlerAbstractDevice) o,
 					bad.getScriptingName());
+			return;
+		}else {
+			if(methodExists(o, "connect") &&
+			   methodExists(o, "disconnect")) {
+				BowlerAbstractDevice bad;
+				try {
+					bad = new NonBowlerDevice() {
+						private Object deviceWrapped=o;
+						Method methodConnect= o.getClass().getDeclaredMethod("connect", null);
+						Method methodDisconnect= o.getClass().getDeclaredMethod("disconnect", null);
+						boolean hasGetName = methodExists(deviceWrapped, "getName");
+						Method methodGetName=null;
+						@Override
+						public String getScriptingName() {
+
+							if(hasGetName) {
+								if(methodGetName==null)
+								try {
+									methodGetName= deviceWrapped.getClass().getDeclaredMethod("getName", null);
+								} catch (NoSuchMethodException | SecurityException e) {
+									return super.getScriptingName();
+								}
+							}else {
+								return super.getScriptingName();
+							}
+							if(methodGetName==null)
+								return super.getScriptingName();
+							try {
+								return (String) methodGetName.invoke(deviceWrapped, null);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								return super.getScriptingName();
+							}
+						}
+
+						@Override
+						public ArrayList<String> getNamespacesImp() {
+							// TODO Auto-generated method stub
+							return new ArrayList<>();
+						}
+						
+						@Override
+						public void disconnectDeviceImp() {
+							try {
+								methodDisconnect.invoke(deviceWrapped, null);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						
+						@Override
+						public boolean connectDeviceImp() {
+							try {
+								Object value = methodConnect.invoke(deviceWrapped, null);
+								try {
+									return (boolean)value;
+								}catch(Exception e) {
+									
+								}
+								return true;
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							return false;
+						}
+					};
+					ConnectionManager.addConnection((BowlerAbstractDevice) o,
+							bad.getScriptingName());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 		}
+		
+	}   
+	public boolean methodExists(Object clazz, String methodName) {
+	    for (Method method : clazz.getClass().getDeclaredMethods()) {
+	        if (method.getName().equals(methodName)) {
+	            return  true;
+	        }
+	    }
+	    return false;
 	}
 
 	public void addNode(Node o) {
