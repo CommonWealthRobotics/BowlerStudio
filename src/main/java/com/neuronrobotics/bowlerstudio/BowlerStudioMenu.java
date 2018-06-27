@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerstudio;
  **/
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -128,17 +129,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		new Thread() {
 			public void run() {
 				try {
-					// BowlerStudio.openUrlInNewTab(new
-					// URL("https://gist.github.com/" + id));
-					String xmlContent = ScriptingEngine.codeFromGit(id, file)[0];
-					MobileBase mb = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-
-					mb.setGitSelfSource(new String[] { id, file });
+					MobileBase mb ;
+					if(file.toLowerCase().endsWith(".xml")) {
+						mb = MobileBaseLoader.fromGit(id, file);
+					}else {
+						mb=(MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
+					}
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
-
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					BowlerStudio.printStackTrace(e);
 				}
 			}
 		}.start();

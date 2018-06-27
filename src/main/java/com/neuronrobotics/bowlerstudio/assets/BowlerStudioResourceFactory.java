@@ -43,11 +43,11 @@ public class BowlerStudioResourceFactory {
 	@SuppressWarnings("restriction")
 	public static void load() throws Exception {
 		try {
-			BowlerStudio.renderSplashFrame( 57,"Loading DyIO");
+			BowlerStudio.renderSplashFrame( 94,"Loading DyIO");
 			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
 			//mainPanel.setController(new DyIOPanel());
 			mainPanel.setClassLoader(DyIOPanel.class.getClassLoader());
-			BowlerStudio.renderSplashFrame( 58,"Loading GitHub");
+			BowlerStudio.renderSplashFrame( 95,"Loading GitHub");
 
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
 			//githubLogin.setController(new GithubLoginFX());

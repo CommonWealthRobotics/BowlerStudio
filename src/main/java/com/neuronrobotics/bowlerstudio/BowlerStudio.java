@@ -638,7 +638,7 @@ public class BowlerStudio extends Application {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				renderSplashFrame(94, "Main Controller Loaded");
+				renderSplashFrame(96, "UI Launch...");
 
 				Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
 

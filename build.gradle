@@ -106,17 +106,21 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 repositories {
 	mavenCentral()
+	jcenter()
 	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
 	maven { url 'https://clojars.org/repo' }
-	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
-	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
+	//com.neuronrobotics hosting point
+	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
 	maven { url 'https://plugins.gradle.org/m2/' }
 	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
-	 maven { url "https://jitpack.io" }
+	maven { url "https://jitpack.io" }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
+	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+	
 }
 
 dependencies {
@@ -164,9 +168,9 @@ dependencies {
 	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
     compile 'org.slf4j:slf4j-simple:1.6.1'
 			
-	compile "com.neuronrobotics:JavaCad:0.13.5"
+    compile "com.neuronrobotics:JavaCad:0.14.0"
 	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
-	compile "com.neuronrobotics:java-bowler:3.25.1"
+	//compile "com.neuronrobotics:java-bowler:3.25.4"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.23.3-jar-with-dependencies.jar'])
 	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JavaCad-0.8.2.jar'])
 	compile "com.neuronrobotics:WalnutiQ:2.3.3"
@@ -272,7 +276,10 @@ dependencies {
 
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
-	compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
+	//compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
+	compile project(':libraries:bowler-script-kernel:java-bowler')
+	compile project(':libraries:bowler-script-kernel')
+	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 
 }
 

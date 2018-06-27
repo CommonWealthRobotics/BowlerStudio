@@ -120,8 +120,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void addConnection(BowlerAbstractDevice newDevice, String name) {
-		DeviceManager.addConnection(newDevice, name);
 
+
+		DeviceManager.addConnection(newDevice, name);
+		
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class VirtualCameraMobileBase extends MobileBase {
 						elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
 											));
 //				 global.getRotation().setStorage(nr);
-				//System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
+				//System.err.println("Camera  tilt="+global);
 				// New target calculated appliaed to global offset
 				source.setGlobalToFiducialTransform(global);
 			}catch (Exception ex){

@@ -777,8 +777,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void buildCamera() {
 
 		CSG cylinder = new Cylinder(0, // Radius at the top
-				5, // Radius at the bottom
-				20, // Height
+				2.5, // Radius at the bottom
+				10, // Height
 				(int) 20 // resolution
 		).toCSG().roty(90).setColor(Color.BLACK);
 
@@ -808,6 +808,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// TODO reorent the start camera
 		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
+		
 	}
 
 	/**
@@ -940,7 +941,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void autoSpin() {
 		try {
 			long diff = System.currentTimeMillis() - getLastMosueMovementTime();
-
+			if(spin!=null)
 			if (diff > timeForAutospin && spin.isSelected()) {
 				// TODO start spinning
 				double scale = 0.5;
@@ -956,7 +957,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			}
 		} catch (Exception | Error e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		FxTimer.runLater(Duration.ofMillis(30), () -> {
 			autoSpin();

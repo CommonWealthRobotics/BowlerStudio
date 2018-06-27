@@ -15,6 +15,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -45,7 +46,9 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 			
 			@Override
 			public void onDisconnect(BowlerAbstractDevice arg0) {
-				stop();
+				Platform.runLater(()->{
+					stop();
+				});
 			}
 			
 			@Override
@@ -83,7 +86,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 //					}
 //				}.start();
 			}else{
-				System.gc();// clean up any objects created by the physics engine
+				//System.gc();// clean up any objects created by the physics engine
 				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
 				runstop.setText("Stop");
 				msLoopTime.setDisable(true);
