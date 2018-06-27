@@ -1,3 +1,30 @@
+bowlerstudio (0.26.2) xenial; urgency=medium
+
+  * updating java-bowler
+  * java -bowler
+  * java-bowler
+  * Java-bowler to submodule
+  * Java-bowler to submodule
+  * Adding java-bowler submodule
+  * addign the java-bowler build to the final build
+  * Rmoving submodule
+  * Rmoving submodule
+  * Compiling with 2 submodules
+  * build with submodule
+  * Adding the auto-wrapping of objects that act like devices with a connect and disconnect method
+  * java-bowler
+  * java-bowler
+  * move filter to java-bowler
+  * formatting and use DMDevice
+  * device loading more efficient for scripts
+  * working with the fix for mobile base updates
+  * builds as jar
+  * fixed the drifting window issue
+  * kernel
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 25 Jun 2018 10:02:48 -0400
+
 bowlerstudio (0.26.1) xenial; urgency=medium
 
   [ hephaestus ]
