@@ -1,3 +1,12 @@
+bowlerstudio (0.27.0) xenial; urgency=medium
+
+  * kernel
+  * kernel
+  * usinf the javacad sources
+  * 0.27.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 28 Jun 2018 15:08:24 -0400
+
 bowlerstudio (0.26.2) xenial; urgency=medium
 
   * updating java-bowler
