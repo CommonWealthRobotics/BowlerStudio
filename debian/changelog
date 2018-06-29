@@ -1,3 +1,9 @@
+bowlerstudio (0.27.1) xenial; urgency=medium
+
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 29 Jun 2018 10:15:26 -0400
+
 bowlerstudio (0.27.0) xenial; urgency=medium
 
   * kernel
