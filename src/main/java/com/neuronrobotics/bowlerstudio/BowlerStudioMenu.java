@@ -9,8 +9,6 @@ import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.twod.TwoDCad;
-import com.neuronrobotics.bowlerstudio.twod.TwoDCadFactory;
 //import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
@@ -505,11 +503,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				if (openFile == null) {
 					return;
 				}
-				ArrayList<Polygon> points = TwoDCadFactory.pointsFromFile(openFile);
-				if (null != points) {
-					bowlerStudioModularFrame.addTab(new TwoDCad(points), true);
-					return;
-				}
+
 				bowlerStudioModularFrame.createFileTab(openFile);
 			}
 		}.start();

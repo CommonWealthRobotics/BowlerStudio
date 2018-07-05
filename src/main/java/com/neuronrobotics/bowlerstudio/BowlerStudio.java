@@ -270,8 +270,16 @@ public class BowlerStudio extends Application {
 
 				}
 				renderSplashFrame(15, "Loading Settings");
-				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-						StudioBuildInfo.getVersion());
+				try {
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+							StudioBuildInfo.getVersion());
+				}catch(Throwable t) {
+					System.out.println("Resetting the configs repo...");
+					//clear the configs repo
+					ScriptingEngine.deleteRepo(ConfigurationDatabase.getGitSource());
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+							StudioBuildInfo.getVersion());
+				}
 				// String lastVersion = (String)
 				// ConfigurationDatabase.getObject("BowlerStudioConfigs",
 				// "skinBranch",
