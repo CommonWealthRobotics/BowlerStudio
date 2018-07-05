@@ -228,6 +228,16 @@ public class BowlerStudio extends Application {
 			} catch (IllegalStateException e) {
 			}
 		}
+		if (splashGraphics != null && splash.isVisible()) {
+			splashGraphics.setComposite(AlphaComposite.Clear);
+			splashGraphics.fillRect(65, 270, 200, 40);
+			splashGraphics.setPaintMode();
+			splashGraphics.setColor(Color.WHITE);
+			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 65);
+			// Platform.runLater(() -> {
+			splash.update();
+			// });
+		}
 		renderSplashFrame(2, "Testing Internet Connection");
 
 		try {
