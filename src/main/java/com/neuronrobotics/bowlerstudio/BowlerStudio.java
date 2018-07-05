@@ -233,7 +233,7 @@ public class BowlerStudio extends Application {
 			splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 65);
+			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
 			// Platform.runLater(() -> {
 			splash.update();
 			// });
