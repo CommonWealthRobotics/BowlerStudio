@@ -221,6 +221,14 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		new JFXPanel();
+		if(!StudioBuildInfo.isOS64bit()) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("32 Bit Java Detected");
+			alert.setHeaderText("Insuffient Ram Capibilities");
+			alert.setContentText("This applications uses more that 4gb of ram");
+			alert.showAndWait();
+			System.exit(1);
+		}
 		Log.enableWarningPrint();
 		if (splash != null) {
 			try {
