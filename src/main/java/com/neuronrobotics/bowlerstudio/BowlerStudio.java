@@ -226,7 +226,7 @@ public class BowlerStudio extends Application {
 			Platform.runLater(()->{
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("32 Bit Java Detected");
-				alert.setHeaderText("Insuffient Ram Capibilities");
+				alert.setHeaderText("Insuffient Ram Capibilities in 32 bit mode");
 				alert.setContentText("This applications uses more that 4gb of ram\nA 32 bit JVM mode detected: "+System.getProperty("os.arch"));
 				alert.showAndWait();
 				System.exit(1);
