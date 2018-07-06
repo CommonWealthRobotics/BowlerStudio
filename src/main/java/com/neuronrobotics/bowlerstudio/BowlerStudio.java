@@ -24,6 +24,7 @@ import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.svg.SVGLoad;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -91,7 +92,6 @@ public class BowlerStudio extends Application {
 					}
 				}
 			}
-
 		};
 
 		public Console() {
@@ -267,6 +267,7 @@ public class BowlerStudio extends Application {
 			// Remove the default printing
 
 		});
+		SVGLoad.setProgressDefault(newShape -> BowlerStudioController.addCsg(newShape));
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Attempting to Log In...");

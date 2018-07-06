@@ -1,3 +1,10 @@
+bowlerstudio (0.27.4) xenial; urgency=medium
+
+  * bugfix
+  * 0.27.4
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 05 Jul 2018 18:17:00 -0400
+
 bowlerstudio (0.27.3) xenial; urgency=medium
 
   * Adding the version number to the splash screen
