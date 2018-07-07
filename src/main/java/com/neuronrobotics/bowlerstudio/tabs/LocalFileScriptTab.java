@@ -365,7 +365,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	@Override
-	public void onScriptError(Exception except, File source) {
+	public void onScriptError(Throwable except, File source) {
 		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

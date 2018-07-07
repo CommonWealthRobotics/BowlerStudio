@@ -365,7 +365,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					});
 					
 				}
-				catch (Exception ex) {
+				catch (Throwable ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
 					Platform.runLater(() -> {
 						try{

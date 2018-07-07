@@ -173,7 +173,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 	}
 
-	public static void highlightException(File fileEngineRunByName, Exception ex) {
+	public static void highlightException(File fileEngineRunByName, Throwable ex) {
 		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 
@@ -181,7 +181,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		bowlerStudioControllerStaticReference.clearHighlits();
 	}
 
-	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
+	private void highlightExceptionLocal(File fileEngineRunByName, Throwable ex) {
 		new Thread() {
 			public void run() {
 				setName("Highlighter thread");
@@ -435,7 +435,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	@Override
-	public void onScriptError(Exception except, File source) {
+	public void onScriptError(Throwable except, File source) {
 		// TODO Auto-generated method stub
 
 	}

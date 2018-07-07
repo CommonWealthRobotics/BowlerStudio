@@ -763,11 +763,11 @@ public class BowlerStudio extends Application {
 
 	}
 
-	public static void printStackTrace(Exception e) {
+	public static void printStackTrace(Throwable e) {
 		printStackTrace(e, null);
 	}
 
-	public static void printStackTrace(Exception e, File sourceFile) {
+	public static void printStackTrace(Throwable e, File sourceFile) {
 		BowlerStudioController.highlightException(sourceFile, e);
 	}
 
