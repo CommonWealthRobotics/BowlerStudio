@@ -335,7 +335,7 @@ public class ScriptingFileWidget extends BorderPane implements
 					});
 					BowlerStudioController.highlightException(currentFile, d);
 				}
-				catch (Exception|Error ex) {
+				catch (Throwable ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
 
 					try{
