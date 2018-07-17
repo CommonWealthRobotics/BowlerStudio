@@ -1,3 +1,12 @@
+bowlerstudio (0.27.6) xenial; urgency=medium
+
+  * Change from exception to throwable dispalys and highlights
+  * easier clearing of the highlights
+  * Avoud competition with the click to highlight
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 07 Jul 2018 19:02:21 -0400
+
 bowlerstudio (0.27.5) xenial; urgency=medium
 
   * Better loading of exceptions and SVG manipulations
