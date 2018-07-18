@@ -1,3 +1,10 @@
+bowlerstudio (0.28.0) xenial; urgency=medium
+
+  * jcsg
+  * 0.28.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Jul 2018 15:25:23 -0400
+
 bowlerstudio (0.27.6) xenial; urgency=medium
 
   * Change from exception to throwable dispalys and highlights
