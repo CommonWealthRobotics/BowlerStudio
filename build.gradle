@@ -105,6 +105,7 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 
 repositories {
+	maven { url 'https://jitpack.io' }
 	mavenCentral()
 	jcenter()
 	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
@@ -120,6 +121,10 @@ repositories {
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
 	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+		//DockFX
+	maven { 
+	url 'https://dl.bintray.com/clearcontrol/ClearControl/'  
+	}
 	
 }
 
@@ -169,7 +174,7 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.6.1'
 			
     //compile "com.neuronrobotics:JavaCad:0.14.0"
-	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
+	//compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
 	//compile "com.neuronrobotics:java-bowler:3.25.4"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.23.3-jar-with-dependencies.jar'])
 	//compile fileTree (dir: '../JCSG/build/libs/', includes: ['JavaCad-0.8.2.jar'])
@@ -257,7 +262,8 @@ dependencies {
 	//compile "org.jfxtras:jfxtras-labs:8.0-r4"
 		
 	//https://bintray.com/clearcontrol/ClearControl/DockFX
-	compile 'org.dockfx:DockFX:0.1.12'
+	// https://mvnrepository.com/artifact/org.dockfx/DockFX
+	//compile group: 'org.dockfx', name: 'DockFX', version: '0.1.12'
 	//compile 'com.github.movisens:SmartGattLib:1.7'
 	// https://mvnrepository.com/artifact/org.apache.xmlrpc/xmlrpc-client
 	compile group: 'org.apache.xmlrpc', name: 'xmlrpc-client', version: '3.1.3'
