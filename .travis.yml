@@ -8,7 +8,7 @@ install:
   
   
 script:
-  - gradle compileJava   
+  - TERM=dumb ./gradlew  compileJava --stacktrace 
 cache:
   directories:
   - $HOME/.m2
