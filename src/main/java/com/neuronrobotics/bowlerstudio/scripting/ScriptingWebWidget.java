@@ -4,7 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+//import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
@@ -347,8 +347,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 						alert.showAndWait();
 						if (stackTrace.contains("dyio"))
 							ConnectionManager.addConnection();
-						else if (stackTrace.contains("camera"))
-							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
+//						else if (stackTrace.contains("camera"))
+//							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
 						else if (stackTrace.contains("gamepad"))
 							ConnectionManager.onConnectGamePad("gamepad");
 						reset();

@@ -6,7 +6,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+//import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
@@ -202,8 +202,8 @@ public class Terminal {
 						alert.showAndWait();
 						if (stackTrace.contains("dyio"))
 							ConnectionManager.addConnection();
-						else if (stackTrace.contains("camera"))
-							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
+//						else if (stackTrace.contains("camera"))
+//							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
 						else if (stackTrace.contains("gamepad"))
 							ConnectionManager.onConnectGamePad("gamepad");
 						reset();

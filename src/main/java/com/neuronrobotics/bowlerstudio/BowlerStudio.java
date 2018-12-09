@@ -12,7 +12,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.imageprovider.NativeResource;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
+//import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -390,22 +390,7 @@ public class BowlerStudio extends Application {
 
 			// System.out.println("Loading Main.fxml");
 
-			try {
-				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
-			} catch (Exception | Error e) {
-				// e.printStackTrace();
-				// opencvOk=false;
-				Platform.runLater(() -> {
-					Alert alert = new Alert(AlertType.INFORMATION);
-					alert.setTitle("OpenCV missing");
-					alert.setHeaderText("Opencv library is missing");
-					alert.setContentText(e.getMessage());
-					alert.initModality(Modality.APPLICATION_MODAL);
-					// alert.show();
-					// e.printStackTrace(System.out);
-				});
 
-			}
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
