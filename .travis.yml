@@ -13,7 +13,8 @@ install:
   
   
 script:
-  - TERM=dumb ./gradlew wrapper --gradle-version 2.12 compileJava javadoc test 
+  - TERM=dumb ./gradlew wrapper --gradle-version 2.12
+  - TERM=dumb ./gradlew compileJava javadoc test 
 cache:
   directories:
   - $HOME/.m2
