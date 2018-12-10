@@ -173,7 +173,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 	}
 
-	public static void highlightException(File fileEngineRunByName, Exception ex) {
+	public static void highlightException(File fileEngineRunByName, Throwable ex) {
 		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 
@@ -181,7 +181,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		bowlerStudioControllerStaticReference.clearHighlits();
 	}
 
-	private void highlightExceptionLocal(File fileEngineRunByName, Exception ex) {
+	private void highlightExceptionLocal(File fileEngineRunByName, Throwable ex) {
 		new Thread() {
 			public void run() {
 				setName("Highlighter thread");
@@ -194,7 +194,9 @@ public class BowlerStudioController implements IScriptEventListener {
 					widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
 					// System.out.println("Highlighting "+fileEngineRunByName+" at line
 					// "+lineNumber+" to color "+color);
-					for (StackTraceElement el : ex.getStackTrace()) {
+					StackTraceElement[] stackTrace = ex.getStackTrace();
+					
+					for (StackTraceElement el : stackTrace) {
 						try {
 							// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
 							// "+el.getFileName());
@@ -207,6 +209,23 @@ public class BowlerStudioController implements IScriptEventListener {
 							// PrintWriter pw = new PrintWriter(sw);
 							// e.printStackTrace(pw);
 							// System.out.println(sw.toString());
+						}
+					}
+					if(ex.getCause()!=null) {
+						for (StackTraceElement el : ex.getCause().getStackTrace()) {
+							try {
+								// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
+								// "+el.getFileName());
+								if (el.getFileName().contentEquals(fileEngineRunByName.getName())) {
+									widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),
+											Color.CYAN);
+								}
+							} catch (Exception e) {
+								// StringWriter sw = new StringWriter();
+								// PrintWriter pw = new PrintWriter(sw);
+								// e.printStackTrace(pw);
+								// System.out.println(sw.toString());
+							}
 						}
 					}
 
@@ -416,7 +435,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	@Override
-	public void onScriptError(Exception except, File source) {
+	public void onScriptError(Throwable except, File source) {
 		// TODO Auto-generated method stub
 
 	}

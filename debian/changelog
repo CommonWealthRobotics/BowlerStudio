@@ -1,3 +1,70 @@
+bowlerstudio (0.28.1) xenial; urgency=medium
+
+  * 0.28.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Jul 2018 17:14:47 -0400
+
+bowlerstudio (0.28.0) xenial; urgency=medium
+
+  * jcsg
+  * 0.28.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Jul 2018 15:25:23 -0400
+
+bowlerstudio (0.27.6) xenial; urgency=medium
+
+  * Change from exception to throwable dispalys and highlights
+  * easier clearing of the highlights
+  * Avoud competition with the click to highlight
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 07 Jul 2018 19:02:21 -0400
+
+bowlerstudio (0.27.5) xenial; urgency=medium
+
+  * Better loading of exceptions and SVG manipulations
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 07 Jul 2018 11:52:27 -0400
+
+bowlerstudio (0.27.4) xenial; urgency=medium
+
+  * bugfix
+  * 0.27.4
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 05 Jul 2018 18:17:00 -0400
+
+bowlerstudio (0.27.3) xenial; urgency=medium
+
+  * Adding the version number to the splash screen
+  * error out on 32bit systems
+  * Arror message on 32 bit mode JVM in UI
+  * Gracefull loading of unknown links
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 05 Jul 2018 16:51:30 -0400
+
+bowlerstudio (0.27.2) xenial; urgency=medium
+
+  * rev bump
+  * Massivly faster slicer
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 05 Jul 2018 13:59:57 -0400
+
+bowlerstudio (0.27.1) xenial; urgency=medium
+
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 29 Jun 2018 10:15:26 -0400
+
+bowlerstudio (0.27.0) xenial; urgency=medium
+
+  * kernel
+  * kernel
+  * usinf the javacad sources
+  * 0.27.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 28 Jun 2018 15:08:24 -0400
+
 bowlerstudio (0.26.2) xenial; urgency=medium
 
   * updating java-bowler

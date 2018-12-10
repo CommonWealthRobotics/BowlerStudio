@@ -12,7 +12,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.imageprovider.NativeResource;
-import com.neuronrobotics.imageprovider.OpenCVJNILoader;
+//import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -24,6 +24,7 @@ import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.svg.SVGLoad;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -91,7 +92,6 @@ public class BowlerStudio extends Application {
 					}
 				}
 			}
-
 		};
 
 		public Console() {
@@ -221,12 +221,33 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		new JFXPanel();
+		if(!StudioBuildInfo.isOS64bit()) {
+			
+			Platform.runLater(()->{
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("32 Bit Java Detected");
+				alert.setHeaderText("Insuffient Ram Capibilities in 32 bit mode");
+				alert.setContentText("This applications uses more that 4gb of ram\nA 32 bit JVM mode detected: "+System.getProperty("os.arch"));
+				alert.showAndWait();
+				System.exit(1);
+			});
+		}
 		Log.enableWarningPrint();
 		if (splash != null) {
 			try {
 				splashGraphics = splash.createGraphics();
 			} catch (IllegalStateException e) {
 			}
+		}
+		if (splashGraphics != null && splash.isVisible()) {
+			splashGraphics.setComposite(AlphaComposite.Clear);
+			splashGraphics.fillRect(65, 270, 200, 40);
+			splashGraphics.setPaintMode();
+			splashGraphics.setColor(Color.WHITE);
+			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
+			// Platform.runLater(() -> {
+			splash.update();
+			// });
 		}
 		renderSplashFrame(2, "Testing Internet Connection");
 
@@ -246,6 +267,7 @@ public class BowlerStudio extends Application {
 			// Remove the default printing
 
 		});
+		SVGLoad.setProgressDefault(newShape -> BowlerStudioController.addCsg(newShape));
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Attempting to Log In...");
@@ -270,8 +292,16 @@ public class BowlerStudio extends Application {
 
 				}
 				renderSplashFrame(15, "Loading Settings");
-				firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-						StudioBuildInfo.getVersion());
+				try {
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+							StudioBuildInfo.getVersion());
+				}catch(Throwable t) {
+					System.out.println("Resetting the configs repo...");
+					//clear the configs repo
+					ScriptingEngine.deleteRepo(ConfigurationDatabase.getGitSource());
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+							StudioBuildInfo.getVersion());
+				}
 				// String lastVersion = (String)
 				// ConfigurationDatabase.getObject("BowlerStudioConfigs",
 				// "skinBranch",
@@ -360,22 +390,7 @@ public class BowlerStudio extends Application {
 
 			// System.out.println("Loading Main.fxml");
 
-			try {
-				OpenCVJNILoader.load(); // Loads the JNI (java native interface)
-			} catch (Exception | Error e) {
-				// e.printStackTrace();
-				// opencvOk=false;
-				Platform.runLater(() -> {
-					Alert alert = new Alert(AlertType.INFORMATION);
-					alert.setTitle("OpenCV missing");
-					alert.setHeaderText("Opencv library is missing");
-					alert.setContentText(e.getMessage());
-					alert.initModality(Modality.APPLICATION_MODAL);
-					// alert.show();
-					// e.printStackTrace(System.out);
-				});
 
-			}
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
@@ -517,7 +532,6 @@ public class BowlerStudio extends Application {
 	 * @version 1.0
 	 * @param url
 	 *            - The URL of the tab that needs to be opened
-	 * @return None
 	 */
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
@@ -733,11 +747,11 @@ public class BowlerStudio extends Application {
 
 	}
 
-	public static void printStackTrace(Exception e) {
+	public static void printStackTrace(Throwable e) {
 		printStackTrace(e, null);
 	}
 
-	public static void printStackTrace(Exception e, File sourceFile) {
+	public static void printStackTrace(Throwable e, File sourceFile) {
 		BowlerStudioController.highlightException(sourceFile, e);
 	}
 

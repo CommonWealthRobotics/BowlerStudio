@@ -27,6 +27,8 @@ import org.reactfx.util.FxTimer;
 import java.time.Duration;
 import java.util.HashMap;
 
+import javax.management.RuntimeErrorException;
+
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
 	double defauletSpeed=0.10;
 	private AbstractKinematicsNR kin;
@@ -100,7 +102,6 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
-		buttons. getColumnConstraints().add(new ColumnConstraints(50)); // column 2 is 100 wide
 	    
 		buttons.getRowConstraints().add(new RowConstraints(40)); // 
 		buttons. getRowConstraints().add(new RowConstraints(40)); // 
@@ -146,12 +147,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					3, 
 					1);
 		}
+		/*
 		buttons.add(	game, 
 				4, 
 				0);
 		buttons.add(	conf, 
 				4, 
 				1);
+				*/
 		add(	buttons, 
 				0, 
 				0);
@@ -314,9 +317,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		}
 	}
 	public AbstractKinematicsNR getKin() {
+		
 		return kin;
 	}
 	public void setKin(AbstractKinematicsNR kin) {
+		if(!kin.isAvailable())
+			kin.connect();
 		if(MobileBase.class.isInstance(kin))
 			setMobilebase((MobileBase)kin);
 		this.kin = kin;
@@ -362,7 +368,8 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
 							jogTHreadHandle.setToSet(toSet, toSeconds);
-							
+							Log.enableDebugPrint();
+							//System.out.println("Loop Jogging to: "+toSet);
 						}else{
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
@@ -398,7 +405,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				if(controlThreadRunning){
 					if(getMobilebase()==null){
 						try {
-							//Log.enableDebugPrint();
+							Log.enableDebugPrint();
 							//System.out.println("Jogging to: "+toSet);
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
@@ -416,6 +423,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				}
 				ThreadUtil.wait((int) (toSeconds*1000));
 			}
+			new RuntimeException("Jog thread finished").printStackTrace();
 		}
 
 		public void setToSet(TransformNR toSet,double toSeconds) {

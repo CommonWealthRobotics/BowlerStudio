@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+//import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
@@ -327,15 +327,15 @@ public class ScriptingFileWidget extends BorderPane implements
 						alert.showAndWait();
 						if(stackTrace.contains("dyio"))
 							ConnectionManager.addConnection();
-						else if(stackTrace.contains("camera"))
-							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
+//						else if(stackTrace.contains("camera"))
+//							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
 						else if(stackTrace.contains("gamepad"))
 							ConnectionManager.onConnectGamePad("gamepad");
 						reset();
 					});
 					BowlerStudioController.highlightException(currentFile, d);
 				}
-				catch (Exception|Error ex) {
+				catch (Throwable ex) {
 					System.err.println("Script exception of type= "+ex.getClass().getName());
 
 					try{

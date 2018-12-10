@@ -256,7 +256,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		textArea.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 3) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
 					highlighter.removeAllHighlights();
 				}
 				// System.out.println("Number of click: " + e.getClickCount());
@@ -365,7 +365,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	@Override
-	public void onScriptError(Exception except, File source) {
+	public void onScriptError(Throwable except, File source) {
 		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

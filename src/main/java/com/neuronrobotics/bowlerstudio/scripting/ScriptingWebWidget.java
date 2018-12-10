@@ -4,7 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+//import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
@@ -34,15 +34,15 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({ "unused", "restriction" })
-public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object>{
+public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object> {
 
 	private boolean running = false;
 	private Thread scriptRunner = null;
-	
+
 	private Dimension codeDimentions = new Dimension(1168, 768);
-	//Label fileLabel = new Label();
+	// Label fileLabel = new Label();
 	private Object scriptResult;
-	private String codeText="";
+	private String codeText = "";
 
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	boolean loadGist = false;
 
 	private ScriptingWidgetType type;
-	
+
 	final ComboBox<String> fileListBox = new ComboBox<>();
 	private File currentFile = null;
 
@@ -62,11 +62,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private String currentGit;
 	private String currentGist;
 	private boolean isOwnedByLoggedInUser;
-	private ImageView image=new ImageView();
+	private ImageView image = new ImageView();
 
-	
-	public ScriptingWebWidget(File currentFile, String currentGist,
-			WebEngine engine) throws IOException, InterruptedException {
+	public ScriptingWebWidget(File currentFile, String currentGist, WebEngine engine)
+			throws IOException, InterruptedException {
 		this(ScriptingWidgetType.GIST);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 		edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
@@ -77,12 +76,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
-	
-	private void startStopAction(){
+	private void startStopAction() {
 		runfx.setDisable(true);
 		if (running)
 			stop();
@@ -95,33 +92,33 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		this.type = type;
 
 		runfx.setOnAction(e -> {
-	    	new Thread(){
-	    		public void run(){
+			new Thread() {
+				public void run() {
 
-	    			startStopAction();
-	    		}
-	    	}.start();
+					startStopAction();
+				}
+			}.start();
 		});
 		edit.setOnAction(e -> {
-	    	new Thread(){
-	    		public void run(){
-	    			if(isOwnedByLoggedInUser)
-	    				BowlerStudio.createFileTab(currentFile);
-	    			else{
-	    				// todo fork git repo
-	    				System.out.println("Making Fork...");
-	    				GHGist newGist;
+			new Thread() {
+				public void run() {
+					if (isOwnedByLoggedInUser)
+						BowlerStudio.createFileTab(currentFile);
+					else {
+						// todo fork git repo
+						System.out.println("Making Fork...");
+						GHGist newGist;
 						try {
 							newGist = ScriptingEngine.fork(currentGist);
 							Map<String, GHGistFile> fileMap = newGist.getFiles();
-							if(fileMap.size()==1){
+							if (fileMap.size() == 1) {
 								String filename = (String) fileMap.keySet().toArray()[0];
-								String url =newGist.getGitPullUrl();
+								String url = newGist.getGitPullUrl();
 								File file = ScriptingEngine.fileFromGit(url, filename);
 								BowlerStudio.createFileTab(file);
-							}else{
-			    				String webURL = newGist.getHtmlUrl();
-			    				try {
+							} else {
+								String webURL = newGist.getHtmlUrl();
+								try {
 									BowlerStudio.openUrlInNewTab(new URL(webURL));
 								} catch (MalformedURLException e) {
 									// TODO Auto-generated catch block
@@ -132,14 +129,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 							BowlerStudioController.highlightException(currentFile, e1);
 						}
 
-	    			}
-	    					
-	    		}
-	    	}.start();
+					}
+
+				}
+			}.start();
 
 		});
-		
-
 
 		setPadding(new Insets(1, 0, 3, 10));
 
@@ -148,9 +143,9 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(image);
 		controlPane.getChildren().add(edit);
-		
+
 		controlPane.getChildren().add(fileListBox);
-		
+
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
 
@@ -164,11 +159,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			runfx.setText("Run");
 			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-			
+
 		});
 
 	}
-
 
 	public void addIScriptEventListener(IScriptEventListener l) {
 		if (!listeners.contains(l))
@@ -200,104 +194,101 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	}
 
-//	public void loadCodeFromFile(File currentFile) throws IOException {
-//		if (!currentFile.exists()) {
-//			currentFile.createNewFile();
-//		}
-//		setUpFile(currentFile);
-//		setCode(new String(Files.readAllBytes(currentFile.toPath())));
-//	}
-	
-	private void loadGitLocal(String id, String file){
-		//System.out.println("Loading "+file+" from "+id);
+	// public void loadCodeFromFile(File currentFile) throws IOException {
+	// if (!currentFile.exists()) {
+	// currentFile.createNewFile();
+	// }
+	// setUpFile(currentFile);
+	// setCode(new String(Files.readAllBytes(currentFile.toPath())));
+	// }
+
+	private void loadGitLocal(String id, String file) {
+		// System.out.println("Loading "+file+" from "+id);
 		String[] code;
 		try {
-			code = ScriptingEngine.codeFromGit(id,file);
-			
+			code = ScriptingEngine.codeFromGit(id, file);
+
 			if (code != null) {
 				setCode(code[0]);
-				currentFile = ScriptingEngine.fileFromGit(id,file);
+				currentFile = ScriptingEngine.fileFromGit(id, file);
 			}
 			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 			Platform.runLater(() -> {
-				if(isOwnedByLoggedInUser){
+				if (isOwnedByLoggedInUser) {
 					edit.setText("Edit...");
 					edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
-				}else{
+				} else {
 					edit.setText("Make Copy");
 					edit.setGraphic(AssetFactory.loadIcon("Make-Copy-Script.png"));
 				}
 			});
 			try {
-				image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+				image.setImage(AssetFactory
+						.loadAsset("Script-Tab-" + ScriptingEngine.getShellType(currentFile.getName()) + ".png"));
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 
 		} catch (Exception e) {
-			  StringWriter sw = new StringWriter();
-		      PrintWriter pw = new PrintWriter(sw);
-		      e.printStackTrace(pw);
-		      System.out.println(sw.toString());
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			System.out.println(sw.toString());
 		}
 	}
 
-	public void loadCodeFromGist(String a, WebEngine e)
-			throws Exception {
-		//new Thread(()->{
-			addr = a;
-			engine = e;
-			loadGist = true;
-			fileListBox.valueProperty().removeListener(this);
-			Platform.runLater(()->runfx.setDisable(true));
-			Platform.runLater(()->edit.setDisable(true));
-			Platform.runLater(()->fileListBox.getItems().clear());
-			List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
-			ArrayList<String> fileList;
-			if(!gists.isEmpty()){
-				currentGist=gists.get(0);
-				currentGit = "https://gist.github.com/" + currentGist+".git";
-			}else if(addr.contains("https://github.com/")){
-				
-				if (a.endsWith("/")) {
-				    a = a.substring(0, a.length() - 1);
-				}
-				currentGit =a+".git";
-				
+	public void loadCodeFromGist(String a, WebEngine e) throws Exception {
+		// new Thread(()->{
+		addr = a;
+		engine = e;
+		loadGist = true;
+		fileListBox.valueProperty().removeListener(this);
+		Platform.runLater(() -> runfx.setDisable(true));
+		Platform.runLater(() -> edit.setDisable(true));
+		Platform.runLater(() -> fileListBox.getItems().clear());
+		List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
+		ArrayList<String> fileList;
+		if (!gists.isEmpty()) {
+			currentGist = gists.get(0);
+			currentGit = "https://gist.github.com/" + currentGist + ".git";
+		} else if (addr.contains("https://github.com/")) {
+
+			if (a.endsWith("/")) {
+				a = a.substring(0, a.length() - 1);
 			}
-			else{
-				return;
+			currentGit = a + ".git";
+
+		} else {
+			return;
+		}
+		ArrayList<String> tmp = ScriptingEngine.filesInGit(currentGit);
+		fileList = new ArrayList<>();
+		for (String s : tmp) {
+			if (!s.contains("csgDatabase.json"))// filter out configuration files from the list
+				fileList.add(s);
+		}
+		// for(String s:fileList){
+		// System.out.println("GITS: "+s);
+		// }
+		if (!fileList.isEmpty())
+			loadGitLocal(currentGit, fileList.get(0));
+
+		Platform.runLater(() -> {
+
+			for (String s : fileList) {
+				fileListBox.getItems().add(s);
 			}
-			ArrayList<String> tmp = ScriptingEngine.filesInGit(currentGit);
-			fileList=new ArrayList<>();
-			for(String s:tmp){
-				if(!s.contains("csgDatabase.json"))// filter out configuration files from the list
-					fileList.add(s);
+			if (!fileList.isEmpty()) {
+				fileListBox.setValue(fileList.get(0));
+				fileListBox.valueProperty().addListener(this);
+				Platform.runLater(() -> runfx.setDisable(false));
+				Platform.runLater(() -> edit.setDisable(false));
 			}
-//			for(String s:fileList){
-//				System.out.println("GITS: "+s);
-//			}
-			if(!fileList.isEmpty())
-				loadGitLocal(currentGit, fileList.get(0));
-			
-			Platform.runLater(()->{
-				
-				for(String s:fileList){
-						fileListBox.getItems().add(s);
-				}
-				if(!fileList.isEmpty()){
-					fileListBox.setValue(fileList.get(0));
-					fileListBox.valueProperty().addListener(this);
-					Platform.runLater(()->runfx.setDisable(false));
-					Platform.runLater(()->edit.setDisable(false));
-				}
-			});
-		//}).start();
-		
+		});
+		// }).start();
+
 	}
-
-
 
 	private void start() {
 		BowlerStudio.clearConsole();
@@ -308,32 +299,31 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			e1.printStackTrace();
 		}
 		running = true;
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			runfx.setText("Stop");
 			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-			
+
 		});
 		scriptRunner = new Thread() {
 
 			public void run() {
 				String name;
-				try{
+				try {
 					name = currentFile.getName();
-				}catch (NullPointerException e){
-					name="";
+				} catch (NullPointerException e) {
+					name = "";
 				}
 				try {
-					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null,ScriptingEngine.getShellType(name));
+					Object obj = ScriptingEngine.inlineScriptRun(currentFile, null, ScriptingEngine.getShellType(name));
 					for (IScriptEventListener l : listeners) {
-						l.onScriptFinished(obj, scriptResult,currentFile);
+						l.onScriptFinished(obj, scriptResult, currentFile);
 					}
 
 					scriptResult = obj;
 					reset();
 
-				} 
-				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){
+				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Device missing error");
@@ -341,40 +331,39 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						d.printStackTrace(pw);
-						
+
 						String stackTrace = sw.toString();
-						
-						if(stackTrace.contains("dyio"))
-							message+="dyio";
-						else if(stackTrace.contains("camera"))
-							message+="camera";
-						else if(stackTrace.contains("gamepad"))
-							message+="gamepad";
+
+						if (stackTrace.contains("dyio"))
+							message += "dyio";
+						else if (stackTrace.contains("camera"))
+							message += "camera";
+						else if (stackTrace.contains("gamepad"))
+							message += "gamepad";
 						else
-							message+=stackTrace;
+							message += stackTrace;
 						alert.setHeaderText(message);
 						alert.setContentText("You need to connect it before running again");
 						alert.showAndWait();
-						if(stackTrace.contains("dyio"))
+						if (stackTrace.contains("dyio"))
 							ConnectionManager.addConnection();
-						else if(stackTrace.contains("camera"))
-							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
-						else if(stackTrace.contains("gamepad"))
+//						else if (stackTrace.contains("camera"))
+//							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
+						else if (stackTrace.contains("gamepad"))
 							ConnectionManager.onConnectGamePad("gamepad");
 						reset();
 					});
-					
-				}
-				catch (Exception ex) {
-					System.err.println("Script exception of type= "+ex.getClass().getName());
+
+				} catch (Throwable ex) {
+					System.err.println("Script exception of type= " + ex.getClass().getName());
 					Platform.runLater(() -> {
-						try{
+						try {
 							if (ex.getMessage().contains("sleep interrupted")) {
 								append("\n" + currentFile + " Interupted\n");
-							} else{
-								throw new RuntimeException(ex);
+							} else {
+								BowlerStudio.printStackTrace(ex,currentFile);
 							}
-						}catch(Exception e){
+						} catch (Throwable e) {
 							StringWriter sw = new StringWriter();
 							PrintWriter pw = new PrintWriter(sw);
 							ex.printStackTrace(pw);
@@ -384,17 +373,17 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 						reset();
 					});
 					for (IScriptEventListener l : listeners) {
-						l.onScriptError(ex,currentFile);
+						l.onScriptError(ex, currentFile);
 					}
-					throw new RuntimeException(ex);
+					BowlerStudio.printStackTrace(ex,currentFile);
 				}
 
 			}
 		};
 
 		try {
-//			if (loadGist)
-//				loadCodeFromGist(addr, engine);
+			// if (loadGist)
+			// loadCodeFromGist(addr, engine);
 
 			scriptRunner.start();
 		} catch (Exception e) {
@@ -417,27 +406,20 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		codeText = string;
 		// System.out.println(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onScriptChanged(pervious, string,currentFile);
+			l.onScriptChanged(pervious, string, currentFile);
 		}
 	}
 
 	public String getFileName() {
-		if(currentFile!=null)
+		if (currentFile != null)
 			return currentFile.getName();
 		else
 			return "Web";
 	}
 
-
-
 	@Override
-	public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, Object oldValue,
-			Object newValue) {
-		loadGitLocal(currentGit, (String)newValue);
+	public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, Object oldValue, Object newValue) {
+		loadGitLocal(currentGit, (String) newValue);
 	}
-
-
-
-
 
 }

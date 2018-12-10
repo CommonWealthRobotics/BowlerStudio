@@ -66,7 +66,7 @@ import javafx.scene.control.TextArea;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer info@michaelhoffer.de
  */
 public class RedirectableStream extends PrintStream {
 

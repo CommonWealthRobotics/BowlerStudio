@@ -11,6 +11,6 @@ public interface IScriptEventListener {
 	
 	void onScriptChanged(String previous, String current, File source);
 	
-	void onScriptError( Exception except, File source);
+	void onScriptError( Throwable except, File source);
 
 }

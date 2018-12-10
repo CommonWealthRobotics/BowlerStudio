@@ -4,7 +4,7 @@ import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
-import com.neuronrobotics.imageprovider.OpenCVImageProvider;
+//import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -192,41 +192,41 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	}
 	
-	 public static OpenCVImageProvider onConnectCVCamera() {
-		List<String> choices = new ArrayList<>();
-		choices.add("0");
-		choices.add("1");
-		choices.add("2");
-		choices.add("3");
-		choices.add("4");
-		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
-		dialog.setTitle("OpenCV Camera Index Chooser");
-		dialog.setHeaderText("Choose an OpenCV camera");
-		dialog.setContentText("Camera Index:");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		
-		// The Java 8 way to get the response value (with lambda expression).
-		if (result !=null) {
-			String letter = result.get();
-			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
-			String name = "camera"+letter;
-			addConnection(p,name);
-			return p;
-		}
-		return null;
-//		OpenCVImageProvider p = new OpenCVImageProvider(0);
-//		String name = "camera0";
-//		application.addConnection(p,name);
-		
-	}
+//	 public static OpenCVImageProvider onConnectCVCamera() {
+//		List<String> choices = new ArrayList<>();
+//		choices.add("0");
+//		choices.add("1");
+//		choices.add("2");
+//		choices.add("3");
+//		choices.add("4");
+//		
+//		ChoiceDialog<String> dialog = new ChoiceDialog<>("0", choices);
+//		dialog.setTitle("OpenCV Camera Index Chooser");
+//		dialog.setHeaderText("Choose an OpenCV camera");
+//		dialog.setContentText("Camera Index:");
+//
+//		// Traditional way to get the response value.
+//		Optional<String> result = dialog.showAndWait();
+//		
+//		// The Java 8 way to get the response value (with lambda expression).
+//		if (result !=null) {
+//			String letter = result.get();
+//			OpenCVImageProvider p = new OpenCVImageProvider(Integer.parseInt(letter));
+//			String name = "camera"+letter;
+//			addConnection(p,name);
+//			return p;
+//		}
+//		return null;
+////		OpenCVImageProvider p = new OpenCVImageProvider(0);
+////		String name = "camera0";
+////		application.addConnection(p,name);
+//		
+//	}
 
 
 
 	 public static void onConnectJavaCVCamera() {
-		 onConnectCVCamera();
+		//onConnectCVCamera();
 //		List<String> choices = new ArrayList<>();
 //		try {
 //			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();
