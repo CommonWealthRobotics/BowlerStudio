@@ -532,7 +532,6 @@ public class BowlerStudio extends Application {
 	 * @version 1.0
 	 * @param url
 	 *            - The URL of the tab that needs to be opened
-	 * @return None
 	 */
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
