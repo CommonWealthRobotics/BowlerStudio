@@ -542,7 +542,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	@FXML
 	public void onConnectCVCamera(ActionEvent event) {
 
-		Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
+		//Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
 
 	}
 
