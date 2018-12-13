@@ -36,15 +36,10 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.IOUtils;
 import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.PatchFormatException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHRepository;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -55,20 +50,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
 
-	private static TextArea log;
-	private static Stage primaryStage;
 	private static Scene scene;
-	private static FXMLLoader fxmlLoader;
 	private static boolean hasnetwork;
 	private static Console out;
 	private static TextArea logViewRefStatic = null;
-	private static CreatureLab3dController creatureLab3dController;
-	private BowlerStudioModularFrame modularFrame;
 	private static String firstVer = "";
 	private static Graphics2D splashGraphics;
 	final static SplashScreen splash = SplashScreen.getSplashScreen();
@@ -606,7 +595,6 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void setCreatureLab3d(CreatureLab3dController creatureLab3dController) {
-		BowlerStudio.creatureLab3dController = creatureLab3dController;
 	}
 
 	@SuppressWarnings("restriction")
