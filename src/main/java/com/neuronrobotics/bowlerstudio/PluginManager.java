@@ -58,8 +58,8 @@ public class PluginManager {
 		//Ipid
 		addPlugin(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
 		// Image s
-		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
-		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
+//		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
+//		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
 		// Bootloader
 		addPlugin(new DeviceSupportPluginMap(NRBootLoader.class, BootloaderPanel.class));
 		//BowlerBoard Specific
@@ -233,8 +233,7 @@ public class PluginManager {
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	DyIOControl.class ==c.getPlugin() ||
 							BootloaderPanel.class ==c.getPlugin()||
-							CreatureLab.class ==c.getPlugin()||
-							CameraTab.class ==c.getPlugin()
+							CreatureLab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
 							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
