@@ -176,7 +176,7 @@ dependencies {
 	compile "com.neuronrobotics:WalnutiQ:2.3.3"
 	
 	
-	
+	/*
 	String basedir =System.getenv("OPENCV_DIR")+"/java/opencv-249.jar";
 	
 	if(isWindows()){
@@ -202,7 +202,7 @@ dependencies {
 			compile fileTree (dir: '/usr/share/java/', includes: ['*opencv-24*.jar'])
 		}
 	}
-	
+	*/
 	//compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
 	//compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
