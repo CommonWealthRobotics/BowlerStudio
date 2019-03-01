@@ -2,3 +2,6 @@
 	path = libraries/bowler-script-kernel
 	url = https://github.com/CommonWealthRobotics/bowler-script-kernel.git
 
+[submodule "kinematics-chef"]
+	path = kinematics-chef
+	url = https://github.com/CommonWealthRobotics/kinematics-chef.git
