@@ -2,6 +2,8 @@ BowlerStudio
 ==========
 
 [![Join the chat at https://gitter.im/CommonWealthRobotics/BowlerStudio](https://badges.gitter.im/CommonWealthRobotics/BowlerStudio.svg)](https://gitter.im/CommonWealthRobotics/BowlerStudioDevelopment?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+[![Build Status](https://travis-ci.org/CommonWealthRobotics/BowlerStudio.svg?branch=development)](https://travis-ci.org/CommonWealthRobotics/BowlerStudio)
+[![Github All Releases](https://img.shields.io/github/downloads/CommonWealthRobotics/BowlerStudio/total.svg)](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
 # [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
