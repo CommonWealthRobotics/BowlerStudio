@@ -4,8 +4,8 @@ include ':libraries:bowler-script-kernel:JCSG'
 
 rootProject.name = 'BowlerStudio'
 
-//includeBuild('kinematics-chef'){
-//    dependencySubstitution {
-//        substitute module('com.neuronrobotics:kinematics-chef-core') with project(':')
-//    }
-//}
+includeBuild('kinematics-chef'){
+    dependencySubstitution {
+        substitute module('com.neuronrobotics:kinematics-chef-core') with project(':')
+    }
+}

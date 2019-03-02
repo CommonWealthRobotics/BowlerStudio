@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerstudio;
 
-//import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
+import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
