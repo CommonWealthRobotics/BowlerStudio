@@ -119,6 +119,7 @@ repositories {
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
 	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
+	maven { url 'https://dl.bintray.com/commonwealthrobotics/maven-artifacts'  }
 	
 }
 
@@ -281,6 +282,7 @@ dependencies {
 	compile project(':libraries:bowler-script-kernel')
 	compile project(':libraries:bowler-script-kernel:JCSG')
 	//compile project(':kinematics-chef')
+	compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 
