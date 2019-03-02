@@ -41,6 +41,8 @@ import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.w3c.dom.Document;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -257,7 +259,10 @@ public class BowlerStudio extends Application {
 			// Remove the default printing
 
 		});
-		SVGLoad.setProgressDefault(newShape -> BowlerStudioController.addCsg(newShape));
+		Document svgDocument;
+		SVGLoad.setProgressDefault((newShape) ->{
+			BowlerStudioController.addCsg(newShape);
+		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Attempting to Log In...");
