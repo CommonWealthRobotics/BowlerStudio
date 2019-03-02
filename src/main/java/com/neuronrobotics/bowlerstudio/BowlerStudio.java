@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerstudio;
 
-import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
+//import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
@@ -25,6 +25,7 @@ import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.svg.ISVGLoadProgress;
 import eu.mihosoft.vrl.v3d.svg.SVGLoad;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -259,9 +260,12 @@ public class BowlerStudio extends Application {
 			// Remove the default printing
 
 		});
-		Document svgDocument;
-		SVGLoad.setProgressDefault((newShape) ->{
-			BowlerStudioController.addCsg(newShape);
+		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
+		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
+			@Override
+			public void onShape(CSG newShape) {
+				BowlerStudioController.addCsg(newShape);
+			}
 		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
