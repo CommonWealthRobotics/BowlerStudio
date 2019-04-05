@@ -281,8 +281,8 @@ dependencies {
 	compile project(':libraries:bowler-script-kernel:java-bowler')
 	compile project(':libraries:bowler-script-kernel')
 	compile project(':libraries:bowler-script-kernel:JCSG')
-	//compile project(':kinematics-chef')
-	compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
+	compile project(':kinematics-chef')
+	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 
