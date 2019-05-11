@@ -275,13 +275,16 @@ dependencies {
 	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'	
     // https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen
 	compile group: 'org.apache.xmlgraphics', name: 'batik-svggen', version: '1.7'
+	// https://mvnrepository.com/artifact/org.axsl.org.w3c.dom.svg/svg-dom-java
+	compile group: 'org.axsl.org.w3c.dom.svg', name: 'svg-dom-java', version: '1.1'
+	
 
 	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 	//compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
 	compile project(':libraries:bowler-script-kernel:java-bowler')
 	compile project(':libraries:bowler-script-kernel')
 	compile project(':libraries:bowler-script-kernel:JCSG')
-	compile project(':kinematics-chef')
+	//compile project(':kinematics-chef')
 	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
