@@ -51,8 +51,11 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		//setpoint.setBlockIncrement(range/100);
 		setpointValue = new TextField(getFormatted(current));
 		setpointValue.setOnAction(event -> {
+			String txt =setpointValue.getText();
+			double val =Double.parseDouble(txt);
+			System.out.println("Setpoint Text changed to "+val);
 			Platform.runLater(() -> {
-				double val =Double.parseDouble(setpointValue.getText());
+				
 				setValue(val);
 				getListener().onSliderMoving(this,val);
 				getListener().onSliderDoneMoving(this,val);
@@ -124,6 +127,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 				setpoint.setValue(val);
 				setpointValue.setText(getFormatted(setpoint.getValue()));
 				setpoint.valueProperty().addListener(this);
+				System.out.println("Setpoint changed to "+val);
 		});
 
 	}
