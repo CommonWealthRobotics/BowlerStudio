@@ -54,9 +54,10 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			String txt =setpointValue.getText();
 			double val =Double.parseDouble(txt);
 			System.out.println("Setpoint Text changed to "+val);
+			
 			Platform.runLater(() -> {
-				
-				setValue(val);
+				setValueLocal(val);
+
 				getListener().onSliderMoving(this,val);
 				getListener().onSliderDoneMoving(this,val);
 			});
@@ -109,27 +110,30 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public void setValue(double value){
 		
 		Platform.runLater(() -> {
-				setpoint.valueProperty().removeListener(this);
-				double val = value;
-				if(val>setpoint.getMax()){
-					if(isAllowResize())
-						setpoint.setMax(val);
-					else
-						val=setpoint.getMax();
-				}if(val<setpoint.getMin()){
-					if(isAllowResize())
-						setpoint.setMin(val);
-					else
-						val=setpoint.getMin();
-				}
-				double range = Math.abs(setpoint.getMax()-setpoint.getMin());
-				setpoint.setMajorTickUnit(range);
-				setpoint.setValue(val);
-				setpointValue.setText(getFormatted(setpoint.getValue()));
-				setpoint.valueProperty().addListener(this);
-				System.out.println("Setpoint changed to "+val);
+				setValueLocal(value);
 		});
 
+	}
+	private void setValueLocal(double value) {
+		setpoint.valueProperty().removeListener(this);
+		double val = value;
+		if(val>setpoint.getMax()){
+			if(isAllowResize())
+				setpoint.setMax(val);
+			else
+				val=setpoint.getMax();
+		}if(val<setpoint.getMin()){
+			if(isAllowResize())
+				setpoint.setMin(val);
+			else
+				val=setpoint.getMin();
+		}
+		double range = Math.abs(setpoint.getMax()-setpoint.getMin());
+		setpoint.setMajorTickUnit(range);
+		setpoint.setValue(val);
+		setpointValue.setText(getFormatted(setpoint.getValue()));
+		setpoint.valueProperty().addListener(this);
+		//System.out.println("Setpoint changed to "+val);
 	}
 	
 	public double getValue(){
