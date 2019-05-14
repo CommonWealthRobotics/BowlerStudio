@@ -857,6 +857,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
 								Object[] set = openGits.keySet().toArray();
 								for (int i = 0; i < set.length; i++) {
+									try {
+										Thread.sleep(300);
+									} catch (InterruptedException e1) {
+										e1.printStackTrace();
+									}
 									if (String.class.isInstance(set[i])) {
 										String s = (String) set[i];
 										try {
@@ -867,7 +872,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												openGits.remove(s);
 												System.err.println("Removing missing "+s);
 											}
+											
 										} catch (Exception e) {
+											e.printStackTrace();
 											// TODO Auto-generated catch block
 											//e.printStackTrace();
 											openGits.clear();
