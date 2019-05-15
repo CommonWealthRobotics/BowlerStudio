@@ -80,8 +80,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			try {
 				return super.minWidth(height);
 			} catch (Exception e) {
-				e.printStackTrace();
-				return 200;
+				//System.out.println("Error in "+file);
+				//e.printStackTrace();
+				return minWidthProperty().doubleValue();
 			}
 
 		}
@@ -99,8 +100,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			try {
 				return super.minHeight(width);
 			} catch (Exception e) {
-				e.printStackTrace();
-				return 200;
+				//System.out.println("Error in "+file);
+				//e.printStackTrace();
+				return  minHeightProperty().doubleValue();
 			}
 		}
 	}
