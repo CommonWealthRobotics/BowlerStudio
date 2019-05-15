@@ -167,11 +167,11 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
    
     cd BowlerStudio
     
-    git submodule init
+    git submodule update --init --recursive
     
-    git submodule update
+    git submodule update  --recursive
     
-    gradle jar
+    ./gradlew shaddowJar
     
     java -jar build/libs/BowlerStudio.jar
     
