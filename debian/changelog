@@ -1,3 +1,41 @@
+bowlerstudio (0.29.3) xenial; urgency=medium
+
+  [ Kevin Harrington ]
+  * Update README.md
+  * 0.29.3
+  * jcsg
+
+  [ McKinney ]
+  * Adding the kinematics-chef
+  * Adding the kinematics-chef
+  * Adding the kinematics-chef
+
+  [ Kevin Harrington ]
+  * from compile to implementation
+  * updating gradle
+  * travis update
+  * removing kinematics chef source
+  * kinematics chef submodule
+  * adding the maven switch-over
+  * maven version of kinematicsChef working
+  * removing kinematics chef untill the circular kernel dep is resolved.
+  * added back KC after modifying the depencies
+  * removing kc again
+  * adjusting dh widget
+  * remove kinematics
+  * Fixing the "double enter" bug
+  * Correcting the error of file tabs loading and interfearing with each other at boot time
+  * no silent fails
+  * formatting
+  * return logical bounds
+  * Update .gitmodules
+  * Update README.md
+  * Update README.md
+  * removing submodule
+  * updating submodules
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 15 May 2019 17:29:28 -0400
+
 bowlerstudio (0.29.2) xenial; urgency=medium
 
   * 0.35.2
