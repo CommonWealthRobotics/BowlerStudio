@@ -300,10 +300,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		});
 		final Tooltip tooltip = new Tooltip();
-		tooltip.setText(
-		    "\nExport all of the parts on the screen\n" +
-		    "to manufacturing. STL and SVG\n"  
-		);
+		tooltip.setText("\nExport all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
 		export.setTooltip(tooltip);
 		Button clear = new Button("Clear");
 		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
@@ -341,19 +338,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				System.out.println("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
-					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(csgs, baseDirForFiles);
-					for(File f:files){
+					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI())
+							.generateManufacturingParts(csgs, baseDirForFiles);
+					for (File f : files) {
 						System.out.println("Exported " + f.getAbsolutePath());
 
 					}
 					System.out.println("Success! " + files.size() + " parts exported");
-					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					BowlerStudio.printStackTrace(e);
 				}
-				
-				
+
 				Platform.runLater(() -> {
 					export.setDisable(false);
 				});
@@ -461,14 +458,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ex.printStackTrace(System.out);
 					}
 				}
-				for (CSG add : toRemove)
-					Platform.runLater(() -> {
+
+				Platform.runLater(() -> {
+					for (CSG add : toRemove)
 						removeObject(add);
-					});
-				for (CSG ret : toAdd)
 					Platform.runLater(() -> {
-						addObject(ret, source);
+						for (CSG ret : toAdd)
+							addObject(ret, source);
 					});
+				});
+
+
 				System.out.println("Saving CSG database");
 				CSGDatabase.saveDatabase();
 			}
@@ -607,13 +607,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			@Override
 			public void handle(ActionEvent event) {
 				resetMouseTime();
-				if(current.getDrawMode() ==DrawMode.FILL ){
-				  toWireframe.setText("To Solid Fill");
-				  current.setDrawMode(DrawMode.LINE);
-				}
-				else{
-				  current.setDrawMode(DrawMode.FILL);
-				  toWireframe.setText("To Wire Frame");
+				if (current.getDrawMode() == DrawMode.FILL) {
+					toWireframe.setText("To Solid Fill");
+					current.setDrawMode(DrawMode.LINE);
+				} else {
+					current.setDrawMode(DrawMode.FILL);
+					toWireframe.setText("To Wire Frame");
 				}
 			}
 		});
@@ -693,8 +692,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void run() {
 				try {
 
-					setDefaultStlDir(new CadFileExporter(BowlerStudioController.getMobileBaseUI()).generateManufacturingParts(Arrays.asList(currentCsg),
-							FileSelectionFactory.GetDirectory(getDefaultStlDir())).get(0));
+					setDefaultStlDir(new CadFileExporter(BowlerStudioController.getMobileBaseUI())
+							.generateManufacturingParts(Arrays.asList(currentCsg),
+									FileSelectionFactory.GetDirectory(getDefaultStlDir()))
+							.get(0));
 				} catch (Exception e1) {
 					BowlerStudioController.highlightException(source, e1);
 				}
@@ -808,7 +809,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// TODO reorent the start camera
 		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
-		
+
 	}
 
 	/**
@@ -816,9 +817,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *
 	 * @return the camera field of view property
 	 */
-//	public DoubleProperty getCameraFieldOfViewProperty() {
-//		return camera.fieldOfViewProperty();
-//	}
+	// public DoubleProperty getCameraFieldOfViewProperty() {
+	// return camera.fieldOfViewProperty();
+	// }
 
 	/**
 	 * Builds the axes.
@@ -941,23 +942,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void autoSpin() {
 		try {
 			long diff = System.currentTimeMillis() - getLastMosueMovementTime();
-			if(spin!=null)
-			if (diff > timeForAutospin && spin.isSelected()) {
-				// TODO start spinning
-				double scale = 0.5;
-				long finaSpeedScale = timeForAutospin + (timeForAutospin / 2);
-				if (diff < finaSpeedScale) {
-					double finaSpeedDiff = ((double) (finaSpeedScale - diff));
-					double sineScale = (finaSpeedDiff / ((double) (timeForAutospin / 2)));
-					scale = 1 - Math.sin(sineScale * (Math.PI / 2));
-					moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5 * scale, 0)), 0);
-				} else {
-					moveCamera(autoSpinSpeed, 0);
-				}
+			if (spin != null)
+				if (diff > timeForAutospin && spin.isSelected()) {
+					// TODO start spinning
+					double scale = 0.5;
+					long finaSpeedScale = timeForAutospin + (timeForAutospin / 2);
+					if (diff < finaSpeedScale) {
+						double finaSpeedDiff = ((double) (finaSpeedScale - diff));
+						double sineScale = (finaSpeedDiff / ((double) (timeForAutospin / 2)));
+						scale = 1 - Math.sin(sineScale * (Math.PI / 2));
+						moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5 * scale, 0)), 0);
+					} else {
+						moveCamera(autoSpinSpeed, 0);
+					}
 
-			}
+				}
 		} catch (Exception | Error e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		FxTimer.runLater(Duration.ofMillis(30), () -> {
 			autoSpin();
@@ -1134,10 +1135,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	// }
 
 	/**
-	 * The main() method is ignored in correctly deployed JavaFX application.
-	 * main() serves only as fallback in case the application can not be
-	 * launched through deployment artifacts, e.g., in IDEs with limited FX
-	 * support. NetBeans ignores main().
+	 * The main() method is ignored in correctly deployed JavaFX application. main()
+	 * serves only as fallback in case the application can not be launched through
+	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
+	 * main().
 	 *
 	 * @param args
 	 *            the command line arguments
@@ -1244,7 +1245,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		selectedSet = selectedCsg;
 		setSelectedCsg(selectedCsg.get(0));
 		try {
-		    
+
 			for (int in = 1; in < selectedCsg.size(); in++) {
 				int i = in;
 				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
@@ -1479,7 +1480,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	/**
-	 * @param defaultStlDir the defaultStlDir to set
+	 * @param defaultStlDir
+	 *            the defaultStlDir to set
 	 */
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
