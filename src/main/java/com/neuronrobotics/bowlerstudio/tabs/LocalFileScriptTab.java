@@ -80,7 +80,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			try {
 				return super.minWidth(height);
 			} catch (Exception e) {
-				return 200;
+				//System.out.println("Error in "+file);
+				//e.printStackTrace();
+				return minWidthProperty().doubleValue();
 			}
 
 		}
@@ -98,7 +100,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			try {
 				return super.minHeight(width);
 			} catch (Exception e) {
-				return 200;
+				//System.out.println("Error in "+file);
+				//e.printStackTrace();
+				return  minHeightProperty().doubleValue();
 			}
 		}
 	}
@@ -242,6 +246,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					// display.
 					linenum += 1;
 				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 				if (lineSelected != linenum) {
 					lineSelected = linenum;

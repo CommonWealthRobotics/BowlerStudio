@@ -222,11 +222,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 ////		application.addConnection(p,name);
 //		
 //	}
-
+//
 
 
 	 public static void onConnectJavaCVCamera() {
-		//onConnectCVCamera();
+		// onConnectCVCamera();
 //		List<String> choices = new ArrayList<>();
 //		try {
 //			String[] des = OpenCVFrameGrabber.getDeviceDescriptions();

@@ -32,7 +32,6 @@ public class PurchasingTest {
 
 	@Test
 	public void test() {
-		/*
 		try {
 			ScriptingEngine.runLogin();
 		} catch (IOException e2) {
@@ -77,7 +76,6 @@ public class PurchasingTest {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
-		*/
 	}
 
 }

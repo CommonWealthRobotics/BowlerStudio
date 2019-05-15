@@ -1,3 +1,35 @@
+bowlerstudio (0.29.2) xenial; urgency=medium
+
+  * 0.35.2
+  * 0.29.2
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 06 Jan 2019 16:07:15 -0500
+
+bowlerstudio (0.29.0) xenial; urgency=medium
+
+  * =Updating gradle
+  * updated kernel
+  * removing OpenCV
+  * moving dockfx off server
+  * Updaing build
+  * Updaing build
+  * gradle version
+  * tests working
+  * remove test
+  * comments
+  * reove javadoc violations
+  * Update README.md
+  * merging
+  * removed opencv components
+  * fixing travis
+  * javadoc fix
+  * fixed travis
+  * removing the opencv from the build tree
+  * updating JCSG
+  * 0.29.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 06 Jan 2019 14:17:56 -0500
+
 bowlerstudio (0.28.1) xenial; urgency=medium
 
   * 0.28.1

@@ -68,22 +68,16 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 		gridpane.add(delta, 1, 0);
 		gridpane.add(new Text("Radius (Length)"), 0, 1);
 		gridpane.add(radius, 1, 1);
-		Accordion advancedPanel = new Accordion();
-		GridPane agridpane = new GridPane();
-		agridpane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
-	    agridpane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
-	    agridpane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
-	    agridpane.getRowConstraints().add(new RowConstraints(50)); // 
-	    agridpane.getRowConstraints().add(new RowConstraints(50)); // 
-		agridpane.add(new Text("Theta"), 0, 0);
-		agridpane.add(theta, 1, 0);
-		agridpane.add(new Text("Alpha"), 0, 1);
-		agridpane.add(alpha, 1, 1);
-		
-		TitledPane rp =new TitledPane("Advance D-H ", agridpane);
-		advancedPanel.getPanes().add(rp);
-		
-		gridpane.add(advancedPanel, 1, 2);
+
+		gridpane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
+	    gridpane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
+	    gridpane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+	    gridpane.getRowConstraints().add(new RowConstraints(50)); // 
+		gridpane.add(new Text("Theta"), 0, 2);
+		gridpane.add(theta, 1, 2);
+		gridpane.add(new Text("Alpha"), 0, 3);
+		gridpane.add(alpha, 1, 3);
 		
 		getChildren().add(gridpane);
 	}

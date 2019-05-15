@@ -31,7 +31,7 @@ public class Purchasing {
 
 	@Test
 	public void test() throws XmlRpcException, MalformedURLException {
-/*
+
 		XmlRpcClient client = new XmlRpcClient();
 
 		XmlRpcClientConfigImpl start_config = new XmlRpcClientConfigImpl();
@@ -63,7 +63,7 @@ public class Purchasing {
 					}
 				} });
 		// https://sourceforge.net/p/openerpjavaapi/wiki/Home/
-	*/	
+		
 
 	}
 
