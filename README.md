@@ -141,15 +141,18 @@ by calling the `assemble` task.
 Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerStudio`) and enter the following command:
 
 #### Bash (Linux/OS X/Cygwin/other Unix-like shell)
+##### Ubuntu 18.04 Dependencies
+
+```
+sudo apt install  openjdk-8-jdk openjfx=8u161-b12-1ubuntu2 libopenjfx-java=8u161-b12-1ubuntu2
+```
 
 ##### Ubuntu 16.04 Dependencies
-
-    sudo add-apt-repository ppa:webupd8team/java
-   
-    sudo apt-get update
-   
-    sudo apt-get install git gradle oracle-java8-installer oracle-java8-set-default libopencv2.4-java slic3r libopencv2.4-jni
+```   
+    sudo apt-get install git gradle openjfx  openjdk-8-jdk 
+```
 ##### Ubuntu 14.04, install extra dependencies
+```
 	sudo add-apt-repository ppa:cwchien/gradle -y
 	sudo apt-add-repository ppa:webupd8team/java -y
 	sudo apt-add-repository ppa:rsalveti/3d-printing -y
@@ -158,11 +161,12 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
 	sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
 	sudo apt-get update -qq
-	sudo apt-get install -y --force-yes gradle  oracle-java8-installer libopencv2.4-jni slic3r libopencv2.4-java  libdc1394-22-dev libdc1394-22 libdc1394-utils openjdk-8-jdk bowlerstudio arduino-ide
+	sudo apt-get install -y --force-yes gradle openjfx openjdk-8-jdk arduino-ide
 	sudo apt-get install  -y --force-yes oracle-java8-set-default
 	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
+```
 ##### All Unix  
-   
+```  
     git clone https://github.com/NeuronRobotics/BowlerStudio.git
    
     cd BowlerStudio
@@ -174,7 +178,7 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
     ./gradlew shaddowJar
     
     java -jar build/libs/BowlerStudio.jar
-    
+```
 Now you can use the Eclipse Marketplace to install the Gradle Plugin
     
 #### Windows (CMD)
