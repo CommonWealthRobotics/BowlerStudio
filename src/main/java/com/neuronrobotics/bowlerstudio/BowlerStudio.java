@@ -57,14 +57,13 @@ import java.util.Arrays;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
-
+	final static SplashScreen splash = SplashScreen.getSplashScreen();
 	private static Scene scene;
 	private static boolean hasnetwork;
 	private static Console out;
 	private static TextArea logViewRefStatic = null;
 	private static String firstVer = "";
-	private static Graphics2D splashGraphics;
-	final static SplashScreen splash = SplashScreen.getSplashScreen();
+
 	private static Stage primaryStage2;
 	private static File layoutFile;
 
@@ -226,22 +225,7 @@ public class BowlerStudio extends Application {
 			});
 		}
 		Log.enableWarningPrint();
-		if (splash != null) {
-			try {
-				splashGraphics = splash.createGraphics();
-			} catch (IllegalStateException e) {
-			}
-		}
-		if (splashGraphics != null && splash.isVisible()) {
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
-			// Platform.runLater(() -> {
-			splash.update();
-			// });
-		}
+
 		renderSplashFrame(2, "Testing Internet Connection");
 
 		try {
@@ -489,25 +473,11 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void closeSplash() {
-		if (splashGraphics != null && splash.isVisible()) {
-			splash.close();
-			splashGraphics = null;
-		}
+		SplashManager.closeSplash();
 	}
 
 	public static void renderSplashFrame(int frame, String message) {
-
-		System.err.println(" Splash Rendering " + frame + " " + message);
-		if (splashGraphics != null && splash.isVisible()) {
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(frame + "% " + message, 65, 280);
-			// Platform.runLater(() -> {
-			splash.update();
-			// });
-		}
+		SplashManager.renderSplashFrame(frame, message);
 	}
 
 	/**
