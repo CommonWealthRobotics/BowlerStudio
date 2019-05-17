@@ -874,7 +874,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											}
 											
 										} catch (Exception e) {
-											e.printStackTrace();
+											//e.printStackTrace();
 											// TODO Auto-generated catch block
 											//e.printStackTrace();
 											openGits.clear();

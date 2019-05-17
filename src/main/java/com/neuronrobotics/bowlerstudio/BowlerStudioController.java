@@ -122,7 +122,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		try {
 			Log.warning("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
-			t.setFontSize(size);
+
 			String key = t.getScripting().getGitRepo() + ":" + t.getScripting().getGitFile();
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());
@@ -141,6 +141,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				t.getScripting().close();
 				System.out.println("Closing " + file.getAbsolutePath());
 			});
+			t.setFontSize(size);
 			return t.getScripting();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
