@@ -57,7 +57,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
-	final static SplashScreen splash = SplashScreen.getSplashScreen();
+	final static SplashScreen splash=null;// = SplashScreen.getSplashScreen();
 	private static Scene scene;
 	private static boolean hasnetwork;
 	private static Console out;
@@ -705,7 +705,7 @@ public class BowlerStudio extends Application {
 		});
 		new Thread() {
 			public void run() {
-				System.err.println("Closing application");
+				renderSplashFrame(0, "Closing, Saving state..");
 				ConnectionManager.disconnectAll();
 				if (ScriptingEngine.isLoginSuccess())
 					ConfigurationDatabase.save();

@@ -135,5 +135,6 @@ public class PsudoSplash {
 
 	public void setMessage(String message) {
 		this.message = message;
+		interfaceFrame.setVisible(true);
 	}
 }
