@@ -12,11 +12,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.reactfx.util.FxTimer;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -444,6 +446,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	public void setFontSize(int size) {
 		myFont = new Font(myFont.getName(), myFont.getStyle(), size);
-		textArea.setFont(myFont);
+		setFontLoop();
+	}
+	private void setFontLoop() {
+		FxTimer.runLater(
+		        Duration.ofMillis(200),
+		        () -> {
+		        	try {
+		        		textArea.setFont(myFont);
+					}catch(Throwable ex) {
+						System.err.println("Tab Font set failed "+file.getAbsolutePath());
+						setFontLoop();
+					}
+		        });
 	}
 }

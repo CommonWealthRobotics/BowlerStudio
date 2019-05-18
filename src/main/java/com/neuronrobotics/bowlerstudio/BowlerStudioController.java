@@ -26,6 +26,8 @@ import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
 
+import org.reactfx.util.FxTimer;
+
 import java.awt.Color;
 //import java.awt.*;
 import java.io.File;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import java.time.Duration;
 //import org.bytedeco.javacpp.DoublePointer;
 
 @SuppressWarnings("restriction")
@@ -132,6 +134,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			fileTab.setContent(t);
 			fileTab.setGraphic(
 					AssetFactory.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png"));
+
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
 			fileTab.setOnCloseRequest(event -> {
@@ -142,17 +145,8 @@ public class BowlerStudioController implements IScriptEventListener {
 				System.out.println("Closing " + file.getAbsolutePath());
 			});
 			
-			int trys = 0;
-			while(trys<10) {
-				ThreadUtil.wait(200);
-				try {
-					t.setFontSize(size);
-				}catch(Throwable ex) {
-					trys++;
-					System.err.println("Tab Font set failed "+file.getAbsolutePath());
-				}
-			}
-			
+
+			t.setFontSize(size);
 			return t.getScripting();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
