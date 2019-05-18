@@ -134,7 +134,11 @@ public class PsudoSplash {
 	}
 
 	public void setMessage(String message) {
-		this.message = message;
+		if(message.length()>23) {
+			this.message = message.subSequence(0, 23).toString();
+			new RuntimeException().printStackTrace();
+		}else
+			this.message = message;
 		interfaceFrame.setVisible(true);
 	}
 }

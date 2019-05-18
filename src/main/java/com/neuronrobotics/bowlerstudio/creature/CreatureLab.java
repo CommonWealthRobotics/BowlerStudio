@@ -21,13 +21,16 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import javafx.scene.control.ToggleButton;
 
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
@@ -40,7 +43,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
   private MobileBaseCadManager baseManager;
   private CheckBox autoRegen = new CheckBox("Auto-Regnerate CAD");
-
   Parent root;
   private BowlerJInputDevice gameController = null;
   CreatureLabControlsTab tab = new CreatureLabControlsTab();;
@@ -119,9 +121,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
       rootItem = new TreeItem<String>(device.getScriptingName());
     }
     tree = new TreeView<>(rootItem);
-    AnchorPane treebox = tab.getTreeBox();
-    treebox.getChildren().clear();
-    treebox.getChildren().add(tree);
+    AnchorPane treebox1 = tab.getTreeBox();
+    treebox1.getChildren().clear();
+    treebox1.getChildren().add(tree);
     AnchorPane.setTopAnchor(tree, 0.0);
     AnchorPane.setLeftAnchor(tree, 0.0);
     AnchorPane.setRightAnchor(tree, 0.0);
@@ -177,17 +179,32 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
       }
     });
+    VBox progress = new VBox(10);
+    
+    final ToggleGroup group = new ToggleGroup();
 
-    HBox progress = new HBox(10);
+    RadioButton rb1 = new RadioButton();
+    rb1.setToggleGroup(group);
+    rb1.setSelected(true);
+
+    RadioButton rb2 = new RadioButton();
+    rb2.setToggleGroup(group);
+     
+
+    HBox radioOptions = new HBox(10);
+    radioOptions.getChildren().addAll(new Label("Cad"),rb1,rb2,new Label("Config"));
+    
     pi = new ProgressIndicator(0);
     baseManager = new MobileBaseCadManager(device, BowlerStudioController.getMobileBaseUI());
     pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
-
-    progress.getChildren().addAll(new Label("Cad Progress:"), pi, autoRegen);
+    HBox progressIndicatorPanel = new HBox(10);
+    progressIndicatorPanel.getChildren().addAll(new Label("Cad Progress:"), pi);
+    progress.getChildren().addAll(progressIndicatorPanel, autoRegen,radioOptions);
 
     progress.setStyle("-fx-background-color: #FFFFFF;");
     progress.setOpacity(.7);
-    progress.setPrefSize(325, 50);
+    //progress.setMinHeight(150);
+    progress.setPrefSize(325, 150);
     tab.setOverlayTop(progress);
     tab.setOverlayTopRight(walkWidget);
 

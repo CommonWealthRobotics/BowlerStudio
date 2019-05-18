@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class CreatureLabControlsTab {
     @FXML
@@ -34,9 +34,9 @@ public class CreatureLabControlsTab {
 		this.controlsBox = controlsBox;
 	}
 
-	public AnchorPane getProgressBar() {
-		return progressBar;
-	}
+//	public AnchorPane getProgressBar() {
+//		return progressBar;
+//	}
 
 	public void setProgressBar(AnchorPane progressBar) {
 		this.progressBar = progressBar;
@@ -51,7 +51,7 @@ public class CreatureLabControlsTab {
 	}
 
 
-	public void setOverlayTop(HBox progress) {
+	public void setOverlayTop(VBox progress) {
 		// TODO Auto-generated method stub
 		progressBar.getChildren().clear();
 		progressBar.getChildren().add(progress);

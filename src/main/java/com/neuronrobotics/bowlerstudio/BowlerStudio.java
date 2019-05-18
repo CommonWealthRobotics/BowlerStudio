@@ -226,7 +226,7 @@ public class BowlerStudio extends Application {
 		}
 		Log.enableWarningPrint();
 
-		renderSplashFrame(2, "Testing Internet Connection");
+		renderSplashFrame(2, "Testing Internet");
 
 		try {
 			final URL url = new URL("http://github.com");
@@ -253,7 +253,7 @@ public class BowlerStudio extends Application {
 		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
-			renderSplashFrame(5, "Attempting to Log In...");
+			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 			try {
@@ -326,7 +326,7 @@ public class BowlerStudio extends Application {
 				}
 			}
 
-			renderSplashFrame(50, "Downloading tutorials");
+			renderSplashFrame(50, "Tutorials...");
             // load tutorials repo
             ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
                     "master", // the default branch is source, so this needs to
@@ -350,12 +350,12 @@ public class BowlerStudio extends Application {
 				AssetFactory.loadAllAssets();
 			}
 
-			renderSplashFrame(60, "Downloading Vitamins");
+			renderSplashFrame(60, "Vitamins...");
 			// load the vitimins repo so the demo is always snappy
 			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 			ScriptingEngine.pull("https://github.com/madhephaestus/DefaultHaarCascade.git", null);
 			
-			renderSplashFrame(80, "Loding Example Robots");
+			renderSplashFrame(80, "Example Robots");
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 																													// repo,
 																													// change
@@ -705,7 +705,7 @@ public class BowlerStudio extends Application {
 		});
 		new Thread() {
 			public void run() {
-				renderSplashFrame(0, "Closing, Saving state..");
+				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
 				if (ScriptingEngine.isLoginSuccess())
 					ConfigurationDatabase.save();
