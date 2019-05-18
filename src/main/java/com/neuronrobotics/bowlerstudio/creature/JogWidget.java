@@ -30,7 +30,7 @@ import java.util.HashMap;
 import javax.management.RuntimeErrorException;
 
 public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
-	double defauletSpeed=0.10;
+	double defauletSpeed=0.05;
 	private AbstractKinematicsNR kin;
 	private MobileBase mobilebase=null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
@@ -43,7 +43,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
 	Button conf = new Button("Configure...",AssetFactory.loadIcon("Configure-Game-Controller.png"));
 	TextField increment=new TextField(Double.toString(defauletSpeed));
-	TextField sec=new TextField("0.1");
+	TextField sec=new TextField("0.01");
 	private TransformWidget transform;
 	private BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
@@ -60,7 +60,6 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			ny = new Button("",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
 			
 		}
-
 
 		getKin().addPoseUpdateListener(this);
 
