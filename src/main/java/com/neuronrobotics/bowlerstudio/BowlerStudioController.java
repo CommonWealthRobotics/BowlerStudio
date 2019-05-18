@@ -149,7 +149,7 @@ public class BowlerStudioController implements IScriptEventListener {
 					t.setFontSize(size);
 				}catch(Throwable ex) {
 					trys++;
-					System.err.println("Tab Font set failed");
+					System.err.println("Tab Font set failed "+file.getAbsolutePath());
 				}
 			}
 			
