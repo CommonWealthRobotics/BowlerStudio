@@ -57,7 +57,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
-	final static SplashScreen splash=null;// = SplashScreen.getSplashScreen();
+	final static SplashScreen splash = SplashScreen.getSplashScreen();
 	private static Scene scene;
 	private static boolean hasnetwork;
 	private static Console out;
