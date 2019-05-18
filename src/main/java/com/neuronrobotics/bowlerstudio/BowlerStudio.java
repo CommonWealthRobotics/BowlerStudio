@@ -446,7 +446,7 @@ public class BowlerStudio extends Application {
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			// Log.enableInfoPrint();
-			renderSplashFrame(92, "Done Application");
+			renderSplashFrame(92, "Preload done");
 			// ThreadUtil.wait(100);
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists())
