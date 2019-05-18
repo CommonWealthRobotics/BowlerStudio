@@ -1,3 +1,22 @@
+bowlerstudio (0.29.4) xenial; urgency=medium
+
+  * moving splash screen to a manager class
+  * 0.29.4-dev
+  * Adding a psudo-splash screen using Jframe
+  * set font after loading tab to prevent NPE
+  * java-bowler update
+  * Re-display slash on closing to indicate saving state
+  * Adding toggle buttons for config mode
+  * adding a cad configuration mode
+  * Stable loading of tabs
+  * Better defaults for jog widget
+  * tab loading failure reporting
+  * Set the font with a delay and a fail-over loop in the tab
+  * if spash availible, use the better one
+  * use the same splash for all
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 18 May 2019 02:43:48 -0400
+
 bowlerstudio (0.29.3) xenial; urgency=medium
 
   [ Kevin Harrington ]
