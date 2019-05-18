@@ -141,7 +141,18 @@ public class BowlerStudioController implements IScriptEventListener {
 				t.getScripting().close();
 				System.out.println("Closing " + file.getAbsolutePath());
 			});
-			t.setFontSize(size);
+			
+			int trys = 0;
+			while(trys<10) {
+				ThreadUtil.wait(200);
+				try {
+					t.setFontSize(size);
+				}catch(Throwable ex) {
+					trys++;
+					System.err.println("Tab Font set failed");
+				}
+			}
+			
 			return t.getScripting();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
