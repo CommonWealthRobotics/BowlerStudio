@@ -40,8 +40,7 @@ import net.java.games.input.Controller;
 import net.java.games.input.Event;
 
 @SuppressWarnings("restriction")
-public class LinkSliderWidget extends Group
-		implements  IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener {
+public class LinkSliderWidget extends Group implements IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -54,7 +53,7 @@ public class LinkSliderWidget extends Group
 	private double seconds;
 	private String paramsKey;
 	private AbstractLink abstractLink;
-	//private EngineeringUnitsSliderWidget slide;
+	// private EngineeringUnitsSliderWidget slide;
 
 	public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR d) {
 
@@ -72,12 +71,9 @@ public class LinkSliderWidget extends Group
 			abstractLink.getLinkConfiguration().setName(name.getText());
 		});
 
-		setSetpoint(new EngineeringUnitsSliderWidget(this, 
-													abstractLink.getMinEngineeringUnits(),
-													abstractLink.getMaxEngineeringUnits(), 
-													device.getCurrentJointSpaceVector()[linkIndex],
-													180,
-													dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
+		setSetpoint(new EngineeringUnitsSliderWidget(this, abstractLink.getMinEngineeringUnits(),
+				abstractLink.getMaxEngineeringUnits(), device.getCurrentJointSpaceVector()[linkIndex], 180,
+				dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
 
 		GridPane panel = new GridPane();
 
@@ -99,14 +95,15 @@ public class LinkSliderWidget extends Group
 
 		getChildren().add(panel);
 		abstractLink.addLinkListener(this);
-		//device.addJointSpaceListener(this);
+		// device.addJointSpaceListener(this);
 
 	}
-	
-	public void setUpperBound(double newBound){
+
+	public void setUpperBound(double newBound) {
 		getSetpoint().setUpperBound(newBound);
 	}
-	public void setLowerBound(double newBound){
+
+	public void setLowerBound(double newBound) {
 		getSetpoint().setLowerBound(newBound);
 	}
 
@@ -115,31 +112,34 @@ public class LinkSliderWidget extends Group
 	// Boolean changing) {
 	//
 	// }
-//
-//	@Override
-//	public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-//
-//		try {
-//			setpoint.setValue(joints[linkIndex]);
-//		} catch (ArrayIndexOutOfBoundsException ex) {
-//			return;
-//		}
-//		
-//
-//	}
-//
-//	@Override
-//	public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
-//		// TODO Auto-generated method stub
-//		System.out.println("targe update");
-//	}
-//
-//	@Override
-//	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-//		// TODO Auto-generated method stub
-//		System.out.println("limit update");
-//
-//	}
+	//
+	// @Override
+	// public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints)
+	// {
+	//
+	// try {
+	// setpoint.setValue(joints[linkIndex]);
+	// } catch (ArrayIndexOutOfBoundsException ex) {
+	// return;
+	// }
+	//
+	//
+	// }
+	//
+	// @Override
+	// public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[]
+	// joints) {
+	// // TODO Auto-generated method stub
+	// System.out.println("targe update");
+	// }
+	//
+	// @Override
+	// public void onJointSpaceLimit(AbstractKinematicsNR source, int axis,
+	// JointLimit event) {
+	// // TODO Auto-generated method stub
+	// System.out.println("limit update");
+	//
+	// }
 
 	private void controllerLoop() {
 		seconds = .1;
@@ -229,7 +229,9 @@ public class LinkSliderWidget extends Group
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		// TODO Auto-generated method stub
 		try {
-			device.setDesiredJointAxisValue(linkIndex, getSetpoint().getValue(), 0);
+			if (newAngleDegrees < device.getAbstractLink(linkIndex).getMaxEngineeringUnits()
+					&& newAngleDegrees > device.getAbstractLink(linkIndex).getMinEngineeringUnits())
+				device.setDesiredJointAxisValue(linkIndex, newAngleDegrees, 0);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
