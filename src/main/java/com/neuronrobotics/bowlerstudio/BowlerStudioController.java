@@ -80,7 +80,11 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		@Override
 		public void setAllCSG(Collection<CSG> toAdd, File source) {
-			BowlerStudioController.setCsg(new ArrayList<>(toAdd));
+			try {
+				BowlerStudioController.setCsg(new ArrayList<>(toAdd));
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 		}
 
 		@Override
@@ -144,7 +148,6 @@ public class BowlerStudioController implements IScriptEventListener {
 				t.getScripting().close();
 				System.out.println("Closing " + file.getAbsolutePath());
 			});
-			
 
 			t.setFontSize(size);
 			return t.getScripting();
@@ -201,7 +204,7 @@ public class BowlerStudioController implements IScriptEventListener {
 					// System.out.println("Highlighting "+fileEngineRunByName+" at line
 					// "+lineNumber+" to color "+color);
 					StackTraceElement[] stackTrace = ex.getStackTrace();
-					
+
 					for (StackTraceElement el : stackTrace) {
 						try {
 							// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
@@ -217,7 +220,7 @@ public class BowlerStudioController implements IScriptEventListener {
 							// System.out.println(sw.toString());
 						}
 					}
-					if(ex.getCause()!=null) {
+					if (ex.getCause() != null) {
 						for (StackTraceElement el : ex.getCause().getStackTrace()) {
 							try {
 								// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
