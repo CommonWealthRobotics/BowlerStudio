@@ -40,18 +40,19 @@ import java.time.Duration;
 public class LinkConfigurationWidget extends GridPane {
 
 	// private int index;
-	private AbstractKinematicsNR congiuration;
 	private LinkConfiguration conf;
 	private EngineeringUnitsSliderWidget zero;
 	private EngineeringUnitsSliderWidget lowerBound;
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
+	private MobileBaseCadManager manager;
 
 	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,
-			EngineeringUnitsSliderWidget setpointSLider) {
+			EngineeringUnitsSliderWidget setpointSLider, MobileBaseCadManager manager) {
 		// this.index = index;
 		// this.congiuration = congiuration;
 		conf = congiuration;
+		this.manager = manager;
 		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
 		getColumnConstraints().add(new ColumnConstraints(200)); // column 2 is 300 wide
@@ -63,6 +64,7 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setMassKg(Double.parseDouble(mass.getText()));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
+			if(manager!=null)manager.generateCad();
 		});
 		TransformNR currentCentroid = conf.getCenterOfMassFromCentroid();
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
@@ -72,6 +74,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
+			if(manager!=null)manager.generateCad();
+
 		});
 
 		TextField massy = new TextField(CreatureLab.getFormatted(currentCentroid.getY()));
@@ -81,6 +85,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
+			if(manager!=null)manager.generateCad();
+
 		});
 
 		TextField massz = new TextField(CreatureLab.getFormatted(currentCentroid.getZ()));
@@ -90,6 +96,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
+			if(manager!=null)manager.generateCad();
+
 		});
 
 		TextField scale = new TextField(CreatureLab.getFormatted(conf.getScale()));
@@ -97,6 +105,8 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setScale(Double.parseDouble(scale.getText()));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
+			if(manager!=null)manager.generateCad();
+
 		});
 		Button editShaft = new Button("Edit " + conf.getShaftSize());
 		editShaft.setOnAction(event -> {
@@ -161,6 +171,8 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setShaftSize(motorsize);
 			conf.setShaftType(motortype);
 			setShaftSize(editShaft, newShaft, motorsize);
+			if(manager!=null)manager.generateCad();
+
 		});
 		shaftSize.getSelectionModel().select(conf.getShaftSize());
 
@@ -216,6 +228,7 @@ public class LinkConfigurationWidget extends GridPane {
 				});
 				conf.setShaftSize(shaftsize);
 				conf.setShaftType(shafttype);
+				if(manager!=null)manager.generateCad();
 
 			}
 		});
@@ -295,6 +308,8 @@ public class LinkConfigurationWidget extends GridPane {
 			factory.refreshHardwareLayer(conf);
 			activLink = factory.getLink(conf);
 			System.out.println("Link device to " + conf.getDeviceScriptingName());
+			if(manager!=null)manager.generateCad();
+
 		});
 
 		add(new Text("Scale To Degrees "), 0, 0);
@@ -321,6 +336,8 @@ public class LinkConfigurationWidget extends GridPane {
 				try {
 					activLink.setTargetEngineeringUnits(0);
 					activLink.flush(0);
+					if(manager!=null)manager.generateCad();
+
 				} catch (Exception ex) {
 					BowlerStudio.printStackTrace(ex);
 				}
@@ -346,6 +363,7 @@ public class LinkConfigurationWidget extends GridPane {
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				activLink.setTargetEngineeringUnits(0);
 				activLink.flush(0);
+				if(manager!=null)manager.generateCad();
 
 			}
 		}, 0, 255, conf.getUpperLimit(), 150, "device units", true);
@@ -363,6 +381,7 @@ public class LinkConfigurationWidget extends GridPane {
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				// TODO Auto-generated method stub
+				if(manager!=null)manager.generateCad();
 
 			}
 		}, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
@@ -379,6 +398,8 @@ public class LinkConfigurationWidget extends GridPane {
 				factory.refreshHardwareLayer(conf);
 				activLink = factory.getLink(conf);
 				System.out.println("Link channel to " + conf.getTypeString());
+				if(manager!=null)manager.generateCad();
+
 			}
 		});
 		channel.getSelectionModel().select(conf.getHardwareIndex());
@@ -393,6 +414,8 @@ public class LinkConfigurationWidget extends GridPane {
 			public void handle(ActionEvent event) {
 				conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
 				System.out.println("Link type changed to " + conf.getTypeString());
+				if(manager!=null)manager.generateCad();
+
 			}
 		});
 		comboBox.getSelectionModel().select(conf.getTypeString().toString());

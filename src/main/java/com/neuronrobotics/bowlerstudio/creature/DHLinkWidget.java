@@ -40,7 +40,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 	
 	
 	
-	public DHLinkWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2, Button del,IOnEngineeringUnitsChange externalListener ) {
+	public DHLinkWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR device2, Button del,IOnEngineeringUnitsChange externalListener, MobileBaseCadManager manager ) {
 
 		this.linkIndex = linkIndex;
 		this.device = device2;
@@ -51,7 +51,6 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 		AbstractLink abstractLink  = device2.getAbstractLink(linkIndex);
 		
 		
-
 		TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
 		name.setMaxWidth(100.0);
 		name.setOnAction(event -> {
@@ -89,7 +88,7 @@ public class DHLinkWidget extends Group implements  IJointSpaceUpdateListenerNR 
 
 		if(dhdevice!=null)
 			accordion.getPanes().add(new TitledPane("Configure D-H", new DhSettingsWidget(dhdevice.getChain().getLinks().get(linkIndex),dhdevice,externalListener)));
-		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(abstractLink.getLinkConfiguration(), device2.getFactory(),setpoint)));
+		accordion.getPanes().add(new TitledPane("Configure Link", new LinkConfigurationWidget(abstractLink.getLinkConfiguration(), device2.getFactory(),setpoint,manager)));
 		
 		GridPane panel = new GridPane();
 		

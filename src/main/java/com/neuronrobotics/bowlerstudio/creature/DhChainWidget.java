@@ -56,6 +56,7 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice=null;
 	private MobileBase mbase=null;
+	private MobileBaseCadManager manager=null;
 	private File kinematicsFile;
 
 	private ArrayList<DHLinkWidget> widgets = new ArrayList<>();
@@ -70,6 +71,7 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 		}
 		if(MobileBase.class.isInstance(device2)){
 			mbase=(MobileBase)device2;
+			manager=MobileBaseCadManager.get(mbase);
 		}
 		links = new VBox(20);
 		controls = new VBox(10);
@@ -97,7 +99,6 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 	    	        if (getKinematicsFile() == null) {
 	    	            return;
 	    	        }
-
 	    	        setKinematics();
 	    		}
 	    	}.start();
@@ -246,7 +247,7 @@ public class DhChainWidget extends Group implements  IDeviceConnectionEventListe
 					dh,
 					device,
 					del,
-					externalListener);
+					externalListener,manager);
 			widgets.add(w);
 			links.getChildren().add(w);
 			device.addJointSpaceListener(w);

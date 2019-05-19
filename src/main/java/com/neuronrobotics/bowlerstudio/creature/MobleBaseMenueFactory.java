@@ -95,7 +95,6 @@ public class MobleBaseMenueFactory {
 		}
 		
 		
-
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(publish);
 
@@ -558,7 +557,7 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory, widget.getSetpoint())));
+				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory, widget.getSetpoint(),MobileBaseCadManager.get(base))));
 			}
 			BowlerStudio.select( base,conf);
 		});
