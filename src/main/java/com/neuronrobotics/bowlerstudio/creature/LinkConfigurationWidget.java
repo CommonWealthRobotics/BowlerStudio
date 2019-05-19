@@ -46,7 +46,16 @@ public class LinkConfigurationWidget extends GridPane {
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
 	private MobileBaseCadManager manager;
-
+	
+	double textToNum(TextField mass) {
+		try {
+			return Double.parseDouble(mass.getText().trim());
+		}catch(Throwable t) {
+			mass.setText("0");
+			return 0;
+		}
+	}
+	
 	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,
 			EngineeringUnitsSliderWidget setpointSLider, MobileBaseCadManager manager) {
 		// this.index = index;
@@ -61,7 +70,7 @@ public class LinkConfigurationWidget extends GridPane {
 
 		TextField mass = new TextField(CreatureLab.getFormatted(conf.getMassKg()));
 		mass.setOnAction(event -> {
-			conf.setMassKg(Double.parseDouble(mass.getText()));
+			conf.setMassKg(textToNum(mass));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if(manager!=null)manager.generateCad();
@@ -69,7 +78,7 @@ public class LinkConfigurationWidget extends GridPane {
 		TransformNR currentCentroid = conf.getCenterOfMassFromCentroid();
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
 		massx.setOnAction(event -> {
-			currentCentroid.setX(Double.parseDouble(massx.getText()));
+			currentCentroid.setX(textToNum(massx));
 			conf.setCenterOfMassFromCentroid(currentCentroid);
 			;
 			activLink.setTargetEngineeringUnits(0);
@@ -80,7 +89,7 @@ public class LinkConfigurationWidget extends GridPane {
 
 		TextField massy = new TextField(CreatureLab.getFormatted(currentCentroid.getY()));
 		massy.setOnAction(event -> {
-			currentCentroid.setY(Double.parseDouble(massy.getText()));
+			currentCentroid.setY(textToNum(massy));
 			conf.setCenterOfMassFromCentroid(currentCentroid);
 			;
 			activLink.setTargetEngineeringUnits(0);
@@ -91,7 +100,7 @@ public class LinkConfigurationWidget extends GridPane {
 
 		TextField massz = new TextField(CreatureLab.getFormatted(currentCentroid.getZ()));
 		massz.setOnAction(event -> {
-			currentCentroid.setZ(Double.parseDouble(massz.getText()));
+			currentCentroid.setZ(textToNum(massz));
 			conf.setCenterOfMassFromCentroid(currentCentroid);
 			;
 			activLink.setTargetEngineeringUnits(0);
@@ -102,7 +111,7 @@ public class LinkConfigurationWidget extends GridPane {
 
 		TextField scale = new TextField(CreatureLab.getFormatted(conf.getScale()));
 		scale.setOnAction(event -> {
-			conf.setScale(Double.parseDouble(scale.getText()));
+			conf.setScale(textToNum(scale));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if(manager!=null)manager.generateCad();
