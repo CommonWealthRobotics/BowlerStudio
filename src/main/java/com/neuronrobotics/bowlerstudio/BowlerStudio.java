@@ -57,7 +57,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
-	final static SplashScreen splash =null;//= SplashScreen.getSplashScreen();
+	final static SplashScreen splash = null;// = SplashScreen.getSplashScreen();
 	private static Scene scene;
 	private static boolean hasnetwork;
 	private static Console out;
@@ -74,12 +74,12 @@ public class BowlerStudio extends Application {
 			public void run() {
 				while (true) {
 					ThreadUtil.wait(150);
-					try{
+					try {
 						String text = incoming.asString();
 						incoming.clear();
 						if (text != null && text.length() > 0)
 							appendText(text);
-					}catch(Exception e){
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -106,10 +106,12 @@ public class BowlerStudio extends Application {
 				if (text.length() > LengthOfOutputLog) {
 
 					Platform.runLater(() -> {
+						try {
+							getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
 
-						getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
-
-						getLogViewRefStatic().appendText(valueOf);
+							getLogViewRefStatic().appendText(valueOf);
+						} catch (Throwable t) {
+						}
 
 					});
 				} else {
@@ -141,67 +143,66 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void select(MobileBase base) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
-		  MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
+		if (BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
 		}
 		/*
-		try {
-
-			ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg.get(0));
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(csg);
-		} catch (Exception ex) {
-			System.err.println("Base not loaded yet");
-		}
-		*/
+		 * try {
+		 * 
+		 * ArrayList<CSG> csg =
+		 * MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().
+		 * setSelectedCsg(csg.get(0));
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().
+		 * setSelectedCsg(csg); } catch (Exception ex) {
+		 * System.err.println("Base not loaded yet"); }
+		 */
 
 	}
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
-		  MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
+		if (BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
 		}
 		/*
-		try {
-	
-			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
-			try {
-				BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-						.setSelectedCsg(limCad.get(limCad.size() - 1));
-			} catch (Exception ex) {
-				// initialization has no csgs yet
-			}
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-		} catch (Exception ex) {
-			System.err.println("Limb not loaded yet");
-		}
-		*/
+		 * try {
+		 * 
+		 * ArrayList<CSG> limCad =
+		 * MobileBaseCadManager.get(base).getDHtoCadMap().get(limb); try {
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+		 * .setSelectedCsg(limCad.get(limCad.size() - 1)); } catch (Exception ex) { //
+		 * initialization has no csgs yet }
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().
+		 * setSelectedCsg(limCad); } catch (Exception ex) {
+		 * System.err.println("Limb not loaded yet"); }
+		 */
 	}
 
 	public static void select(MobileBase base, LinkConfiguration limb) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()){
-		  MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
+		if (BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
 		}
 		/*
-		try {
-
-			ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
-					.setSelectedCsg(limCad.get(limCad.size() - 1));
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(limCad);
-		} catch (Exception ex) {
-			System.err.println("Limb not loaded yet");
-		}
-		*/
+		 * try {
+		 * 
+		 * ArrayList<CSG> limCad =
+		 * MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager()
+		 * .setSelectedCsg(limCad.get(limCad.size() - 1));
+		 * BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().
+		 * setSelectedCsg(limCad); } catch (Exception ex) {
+		 * System.err.println("Limb not loaded yet"); }
+		 */
 	}
 
 	public static void select(File script, int lineNumber) {
-		if(BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
-		try {
-			BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script, lineNumber);
-		} catch (Exception ex) {
-			System.err.println("File not found");
-		}
+		if (BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().isAutoHightlight())
+			try {
+				BowlerStudioModularFrame.getBowlerStudioModularFrame().getJfx3dmanager().setSelectedCsg(script,
+						lineNumber);
+			} catch (Exception ex) {
+				System.err.println("File not found");
+			}
 	}
 
 	/**
@@ -213,13 +214,14 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		new JFXPanel();
-		if(!StudioBuildInfo.isOS64bit()) {
-			
-			Platform.runLater(()->{
+		if (!StudioBuildInfo.isOS64bit()) {
+
+			Platform.runLater(() -> {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("32 Bit Java Detected");
 				alert.setHeaderText("Insuffient Ram Capibilities in 32 bit mode");
-				alert.setContentText("This applications uses more that 4gb of ram\nA 32 bit JVM mode detected: "+System.getProperty("os.arch"));
+				alert.setContentText("This applications uses more that 4gb of ram\nA 32 bit JVM mode detected: "
+						+ System.getProperty("os.arch"));
 				alert.showAndWait();
 				System.exit(1);
 			});
@@ -278,9 +280,9 @@ public class BowlerStudio extends Application {
 				try {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
-				}catch(Throwable t) {
+				} catch (Throwable t) {
 					System.out.println("Resetting the configs repo...");
-					//clear the configs repo
+					// clear the configs repo
 					ScriptingEngine.deleteRepo(ConfigurationDatabase.getGitSource());
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
@@ -304,7 +306,7 @@ public class BowlerStudio extends Application {
 
 				System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 
-				if (lastVersion==null || !StudioBuildInfo.getVersion().contains(lastVersion)) {
+				if (lastVersion == null || !StudioBuildInfo.getVersion().contains(lastVersion)) {
 					renderSplashFrame(20, "Downloading Image Assets");
 
 					System.err.println("\n\nnew version\n\n");
@@ -327,11 +329,11 @@ public class BowlerStudio extends Application {
 			}
 
 			renderSplashFrame(50, "Tutorials...");
-            // load tutorials repo
-            ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
-                    "master", // the default branch is source, so this needs to
-                                // be specified
-                    "index.html");
+			// load tutorials repo
+			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
+					"master", // the default branch is source, so this needs to
+								// be specified
+					"index.html");
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
@@ -341,7 +343,7 @@ public class BowlerStudio extends Application {
 					StudioBuildInfo.getVersion());
 			// Download and Load all of the assets
 			try {
-				
+
 				AssetFactory.loadAsset("BowlerStudio.png");
 			} catch (Exception ex) {
 				renderSplashFrame(54, "Re-Loading Images");
@@ -354,7 +356,7 @@ public class BowlerStudio extends Application {
 			// load the vitimins repo so the demo is always snappy
 			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 			ScriptingEngine.pull("https://github.com/madhephaestus/DefaultHaarCascade.git", null);
-			
+
 			renderSplashFrame(80, "Example Robots");
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 																													// repo,
@@ -372,7 +374,6 @@ public class BowlerStudio extends Application {
 			// System.out.println("Loading assets ");
 
 			// System.out.println("Loading Main.fxml");
-
 
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
@@ -451,10 +452,11 @@ public class BowlerStudio extends Application {
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists())
 				throw new RuntimeException("Style sheet does not exist");
-			try{
-			  ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git", "hotfix.groovy", null);
-			}catch(Exception e){
-			  
+			try {
+				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
+						"hotfix.groovy", null);
+			} catch (Exception e) {
+
 			}
 			launch();
 
