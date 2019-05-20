@@ -26,6 +26,10 @@ public class PsudoSplash {
 	private String message = "";
 
 	class CustomPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8749662598444052868L;
 		private BufferedImage image;
 
 		public CustomPanel() {
