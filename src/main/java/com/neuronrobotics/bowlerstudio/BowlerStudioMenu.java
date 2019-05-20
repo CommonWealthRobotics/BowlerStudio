@@ -94,14 +94,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	private String name;
 	private BowlerStudioMenu selfRef = this;
-
+	private File openFile;
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
 
 	@FXML
 	public void onMobileBaseFromGist(ActionEvent event) {
-
 		PromptForGit.prompt("Select a Creature From a Gist", "bcb4760a449190206170", (gitsId, file) -> {
 			loadMobilebaseFromGist(gitsId, file);
 		});
@@ -490,16 +489,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	@FXML
 	public void onLoadFile(ActionEvent e) {
 		new Thread() {
+			
+
 			public void run() {
 				setName("Load File Thread");
-				File openFile = FileSelectionFactory.GetFile(ScriptingEngine.getLastFile(),
+				if(openFile==null)
+					openFile=ScriptingEngine.getLastFile();
+				openFile = FileSelectionFactory.GetFile(openFile,
+						new ExtensionFilter("All", "*.*"),
 						new ExtensionFilter("Groovy Scripts", "*.groovy", "*.java", "*.txt"),
 						new ExtensionFilter("Clojure", "*.cloj", "*.clj", "*.txt", "*.clojure"),
 						new ExtensionFilter("Python", "*.py", "*.python", "*.txt"),
 						new ExtensionFilter("DXF", "*.dxf", "*.DXF"),
 						new ExtensionFilter("GCODE", "*.gcode", "*.nc", "*.ncg", "*.txt"),
 						new ExtensionFilter("Image", "*.jpg", "*.jpeg", "*.JPG", "*.png", "*.PNG"),
-						new ExtensionFilter("STL", "*.stl", "*.STL", "*.Stl"), new ExtensionFilter("All", "*.*"));
+						new ExtensionFilter("STL", "*.stl", "*.STL", "*.Stl"));
 				if (openFile == null) {
 					return;
 				}
