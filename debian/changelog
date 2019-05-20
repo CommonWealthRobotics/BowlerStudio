@@ -1,3 +1,20 @@
+bowlerstudio (0.29.5) xenial; urgency=medium
+
+  * kernel
+  * 0.29.5 start
+  * updating the hardware setting menues
+  * formatting
+  * Prevent fault on null passed here
+  * formatting
+  * regenerate on link configuration changes
+  * sanatize text input
+  * Remember the open file and open another from the same directory
+  * bound the link setting
+  * inter-connecting the bounding to ensure a slider never shows invalid data
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 19 May 2019 21:39:00 -0400
+
 bowlerstudio (0.29.4) xenial; urgency=medium
 
   * moving splash screen to a manager class
