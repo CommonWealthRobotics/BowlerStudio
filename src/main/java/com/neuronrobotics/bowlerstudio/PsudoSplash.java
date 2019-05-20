@@ -24,6 +24,7 @@ import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 public class PsudoSplash {
 	JFrame interfaceFrame;
 	private String message = "";
+
 	class CustomPanel extends JPanel {
 		private BufferedImage image;
 
@@ -66,21 +67,21 @@ public class PsudoSplash {
 		 */
 		@Override
 		protected void paintComponent(Graphics g) {
+
 			super.paintComponent(g);
 			g.drawImage(image, 0, 0, this);
-			Graphics2D splashGraphics=(Graphics2D) g;
+			Graphics2D splashGraphics = (Graphics2D) g;
 			splashGraphics.setComposite(AlphaComposite.Clear);
-//			splashGraphics.fillRect(65, 270, 200, 40);
+			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
 			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
-			
-			
+
 			splashGraphics.setComposite(AlphaComposite.Clear);
-//			splashGraphics.fillRect(65, 270, 200, 40);
+			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString( getMessage(), 65, 280);
+			splashGraphics.drawString(getMessage(), 65, 280);
 
 		}
 	}
@@ -117,28 +118,36 @@ public class PsudoSplash {
 		}
 	}
 
-	
-	 boolean isVisableSplash() {
-		 return interfaceFrame.isVisible();
-	 }
-	 void closeSplashLocal() {
-		 interfaceFrame.setVisible(false);
-	 }
-	 void updateSplash() {
-		 interfaceFrame.invalidate();
-		 interfaceFrame.repaint();
-	 }
+	boolean isVisableSplash() {
+		if (interfaceFrame != null)
+			return interfaceFrame.isVisible();
+		return false;
+	}
+
+	void closeSplashLocal() {
+		if (interfaceFrame != null)
+			interfaceFrame.setVisible(false);
+	}
+
+	void updateSplash() {
+		if (interfaceFrame != null) {
+			interfaceFrame.invalidate();
+			interfaceFrame.repaint();
+		}
+	}
 
 	public String getMessage() {
 		return message;
 	}
 
 	public void setMessage(String message) {
-		if(message.length()>23) {
+		if (message.length() > 23) {
 			this.message = message.subSequence(0, 23).toString();
 			new RuntimeException().printStackTrace();
-		}else
+		} else
 			this.message = message;
-		interfaceFrame.setVisible(true);
+		if (interfaceFrame != null) {
+			interfaceFrame.setVisible(true);
+		}
 	}
 }
