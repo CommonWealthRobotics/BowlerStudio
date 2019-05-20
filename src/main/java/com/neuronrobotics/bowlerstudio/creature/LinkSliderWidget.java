@@ -229,13 +229,17 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		// TODO Auto-generated method stub
 		try {
-			if (newAngleDegrees < device.getAbstractLink(linkIndex).getMaxEngineeringUnits()
-					&& newAngleDegrees > device.getAbstractLink(linkIndex).getMinEngineeringUnits())
+				if (newAngleDegrees > device.getAbstractLink(linkIndex).getMaxEngineeringUnits()) {
+					newAngleDegrees=device.getAbstractLink(linkIndex).getMaxEngineeringUnits();
+				}
+				if(newAngleDegrees <device.getAbstractLink(linkIndex).getMinEngineeringUnits()) {
+					newAngleDegrees=device.getAbstractLink(linkIndex).getMinEngineeringUnits();
+				}
 				device.setDesiredJointAxisValue(linkIndex, newAngleDegrees, 0);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		;
 
