@@ -46,6 +46,7 @@ public class LinkConfigurationWidget extends GridPane {
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
 	private MobileBaseCadManager manager;
+	private EngineeringUnitsSliderWidget setpointSLider;
 	
 	double textToNum(TextField mass) {
 		try {
@@ -57,10 +58,11 @@ public class LinkConfigurationWidget extends GridPane {
 	}
 	
 	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,
-			EngineeringUnitsSliderWidget setpointSLider, MobileBaseCadManager manager) {
+			EngineeringUnitsSliderWidget slide, MobileBaseCadManager manager) {
 		// this.index = index;
 		// this.congiuration = congiuration;
 		conf = congiuration;
+		this.setpointSLider = slide;
 		this.manager = manager;
 		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
@@ -329,53 +331,54 @@ public class LinkConfigurationWidget extends GridPane {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				conf.setLowerLimit(newAngleDegrees);
-				double eng = 0;
-				if (conf.getScale() > 0)
-					eng = (activLink.getMinEngineeringUnits());
-				else
-					eng = (activLink.getMaxEngineeringUnits());
+				double eng=setLowerBound(newAngleDegrees);
+				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
-				setpointSLider.setLowerBound(eng);
+				activLink.setUseLimits(true);
 			}
+
+
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				try {
-					activLink.setTargetEngineeringUnits(0);
+					activLink.setUseLimits(false);
+					activLink.setTargetEngineeringUnits(setLowerBound(newAngleDegrees)+0.01);
 					activLink.flush(0);
+					activLink.setUseLimits(true);
 					if(manager!=null)manager.generateCad();
+					zero.setLowerBound(newAngleDegrees);
 
 				} catch (Exception ex) {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, 0, 255, conf.getLowerLimit(), 150, "device units", true);
+		}, 1, conf.getStaticOffset(), conf.getLowerLimit(), 150, "device units", true);
 
 		upperBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				conf.setUpperLimit(newAngleDegrees);
-				double eng = 0;
-				if (conf.getScale() < 0)
-					eng = (activLink.getMinEngineeringUnits());
-				else
-					eng = (activLink.getMaxEngineeringUnits());
+				double eng=setUpperBound(newAngleDegrees-0.00001);
+				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
-				setpointSLider.setLowerBound(eng);
+				activLink.setUseLimits(true);
 			}
+
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				activLink.setTargetEngineeringUnits(0);
+				activLink.setUseLimits(false);
+				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees)-0.00001);
 				activLink.flush(0);
+				activLink.setUseLimits(true);
+				zero.setUpperBound(newAngleDegrees);
 				if(manager!=null)manager.generateCad();
 
 			}
-		}, 0, 255, conf.getUpperLimit(), 150, "device units", true);
+		}, conf.getStaticOffset(), 180, conf.getUpperLimit(), 150, "device units", true);
 
 		zero = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
@@ -389,7 +392,13 @@ public class LinkConfigurationWidget extends GridPane {
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				// TODO Auto-generated method stub
+				setLowerBound(conf.getLowerLimit());
+				setUpperBound(conf.getUpperLimit());
+				setpointSLider.setValue(0);
+				activLink.setTargetEngineeringUnits(0);
+				activLink.flush(0);
+				upperBound.setLowerBound(newAngleDegrees);
+				lowerBound.setUpperBound(newAngleDegrees);
 				if(manager!=null)manager.generateCad();
 
 			}
@@ -474,6 +483,35 @@ public class LinkConfigurationWidget extends GridPane {
 
 	}
 
+	private double setUpperBound(double newAngleDegrees) {
+		conf.setUpperLimit(newAngleDegrees);
+		double eng = 0;
+		if (conf.getScale() < 0) {
+			eng = (activLink.getMinEngineeringUnits());
+			setpointSLider.setLowerBound(eng);
+		}else {
+			eng = (activLink.getMaxEngineeringUnits());
+			setpointSLider.setUpperBound(eng);
+		}
+		
+		
+		return eng;
+	}
+	private double setLowerBound(double newAngleDegrees) {
+		conf.setLowerLimit(newAngleDegrees);
+		
+		double eng = 0;
+		if (conf.getScale() > 0) {
+			eng = (activLink.getMinEngineeringUnits());
+			setpointSLider.setLowerBound(eng);
+		}else {
+			eng = (activLink.getMaxEngineeringUnits());
+			setpointSLider.setUpperBound(eng);
+		}
+		
+		return eng;
+		
+	}
 	private void setShaftSize(Button editShaft, Button newShaft, String selectedItem) {
 		if (selectedItem == null) {
 			newShaft.setText("");
