@@ -110,8 +110,15 @@ public class PsudoSplash {
 				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
 			}
 		});
+		while (interfaceFrame == null)
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		try {
-			Thread.sleep(500);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
