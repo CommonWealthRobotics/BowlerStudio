@@ -1,3 +1,12 @@
+bowlerstudio (0.29.6) xenial; urgency=medium
+
+  * null checks on the interface frame
+  * wait for splash to be ready before returning
+  * serialVersionUID
+  * 0.29.6
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 20 May 2019 19:50:35 -0400
+
 bowlerstudio (0.29.5) xenial; urgency=medium
 
   * kernel
