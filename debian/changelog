@@ -1,3 +1,10 @@
+bowlerstudio (0.29.7) xenial; urgency=medium
+
+  * kernel updates
+  * 0.29.7
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 30 May 2019 09:35:12 -0400
+
 bowlerstudio (0.29.6) xenial; urgency=medium
 
   * null checks on the interface frame
