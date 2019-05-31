@@ -1,3 +1,9 @@
+bowlerstudio (0.30.0) xenial; urgency=medium
+
+  * Added parabola
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 31 May 2019 08:01:51 -0400
+
 bowlerstudio (0.29.8) xenial; urgency=medium
 
   [ hephaestus ]
