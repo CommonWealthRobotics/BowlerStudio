@@ -580,6 +580,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			cm.getItems().add(parameters);
 		}
 
+		MenuItem exportObj = new MenuItem("Export OBJ...");
+		exportObj.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				currentCsg.addExportFormat("obj");
+				exportManufacturingPart(currentCsg, source);
+			}
+
+		});
+		
 		MenuItem exportDXF = new MenuItem("Export SVG...");
 		exportDXF.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -591,7 +602,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		});
 		cm.getItems().add(exportDXF);
-
 		MenuItem export = new MenuItem("Export STL...");
 		export.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -601,7 +611,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		});
 		cm.getItems().add(export);
-
+		cm.getItems().add(exportObj);
+		
 		MenuItem toWireframe = new MenuItem("To Wire Frame");
 		toWireframe.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
