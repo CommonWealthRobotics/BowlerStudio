@@ -7,18 +7,17 @@ BowlerStudio
 
 # [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
-## Ubuntu
+## Ubuntu 18.04
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
-	sudo apt-get update
-	sudo apt-get remove arduino bowlerstudio 
-	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
-## Debian 
-	sudo apt-get install software-properties-common python-software-properties					
-	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
+	sudo apt-get update 
+	sudo apt-get install bowlerstudio openjdk-8-jdk openjfx=8u161-b12-1ubuntu2 libopenjfx-java=8u161-b12-1ubuntu2 libopenjfx-jni=8u161-b12-1ubuntu2
+	
+## Debian/Other ubuntu
+	sudo apt-get install software-properties-common python-software-properties
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
+	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu bionic main" -y
 	sudo apt-get update
-	sudo apt-get remove arduino bowlerstudio 
-	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+	sudo apt-get install bowlerstudio openjdk-8-jdk openjfx
 							
 
 # What is BowlerStudio?
