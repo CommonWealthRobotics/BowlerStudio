@@ -289,6 +289,10 @@ dependencies {
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 
+	// https://mvnrepository.com/artifact/org.mobicents.external.freetts/freetts
+	//compile group: 'org.mobicents.external.freetts', name: 'freetts', version: '1.0'
+	// https://mvnrepository.com/artifact/org.mobicents.external.freetts/freetts
+	//compile group: 'org.mobicents.external.freetts', name: 'en_us', version: '1.0'
 }
 
 // create a fat-jar (class files plus dependencies
