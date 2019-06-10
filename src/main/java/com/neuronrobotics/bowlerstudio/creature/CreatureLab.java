@@ -187,10 +187,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		RadioButton rb2 = new RadioButton();
 		rb2.setToggleGroup(group);
+		rb2.fire();
 		rb2.setOnAction(event -> {
 			setCadMode(true);
 		});
-
+		
 		HBox radioOptions = new HBox(10);
 		radioOptions.getChildren().addAll(new Label("Cad"), rb1, rb2, new Label("Config"));
 
@@ -209,7 +210,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		tab.setOverlayTopRight(walkWidget);
 
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
-
+		setCadMode(true);// start the UI in config mode
 		generateCad();
 
 		setContent(root);

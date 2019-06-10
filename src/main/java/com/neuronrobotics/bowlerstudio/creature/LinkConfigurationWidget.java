@@ -354,7 +354,10 @@ public class LinkConfigurationWidget extends GridPane {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, 1, conf.getStaticOffset(), conf.getLowerLimit(), 150, "device units", true);
+		}, conf.getLowerLimit()<1?conf.getLowerLimit():1,//min
+				conf.getStaticOffset(),//max
+				conf.getLowerLimit(),//current
+150, "device units", true);
 
 		upperBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
@@ -378,7 +381,7 @@ public class LinkConfigurationWidget extends GridPane {
 				if(manager!=null)manager.generateCad();
 
 			}
-		}, conf.getStaticOffset(), 180, conf.getUpperLimit(), 150, "device units", true);
+		}, conf.getStaticOffset(), conf.getUpperLimit()>180?conf.getUpperLimit():180, conf.getUpperLimit(), 150, "device units", true);
 
 		zero = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 

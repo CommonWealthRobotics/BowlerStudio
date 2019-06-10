@@ -34,10 +34,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			min=max;
 			max=minStart;
 		}
+		if(min>current)
+			min=current;
+		if(max<current)
+			max=current;
 		double range = Math.abs(max-min);
 		if(range<1){
-			min=-100;
-			max = 100;
+			min=min-100;
+			max = max+100;
 			range=200;
 		}
 		setpoint.setMin(min);
