@@ -2,14 +2,11 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.util.ArrayList;
 
-import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
-import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
+//import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+//import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
-import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
@@ -70,21 +67,21 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	}
 	
     public void requestClose() {
-    	Platform.runLater(()->{
-    		try{
-		        TabPaneBehavior behavior = getBehavior();
-		        if(behavior.canCloseTab(this)) {
-		            behavior.closeTab(this);
-		        }
-    		}catch (NullPointerException e){
-    			//e.printStackTrace();
-    		}
-    	});
+//    	Platform.runLater(()->{
+//    		try{
+//		        TabPaneBehavior behavior = getBehavior();
+//		        if(behavior.canCloseTab(this)) {
+//		            behavior.closeTab(this);
+//		        }
+//    		}catch (NullPointerException e){
+//    			//e.printStackTrace();
+//    		}
+//    	});
     }
 
-    private TabPaneBehavior getBehavior() {
-        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
-    }
+//    private TabPaneBehavior getBehavior() {
+//        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
+//    }
 
 	public void setActive(boolean a){
 		active=a;

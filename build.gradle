@@ -18,11 +18,14 @@ plugins {
 }
 javafx {
     version = "11.0.2"
-    modules = [ 'javafx.controls',
+    modules = [ 
+    'javafx.base',
+    'javafx.controls',
     'javafx.fxml',
+    'javafx.graphics',
     'javafx.media',
     'javafx.swing',
-    'javafx.web'
+    'javafx.web',
      ]
 }
 
