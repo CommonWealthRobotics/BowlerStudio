@@ -1,3 +1,11 @@
+bowlerstudio (0.30.3) bionic; urgency=medium
+
+  * freetts
+  * defaulting the CAD manager to config mode
+  * 0.30.3
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 10 Jun 2019 16:01:36 -0400
+
 bowlerstudio (0.30.2) bionic; urgency=medium
 
   * adding obj export now that obj string bug is fixed
