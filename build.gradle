@@ -58,13 +58,23 @@ String getOsArch() {
 	return System.getProperty("os.arch");
 }
 
-
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'java'
-apply plugin: 'signing'
-apply plugin: 'maven'
-apply plugin: 'application'
+plugins {
+ 	id 'java'
+ 	id 'signing'
+ 	id 'eclipse'
+ 	id 'maven'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
+	id 'com.github.johnrengelman.shadow'
+}
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls',
+    'javafx.fxml',
+    'javafx.media',
+    'javafx.swing'
+     ]
+}
 //apply plugin: 'edu.sc.seis.launch4j'
 
 sourceCompatibility = '1.8'
