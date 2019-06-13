@@ -7,6 +7,26 @@ buildscript {
     }
 }
 
+plugins {
+ 	id 'java'
+ 	id 'signing'
+ 	id 'eclipse'
+ 	id 'maven'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
+	id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls',
+    'javafx.fxml',
+    'javafx.media',
+    'javafx.swing',
+    'javafx.web'
+     ]
+}
+
+
 boolean is64Bit() {
 	////System.out.println("Arch: "+getOsArch());
 	return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
@@ -58,23 +78,6 @@ String getOsArch() {
 	return System.getProperty("os.arch");
 }
 
-plugins {
- 	id 'java'
- 	id 'signing'
- 	id 'eclipse'
- 	id 'maven'
-	id 'application'
-	id 'org.openjfx.javafxplugin' version '0.0.7'
-	id 'com.github.johnrengelman.shadow'
-}
-javafx {
-    version = "11.0.2"
-    modules = [ 'javafx.controls',
-    'javafx.fxml',
-    'javafx.media',
-    'javafx.swing'
-     ]
-}
 //apply plugin: 'edu.sc.seis.launch4j'
 
 sourceCompatibility = '1.8'
