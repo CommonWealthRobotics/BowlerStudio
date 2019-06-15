@@ -13,10 +13,10 @@ plugins {
  	id 'eclipse'
  	id 'maven'
 	id 'application'
-	//id 'org.openjfx.javafxplugin' version '0.0.7'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
 	id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
-/*
+
 javafx {
     version = "11.0.2"
     modules = [ 
@@ -29,7 +29,7 @@ javafx {
     'javafx.web',
      ]
 }
-*/
+
 
 boolean is64Bit() {
 	////System.out.println("Arch: "+getOsArch());
@@ -310,6 +310,9 @@ dependencies {
 	//compile group: 'org.mobicents.external.freetts', name: 'freetts', version: '1.0'
 	// https://mvnrepository.com/artifact/org.mobicents.external.freetts/freetts
 	//compile group: 'org.mobicents.external.freetts', name: 'en_us', version: '1.0'
+	runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
 }
 
 // create a fat-jar (class files plus dependencies
@@ -336,7 +339,10 @@ jar {
 
 		        		
 		    )
-		}
+	}
+	from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 shadowJar {
