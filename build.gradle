@@ -13,9 +13,10 @@ plugins {
  	id 'eclipse'
  	id 'maven'
 	id 'application'
-	id 'org.openjfx.javafxplugin' version '0.0.7'
+	//id 'org.openjfx.javafxplugin' version '0.0.7'
 	id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
+/*
 javafx {
     version = "11.0.2"
     modules = [ 
@@ -28,7 +29,7 @@ javafx {
     'javafx.web',
      ]
 }
-
+*/
 
 boolean is64Bit() {
 	////System.out.println("Arch: "+getOsArch());
