@@ -28,12 +28,12 @@ public class DyIOControl extends AbstractBowlerStudioTab {
 		this.dyio = (DyIO)pm;
 		setGraphic(AssetFactory.loadIcon("DyIO-Tab.png"));
 		
-		setText(dyio.getScriptingName());
-		FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getMainPanel();
-        Parent root = fxmlLoader.getRoot();
-        controller = fxmlLoader.getController();
-        controller.setDyIO(dyio);
-        setContent(root);
+//		setText(dyio.getScriptingName());
+//		FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getMainPanel();
+//        Parent root = fxmlLoader.getRoot();
+//        controller = fxmlLoader.getController();
+//        controller.setDyIO(dyio);
+//        setContent(root);
 	}
 	
 

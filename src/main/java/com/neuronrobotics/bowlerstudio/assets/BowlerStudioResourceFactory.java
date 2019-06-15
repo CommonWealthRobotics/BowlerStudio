@@ -29,7 +29,7 @@ public class BowlerStudioResourceFactory {
 	private static Image chanUpdate;
 	private static Image chanDefault;
 	private static final ArrayList<FXMLLoader> fxmlLoaders = new ArrayList<>();
-	private static FXMLLoader mainPanel;
+	//private static FXMLLoader mainPanel;
 	private static FXMLLoader githubLogin;
 	private static FXMLLoader mainControllerPanel;
 
@@ -43,10 +43,10 @@ public class BowlerStudioResourceFactory {
 	@SuppressWarnings("restriction")
 	public static void load() throws Exception {
 		try {
-			BowlerStudio.renderSplashFrame( 94,"Loading DyIO");
-			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
+//			BowlerStudio.renderSplashFrame( 94,"Loading DyIO");
+//			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");
 			//mainPanel.setController(new DyIOPanel());
-			mainPanel.setClassLoader(DyIOPanel.class.getClassLoader());
+			//mainPanel.setClassLoader(DyIOPanel.class.getClassLoader());
 			BowlerStudio.renderSplashFrame( 95,"Loading GitHub");
 
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
@@ -70,56 +70,56 @@ public class BowlerStudioResourceFactory {
 		}
 		
 
-		for (DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
-			Image image;
-			//
-			try {
-				image = AssetFactory.loadAsset("dyio/icon-" + cm.toSlug() + ".png");
-			} catch (NullPointerException e) {
-				image = AssetFactory.loadAsset("dyio/icon-off.png");
-			}
-			lookup.put(cm, image);
-		}
-		setChanHighlight(AssetFactory.loadAsset("dyio/channel-highlight.png"));
-		setChanDefault(AssetFactory.loadAsset("dyio/channel-default.png"));
-		setChanUpdate(AssetFactory.loadAsset("dyio/channel-update.png"));
+//		for (DyIOChannelMode cm : EnumSet.allOf(DyIOChannelMode.class)) {
+//			Image image;
+//			//
+//			try {
+//				image = AssetFactory.loadAsset("dyio/icon-" + cm.toSlug() + ".png");
+//			} catch (NullPointerException e) {
+//				image = AssetFactory.loadAsset("dyio/icon-off.png");
+//			}
+//			lookup.put(cm, image);
+//		}
+//		setChanHighlight(AssetFactory.loadAsset("dyio/channel-highlight.png"));
+//		setChanDefault(AssetFactory.loadAsset("dyio/channel-default.png"));
+//		setChanUpdate(AssetFactory.loadAsset("dyio/channel-update.png"));
 
-		for (int i = 0; i < 24; i++) {
-			// generate the control widgets
-			FXMLLoader fxmlLoader;
-			try {
-				fxmlLoader = AssetFactory.loadLayout("layout/DyIOChannelContorol.fxml", true);
-				//fxmlLoader.setController(new DyIOchannelWidget());
-				fxmlLoader.setClassLoader(DyIOchannelWidget.class.getClassLoader());
-				try {
-					fxmlLoader.load();
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-				fxmlLoaders.add(fxmlLoader);
-			} catch (InvalidRemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransportException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		try {
-			mainPanel.load();
-		} catch (IOException ex) {
-			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, ex);
-		}
+//		for (int i = 0; i < 24; i++) {
+//			// generate the control widgets
+//			FXMLLoader fxmlLoader;
+//			try {
+//				fxmlLoader = AssetFactory.loadLayout("layout/DyIOChannelContorol.fxml", true);
+//				//fxmlLoader.setController(new DyIOchannelWidget());
+//				fxmlLoader.setClassLoader(DyIOchannelWidget.class.getClassLoader());
+//				try {
+//					fxmlLoader.load();
+//				} catch (IOException ex) {
+//					throw new RuntimeException(ex);
+//				}
+//				fxmlLoaders.add(fxmlLoader);
+//			} catch (InvalidRemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (TransportException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (GitAPIException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//		}
+//		try {
+//			mainPanel.load();
+//		} catch (IOException ex) {
+//			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 
 		try {
 			githubLogin.load();
@@ -157,13 +157,13 @@ public class BowlerStudioResourceFactory {
 		BowlerStudioResourceFactory.chanDefault = chanDefault;
 	}
 
-	public static FXMLLoader getMainPanel() {
-		return mainPanel;
-	}
-
-	public static void setMainPanel(FXMLLoader mainPanel) {
-		BowlerStudioResourceFactory.mainPanel = mainPanel;
-	}
+//	public static FXMLLoader getMainPanel() {
+//		return mainPanel;
+//	}
+//
+//	public static void setMainPanel(FXMLLoader mainPanel) {
+//		BowlerStudioResourceFactory.mainPanel = mainPanel;
+//	}
 
 	public static FXMLLoader getGithubLogin() {
 		return githubLogin;

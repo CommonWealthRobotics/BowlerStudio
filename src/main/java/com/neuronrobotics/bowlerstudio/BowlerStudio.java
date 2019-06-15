@@ -581,7 +581,7 @@ public class BowlerStudio extends Application {
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
-		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
+		//System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
 		new Thread(() -> {
 			try {
 
@@ -686,6 +686,10 @@ public class BowlerStudio extends Application {
 				// Log.enableWarningPrint();
 				// Log.enableDebugPrint();
 				// Log.enableErrorPrint();
+				String javaVersion = System.getProperty("java.version");
+		        String javafxVersion = System.getProperty("javafx.version");
+				System.out.println("Java Version : " + javaVersion);
+				System.out.println("FavaFX Version : " + javafxVersion);
 				System.out.println("BowlerStudio First Version: " + firstVer);
 				System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 				System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
