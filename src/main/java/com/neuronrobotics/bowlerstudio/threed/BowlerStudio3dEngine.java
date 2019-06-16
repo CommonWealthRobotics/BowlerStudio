@@ -234,7 +234,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// handleKeyboard(s);
 		handleMouse(getSubScene());
 
-		setScene(s);
+		Platform.runLater(() ->setScene(s));
 
 		// new Thread() {
 		//

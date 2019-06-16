@@ -85,6 +85,7 @@ public class BowlerStudioModularFrame {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
+		setBowlerStudioModularFrame(this);
 		assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 		assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 		dockPane = new DockPane();
@@ -377,7 +378,9 @@ public class BowlerStudioModularFrame {
 		return bowlerStudioModularFrame;
 	}
 
-	public static void setBowlerStudioModularFrame(BowlerStudioModularFrame bowlerStudioModularFrame) {
+	private static void setBowlerStudioModularFrame(BowlerStudioModularFrame bowlerStudioModularFrame) {
+		if(bowlerStudioModularFrame==null)
+			throw new RuntimeException();
 		BowlerStudioModularFrame.bowlerStudioModularFrame = bowlerStudioModularFrame;
 	}
 

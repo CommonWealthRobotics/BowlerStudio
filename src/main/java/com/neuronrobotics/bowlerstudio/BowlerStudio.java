@@ -613,10 +613,14 @@ public class BowlerStudio extends Application {
 
 			try {
 				mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
-				BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
-				mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
-				mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+
+				renderSplashFrame(96, "Setting controller");
+				mainControllerPanel.setController(new BowlerStudioModularFrame());
+				//renderSplashFrame(96, "Class loader");
+				//mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 				try {
+					renderSplashFrame(96, "Controller load");
+					
 					mainControllerPanel.load();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -686,6 +690,10 @@ public class BowlerStudio extends Application {
 				// Log.enableWarningPrint();
 				// Log.enableDebugPrint();
 				// Log.enableErrorPrint();
+				String javaVersion = System.getProperty("java.version");
+		        String javafxVersion = System.getProperty("javafx.version");
+				System.out.println("Java Version : " + javaVersion);
+				System.out.println("JavaFX Version : " + javafxVersion);
 				System.out.println("BowlerStudio First Version: " + firstVer);
 				System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 				System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());

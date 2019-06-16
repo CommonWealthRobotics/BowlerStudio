@@ -42,8 +42,8 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				//if the device disconnects, close the tab
-				if(source ==pm && source !=null )
-					requestClose();
+//				if(source ==pm && source !=null )
+//					requestClose();
 			}
 			
 			@Override
@@ -69,22 +69,22 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 		return isAcvive();
 	}
 	
-    public void requestClose() {
-    	Platform.runLater(()->{
-    		try{
-		        TabPaneBehavior behavior = getBehavior();
-		        if(behavior.canCloseTab(this)) {
-		            behavior.closeTab(this);
-		        }
-    		}catch (NullPointerException e){
-    			//e.printStackTrace();
-    		}
-    	});
-    }
-
-    private TabPaneBehavior getBehavior() {
-        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
-    }
+//    public void requestClose() {
+//    	Platform.runLater(()->{
+//    		try{
+//		        TabPaneBehavior behavior = getBehavior();
+//		        if(behavior.canCloseTab(this)) {
+//		            behavior.closeTab(this);
+//		        }
+//    		}catch (NullPointerException e){
+//    			//e.printStackTrace();
+//    		}
+//    	});
+//    }
+//
+//    private TabPaneBehavior getBehavior() {
+//        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
+//    }
 
 	public void setActive(boolean a){
 		active=a;
