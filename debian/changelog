@@ -1,3 +1,12 @@
+bowlerstudio (0.30.4) bionic; urgency=medium
+
+  * UI loading in kernel
+  * updated travis
+  * setting the modular frame on loading
+  * 0.30.4
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 16 Jun 2019 14:41:45 -0400
+
 bowlerstudio (0.30.3) bionic; urgency=medium
 
   * freetts
