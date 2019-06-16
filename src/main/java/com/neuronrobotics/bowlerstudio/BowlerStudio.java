@@ -604,7 +604,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
+			renderSplashFrame(96, "Resources Loaded");
 			primaryStage2 = primaryStage;
 			BowlerStudioModularFrame.setPrimaryStage(primaryStage);
 			// Initialize your logic here: all @FXML variables will have been
@@ -613,10 +613,14 @@ public class BowlerStudio extends Application {
 
 			try {
 				mainControllerPanel = AssetFactory.loadLayout("layout/BowlerStudioModularFrame.fxml");
-				BowlerStudioModularFrame.setBowlerStudioModularFrame(new BowlerStudioModularFrame());
-				mainControllerPanel.setController(BowlerStudioModularFrame.getBowlerStudioModularFrame());
-				mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+
+				renderSplashFrame(96, "Setting controller");
+				mainControllerPanel.setController(new BowlerStudioModularFrame());
+				//renderSplashFrame(96, "Class loader");
+				//mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 				try {
+					renderSplashFrame(96, "Controller load");
+					
 					mainControllerPanel.load();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -689,7 +693,7 @@ public class BowlerStudio extends Application {
 				String javaVersion = System.getProperty("java.version");
 		        String javafxVersion = System.getProperty("javafx.version");
 				System.out.println("Java Version : " + javaVersion);
-				System.out.println("FavaFX Version : " + javafxVersion);
+				System.out.println("JavaFX Version : " + javafxVersion);
 				System.out.println("BowlerStudio First Version: " + firstVer);
 				System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
 				System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());

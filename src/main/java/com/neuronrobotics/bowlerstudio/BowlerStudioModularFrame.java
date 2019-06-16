@@ -70,7 +70,7 @@ public class BowlerStudioModularFrame {
 
 	private static Stage primaryStage;
 
-	private static BowlerStudioModularFrame bowlerStudioModularFrame;
+	private static BowlerStudioModularFrame bowlerStudioModularFrame=null;
 
 	private HashMap<Tab, DockNode> webTabs = new HashMap<>();
 	private HashMap<String, Boolean> isOpen = new HashMap<>();
@@ -85,16 +85,26 @@ public class BowlerStudioModularFrame {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
+		System.err.println("Loading "+this.getClass());
 		assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 		assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
+		if(bowlerStudioModularFrame==null)
+			setBowlerStudioModularFrame(this);
+		else
+			throw new RuntimeException();
+		System.err.println("Loading "+DockPane.class);
 		dockPane = new DockPane();
 		dockImage = AssetFactory.loadAsset("BowlerStudioModularFrameIcon.png");
 		// final Tab newtab = new Tab();
 		// newtab.setText("");
 		// newtab.setClosable(false);
 		// newtab.setGraphic(AssetFactory.loadIcon("New-Web-Tab.png"));
+		System.err.println("Getting url ");
 		String homeURL = Tutorial.getHomeUrl();
+		System.err.println("url "+homeURL);
+		System.err.println("Create 3d engine ");
 		setJfx3dmanager(new BowlerStudio3dEngine());
+		System.err.println("Create "+BowlerStudioController.class);
 		controller = new BowlerStudioController(getJfx3dmanager());
 		WebTab.setBSController(controller);
 
@@ -103,10 +113,11 @@ public class BowlerStudioModularFrame {
 
 			Platform.runLater(()->{
 				try {
+					System.err.println("Loading Tutorial "+WebTab.class);
 					webtab = new WebTab("Tutorial", homeURL, true);
 					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
 					getTutorialDockNode().setPrefSize(1024, 730);
-				} catch (IOException | InterruptedException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -118,14 +129,14 @@ public class BowlerStudioModularFrame {
 		}
 
 		
-
+		System.err.println("Loading "+ConnectionManager.class);
 		connectionManagerDockNode = new DockNode(ConnectionManager.getConnectionManager().getContent(),
 				ConnectionManager.getConnectionManager().getText(),
 				ConnectionManager.getConnectionManager().getGraphic());
 		connectionManagerDockNode.setPrefSize(200, 700);
-
+		System.err.println("Adding tutorial ");
 		// Initial docked setup
-		addTutorial();
+		//addTutorial();
 
 		// Add the dock pane to the window
 		editorContainer.getChildren().add(dockPane);
@@ -133,7 +144,7 @@ public class BowlerStudioModularFrame {
 		AnchorPane.setRightAnchor(dockPane, 0.0);
 		AnchorPane.setLeftAnchor(dockPane, 0.0);
 		AnchorPane.setBottomAnchor(dockPane, 0.0);
-
+		System.err.println("Loading docking widgets");
 		FXMLLoader WindowLoader3d;
 		WindowLoader3d = AssetFactory.loadLayout("layout/CreatureLab.fxml");
 		creatureLab3dController = new CreatureLab3dController(getJfx3dmanager());
@@ -159,6 +170,8 @@ public class BowlerStudioModularFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.err.println("Loading menu widgets");
+
 		BorderPane menue = (BorderPane) menueBar.getRoot();
 		BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
 		VBox cmd = (VBox) commandLine.getRoot();
@@ -180,9 +193,8 @@ public class BowlerStudioModularFrame {
 
 		// focus on the tutorial to start
 		Platform.runLater(() -> getTutorialDockNode().requestFocus());
-		connectionManagerDockNode.onMouseClickedProperty().addListener((a, b, c) -> {
-			System.err.println("Cloick");
-		});
+
+		System.err.println("Loading done");
 
 	}
 
@@ -374,7 +386,10 @@ public class BowlerStudioModularFrame {
 	}
 
 	public static BowlerStudioModularFrame getBowlerStudioModularFrame() {
+		if(bowlerStudioModularFrame==null)
+			throw new RuntimeException();
 		return bowlerStudioModularFrame;
+		
 	}
 
 	public static void setBowlerStudioModularFrame(BowlerStudioModularFrame bowlerStudioModularFrame) {
