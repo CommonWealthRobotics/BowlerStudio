@@ -5,6 +5,9 @@ BowlerStudio
 [![Build Status](https://travis-ci.org/CommonWealthRobotics/BowlerStudio.svg?branch=development)](https://travis-ci.org/CommonWealthRobotics/BowlerStudio)
 [![Github All Releases](https://img.shields.io/github/downloads/CommonWealthRobotics/BowlerStudio/total.svg)](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
+
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2904/badge)](https://bestpractices.coreinfrastructure.org/projects/2904)
+
 # [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
 ## Ubuntu 18.04
