@@ -333,7 +333,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		});
 
 		widthProperty().addListener((w, o, n) -> {
-			resizeEvent();
+			//resizeEvent();
 //			FxTimer.runLater(Duration.ofMillis((int) (40.0 * Math.random())), () -> {
 //				getChildren().clear();
 //				getChildren().setAll(swingNode, getScripting());
@@ -341,7 +341,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //			});
 		});
 		heightProperty().addListener((w, o, n) -> {
-			resizeEvent();
+			//resizeEvent();
 		});
 		SwingUtilities.invokeLater(() -> {
 			if (getScripting() != null && getScripting().getCode() != null) {
