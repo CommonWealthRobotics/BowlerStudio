@@ -69,7 +69,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static HashMap<String, String> langaugeMapping = new HashMap<>();
 
 	private class MySwingNode extends SwingNode {
-		
+
 		@Override
 		public double prefWidth(double height) {
 			try {
@@ -79,8 +79,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				// e.printStackTrace();
 				return prefWidthProperty().doubleValue();
 			}
-			
+
 		}
+
 		@Override
 		public double prefHeight(double height) {
 			try {
@@ -90,8 +91,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				// e.printStackTrace();
 				return prefHeightProperty().doubleValue();
 			}
-			
+
 		}
+
 		/**
 		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
 		 * This value corresponds to the minimum width of the Swing component.
@@ -307,6 +309,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		getChildren().setAll(swingNode, getScripting());
 		swingNode.setOnMouseEntered(mouseEvent -> {
+			//System.err.println("On mouse entered " + file.getName());
 			resizeEvent();
 		});
 		// textArea
@@ -330,17 +333,15 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		});
 
 		widthProperty().addListener((w, o, n) -> {
-			// c.resizeChart((int) n.intValue(), (int) pane.getHeight());
-			// System.err.println("Width resized "+file);
-			// SwingUtilities.invokeLater(() -> sn.setContent(sp));
-
 			resizeEvent();
+//			FxTimer.runLater(Duration.ofMillis((int) (40.0 * Math.random())), () -> {
+//				getChildren().clear();
+//				getChildren().setAll(swingNode, getScripting());
+//				//resizeEvent();
+//			});
 		});
 		heightProperty().addListener((w, o, n) -> {
-			// c.resizeChart((int) pane.getWidth(), (int) n.intValue());
-			// System.err.println("height resized "+file);
 			resizeEvent();
-			// SwingUtilities.invokeLater(() -> sn.setContent(sp));
 		});
 		SwingUtilities.invokeLater(() -> {
 			if (getScripting() != null && getScripting().getCode() != null) {
@@ -351,14 +352,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void resizeEvent() {
-		if(!((lastRefresh+16)<System.currentTimeMillis())) {
-			FxTimer.runLater(Duration.ofMillis((int)(20.0*Math.random()+16)), () -> {
+		if (!((lastRefresh + 16) < System.currentTimeMillis())) {
+			FxTimer.runLater(Duration.ofMillis((int) (20.0 * Math.random() + 16)), () -> {
 				resizeEvent();
 			});
 			return;
 		}
-		lastRefresh=System.currentTimeMillis();
-
+		lastRefresh = System.currentTimeMillis();
+		//System.err.println("resizeEvent " + file.getName());
 
 		SwingUtilities.invokeLater(() -> {
 			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
@@ -378,9 +379,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		SwingUtilities.invokeLater(() -> {
 			textArea.repaint();
 		});
-
-		Platform.runLater(() -> {
-			swingNode.autosize();
+		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
+		FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
 			swingNode.requestFocus();
 		});
 
