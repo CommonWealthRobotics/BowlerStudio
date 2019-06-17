@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -33,6 +35,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -328,10 +331,42 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
 		highlighter.removeAllHighlights();
-		focusedProperty().addListener((w, o, n) -> {
-			System.err.println("Focused " + file);
-		});
-
+//		textArea.addFocusListener(new FocusListener() {
+//			
+//			@Override
+//			public void focusLost(FocusEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				System.err.println("textArea Focus gained "+file.getName());
+//				
+//			}
+//		});
+//		focusedProperty().addListener((w, o, n)-> {
+//			System.err.println("LocalFileScriptTab Focus gained "+file.getName());
+//		});
+//		
+//		swingNode.focusedProperty().addListener((w, o, n)-> {
+//			System.err.println("swingNode Focus gained "+file.getName());
+//		});
+//		spscrollPane.addFocusListener(new FocusListener() {
+//			
+//			@Override
+//			public void focusLost(FocusEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				System.err.println("spscrollPane Focus gained "+file.getName());
+//				
+//			}
+//		});
+		
 		widthProperty().addListener((w, o, n) -> {
 			//resizeEvent();
 //			FxTimer.runLater(Duration.ofMillis((int) (40.0 * Math.random())), () -> {
@@ -359,32 +394,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
-		//System.err.println("resizeEvent " + file.getName());
+//		System.err.println("Refresh event " + file.getName());
 
-		SwingUtilities.invokeLater(() -> {
-			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
-		});
-		SwingUtilities.invokeLater(() -> {
-			spscrollPane.invalidate();
-		});
-		SwingUtilities.invokeLater(() -> {
-			spscrollPane.repaint();
-		});
-		SwingUtilities.invokeLater(() -> {
-			textArea.requestFocusInWindow();
-		});
-		SwingUtilities.invokeLater(() -> {
-			textArea.invalidate();
-		});
-		SwingUtilities.invokeLater(() -> {
-			textArea.repaint();
-		});
-		swingNode.setContent(spscrollPane);
+		SwingUtilities.invokeLater(() ->swingNode.setContent(spscrollPane));
 		FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
 			swingNode.requestFocus();
+			SwingUtilities.invokeLater(() -> textArea.requestFocusInWindow());
 		});
-
-		// System.err.println("resize "+file);
 	}
 
 	@Override
