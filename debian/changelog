@@ -1,3 +1,13 @@
+bowlerstudio (0.30.5) bionic; urgency=medium
+
+  * #63
+  * #63 adding individual invokelaters and a retry loop with timing gating
+  * close #63
+  * 0.30.5
+  * Removing the flashing for #63
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 17 Jun 2019 13:15:37 -0400
+
 bowlerstudio (0.30.4) bionic; urgency=medium
 
   * UI loading in kernel
