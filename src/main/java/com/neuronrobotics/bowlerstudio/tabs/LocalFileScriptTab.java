@@ -70,20 +70,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private class MySwingNode extends SwingNode {
 		/**
-		 * Returns the {@code SwingNode}'s minimum width for use in layout
-		 * calculations. This value corresponds to the minimum width of the
-		 * Swing component.
+		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
+		 * This value corresponds to the minimum width of the Swing component.
 		 * 
-		 * @return the minimum width that the node should be resized to during
-		 *         layout
+		 * @return the minimum width that the node should be resized to during layout
 		 */
 		@Override
 		public double minWidth(double height) {
 			try {
 				return super.minWidth(height);
 			} catch (Exception e) {
-				//System.out.println("Error in "+file);
-				//e.printStackTrace();
+				// System.out.println("Error in "+file);
+				e.printStackTrace();
 				return minWidthProperty().doubleValue();
 			}
 
@@ -91,20 +89,19 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		/**
 		 * Returns the {@code SwingNode}'s minimum height for use in layout
-		 * calculations. This value corresponds to the minimum height of the
-		 * Swing component.
+		 * calculations. This value corresponds to the minimum height of the Swing
+		 * component.
 		 * 
-		 * @return the minimum height that the node should be resized to during
-		 *         layout
+		 * @return the minimum height that the node should be resized to during layout
 		 */
 		@Override
 		public double minHeight(double width) {
 			try {
 				return super.minHeight(width);
 			} catch (Exception e) {
-				//System.out.println("Error in "+file);
-				//e.printStackTrace();
-				return  minHeightProperty().doubleValue();
+				// System.out.println("Error in "+file);
+				e.printStackTrace();
+				return minHeightProperty().doubleValue();
 			}
 		}
 	}
@@ -126,6 +123,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		public void componentResized(ComponentEvent e) {
 			System.err.println("componentResized");
+
 		}
 
 		public void componentHidden(ComponentEvent e) {
@@ -141,9 +139,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 
 	}
-	public static void setExtentionSyntaxType(String shellType,String syntax){
+
+	public static void setExtentionSyntaxType(String shellType, String syntax) {
 		langaugeMapping.put(shellType, syntax);
 	}
+
 	public LocalFileScriptTab(File file) throws IOException {
 
 		this.file = file;
@@ -160,8 +160,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
 			break;
 		default:
-			type=langaugeMapping.get(shellType);
-			if(type == null){
+			type = langaugeMapping.get(shellType);
+			if (type == null) {
 				type = SyntaxConstants.SYNTAX_STYLE_NONE;
 				if (shellType.toLowerCase().contains("arduino")) {
 					type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
@@ -204,6 +204,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
+				System.err.println("changedUpdate " + file);
 				new Thread() {
 					public void run() {
 						getScripting().removeIScriptEventListener(l);
@@ -253,8 +254,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				if (lineSelected != linenum) {
 					lineSelected = linenum;
 					// System.err.println("Select "+lineSelected);
-					BowlerStudio.select(file, lineSelected);
-
+					new Thread(() -> {
+						BowlerStudio.select(file, lineSelected);
+					}).start();
 				}
 
 			}
@@ -327,7 +329,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void resizeEvent() {
 		SwingUtilities.invokeLater(() -> {
-			sp.setSize((int) sp.getWidth() , (int) sp.getHeight());
+			sp.setSize((int) sp.getWidth(), (int) sp.getHeight());
 			textArea.requestFocusInWindow();
 			textArea.invalidate();
 			textArea.repaint();
@@ -378,7 +380,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			@Override
 			public void run() {
 				System.out.println("script error");
-				textArea.requestFocusInWindow();
+				//textArea.requestFocusInWindow();
 			}
 		});
 
@@ -428,11 +430,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		try {
 
-			textArea.moveCaretPosition(startIndex);
+			SwingUtilities.invokeLater(() -> {textArea.moveCaretPosition(startIndex);});
 		} catch (Error | Exception ex) {
 			ex.printStackTrace();
 		}
-		textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+		SwingUtilities.invokeLater(() -> {try {
+			textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}});
 
 	}
 
@@ -448,16 +455,15 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		myFont = new Font(myFont.getName(), myFont.getStyle(), size);
 		setFontLoop();
 	}
+
 	private void setFontLoop() {
-		FxTimer.runLater(
-		        Duration.ofMillis(200),
-		        () -> {
-		        	try {
-		        		textArea.setFont(myFont);
-					}catch(Throwable ex) {
-						System.err.println("Tab Font set failed "+file.getAbsolutePath());
-						setFontLoop();
-					}
-		        });
+		FxTimer.runLater(Duration.ofMillis(200), () -> {
+			try {
+				SwingUtilities.invokeLater(() -> {textArea.setFont(myFont);});
+			} catch (Throwable ex) {
+				System.err.println("Tab Font set failed " + file.getAbsolutePath());
+				setFontLoop();
+			}
+		});
 	}
 }
