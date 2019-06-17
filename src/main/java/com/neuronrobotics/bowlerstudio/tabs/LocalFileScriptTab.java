@@ -388,14 +388,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void resizeEvent() {
 		if (!((lastRefresh + 16) < System.currentTimeMillis())) {
-//			FxTimer.runLater(Duration.ofMillis((int) (20.0 * Math.random() + 16)), () -> {
-//				//resizeEvent();
-//			});
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
-//		System.err.println("Refresh event " + file.getName());
-
 		SwingUtilities.invokeLater(() ->swingNode.setContent(spscrollPane));
 		FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
 			swingNode.requestFocus();
