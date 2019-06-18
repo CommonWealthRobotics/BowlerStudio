@@ -65,6 +65,7 @@ apply plugin: 'java'
 apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'application'
+
 //apply plugin: 'edu.sc.seis.launch4j'
 
 sourceCompatibility = '1.8'
@@ -289,11 +290,8 @@ dependencies {
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 
-	// https://mvnrepository.com/artifact/org.mobicents.external.freetts/freetts
-	//compile group: 'org.mobicents.external.freetts', name: 'freetts', version: '1.0'
-	// https://mvnrepository.com/artifact/org.mobicents.external.freetts/freetts
-	//compile group: 'org.mobicents.external.freetts', name: 'en_us', version: '1.0'
-		compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'
+
+	//	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'
 	// https://mvnrepository.com/artifact/de.dfki.mary/voice-dfki-poppy-hsmm
 	compile group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
 	// https://mvnrepository.com/artifact/de.dfki.mary/voice-dfki-poppy-hsmm
@@ -336,6 +334,7 @@ shadowJar {
    baseName = 'BowlerStudio'
    classifier = "fat"
    version = props."app.version"
+    mergeServiceFiles()
 }
 
 //task run(type: JavaExec) {
