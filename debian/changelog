@@ -1,3 +1,17 @@
+bowlerstudio (0.31.0) bionic; urgency=medium
+
+  * minimized flicker
+  * cleanup
+  * editable
+  * minimal needed for refresh
+  * cleanup
+  * changing the speach kernel
+  * ignore
+  * text to spech update
+  * 0.31.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 18 Jun 2019 10:53:09 -0400
+
 bowlerstudio (0.30.5) bionic; urgency=medium
 
   * #63
