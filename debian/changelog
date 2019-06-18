@@ -1,3 +1,11 @@
+bowlerstudio (0.31.1) bionic; urgency=medium
+
+  * working marytts jar
+  * ignore
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 18 Jun 2019 12:17:28 -0400
+
 bowlerstudio (0.31.0) bionic; urgency=medium
 
   * minimized flicker
