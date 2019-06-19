@@ -9,9 +9,11 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -128,7 +130,11 @@ public class PsudoSplash {
 			e.printStackTrace();
 		}
 	}
-
+	public void setIcon(Image img) {
+		BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(img, null);
+		if (interfaceFrame != null)
+			interfaceFrame.setIconImage(image);
+	}
 	boolean isVisableSplash() {
 		if (interfaceFrame != null)
 			return interfaceFrame.isVisible();

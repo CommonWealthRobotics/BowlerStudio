@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 
+import javafx.scene.image.Image;
+
 public class SplashManager {
 	private static Graphics2D splashGraphics;
 
@@ -26,7 +28,11 @@ public class SplashManager {
 		}
 		psudo.closeSplashLocal();
 	}
-
+	public static void setIcon(Image img) {
+		if (psudo != null) {
+			psudo.setIcon(img);
+		}
+	}
 	private static boolean isVisableSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();

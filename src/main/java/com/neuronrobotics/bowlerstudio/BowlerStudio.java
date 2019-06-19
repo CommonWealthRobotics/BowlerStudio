@@ -276,7 +276,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 
 				}
-				renderSplashFrame(15, "Loading Settings");
+				renderSplashFrame(15, "Loading Images");
 				try {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
@@ -327,7 +327,7 @@ public class BowlerStudio extends Application {
 					renderSplashFrame(25, "Populating Menu");
 				}
 			}
-
+			SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 			renderSplashFrame(50, "Tutorials...");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
