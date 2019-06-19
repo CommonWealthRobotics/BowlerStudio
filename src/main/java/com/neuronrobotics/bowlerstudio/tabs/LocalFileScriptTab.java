@@ -391,11 +391,19 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
-		SwingUtilities.invokeLater(() ->swingNode.setContent(spscrollPane));
-		FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
-			swingNode.requestFocus();
-			SwingUtilities.invokeLater(() -> textArea.requestFocusInWindow());
+		SwingUtilities.invokeLater(() ->{
+			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+			spscrollPane.invalidate();
+			spscrollPane.repaint();
+			textArea.invalidate();
+			textArea.repaint();
+			swingNode.setContent(spscrollPane);
+			textArea.requestFocusInWindow();
+			FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+				swingNode.requestFocus();
+			});
 		});
+		
 	}
 
 	@Override
