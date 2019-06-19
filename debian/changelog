@@ -1,3 +1,10 @@
+bowlerstudio (0.31.3) bionic; urgency=medium
+
+  * Loading an image as the tray icon for the splash
+  * 0.31.3
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 19 Jun 2019 18:09:17 -0400
+
 bowlerstudio (0.31.2) bionic; urgency=medium
 
   * kernel
