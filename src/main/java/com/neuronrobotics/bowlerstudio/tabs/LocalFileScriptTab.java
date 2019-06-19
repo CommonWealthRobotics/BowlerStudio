@@ -526,14 +526,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void setFontLoop() {
 		FxTimer.runLater(Duration.ofMillis(200), () -> {
-			try {
-				SwingUtilities.invokeLater(() -> {
-					textArea.setFont(myFont);
-				});
-			} catch (Throwable ex) {
-				System.err.println("Tab Font set failed " + file.getAbsolutePath());
-				setFontLoop();
-			}
+			SwingUtilities.invokeLater(() -> {
+				try {
+						textArea.setFont(myFont);
+				} catch (Throwable ex) {
+					System.err.println("Tab Font set failed " + file.getAbsolutePath());
+					setFontLoop();
+				}
+			});
 		});
 	}
 }
