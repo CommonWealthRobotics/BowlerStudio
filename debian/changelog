@@ -1,3 +1,19 @@
+bowlerstudio (0.31.6) bionic; urgency=medium
+
+  * Closes #57 Adding files to empty repos
+  * adding basic adding feature
+  * adding calls to the workspace manager
+  * adding workspace manager
+  * calls to workspace manager
+  * null check
+  * adding file open windows to the workspace menu
+  * set up the files after pull
+  * change it to pull
+  * add repo to workspace button
+  * bugfix
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 20 Jun 2019 18:31:49 -0400
+
 bowlerstudio (0.31.4) bionic; urgency=medium
 
   * catch the exception in the lambda
