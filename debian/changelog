@@ -1,3 +1,12 @@
+bowlerstudio (0.31.4) bionic; urgency=medium
+
+  * catch the exception in the lambda
+  * Fix the flicker
+  * delay the print to ensure that the window loads after the web tab loads
+  * 0.31.4
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 20 Jun 2019 00:47:16 -0400
+
 bowlerstudio (0.31.3) bionic; urgency=medium
 
   * Loading an image as the tray icon for the splash
