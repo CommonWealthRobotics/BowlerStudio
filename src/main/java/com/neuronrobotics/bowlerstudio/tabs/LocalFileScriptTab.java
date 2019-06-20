@@ -313,7 +313,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		getChildren().setAll(swingNode, getScripting());
 		swingNode.setOnMouseEntered(mouseEvent -> {
 			//System.err.println("On mouse entered " + file.getName());
-			resizeEvent();
+			//resizeEvent();
+			SwingUtilities.invokeLater(() ->{
+				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+				spscrollPane.invalidate();
+				spscrollPane.repaint();
+				textArea.invalidate();
+				textArea.repaint();
+				textArea.requestFocusInWindow();
+				FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+					swingNode.requestFocus();
+				});
+			});
 		});
 		// textArea
 		KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
@@ -368,15 +379,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //		});
 		
 		widthProperty().addListener((w, o, n) -> {
-			//resizeEvent();
-//			FxTimer.runLater(Duration.ofMillis((int) (40.0 * Math.random())), () -> {
-//				getChildren().clear();
-//				getChildren().setAll(swingNode, getScripting());
-//				//resizeEvent();
-//			});
+			resizeEvent();
+
 		});
 		heightProperty().addListener((w, o, n) -> {
-			//resizeEvent();
+			resizeEvent();
 		});
 		SwingUtilities.invokeLater(() -> {
 			if (getScripting() != null && getScripting().getCode() != null) {
@@ -387,7 +394,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void resizeEvent() {
-		if (!((lastRefresh + 16) < System.currentTimeMillis())) {
+		if (!((lastRefresh + 60) < System.currentTimeMillis())) {
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
@@ -397,9 +404,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			spscrollPane.repaint();
 			textArea.invalidate();
 			textArea.repaint();
-			swingNode.setContent(spscrollPane);
+			
 			textArea.requestFocusInWindow();
 			FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+				swingNode.setContent(spscrollPane);
 				swingNode.requestFocus();
 			});
 		});
