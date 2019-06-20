@@ -359,7 +359,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public boolean isAutoHightlight() {
-		return autoHighilight.isSelected();
+		if(autoHighilight!=null)
+			return autoHighilight.isSelected();
+		return false;
 	}
 
 	public Group getDebuggerBox() {
