@@ -189,13 +189,24 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						});
 						ThreadUtil.wait(20);
 						for (GHGist gist : gists) {
+							String url=gist.getGitPushUrl();
 							String desc = gist.getDescription();
 							if (desc == null || desc.length() == 0) {
 								desc = gist.getFiles().keySet().toArray()[0].toString();
 							}
+							String descriptionString =desc;
 							Menu tmpGist = new Menu(desc);
 							String description = desc;
 							MenuItem loadWebGist = new MenuItem("Show Web Gist...");
+							MenuItem addToWs = new MenuItem("Add Repo to Workspace");
+							addToWs.setOnAction(event -> {
+								new Thread() {
+									public void run() {
+										BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(),
+												"GIST: " + descriptionString);
+									}
+								}.start();
+							});
 							loadWebGist.setOnAction(event -> {
 								String webURL = gist.getHtmlUrl();
 								try {
@@ -223,10 +234,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								}
 							}.start());
 							Platform.runLater(() -> {
-								tmpGist.getItems().addAll(addFile,
+								tmpGist.getItems().addAll(addToWs,addFile,
 								 loadWebGist);
 							});
-							String descriptionString =desc;
+							
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
 
@@ -258,9 +269,16 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												e1.printStackTrace();
 												return;
 											}
-											if (tmpGist.getItems().size() != 2)
+											if (tmpGist.getItems().size() != 3)
 												return;// menue populated by
-														// another thread
+											
+											// another thread
+											try {
+												ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
+											} catch (IOException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
 											for (String s : listofFiles) {
 												MenuItem tmp = new MenuItem(s);
 												tmp.setOnAction(event -> {
@@ -268,9 +286,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 														public void run() {
 															try {
 																File fileSelected = ScriptingEngine
-																		.fileFromGit(gist.getGitPushUrl(), s);
+																		.fileFromGit(url, s);
 																BowlerStudio.createFileTab(fileSelected);
-																BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), "GIST: "+descriptionString);
+																BowlerStudioMenuWorkspace.add(url, "GIST: "+descriptionString);
 															} catch (Exception e) {
 																// TODO
 																// Auto-generated
@@ -371,9 +389,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private static void setUpRepoMenue(Menu repoMenue,GHRepository repo) {
 		String menueMessage = repo.getFullName();
 		String url = repo.getGitTransportUrl().replace("git://", "https://");
-		setUpRepoMenue( repoMenue, menueMessage, url) ;
+		setUpRepoMenue( repoMenue, menueMessage, url,true) ;
 	}
-	public static void setUpRepoMenue(Menu repoMenue,String menueMessage,String url) {
+	public static void setUpRepoMenue(Menu repoMenue,String menueMessage,String url, boolean useAddToWorkspaceItem) {
 		new Thread() {
 			public void run() {
 				//String menueMessage = repo.getFullName();
@@ -381,19 +399,26 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem updateRepo = new MenuItem("Update Repo...");
+				MenuItem addToWs = new MenuItem("Add Repo to Workspace");
+				addToWs.setOnAction(event -> {
+					new Thread() {
+						public void run() {
+							BowlerStudioMenuWorkspace.add(url, menueMessage);
+						}
+					}.start();
+				});
 				//String url = repo.getGitTransportUrl().replace("git://", "https://");
 				updateRepo.setOnAction(event -> {
-//					System.out.println("Adding file to : " + url);
-//					Platform.runLater(() -> {
-//						Stage s = new Stage();
-//
-//						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
-//						try {
-//							controller.start(s);
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
-//					});
+					new Thread() {
+						public void run() {
+							try {
+								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}.start();
 				});
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				addFile.setOnAction(event -> {
@@ -411,6 +436,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				});
 				Platform.runLater(() -> {
 					orgFiles.getItems().add(loading);
+					if(useAddToWorkspaceItem)
+						orgRepo.getItems().add(addToWs);
 					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles);
 				});
 
