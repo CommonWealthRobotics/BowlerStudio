@@ -246,7 +246,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 														// servicing this gist
 											gistFlag = true;
 											System.out.println("Loading files for " + description);
-											BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), descriptionString);
+											
 
 											ArrayList<String> listofFiles;
 											try {
@@ -269,6 +269,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 																File fileSelected = ScriptingEngine
 																		.fileFromGit(gist.getGitPushUrl(), s);
 																BowlerStudio.createFileTab(fileSelected);
+																BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), descriptionString);
 															} catch (Exception e) {
 																// TODO
 																// Auto-generated
@@ -427,7 +428,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								gistFlag = true;
 								System.out.println(
 										"Loading files for " + repo.getFullName() + " " + repo.getDescription());
-								BowlerStudioMenuWorkspace.add(url, menueMessage);
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
@@ -451,6 +451,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												try {
 													File fileSelected = ScriptingEngine.fileFromGit(url, s);
 													BowlerStudio.createFileTab(fileSelected);
+													BowlerStudioMenuWorkspace.add(url, menueMessage);
 												} catch (Exception e) {
 													// TODO
 													// Auto-generated
@@ -768,7 +769,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert workspacemenu != null : "fx:id=\"workspacemenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-		BowlerStudioMenuWorkspace.init(workspacemenu);
+		
 		showDevicesPanel.setOnAction(event -> {
 			bowlerStudioModularFrame.showConectionManager();
 		});
@@ -781,6 +782,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 		new Thread() {
 			public void run() {
+				BowlerStudioMenuWorkspace.init(workspacemenu);
 				ThreadUtil.wait(500);
 				try {
 					ScriptingEngine.setAutoupdate(true);
