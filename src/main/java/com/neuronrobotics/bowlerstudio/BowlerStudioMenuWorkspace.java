@@ -62,10 +62,11 @@ public class BowlerStudioMenuWorkspace {
 				}
 				String removedURL = (String) myOptions.remove(bestIndex);
 				if (menu.size() < maxMenueSize) {
-					menu.add(removedURL);
+					
 					// clone all repos from git
 					try {
 						ScriptingEngine.filesInGit(removedURL);
+						menu.add(removedURL);
 					}catch(Exception e) {
 						// repo is broken or missing
 						workspaceData.remove(removedURL);
@@ -82,7 +83,7 @@ public class BowlerStudioMenuWorkspace {
 					ArrayList<String> data = (ArrayList<String>) workspaceData.get(url);
 					
 					String message = data.get(0);
-					BowlerStudioMenu.setUpRepoMenue(workspaceMenu,message,url);
+					BowlerStudioMenu.setUpRepoMenue(workspaceMenu,message,url, false);
 			
 				}
 			});
