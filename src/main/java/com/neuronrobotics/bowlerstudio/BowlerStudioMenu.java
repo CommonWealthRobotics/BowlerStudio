@@ -225,6 +225,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								tmpGist.getItems().addAll(addFile,
 								 loadWebGist);
 							});
+							String descriptionString =desc;
 							EventHandler<Event> loadFiles = new EventHandler<Event>() {
 								boolean gistFlag = false;
 
@@ -245,6 +246,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 														// servicing this gist
 											gistFlag = true;
 											System.out.println("Loading files for " + description);
+											BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), descriptionString);
+
 											ArrayList<String> listofFiles;
 											try {
 												listofFiles = ScriptingEngine.filesInGit(gist.getGitPushUrl(), ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
@@ -367,8 +370,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private void setUpRepoMenue(Menu repoMenue, GHRepository repo) {
 		new Thread() {
 			public void run() {
-
-				Menu orgRepo = new Menu(repo.getFullName());
+				String menueMessage = repo.getFullName();
+				Menu orgRepo = new Menu(menueMessage);
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem updateRepo = new MenuItem("Update Repo...");
@@ -424,6 +427,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								gistFlag = true;
 								System.out.println(
 										"Loading files for " + repo.getFullName() + " " + repo.getDescription());
+								BowlerStudioMenuWorkspace.add(url, menueMessage);
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
