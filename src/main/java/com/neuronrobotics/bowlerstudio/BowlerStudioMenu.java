@@ -53,7 +53,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML // fx:id="GitHubRoot"
 	private Menu GitHubRoot; // Value injected by FXMLLoader
-
+	
+	@FXML // fx:id="workspacemenu"
+	private Menu workspacemenu;
 	@FXML // fx:id="MeneBarBowlerStudio"
 	private MenuBar MeneBarBowlerStudio; // Value injected by FXMLLoader
 
@@ -761,6 +763,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert workspacemenu != null : "fx:id=\"workspacemenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		BowlerStudioMenuWorkspace.init(workspacemenu);
 		showDevicesPanel.setOnAction(event -> {
 			bowlerStudioModularFrame.showConectionManager();
 		});
