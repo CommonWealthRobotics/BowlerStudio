@@ -42,6 +42,7 @@ import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.reactfx.util.FxTimer;
 import org.w3c.dom.Document;
 
 import javax.swing.*;
@@ -206,8 +207,7 @@ public class BowlerStudio extends Application {
 	}
 
 	/**
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 * @throws Exception
 	 */
 
@@ -501,8 +501,7 @@ public class BowlerStudio extends Application {
 	/**
 	 * @author Sainath
 	 * @version 1.0
-	 * @param url
-	 *            - The URL of the tab that needs to be opened
+	 * @param url - The URL of the tab that needs to be opened
 	 */
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
@@ -511,8 +510,7 @@ public class BowlerStudio extends Application {
 	/**
 	 * @author Sainath
 	 * @version 1.0
-	 * @param msg
-	 *            - message that needs to be spoken
+	 * @param msg - message that needs to be spoken
 	 * @return an integer
 	 */
 	public static int speak(String msg) {
@@ -616,11 +614,11 @@ public class BowlerStudio extends Application {
 
 				renderSplashFrame(96, "Setting controller");
 				mainControllerPanel.setController(new BowlerStudioModularFrame());
-				//renderSplashFrame(96, "Class loader");
-				//mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
+				// renderSplashFrame(96, "Class loader");
+				// mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 				try {
 					renderSplashFrame(96, "Controller load");
-					
+
 					mainControllerPanel.load();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -690,15 +688,17 @@ public class BowlerStudio extends Application {
 				// Log.enableWarningPrint();
 				// Log.enableDebugPrint();
 				// Log.enableErrorPrint();
-				String javaVersion = System.getProperty("java.version");
-		        String javafxVersion = System.getProperty("javafx.version");
-				System.out.println("Java Version : " + javaVersion);
-				System.out.println("JavaFX Version : " + javafxVersion);
-				System.out.println("BowlerStudio First Version: " + firstVer);
-				System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-				System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-				System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-				System.out.println("Welcome to BowlerStudio!");
+				FxTimer.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
+					String javaVersion = System.getProperty("java.version");
+					String javafxVersion = System.getProperty("javafx.version");
+					System.out.println("Java Version : " + javaVersion);
+					System.out.println("JavaFX Version : " + javafxVersion);
+					System.out.println("BowlerStudio First Version: " + firstVer);
+					System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+					System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+					System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+					System.out.println("Welcome to BowlerStudio!");
+				});
 				closeSplash();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
