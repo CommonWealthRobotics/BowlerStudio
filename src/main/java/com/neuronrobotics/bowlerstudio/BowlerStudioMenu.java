@@ -55,7 +55,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private Menu GitHubRoot; // Value injected by FXMLLoader
 	
 	@FXML // fx:id="workspacemenu"
-	private Menu workspacemenu;
+	private Menu workspacemenuHandle; // Value injected by FXMLLoader
+	
 	@FXML // fx:id="MeneBarBowlerStudio"
 	private MenuBar MeneBarBowlerStudio; // Value injected by FXMLLoader
 
@@ -95,7 +96,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
 	private String name;
-	private BowlerStudioMenu selfRef = this;
+	private static BowlerStudioMenu selfRef =null;
 	private File openFile;
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
@@ -269,7 +270,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 																File fileSelected = ScriptingEngine
 																		.fileFromGit(gist.getGitPushUrl(), s);
 																BowlerStudio.createFileTab(fileSelected);
-																BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), descriptionString);
+																BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(), "GIST: "+descriptionString);
 															} catch (Exception e) {
 																// TODO
 																// Auto-generated
@@ -367,16 +368,20 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 
 	}
-
-	private void setUpRepoMenue(Menu repoMenue, GHRepository repo) {
+	private static void setUpRepoMenue(Menu repoMenue,GHRepository repo) {
+		String menueMessage = repo.getFullName();
+		String url = repo.getGitTransportUrl().replace("git://", "https://");
+		setUpRepoMenue( repoMenue, menueMessage, url) ;
+	}
+	public static void setUpRepoMenue(Menu repoMenue,String menueMessage,String url) {
 		new Thread() {
 			public void run() {
-				String menueMessage = repo.getFullName();
+				//String menueMessage = repo.getFullName();
 				Menu orgRepo = new Menu(menueMessage);
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem updateRepo = new MenuItem("Update Repo...");
-				String url = repo.getGitTransportUrl().replace("git://", "https://");
+				//String url = repo.getGitTransportUrl().replace("git://", "https://");
 				updateRepo.setOnAction(event -> {
 //					System.out.println("Adding file to : " + url);
 //					Platform.runLater(() -> {
@@ -427,7 +432,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											// servicing this gist
 								gistFlag = true;
 								System.out.println(
-										"Loading files for " + repo.getFullName() + " " + repo.getDescription());
+										"Loading files for " + menueMessage + " " );
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
@@ -768,8 +773,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		assert myOrganizations != null : "fx:id=\"myOrganizations\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-		assert workspacemenu != null : "fx:id=\"workspacemenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
-		
+		assert workspacemenuHandle != null : "fx:id=\"workspacemenuHandle\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		selfRef=this;
+		new Thread() {
+			public void run() {
+				ThreadUtil.wait(500);
+				BowlerStudioMenuWorkspace.init(workspacemenuHandle);
+			}
+		}.start();
 		showDevicesPanel.setOnAction(event -> {
 			bowlerStudioModularFrame.showConectionManager();
 		});
@@ -782,7 +793,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 		new Thread() {
 			public void run() {
-				BowlerStudioMenuWorkspace.init(workspacemenu);
+				
 				ThreadUtil.wait(500);
 				try {
 					ScriptingEngine.setAutoupdate(true);

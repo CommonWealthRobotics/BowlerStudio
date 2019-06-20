@@ -1,30 +1,28 @@
 package com.neuronrobotics.bowlerstudio;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-
-import com.google.gson.internal.LinkedTreeMap;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
-	@SuppressWarnings("unused")
 	private static Menu workspaceMenu;
 	private static HashMap<String, Object> workspaceData = null;
-	private static final int maxMenueSize = 2;
-
+	private static final int maxMenueSize = 30;
+	
 	public static void init(Menu workspacemenu) {
+		if(workspacemenu==null)
+			throw new RuntimeException();
 		workspaceMenu = workspacemenu;
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		sort();
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void add(String url, String message) {
 		ArrayList<String> data;
 		if (workspaceData.get(url) == null) {
@@ -41,6 +39,7 @@ public class BowlerStudioMenuWorkspace {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void sort() {
 		try {
 			ArrayList<String> myOptions = new ArrayList<String>();
@@ -62,17 +61,29 @@ public class BowlerStudioMenuWorkspace {
 					}
 				}
 				String removedURL = (String) myOptions.remove(bestIndex);
-				if (menu.size() < maxMenueSize)
+				if (menu.size() < maxMenueSize) {
 					menu.add(removedURL);
-				else
+					// clone all repos from git
+					try {
+						ScriptingEngine.filesInGit(removedURL);
+					}catch(Exception e) {
+						// repo is broken or missing
+						workspaceData.remove(removedURL);
+					}
+					
+				}else {
 					workspaceData.remove(removedURL);
+				}
 			}
 			Platform.runLater(() -> {
-				workspaceMenu.getItems().clear();
-				for (String s : menu) {
-					ArrayList<String> data = (ArrayList<String>) workspaceData.get(s);
-					MenuItem e = new MenuItem(data.get(0));
-					workspaceMenu.getItems().add(e);
+				if(workspaceMenu.getItems()!=null)
+					workspaceMenu.getItems().clear();
+				for (String url : menu) {
+					ArrayList<String> data = (ArrayList<String>) workspaceData.get(url);
+					
+					String message = data.get(0);
+					BowlerStudioMenu.setUpRepoMenue(workspaceMenu,message,url);
+			
 				}
 			});
 			
