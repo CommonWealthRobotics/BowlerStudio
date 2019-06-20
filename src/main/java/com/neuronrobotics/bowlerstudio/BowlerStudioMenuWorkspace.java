@@ -65,7 +65,7 @@ public class BowlerStudioMenuWorkspace {
 					
 					// clone all repos from git
 					try {
-						ScriptingEngine.filesInGit(removedURL);
+						ScriptingEngine.pull(removedURL);
 						menu.add(removedURL);
 					}catch(Exception e) {
 						// repo is broken or missing
