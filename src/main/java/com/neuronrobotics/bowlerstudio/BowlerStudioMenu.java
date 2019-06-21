@@ -39,8 +39,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
-
+@SuppressWarnings("restriction")
 public class BowlerStudioMenu implements MenuRefreshEvent {
+
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -98,6 +99,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private String name;
 	private static BowlerStudioMenu selfRef =null;
 	private File openFile;
+	private Map<String, GHRepository> myPublic;
+	//PagedIterable<GHGist> gists ;
+	private HashMap<String, String> messages = new HashMap<String, String>();
+	
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
@@ -185,147 +190,23 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					}
 					try {
 						GHMyself myself = github.getMyself();
-						PagedIterable<GHGist> gists = myself.listGists();
+						PagedIterable<GHGist>	gists = myself.listGists();
 						Platform.runLater(() -> {
 							myGists.getItems().clear();
 						});
 						ThreadUtil.wait(20);
 						for (GHGist gist : gists) {
+							
 							String url=gist.getGitPushUrl();
 							String desc = gist.getDescription();
 							if (desc == null || desc.length() == 0 || desc.contentEquals("Adding new file from BowlerStudio")) {
 								desc = gist.getFiles().keySet().toArray()[0].toString();
 							}
 							String descriptionString =desc;
-							Menu tmpGist = new Menu(desc);
-							String description = desc;
-							MenuItem loadWebGist = new MenuItem("Show Web Gist...");
-							MenuItem addToWs = new MenuItem("Add Repo to Workspace");
-							addToWs.setOnAction(event -> {
-								new Thread() {
-									public void run() {
-										BowlerStudioMenuWorkspace.add(gist.getGitPushUrl(),
-												"GIST: " + descriptionString);
-									}
-								}.start();
-							});
-							loadWebGist.setOnAction(event -> {
-								String webURL = gist.getHtmlUrl();
-								try {
-									BowlerStudio.openUrlInNewTab(new URL(webURL));
-								} catch (MalformedURLException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							});
-							MenuItem addFile = new MenuItem("Add file to Gist...");
-							addFile.setOnAction(event -> new Thread() {
-								public void run() {
-									Platform.runLater(() -> {
-										Stage s = new Stage();
-
-										AddFileToGistController controller = new AddFileToGistController(
-												gist.getGitPushUrl(), selfRef);
-										try {
-											controller.start(s);
-
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-									});
-								}
-							}.start());
-							Platform.runLater(() -> {
-								tmpGist.getItems().addAll(addToWs,addFile,
-								 loadWebGist);
-							});
-							
-							EventHandler<Event> loadFiles = new EventHandler<Event>() {
-								boolean gistFlag = false;
-
-								@Override
-								public void handle(Event ev) {
-									if (gistFlag)
-										return;// another thread is servicing
-												// this gist
-									// for(ScriptingEngine.)
-									new Thread() {
-										public void run() {
-
-											ThreadUtil.wait(500);
-											if (!tmpGist.isShowing())
-												return;
-											if (gistFlag)
-												return;// another thread is
-														// servicing this gist
-											gistFlag = true;
-											System.out.println("Loading files for " + description);
-											
-
-											ArrayList<String> listofFiles;
-											try {
-												listofFiles = ScriptingEngine.filesInGit(gist.getGitPushUrl(), ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-														null);
-
-											} catch (Exception e1) {
-												e1.printStackTrace();
-												return;
-											}
-											if (tmpGist.getItems().size() != 3)
-												return;// menue populated by
-											
-											// another thread
-											try {
-												ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-											} catch (IOException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-											for (String s : listofFiles) {
-												MenuItem tmp = new MenuItem(s);
-												tmp.setOnAction(event -> {
-													new Thread() {
-														public void run() {
-															try {
-																File fileSelected = ScriptingEngine
-																		.fileFromGit(url, s);
-																BowlerStudio.createFileTab(fileSelected);
-																BowlerStudioMenuWorkspace.add(url, "GIST: "+descriptionString);
-															} catch (Exception e) {
-																// TODO
-																// Auto-generated
-																// catch block
-																e.printStackTrace();
-															}
-														}
-													}.start();
-
-												});
-												Platform.runLater(() -> {
-													tmpGist.getItems().add(tmp);
-													// removing this listener
-													// after menue is activated
-													// for the first time
-													tmpGist.setOnShowing(null);
-
-												});
-											}
-											Platform.runLater(() -> {
-												tmpGist.hide();
-												Platform.runLater(() -> {
-													tmpGist.show();
-												});
-											});
-										}
-									}.start();
-								}
-							};
-
-							tmpGist.setOnShowing(loadFiles);
-							Platform.runLater(() -> {
-								myGists.getItems().add(tmpGist);
-							});
-
+							selfRef.messages.put(url,"GIST: "+descriptionString);
+							//Menu tmpGist = new Menu(desc);
+							//setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
+							setUpRepoMenue( myGists, url,true,true) ;
 						}
 						// Now load the users GIT repositories
 						// github.getMyOrganizations();
@@ -348,7 +229,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						}
 						GHMyself self = github.getMyself();
 						// Repos I own
-						Map<String, GHRepository> myPublic = self.getAllRepositories();
+						myPublic = self.getAllRepositories();
 						HashMap<String, Menu> myownerMenue = new HashMap<>();
 						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
 							GHRepository g = entry.getValue();
@@ -358,6 +239,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
 								});
 							}
+							
 							setUpRepoMenue(myownerMenue.get(g.getOwnerName()), g);
 						}
 						// Watched repos
@@ -389,15 +271,37 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	}
 	private static void setUpRepoMenue(Menu repoMenue,GHRepository repo) {
-		String menueMessage = repo.getFullName();
 		String url = repo.getGitTransportUrl().replace("git://", "https://");
-		setUpRepoMenue( repoMenue, menueMessage, url,true) ;
+		selfRef.messages.put(url,repo.getFullName());
+		setUpRepoMenue( repoMenue,  url,true,true) ;
 	}
-	public static void setUpRepoMenue(Menu repoMenue,String menueMessage,String url, boolean useAddToWorkspaceItem) {
-		new Thread() {
+	
+	public static String gitURLtoMessage(String url) {
+		while(true) {
+			try {
+				if(selfRef.messages.get(url)!=null)
+					break;
+				throw new RuntimeException();
+			}catch(Exception e) {
+				System.err.println("Waiting for API to load message data..."+url);
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+		return selfRef.messages.get(url);
+	}
+	
+	public static void setUpRepoMenue(Menu repoMenue,String url, boolean useAddToWorkspaceItem, boolean threaded) {
+		
+		Thread t =new Thread() {
 			public void run() {
+
 				//String menueMessage = repo.getFullName();
-				Menu orgRepo = new Menu(menueMessage);
+				Menu orgRepo = new Menu(gitURLtoMessage( url) );
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem updateRepo = new MenuItem("Update Repo...");
@@ -405,7 +309,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				addToWs.setOnAction(event -> {
 					new Thread() {
 						public void run() {
-							BowlerStudioMenuWorkspace.add(url, menueMessage);
+							BowlerStudioMenuWorkspace.add(url);
 						}
 					}.start();
 				});
@@ -461,7 +365,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											// servicing this gist
 								gistFlag = true;
 								System.out.println(
-										"Loading files for " + menueMessage + " " );
+										"Loading files for " + gitURLtoMessage(url) + " " );
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
@@ -485,7 +389,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												try {
 													File fileSelected = ScriptingEngine.fileFromGit(url, s);
 													BowlerStudio.createFileTab(fileSelected);
-													BowlerStudioMenuWorkspace.add(url, menueMessage);
+													BowlerStudioMenuWorkspace.add(url);
 												} catch (Exception e) {
 													// TODO
 													// Auto-generated
@@ -524,7 +428,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				});
 
 			}
-		}.start();
+		};
+		if(threaded)
+			t.start();
+		else
+			t.run();
 	}
 
 	@FXML
