@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Ryan Benasutti on 2/6/2016.
  */
-
+@SuppressWarnings("restriction")
 public class AddFileToGistController extends Application {
 	@FXML
 	public TextField filenameField;
@@ -115,6 +115,7 @@ public class AddFileToGistController extends Application {
 		});
 	}
 
+
 	@FXML
 	public void onAddFile(ActionEvent event) {
 		new Thread(()->{
@@ -140,7 +141,9 @@ public class AddFileToGistController extends Application {
 				ScriptingEngine.pushCodeToGit(gitRepo, ScriptingEngine.getFullBranch(gitRepo), text, "//Your code here",
 						message);
 				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
+				
 				BowlerStudio.createFileTab(nf);
+				
 				refreshevent.setToLoggedIn();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
