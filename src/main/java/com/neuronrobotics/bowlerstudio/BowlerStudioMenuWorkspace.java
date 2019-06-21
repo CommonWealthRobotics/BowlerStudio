@@ -15,12 +15,12 @@ public class BowlerStudioMenuWorkspace {
 	private static HashMap<String, Object> workspaceData = null;
 	private static final int maxMenueSize = 15;
 	private static boolean sorting = false;
-
+	private static HashMap<String,Integer> rank = new HashMap<String, Integer>();
 	public static void init(Menu workspacemenu) {
 		if (workspacemenu == null)
 			throw new RuntimeException();
 		workspaceMenu = workspacemenu;
-		loginEvent();
+		//loginEvent();
 
 	}
 
@@ -67,7 +67,8 @@ public class BowlerStudioMenuWorkspace {
 		if (sorting)
 			return;
 		sorting = true;
-		System.out.println("Sorting workspace...");
+		
+		boolean rankChanged=false;
 		try {
 			ArrayList<String> myOptions = new ArrayList<String>();
 			synchronized (workspaceData) {
@@ -113,6 +114,18 @@ public class BowlerStudioMenuWorkspace {
 					}
 				}
 			}
+			
+			for(int i=0;i<menu.size();i++) {
+				String url = menu.get(i);
+				if(rank.get(url)==null) {
+					rankChanged=true;
+					rank.put(url,i);
+				}
+				if(rank.get(url).intValue()!=i) {
+					rankChanged=true;
+				}
+				rank.put(url,i);
+			}
 			Platform.runLater(() -> {
 				if (workspaceMenu.getItems() != null)
 					workspaceMenu.getItems().clear();
@@ -133,7 +146,10 @@ public class BowlerStudioMenuWorkspace {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		ConfigurationDatabase.save();
+		if(rankChanged) {
+			System.out.println("Sorting workspace...");
+			ConfigurationDatabase.save();
+		}
 	}
 
 }
