@@ -55,8 +55,8 @@ public class BowlerStudioMenuWorkspace {
 				System.out.println("Workspace add: "+url);
 			}
 		}
-		data = (ArrayList<String>) workspaceData.get(url);
-		data.set(1, new Long(System.currentTimeMillis()).toString());
+		//data = (ArrayList<String>) workspaceData.get(url);
+		//data.set(1, new Long(System.currentTimeMillis()).toString());
 		sort();
 		//
 
@@ -120,28 +120,34 @@ public class BowlerStudioMenuWorkspace {
 				if(rank.get(url)==null) {
 					rankChanged=true;
 					rank.put(url,i);
+					//System.out.println("Rank firstNoted : "+url+" "+i);
 				}
 				if(rank.get(url).intValue()!=i) {
 					rankChanged=true;
+					System.out.println("Rank changed : "+url+" to: "+i+" was: "+rank.get(url).intValue());
 				}
 				rank.put(url,i);
 			}
-			Platform.runLater(() -> {
-				if (workspaceMenu.getItems() != null)
-					workspaceMenu.getItems().clear();
-				
-				new Thread(() -> {
-					for (String url : menu) {
-							BowlerStudioMenu.setUpRepoMenue(workspaceMenu, 
-									url, 
-									false, 
-									false,
-									((ArrayList<String>) workspaceData.get(url)).get(0));
-						
-					}
-					sorting = false;
-				}).start();
-			});
+			if(rankChanged) {
+				Platform.runLater(() -> {
+					if (workspaceMenu.getItems() != null)
+						workspaceMenu.getItems().clear();
+					
+					new Thread(() -> {
+						for (String url : menu) {
+								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, 
+										url, 
+										false, 
+										false,
+										((ArrayList<String>) workspaceData.get(url)).get(0));
+							
+						}
+						sorting = false;
+					}).start();
+				});
+			}else {
+				sorting = false;
+			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
