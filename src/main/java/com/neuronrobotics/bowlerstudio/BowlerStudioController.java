@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
 
+import org.kohsuke.github.GHRepository;
 import org.reactfx.util.FxTimer;
 
 import java.awt.Color;
@@ -128,6 +129,12 @@ public class BowlerStudioController implements IScriptEventListener {
 		try {
 			Log.warning("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
+			
+			new Thread() {
+				public void run() {
+					BowlerStudioMenuWorkspace.add(t.getScripting().getGitRepo());
+				}
+			}.start();
 
 			String key = t.getScripting().getGitRepo() + ":" + t.getScripting().getGitFile();
 			ArrayList<String> files = new ArrayList<>();
