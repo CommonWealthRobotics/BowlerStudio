@@ -191,7 +191,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						for (GHGist gist : gists) {
 							String url=gist.getGitPushUrl();
 							String desc = gist.getDescription();
-							if (desc == null || desc.length() == 0) {
+							if (desc == null || desc.length() == 0 || desc.contentEquals("Adding new file from BowlerStudio")) {
 								desc = gist.getFiles().keySet().toArray()[0].toString();
 							}
 							String descriptionString =desc;

@@ -129,7 +129,7 @@ public class AddFileToGistController extends Application {
 			
 			String message = description.getText();
 			if(message == null || message.length()==0){
-				message = "Adding new file from BowlerStudio";
+				message = text;
 			}
 			
 			if(gitRepo==null){
