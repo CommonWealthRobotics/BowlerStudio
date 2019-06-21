@@ -12,7 +12,7 @@ import javafx.scene.control.Menu;
 public class BowlerStudioMenuWorkspace {
 	private static Menu workspaceMenu;
 	private static HashMap<String, Object> workspaceData = null;
-	private static final int maxMenueSize = 10;
+	private static final int maxMenueSize = 15;
 	
 	public static void init(Menu workspacemenu) {
 		if(workspacemenu==null)
