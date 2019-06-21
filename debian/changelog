@@ -1,3 +1,13 @@
+bowlerstudio (0.31.7) bionic; urgency=medium
+
+  * when no message is given, use the file name
+  * 0.31.7
+  * login event for configurations
+  * re-load the configurations database on login
+  * larger max workspace
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 21 Jun 2019 12:25:07 -0400
+
 bowlerstudio (0.31.6) bionic; urgency=medium
 
   * Closes #57 Adding files to empty repos
