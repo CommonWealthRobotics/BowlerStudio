@@ -1,3 +1,18 @@
+bowlerstudio (0.31.8) bionic; urgency=medium
+
+  * loading the new tab into workspace
+  * thread wrap loading the tab into the workspace
+  * restructure the menu loading
+  * restructured the workspace manager
+  * 0.31.8
+  * allow for non-blocking menu loading
+  * load menue with known message
+  * kernel
+  * if the rank changes, save
+  * stable rank order, and refresh of UI only when the rank changes
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 21 Jun 2019 18:05:31 -0400
+
 bowlerstudio (0.31.7) bionic; urgency=medium
 
   * when no message is given, use the file name
