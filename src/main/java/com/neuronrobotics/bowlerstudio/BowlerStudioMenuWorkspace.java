@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -13,39 +14,59 @@ public class BowlerStudioMenuWorkspace {
 	private static Menu workspaceMenu;
 	private static HashMap<String, Object> workspaceData = null;
 	private static final int maxMenueSize = 15;
-	
+	private static boolean sorting = false;
 	public static void init(Menu workspacemenu) {
 		if(workspacemenu==null)
 			throw new RuntimeException();
-		workspaceMenu = workspacemenu;
-		workspaceData = ConfigurationDatabase.getParamMap("workspace");
-		sort();
+		workspaceMenu = workspacemenu; 
+		loginEvent();
+
 	}
 	
 	public static void loginEvent() {
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
+		for(String o:workspaceData.keySet()) {
+			try {
+				ScriptingEngine.pull(o);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		sort();
+		ConfigurationDatabase.save();
+	}
+	
+	public static void add(String url ) {
+		add( url,BowlerStudioMenu.gitURLtoMessage(url));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void add(String url, String message) {
+	public static void add(String url,String menueMessage ) {
+		if (menueMessage == null || menueMessage.length()<2)
+			throw new RuntimeException();
 		ArrayList<String> data;
-		if (workspaceData.get(url) == null) {
-			data = new ArrayList<String>();
-			data.add(message);
-			data.add(new Long(System.currentTimeMillis()).toString());
-			workspaceData.put(url, data);
-
+		synchronized(workspaceData) {
+			if (workspaceData.get(url) == null) {
+				data = new ArrayList<String>();
+				data.add(menueMessage);
+				data.add(new Long(System.currentTimeMillis()).toString());
+				workspaceData.put(url, data);
+			}
 		}
 		data = (ArrayList<String>) workspaceData.get(url);
 		data.set(1, new Long(System.currentTimeMillis()).toString());
 		sort();
-		ConfigurationDatabase.save();
+		//
 
 	}
 
 	@SuppressWarnings("unchecked")
 	private static void sort() {
+		if(sorting)
+			return;
+		sorting=true;
+		System.out.println("Sorting workspace...");
 		try {
 			ArrayList<String> myOptions = new ArrayList<String>();
 			for(String o:workspaceData.keySet()) {
@@ -70,7 +91,7 @@ public class BowlerStudioMenuWorkspace {
 					
 					// clone all repos from git
 					try {
-						ScriptingEngine.pull(removedURL);
+						//ScriptingEngine.pull(removedURL);
 						menu.add(removedURL);
 					}catch(Exception e) {
 						// repo is broken or missing
@@ -84,18 +105,18 @@ public class BowlerStudioMenuWorkspace {
 			Platform.runLater(() -> {
 				if(workspaceMenu.getItems()!=null)
 					workspaceMenu.getItems().clear();
-				for (String url : menu) {
-					ArrayList<String> data = (ArrayList<String>) workspaceData.get(url);
-					
-					String message = data.get(0);
-					BowlerStudioMenu.setUpRepoMenue(workspaceMenu,message,url, false);
-			
-				}
+				new Thread(()->{
+					for (String url : menu) {
+						BowlerStudioMenu.setUpRepoMenue(workspaceMenu,url, false,false);
+					}
+					sorting=false;
+				}).start();
 			});
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
 	}
 
 }
