@@ -32,7 +32,7 @@ public class BowlerStudioResourceFactory {
 	private static FXMLLoader mainPanel;
 	private static FXMLLoader githubLogin;
 	private static FXMLLoader mainControllerPanel;
-
+	private static boolean loaded=false;
 	private BowlerStudioResourceFactory() {
 	}
 
@@ -42,6 +42,9 @@ public class BowlerStudioResourceFactory {
 
 	@SuppressWarnings("restriction")
 	public static void load() throws Exception {
+		if(loaded)
+			return;
+		loaded=true;
 		try {
 			BowlerStudio.renderSplashFrame( 94,"Loading DyIO");
 			mainPanel = AssetFactory.loadLayout("layout/DyIOPanel.fxml");

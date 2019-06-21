@@ -164,6 +164,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	private void setToLoggedIn(final String name) {
 		this.name = name;
+		BowlerStudioMenuWorkspace.loginEvent();
 		// new Exception().printStackTrace();
 		FxTimer.runLater(Duration.ofMillis(100), () -> {
 			logoutGithub.disableProperty().set(false);

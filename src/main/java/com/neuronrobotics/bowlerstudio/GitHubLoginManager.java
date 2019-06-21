@@ -38,6 +38,8 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 			System.err.println("Calling login from BowlerStudio");
 			// new RuntimeException().printStackTrace();
 			FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
+			if(fxmlLoader==null)
+				return null;
 			Parent root = fxmlLoader.getRoot();
 			if (githublogin == null) {
 				githublogin = fxmlLoader.getController();

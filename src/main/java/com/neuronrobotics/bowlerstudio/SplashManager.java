@@ -28,11 +28,7 @@ public class SplashManager {
 		}
 		psudo.closeSplashLocal();
 	}
-	public static void setIcon(Image img) {
-		if (psudo != null) {
-			psudo.setIcon(img);
-		}
-	}
+
 	private static boolean isVisableSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();

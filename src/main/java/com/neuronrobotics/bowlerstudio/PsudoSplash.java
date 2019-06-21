@@ -114,6 +114,12 @@ public class PsudoSplash {
 				interfaceFrame.setLocationRelativeTo(null);
 				interfaceFrame.setVisible(true);
 				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
+				try {
+					interfaceFrame.setIconImage( ImageIO.read(getClass().getResource("splash.png")));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		while (interfaceFrame == null)
@@ -130,11 +136,11 @@ public class PsudoSplash {
 			e.printStackTrace();
 		}
 	}
-	public void setIcon(Image img) {
-		BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(img, null);
-		if (interfaceFrame != null)
-			interfaceFrame.setIconImage(image);
-	}
+//	public void setIcon(Image img) {
+//		BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(img, null);
+//		if (interfaceFrame != null)
+//			interfaceFrame.setIconImage(image);
+//	}
 	boolean isVisableSplash() {
 		if (interfaceFrame != null)
 			return interfaceFrame.isVisible();

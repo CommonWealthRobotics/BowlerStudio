@@ -327,7 +327,7 @@ public class BowlerStudio extends Application {
 					renderSplashFrame(25, "Populating Menu");
 				}
 			}
-			SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+			//SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 			renderSplashFrame(50, "Tutorials...");
 			// load tutorials repo
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
@@ -354,8 +354,7 @@ public class BowlerStudio extends Application {
 
 			renderSplashFrame(60, "Vitamins...");
 			// load the vitimins repo so the demo is always snappy
-			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
-			ScriptingEngine.pull("https://github.com/madhephaestus/DefaultHaarCascade.git", null);
+			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 
 			renderSplashFrame(80, "Example Robots");
 			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
@@ -369,29 +368,22 @@ public class BowlerStudio extends Application {
 																													// demo
 					"exampleRobots.json"// File from within the Git repo
 			);
+			renderSplashFrame(81, "CSG database");
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 
 			// System.out.println("Loading assets ");
 
 			// System.out.println("Loading Main.fxml");
-
+			renderSplashFrame(81, "Find arduino");
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
 				Slic3r.setExecutableLocation("/usr/bin/slic3r");
 
 			} else if (NativeResource.isWindows()) {
-				String basedir = System.getenv("OPENCV_DIR");
-				if (basedir == null)
-					throw new RuntimeException(
-							"OPENCV_DIR was not found, environment variable OPENCV_DIR needs to be set");
-				System.err.println("OPENCV_DIR found at " + basedir);
-				basedir += "\\..\\..\\..\\Slic3r_X64\\Slic3r\\slic3r.exe";
-				Slic3r.setExecutableLocation(basedir);
 				arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
 				if (!new File(arduino).exists()) {
 					arduino = "C:\\Program Files\\Arduino\\arduino.exe";
-
 				}
 
 			} else if (NativeResource.isOSX()) {
@@ -431,6 +423,7 @@ public class BowlerStudio extends Application {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			renderSplashFrame(82, "Set up UI");
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// This is a workaround for #8 and is only relavent on osx

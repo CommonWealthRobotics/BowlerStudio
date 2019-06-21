@@ -12,12 +12,17 @@ import javafx.scene.control.Menu;
 public class BowlerStudioMenuWorkspace {
 	private static Menu workspaceMenu;
 	private static HashMap<String, Object> workspaceData = null;
-	private static final int maxMenueSize = 30;
+	private static final int maxMenueSize = 10;
 	
 	public static void init(Menu workspacemenu) {
 		if(workspacemenu==null)
 			throw new RuntimeException();
 		workspaceMenu = workspacemenu;
+		workspaceData = ConfigurationDatabase.getParamMap("workspace");
+		sort();
+	}
+	
+	public static void loginEvent() {
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		sort();
 	}
