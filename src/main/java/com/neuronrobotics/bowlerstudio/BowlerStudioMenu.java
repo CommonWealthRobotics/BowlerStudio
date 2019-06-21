@@ -294,14 +294,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		}
 		return selfRef.messages.get(url);
 	}
-	
-	public static void setUpRepoMenue(Menu repoMenue,String url, boolean useAddToWorkspaceItem, boolean threaded) {
+	public static void setUpRepoMenue(Menu repoMenue,String url, boolean useAddToWorkspaceItem, boolean threaded)
+	{
+		setUpRepoMenue(repoMenue,url,useAddToWorkspaceItem,threaded,gitURLtoMessage(url));
+	}
+	public static void setUpRepoMenue(Menu repoMenue,String url, boolean useAddToWorkspaceItem, boolean threaded, String message) {
 		
 		Thread t =new Thread() {
 			public void run() {
 
 				//String menueMessage = repo.getFullName();
-				Menu orgRepo = new Menu(gitURLtoMessage( url) );
+				Menu orgRepo = new Menu(message );
 				Menu orgFiles = new Menu("Files");
 				MenuItem loading = new MenuItem("Loading...");
 				MenuItem updateRepo = new MenuItem("Update Repo...");
@@ -365,7 +368,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											// servicing this gist
 								gistFlag = true;
 								System.out.println(
-										"Loading files for " + gitURLtoMessage(url) + " " );
+										"Loading files for " + message + " " );
 								ArrayList<String> listofFiles;
 								try {
 									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
@@ -893,6 +896,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	@FXML
 	void onRefresh(ActionEvent event) {
 		setToLoggedIn();
+		
 	}
 
 }
