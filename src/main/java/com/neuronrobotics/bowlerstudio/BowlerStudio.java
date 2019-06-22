@@ -23,6 +23,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.*;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.svg.ISVGLoadProgress;
@@ -210,10 +211,19 @@ public class BowlerStudio extends Application {
 	 * @param args the command line arguments
 	 * @throws Exception
 	 */
-
+	public static class JavaFXInitializer extends javafx.application.Application {
+		public JavaFXInitializer(){
+			
+		}
+		public static void go() {
+			launch();
+		}
+		@Override
+		public void start(Stage primaryStage) throws Exception {}
+	}
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
-		new JFXPanel();
+		JavaFXInitializer.go();
 		if (!StudioBuildInfo.isOS64bit()) {
 
 			Platform.runLater(() -> {
