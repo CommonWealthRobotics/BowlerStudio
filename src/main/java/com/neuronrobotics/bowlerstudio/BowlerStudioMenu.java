@@ -317,50 +317,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					}.start();
 				});
 				//String url = repo.getGitTransportUrl().replace("git://", "https://");
-				updateRepo.setOnAction(event -> {
-					new Thread() {
-						public void run() {
-							try {
-								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}.start();
-				});
-				MenuItem addFile = new MenuItem("Add file to Git Repo...");
-				addFile.setOnAction(event -> {
-					System.out.println("Adding file to : " + url);
-					Platform.runLater(() -> {
-						Stage s = new Stage();
 
-						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
-						try {
-							controller.start(s);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					});
-				});
-				Platform.runLater(() -> {
-					orgFiles.getItems().add(loading);
-					if(useAddToWorkspaceItem)
-						orgRepo.getItems().add(addToWs);
-					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles);
-				});
+
 
 				EventHandler<Event> loadFiles = new EventHandler<Event>() {
-					boolean gistFlag = false;
+					public boolean gistFlag = false;
 
 					@Override
 					public void handle(Event ev) {
 
-						// for(ScriptingEngine.)
+						System.out.println("Load file event "+url);
 						new Thread() {
 							public void run() {
 
 								ThreadUtil.wait(500);
+								System.out.println("Load file Thread "+url);
 								if (!orgFiles.isShowing())
 									return;
 								if (gistFlag)
@@ -382,7 +353,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									return;// menue populated by
 											// another thread
 								}
-
+								Platform.runLater(() -> {
+									// removing this listener
+									// after menue is activated
+									// for the first time
+									orgFiles.setOnShowing(null);
+									gistFlag = false;
+								});
 								for (String s : listofFiles) {
 									System.err.println("Adding file: "+s);
 									MenuItem tmp = new MenuItem(s);
@@ -405,11 +382,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									});
 									Platform.runLater(() -> {
 										orgFiles.getItems().add(tmp);
-										// removing this listener
-										// after menue is activated
-										// for the first time
-										orgFiles.setOnShowing(null);
-
 									});
 
 								}
@@ -425,6 +397,46 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						}.start();
 					}
 				};
+				updateRepo.setOnAction(event -> {
+					new Thread() {
+						public void run() {
+							try {
+								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							orgFiles.setOnShowing(loadFiles);
+							orgFiles.getItems().clear();
+							Platform.runLater(() ->orgFiles.getItems().add(loading));
+							selfRef.setToLoggedIn();
+						}
+					}.start();
+				});
+				MenuItem addFile = new MenuItem("Add file to Git Repo...");
+				addFile.setOnAction(event -> {
+					System.out.println("Adding file to : " + url);
+					Platform.runLater(() -> {
+						Stage s = new Stage();
+
+						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
+						try {
+							controller.start(s);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						orgFiles.setOnShowing(loadFiles);
+						orgFiles.getItems().clear();
+						Platform.runLater(() ->orgFiles.getItems().add(loading));
+						selfRef.setToLoggedIn();
+					});
+				});
+				Platform.runLater(() -> {
+					orgFiles.getItems().add(loading);
+					if(useAddToWorkspaceItem)
+						orgRepo.getItems().add(addToWs);
+					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles);
+				});
 				orgFiles.setOnShowing(loadFiles);
 				Platform.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);

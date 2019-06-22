@@ -20,11 +20,10 @@ public class BowlerStudioMenuWorkspace {
 		if (workspacemenu == null)
 			throw new RuntimeException();
 		workspaceMenu = workspacemenu;
-		//loginEvent();
-
 	}
 
 	public static void loginEvent() {
+		rank.clear();
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		for (String o : workspaceData.keySet()) {
 			try {
