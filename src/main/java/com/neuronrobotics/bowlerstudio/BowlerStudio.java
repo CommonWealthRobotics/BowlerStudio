@@ -18,6 +18,7 @@ import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
+import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.*;
@@ -211,16 +212,7 @@ public class BowlerStudio extends Application {
 	 * @param args the command line arguments
 	 * @throws Exception
 	 */
-	public static class JavaFXInitializer extends javafx.application.Application {
-		public JavaFXInitializer(){
-			
-		}
-		public static void go() {
-			launch();
-		}
-		@Override
-		public void start(Stage primaryStage) throws Exception {}
-	}
+
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
