@@ -215,7 +215,6 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
-		JavaFXInitializer.go();
 		if (!StudioBuildInfo.isOS64bit()) {
 
 			Platform.runLater(() -> {
