@@ -350,15 +350,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			//System.err.println("On mouse entered " + file.getName());
 			//resizeEvent();
 			SwingUtilities.invokeLater(() ->{
-				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
-				spscrollPane.invalidate();
-				spscrollPane.repaint();
-				textArea.invalidate();
-				textArea.repaint();
-				textArea.requestFocusInWindow();
-				FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
-					swingNode.requestFocus();
-				});
+				resizeEvent();
+//				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+//				spscrollPane.invalidate();
+//				spscrollPane.repaint();
+//				textArea.invalidate();
+//				textArea.repaint();
+//				textArea.requestFocusInWindow();
+//				FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+//					swingNode.requestFocus();
+//				});
 			});
 		});
 		// textArea
@@ -377,42 +378,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
 		highlighter.removeAllHighlights();
-//		textArea.addFocusListener(new FocusListener() {
-//			
-//			@Override
-//			public void focusLost(FocusEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void focusGained(FocusEvent e) {
-//				System.err.println("textArea Focus gained "+file.getName());
-//				
-//			}
-//		});
-//		focusedProperty().addListener((w, o, n)-> {
-//			System.err.println("LocalFileScriptTab Focus gained "+file.getName());
-//		});
-//		
-//		swingNode.focusedProperty().addListener((w, o, n)-> {
-//			System.err.println("swingNode Focus gained "+file.getName());
-//		});
-//		spscrollPane.addFocusListener(new FocusListener() {
-//			
-//			@Override
-//			public void focusLost(FocusEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void focusGained(FocusEvent e) {
-//				System.err.println("spscrollPane Focus gained "+file.getName());
-//				
-//			}
-//		});
-		
+
 		widthProperty().addListener((w, o, n) -> {
 			resizeEvent();
 
