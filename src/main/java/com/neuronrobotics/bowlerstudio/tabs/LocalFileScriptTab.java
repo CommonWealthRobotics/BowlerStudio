@@ -379,13 +379,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		highlighter.removeAllHighlights();
 
-		widthProperty().addListener((w, o, n) -> {
-			resizeEvent();
-
-		});
-		heightProperty().addListener((w, o, n) -> {
-			resizeEvent();
-		});
+//		widthProperty().addListener((w, o, n) -> {
+//			resizeEvent();
+//
+//		});
+//		heightProperty().addListener((w, o, n) -> {
+//			resizeEvent();
+//		});
 		SwingUtilities.invokeLater(() -> {
 			if (getScripting() != null && getScripting().getCode() != null) {
 				onScriptChanged(null, getScripting().getCode(), file);
