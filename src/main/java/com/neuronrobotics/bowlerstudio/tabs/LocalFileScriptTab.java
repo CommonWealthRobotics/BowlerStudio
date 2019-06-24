@@ -96,6 +96,41 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			}
 
 		}
+		/**
+		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
+		 * This value corresponds to the minimum width of the Swing component.
+		 * 
+		 * @return the minimum width that the node should be resized to during layout
+		 */
+		@Override
+		public double maxWidth(double height) {
+			try {
+				return super.maxWidth(height);
+			} catch (Exception e) {
+				// System.out.println("Error in "+file);
+				// e.printStackTrace();
+				return maxWidthProperty().doubleValue();
+			}
+
+		}
+
+		/**
+		 * Returns the {@code SwingNode}'s minimum height for use in layout
+		 * calculations. This value corresponds to the minimum height of the Swing
+		 * component.
+		 * 
+		 * @return the minimum height that the node should be resized to during layout
+		 */
+		@Override
+		public double maxHeight(double width) {
+			try {
+				return super.maxHeight(width);
+			} catch (Exception e) {
+				// System.out.println("Error in "+file);
+				// e.printStackTrace();
+				return maxHeightProperty().doubleValue();
+			}
+		}
 
 		/**
 		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
