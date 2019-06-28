@@ -277,7 +277,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.setAutoupdate(true);
 
 				}
-				renderSplashFrame(15, "Loading Images");
+				renderSplashFrame(15, "Load Configs");
 				try {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
@@ -342,6 +342,7 @@ public class BowlerStudio extends Application {
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 					StudioBuildInfo.getVersion());
+			renderSplashFrame(54, "Load Assets");
 			// Download and Load all of the assets
 			try {
 
@@ -397,24 +398,6 @@ public class BowlerStudio extends Application {
 					if (!alreadyNotified) {
 						ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep", true);
 						String adr = arduino;
-						Platform.runLater(() -> {
-							Alert alert = new Alert(AlertType.INFORMATION);
-							alert.setTitle("Arduino is missing");
-							alert.setHeaderText("Arduino expected at: " + adr);
-							// alert.initModality(Modality.APPLICATION_MODAL);
-							// alert.show();
-							// new Thread() {
-							// public void run() {
-							// try {
-							// openExternalWebpage(new
-							// URL("https://www.arduino.cc/en/Main/Software"));
-							// } catch (Exception e) {
-							// // TODO Auto-generated catch block
-							// e.printStackTrace();
-							// }
-							// }
-							// }.start();
-						});
 
 					}
 
