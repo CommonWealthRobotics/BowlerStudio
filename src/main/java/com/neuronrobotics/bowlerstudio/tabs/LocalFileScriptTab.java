@@ -5,6 +5,8 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
@@ -392,10 +394,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			}
 
 		});
+
 	}
 
 	private void resizeEvent() {
-		if (!((lastRefresh + 60) < System.currentTimeMillis())) {
+		if (!((lastRefresh + 60) < System.currentTimeMillis())||
+				spscrollPane.getVerticalScrollBar().getValueIsAdjusting()||
+				spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
