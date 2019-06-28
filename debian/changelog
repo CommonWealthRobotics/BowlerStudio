@@ -1,3 +1,14 @@
+bowlerstudio (0.32.4) bionic; urgency=medium
+
+  [ Kevin Harrington ]
+  * cleanup
+  * fixing the scrilling freez issue
+
+  [ hephaestus ]
+  * resolved the most recent macos issue
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 28 Jun 2019 03:27:34 -0400
+
 bowlerstudio (0.32.3) bionic; urgency=medium
 
   * version
