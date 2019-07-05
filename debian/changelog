@@ -1,3 +1,10 @@
+bowlerstudio (0.32.5) bionic; urgency=medium
+
+  * kernel
+  * auto-pull latest tutorials
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 05 Jul 2019 12:57:42 -0400
+
 bowlerstudio (0.32.4) bionic; urgency=medium
 
   [ Kevin Harrington ]
