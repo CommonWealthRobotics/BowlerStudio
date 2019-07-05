@@ -335,6 +335,8 @@ public class BowlerStudio extends Application {
 					"master", // the default branch is source, so this needs to
 								// be specified
 					"index.html");
+			if(ScriptingEngine.hasNetwork())
+				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
