@@ -1,3 +1,12 @@
+bowlerstudio (0.32.6) bionic; urgency=medium
+
+  * do not add degenerate files to the configurations
+  * when encountering an erronious file, remove from configs in the future and keep going.
+  * 0.32.6
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 06 Jul 2019 11:15:48 -0400
+
 bowlerstudio (0.32.5) bionic; urgency=medium
 
   * kernel
