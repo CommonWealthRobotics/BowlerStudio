@@ -140,7 +140,8 @@ public class BowlerStudioController implements IScriptEventListener {
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());
 			files.add(t.getScripting().getGitFile());
-			ConfigurationDatabase.setObject("studio-open-git", key, files);
+			if(key.length()>3 && files.get(0).length()>0 && files.get(1).length()>0)// catch degenerates
+				ConfigurationDatabase.setObject("studio-open-git", key, files);
 
 			fileTab.setContent(t);
 			fileTab.setGraphic(
