@@ -850,11 +850,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												System.err.println("Removing missing "+s);
 											}
 											
-										} catch (Exception e) {
-											//e.printStackTrace();
-											// TODO Auto-generated catch block
-											//e.printStackTrace();
-											openGits.clear();
+										} catch (Throwable e) {
+											openGits.remove(s);
+											System.out.println("Error loading file "+s);
 										}
 									}
 								}
