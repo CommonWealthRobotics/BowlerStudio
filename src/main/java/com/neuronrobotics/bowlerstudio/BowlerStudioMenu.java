@@ -845,7 +845,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											@SuppressWarnings("unchecked")
 											ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 											File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-											if (createFileTab(f) == null) {
+											if (!f.exists() ||createFileTab(f) == null ) {
 												openGits.remove(s);
 												System.err.println("Removing missing "+s);
 											}
