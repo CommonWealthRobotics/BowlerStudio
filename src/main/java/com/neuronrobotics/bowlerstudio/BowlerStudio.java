@@ -82,6 +82,7 @@ public class BowlerStudio extends Application {
 						incoming.clear();
 						if (text != null && text.length() > 0)
 							appendText(text);
+						text=null;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -115,6 +116,7 @@ public class BowlerStudio extends Application {
 							getLogViewRefStatic().appendText(valueOf);
 						} catch (Throwable t) {
 						}
+						
 
 					});
 				} else {
