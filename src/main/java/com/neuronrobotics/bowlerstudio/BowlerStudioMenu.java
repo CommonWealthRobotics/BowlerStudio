@@ -788,7 +788,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		loadFirmata.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onFirmata());
 		});
-		new Thread(new Runnable() {
+		Thread t= new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -876,7 +876,16 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				}
 				ScriptingEngine.addIGithubLoginListener(listener);
 			}
-		}).start();
+		});
+		if(ScriptingEngine.hasNetwork())
+			t.start();
+		else
+			if (ScriptingEngine.getLoginID() != null) {
+				setToLoggedIn(ScriptingEngine.getLoginID());
+			} else {
+				setToLoggedOut();
+			}
+		
 		//WindowMenu
 		int [] fonts = new int [] { 6,8,10,12,14,16,18,20,24,28,32,36,40};
 		Menu fontSelect = new Menu("Font Size");
