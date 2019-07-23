@@ -1,3 +1,12 @@
+bowlerstudio (0.32.7) bionic; urgency=medium
+
+  * kernel
+  * merge
+  * clear the text string
+  * Robust loading when uplink is unavailible
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 22 Jul 2019 20:45:29 -0400
+
 bowlerstudio (0.32.6) bionic; urgency=medium
 
   * do not add degenerate files to the configurations
