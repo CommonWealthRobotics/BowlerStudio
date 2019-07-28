@@ -33,7 +33,7 @@ public class PurchasingTest {
 	@Test
 	public void test() {
 		try {
-			ScriptingEngine.runLogin();
+			ScriptingEngine.login();
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();

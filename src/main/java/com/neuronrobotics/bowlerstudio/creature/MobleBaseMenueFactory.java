@@ -5,6 +5,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
@@ -245,7 +246,7 @@ public class MobleBaseMenueFactory {
 							
 							
 							
-							GitHub github = ScriptingEngine.getGithub();
+							GitHub github = PasswordManager.getGithub();
 							GHGistBuilder builder = github.createGist();
 							builder.description(newName + " copy of " + oldname);
 							String filename = newName + ".xml";

@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.tabs;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
@@ -220,7 +221,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				: "http://" + urlField.getText();
 		if(isTutorialTab ){
 			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
-					Current_URL.contains("gist.github.com/"+ScriptingEngine.getLoginID())||
+					Current_URL.contains("gist.github.com/"+PasswordManager.getUsername() )||
 					Current_URL.contains("localhost") ))){
 				try {
 					

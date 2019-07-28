@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -24,7 +25,7 @@ public class GistHelper
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException
         //Setup gist
-        GitHub gitHub = ScriptingEngine.getGithub();
+        GitHub gitHub = PasswordManager.getGithub();
         GHGistBuilder builder = gitHub.createGist();
         builder.file(filename, "//Your code here");
         builder.description(description);
@@ -36,7 +37,7 @@ public class GistHelper
 
     public static String addFileToGist(String filename, String content, GHGist gistID)
     {
-        GitHub gitHub = ScriptingEngine.getGithub();
+        GitHub gitHub = PasswordManager.getGithub();
         try
         {
             //Copy from old gist

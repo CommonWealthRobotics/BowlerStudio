@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerstudio;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 //import com.neuronrobotics.imageprovider.CHDKImageProvider;
@@ -183,9 +184,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
-					GitHub github = ScriptingEngine.getGithub();
+					GitHub github = PasswordManager.getGithub();
 					while (github == null) {
-						github = ScriptingEngine.getGithub();
+						github = PasswordManager.getGithub();
 						ThreadUtil.wait(20);
 					}
 					try {
@@ -806,8 +807,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					}
 				});
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
-					if (ScriptingEngine.getLoginID() != null) {
-						setToLoggedIn(ScriptingEngine.getLoginID());
+					if (PasswordManager.getUsername()  != null) {
+						setToLoggedIn(PasswordManager.getUsername() );
 					} else {
 						setToLoggedOut();
 					}
@@ -880,8 +881,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		if(ScriptingEngine.hasNetwork())
 			t.start();
 		else
-			if (ScriptingEngine.getLoginID() != null) {
-				setToLoggedIn(ScriptingEngine.getLoginID());
+			if (PasswordManager.getUsername() != null) {
+				setToLoggedIn(PasswordManager.getUsername() );
 			} else {
 				setToLoggedOut();
 			}

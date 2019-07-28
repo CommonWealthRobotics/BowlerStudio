@@ -262,7 +262,7 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			ScriptingEngine.setLoginManager(new GitHubLoginManager());
 			try {
-				ScriptingEngine.runLogin();
+				ScriptingEngine.login();
 				renderSplashFrame(10, "Login OK!");
 			} catch (Exception e) {
 				// e.printStackTrace();

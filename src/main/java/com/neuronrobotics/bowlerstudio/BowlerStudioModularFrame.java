@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerstudio;
  **/
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.WebTab;
@@ -339,7 +340,7 @@ public class BowlerStudioModularFrame {
 	public void openUrlInNewTab(URL url) {
 		Platform.runLater(() -> {
 			try {
-				if (ScriptingEngine.getLoginID() != null) {
+				if (PasswordManager.getUsername()  != null) {
 					WebTab newTab = new WebTab("Web", url.toExternalForm(), false);
 
 					addTab(newTab, true);

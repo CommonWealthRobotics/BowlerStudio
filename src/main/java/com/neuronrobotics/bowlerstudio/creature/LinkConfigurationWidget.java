@@ -10,6 +10,7 @@ import org.kohsuke.github.GitHub;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -541,7 +542,7 @@ public class LinkConfigurationWidget extends GridPane {
 			Vitamins.saveDatabase(type);
 
 		} catch (org.eclipse.jgit.api.errors.TransportException e) {
-			GitHub github = ScriptingEngine.getGithub();
+			GitHub github = PasswordManager.getGithub();
 
 			GHRepository repo = github.getUser("madhephaestus").getRepository("Hardware-Dimensions");
 			GHRepository forked = repo.fork();
