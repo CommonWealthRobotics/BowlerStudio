@@ -1,3 +1,21 @@
+bowlerstudio (0.33.0) bionic; urgency=medium
+
+  [ Kevin Harrington ]
+  * changing default physics compute time
+
+  [ Technocopia PC 01 ]
+  * jcsg
+
+  [ Kevin Harrington ]
+  * Switching over to password manager in kernel
+  * new password manager
+  * updated password loading
+  * move the delete function to the kernel wher it belongs
+  * 0.33.0
+  * print on login
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 28 Jul 2019 16:50:30 -0400
+
 bowlerstudio (0.32.7) bionic; urgency=medium
 
   * kernel
