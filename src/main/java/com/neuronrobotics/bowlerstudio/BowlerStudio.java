@@ -71,7 +71,7 @@ public class BowlerStudio extends Application {
 
 	private static Stage primaryStage2;
 	private static File layoutFile;
-
+	private static boolean deleteFlag=false;
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
 		ByteList incoming = new ByteList();
@@ -698,11 +698,15 @@ public class BowlerStudio extends Application {
 			primaryStage2.hide();
 		});
 		new Thread() {
+			
+
 			public void run() {
 				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
 				if (ScriptingEngine.isLoginSuccess())
 					ConfigurationDatabase.save();
+				if(isDeleteFlag())
+					ScriptingEngine.deleteCache();
 				System.exit(0);
 			}
 		}.start();
@@ -733,5 +737,17 @@ public class BowlerStudio extends Application {
 	public static void print(ArrayList<CSG> toDisplay) {
 		for (CSG c : toDisplay)
 			BowlerStudioController.addCsg(c);
+	}
+
+	public static boolean isDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public static void setDeleteFlag(boolean deleteFlag) {
+		BowlerStudio.deleteFlag = deleteFlag;
+	}
+
+	public static void exit() {
+		closeBowlerStudio();
 	}
 }

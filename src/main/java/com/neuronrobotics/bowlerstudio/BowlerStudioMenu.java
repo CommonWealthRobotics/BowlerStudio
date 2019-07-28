@@ -187,9 +187,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					if(!PasswordManager.hasNetwork())
 						return;
 					GitHub github = PasswordManager.getGithub();
-					while (github == null) {
+					while (github == null && !PasswordManager.loggedIn()) {
 						github = PasswordManager.getGithub();
-						ThreadUtil.wait(20);
+						ThreadUtil.wait(200);
 					}
 					try {
 						GHMyself myself = github.getMyself();
@@ -286,7 +286,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					break;
 				throw new RuntimeException();
 			}catch(Exception e) {
-				System.err.println("Waiting for API to load message data..."+url);
+				//System.err.println("Waiting for API to load message data..."+url);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
@@ -657,9 +657,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			if (result.get() == ButtonType.OK) {
 				new Thread(() ->
                 {
-                    File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/");
-                    deleteFolder(cache);
-                    System.exit(0);
+                    BowlerStudio.setDeleteFlag(true);
+                    BowlerStudio.exit();
                 }).start();
 			} else {
 				System.out.println("Nothing was deleted");
@@ -687,21 +686,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
         }).start();
     }
 
-	private static void deleteFolder(File folder) {
-
-		System.out.println("Deleting " + folder.getAbsolutePath());
-		File[] files = folder.listFiles();
-		if (files != null) { // some JVMs return null for empty dirs
-			for (File f : files) {
-				if (f.isDirectory()) {
-					deleteFolder(f);
-				} else {
-					f.delete();
-				}
-			}
-		}
-		folder.delete();
-	}
 
 	@FXML
 	public void onMobileBaseFromGit(ActionEvent event) {
