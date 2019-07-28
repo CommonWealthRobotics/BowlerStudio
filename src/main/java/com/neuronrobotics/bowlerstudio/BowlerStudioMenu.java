@@ -546,6 +546,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	public void onLogin(ActionEvent event) {
 		new Thread() {
 			public void run() {
+				PasswordManager.checkInternet();
 				ScriptingEngine.setLoginManager(new GitHubLoginManager());
 				setName("Login Gist Thread");
 				try {
