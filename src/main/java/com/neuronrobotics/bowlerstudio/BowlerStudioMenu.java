@@ -184,6 +184,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
+					if(!PasswordManager.hasNetwork())
+						return;
 					GitHub github = PasswordManager.getGithub();
 					while (github == null) {
 						github = PasswordManager.getGithub();
@@ -547,6 +549,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				ScriptingEngine.setLoginManager(new GitHubLoginManager());
 				setName("Login Gist Thread");
 				try {
+					ScriptingEngine.logout();	
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					ScriptingEngine.login();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -728,12 +737,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert workspacemenuHandle != null : "fx:id=\"workspacemenuHandle\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		selfRef=this;
-		new Thread() {
-			public void run() {
-				ThreadUtil.wait(500);
-				BowlerStudioMenuWorkspace.init(workspacemenuHandle);
-			}
-		}.start();
+		BowlerStudioMenuWorkspace.init(workspacemenuHandle);
+		
 		showDevicesPanel.setOnAction(event -> {
 			bowlerStudioModularFrame.showConectionManager();
 		});
@@ -806,6 +811,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 					}
 				});
+				
 				FxTimer.runLater(Duration.ofMillis(100), () -> {
 					if (PasswordManager.getUsername()  != null) {
 						setToLoggedIn(PasswordManager.getUsername() );
@@ -876,6 +882,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					listener.onLogin(null);
 				}
 				ScriptingEngine.addIGithubLoginListener(listener);
+				if(PasswordManager.hasNetwork() && !PasswordManager.loggedIn()) {
+					new Thread(()->{
+						try {
+							ScriptingEngine.login();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}).start(); 	
+				}else {
+					setToLoggedIn(PasswordManager.getUsername() );
+				}
 			}
 		});
 		if(ScriptingEngine.hasNetwork())

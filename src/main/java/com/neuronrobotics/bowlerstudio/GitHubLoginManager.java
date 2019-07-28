@@ -30,12 +30,13 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 		}
 		boolean loginWas = loginWindowOpen;
 		
-		
+		if (githublogin != null)
+			githublogin.reset();
 		if(stage==null){						
 			if (!loginWas && githublogin != null)
 				githublogin.reset();
 			githublogin = null;
-			System.err.println("Calling login from BowlerStudio");
+			//System.out.println("Calling login from BowlerStudio "+username);
 			// new RuntimeException().printStackTrace();
 			FXMLLoader fxmlLoader = BowlerStudioResourceFactory.getGithubLogin();
 			if(fxmlLoader==null)
@@ -43,6 +44,7 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 			Parent root = fxmlLoader.getRoot();
 			if (githublogin == null) {
 				githublogin = fxmlLoader.getController();
+				githublogin.reset();
 				Platform.runLater(() -> {
 					if(!loginWindowOpen){
 						githublogin.reset();
@@ -54,18 +56,20 @@ public class GitHubLoginManager implements IGitHubLoginManager {
 						stage.centerOnScreen();
 					
 						loginWindowOpen = true;
+						stage.setAlwaysOnTop(true);
 						stage.show();
+						
 						stage =null;
 					}
 				});
 			}
 		}
 		// setContent(root);
-		while (!githublogin.isDone()) {
+		do{
 			//System.err.println("Waiting for user login");
 
-			ThreadUtil.wait(1000);
-		}
+			ThreadUtil.wait(100);
+		}while (!githublogin.isDone()) ;
 		creds = githublogin.getCreds();
 		//System.err.println(" login = "+creds);
 		if(creds == null){

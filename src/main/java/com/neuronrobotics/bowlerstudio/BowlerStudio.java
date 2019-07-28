@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
@@ -44,6 +45,7 @@ import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.python.antlr.ast.Pass;
 import org.reactfx.util.FxTimer;
 import org.w3c.dom.Document;
 
@@ -679,6 +681,7 @@ public class BowlerStudio extends Application {
 					System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 					System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 					System.out.println("Welcome to BowlerStudio!");
+					
 				});
 				closeSplash();
 			} catch (Exception e) {
