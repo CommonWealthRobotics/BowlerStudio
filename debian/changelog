@@ -1,3 +1,12 @@
+bowlerstudio (0.33.1) bionic; urgency=medium
+
+  * pull password manager from library
+  * kernel runtime bug
+  * adding exception handeling to button clicks
+  * all limbs homed to zero degrees directly
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 06 Aug 2019 20:52:54 -0400
+
 bowlerstudio (0.33.0) bionic; urgency=medium
 
   [ Kevin Harrington ]
