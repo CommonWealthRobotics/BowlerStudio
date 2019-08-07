@@ -64,21 +64,21 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		getKin().addPoseUpdateListener(this);
 
 		
-		px.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		nx.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		py.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		ny.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		pz.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		nz.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
-		home.setOnMousePressed(	event -> handle( (Button)event.getSource() ));
+		px.setOnMousePressed(	event -> {try {handle( (Button)event.getSource()); }catch(Throwable T) {T.printStackTrace();}});
+		nx.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		py.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		ny.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		pz.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		nz.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		home.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
 		
-		px.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		nx.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		py.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		ny.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		pz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		nz.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
-		home.setOnMouseReleased(	event -> handle( (Button)event.getSource() ));
+		px.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		nx.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		py.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		ny.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		pz.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		nz.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		home.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
 		game.setOnAction(event -> {
 			if(getGameController() == null){
 				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController"));
@@ -262,6 +262,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
+					for(int i=0;i<getKin().getNumberOfLinks();i++){
+						try {
+							getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+							
+						} catch (Exception ex) {
+							// TODO Auto-generated catch block
+							ex.printStackTrace();
+						}
+					}
 				}
 			}
 		}else{
