@@ -184,7 +184,9 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			try {
 				TransformNR t = getKin().getCurrentTaskSpaceTransform();
 				getKin().setDesiredTaskSpaceTransform(t,  0);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			if(button == px){
 				x=0;
 			}
@@ -257,21 +259,17 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(getMobilebase()!=null){
 			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
 			for(DHParameterKinematics c:getMobilebase().getAllDHChains()){
-				try {
-					c.setDesiredTaskSpaceTransform( c.calcHome(),0);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-					for(int i=0;i<getKin().getNumberOfLinks();i++){
+	
+					for(int i=0;i<c.getNumberOfLinks();i++){
 						try {
-							getKin().setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
+							c.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
 							
 						} catch (Exception ex) {
 							// TODO Auto-generated catch block
 							ex.printStackTrace();
 						}
 					}
-				}
+				
 			}
 		}else{
 			for(int i=0;i<getKin().getNumberOfLinks();i++){
@@ -355,7 +353,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					}catch(Exception e){
 						inc=defauletSpeed;
 						Platform.runLater(() -> {
+							try{
 							increment.setText(Double.toString(defauletSpeed));
+							}catch(Exception ex){
+								ex.printStackTrace();
+							}
 						});
 					}
 					//double rxl=0;
@@ -376,7 +378,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
 							jogTHreadHandle.setToSet(toSet, toSeconds);
-							Log.enableDebugPrint();
+							//Log.enableDebugPrint();
 							//System.out.println("Loop Jogging to: "+toSet);
 						}else{
 							TransformNR toSet = current.copy();
@@ -390,7 +392,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					}
 				}
 			}catch(Exception e){
-				
+				e.printStackTrace();
 			}
 			if(seconds<.01){
 				seconds=.01;
@@ -399,6 +401,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			FxTimer.runLater(
 					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
 						controllerLoop();
+						//System.out.println("Controller loop!");
 					});
 		}
 	}
