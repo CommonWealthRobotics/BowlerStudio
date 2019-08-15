@@ -149,8 +149,11 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 				jogTHreadHandle.setToSet(slider + getSetpoint().getValue(), seconds);
 			}
 
-			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), () -> {
-				controllerLoop();
+			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
+				@Override
+				public void run() {
+					controllerLoop();
+				}
 			});
 		}
 	}

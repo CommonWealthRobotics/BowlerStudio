@@ -412,9 +412,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			textArea.repaint();
 			
 			textArea.requestFocusInWindow();
-			FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
-				swingNode.setContent(spscrollPane);
-				swingNode.requestFocus();
+			FxTimer.runLater(Duration.ofMillis((int) 16), new Runnable() {
+				@Override
+				public void run() {
+					swingNode.setContent(spscrollPane);
+					swingNode.requestFocus();
+				}
 			});
 		});
 		
@@ -539,15 +542,18 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void setFontLoop() {
-		FxTimer.runLater(Duration.ofMillis(200), () -> {
-			SwingUtilities.invokeLater(() -> {
-				try {
-						textArea.setFont(myFont);
-				} catch (Throwable ex) {
-					System.err.println("Tab Font set failed " + file.getAbsolutePath());
-					setFontLoop();
-				}
-			});
+		FxTimer.runLater(Duration.ofMillis(200), new Runnable() {
+			@Override
+			public void run() {
+				SwingUtilities.invokeLater(() -> {
+					try {
+							textArea.setFont(myFont);
+					} catch (Throwable ex) {
+						System.err.println("Tab Font set failed " + file.getAbsolutePath());
+						setFontLoop();
+					}
+				});
+			}
 		});
 	}
 }

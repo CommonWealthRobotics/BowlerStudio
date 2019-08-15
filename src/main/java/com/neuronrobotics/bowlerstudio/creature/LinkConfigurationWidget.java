@@ -229,13 +229,16 @@ public class LinkConfigurationWidget extends GridPane {
 						setShaftSize(editShaft, newShaft, shaftsize);
 						FxTimer.runLater(
 						        Duration.ofMillis(200),
-						        () ->  {
-						        	
-						    System.out.println("Settting shaft size: "+shaftsize+" of "+shafttype);
+						        new Runnable() {
+									@Override
+									public void run() {
+										
+   System.out.println("Settting shaft size: "+shaftsize+" of "+shafttype);
 
-						    Platform.runLater(() ->shaftType.getSelectionModel().select(shafttype));
-						    Platform.runLater(() ->shaftSize.getSelectionModel().select(shaftsize));
-						});
+   Platform.runLater(() ->shaftType.getSelectionModel().select(shafttype));
+   Platform.runLater(() ->shaftSize.getSelectionModel().select(shaftsize));
+}
+								});
 					});
 				});
 				conf.setShaftSize(shaftsize);

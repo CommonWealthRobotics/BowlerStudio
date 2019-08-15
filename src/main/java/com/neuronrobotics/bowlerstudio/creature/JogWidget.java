@@ -291,8 +291,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
 		// TODO Auto-generated method stub
 		if(pose != null &&getTransform()!=null)
-			Platform.runLater(() -> {
-				getTransform().updatePose(pose);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					getTransform().updatePose(pose);
+				}
 			});
 	}
 
@@ -300,8 +303,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,
 			TransformNR pose) {
 		if(pose != null &&getTransform()!=null)
-		Platform.runLater(() -> {
-			getTransform().updatePose(pose);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				getTransform().updatePose(pose);
+			}
 		});
 	}
 	
@@ -339,6 +345,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	
 	
 	private void controllerLoop(){
+		//System.out.println("controllerLoop");
 		double seconds=.1;
 		if(getGameController()!=null || stop==false){
 			try{
@@ -399,9 +406,12 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				sec.setText(".01");
 			}
 			FxTimer.runLater(
-					Duration.ofMillis((int)(seconds*1000.0)) ,() -> {
-						controllerLoop();
-						//System.out.println("Controller loop!");
+					Duration.ofMillis((int)(seconds*1000.0)) ,new Runnable() {
+						@Override
+						public void run() {
+							controllerLoop();
+							//System.out.println("Controller loop!");
+						}
 					});
 		}
 	}
@@ -413,13 +423,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		public void run(){
 			setName("Jog Widget Set Drive Arc Command");
 			while(kin.isAvailable()){
+				//System.out.println("Jog loop");
 				if(controlThreadRunning){
 					if(getMobilebase()==null){
 						try {
-							Log.enableDebugPrint();
+							//Log.enableDebugPrint();
 							//System.out.println("Jogging to: "+toSet);
 							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
 						} catch (Exception e) {
+							e.printStackTrace();
 							//BowlerStudioController.highlightException(null, e);
 						}
 					}else{
@@ -427,6 +439,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 						try {
 							getMobilebase().DriveArc(toSet, toSeconds);
 						} catch (Exception e) {
+							e.printStackTrace();
 							//BowlerStudioController.highlightException(null, e);
 						}
 					}

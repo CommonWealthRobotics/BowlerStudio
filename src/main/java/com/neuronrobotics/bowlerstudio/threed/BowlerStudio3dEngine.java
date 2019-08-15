@@ -101,7 +101,7 @@ import java.util.*;
  * MoleculeSampleApp.
  */
 public class BowlerStudio3dEngine extends JFXPanel {
-
+	private boolean focusing = false; 
 	/**
 	 * 
 	 */
@@ -675,7 +675,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					cm.show(current, event.getScreenX() - 10, event.getScreenY() - 10);
 				else if (event.isPrimaryButtonDown()) {
 					if (System.currentTimeMillis() - lastClickedTime < 500) {
-						FxTimer.runLater(java.time.Duration.ofMillis(200), () -> setSelectedCsg(currentCsg));
+						FxTimer.runLater(java.time.Duration.ofMillis(200), new Runnable() {
+							@Override
+							public void run() { setSelectedCsg(currentCsg);}
+						});
 
 					}
 					lastClickedTime = System.currentTimeMillis();
@@ -973,8 +976,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} catch (Exception | Error e) {
 			// e.printStackTrace();
 		}
-		FxTimer.runLater(Duration.ofMillis(30), () -> {
-			autoSpin();
+		FxTimer.runLater(Duration.ofMillis(30), new Runnable() {
+			@Override
+			public void run() {
+				autoSpin();
+			}
 		});
 	}
 
@@ -994,17 +1000,20 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(MouseEvent event) {
 				resetMouseTime();
 				long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
-				FxTimer.runLater(Duration.ofMillis(100), () -> {
-					long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
-					if (differenceIntime > 2000) {
-						// reset only if an object is not being selected
-						if (lastClickedDifference < offset) {
-							cancelSelection();
-							// System.err.println("Cancel event detected");
+				FxTimer.runLater(Duration.ofMillis(100), new Runnable() {
+					@Override
+					public void run() {
+						long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
+						if (differenceIntime > 2000) {
+							// reset only if an object is not being selected
+							if (lastClickedDifference < offset) {
+								cancelSelection();
+								// System.err.println("Cancel event detected");
+							}
+						} else {
+							// System.err.println("too soon after a select
+							// "+differenceIntime+" from "+lastSelectedTime);
 						}
-					} else {
-						// System.err.println("too soon after a select
-						// "+differenceIntime+" from "+lastSelectedTime);
 					}
 				});
 				lastClickedTimeLocal = System.currentTimeMillis();
@@ -1265,13 +1274,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				if (mesh != null)
 					FxTimer.runLater(java.time.Duration.ofMillis(20),
 
-							() -> {
-								// mesh.setMaterial(new PhongMaterial(new Color(
-								// 1,
-								// (selectedCsg.get(i).getColor().getGreen())*0.6,
-								// (selectedCsg.get(i).getColor().getBlue())*0.6,
-								// selectedCsg.get(i).getColor().getOpacity())));
-								mesh.setMaterial(new PhongMaterial(Color.GOLD));
+							new Runnable() {
+								@Override
+								public void run() {
+									// mesh.setMaterial(new PhongMaterial(new Color(
+									// 1,
+									// (selectedCsg.get(i).getColor().getGreen())*0.6,
+									// (selectedCsg.get(i).getColor().getBlue())*0.6,
+									// selectedCsg.get(i).getColor().getOpacity())));
+									mesh.setMaterial(new PhongMaterial(Color.GOLD));
+								}
 							});
 
 			}
@@ -1281,9 +1293,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void setSelectedCsg(CSG scg) {
-		if (scg == this.selectedCsg)
+		if (scg == this.selectedCsg||focusing)
 			return;
-
+		this.selectedCsg = scg;
+		focusing=true;
 		for (CSG key : getCsgMap().keySet()) {
 
 			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
@@ -1293,14 +1306,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		selectedSet = null;
 		// System.err.println("Selecting one");
-		this.selectedCsg = scg;
+		
 
 		FxTimer.runLater(java.time.Duration.ofMillis(1),
 
-				() -> {
-					try {
-						getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
-					} catch (Exception e) {
+				new Runnable() {
+					@Override
+					public void run() {
+						try {
+							getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
+						} catch (Exception e) {
+						}
 					}
 				});
 		// System.out.println("Selecting "+selectedCsg);
@@ -1413,8 +1429,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// System.err.println("Interpolation step " + depth + " x " + xIncrement
 		// + " y " + yIncrement + " z " + zIncrement);
 		if (depth < targetDepth) {
-			FxTimer.runLater(Duration.ofMillis(16), () -> {
-				focusInterpolate(start, target, depth + 1, targetDepth, interpolator);
+			FxTimer.runLater(Duration.ofMillis(16), new Runnable() {
+				@Override
+				public void run() {
+					focusInterpolate(start, target, depth + 1, targetDepth, interpolator);
+				}
 			});
 		} else {
 			// System.err.println("Camera intrpolation done");
@@ -1423,6 +1442,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			});
 			perviousTarget = target.copy();
 			perviousTarget.setRotation(new RotationNR());
+			focusing=false;
 		}
 
 	}

@@ -327,9 +327,12 @@ public class DyIOPanel  implements Initializable {
 					channelValue.get(index).setText(Integer.toString(value));
 					channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanUpdate());
 					FxTimer.runLater(
-							Duration.ofMillis(200) ,() -> {
-								channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
-								displayFlash.set(index, true);
+							Duration.ofMillis(200) ,new Runnable() {
+								@Override
+								public void run() {
+									channelButtonSelectors.get(index).setImage(BowlerStudioResourceFactory.getChanDefault());
+									displayFlash.set(index, true);
+								}
 							});
 				
 			});
