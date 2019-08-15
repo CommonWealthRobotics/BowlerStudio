@@ -1,3 +1,11 @@
+bowlerstudio (0.33.3) bionic; urgency=medium
+
+  * cleaned catching errors
+  * 0.33.2
+  * switching to new github api
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 15 Aug 2019 16:20:25 -0400
+
 bowlerstudio (0.33.1) bionic; urgency=medium
 
   * pull password manager from library
