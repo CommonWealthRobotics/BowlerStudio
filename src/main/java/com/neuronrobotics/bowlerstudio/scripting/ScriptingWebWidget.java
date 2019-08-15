@@ -117,13 +117,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 								File file = ScriptingEngine.fileFromGit(url, filename);
 								BowlerStudio.createFileTab(file);
 							} else {
-								String webURL = newGist.getHtmlUrl();
-								try {
-									BowlerStudio.openUrlInNewTab(new URL(webURL));
-								} catch (MalformedURLException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+								BowlerStudio.openUrlInNewTab(newGist.getHtmlUrl());
 							}
 						} catch (Exception e1) {
 							BowlerStudioController.highlightException(currentFile, e1);

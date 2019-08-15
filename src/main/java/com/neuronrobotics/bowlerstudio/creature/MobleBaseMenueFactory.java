@@ -269,7 +269,7 @@ public class MobleBaseMenueFactory {
 									ThreadUtil.wait(500);
 									Log.warn(gist + " not built yet");
 								}
-								BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
+								BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
 								System.out.println("Creating gist at: " + gitURL);
 								
 								
