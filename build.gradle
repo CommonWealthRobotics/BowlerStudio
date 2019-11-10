@@ -105,6 +105,8 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 
 repositories {
+	//com.neuronrobotics hosting point
+	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
 	mavenCentral()
 	jcenter()
 	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
@@ -112,8 +114,7 @@ repositories {
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
 	maven { url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' }
-	//com.neuronrobotics hosting point
-	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
+
 	maven { url 'https://plugins.gradle.org/m2/' }
 	maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 	maven { url "https://jitpack.io" }
@@ -128,8 +129,6 @@ dependencies {
 	
 	compile group: 'org.json', name: 'json', version: '20180813'
 	compile 'com.google.crypto.tink:tink:1.3.0-rc1'
-	compile group: 'com.neuronrobotics', name:'GithubPasswordManager', version:'0.0.1'
-	compile group:'org.hid4java', name:'hid4java', version:'0.5.0'
 
 	compile 'gov.nist.math:jama:1.0.2'
 
@@ -152,7 +151,8 @@ dependencies {
 	compile group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
 	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
 	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
-	compile group: 'org.kohsuke', name: 'github-api', version: '1.94'
+		compile group: 'com.neuronrobotics', name:'GithubPasswordManager', version:'0.0.1'
+		
 	compile 'com.miglayout:miglayout-swing:4.2'
 	compile 'commons-io:commons-io:2.4'
 	compile group:'org.python',name:'jython',version:'2.5.3'
