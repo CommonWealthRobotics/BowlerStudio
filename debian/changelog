@@ -1,3 +1,15 @@
+bowlerstudio (0.34.0) bionic; urgency=medium
+
+  * kernel
+  * kernel
+  * kernel
+  * adding 2 factor authentication
+  * updated the version number
+  * close #6
+  * tagged the kernel update
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 27 Nov 2019 17:44:44 -0500
+
 bowlerstudio (0.33.3) bionic; urgency=medium
 
   * cleaned catching errors
