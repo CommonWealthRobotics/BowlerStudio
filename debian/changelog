@@ -1,3 +1,12 @@
+bowlerstudio (0.34.1) bionic; urgency=medium
+
+  * password manager
+  * kernel
+  * 0.34.1
+  * Fixed the logout cleanup
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 28 Nov 2019 13:09:01 -0500
+
 bowlerstudio (0.34.0) bionic; urgency=medium
 
   * kernel
