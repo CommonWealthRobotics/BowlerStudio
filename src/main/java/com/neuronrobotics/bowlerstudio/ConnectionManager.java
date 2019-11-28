@@ -145,7 +145,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //		this.bowlerStudioController = bowlerStudioController;
 //	}
 	
-	public static BowlerAbstractDevice pickConnectedDevice(Class class1) {
+	public static BowlerAbstractDevice pickConnectedDevice(@SuppressWarnings("rawtypes") Class class1) {
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
 		if(!choices.isEmpty()){
