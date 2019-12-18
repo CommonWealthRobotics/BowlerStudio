@@ -878,7 +878,7 @@ public class MobleBaseMenueFactory {
 //			}
 //
 //		});
-		dhItem.getChildren().addAll(addLink, advanced, remove);
+		dhItem.getChildren().addAll(addLink, remove);
 		if (creatureIsOwnedByUser) {
 			// TreeItem<String> owner = new
 			// TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
