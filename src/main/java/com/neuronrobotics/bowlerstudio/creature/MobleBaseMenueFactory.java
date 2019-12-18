@@ -863,21 +863,21 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(PlaceLimb);
 
-		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",
-				AssetFactory.loadIcon("Advanced-Configuration.png"));
-
-		callbackMapForTreeitems.put(advanced, () -> {
-			if (widgetMapForTreeitems.get(advanced) == null) {
-				// create the widget for the leg when looking at it for the
-				// first time
-				try {
-					widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
-				} catch (Exception ex) {
-					BowlerStudio.printStackTrace(ex);
-				}
-			}
-
-		});
+//		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",
+//				AssetFactory.loadIcon("Advanced-Configuration.png"));
+//
+//		callbackMapForTreeitems.put(advanced, () -> {
+//			if (widgetMapForTreeitems.get(advanced) == null) {
+//				// create the widget for the leg when looking at it for the
+//				// first time
+//				try {
+//					widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+//				} catch (Exception ex) {
+//					BowlerStudio.printStackTrace(ex);
+//				}
+//			}
+//
+//		});
 		dhItem.getChildren().addAll(addLink, advanced, remove);
 		if (creatureIsOwnedByUser) {
 			// TreeItem<String> owner = new
