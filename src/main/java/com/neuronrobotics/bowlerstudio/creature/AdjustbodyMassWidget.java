@@ -59,6 +59,9 @@ public class AdjustbodyMassWidget extends Group {
 			if(manager!=null)manager.generateCad();
 
 		});
+		
+		
+		
 		pane.add(new Text("Mass"), 0, 0);
 		pane.add(mass, 1, 0);
 

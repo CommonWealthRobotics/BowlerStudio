@@ -407,6 +407,28 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
+		TreeItem<String> imuCenter = new TreeItem<>("Imu center", AssetFactory.loadIcon("Advanced-Configuration.png"));
+
+		callbackMapForTreeitems.put(imuCenter, () -> {
+			TransformWidget imu = new TransformWidget("IMU center", device.getIMUFromCentroid(), new IOnTransformChange() {
+
+				@Override
+				public void onTransformChaging(TransformNR newTrans) {}
+
+				@Override
+				public void onTransformFinished(TransformNR newTrans) {
+					MobileBaseCadManager manager = MobileBaseCadManager.get(device);
+					if(manager!=null)manager.generateCad();
+					device.setIMUFromCentroid(newTrans);
+				}
+				
+			});
+			if (widgetMapForTreeitems.get(imuCenter) == null) {
+				widgetMapForTreeitems.put(imuCenter,new Group( imu));
+
+			}
+
+		});
 		TreeItem<String> bodymass = new TreeItem<>("Adjust Body Mass", AssetFactory.loadIcon("Advanced-Configuration.png"));
 
 		callbackMapForTreeitems.put(bodymass, () -> {
@@ -436,7 +458,7 @@ public class MobleBaseMenueFactory {
 
 		});
 		
-		rootItem.getChildren().addAll(bodymass,physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
+		rootItem.getChildren().addAll(bodymass,imuCenter,physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
 
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
