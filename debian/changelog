@@ -1,3 +1,10 @@
+bowlerstudio (0.35.1) bionic; urgency=medium
+
+  * kernel updated
+  * version bump
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Dec 2019 18:40:32 -0500
+
 bowlerstudio (0.35.0) bionic; urgency=medium
 
   * kernel
