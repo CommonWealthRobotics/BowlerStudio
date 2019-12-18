@@ -98,6 +98,97 @@ public class MobleBaseMenueFactory {
 
 		}
 
+		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",
+				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
+		rootItem.getChildren().addAll(makeCopy);
+		callbackMapForTreeitems.put(makeCopy, () -> {
+			Platform.runLater(() -> {
+				String oldname = device.getScriptingName();
+				TextInputDialog dialog = new TextInputDialog(oldname + "_copy");
+				dialog.setTitle("Making a copy of " + oldname);
+				dialog.setHeaderText("Set the scripting name for this creature");
+				dialog.setContentText("Please the name of the new creature:");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()) {
+					view.getSelectionModel().select(rootItem);
+					new Thread() {
+						public void run() {
+							System.out.println("Your new creature: " + result.get());
+							String newName = result.get();
+							device.setScriptingName(newName);
+
+							GitHub github = PasswordManager.getGithub();
+							GHGistBuilder builder = github.createGist();
+							builder.description(newName + " copy of " + oldname);
+							String filename = newName + ".xml";
+							builder.file(filename, "<none>");
+							builder.public_(true);
+							GHGist gist;
+							try {
+								gist = builder.create();
+								String gitURL = "https://gist.github.com/"
+										+ ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
+
+								System.out.println("Creating new Robot repo");
+								while (true) {
+									try {
+										ScriptingEngine.fileFromGit(gitURL, filename);
+										break;
+									} catch (Exception e) {
+
+									}
+									ThreadUtil.wait(500);
+									Log.warn(gist + " not built yet");
+								}
+								BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
+								System.out.println("Creating gist at: " + gitURL);
+
+								System.out.println("copy Cad engine ");
+								device.setGitCadEngine(
+										copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
+								System.out.println("copy walking engine Was: " + device.getGitWalkingEngine());
+								device.setGitWalkingEngine(copyGitFile(device.getGitWalkingEngine()[0], gitURL,
+										device.getGitWalkingEngine()[1]));
+								// System.out.println("is now "+device.getGitWalkingEngine());
+								for (DHParameterKinematics dh : device.getAllDHChains()) {
+									// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
+									dh.setGitCadEngine(
+											copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+
+									// System.out.println("copy Leg Dh engine ");
+									dh.setGitDhEngine(
+											copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+								}
+
+								String xml = device.getXml();
+
+								ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
+										xml, "new Robot content");
+
+								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
+
+								mb.setGitSelfSource(new String[] { gitURL, newName + ".xml" });
+								device.disconnect();
+
+								ConnectionManager.addConnection(mb, mb.getScriptingName());
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							// DeviceManager.addConnection(newDevice,
+							// newDevice.getScriptingName());
+						}
+					}.start();
+				}
+			});
+		});
+
 		TreeItem<String> legs = loadLimbs(device, view, device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
 				widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 		TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
@@ -222,96 +313,8 @@ public class MobleBaseMenueFactory {
 			});
 
 		});
-		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",
-				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
-		callbackMapForTreeitems.put(makeCopy, () -> {
-			Platform.runLater(() -> {
-				String oldname = device.getScriptingName();
-				TextInputDialog dialog = new TextInputDialog(oldname + "_copy");
-				dialog.setTitle("Making a copy of " + oldname);
-				dialog.setHeaderText("Set the scripting name for this creature");
-				dialog.setContentText("Please the name of the new creature:");
-
-				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
-				if (result.isPresent()) {
-					view.getSelectionModel().select(rootItem);
-					new Thread() {
-						public void run() {
-							System.out.println("Your new creature: " + result.get());
-							String newName = result.get();
-							device.setScriptingName(newName);
-
-							GitHub github = PasswordManager.getGithub();
-							GHGistBuilder builder = github.createGist();
-							builder.description(newName + " copy of " + oldname);
-							String filename = newName + ".xml";
-							builder.file(filename, "<none>");
-							builder.public_(true);
-							GHGist gist;
-							try {
-								gist = builder.create();
-								String gitURL = "https://gist.github.com/"
-										+ ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
-
-								System.out.println("Creating new Robot repo");
-								while (true) {
-									try {
-										ScriptingEngine.fileFromGit(gitURL, filename);
-										break;
-									} catch (Exception e) {
-
-									}
-									ThreadUtil.wait(500);
-									Log.warn(gist + " not built yet");
-								}
-								BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
-								System.out.println("Creating gist at: " + gitURL);
-
-								System.out.println("copy Cad engine ");
-								device.setGitCadEngine(
-										copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-								System.out.println("copy walking engine Was: " + device.getGitWalkingEngine());
-								device.setGitWalkingEngine(copyGitFile(device.getGitWalkingEngine()[0], gitURL,
-										device.getGitWalkingEngine()[1]));
-								// System.out.println("is now "+device.getGitWalkingEngine());
-								for (DHParameterKinematics dh : device.getAllDHChains()) {
-									// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
-									dh.setGitCadEngine(
-											copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
-
-									// System.out.println("copy Leg Dh engine ");
-									dh.setGitDhEngine(
-											copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
-								}
-
-								String xml = device.getXml();
-
-								ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
-										xml, "new Robot content");
-
-								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
-
-								mb.setGitSelfSource(new String[] { gitURL, newName + ".xml" });
-								device.disconnect();
-
-								ConnectionManager.addConnection(mb, mb.getScriptingName());
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							// DeviceManager.addConnection(newDevice,
-							// newDevice.getScriptingName());
-						}
-					}.start();
-				}
-			});
-		});
-
+		
+		
 		TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
 		callbackMapForTreeitems.put(setCAD, () -> {
 			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
@@ -424,8 +427,7 @@ public class MobleBaseMenueFactory {
 
 		});
 
-		rootItem.getChildren().addAll(physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable,
-				makeCopy);
+		rootItem.getChildren().addAll(physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
 
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
