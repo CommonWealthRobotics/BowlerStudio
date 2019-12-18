@@ -48,16 +48,16 @@ public class LinkConfigurationWidget extends GridPane {
 	private AbstractLink activLink;
 	private MobileBaseCadManager manager;
 	private EngineeringUnitsSliderWidget setpointSLider;
-	
+
 	double textToNum(TextField mass) {
 		try {
 			return Double.parseDouble(mass.getText().trim());
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			mass.setText("0");
 			return 0;
 		}
 	}
-	
+
 	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,
 			EngineeringUnitsSliderWidget slide, MobileBaseCadManager manager) {
 		// this.index = index;
@@ -76,7 +76,8 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setMassKg(textToNum(mass));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 		});
 		TransformNR currentCentroid = conf.getCenterOfMassFromCentroid();
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
@@ -86,7 +87,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 
@@ -97,7 +99,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 
@@ -108,7 +111,8 @@ public class LinkConfigurationWidget extends GridPane {
 			;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 
@@ -117,7 +121,8 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setScale(textToNum(scale));
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 		Button editShaft = new Button("Edit " + conf.getShaftSize());
@@ -183,7 +188,8 @@ public class LinkConfigurationWidget extends GridPane {
 			conf.setShaftSize(motorsize);
 			conf.setShaftType(motortype);
 			setShaftSize(editShaft, newShaft, motorsize);
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 		shaftSize.getSelectionModel().select(conf.getShaftSize());
@@ -223,27 +229,24 @@ public class LinkConfigurationWidget extends GridPane {
 
 				Platform.runLater(() -> {
 					setShaftType(editShaft, newShaft, shaftSize, shafttype);
-					FxTimer.runLater(
-					        Duration.ofMillis(20),
-					        () ->  {
+					FxTimer.runLater(Duration.ofMillis(20), () -> {
 						setShaftSize(editShaft, newShaft, shaftsize);
-						FxTimer.runLater(
-						        Duration.ofMillis(200),
-						        new Runnable() {
-									@Override
-									public void run() {
-										
-   System.out.println("Settting shaft size: "+shaftsize+" of "+shafttype);
+						FxTimer.runLater(Duration.ofMillis(200), new Runnable() {
+							@Override
+							public void run() {
 
-   Platform.runLater(() ->shaftType.getSelectionModel().select(shafttype));
-   Platform.runLater(() ->shaftSize.getSelectionModel().select(shaftsize));
-}
-								});
+								System.out.println("Settting shaft size: " + shaftsize + " of " + shafttype);
+
+								Platform.runLater(() -> shaftType.getSelectionModel().select(shafttype));
+								Platform.runLater(() -> shaftSize.getSelectionModel().select(shaftsize));
+							}
+						});
 					});
 				});
 				conf.setShaftSize(shaftsize);
 				conf.setShaftType(shafttype);
-				if(manager!=null)manager.generateCad();
+				if (manager != null)
+					manager.generateCad();
 
 			}
 		});
@@ -323,7 +326,8 @@ public class LinkConfigurationWidget extends GridPane {
 			factory.refreshHardwareLayer(conf);
 			activLink = factory.getLink(conf);
 			System.out.println("Link device to " + conf.getDeviceScriptingName());
-			if(manager!=null)manager.generateCad();
+			if (manager != null)
+				manager.generateCad();
 
 		});
 
@@ -335,57 +339,57 @@ public class LinkConfigurationWidget extends GridPane {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				double eng=setLowerBound(newAngleDegrees);
+				double eng = setLowerBound(newAngleDegrees);
 				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
 				activLink.setUseLimits(true);
 			}
 
-
-
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				try {
 					activLink.setUseLimits(false);
-					activLink.setTargetEngineeringUnits(setLowerBound(newAngleDegrees)+0.01);
+					activLink.setTargetEngineeringUnits(setLowerBound(newAngleDegrees) + 0.01);
 					activLink.flush(0);
 					activLink.setUseLimits(true);
-					if(manager!=null)manager.generateCad();
+					if (manager != null)
+						manager.generateCad();
 					zero.setLowerBound(newAngleDegrees);
 
 				} catch (Exception ex) {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, conf.getLowerLimit()<1?conf.getLowerLimit():1,//min
-				conf.getStaticOffset(),//max
-				conf.getLowerLimit(),//current
-150, "device units", true);
+		}, conf.getLowerLimit() < 1 ? conf.getLowerLimit() : 1, // min
+				conf.getStaticOffset(), // max
+				conf.getLowerLimit(), // current
+				150, "device units", true);
 
 		upperBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				double eng=setUpperBound(newAngleDegrees-0.00001);
+				double eng = setUpperBound(newAngleDegrees - 0.00001);
 				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
 				activLink.setUseLimits(true);
 			}
 
-
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				activLink.setUseLimits(false);
-				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees)-0.00001);
+				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees) - 0.00001);
 				activLink.flush(0);
 				activLink.setUseLimits(true);
 				zero.setUpperBound(newAngleDegrees);
-				if(manager!=null)manager.generateCad();
+				if (manager != null)
+					manager.generateCad();
 
 			}
-		}, conf.getStaticOffset(), conf.getUpperLimit()>180?conf.getUpperLimit():180, conf.getUpperLimit(), 150, "device units", true);
+		}, conf.getStaticOffset(), conf.getUpperLimit() > 180 ? conf.getUpperLimit() : 180, conf.getUpperLimit(), 150,
+				"device units", true);
 
 		zero = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
@@ -406,7 +410,8 @@ public class LinkConfigurationWidget extends GridPane {
 				activLink.flush(0);
 				upperBound.setLowerBound(newAngleDegrees);
 				lowerBound.setUpperBound(newAngleDegrees);
-				if(manager!=null)manager.generateCad();
+				if (manager != null)
+					manager.generateCad();
 
 			}
 		}, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
@@ -423,7 +428,8 @@ public class LinkConfigurationWidget extends GridPane {
 				factory.refreshHardwareLayer(conf);
 				activLink = factory.getLink(conf);
 				System.out.println("Link channel to " + conf.getTypeString());
-				if(manager!=null)manager.generateCad();
+				if (manager != null)
+					manager.generateCad();
 
 			}
 		});
@@ -439,7 +445,8 @@ public class LinkConfigurationWidget extends GridPane {
 			public void handle(ActionEvent event) {
 				conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
 				System.out.println("Link type changed to " + conf.getTypeString());
-				if(manager!=null)manager.generateCad();
+				if (manager != null)
+					manager.generateCad();
 
 			}
 		});
@@ -496,29 +503,30 @@ public class LinkConfigurationWidget extends GridPane {
 		if (conf.getScale() < 0) {
 			eng = (activLink.getMinEngineeringUnits());
 			setpointSLider.setLowerBound(eng);
-		}else {
+		} else {
 			eng = (activLink.getMaxEngineeringUnits());
 			setpointSLider.setUpperBound(eng);
 		}
-		
-		
+
 		return eng;
 	}
+
 	private double setLowerBound(double newAngleDegrees) {
 		conf.setLowerLimit(newAngleDegrees);
-		
+
 		double eng = 0;
 		if (conf.getScale() > 0) {
 			eng = (activLink.getMinEngineeringUnits());
 			setpointSLider.setLowerBound(eng);
-		}else {
+		} else {
 			eng = (activLink.getMaxEngineeringUnits());
 			setpointSLider.setUpperBound(eng);
 		}
-		
+
 		return eng;
-		
+
 	}
+
 	private void setShaftSize(Button editShaft, Button newShaft, String selectedItem) {
 		if (selectedItem == null) {
 			newShaft.setText("");

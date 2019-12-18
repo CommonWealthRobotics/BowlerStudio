@@ -407,6 +407,15 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
+		TreeItem<String> bodymass = new TreeItem<>("Adjust Body Mass", AssetFactory.loadIcon("Advanced-Configuration.png"));
+
+		callbackMapForTreeitems.put(bodymass, () -> {
+			if (widgetMapForTreeitems.get(bodymass) == null) {
+				widgetMapForTreeitems.put(bodymass, new AdjustbodyMassWidget(device));
+
+			}
+
+		});
 		TreeItem<String> item = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
 
 		callbackMapForTreeitems.put(item, () -> {
@@ -426,8 +435,8 @@ public class MobleBaseMenueFactory {
 			}
 
 		});
-
-		rootItem.getChildren().addAll(physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
+		
+		rootItem.getChildren().addAll(bodymass,physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
 
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
