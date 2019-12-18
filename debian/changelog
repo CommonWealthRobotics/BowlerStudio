@@ -1,3 +1,21 @@
+bowlerstudio (0.35.0) bionic; urgency=medium
+
+  * kernel
+  * kernel
+  * kernel
+  * new version
+  * #67 Default to virtual if no other link type exist.
+  * close #66
+  * compileing
+  * moving the make a copy button
+  * added the mass adjust widget
+  * loading the ass of the robots body
+  * close #64
+  * adding a transform widget for the IMU centroid
+  * revbump
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 18 Dec 2019 17:24:31 -0500
+
 bowlerstudio (0.34.1) bionic; urgency=medium
 
   * password manager
