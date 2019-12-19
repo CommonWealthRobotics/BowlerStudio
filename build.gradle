@@ -146,8 +146,9 @@ dependencies {
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
 	compile 'org.kohsuke.stapler:stapler:1.237'
-	
-	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.0.1.201506240215-r'
+		
+	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
+	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.6.0.201912101111-r'
 	
 	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
 	compile group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
