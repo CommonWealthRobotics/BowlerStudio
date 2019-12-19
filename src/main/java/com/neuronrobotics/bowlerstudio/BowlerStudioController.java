@@ -288,18 +288,36 @@ public class BowlerStudioController implements IScriptEventListener {
 		});
 
 	}
-
-	private boolean removeObject(Object p) {
-		if (CSG.class.isInstance(p) || Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
+	
+	public static boolean removeObject(Object p) {
+		if (CSG.class.isInstance(p) ) {
 			Platform.runLater(() -> {
-				getJfx3dmanager().removeObjects();
-				getJfx3dmanager().clearUserNode();
+				getBowlerStudio().getJfx3dmanager().removeObject((CSG) p);
+			});
+			return true;
+		}
+		if ( Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
+			Platform.runLater(() -> {
+				getBowlerStudio().getJfx3dmanager().clearUserNode();
 			});
 			return true;
 		}
 		// ThreadUtil.wait(20);
 		return false;
 	}
+
+
+//	private boolean removeObject(Object p) {
+//		if (CSG.class.isInstance(p) || Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
+//			Platform.runLater(() -> {
+//				getJfx3dmanager().removeObjects();
+//				getJfx3dmanager().clearUserNode();
+//			});
+//			return true;
+//		}
+//		// ThreadUtil.wait(20);
+//		return false;
+//	}
 
 	public static void setCsg(List<CSG> toadd, File source) {
 		Platform.runLater(() -> {
