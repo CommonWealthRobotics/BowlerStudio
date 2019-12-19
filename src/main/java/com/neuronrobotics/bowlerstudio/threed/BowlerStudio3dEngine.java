@@ -540,7 +540,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
 					customMenuItem.setHideOnClick(false);
 					parameters.getItems().add(customMenuItem);
-					System.err.println("Adding Length Paramater " + lp.getName());
+					//System.err.println("Adding Length Paramater " + lp.getName());
 				} else {
 					try {
 						Parameter lp = (Parameter) param;
