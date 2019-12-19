@@ -1,3 +1,13 @@
+bowlerstudio (0.36.0) bionic; urgency=medium
+
+  * adding git@ uri support
+  * updating jgit
+  * rev bump kernel
+  * udpating jgit
+  * removing the clone conflict loop
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 19 Dec 2019 14:10:11 -0500
+
 bowlerstudio (0.35.1) bionic; urgency=medium
 
   * kernel updated
