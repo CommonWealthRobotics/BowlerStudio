@@ -1299,7 +1299,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		focusing=true;
 		for (CSG key : getCsgMap().keySet()) {
 
-			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+			Platform.runLater(() -> {
+				try {
+				getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()));
+				}catch(Throwable ex) {}
+			});
 		}
 		lastSelectedTime = System.currentTimeMillis();
 		// System.err.println("Selecting a CSG");

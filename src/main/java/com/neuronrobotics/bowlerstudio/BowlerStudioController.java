@@ -354,6 +354,10 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		});
 	}
+	
+	public static void setSelectedCsg(CSG obj) {
+		getBowlerStudio().getJfx3dmanager().setSelectedCsg(obj);
+	}
 
 	public static void addCsg(CSG toadd, File source) {
 		Platform.runLater(() -> {
