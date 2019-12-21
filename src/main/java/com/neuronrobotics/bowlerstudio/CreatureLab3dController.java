@@ -64,8 +64,7 @@ public class CreatureLab3dController {
 				public void uncaughtException(Thread t, Throwable e) {
 					e.printStackTrace();
 					new RuntimeException("Caught the UI exception!").printStackTrace();
-					jfx3dControls.getChildren().remove(getEngine().getControlsBox());
-					viewContainer.getChildren().remove(getEngine() .getSubScene());
+					
 				}
 			});
 			

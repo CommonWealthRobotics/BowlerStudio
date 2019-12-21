@@ -24,6 +24,7 @@ import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import org.reactfx.util.FxTimer;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.HashMap;
 
@@ -166,6 +167,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		jogTHreadHandle = new jogThread();
 		jogTHreadHandle.start();
 		controllerLoop();
+		
 	}
 
 	private BowlerJInputDevice RemoveGameController() {
