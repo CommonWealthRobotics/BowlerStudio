@@ -1,3 +1,14 @@
+bowlerstudio (0.36.1) bionic; urgency=medium
+
+  * print statements
+  * removing print statements
+  * adding a public removeObjects to the static calls
+  * adding public API for selecting a CSG
+  * revbump
+  * #68 This may resolve the issue, but extensive testing is needed
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 21 Dec 2019 13:26:53 -0500
+
 bowlerstudio (0.36.0) bionic; urgency=medium
 
   * adding git@ uri support
