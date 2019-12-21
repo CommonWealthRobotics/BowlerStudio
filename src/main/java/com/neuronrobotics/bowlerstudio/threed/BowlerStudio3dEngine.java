@@ -1110,15 +1110,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private void selectObjectsSourceFile(CSG source) {
 		new Thread(() -> {
+			// this code is thread safed
 			BowlerStudioController.getBowlerStudio().clearHighlits();
 			debuggerList.clear();
 			debuggerIndex = 0;
 
 			for (String ex : source.getCreationEventStackTraceList()) {
-
+				// Thread safed
 				String fileName = getFilenameFromTrace(ex);
 				int linNum = getLineNumbereFromTrace(ex);
-
+				
 				boolean duplicate = false;
 				for (String have : debuggerList) {
 					if (getFilenameFromTrace(have).contentEquals(fileName) && getLineNumbereFromTrace(have) == linNum)
@@ -1129,7 +1130,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 				lastFileSelected = fileName;
 				lastFileLine = linNum;
-
+				// this code is thread safed
 				BowlerStudioController.getBowlerStudio().setHighlight(locateFile(fileName, source), linNum,
 						java.awt.Color.PINK);
 
@@ -1282,7 +1283,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 									// (selectedCsg.get(i).getColor().getGreen())*0.6,
 									// (selectedCsg.get(i).getColor().getBlue())*0.6,
 									// selectedCsg.get(i).getColor().getOpacity())));
-									mesh.setMaterial(new PhongMaterial(Color.GOLD));
+									Platform.runLater(()->mesh.setMaterial(new PhongMaterial(Color.GOLD)));
 								}
 							});
 
@@ -1317,10 +1318,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				new Runnable() {
 					@Override
 					public void run() {
+						Platform.runLater(()->{
 						try {
 							getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 						} catch (Exception e) {
 						}
+						});
 					}
 				});
 		// System.out.println("Selecting "+selectedCsg);
