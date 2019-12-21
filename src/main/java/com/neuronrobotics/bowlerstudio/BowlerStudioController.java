@@ -342,6 +342,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			getBowlerStudio().getJfx3dmanager().removeObjects();
 			if (toadd != null)
 				for (CSG c : toadd) {
+					if(c!=null)
 					Platform.runLater(() -> getBowlerStudio().getJfx3dmanager().addObject(c, source));
 				}
 		});

@@ -90,6 +90,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
@@ -176,7 +177,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	/** The ground. */
 	private Group ground;
-
+	private Group group;
 	private boolean captureMouse = false;
 
 	private VirtualCameraDevice virtualcam;
@@ -218,47 +219,68 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private CheckBox autoHighilight;
 
 	private Button export;;
+	private boolean rebuildingUIOnerror = false;
 
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
 	public BowlerStudio3dEngine() {
+		rebuild();
+		
+		// Set up the Ui THread explosion handler
+		Platform.runLater(() ->{
+			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread t, Throwable e) {
+					if(rebuildingUIOnerror)
+						return;
+					System.err.println("Caught the UI exception!");
+					clearUserNode();
+					removeObjects();
+					getRoot().getChildren().clear();
+					axisGroup.getChildren().clear();
+					gridGroup.getChildren().clear();
+					manipulator.getChildren().clear();
+					lookGroup.getChildren().clear();
+					focusGroup.getChildren().clear();
+					userGroup.getChildren().clear();
+					ground.getChildren().clear();
+					hand.getChildren().clear();
+					group.getChildren().clear();
+					rebuild();
+				}
+			});
+			
+		});
+
+		autoSpin();
+	}
+	
+	private void rebuild() {
+		rebuildingUIOnerror=true;
 		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
+		System.out.println("Building scene");
 		buildScene();
+		System.out.println("Building camera");
+
 		buildCamera();
+		System.out.println("Building axis");
+
 		buildAxes();
 
 		Stop[] stops = null;
+		System.out.println("Building gradiant");
+
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-		Scene s = new Scene(new Group(getSubScene()));
+		group = new Group(getSubScene());
+		Scene s = new Scene(group);
 		// handleKeyboard(s);
 		handleMouse(getSubScene());
+		Platform.runLater(() ->{
+			setScene(s);
+			rebuildingUIOnerror=false;
 
-		Platform.runLater(() ->setScene(s));
-
-		// new Thread() {
-		//
-		// public void run() {
-		// setName("3d Highlighter");
-		//
-		// while (true) {
-		// ThreadUtil.wait(100);
-		// if (getSelectedCsg() != null) {
-		// Color newColor =
-		// getSelectedCsg().getColor().interpolate(Color.YELLOW,
-		// Math.sin(color));
-		// color += .05;
-		// if (color > Math.PI)
-		// color = 0;
-		// PhongMaterial m = new PhongMaterial(newColor);
-		// // current.setMaterial(m);
-		// Platform.runLater(() -> csgMap.get(getSelectedCsg()).setMaterial(m));
-		// }
-		// }
-		// }
-		// }.start();
-		//
-		autoSpin();
+		});
 	}
 
 	private void highlightDebugIndex(int index, java.awt.Color c) {
@@ -326,7 +348,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		autoHighilight = new CheckBox("Auto Highlight");
 		autoHighilight.setSelected(true);
-		controls.getChildren().addAll(home, export, clear, ruler, autoHighilight, spin);
+		Platform.runLater(()->controls.getChildren().addAll(home, export, clear, ruler, autoHighilight, spin));
 		return new Group(controls);
 	}
 
@@ -397,7 +419,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		fwd.disableProperty().set(true);
 		back.disableProperty().set(true);
 
-		controls.getChildren().addAll(new Label("Cad Debugger"), back, fwd);
+		Platform.runLater(()->controls.getChildren().addAll(new Label("Cad Debugger"), back, fwd));
 		return new Group(controls);
 	}
 
@@ -485,6 +507,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg, File source) {
+		if(currentCsg==null)
+			return new MeshView();
+					
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		// System.out.println(" Adding a CSG from file: "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
@@ -687,15 +712,18 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 		closeTheMenueHandler cmh = new closeTheMenueHandler();
-		current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh);
+		Platform.runLater(()->current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh));
 
 		// cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, cmh);
-
-		lookGroup.getChildren().add(current);
-		Axis axis = new Axis();
-		axis.getTransforms().add(currentCsg.getManipulator());
-		axisMap.put(current, axis);
-		lookGroup.getChildren().add(axis);
+		if(current==null)
+			return new MeshView();
+		if(!lookGroup.getChildren().contains(current)) {
+			Platform.runLater(()->lookGroup.getChildren().add(current));
+			Axis axis = new Axis();
+			Platform.runLater(()->axis.getTransforms().add(currentCsg.getManipulator()));
+			axisMap.put(current, axis);
+			Platform.runLater(()->lookGroup.getChildren().add(axis));
+		}
 		// Log.warning("Adding new axis");
 		return current;
 	}
@@ -785,7 +813,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void buildScene() {
 		world.ry.setAngle(-90);// point z upwards
 		world.ry.setAngle(180);// arm out towards user
-		getRoot().getChildren().add(world);
+		Platform.runLater(()->getRoot().getChildren().add(world));
 	}
 
 	/**
@@ -1194,6 +1222,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *            the new sub scene
 	 */
 	public void setSubScene(SubScene scene) {
+		System.out.println("Setting UI scene");
 		this.scene = scene;
 	}
 
