@@ -64,7 +64,7 @@ public class CreatureLab3dController {
 				public void uncaughtException(Thread t, Throwable e) {
 					e.printStackTrace();
 					new RuntimeException("Caught the UI exception!").printStackTrace();
-					
+					System.exit(-5);
 				}
 			});
 			
