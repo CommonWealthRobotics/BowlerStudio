@@ -529,7 +529,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void clearHighlits() {
-		highlighter.removeAllHighlights();
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+        		highlighter.removeAllHighlights();
+            }
+          });
 	}
 
 	public int getFontSize() {
