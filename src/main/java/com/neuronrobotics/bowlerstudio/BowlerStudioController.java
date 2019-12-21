@@ -58,6 +58,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudioControllerStaticReference = null;
 	private boolean doneLoadingTutorials = false;
+	private boolean runningExceptionHighlight = false;
 
 	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager) {
 		if (getBowlerStudio() != null)
@@ -199,8 +200,17 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	private void highlightExceptionLocal(File fileEngineRunByName, Throwable ex) {
+		// THis needs to gate on checking if this thread is running already
+		if(runningExceptionHighlight) {
+			ex.printStackTrace();
+			
+			new RuntimeException("Only one exception Highlight can be called at once!").printStackTrace();
+			return;
+		}
+		
 		new Thread() {
 			public void run() {
+				runningExceptionHighlight=true;
 				setName("Highlighter thread");
 				if (fileEngineRunByName != null) {
 					if (openFiles.get(fileEngineRunByName.getAbsolutePath()) == null) {
@@ -274,6 +284,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				ex.printStackTrace(pw);
 				System.out.println(sw.toString());
 				ex.printStackTrace();
+				runningExceptionHighlight=false;
 			}
 		}.start();
 
