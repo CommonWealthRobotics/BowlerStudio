@@ -225,51 +225,29 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * Instantiates a new jfx3d manager.
 	 */
 	public BowlerStudio3dEngine() {
+
+		System.err.println("Setting Scene ");
+		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
 		rebuild();
 		
 		// Set up the Ui THread explosion handler
-		Platform.runLater(() ->{
-			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread t, Throwable e) {
-					if(rebuildingUIOnerror)
-						return;
-					System.err.println("Caught the UI exception!");
-					clearUserNode();
-					removeObjects();
-					getRoot().getChildren().clear();
-					axisGroup.getChildren().clear();
-					gridGroup.getChildren().clear();
-					manipulator.getChildren().clear();
-					lookGroup.getChildren().clear();
-					focusGroup.getChildren().clear();
-					userGroup.getChildren().clear();
-					ground.getChildren().clear();
-					hand.getChildren().clear();
-					group.getChildren().clear();
-					rebuild();
-				}
-			});
-			
-		});
-
+		
 		autoSpin();
 	}
 	
 	private void rebuild() {
 		rebuildingUIOnerror=true;
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
-		System.out.println("Building scene");
+		System.err.println("Building scene");
 		buildScene();
-		System.out.println("Building camera");
+		System.err.println("Building camera");
 
 		buildCamera();
-		System.out.println("Building axis");
+		System.err.println("Building axis");
 
 		buildAxes();
 
 		Stop[] stops = null;
-		System.out.println("Building gradiant");
+		System.err.println("Building gradiant");
 
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		group = new Group(getSubScene());

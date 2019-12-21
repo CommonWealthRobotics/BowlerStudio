@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 /**
  * Sample Skeleton for "CreatureLab.fxml" Controller Class
  * You can copy and paste this code into your favorite IDE
@@ -50,12 +52,29 @@ public class CreatureLab3dController {
 
     @FXML // fx:id="viewContainer"
     private AnchorPane viewContainer; // Value injected by FXMLLoader
-    private SubScene subScene;
-	private BowlerStudio3dEngine jfx3dmanager;
+    //private SubScene subScene;
 	protected EventHandler<? super KeyEvent> normalKeyPessHandle = null;
-    public  CreatureLab3dController (BowlerStudio3dEngine engine){
-		this.jfx3dmanager = engine;
-    	
+	
+	private static BowlerStudio3dEngine engine;
+	
+    public  CreatureLab3dController (){
+    	Platform.runLater(() ->{
+			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread t, Throwable e) {
+					e.printStackTrace();
+					new RuntimeException("Caught the UI exception!").printStackTrace();
+					viewContainer.getChildren().removeAll();
+					jfx3dControls.getChildren().removeAll();
+					getEngine().removeAll();
+			    	//setEngine(new BowlerStudio3dEngine());
+					//setupUi();
+
+				}
+			});
+			
+		});
+    	setEngine(new BowlerStudio3dEngine());
     }
     
 	public void setOverlayLeft(Node content) {
@@ -156,21 +175,32 @@ public class CreatureLab3dController {
         assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'CreatureLab.fxml'.";
         clearOverlayLeft();
         // Initialize your logic here: all @FXML variables will have been injected
-		Platform.runLater(() -> {
-			subScene = jfx3dmanager.getSubScene();
-			subScene.setFocusTraversable(false);
-			subScene.widthProperty().bind(viewContainer.widthProperty());
-			subScene.heightProperty().bind(viewContainer.heightProperty());
-		});
-		Platform.runLater(() -> {
-			jfx3dControls.getChildren().add(jfx3dmanager.getControlsBox());
-			viewContainer.getChildren().add(subScene);
-			AnchorPane.setTopAnchor(subScene, 0.0);
-			AnchorPane.setRightAnchor(subScene, 0.0);
-			AnchorPane.setLeftAnchor(subScene, 0.0);
-			AnchorPane.setBottomAnchor(subScene, 0.0);
-		});
+		setupUi();
 		
     }
+
+	private void setupUi() {
+		Platform.runLater(() -> {
+			getEngine() .getSubScene().setFocusTraversable(false);
+			getEngine() .getSubScene().widthProperty().bind(viewContainer.widthProperty());
+			getEngine() .getSubScene().heightProperty().bind(viewContainer.heightProperty());
+		});
+		Platform.runLater(() -> {
+			jfx3dControls.getChildren().add(getEngine().getControlsBox());
+			viewContainer.getChildren().add(getEngine() .getSubScene());
+			AnchorPane.setTopAnchor(getEngine() .getSubScene(), 0.0);
+			AnchorPane.setRightAnchor(getEngine() .getSubScene(), 0.0);
+			AnchorPane.setLeftAnchor(getEngine() .getSubScene(), 0.0);
+			AnchorPane.setBottomAnchor(getEngine() .getSubScene(), 0.0);
+		});
+	}
+
+	public static BowlerStudio3dEngine getEngine() {
+		return engine;
+	}
+
+	public static void setEngine(BowlerStudio3dEngine engine) {
+		CreatureLab3dController.engine = engine;
+	}
 
 }

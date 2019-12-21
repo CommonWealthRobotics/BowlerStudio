@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
 import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
@@ -104,8 +105,8 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
 						PhysicsEngine.get().clear();
 						new MobileBasePhysicsManager(base, baseCad, simplecad);
-						BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
-						oldParts = threeD.getCsgMap().keySet();
+						//BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
+						oldParts = CreatureLab3dController.getEngine().getCsgMap().keySet();
 						BowlerStudioController.setCsg(PhysicsEngine.get().getCsgFromEngine());
 						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						

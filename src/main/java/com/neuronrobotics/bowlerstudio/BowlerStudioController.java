@@ -54,17 +54,15 @@ public class BowlerStudioController implements IScriptEventListener {
 	 * 
 	 */
 	private ConnectionManager connectionManager;
-	private BowlerStudio3dEngine jfx3dmanager;
 	private AbstractImageProvider vrCamera;
 	private static BowlerStudioController bowlerStudioControllerStaticReference = null;
 	private boolean doneLoadingTutorials = false;
 	private boolean runningExceptionHighlight = false;
 
-	public BowlerStudioController(BowlerStudio3dEngine jfx3dmanager) {
+	public BowlerStudioController() {
 		if (getBowlerStudio() != null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference = this;
-		this.setJfx3dmanager(jfx3dmanager);
 		size = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize", 12)).intValue();
 
 	}
@@ -98,12 +96,12 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		@Override
 		public Set<CSG> getVisibleCSGs() {
-			return BowlerStudioController.getBowlerStudio().jfx3dmanager.getCsgMap().keySet();
+			return CreatureLab3dController.getEngine().getCsgMap().keySet();
 		}
 
 		@Override
 		public void setSelectedCsg(Collection<CSG> selectedCsg) {
-			BowlerStudioController.getBowlerStudio().jfx3dmanager.setSelectedCsg(new ArrayList<>(selectedCsg));
+			CreatureLab3dController.getEngine().setSelectedCsg(new ArrayList<>(selectedCsg));
 
 		}
 	};
@@ -310,13 +308,13 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static boolean removeObject(Object p) {
 		if (CSG.class.isInstance(p) ) {
 			Platform.runLater(() -> {
-				getBowlerStudio().getJfx3dmanager().removeObject((CSG) p);
+				CreatureLab3dController.getEngine().removeObject((CSG) p);
 			});
 			return true;
 		}
 		if ( Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
 			Platform.runLater(() -> {
-				getBowlerStudio().getJfx3dmanager().clearUserNode();
+				CreatureLab3dController.getEngine().clearUserNode();
 			});
 			return true;
 		}
@@ -328,8 +326,8 @@ public class BowlerStudioController implements IScriptEventListener {
 //	private boolean removeObject(Object p) {
 //		if (CSG.class.isInstance(p) || Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
 //			Platform.runLater(() -> {
-//				getJfx3dmanager().removeObjects();
-//				getJfx3dmanager().clearUserNode();
+//				CreatureLab3dController.getEngine().removeObjects();
+//				CreatureLab3dController.getEngine().clearUserNode();
 //			});
 //			return true;
 //		}
@@ -339,11 +337,11 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	public static void setCsg(List<CSG> toadd, File source) {
 		Platform.runLater(() -> {
-			getBowlerStudio().getJfx3dmanager().removeObjects();
+			CreatureLab3dController.getEngine().removeObjects();
 			if (toadd != null)
 				for (CSG c : toadd) {
 					if(c!=null)
-					Platform.runLater(() -> getBowlerStudio().getJfx3dmanager().addObject(c, source));
+					Platform.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source));
 				}
 		});
 	}
@@ -358,10 +356,10 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	public static void setUserNode(List<Node> toadd) {
 		Platform.runLater(() -> {
-			getBowlerStudio().getJfx3dmanager().clearUserNode();
+			CreatureLab3dController.getEngine().clearUserNode();
 			if (toadd != null)
 				for (Node c : toadd) {
-					getBowlerStudio().getJfx3dmanager().addUserNode(c);
+					CreatureLab3dController.getEngine().addUserNode(c);
 				}
 		});
 	}
@@ -369,19 +367,19 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void addUserNode(Node toadd) {
 		Platform.runLater(() -> {
 			if (toadd != null)
-				getBowlerStudio().getJfx3dmanager().addUserNode(toadd);
+				CreatureLab3dController.getEngine().addUserNode(toadd);
 
 		});
 	}
 	
 	public static void setSelectedCsg(CSG obj) {
-		getBowlerStudio().getJfx3dmanager().setSelectedCsg(obj);
+		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
 
 	public static void addCsg(CSG toadd, File source) {
 		Platform.runLater(() -> {
 			if (toadd != null)
-				getBowlerStudio().getJfx3dmanager().addObject(toadd, source);
+				CreatureLab3dController.getEngine().addObject(toadd, source);
 
 		});
 	}
@@ -401,7 +399,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			CSG csg = (CSG) o;
 			Platform.runLater(() -> {
 				// new RuntimeException().printStackTrace();
-				getJfx3dmanager().addObject(csg, source);
+				CreatureLab3dController.getEngine().addObject(csg, source);
 			});
 			return;
 
@@ -452,7 +450,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public void addNode(Node o) {
-		getJfx3dmanager().addUserNode(o);
+		CreatureLab3dController.getEngine().addUserNode(o);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -526,16 +524,16 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	public static void clearCSG() {
 		Platform.runLater(() -> {
-			getBowlerStudio().getJfx3dmanager().removeObjects();
+			CreatureLab3dController.getEngine().removeObjects();
 		});
 	}
 
 	public static void setCsg(CSG legAssembly, File cadScript) {
 		Platform.runLater(() -> {
-			getBowlerStudio().getJfx3dmanager().removeObjects();
+			CreatureLab3dController.getEngine().removeObjects();
 			if (legAssembly != null)
 
-				Platform.runLater(() -> getBowlerStudio().getJfx3dmanager().addObject(legAssembly, cadScript));
+				Platform.runLater(() -> CreatureLab3dController.getEngine().addObject(legAssembly, cadScript));
 
 		});
 	}
@@ -544,13 +542,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		setCsg(thread.getAllCad(), cadScript);
 	}
 
-	public BowlerStudio3dEngine getJfx3dmanager() {
-		return jfx3dmanager;
-	}
-
-	private void setJfx3dmanager(BowlerStudio3dEngine jfx3dmanager) {
-		this.jfx3dmanager = jfx3dmanager;
-	}
 
 	public boolean isDoneLoadingTutorials() {
 		return doneLoadingTutorials;
