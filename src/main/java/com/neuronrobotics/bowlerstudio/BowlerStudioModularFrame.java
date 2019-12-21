@@ -164,9 +164,23 @@ public class BowlerStudioModularFrame {
 		}
 		BorderPane menue = (BorderPane) menueBar.getRoot();
 		BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
-		VBox cmd = (VBox) commandLine.getRoot();
+				VBox cmd = (VBox) commandLine.getRoot();
 		creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
 		creatureLab3dDockNode.setPrefSize(400, 400);
+		Platform.runLater(() ->{
+			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread t, Throwable e) {
+					e.printStackTrace();
+					new RuntimeException("Caught the UI exception!").printStackTrace();
+					creatureLab3dDockNode.undock();
+					creatureLab3dDockNode.close();
+
+				}
+			});
+			
+		});
+
 
 		terminalDockNode = new DockNode(cmd, "Terminal", AssetFactory.loadIcon("Command-Line.png"));
 		terminalDockNode.setPrefSize(400, 400);
