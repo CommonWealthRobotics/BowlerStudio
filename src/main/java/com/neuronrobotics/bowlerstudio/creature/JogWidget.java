@@ -26,6 +26,7 @@ import org.reactfx.util.FxTimer;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.management.RuntimeErrorException;
@@ -51,9 +52,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	private boolean stop=true;
 	private jogThread jogTHreadHandle;
 	private String paramsKey;
-
+	private GridPane buttons;
+	private static ArrayList<JogWidget> allWidgets=new ArrayList<JogWidget>();
 	
 	public JogWidget(AbstractKinematicsNR kinimatics){
+		allWidgets.add(this);
 		this.setKin(kinimatics);
 		
 		if(MobileBase.class.isInstance(kinimatics)){
@@ -98,7 +101,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			}
 		});
 		
-		GridPane buttons = new GridPane();
+		buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
@@ -147,14 +150,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					3, 
 					1);
 		}
-		/*
-		buttons.add(	game, 
-				4, 
-				0);
-		buttons.add(	conf, 
-				4, 
-				1);
-				*/
+		
 		add(	buttons, 
 				0, 
 				0);
@@ -417,7 +413,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		private TransformNR toSet;
 		private double toSeconds=.016;
 		public void run(){
-			setName("Jog Widget Set Drive Arc Command");
+			setName("Jog Widget Set Drive Arc Command "+getKin().getScriptingName());
 			while(kin.isAvailable()){
 				//System.out.println("Jog loop");
 				if(controlThreadRunning){
