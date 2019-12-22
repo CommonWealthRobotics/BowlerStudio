@@ -1,3 +1,12 @@
+bowlerstudio (1.0.2) bionic; urgency=medium
+
+  * javadoc fix
+  * test fixed
+  * select all items made by a line of code rather than just the one
+  * 1.0.2
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 22 Dec 2019 15:29:23 -0500
+
 bowlerstudio (1.0.1) bionic; urgency=medium
 
   * thread safing the clear of highlights
