@@ -1474,10 +1474,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		for (CSG checker : getCsgMap().keySet()) {
 			for (String trace : checker.getCreationEventStackTraceList()) {
 				String[] traceParts = trace.split(":");
-				// System.err.println("Seeking: "+script.getName()+" line=
-				// "+lineNumber+" checking from line: "+trace);
-				// System.err.println("TraceParts "+traceParts[0]+" and
-				// "+traceParts[1]);
 				if (traceParts[0].trim().toLowerCase().contains(script.getName().toLowerCase().trim())) {
 					// System.out.println("Script matches");
 					try {
@@ -1494,7 +1490,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 		if (objsFromScriptLine.size() > 0) {
-			setSelectedCsg(objsFromScriptLine.get(0));
+			
+			setSelectedCsg(objsFromScriptLine);
 		}
 	}
 
