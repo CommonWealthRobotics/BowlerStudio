@@ -1256,9 +1256,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		TransformNR startSelectNr = perviousTarget.copy();
 		TransformNR targetNR = new TransformNR();
 		Affine interpolator = new Affine();
-		TransformFactory.nrToAffine(startSelectNr, interpolator);
 
 		Platform.runLater(() -> {
+			TransformFactory.nrToAffine(startSelectNr, interpolator);
 
 			removeAllFocusTransforms();
 
