@@ -1,3 +1,29 @@
+bowlerstudio (1.0.1) bionic; urgency=medium
+
+  * thread safing the clear of highlights
+  * THread safing the selection code
+  * thread-safing the Device manager
+  * #68
+  * restructure to make the location of the 3d windo more sane
+  * exception caught, but no resolution
+  * removing the event listener
+  * attempt to remove the scene
+  * just catch the exception for now
+  * exit on error
+  * refactoring to chase down #68
+  * kernel
+  * nrToAffine should be in a UI thread
+  * change the jog widget to use the set all joints method #68
+  * set the affine from the UI thread
+  * move the affine set into the platform runlater #68
+  * Updating kernel for #68
+  * Close #68
+  * code cleanup in jog widget
+  * version 1.0.0 released!
+  * 1.0.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 22 Dec 2019 13:07:17 -0500
+
 bowlerstudio (0.36.1) bionic; urgency=medium
 
   * print statements
