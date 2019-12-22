@@ -58,17 +58,7 @@ public class CreatureLab3dController {
 	private static BowlerStudio3dEngine engine;
 	
     public  CreatureLab3dController (){
-    	Platform.runLater(() ->{
-			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread t, Throwable e) {
-					e.printStackTrace();
-					new RuntimeException("Caught the UI exception!").printStackTrace();
-					System.exit(-5);
-				}
-			});
-			
-		});
+    
     	setEngine(new BowlerStudio3dEngine());
     }
     
