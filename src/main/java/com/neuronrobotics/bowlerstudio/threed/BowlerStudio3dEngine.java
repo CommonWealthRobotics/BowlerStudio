@@ -1352,43 +1352,28 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			finalCSG = finalCSG.movez(-zcenter);
 			poseToMove.translateZ(zcenter);
 		}
-		Affine centering = TransformFactory.nrToAffine(poseToMove);
-		// this section keeps the camera orented the same way to avoid whipping
-		// around
-		TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(selectedCsg.getManipulator());
-		rotationOnlyCOmponentOfManipulator.setX(0);
-		rotationOnlyCOmponentOfManipulator.setY(0);
-		rotationOnlyCOmponentOfManipulator.setZ(0);
-		TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
 
-		// Platform.runLater(() -> {
-		// focusGroup.getTransforms().clear();
-		// if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-		// || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-		// || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-		// Platform.runLater(() -> {
-		// focusGroup.getTransforms().add(selectedCsg.getManipulator());
-		// focusGroup.getTransforms().add(TransformFactory.nrToAffine(reverseRotation));
-		// });
-		//
-		// } else
-		// focusGroup.getTransforms().add(centering);
-		//
-		// });
-		// System.err.println("Camera intrpolation start");
-		TransformNR startSelectNr = perviousTarget.copy();
-		TransformNR targetNR;// =
-								// TransformFactory.affineToNr(selectedCsg.getManipulator());
-		if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1 || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-				|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-			targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
-		} else {
-			targetNR = TransformFactory.affineToNr(centering);
-		}
-		Affine interpolator = new Affine();
-		Affine correction = TransformFactory.nrToAffine(reverseRotation);
 
 		Platform.runLater(() -> {
+			Affine centering = TransformFactory.nrToAffine(poseToMove);
+			// this section keeps the camera orented the same way to avoid whipping
+			// around
+			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(selectedCsg.getManipulator());
+			rotationOnlyCOmponentOfManipulator.setX(0);
+			rotationOnlyCOmponentOfManipulator.setY(0);
+			rotationOnlyCOmponentOfManipulator.setZ(0);
+			TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
+			TransformNR startSelectNr = perviousTarget.copy();
+			TransformNR targetNR;// =
+									// TransformFactory.affineToNr(selectedCsg.getManipulator());
+			if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1 || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+					|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+				targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
+			} else {
+				targetNR = TransformFactory.affineToNr(centering);
+			}
+			Affine interpolator = new Affine();
+			Affine correction = TransformFactory.nrToAffine(reverseRotation);
 			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
 			interpolator.setTy(startSelectNr.getY() - targetNR.getY());
 			interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
