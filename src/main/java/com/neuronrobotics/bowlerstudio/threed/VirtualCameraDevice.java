@@ -8,6 +8,7 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
@@ -22,10 +23,13 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 	
 	private double zoomDepth = getDefaultZoomDepth();
 	private Affine zoomAffine = new Affine();
-	private static final Affine offset = TransformFactory.nrToAffine(
-			new TransformNR(0, 0, 0, new RotationNR(180,0,0))
-			);
+	private static final Affine offset =new Affine();
 	private Group manipulationFrame;
+	static {
+		Platform.runLater(()->TransformFactory.nrToAffine(
+				new TransformNR(0, 0, 0, new RotationNR(180,0,0)),offset
+				));
+	}
 	public VirtualCameraDevice(PerspectiveCamera camera, Group hand){
 		this.hand = hand;
 		this.setCamera(camera);
