@@ -258,6 +258,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	}
 	
 	public void home(){
+		
 		if(getMobilebase()!=null){
 			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
 			for(DHParameterKinematics c:getMobilebase().getAllDHChains()){
@@ -269,15 +270,17 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
-		for(int i=0;i<c.getNumberOfLinks();i++){
-			try {
-				c.setDesiredJointAxisValue(i, 0, Double.parseDouble(sec.getText()));
-				Thread.sleep(16);
-			} catch (Exception ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
-			}
+		double[] joints = c.getCurrentJointSpaceVector();
+		for (int i = 0; i < c.getNumberOfLinks(); i++) {
+			joints[i] = 0;
 		}
+		try {
+			c.setDesiredJointSpaceVector(joints, 0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
