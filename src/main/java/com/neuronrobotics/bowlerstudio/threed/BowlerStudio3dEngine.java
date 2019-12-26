@@ -220,6 +220,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private Button export;;
 	private boolean rebuildingUIOnerror = false;
+	private static int sumVert = 0;
 	static {
 		Platform.runLater(() ->{
 			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -422,10 +423,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * Removes the objects.
 	 */
 	public void removeObjects() {
+//		for(CSG previousCsg:getCsgMap().keySet())
+//			for(Polygon poly:previousCsg.getPolygons())
+//				sumVert-=(poly.vertices.size());
+//		System.err.println("Total Verts = "+sumVert);
+
 		lookGroup.getChildren().clear();
 		getCsgMap().clear();
 		csgSourceFile.clear();
 		axisMap.clear();
+		
 	}
 
 	/**
@@ -435,6 +442,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 *            the previous
 	 */
 	public void removeObject(CSG previousCsg) {
+//		for(Polygon poly:previousCsg.getPolygons())
+//			sumVert-=(poly.vertices.size());
+//		System.err.println("Total Verts = "+sumVert);
+
 		// System.out.println(" Removing a CSG from file: "+previousCsg+" from
 		// file "+csgSourceFile.get(previousCsg));
 		MeshView previous = getCsgMap().get(previousCsg);
@@ -504,7 +515,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public MeshView addObject(CSG currentCsg, File source) {
 		if(currentCsg==null)
 			return new MeshView();
-					
+//		for(Polygon poly:currentCsg.getPolygons())
+//			sumVert+=(poly.vertices.size());
+//		System.err.println("Total Verts = "+sumVert);
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		// System.out.println(" Adding a CSG from file: "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
