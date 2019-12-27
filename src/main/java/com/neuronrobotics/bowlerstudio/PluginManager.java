@@ -69,7 +69,7 @@ public class PluginManager {
 		//AbstractKinematicsNR
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, JogKinematicsDevice.class));
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, AdvancedKinematicsController.class));
-		addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, DhLab.class));
+		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, DhLab.class));
 		addPlugin(new DeviceSupportPluginMap(MobileBase.class, CreatureLab.class));
 		//NRPrinter
 		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
