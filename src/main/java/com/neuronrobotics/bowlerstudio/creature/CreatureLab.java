@@ -13,6 +13,8 @@ import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -80,7 +82,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			e1.printStackTrace();
 		}
 		MobileBase device = (MobileBase) pm;
-
+		
 		// Button save = new Button("Save Configuration");
 
 		FXMLLoader loader;

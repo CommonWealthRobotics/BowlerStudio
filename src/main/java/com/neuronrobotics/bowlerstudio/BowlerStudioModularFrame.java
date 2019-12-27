@@ -86,7 +86,7 @@ public class BowlerStudioModularFrame {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() throws Exception {
-		setBowlerStudioModularFrame(this);
+		bowlerStudioModularFrame=this;
 		assert editorContainer != null : "fx:id=\"editorContainer\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 		assert menurAnchor != null : "fx:id=\"menurAnchor\" was not injected: check your FXML file 'BowlerStudioModularFrame.fxml'.";
 		dockPane = new DockPane();
@@ -354,6 +354,19 @@ public class BowlerStudioModularFrame {
 			}
 		});
 	}
+	
+	public void closeTab(Tab newTab) {
+		if (webTabs.get(newTab) != null) {
+			System.err.println("Closing tab: " + newTab.getText());
+			DockNode dn=webTabs.get(newTab);
+			webTabs.remove(newTab);
+			dn.undock();
+			Platform.runLater(() -> dn.close());
+			if (newTab.getOnCloseRequest() != null) {
+				newTab.getOnCloseRequest().handle(null);
+			}
+		} 
+	}
 
 	public void addTab(Tab newTab, boolean b) {
 		System.err.println("Loading a new tab: " + newTab.getText());
@@ -363,12 +376,7 @@ public class BowlerStudioModularFrame {
 			Platform.runLater(() -> {
 				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 				dn.closedProperty().addListener(event -> {
-					System.err.println("Closing tab: " + newTab.getText());
-					webTabs.remove(newTab);
-					if (newTab.getOnCloseRequest() != null) {
-	
-						newTab.getOnCloseRequest().handle(null);
-					}
+					closeTab(newTab);
 				});
 	
 				webTabs.put(newTab, dn);
@@ -382,14 +390,8 @@ public class BowlerStudioModularFrame {
 		return bowlerStudioModularFrame;
 	}
 
-	private static void setBowlerStudioModularFrame(BowlerStudioModularFrame bowlerStudioModularFrame) {
-		if(bowlerStudioModularFrame==null)
-			throw new RuntimeException();
-		BowlerStudioModularFrame.bowlerStudioModularFrame = bowlerStudioModularFrame;
-	}
 
 	public void setSelectedTab(Tab tab) {
-		// TODO Auto-generated method stub
 		if (webTabs.get(tab) != null)
 			Platform.runLater(() -> webTabs.get(tab).requestFocus());
 	}

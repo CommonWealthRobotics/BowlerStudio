@@ -187,7 +187,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		Object [] pms= plugins.toArray();
 		for (int i=0;i<pms.length;i++) {
 			disconectAndRemoveDevice(((PluginManagerWidget)pms[i]).getManager());
-			ThreadUtil.wait(50);
+			//ThreadUtil.wait(50);
 		}
 
 	}
@@ -478,30 +478,29 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	//this is needed because if you just remove one they all disapear
 	private static void refreshItemTree(){
-		FxTimer.runLater(
-				Duration.ofMillis(100) ,() -> {
-			Log.warning("Refreshing Tree size="+plugins.size());
+		Log.warning("Refreshing Tree size=" + plugins.size());
+		Platform.runLater(() -> {
 			accordion.getPanes().clear();
-			if(plugins.isEmpty())
+			if (plugins.isEmpty())
 				return;
-			TitledPane last=null;
-			for(int i=0;i<plugins.size();i++){
-				 last=plugins.get(i);
-				 accordion.getPanes().add(last);
+			TitledPane last = null;
+			for (int i = 0; i < plugins.size(); i++) {
+				last = plugins.get(i);
+				accordion.getPanes().add(last);
 			}
-			
 
-			if(!plugins.isEmpty()){
+			if (!plugins.isEmpty()) {
 				disconnectAll.setDisable(false);
 				accordion.setExpandedPane(last);
-			}else{
+			} else {
 				disconnectAll.setDisable(true);
 			}
 		});
+
 	}
 	
 	private static void disconectAndRemoveDevice(PluginManager mp){
-		System.out.println("Disconnecting " + mp.getName());
+		System.out.println("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
 		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp))
 			mp.getDevice().disconnect();	

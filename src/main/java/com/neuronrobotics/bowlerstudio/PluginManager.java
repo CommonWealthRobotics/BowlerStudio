@@ -26,6 +26,8 @@ import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -282,10 +284,14 @@ public class PluginManager {
 					//ThreadUtil.wait(50);
 					getBowlerStudioController().addTab(t, true);
 					
-					t.setOnCloseRequest(arg0 -> {
-						System.out.println("PM is Closing "+t.getText());
-						t.onTabClosing();
-						Platform.runLater(()->launcher.setDisable(false));
+					t.setOnCloseRequest(new EventHandler<Event>() {
+						@Override
+						public void handle(Event arg0) {
+							System.out.println("PM is Closing "+t.getText());
+							t.onTabClosing();
+							Platform.runLater(()->launcher.setDisable(false));
+							
+						}
 					});
 					Platform.runLater(()->{
 						launcher.setDisable(true);

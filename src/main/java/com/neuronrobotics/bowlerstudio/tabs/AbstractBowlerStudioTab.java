@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
@@ -18,6 +19,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 
 	private boolean active = false;
 	ArrayList<String> myNames =null;
+	private EventHandler<Event> localCopyOfEventHandler;
 	
 	public abstract void onTabClosing();
 	public abstract String[] getMyNameSpaces();
@@ -42,8 +44,13 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				//if the device disconnects, close the tab
-//				if(source ==pm && source !=null )
-//					requestClose();
+				if(source ==pm && source !=null )
+					requestClose();
+				else {
+					// Not a bug, expected to ensure one device disconnects the rest of the dependent devices
+//					System.err.println("Device type was "+source.getClass()+" named "+source.getScriptingName()+" expected "+pm.getClass()+" named "+pm.getScriptingName());
+//					new Exception().printStackTrace();
+				}
 			}
 			
 			@Override
@@ -68,23 +75,19 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 		
 		return isAcvive();
 	}
-	
-//    public void requestClose() {
-//    	Platform.runLater(()->{
-//    		try{
-//		        TabPaneBehavior behavior = getBehavior();
-//		        if(behavior.canCloseTab(this)) {
-//		            behavior.closeTab(this);
-//		        }
-//    		}catch (NullPointerException e){
-//    			//e.printStackTrace();
-//    		}
-//    	});
-//    }
+	@Override
+	public void setOnCloseRequest(EventHandler<Event> value){
+		this.localCopyOfEventHandler = value;
+		super.setOnCloseRequest(value);
+		System.err.println(" A close rewuested for "+getText());
+	}
+    public void requestClose() {
+    	BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(this);
+    }
 //
-//    private TabPaneBehavior getBehavior() {
-//        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
-//    }
+    private TabPaneBehavior getBehavior() {
+        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
+    }
 
 	public void setActive(boolean a){
 		active=a;
