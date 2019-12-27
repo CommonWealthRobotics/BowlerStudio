@@ -2,7 +2,11 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
@@ -10,6 +14,7 @@ import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
+import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -44,8 +49,17 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				//if the device disconnects, close the tab
-				if(source ==pm && source !=null )
+				if(source ==pm && source !=null ) {
 					requestClose();
+					if(MobileBase.class.isInstance(pm)) {
+						MobileBase dev = (MobileBase)pm;
+						for(CSG p:MobileBaseCadManager.get(dev).getBasetoCadMap().get(dev))
+							BowlerStudioController.removeObject(p);
+						for(DHParameterKinematics leg:dev.getAllDHChains())
+							for(CSG p:MobileBaseCadManager.get(dev).getDHtoCadMap().get(leg))
+								BowlerStudioController.removeObject(p);
+					}
+				}
 				else {
 					// Not a bug, expected to ensure one device disconnects the rest of the dependent devices
 //					System.err.println("Device type was "+source.getClass()+" named "+source.getScriptingName()+" expected "+pm.getClass()+" named "+pm.getScriptingName());
