@@ -212,7 +212,7 @@ public class BowlerStudioModularFrame {
 			if (!isOpen.get(key)) {
 				isOpen.put(key, true);
 				if (isOpen.get("showTerminal"))
-					connectionManagerDockNode.dock(dockPane, DockPos.CENTER, terminalDockNode);
+					connectionManagerDockNode.dock(dockPane, DockPos.RIGHT, terminalDockNode);
 				else
 					connectionManagerDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				connectionManagerDockNode.requestFocus();
@@ -246,7 +246,7 @@ public class BowlerStudioModularFrame {
 			Platform.runLater(() -> {
 
 				if (isOpen.get("showDevices"))
-					terminalDockNode.dock(dockPane, DockPos.CENTER, connectionManagerDockNode);
+					terminalDockNode.dock(dockPane, DockPos.LEFT, connectionManagerDockNode);
 				else
 					terminalDockNode.dock(dockPane, DockPos.BOTTOM, getTutorialDockNode());
 				terminalDockNode.requestFocus();
