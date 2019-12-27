@@ -1,3 +1,16 @@
+bowlerstudio (1.0.3) bionic; urgency=medium
+
+  * kernel
+  * Commented code for computing the total number of verticies
+  * stable save of configurations
+  * remove redundant pulls
+  * Device manager to the left of terminal, not tabbed with it
+  * cleaner disconnectiong of devices and closing of stale configuration window
+  * removed the dhlab plugin form the mobile base
+  * Remove the MobileBase UI and cad from BowlerStudio on disconnect
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 27 Dec 2019 16:42:08 -0500
+
 bowlerstudio (1.0.2) bionic; urgency=medium
 
   * javadoc fix
