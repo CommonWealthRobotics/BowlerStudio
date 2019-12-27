@@ -292,6 +292,7 @@ public class BowlerStudio extends Application {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
 				}
+				renderSplashFrame(16, "Done Load Configs");
 				// String lastVersion = (String)
 				// ConfigurationDatabase.getObject("BowlerStudioConfigs",
 				// "skinBranch",
@@ -339,8 +340,8 @@ public class BowlerStudio extends Application {
 					"master", // the default branch is source, so this needs to
 								// be specified
 					"index.html");
-			if(ScriptingEngine.hasNetwork())
-				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
+			//if(ScriptingEngine.hasNetwork())
+			//	ScriptingEngine.pull("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());

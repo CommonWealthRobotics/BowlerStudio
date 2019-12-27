@@ -25,14 +25,17 @@ public class BowlerStudioMenuWorkspace {
 	public static void loginEvent() {
 		rank.clear();
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
-		for (String o : workspaceData.keySet()) {
-			try {
-				ScriptingEngine.pull(o);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		new Thread(()-> {
+			for (String o : workspaceData.keySet()) {
+				try {
+					ScriptingEngine.pull(o);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		}
+			
+		}).start();
 		sort();
 	}
 
@@ -153,7 +156,9 @@ public class BowlerStudioMenuWorkspace {
 		}
 		if(rankChanged) {
 			System.out.println("Sorting workspace...");
-			ConfigurationDatabase.save();
+			new Thread(()->{
+				ConfigurationDatabase.save();
+			}).start();
 		}
 	}
 
