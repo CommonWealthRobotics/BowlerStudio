@@ -189,5 +189,5 @@ Now you can use the Eclipse Marketplace to install the Gradle Plugin
     
 # History
 
-Bowler Studio began Feb 11, 2015 withthe goal of making a robotics IDE. 
+Bowler Studio began [Feb 11, 2015](https://github.com/CommonWealthRobotics/BowlerStudio/releases/tag/0.0.1)  with the goal of making a robotics IDE. 
 
