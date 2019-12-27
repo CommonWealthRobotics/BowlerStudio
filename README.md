@@ -186,3 +186,8 @@ Now you can use the Eclipse Marketplace to install the Gradle Plugin
 #### Windows (CMD)
 
     gradlew jar
+    
+# History
+
+Bowler Studio began Feb 11, 2015 withthe goal of making a robotics IDE. 
+
