@@ -32,6 +32,8 @@ public class PluginManagerWidget extends TitledPane {
 		disconnectTHis.setOnMousePressed(	event -> {
 			new Thread(){
 				public void run(){
+					Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 					setName("disconnect plugins");
 				    	Log.warning("Disconnect button for "+manager.getName()+" pressed");
 				    	getManager().getDevice().disconnect();

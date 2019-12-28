@@ -45,6 +45,10 @@ import org.dockfx.DockPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.kohsuke.github.GHIssue;
+import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
 import org.python.antlr.ast.Pass;
 import org.reactfx.util.FxTimer;
 import org.w3c.dom.Document;
@@ -55,10 +59,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
@@ -77,6 +83,8 @@ public class BowlerStudio extends Application {
 		ByteList incoming = new ByteList();
 		Thread update = new Thread() {
 			public void run() {
+				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 				while (true) {
 					ThreadUtil.wait(150);
 					try {
@@ -211,6 +219,8 @@ public class BowlerStudio extends Application {
 				System.err.println("File not found");
 			}
 	}
+	
+	
 
 	/**
 	 * @param args the command line arguments
@@ -219,6 +229,7 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		if (!StudioBuildInfo.isOS64bit()) {
 
 			Platform.runLater(() -> {
@@ -232,7 +243,7 @@ public class BowlerStudio extends Application {
 			});
 		}
 		Log.enableWarningPrint();
-
+		
 		renderSplashFrame(2, "Testing Internet");
 
 		try {
@@ -241,10 +252,12 @@ public class BowlerStudio extends Application {
 			conn.connect();
 			conn.getInputStream();
 			setHasnetwork(true);
+			
 		} catch (Exception e) {
 			// we assuming we have no access to the server and run off of the
 			// cached gists.
 			setHasnetwork(false);
+			
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
@@ -266,6 +279,7 @@ public class BowlerStudio extends Application {
 			try {
 				ScriptingEngine.login();
 				renderSplashFrame(10, "Login OK!");
+
 			} catch (Exception e) {
 				// e.printStackTrace();
 				ScriptingEngine.setupAnyonmous();
@@ -336,12 +350,7 @@ public class BowlerStudio extends Application {
 			//SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 			renderSplashFrame(50, "Tutorials...");
 			// load tutorials repo
-			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
-					"master", // the default branch is source, so this needs to
-								// be specified
-					"index.html");
-			//if(ScriptingEngine.hasNetwork())
-			//	ScriptingEngine.pull("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
+			
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
 			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
@@ -565,6 +574,8 @@ public class BowlerStudio extends Application {
 		}
 		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
 		new Thread(() -> {
+			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 			try {
 
 				String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
@@ -685,13 +696,17 @@ public class BowlerStudio extends Application {
 					
 				});
 				closeSplash();
-			} catch (Exception e) {
+				
+			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
 			}
 		}).start();
 
 	}
+	
+	
 
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
@@ -702,6 +717,8 @@ public class BowlerStudio extends Application {
 			
 
 			public void run() {
+				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
 				if (ScriptingEngine.isLoginSuccess())

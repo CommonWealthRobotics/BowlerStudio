@@ -35,7 +35,6 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
  */
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.BowlerStudioFXMLController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
@@ -43,7 +42,6 @@ import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.utils.SVGFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -54,15 +52,11 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
-import eu.mihosoft.vrl.v3d.FileUtil;
-import eu.mihosoft.vrl.v3d.Polygon;
-import eu.mihosoft.vrl.v3d.Vertex;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingFXUtils;
@@ -91,7 +85,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
 
@@ -229,9 +222,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					e.printStackTrace();
 					new RuntimeException("Caught the UI exception!").printStackTrace();
 					StackTraceElement[] element = e.getStackTrace();
-					if(element[0].getClassName().contains("com.sun.scenario.animation.AbstractMasterTimer" )) {
-						System.exit(-5);
-					}
+					
+					
 				}
 			});
 			

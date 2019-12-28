@@ -276,6 +276,8 @@ public class PluginManager {
 	private void launchTab(DeviceSupportPluginMap c,Button launcher){
 		new Thread(){
 			public void run(){
+				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 				setName("Launching "+c.getPlugin().getSimpleName());
 				try {
 					AbstractBowlerStudioTab t = generateTab(c);

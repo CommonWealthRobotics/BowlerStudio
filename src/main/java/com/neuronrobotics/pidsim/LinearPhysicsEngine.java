@@ -2,6 +2,7 @@ package com.neuronrobotics.pidsim;
 
 import java.util.ArrayList;
 
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.sdk.common.NonBowlerDevice;
 
 public class LinearPhysicsEngine extends NonBowlerDevice {
@@ -98,6 +99,8 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 		new Thread(){
 			public void run() {
 				System.out.println("Starting physics engine.");
+				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 				while (run) {
 					
 					long localStep = (long) (step*1000);

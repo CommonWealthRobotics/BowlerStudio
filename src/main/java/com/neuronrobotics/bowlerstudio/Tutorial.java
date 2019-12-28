@@ -26,10 +26,10 @@ public class Tutorial {
 	public static String getHomeUrl() throws Exception{
 		File i=null;
 		do{
-			i= ScriptingEngine.fileFromGit(
-				"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git", 
-				"master",// the default branch is source, so this needs to be specified
-				"index.html");
+			i= ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
+					"master", // the default branch is source, so this needs to
+					// be specified
+					"index.html");
 		}while(!i.exists());
 		File indexOfTutorial=i;
 		if(!doneLoadingTutorials ){
@@ -39,6 +39,7 @@ public class Tutorial {
 				//}
 				new Thread(){
 					public void run(){
+						Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 							//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
 							Server server = new Server();

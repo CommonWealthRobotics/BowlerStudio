@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.eclipse.jgit.api.Git;
 import org.jfree.util.Log;
 
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.application.Platform;
@@ -83,6 +84,8 @@ public class CommitWidget {
 			result.ifPresent(commitBody -> {
 			    new Thread(){
 			    	public void run(){
+						Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
 					    String message = commitBody.getKey()+"\n\n"+commitBody.getValue();
 					    
 					    Git git;

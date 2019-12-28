@@ -72,6 +72,7 @@ public class Terminal {
 		executionBox.setOnAction(event -> {
 			new Thread() {
 				public void run() {
+					Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 					startStopAction();
 				}
