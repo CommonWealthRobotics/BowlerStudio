@@ -36,6 +36,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
@@ -216,16 +217,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private static int sumVert = 0;
 	static {
 		Platform.runLater(() ->{
-			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread t, Throwable e) {
-					e.printStackTrace();
-					new RuntimeException("Caught the UI exception!").printStackTrace();
-					StackTraceElement[] element = e.getStackTrace();
-					
-					
-				}
-			});
+			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 			
 		});
 	}
