@@ -176,7 +176,7 @@ sudo apt install  curl
     
     git submodule update  --recursive
     
-    ./gradlew shaddowJar
+    ./gradlew shadowJar
     
     java -jar build/libs/BowlerStudio.jar
 ```
