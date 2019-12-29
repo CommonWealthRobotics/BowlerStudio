@@ -457,7 +457,9 @@ public class MobleBaseMenueFactory {
 						String loader = "ScriptingEngine.gitScriptRun(	\"https://github.com/OperationSmallKat/SmallKat_V2.git\", \n" + 
 								"								\"loadRobot.groovy\", \n" + 
 								"[\""+gitURL+"\",\n" + 
-								"		\""+filename+"\",\"GameController_22\",\"hidDevice\",\""+newName+"\"]);";
+								"		\""+filename+"\",\"GameController_22\",\""+
+								device.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName()+
+								"\",\""+newName+"\"]);";
 						
 						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
 								loader, "new Robot content");
