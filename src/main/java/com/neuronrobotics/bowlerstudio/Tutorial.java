@@ -29,7 +29,9 @@ public class Tutorial {
 	public static String getHomeUrl() throws Exception{
 		File i=null;
 		do{
-			i= ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
+			i= ScriptingEngine.fileFromGit(
+					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialSource",
+							"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git"),
 					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBranch",
 							"master"), // the default branch is source, so this needs to
 					// be specified

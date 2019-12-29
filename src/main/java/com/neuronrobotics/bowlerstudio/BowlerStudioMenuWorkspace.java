@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -32,12 +33,17 @@ public class BowlerStudioMenuWorkspace {
 		rank.clear();
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		new Thread(()-> {
-			for (Iterator<String> iterator = workspaceData.keySet().iterator(); iterator.hasNext();) {
-				String o = iterator.next();
+			for (int i=0;i<workspaceData.keySet().size();i++) {
 				try {
-					ScriptingEngine.pull(o);
+					String o = (String) workspaceData.keySet().toArray()[i];
+					try {
+
+						ScriptingEngine.pull(o);
+					} catch (Exception e) {
+						workspaceData.remove(o);
+						i--;
+					}
 				} catch (Exception e) {
-					workspaceData.remove(o);
 				}
 			}
 			running = false;
