@@ -27,8 +27,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.jfree.util.Log;
+import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;
@@ -113,78 +115,9 @@ public class MobleBaseMenueFactory {
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent()) {
 					view.getSelectionModel().select(rootItem);
-					new Thread() {
-						public void run() {
-							System.out.println("Your new creature: " + result.get());
-							String newName = result.get();
-							device.setScriptingName(newName);
-
-							GitHub github = PasswordManager.getGithub();
-							GHGistBuilder builder = github.createGist();
-							builder.description(newName + " copy of " + oldname);
-							String filename = newName + ".xml";
-							builder.file(filename, "<none>");
-							builder.public_(true);
-							GHGist gist;
-							try {
-								gist = builder.create();
-								String gitURL = "https://gist.github.com/"
-										+ ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
-
-								System.out.println("Creating new Robot repo");
-								while (true) {
-									try {
-										ScriptingEngine.fileFromGit(gitURL, filename);
-										break;
-									} catch (Exception e) {
-
-									}
-									ThreadUtil.wait(500);
-									Log.warn(gist + " not built yet");
-								}
-								BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
-								System.out.println("Creating gist at: " + gitURL);
-
-								System.out.println("copy Cad engine ");
-								device.setGitCadEngine(
-										copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-								System.out.println("copy walking engine Was: " + device.getGitWalkingEngine());
-								device.setGitWalkingEngine(copyGitFile(device.getGitWalkingEngine()[0], gitURL,
-										device.getGitWalkingEngine()[1]));
-								// System.out.println("is now "+device.getGitWalkingEngine());
-								for (DHParameterKinematics dh : device.getAllDHChains()) {
-									// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
-									dh.setGitCadEngine(
-											copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
-
-									// System.out.println("copy Leg Dh engine ");
-									dh.setGitDhEngine(
-											copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
-								}
-
-								String xml = device.getXml();
-
-								ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
-										xml, "new Robot content");
-
-								MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
-
-								mb.setGitSelfSource(new String[] { gitURL, newName + ".xml" });
-								device.disconnect();
-
-								ConnectionManager.addConnection(mb, mb.getScriptingName());
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							// DeviceManager.addConnection(newDevice,
-							// newDevice.getScriptingName());
-						}
-					}.start();
+					System.out.println("Your new creature: " + result.get());
+					String newName = result.get();
+					makeACopyOfACreature(device, oldname, newName).start();
 				}
 			});
 		});
@@ -463,6 +396,107 @@ public class MobleBaseMenueFactory {
 		if (creatureIsOwnedByUser) {
 			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
 		}
+	}
+
+	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
+		return new Thread() {
+			public void run() {
+				
+				device.setScriptingName(newName);
+				String filename = newName + ".xml";
+				GitHub github = PasswordManager.getGithub();
+				
+//				GHGistBuilder builder = github.createGist();
+//				builder.description(newName + " copy of " + oldname);
+//				String filename = newName + ".xml";
+//				builder.file(filename, "<none>");
+//				builder.public_(true);
+//				GHGist gist;
+				GHCreateRepositoryBuilder builder = github.createRepository(newName);
+				builder.description(newName + " copy of " + oldname);
+				GHRepository gist=null;
+				try {
+					try {
+						gist = builder.create();
+					}catch(org.kohsuke.github.HttpException ex) {
+						if(ex.getMessage().contains("name already exists on this account")) {
+							gist = github.getRepository(PasswordManager.getLoginID()+"/"+newName);
+						}
+					}
+					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
+
+					System.out.println("Creating new Robot repo");
+					while (true) {
+						try {
+							ScriptingEngine.fileFromGit(gitURL, filename);
+							break;
+						} catch (Exception e) {
+
+						}
+						ThreadUtil.wait(500);
+						Log.warn(gist + " not built yet");
+					}
+					//BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
+					System.out.println("Creating gist at: " + gitURL);
+
+					System.out.println("copy Cad engine ");
+					device.setGitCadEngine(
+							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
+					System.out.println("copy walking engine Was: " + device.getGitWalkingEngine()[0]+" "+device.getGitWalkingEngine()[1]);
+					device.setGitWalkingEngine(copyGitFile(device.getGitWalkingEngine()[0], gitURL,
+							device.getGitWalkingEngine()[1]));
+					// System.out.println("is now "+device.getGitWalkingEngine());
+					for (DHParameterKinematics dh : device.getAllDHChains()) {
+						// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
+						dh.setGitCadEngine(
+								copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+
+						// System.out.println("copy Leg Dh engine ");
+						dh.setGitDhEngine(
+								copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+					}
+
+					String xml = device.getXml();
+					boolean loaderScript = false;
+					if(xml.contains("<type>hidfast</type>")) {
+						// This device needs a loader script
+						String loader = "ScriptingEngine.gitScriptRun(	\"https://github.com/OperationSmallKat/SmallKat_V2.git\", \n" + 
+								"								\"loadRobot.groovy\", \n" + 
+								"[\""+gitURL+"\",\n" + 
+								"		\""+filename+"\"]);";
+						
+						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
+								loader, "new Robot content");
+						loaderScript = true;
+					}
+
+					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
+							xml, "new Robot content");
+					device.disconnect();
+					if(loaderScript) {
+						ScriptingEngine.gitScriptRun(gitURL, "launch.groovy", null);
+						
+						BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, "launch.groovy"));
+					}else {
+						MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
+	
+						mb.setGitSelfSource(new String[] { gitURL, newName + ".xml" });
+						
+						BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+						ConnectionManager.addConnection(mb, mb.getScriptingName());
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// DeviceManager.addConnection(newDevice,
+				// newDevice.getScriptingName());
+			}
+		};
 	}
 
 	private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
