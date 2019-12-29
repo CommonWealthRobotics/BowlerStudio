@@ -93,7 +93,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	public void setOnCloseRequest(EventHandler<Event> value){
 		this.localCopyOfEventHandler = value;
 		super.setOnCloseRequest(value);
-		System.err.println(" A close rewuested for "+getText());
+		System.err.println(" A close requested for "+getText());
 	}
     public void requestClose() {
     	BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(this);
