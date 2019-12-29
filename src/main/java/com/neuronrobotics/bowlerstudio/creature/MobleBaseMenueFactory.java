@@ -406,12 +406,6 @@ public class MobleBaseMenueFactory {
 				String filename = newName + ".xml";
 				GitHub github = PasswordManager.getGithub();
 				
-//				GHGistBuilder builder = github.createGist();
-//				builder.description(newName + " copy of " + oldname);
-//				String filename = newName + ".xml";
-//				builder.file(filename, "<none>");
-//				builder.public_(true);
-//				GHGist gist;
 				GHCreateRepositoryBuilder builder = github.createRepository(newName);
 				builder.description(newName + " copy of " + oldname);
 				GHRepository gist=null;
@@ -455,7 +449,7 @@ public class MobleBaseMenueFactory {
 						dh.setGitDhEngine(
 								copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
 					}
-
+					device.setScriptingName(newName);
 					String xml = device.getXml();
 					boolean loaderScript = false;
 					if(xml.contains("<type>hidfast</type>")) {
@@ -463,7 +457,7 @@ public class MobleBaseMenueFactory {
 						String loader = "ScriptingEngine.gitScriptRun(	\"https://github.com/OperationSmallKat/SmallKat_V2.git\", \n" + 
 								"								\"loadRobot.groovy\", \n" + 
 								"[\""+gitURL+"\",\n" + 
-								"		\""+filename+"\"]);";
+								"		\""+filename+"\",\"GameController_22\",\"hidDevice\",\""+newName+"\"]);";
 						
 						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
 								loader, "new Robot content");
