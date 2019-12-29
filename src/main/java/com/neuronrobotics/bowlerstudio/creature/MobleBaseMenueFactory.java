@@ -458,7 +458,10 @@ public class MobleBaseMenueFactory {
 								gitURL, 
 								"loadRobot.groovy");
 						
-						String loader = "ScriptingEngine.gitScriptRun(\""+gitURL+"\", \n" + 
+						String loader = "//	ScriptingEngine.copyGitFile(\"https://github.com/OperationSmallKat/SmallKat_V2.git\",\n" + 
+								"//								\""+gitURL+"\", \n" + 
+								"//								\"loadRobot.groovy\")"
+								+ "\nScriptingEngine.gitScriptRun(\""+gitURL+"\", \n" + 
 								"								\"loadRobot.groovy\", \n" + 
 								"\t[\""+gitURL+"\",\n" + 
 								"		\""+filename+"\",\n\"GameController_22\",\n\""+
