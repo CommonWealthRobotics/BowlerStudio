@@ -78,6 +78,8 @@ public class BowlerStudio extends Application {
 	private static Stage primaryStage2;
 	private static File layoutFile;
 	private static boolean deleteFlag=false;
+	private static IssueReportingExceptionHandler reporter =new IssueReportingExceptionHandler();
+	
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
 		ByteList incoming = new ByteList();
@@ -423,7 +425,8 @@ public class BowlerStudio extends Application {
 				System.out.println("Arduino exec found at: " + arduino);
 				ArduinoLoader.setARDUINOExec(arduino);
 			} catch (Exception e) {
-				e.printStackTrace();
+				reporter.uncaughtException(Thread.currentThread(), e);
+
 			}
 			renderSplashFrame(82, "Set up UI");
 			try {
@@ -433,8 +436,8 @@ public class BowlerStudio extends Application {
 				// of time
 				javafx.scene.text.Font.getFamilies();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				reporter.uncaughtException(Thread.currentThread(), e);
+
 			}
 			renderSplashFrame(90, "Loading STL Loader");
 			// Add the engine handeler for STLs
@@ -451,6 +454,7 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 			} catch (Exception e) {
+				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
 			launch();
@@ -572,7 +576,8 @@ public class BowlerStudio extends Application {
 																			// else
 			}
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			reporter.uncaughtException(Thread.currentThread(), e);
+
 		}
 		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
 		new Thread(() -> {
@@ -586,7 +591,8 @@ public class BowlerStudio extends Application {
 				// stylesheet);
 				setUserAgentStylesheet(stylesheet);
 			} catch (Exception | Error e) {
-				e.printStackTrace();
+				reporter.uncaughtException(Thread.currentThread(), e);
+
 			}
 			// These must be changed before anything starts
 			PrintStream ps = new PrintStream(getOut());
@@ -596,8 +602,8 @@ public class BowlerStudio extends Application {
 			try {
 				BowlerStudioResourceFactory.load();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				reporter.uncaughtException(Thread.currentThread(), e1);
+
 			}
 
 			primaryStage2 = primaryStage;
@@ -618,8 +624,8 @@ public class BowlerStudio extends Application {
 
 					mainControllerPanel.load();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					reporter.uncaughtException(Thread.currentThread(), e);
+
 				}
 				renderSplashFrame(96, "UI Launch...");
 
@@ -661,8 +667,8 @@ public class BowlerStudio extends Application {
 					try {
 						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						reporter.uncaughtException(Thread.currentThread(), e);
+
 					}
 				});
 				;
@@ -700,8 +706,8 @@ public class BowlerStudio extends Application {
 				closeSplash();
 				
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				reporter.uncaughtException(Thread.currentThread(), e);
+
 				
 			}
 		}).start();

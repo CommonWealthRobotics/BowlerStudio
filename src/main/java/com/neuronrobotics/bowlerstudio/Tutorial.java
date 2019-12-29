@@ -70,8 +70,7 @@ public class Tutorial {
 								doneLoadingTutorials = true;
 								server.join();
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								throw new RuntimeException(e);
 							}
 		
 						
