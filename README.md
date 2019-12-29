@@ -159,7 +159,7 @@ sudo apt install  curl
 ```  
     bowlerstudio # run this to get the JVM downloaded into $HOME/bin/java8/jre
 
-    git clone https://github.com/NeuronRobotics/BowlerStudio.git
+    git clone https://github.com/CommonWealthRobotics/BowlerStudio.git
     
     JAVA_HOME=$HOME/bin/java8/jre
 
