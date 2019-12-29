@@ -360,11 +360,13 @@ public class BowlerStudioModularFrame {
 			System.err.println("Closing tab: " + newTab.getText());
 			DockNode dn=webTabs.get(newTab);
 			webTabs.remove(newTab);
-			dn.undock();
-			Platform.runLater(() -> dn.close());
-			if (newTab.getOnCloseRequest() != null) {
-				newTab.getOnCloseRequest().handle(null);
-			}
+			Platform.runLater(() -> {
+				dn.undock();
+				Platform.runLater(() -> dn.close());
+				if (newTab.getOnCloseRequest() != null) {
+					newTab.getOnCloseRequest().handle(null);
+				}
+			});
 		} 
 	}
 

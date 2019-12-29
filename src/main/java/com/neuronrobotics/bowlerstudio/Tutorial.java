@@ -20,7 +20,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class Tutorial {
-	private static int WEBSERVER_PORT = 8065;
+	private static int WEBSERVER_PORT = 37037;
 	private static String HOME_Local_URL_ROOT = null;
 	private static String HOME_URL =null;
 	private static String HOME_Local_URL = null;
@@ -50,7 +50,7 @@ public class Tutorial {
 						Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 							//HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/", "file:///");
-							Server server = new Server();
+							Server server = new Server(WEBSERVER_PORT);
 							ServerConnector connector = new ServerConnector(server);  
 							server.setConnectors(new Connector[] { connector });
 							ResourceHandler resource_handler = new ResourceHandler();
