@@ -1,3 +1,35 @@
+bowlerstudio (1.0.6) bionic; urgency=medium
+
+  * Update README.md
+  * Create FUNDING.yml
+  * Update FUNDING.yml
+  * Update README.md
+  * Create COC.md
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update FUNDING.yml
+  * Update README.md
+  * Update README.md
+  * more robust error handeling
+  * high level error handeling
+  * Update README.md
+  * Update README.md
+  * kernel
+  * Update README.md
+  * Update README.md
+  * Create a new creature with sub directories and loader script
+  * error handling
+  * adding issue reporting
+  * spelling
+  * deep copy of creatures tested working
+  * 1.0.6
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 29 Dec 2019 15:52:58 -0500
+
 bowlerstudio (1.0.5) bionic; urgency=medium
 
   * removing offending clones and ensure only one pull thread at a time
