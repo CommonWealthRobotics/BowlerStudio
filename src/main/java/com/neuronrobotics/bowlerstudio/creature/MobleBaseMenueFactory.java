@@ -109,7 +109,7 @@ public class MobleBaseMenueFactory {
 				TextInputDialog dialog = new TextInputDialog(oldname + "_copy");
 				dialog.setTitle("Making a copy of " + oldname);
 				dialog.setHeaderText("Set the scripting name for this creature");
-				dialog.setContentText("Please the name of the new creature:");
+				dialog.setContentText("Set the name of the new creature:");
 
 				// Traditional way to get the response value.
 				Optional<String> result = dialog.showAndWait();
@@ -454,12 +454,16 @@ public class MobleBaseMenueFactory {
 					boolean loaderScript = false;
 					if(xml.contains("<type>hidfast</type>")) {
 						// This device needs a loader script
-						String loader = "ScriptingEngine.gitScriptRun(	\"https://github.com/OperationSmallKat/SmallKat_V2.git\", \n" + 
+						ScriptingEngine.copyGitFile("https://github.com/OperationSmallKat/SmallKat_V2.git",
+								gitURL, 
+								"loadRobot.groovy");
+						
+						String loader = "ScriptingEngine.gitScriptRun(\""+gitURL+"\", \n" + 
 								"								\"loadRobot.groovy\", \n" + 
-								"[\""+gitURL+"\",\n" + 
-								"		\""+filename+"\",\"GameController_22\",\""+
+								"\t[\""+gitURL+"\",\n" + 
+								"		\""+filename+"\",\n\"GameController_22\",\n\""+
 								device.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName()+
-								"\",\""+newName+"\"]);";
+								"\",\n\""+newName+"\"]);";
 						
 						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
 								loader, "new Robot content");
