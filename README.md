@@ -178,7 +178,7 @@ sudo apt install  curl
     
     ./gradlew shadowJar
     
-    java -jar build/libs/BowlerStudio.jar
+    $JAVA_HOME/bin/java -jar build/libs/BowlerStudio*.jar
 ```
 Now you can use the Eclipse Marketplace to install the Gradle Plugin
     
