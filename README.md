@@ -10,15 +10,14 @@ BowlerStudio
 ## Ubuntu
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
 	sudo apt-get update
-	sudo apt-get remove arduino bowlerstudio 
-	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+	sudo apt-get install bowlerstudio
+	bowlerstudio
 ## Debian 
 	sudo apt-get install software-properties-common python-software-properties					
 	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
 	sudo apt-get update
-	sudo apt-get remove arduino bowlerstudio 
-	sudo apt-get install bowlerstudio oracle-java8-set-default oracle-java8-installer arduino-ide
+	sudo apt-get install bowlerstudio
 							
 
 # What is BowlerStudio?
@@ -38,15 +37,12 @@ BowlerStudio assists you in every step of a robotics project from concept to com
 BowlerStudio Robotics development IDE is based on
 * [JCSG](https://github.com/miho/JCSG)
 * [Java-Bowler](https://github.com/NeuronRobotics/java-bowler)
-* [OpenCV](http://opencv.org/)
-* [CHDK-PTP-Java](https://github.com/acamilo/CHDK-PTP-Java)
 * [Jinput](https://github.com/jinput/jinput)
 * [motej](http://motej.sourceforge.net/)
 * [Usb4Java](https://github.com/usb4java/usb4java)
 * [NrJavaSerial](https://github.com/NeuronRobotics/nrjavaserial)
 * [BlueCove](https://github.com/hcarver/bluecove)
 * JavaFX 8 3d engine. 
-* [WAlnut](https://github.com/WalnutiQ/wAlnut) a Neural-modeling based AI library.
 * [JBullet](http://jbullet.advel.cz/) physics engine ported from the popular Bullet C++ framework.
 * [Jetty](http://www.eclipse.org/jetty/) Web Framework
 
@@ -144,30 +140,30 @@ Navigate to the [Gradle](http://www.gradle.org/) project (e.g., `path/to/BowlerS
 ##### Ubuntu 18.04 Dependencies
 
 ```
-sudo apt install  openjdk-8-jdk openjfx=8u161-b12-1ubuntu2 libopenjfx-java=8u161-b12-1ubuntu2
+sudo apt install  curl
 ```
 
 ##### Ubuntu 16.04 Dependencies
 ```   
-    sudo apt-get install git gradle openjfx  openjdk-8-jdk 
+    sudo apt-get install git gradle
 ```
 ##### Ubuntu 14.04, install extra dependencies
 ```
-	sudo add-apt-repository ppa:cwchien/gradle -y
-	sudo apt-add-repository ppa:webupd8team/java -y
-	sudo apt-add-repository ppa:rsalveti/3d-printing -y
-	sudo add-apt-repository ppa:openjdk-r/ppa -y
 	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
 	sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
 	sudo apt-get update -qq
-	sudo apt-get install -y --force-yes gradle openjfx openjdk-8-jdk arduino-ide
-	sudo apt-get install  -y --force-yes oracle-java8-set-default
-	#sudo ln /dev/null /dev/raw1394 #use this if you get errors with your 1394 camera not being found
+	sudo apt-get install -y --force-yes gradle 
 ```
 ##### All Unix  
 ```  
-    git clone https://github.com/NeuronRobotics/BowlerStudio.git
+    bowlerstudio # run this to get the JVM downloaded into $HOME/bin/java8/jre
+
+    git clone https://github.com/CommonWealthRobotics/BowlerStudio.git
+    
+    JAVA_HOME=$HOME/bin/java8/jre
+
+    export JAVA_HOME
    
     cd BowlerStudio
     
