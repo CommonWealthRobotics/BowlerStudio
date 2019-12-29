@@ -1,3 +1,11 @@
+bowlerstudio (1.0.5) bionic; urgency=medium
+
+  * removing offending clones and ensure only one pull thread at a time
+  * add the tutorial git to the configurationDatabase
+  * 1.0.5
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 29 Dec 2019 00:53:30 -0500
+
 bowlerstudio (1.0.4) bionic; urgency=medium
 
   * add exception reporting to close #50
