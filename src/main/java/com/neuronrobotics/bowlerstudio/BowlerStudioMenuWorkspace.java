@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
@@ -16,6 +18,7 @@ public class BowlerStudioMenuWorkspace {
 	private static final int maxMenueSize = 15;
 	private static boolean sorting = false;
 	private static HashMap<String,Integer> rank = new HashMap<String, Integer>();
+	private static boolean running = false;
 	public static void init(Menu workspacemenu) {
 		if (workspacemenu == null)
 			throw new RuntimeException();
@@ -23,17 +26,21 @@ public class BowlerStudioMenuWorkspace {
 	}
 
 	public static void loginEvent() {
+		if(running)
+			return;
+		running = true;
 		rank.clear();
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		new Thread(()-> {
-			for (String o : workspaceData.keySet()) {
+			for (Iterator<String> iterator = workspaceData.keySet().iterator(); iterator.hasNext();) {
+				String o = iterator.next();
 				try {
 					ScriptingEngine.pull(o);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (Exception e) {
+					workspaceData.remove(o);
 				}
 			}
+			running = false;
 			
 		}).start();
 		sort();
