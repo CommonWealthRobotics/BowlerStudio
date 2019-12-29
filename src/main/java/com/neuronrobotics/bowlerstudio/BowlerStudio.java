@@ -306,6 +306,8 @@ public class BowlerStudio extends Application {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
 				}
+				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
+						StudioBuildInfo.getVersion());
 				renderSplashFrame(16, "Done Load Configs");
 				// String lastVersion = (String)
 				// ConfigurationDatabase.getObject("BowlerStudioConfigs",
