@@ -5,9 +5,12 @@ BowlerStudio
 [![Build Status](https://travis-ci.org/CommonWealthRobotics/BowlerStudio.svg?branch=development)](https://travis-ci.org/CommonWealthRobotics/BowlerStudio)
 [![Github All Releases](https://img.shields.io/github/downloads/CommonWealthRobotics/BowlerStudio/total.svg)](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
+
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2904/badge)](https://bestpractices.coreinfrastructure.org/projects/2904)
+
 # [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
 
-## Ubuntu
+## Ubuntu 18.04
 	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
 	sudo apt-get update
 	sudo apt-get install bowlerstudio
@@ -16,8 +19,10 @@ BowlerStudio
 	sudo apt-get install software-properties-common python-software-properties					
 	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
 	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
+	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu bionic main" -y
 	sudo apt-get update
 	sudo apt-get install bowlerstudio
+
 							
 
 # What is BowlerStudio?
@@ -180,3 +185,8 @@ Now you can use the Eclipse Marketplace to install the Gradle Plugin
 #### Windows (CMD)
 
     gradlew jar
+    
+# History
+
+Bowler Studio began [Feb 11, 2015](https://github.com/CommonWealthRobotics/BowlerStudio/releases/tag/0.0.1)  with the goal of making a robotics IDE. 
+
