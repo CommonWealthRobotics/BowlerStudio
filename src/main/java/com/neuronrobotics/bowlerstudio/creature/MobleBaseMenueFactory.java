@@ -458,15 +458,17 @@ public class MobleBaseMenueFactory {
 								gitURL, 
 								"loadRobot.groovy");
 						
-						String loader = "//	ScriptingEngine.copyGitFile(\"https://github.com/OperationSmallKat/SmallKat_V2.git\",\n" + 
+						String loader = "//Uncommment this section to update device loader	\n"
+								+ "// ScriptingEngine.copyGitFile(\"https://github.com/OperationSmallKat/SmallKat_V2.git\",\n" + 
 								"//								\""+gitURL+"\", \n" + 
-								"//								\"loadRobot.groovy\")"
-								+ "\nScriptingEngine.gitScriptRun(\""+gitURL+"\", \n" + 
-								"								\"loadRobot.groovy\", \n" + 
+								"//								\"loadRobot.groovy\")\n"
+								+ "MobileBase robot= ScriptingEngine.gitScriptRun(\n\t\""+gitURL+"\", \n" + 
+								"\t\"loadRobot.groovy\", \n" + 
 								"\t[\""+gitURL+"\",\n" + 
-								"		\""+filename+"\",\n\"GameController_22\",\n\""+
+								"\t\""+filename+"\",\n\t\"GameController_22\",\n\t\""+
 								device.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName()+
-								"\",\n\""+newName+"\"]);";
+								"\",\n\t\""+newName+"\"]\n);"
+										+ "\nprintln robot";
 						
 						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
 								loader, "new Robot content");
