@@ -53,11 +53,13 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 					requestClose();
 					if(MobileBase.class.isInstance(pm)) {
 						MobileBase dev = (MobileBase)pm;
-						for(CSG p:MobileBaseCadManager.get(dev).getBasetoCadMap().get(dev))
-							BowlerStudioController.removeObject(p);
-						for(DHParameterKinematics leg:dev.getAllDHChains())
-							for(CSG p:MobileBaseCadManager.get(dev).getDHtoCadMap().get(leg))
+						try {
+							for(CSG p:MobileBaseCadManager.get(dev).getBasetoCadMap().get(dev))
 								BowlerStudioController.removeObject(p);
+							for(DHParameterKinematics leg:dev.getAllDHChains())
+								for(CSG p:MobileBaseCadManager.get(dev).getDHtoCadMap().get(leg))
+									BowlerStudioController.removeObject(p);
+						}catch(Throwable e) {}
 					}
 				}
 				else {
