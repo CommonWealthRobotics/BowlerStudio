@@ -1,3 +1,15 @@
+bowlerstudio (1.0.7) bionic; urgency=medium
+
+  * loading the name of the device from the link
+  * cleaner launching scripts
+  * adding the updating code for the launcher
+  * kernel
+  * catch uncaught exception
+  * Repaired the copy a creature feature
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 30 Dec 2019 01:46:02 -0500
+
 bowlerstudio (1.0.6) bionic; urgency=medium
 
   * Update README.md
