@@ -323,83 +323,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 
 
-				EventHandler<Event> loadFiles = new EventHandler<Event>() {
-					public boolean gistFlag = false;
-
-					@Override
-					public void handle(Event ev) {
-
-						System.out.println("Load file event "+url);
-						new Thread() {
-							public void run() {
-
-								ThreadUtil.wait(500);
-								System.out.println("Load file Thread "+url);
-								if (!orgFiles.isShowing())
-									return;
-								if (gistFlag)
-									return;// another thread is
-											// servicing this gist
-								gistFlag = true;
-								System.out.println(
-										"Loading files for " + message + " " );
-								ArrayList<String> listofFiles;
-								try {
-									listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
-									System.out.println("Clone Done for " + url + listofFiles.size() + " files");
-								} catch (Exception e1) {
-									e1.printStackTrace();
-									return;
-								}
-								if (orgFiles.getItems().size() != 1) {
-									Log.warning("Bailing out of loading thread");
-									return;// menue populated by
-											// another thread
-								}
-								Platform.runLater(() -> {
-									// removing this listener
-									// after menue is activated
-									// for the first time
-									orgFiles.setOnShowing(null);
-									gistFlag = false;
-								});
-								for (String s : listofFiles) {
-									System.err.println("Adding file: "+s);
-									MenuItem tmp = new MenuItem(s);
-									tmp.setOnAction(event -> {
-										new Thread() {
-											public void run() {
-												try {
-													File fileSelected = ScriptingEngine.fileFromGit(url, s);
-													BowlerStudio.createFileTab(fileSelected);
-													BowlerStudioMenuWorkspace.add(url);
-												} catch (Exception e) {
-													// TODO
-													// Auto-generated
-													// catch block
-													e.printStackTrace();
-												}
-											}
-										}.start();
-
-									});
-									Platform.runLater(() -> {
-										orgFiles.getItems().add(tmp);
-									});
-
-								}
-								System.out.println("Refreshing menu");
-								Platform.runLater(() -> {
-									orgFiles.hide();
-									orgFiles.getItems().remove(loading);
-									Platform.runLater(() -> {
-										orgFiles.show();
-									});
-								});
-							}
-						}.start();
-					}
-				};
+				EventHandler<Event> loadFiles = createLoadFileEvent(url, message, orgFiles, loading);
 				updateRepo.setOnAction(event -> {
 					new Thread() {
 						public void run() {
@@ -409,13 +333,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							orgFiles.setOnShowing(loadFiles);
-							orgFiles.getItems().clear();
-							Platform.runLater(() ->orgFiles.getItems().add(loading));
+							resetMenueForLoadingFiles(orgFiles, loading, loadFiles);
 							selfRef.setToLoggedIn();
 						}
+
+						
 					}.start();
 				});
+				
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				addFile.setOnAction(event -> {
 					System.out.println("Adding file to : " + url);
@@ -428,9 +353,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						orgFiles.setOnShowing(loadFiles);
-						orgFiles.getItems().clear();
-						Platform.runLater(() ->orgFiles.getItems().add(loading));
+						resetMenueForLoadingFiles(orgFiles, loading, loadFiles);
 						selfRef.setToLoggedIn();
 					});
 				});
@@ -446,6 +369,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				});
 
 			}
+
+		
 		};
 		if(threaded)
 			t.start();
@@ -479,7 +404,89 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			}
 		}.start();
 	}
+	
+	private static void resetMenueForLoadingFiles(Menu orgFiles, MenuItem loading, EventHandler<Event> loadFiles) {
+		orgFiles.setOnShowing(loadFiles);
+		orgFiles.getItems().clear();
+		Platform.runLater(() ->orgFiles.getItems().add(loading));
+	}
+	private static EventHandler<Event> createLoadFileEvent(String url, String message, Menu orgFiles, MenuItem loading) {
+		return new EventHandler<Event>() {
+			public boolean gistFlag = false;
 
+			@Override
+			public void handle(Event ev) {
+				if (!orgFiles.isShowing())
+					return;
+				if (gistFlag)
+					return;// another thread is
+							// servicing this gist
+				gistFlag = true;
+				System.out.println("Load file event "+url);
+				new Thread() {
+					public void run() {
+						setName("Load file Thread "+url);
+
+						System.out.println(
+								"Loading files for " + message + " " );
+						ArrayList<String> listofFiles;
+						try {
+							listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
+							System.out.println("Clone Done for " + url + listofFiles.size() + " files");
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							return;
+						}
+						if (orgFiles.getItems().size() != 1) {
+							Log.warning("Bailing out of loading thread");
+							return;// menue populated by
+									// another thread
+						}
+						Platform.runLater(() -> {
+							// removing this listener
+							// after menue is activated
+							// for the first time
+							orgFiles.setOnShowing(null);
+							gistFlag = false;
+						});
+						for (String s : listofFiles) {
+							System.err.println("Adding file: "+s);
+							MenuItem tmp = new MenuItem(s);
+							tmp.setOnAction(event -> {
+								new Thread() {
+									public void run() {
+										try {
+											File fileSelected = ScriptingEngine.fileFromGit(url, s);
+											BowlerStudio.createFileTab(fileSelected);
+											BowlerStudioMenuWorkspace.add(url);
+										} catch (Exception e) {
+											// TODO
+											// Auto-generated
+											// catch block
+											e.printStackTrace();
+										}
+									}
+								}.start();
+
+							});
+							Platform.runLater(() -> {
+								orgFiles.getItems().add(tmp);
+							});
+
+						}
+						System.out.println("Refreshing menu");
+						Platform.runLater(() -> {
+							orgFiles.hide();
+							orgFiles.getItems().remove(loading);
+							Platform.runLater(() -> {
+								orgFiles.show();
+							});
+						});
+					}
+				}.start();
+			}
+		};
+	}
 	@FXML
 	public void onConnect(ActionEvent e) {
 
