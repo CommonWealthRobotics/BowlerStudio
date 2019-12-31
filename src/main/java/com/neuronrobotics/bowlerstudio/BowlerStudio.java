@@ -89,15 +89,16 @@ public class BowlerStudio extends Application {
 
 				while (true) {
 					ThreadUtil.wait(150);
-					try {
-						String text = incoming.asString();
-						incoming.clear();
-						if (text != null && text.length() > 0)
-							appendText(text);
-						text=null;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					if(incoming.size()>0)
+						try {
+							String text = incoming.asString();
+							incoming.clear();
+							if (text != null && text.length() > 0)
+								appendText(text);
+							text=null;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 				}
 			}
 		};
