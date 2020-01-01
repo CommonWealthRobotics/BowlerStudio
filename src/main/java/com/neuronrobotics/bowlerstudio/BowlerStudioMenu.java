@@ -224,7 +224,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							GHOrganization ghorg = entry.getValue();
 							Map<String, GHRepository> repos = ghorg.getRepositories();
 							for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
-								setUpRepoMenue(OrgItem, entry1.getValue());
+								resetRepoMenue(OrgItem, entry1.getValue());
 							}
 							Platform.runLater(() -> {
 								myOrganizations.getItems().add(OrgItem);
@@ -243,7 +243,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								});
 							}
 							
-							setUpRepoMenue(myownerMenue.get(g.getOwnerName()), g);
+							resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
 						}
 						// Watched repos
 						PagedIterable<GHRepository> watching = self.listSubscriptions();
@@ -259,7 +259,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									}
 								});
 							}
-							setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
+							resetRepoMenue(ownerMenue.get(g.getOwnerName()), g);
 						}
 
 					} catch (Exception e) {
@@ -273,12 +273,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 
 	}
-	private static void setUpRepoMenue(Menu repoMenue,GHRepository repo) {
-		String url = repo.getGitTransportUrl().replace("git://", "https://");
-		selfRef.messages.put(url,repo.getFullName());
-		setUpRepoMenue( repoMenue,  url,true,true) ;
-	}
-	
+
 	public static String gitURLtoMessage(String url) {
 		while(true) {
 			try {
@@ -301,6 +296,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	{
 		setUpRepoMenue(repoMenue,url,useAddToWorkspaceItem,threaded,gitURLtoMessage(url));
 	}
+	private static void resetRepoMenue(Menu repoMenue,GHRepository repo) {
+		String url = repo.getGitTransportUrl().replace("git://", "https://");
+		selfRef.messages.put(url,repo.getFullName());
+		setUpRepoMenue( repoMenue,  url,true,true) ;
+	}
+	
 	public static void setUpRepoMenue(Menu repoMenue,String url, boolean useAddToWorkspaceItem, boolean threaded, String message) {
 		
 		Thread t =new Thread() {
@@ -416,11 +417,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 			@Override
 			public void handle(Event ev) {
-				if (!orgFiles.isShowing())
-					return;
-				if (gistFlag)
+				if (gistFlag) {
+					System.err.println("Another thread is managing this event");
 					return;// another thread is
 							// servicing this gist
+				}
 				gistFlag = true;
 				System.out.println("Load file event "+url);
 				new Thread() {
@@ -437,11 +438,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							e1.printStackTrace();
 							return;
 						}
-						if (orgFiles.getItems().size() != 1) {
-							Log.warning("Bailing out of loading thread");
-							return;// menue populated by
-									// another thread
-						}
+//						if (orgFiles.getItems().size() != 1) {
+//							Log.warning("Bailing out of loading thread");
+//							return;// menue populated by
+//									// another thread
+//						}
 						Platform.runLater(() -> {
 							// removing this listener
 							// after menue is activated
