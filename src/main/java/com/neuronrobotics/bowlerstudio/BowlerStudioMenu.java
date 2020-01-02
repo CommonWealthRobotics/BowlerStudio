@@ -4,6 +4,7 @@ package com.neuronrobotics.bowlerstudio;
  * You can copy and paste this code into your favorite IDE
  **/
 
+import com.google.common.collect.Lists;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
@@ -30,8 +31,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.kohsuke.github.*;
 import org.reactfx.util.FxTimer;
+
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -310,7 +321,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				//String menueMessage = repo.getFullName();
 				Menu orgRepo = new Menu(message );
 				Menu orgFiles = new Menu("Files");
-				MenuItem loading = new MenuItem("Loading...");
+				Menu orgCommits = new Menu("Commits");
+				Menu orgBranches = new Menu("Branches");
+				MenuItem loading = new MenuItem("Loading Files...");
+				MenuItem loadingCommits = new MenuItem("Loading Commits...");
+				MenuItem loadingBranches = new MenuItem("Loading Branches...");
+
 				MenuItem updateRepo = new MenuItem("Update Repo...");
 				MenuItem addToWs = new MenuItem("Add Repo to Workspace");
 				addToWs.setOnAction(event -> {
@@ -324,7 +340,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 
 
-				EventHandler<Event> loadFiles = createLoadFileEvent(url, message, orgFiles, loading);
+				EventHandler<Event> loadCommitsEvent = createLoadCommitsEvent(url,  orgCommits, loadingCommits);
+				EventHandler<Event> loadBranchesEvent = createLoadBranchesEvent( url,  orgBranches, orgCommits,  loading, loadingCommits,loadCommitsEvent);
+				EventHandler<Event> loadFilesEvent = createLoadFileEvent(url, orgFiles,  orgCommits,  orgBranches,  loading,
+						 loadingCommits,  loadingBranches,  
+						loadCommitsEvent, loadBranchesEvent);
+				
 				updateRepo.setOnAction(event -> {
 					new Thread() {
 						public void run() {
@@ -334,7 +355,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							resetMenueForLoadingFiles(orgFiles, loading, loadFiles);
+							resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
 							selfRef.setToLoggedIn();
 						}
 
@@ -354,24 +375,26 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						resetMenueForLoadingFiles(orgFiles, loading, loadFiles);
+						resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
 						selfRef.setToLoggedIn();
 					});
 				});
+				
+				
 				Platform.runLater(() -> {
-					orgFiles.getItems().add(loading);
+					resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
 					if(useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
-					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles);
+					orgRepo.getItems().addAll(updateRepo,addFile, orgFiles,orgCommits,orgBranches);
+					Platform.runLater(() -> {
+						orgCommits.getItems().add(loadingCommits);
+						orgBranches.getItems().add(loadingBranches);
+						repoMenue.getItems().add(orgRepo);
+					});
 				});
-				orgFiles.setOnShowing(loadFiles);
-				Platform.runLater(() -> {
-					repoMenue.getItems().add(orgRepo);
-				});
-
+				
 			}
-
-		
+	
 		};
 		if(threaded)
 			t.start();
@@ -379,6 +402,170 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			t.run();
 	}
 
+	private static EventHandler<Event> createLoadCommitsEvent(String url, Menu orgCommits, MenuItem loading) {
+		return new EventHandler<Event>() {
+			public boolean gistFlag = false;
+			@Override
+			public void handle(Event event) {
+				// TODO Auto-generated method stub
+				if (gistFlag) {
+					System.err.println("Another thread is managing this event "+url);
+					return;// another thread is
+							// servicing this gist
+				}
+				gistFlag = true;
+				System.out.println("Load Commits event "+url);
+				new Thread(()->{
+					Platform.runLater(() -> {
+						// removing this listener
+						// after menue is activated
+						// for the first time
+						orgCommits.setOnShowing(null);
+						gistFlag = false;
+					});
+					try {
+						Repository repo = ScriptingEngine.getRepository(url);
+						Git git = new Git(repo);
+						String branchName = ScriptingEngine.getFullBranch(url);
+
+				        //System.out.println("Commits of branch: " + branchName);
+				        //System.out.println("-------------------------------------");
+
+				        Iterable<RevCommit> commits = git.log().add(repo.resolve(branchName)).call();
+
+				        List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
+				        Platform.runLater(() -> {
+							try {
+								orgCommits.getItems().add(new MenuItem("On Branch "+ScriptingEngine.getBranch(url)));
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							orgCommits.getItems().add(new SeparatorMenuItem());
+						});
+
+				        for (RevCommit commit : commitsList) {
+							String date = new Date(commit.getCommitTime() * 1000L).toString();
+							String fullData = 	commit.getName() + "\r\n" + 
+												commit.getAuthorIdent().getName() + "\r\n"+ 
+												date + "\r\n" +
+												commit.getShortMessage()+ "\r\n" +
+												commit.getFullMessage() + "\r\n"
+									+ "---------------------------------------------------";
+				            String string = date+" "+commit.getShortMessage();
+				            if(string.length()>80)
+				            	string = string.substring(0, 80);
+							MenuItem tmp = new MenuItem(string);
+				            
+							tmp.setOnAction(ev -> {
+								new Thread() {
+									public void run() {
+										System.out.println("Selecting \r\n\r\n"+fullData);
+										
+									}
+								}.start();
+
+							});
+							Platform.runLater(() -> {
+								orgCommits.getItems().add(tmp);
+							});
+				        }
+				        git.close();
+				        Platform.runLater(() -> {
+				        	orgCommits.hide();
+				        	orgCommits.getItems().remove(loading);
+							Platform.runLater(() -> {
+								orgCommits.show();
+							});
+						});
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (RevisionSyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoHeadException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GitAPIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}).start();
+			}
+		};
+	}
+	private static EventHandler<Event> createLoadBranchesEvent(String url, Menu orgBranches,Menu orgCommits, MenuItem loading,MenuItem loadingCommits,EventHandler<Event> loadCommitsEvent) {
+		return new EventHandler<Event>() {
+			public boolean gistFlag = false;
+			@Override
+			public void handle(Event event) {
+				// TODO Auto-generated method stub
+				if (gistFlag) {
+					System.err.println("Another thread is managing this event "+url);
+					return;// another thread is
+							// servicing this gist
+				}
+				gistFlag = true;
+				System.out.println("Load Branches event "+url);
+				new Thread(()->{
+					Platform.runLater(() -> {
+						// removing this listener
+						// after menue is activated
+						// for the first time
+						orgBranches.setOnShowing(null);
+						gistFlag = false;
+					});
+					try {
+						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
+						for(Ref r:branches) {
+							 MenuItem tmp = new MenuItem(r.getName());
+							 Ref select=r;
+								tmp.setOnAction(ev -> {
+									new Thread() {
+										public void run() {
+											String []name = select.getName().split("/");
+											String myName = name[name.length-1];
+											//System.out.println("Selecting Branch\r\n"+url+" \t\t"+myName);
+											String was;
+											try {
+												was = ScriptingEngine.getBranch(url);
+												ScriptingEngine.checkout(url, select);
+												String s = ScriptingEngine.getBranch(url);
+												System.out.println("Changing from "+was+" to "+myName+" is now "+s+"... Success!");
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											
+											
+										}
+									}.start();
+	
+								});
+								Platform.runLater(() -> {
+									orgBranches.getItems().add(tmp);
+								});
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GitAPIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					Platform.runLater(() -> {
+						orgBranches.hide();
+						orgBranches.getItems().remove(loading);
+						Platform.runLater(() -> {
+							orgBranches.show();
+						});
+					});
+				}).start();
+			}
+		};
+	}
 	@FXML
 	public void onLoadFile(ActionEvent e) {
 		new Thread() {
@@ -411,7 +598,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		orgFiles.getItems().clear();
 		Platform.runLater(() ->orgFiles.getItems().add(loading));
 	}
-	private static EventHandler<Event> createLoadFileEvent(String url, String message, Menu orgFiles, MenuItem loading) {
+	private static EventHandler<Event> createLoadFileEvent(String url,Menu orgFiles, Menu orgCommits, Menu orgBranches, MenuItem loading,
+			MenuItem loadingCommits, MenuItem loadingBranches, 
+			EventHandler<Event> loadCommitsEvent, EventHandler<Event> loadBranchesEvent) {
 		return new EventHandler<Event>() {
 			public boolean gistFlag = false;
 
@@ -429,7 +618,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						setName("Load file Thread "+url);
 
 						System.out.println(
-								"Loading files for " + message + " " );
+								"Loading files for " + url + " " );
 						ArrayList<String> listofFiles;
 						try {
 							listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
@@ -481,6 +670,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							orgFiles.getItems().remove(loading);
 							Platform.runLater(() -> {
 								orgFiles.show();
+								resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+								resetMenueForLoadingFiles(orgBranches, loadingBranches, loadBranchesEvent);
 							});
 						});
 					}
