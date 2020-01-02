@@ -437,7 +437,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							}
 							orgCommits.getItems().add(new SeparatorMenuItem());
 						});
-
+				       
 				        for (RevCommit commit : commitsList) {
 							String date = new Date(commit.getCommitTime() * 1000L).toString();
 							String fullData = 	commit.getName() + "\r\n" + 
@@ -530,6 +530,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						}
 						orgBranches.getItems().add(new SeparatorMenuItem());
 					});
+					 Runnable myEvent=new Runnable() {
+							@Override
+							public void run() {
+								try {
+									System.out.println("Commit event Detected "+url+" on branch "+ScriptingEngine.getBranch(url));
+									ScriptingEngine.removeOnCommitEventListeners(url, this);
+									resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								
+							}
+						};
+						ScriptingEngine.addOnCommitEventListeners(url, myEvent);
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
 						for(Ref r:branches) {
