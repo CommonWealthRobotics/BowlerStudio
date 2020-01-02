@@ -341,7 +341,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 
 				EventHandler<Event> loadCommitsEvent = createLoadCommitsEvent(url,  orgCommits, loadingCommits);
-				EventHandler<Event> loadBranchesEvent = createLoadBranchesEvent( url,  orgBranches, orgCommits,  loading, loadingCommits,loadCommitsEvent);
+				EventHandler<Event> loadBranchesEvent = createLoadBranchesEvent( url,  orgBranches, orgCommits,  loadingBranches, loadingCommits,loadCommitsEvent);
 				EventHandler<Event> loadFilesEvent = createLoadFileEvent(url, orgFiles,  orgCommits,  orgBranches,  loading,
 						 loadingCommits,  loadingBranches,  
 						loadCommitsEvent, loadBranchesEvent);
@@ -509,6 +509,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				}
 				gistFlag = true;
 				System.out.println("Load Branches event "+url);
+				final MenuItem onBranch ;
+				try {
+					onBranch = new MenuItem("On Branch "+ScriptingEngine.getBranch(url));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					return;
+				}; 
 				new Thread(()->{
 					Platform.runLater(() -> {
 						// removing this listener
@@ -516,6 +524,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						// for the first time
 						orgBranches.setOnShowing(null);
 						gistFlag = false;
+					});
+					
+					Platform.runLater(() -> {
+						try {
+							onBranch.setText("On Branch "+ScriptingEngine.getBranch(url));
+							orgBranches.getItems().add(onBranch);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						orgBranches.getItems().add(new SeparatorMenuItem());
 					});
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
@@ -534,6 +553,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												ScriptingEngine.checkout(url, select);
 												String s = ScriptingEngine.getBranch(url);
 												System.out.println("Changing from "+was+" to "+myName+" is now "+s+"... Success!");
+												onBranch.setText("On Branch "+s);
+												resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
 											} catch (IOException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
@@ -555,6 +576,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					System.err.println("Refreshing menu Branches");
 					Platform.runLater(() -> {
 						orgBranches.hide();
 						orgBranches.getItems().remove(loading);
