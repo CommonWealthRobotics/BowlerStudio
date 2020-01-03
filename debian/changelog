@@ -1,3 +1,24 @@
+bowlerstudio (1.0.8) bionic; urgency=medium
+
+  * close #76
+  * updated kernel
+  * menue update
+  * kernel and faster menue loading
+  * adding branches and commit listing
+  * Branch setting works
+  * removing unused imports
+  * reset commits when a commit event is detected
+  * Adding branch select and commit select
+  * removed suspicious slash
+  * safer kernel url parsing
+  * kerne
+  * 1.0.8
+  * formatting
+  * adding more complete messages to creation of branches
+  * Menu driven commits and branches
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 03 Jan 2020 14:15:24 -0500
+
 bowlerstudio (1.0.7) bionic; urgency=medium
 
   * loading the name of the device from the link
