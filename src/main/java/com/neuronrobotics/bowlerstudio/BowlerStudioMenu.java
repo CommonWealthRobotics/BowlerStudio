@@ -43,8 +43,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Consumer;
 @SuppressWarnings("restriction")
 public class BowlerStudioMenu implements MenuRefreshEvent {
 
@@ -373,7 +375,22 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						selfRef.setToLoggedIn();
 					});
 				});
-				
+				Runnable myEvent=new Runnable() {
+					@Override
+					public void run() {
+						try {
+							System.err.println("\n\nCommit event Detected "+url+" on branch "+ScriptingEngine.getBranch(url));
+							resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
+							resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+							resetMenueForLoadingFiles(orgBranches, loadingBranches, loadBranchesEvent);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
+				};
+				ScriptingEngine.addOnCommitEventListeners(url, myEvent);
 				
 				Platform.runLater(() -> {
 					resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
@@ -408,7 +425,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							// servicing this gist
 				}
 				gistFlag = true;
-				System.out.println("Load Commits event "+url);
+				String branchName;
+				try {
+					branchName = ScriptingEngine.getFullBranch(url);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					return;
+				}
+				System.out.println("Load Commits event "+url+" on branch "+branchName);
 				new Thread(()->{
 					Platform.runLater(() -> {
 						// removing this listener
@@ -418,9 +443,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						gistFlag = false;
 					});
 					try {
+						ScriptingEngine.checkout(url,branchName);	
 						Repository repo = ScriptingEngine.getRepository(url);
 						Git git = new Git(repo);
-						String branchName = ScriptingEngine.getFullBranch(url);
+						
 
 				        //System.out.println("Commits of branch: " + branchName);
 				        //System.out.println("-------------------------------------");
@@ -456,6 +482,23 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									public void run() {
 										System.out.println("Selecting \r\n\r\n"+fullData);
 										
+										promptForNewBranch( newBranch->{
+											new Thread() {
+												public void run() {
+											try {String slugify = slugify(newBranch);
+											System.out.println("Creating "+slugify);
+												ScriptingEngine.setCommitContentsAsCurrent(url,slugify, commit);
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (GitAPIException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+												}
+											}.start();
+										});
+										
 									}
 								}.start();
 
@@ -490,6 +533,24 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			}
 		};
 	}
+	public static String slugify(String input) {
+	    return Normalizer.normalize(input, Normalizer.Form.NFD)
+	            .replaceAll("[^\\p{ASCII}]", "")
+	            .replaceAll("[^ \\w]", "").trim()
+	            .replaceAll("\\s+", "-").toLowerCase(Locale.ENGLISH);
+	}
+	private static void promptForNewBranch( Consumer<String> resultEvent) {
+		Platform.runLater(()->{
+			TextInputDialog dialog = new TextInputDialog("new branch name");
+			dialog.setTitle("Enter new Branch Name");
+			dialog.setHeaderText("Enter a new branch");
+			dialog.setContentText("The name of the branch, but be valid");
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			// The Java 8 way to get the response value (with lambda expression).
+			result.ifPresent(resultEvent);
+		});
+	}
 	private static EventHandler<Event> createLoadBranchesEvent(String url, Menu orgBranches,Menu orgCommits, MenuItem loading,MenuItem loadingCommits,EventHandler<Event> loadCommitsEvent) {
 		return new EventHandler<Event>() {
 			public boolean gistFlag = false;
@@ -519,36 +580,45 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						orgBranches.setOnShowing(null);
 						gistFlag = false;
 					});
-					
+					MenuItem newBranchItem= new MenuItem("New Branch...");
+					newBranchItem.setOnAction(event1 -> {
+						promptForNewBranch( newBranch->{
+							new Thread() {
+								public void run() {
+							try {
+								String slugify = slugify(newBranch);
+								System.out.println("Creating "+slugify);
+								ScriptingEngine.newBranch(url, slugify);
+								resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (GitAPIException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+								}
+							}.start();
+						});
+						
+					});
 					Platform.runLater(() -> {
 						try {
 							onBranch.setText("On Branch "+ScriptingEngine.getBranch(url));
 							orgBranches.getItems().add(onBranch);
+							
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						orgBranches.getItems().add(new SeparatorMenuItem());
 					});
-					 Runnable myEvent=new Runnable() {
-							@Override
-							public void run() {
-								try {
-									System.out.println("Commit event Detected "+url+" on branch "+ScriptingEngine.getBranch(url));
-									ScriptingEngine.removeOnCommitEventListeners(url, this);
-									resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								
-							}
-						};
-						ScriptingEngine.addOnCommitEventListeners(url, myEvent);
+					 
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
 						for(Ref r:branches) {
-							 MenuItem tmp = new MenuItem(r.getName());
+							String []name2 = r.getName().split("/");
+							MenuItem tmp = new MenuItem(name2[name2.length-1]);
 							 Ref select=r;
 								tmp.setOnAction(ev -> {
 									new Thread() {
@@ -561,7 +631,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												was = ScriptingEngine.getBranch(url);
 												ScriptingEngine.checkout(url, select);
 												String s = ScriptingEngine.getBranch(url);
-												System.out.println("Changing from "+was+" to "+myName+" is now "+s+"... Success!");
+												if(myName.contentEquals(s))
+													System.out.println("Changing from "+was+" to "+myName+" is now "+s+"... Success!");
 												onBranch.setText("On Branch "+s);
 												resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
 											} catch (IOException e) {
@@ -672,12 +743,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						});
 						for (String s : listofFiles) {
 							System.err.println("Adding file: "+s);
+							String string =s;
+							if(s.length()>80)
+				            	s = s.substring(0, 10)+"..."+s.substring(s.length()-70, s.length()-1);
 							MenuItem tmp = new MenuItem(s);
 							tmp.setOnAction(event -> {
 								new Thread() {
 									public void run() {
 										try {
-											File fileSelected = ScriptingEngine.fileFromGit(url, s);
+											File fileSelected = ScriptingEngine.fileFromGit(url, string);
 											BowlerStudio.createFileTab(fileSelected);
 											BowlerStudioMenuWorkspace.add(url);
 										} catch (Exception e) {
@@ -1149,7 +1223,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	@FXML
 	void onRefresh(ActionEvent event) {
 		setToLoggedIn();
-		
+
 	}
 
 }
