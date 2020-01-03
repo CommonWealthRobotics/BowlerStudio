@@ -31,16 +31,24 @@ import javafx.stage.Stage;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.kohsuke.github.*;
 import org.reactfx.util.FxTimer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Normalizer;
@@ -466,12 +474,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							}
 							orgCommits.getItems().add(new SeparatorMenuItem());
 						});
-						
+						RevCommit previous =null;
 						for (RevCommit commit : commitsList) {
 							String date = format.format(new Date(commit.getCommitTime() * 1000L));
 							String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
-									+ date + "\r\n" + commit.getShortMessage() + "\r\n" + commit.getFullMessage()
-									+ "\r\n" + "---------------------------------------------------";
+									+ date + "\r\n" + commit.getFullMessage()
+									+ "\r\n" + "---------------------------------------------------\r\n";//+
+									//previous==null?"":getDiffOfCommit(previous,commit, repo, git);
+							
+							previous=commit;
 							String string = date + " " +commit.getAuthorIdent().getName()+" "+ commit.getShortMessage();
 							if (string.length() > 80)
 								string = string.substring(0, 80);
@@ -547,7 +558,48 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			}
 		};
 	}
+	//Helper function to get the previous commit.
+	public static RevCommit getPrevHash(RevCommit commit, Repository repo)  throws  IOException {
 
+	    try (RevWalk walk = new RevWalk(repo)) {
+	        // Starting point
+	        walk.markStart(commit);
+	        int count = 0;
+	        for (RevCommit rev : walk) {
+	            // got the previous commit.
+	            if (count == 1) {
+	                return rev;
+	            }
+	            count++;
+	        }
+	        walk.dispose();
+	    }
+	    //Reached end and no previous commits.
+	    return null;
+	}
+	//Helper gets the diff as a string.
+	private static String getDiffOfCommit( RevCommit oldCommit,RevCommit newCommit, Repository repo,Git git) throws IOException {
+	    //Use treeIterator to diff.
+	    AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(oldCommit,git);
+	    AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(newCommit,git);
+	    OutputStream outputStream = new ByteArrayOutputStream();
+	    try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
+	        formatter.setRepository(git.getRepository());
+	        formatter.format(oldTreeIterator, newTreeIterator);
+	    }
+	    String diff = outputStream.toString();
+	    return diff;
+	}
+	//Helper function to get the tree of the changes in a commit. Written by Rüdiger Herrmann
+	private static AbstractTreeIterator getCanonicalTreeParser(ObjectId commitId,Git git) throws IOException {
+	    try (RevWalk walk = new RevWalk(git.getRepository())) {
+	        RevCommit commit = walk.parseCommit(commitId);
+	        ObjectId treeId = commit.getTree().getId();
+	        try (ObjectReader reader = git.getRepository().newObjectReader()) {
+	            return new CanonicalTreeParser(null, reader, treeId);
+	        }
+	    }
+	}
 	public static String slugify(String input) {
 		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 				.replaceAll("[^ \\w]", "").trim().replaceAll("\\s+", "-").toLowerCase(Locale.ENGLISH);
