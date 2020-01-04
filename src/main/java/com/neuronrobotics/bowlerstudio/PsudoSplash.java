@@ -166,7 +166,7 @@ public class PsudoSplash {
 	public void setMessage(String message) {
 		if (message.length() > 23) {
 			this.message = message.subSequence(0, 23).toString();
-			new RuntimeException().printStackTrace();
+			//new RuntimeException().printStackTrace();
 		} else
 			this.message = message;
 		if (interfaceFrame != null) {
