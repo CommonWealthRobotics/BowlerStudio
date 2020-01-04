@@ -1,3 +1,13 @@
+bowlerstudio (1.0.11) bionic; urgency=medium
+
+  * Only load menu items when the mouse enters the repository
+  * only one thread allowing for the loading of configuration data.
+  * kernel
+  * Bugfixes to address additional issues raised
+  * loading assets the proper git way
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 04 Jan 2020 16:14:59 -0500
+
 bowlerstudio (1.0.9) bionic; urgency=medium
 
   * 1.0.9
