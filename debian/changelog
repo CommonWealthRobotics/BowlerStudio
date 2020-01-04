@@ -1,3 +1,13 @@
+bowlerstudio (1.0.9) bionic; urgency=medium
+
+  * 1.0.9
+  * #180 This was a side effect of the branching system beginning to work.
+  * more issue reporting
+  * adding exception reporting
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 04 Jan 2020 13:29:21 -0500
+
 bowlerstudio (1.0.8) bionic; urgency=medium
 
   * close #76
