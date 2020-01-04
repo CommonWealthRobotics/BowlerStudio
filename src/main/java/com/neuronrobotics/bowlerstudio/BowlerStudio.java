@@ -318,7 +318,12 @@ public class BowlerStudio extends Application {
 				// StudioBuildInfo.getVersion());
 				myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 						"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
-				ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
+				try {
+					ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
+				}catch(Throwable t) {
+					ScriptingEngine.deleteRepo(myAssets);
+					ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
+				}
 				String lastVersion = ScriptingEngine.getBranch(myAssets);
 				if (lastVersion == null) {
 					System.err.println("deleting currupt Asset Repo " + myAssets);
