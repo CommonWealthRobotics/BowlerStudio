@@ -31,34 +31,24 @@ import javafx.stage.Stage;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.kohsuke.github.*;
 import org.reactfx.util.FxTimer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Normalizer;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 
-@SuppressWarnings("restriction")
 public class BowlerStudioMenu implements MenuRefreshEvent {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
@@ -122,7 +112,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private HashMap<String, String> messages = new HashMap<String, String>();
 	private static SimpleDateFormat format = new SimpleDateFormat("E 'the' dd 'in' MMM-yyyy 'at' HH:mm");
 	private static SimpleDateFormat formatSimple = new SimpleDateFormat("MM-dd");
-
+	private static IssueReportingExceptionHandler exp=new IssueReportingExceptionHandler();
+	
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
@@ -281,8 +272,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						}
 
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 
 				}
@@ -303,8 +293,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					exp.uncaughtException(Thread.currentThread(), e);
 				}
 			}
 		}
@@ -359,8 +348,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								exp.uncaughtException(Thread.currentThread(), e);
 							}
 							resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
 							selfRef.setToLoggedIn();
@@ -395,8 +383,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
 							resetMenueForLoadingFiles(orgBranches, loadingBranches, loadBranchesEvent);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							exp.uncaughtException(Thread.currentThread(), e);
 						}
 
 					}
@@ -430,7 +417,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 			@Override
 			public void handle(Event event) {
-				// TODO Auto-generated method stub
 				if (gistFlag) {
 					System.err.println("Another thread is managing this event " + url);
 					return;// another thread is
@@ -441,8 +427,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				try {
 					branchName = ScriptingEngine.getFullBranch(url);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					exp.uncaughtException(Thread.currentThread(), e1);
 					return;
 				}
 				System.out.println("Load Commits event " + url + " on branch " + branchName);
@@ -469,8 +454,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							try {
 								orgCommits.getItems().add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								exp.uncaughtException(Thread.currentThread(), e);
 							}
 							orgCommits.getItems().add(new SeparatorMenuItem());
 						});
@@ -514,11 +498,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 														ScriptingEngine.setCommitContentsAsCurrent(url, slugify,
 																commit);
 													} catch (IOException e) {
-														// TODO Auto-generated catch block
-														e.printStackTrace();
+														exp.uncaughtException(Thread.currentThread(), e);
 													} catch (GitAPIException e) {
-														// TODO Auto-generated catch block
-														e.printStackTrace();
+														exp.uncaughtException(Thread.currentThread(), e);
 													}
 												}
 											}.start();
@@ -541,17 +523,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							});
 						});
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					} catch (RevisionSyntaxException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					} catch (NoHeadException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					} catch (GitAPIException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 
 				}).start();
@@ -625,7 +603,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			EventHandler<Event> thisEvent = this;
 			@Override
 			public void handle(Event event) {
-				// TODO Auto-generated method stub
 				if (gistFlag) {
 					System.err.println("Another thread is managing this event " + url);
 					return;// another thread is
@@ -637,8 +614,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				try {
 					onBranch = new MenuItem("On Branch " + ScriptingEngine.getBranch(url));
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					exp.uncaughtException(Thread.currentThread(), e1);
 					return;
 				}
 				;
@@ -672,11 +648,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												resetMenueForLoadingFiles(orgBranches, loading, thisEvent);
 												resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
 											} catch (IOException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
+												exp.uncaughtException(Thread.currentThread(), e);
 											} catch (GitAPIException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
+												exp.uncaughtException(Thread.currentThread(), e);
 											}
 										}
 									}.start();
@@ -684,13 +658,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 					});
 					Platform.runLater(() -> {
+						
 						try {
 							onBranch.setText("On Branch " + ScriptingEngine.getBranch(url));
 							orgBranches.getItems().add(onBranch);
-
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							exp.uncaughtException(Thread.currentThread(), e);
+							
 						}
 						orgBranches.getItems().add(new SeparatorMenuItem());
 						orgBranches.getItems().add(newBranchItem);
@@ -703,11 +677,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							createRepoMenuItem(url, orgBranches, orgCommits, loadingCommits, loadCommitsEvent, onBranch, r);
 						}
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					} catch (GitAPIException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 					System.err.println("Refreshing menu Branches");
 					Platform.runLater(() -> {
@@ -738,8 +710,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						switchToThisNewBranch(url, onBranch, select, myName);
 						resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 
 				}
@@ -846,10 +817,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											BowlerStudio.createFileTab(fileSelected);
 											BowlerStudioMenuWorkspace.add(url);
 										} catch (Exception e) {
-											// TODO
-											// Auto-generated
-											// catch block
-											e.printStackTrace();
+											exp.uncaughtException(Thread.currentThread(), e);
 										}
 									}
 								}.start();
@@ -900,8 +868,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 //			try {
 //				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
+//				exp.uncaughtException(Thread.currentThread(), e);
 //			}
 //		});
 	}
@@ -950,13 +917,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 					ScriptingEngine.login();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					exp.uncaughtException(Thread.currentThread(), e);
 				}
 			}
 		}.start();
@@ -968,8 +933,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		try {
 			ScriptingEngine.logout();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			exp.uncaughtException(Thread.currentThread(), e);
 		}
 	}
 
@@ -1005,8 +969,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						MobileBase mb = new MobileBase(new FileInputStream(openFile));
 						ConnectionManager.addConnection(mb, mb.getScriptingName());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 				});
 			}
@@ -1035,8 +998,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		try {
 			BowlerStudio.openUrlInNewTab(new URL(url));
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			exp.uncaughtException(Thread.currentThread(), e);
 		}
 	}
 
@@ -1155,8 +1117,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						});
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					exp.uncaughtException(Thread.currentThread(), e);
 				}
 			}
 		}.start();
@@ -1198,7 +1159,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 					@Override
 					public void onLogout(String arg0) {
-						// TODO Auto-generated method stub
 
 					}
 
@@ -1242,8 +1202,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 									try {
 										bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
 									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										// e.printStackTrace();
+										exp.uncaughtException(Thread.currentThread(), e);
 									}
 								}
 								loggingIn = false;
@@ -1260,8 +1219,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						try {
 							ScriptingEngine.login();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							exp.uncaughtException(Thread.currentThread(), e);
 						}
 					}).start();
 				} else {
