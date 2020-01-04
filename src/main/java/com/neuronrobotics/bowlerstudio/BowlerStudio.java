@@ -79,6 +79,7 @@ public class BowlerStudio extends Application {
 	private static File layoutFile;
 	private static boolean deleteFlag=false;
 	private static IssueReportingExceptionHandler reporter =new IssueReportingExceptionHandler();
+	private static String lastVersion;
 	
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
@@ -319,12 +320,14 @@ public class BowlerStudio extends Application {
 				myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 						"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 				try {
-					ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
+					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
+					lastVersion = ScriptingEngine.getBranch(myAssets);
 				}catch(Throwable t) {
 					ScriptingEngine.deleteRepo(myAssets);
-					ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
+					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
+					lastVersion = ScriptingEngine.getBranch(myAssets);
 				}
-				String lastVersion = ScriptingEngine.getBranch(myAssets);
+				
 				if (lastVersion == null) {
 					System.err.println("deleting currupt Asset Repo " + myAssets);
 					ScriptingEngine.deleteRepo(myAssets);

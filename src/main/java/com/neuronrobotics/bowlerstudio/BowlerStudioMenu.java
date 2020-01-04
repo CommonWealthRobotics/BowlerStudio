@@ -321,9 +321,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				Menu orgFiles = new Menu("Files");
 				Menu orgCommits = new Menu("Commits");
 				Menu orgBranches = new Menu("Branches");
-				MenuItem loading = new MenuItem("Loading Files...");
-				MenuItem loadingCommits = new MenuItem("Loading Commits...");
-				MenuItem loadingBranches = new MenuItem("Loading Branches...");
+
 
 				MenuItem updateRepo = new MenuItem("Update Repo...");
 				MenuItem addToWs = new MenuItem("Add Repo to Workspace");
@@ -336,11 +334,29 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				});
 				// String url = repo.getGitTransportUrl().replace("git://", "https://");
 
-				EventHandler<Event> loadCommitsEvent = createLoadCommitsEvent(url, orgCommits, loadingCommits);
-				EventHandler<Event> loadBranchesEvent = createLoadBranchesEvent(url, orgBranches, orgCommits,
-						loadingBranches, loadingCommits, loadCommitsEvent);
-				EventHandler<Event> loadFilesEvent = createLoadFileEvent(url, orgFiles, orgCommits, orgBranches,
-						loading, loadingCommits, loadingBranches, loadCommitsEvent, loadBranchesEvent);
+				MenuResettingEventHandler loadCommitsEvent = createLoadCommitsEvent(url, orgCommits);
+				MenuResettingEventHandler loadBranchesEvent = createLoadBranchesEvent(url, orgBranches);
+				MenuResettingEventHandler loadFilesEvent = createLoadFileEvent(url, orgFiles);
+				Runnable myEvent = new Runnable() {
+					@Override
+					public void run() {
+						try {
+//							System.err.println("\n\nCommit event Detected " + url + " on branch "
+//									+ ScriptingEngine.getBranch(url));
+							//new RuntimeException().printStackTrace();
+							Platform.runLater(() ->resetMenueForLoadingFiles("Files:",orgFiles,  loadFilesEvent));
+							Platform.runLater(() ->resetMenueForLoadingFiles("Commits:",orgCommits, loadCommitsEvent));
+							Platform.runLater(() ->resetMenueForLoadingFiles("Branches:",orgBranches, loadBranchesEvent));
+							
+						} catch (Throwable e) {
+							exp.uncaughtException(Thread.currentThread(), e);
+						}
+
+					}
+				};
+				loadCommitsEvent.setMenuReset(myEvent);
+				loadBranchesEvent.setMenuReset(myEvent);
+				loadFilesEvent.setMenuReset(myEvent);
 
 				updateRepo.setOnAction(event -> {
 					new Thread() {
@@ -350,7 +366,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 							} catch (Exception e) {
 								exp.uncaughtException(Thread.currentThread(), e);
 							}
-							resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
+							myEvent.run();
 							selfRef.setToLoggedIn();
 						}
 
@@ -369,35 +385,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
+						myEvent.run();
 						selfRef.setToLoggedIn();
 					});
 				});
-				Runnable myEvent = new Runnable() {
-					@Override
-					public void run() {
-						try {
-							System.err.println("\n\nCommit event Detected " + url + " on branch "
-									+ ScriptingEngine.getBranch(url));
-							resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
-							resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
-							resetMenueForLoadingFiles(orgBranches, loadingBranches, loadBranchesEvent);
-						} catch (Exception e) {
-							exp.uncaughtException(Thread.currentThread(), e);
-						}
-
-					}
-				};
+				
 				ScriptingEngine.addOnCommitEventListeners(url, myEvent);
-
+				orgRepo.setOnShowing(event -> {
+					//On showing the menu, set up the rest of the handlers
+					new Thread(myEvent).start();
+				});
 				Platform.runLater(() -> {
-					resetMenueForLoadingFiles(orgFiles, loading, loadFilesEvent);
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
 					orgRepo.getItems().addAll(updateRepo, addFile, orgFiles, orgCommits, orgBranches);
 					Platform.runLater(() -> {
-						orgCommits.getItems().add(loadingCommits);
-						orgBranches.getItems().add(loadingBranches);
 						repoMenue.getItems().add(orgRepo);
 					});
 				});
@@ -411,8 +413,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			t.run();
 	}
 
-	private static EventHandler<Event> createLoadCommitsEvent(String url, Menu orgCommits, MenuItem loading) {
-		return new EventHandler<Event>() {
+	private static MenuResettingEventHandler createLoadCommitsEvent(String url, Menu orgCommits) {
+		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;
 
 			@Override
@@ -517,7 +519,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						git.close();
 						Platform.runLater(() -> {
 							orgCommits.hide();
-							orgCommits.getItems().remove(loading);
 							Platform.runLater(() -> {
 								orgCommits.show();
 							});
@@ -536,48 +537,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			}
 		};
 	}
-//	//Helper function to get the previous commit.
-//	public static RevCommit getPrevHash(RevCommit commit, Repository repo)  throws  IOException {
-//
-//	    try (RevWalk walk = new RevWalk(repo)) {
-//	        // Starting point
-//	        walk.markStart(commit);
-//	        int count = 0;
-//	        for (RevCommit rev : walk) {
-//	            // got the previous commit.
-//	            if (count == 1) {
-//	                return rev;
-//	            }
-//	            count++;
-//	        }
-//	        walk.dispose();
-//	    }
-//	    //Reached end and no previous commits.
-//	    return null;
-//	}
-//	//Helper gets the diff as a string.
-//	private static String getDiffOfCommit( RevCommit oldCommit,RevCommit newCommit, Repository repo,Git git) throws IOException {
-//	    //Use treeIterator to diff.
-//	    AbstractTreeIterator oldTreeIterator = getCanonicalTreeParser(oldCommit,git);
-//	    AbstractTreeIterator newTreeIterator = getCanonicalTreeParser(newCommit,git);
-//	    OutputStream outputStream = new ByteArrayOutputStream();
-//	    try (DiffFormatter formatter = new DiffFormatter(outputStream)) {
-//	        formatter.setRepository(git.getRepository());
-//	        formatter.format(oldTreeIterator, newTreeIterator);
-//	    }
-//	    String diff = outputStream.toString();
-//	    return diff;
-//	}
-//	//Helper function to get the tree of the changes in a commit. Written by Rüdiger Herrmann
-//	private static AbstractTreeIterator getCanonicalTreeParser(ObjectId commitId,Git git) throws IOException {
-//	    try (RevWalk walk = new RevWalk(git.getRepository())) {
-//	        RevCommit commit = walk.parseCommit(commitId);
-//	        ObjectId treeId = commit.getTree().getId();
-//	        try (ObjectReader reader = git.getRepository().newObjectReader()) {
-//	            return new CanonicalTreeParser(null, reader, treeId);
-//	        }
-//	    }
-//	}
+
 	public static String slugify(String input) {
 		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 				.replaceAll("[^ \\w]", "").trim().replaceAll("\\s+", "-").toLowerCase(Locale.ENGLISH);
@@ -596,9 +556,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 	}
 
-	private static EventHandler<Event> createLoadBranchesEvent(String url, Menu orgBranches, Menu orgCommits,
-			MenuItem loading, MenuItem loadingCommits, EventHandler<Event> loadCommitsEvent) {
-		return new EventHandler<Event>() {
+	private static MenuResettingEventHandler createLoadBranchesEvent(String url, Menu orgBranches) {
+		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;
 			EventHandler<Event> thisEvent = this;
 			@Override
@@ -645,8 +604,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 												String slugify = slugify(newBranch);
 												System.out.println("Creating Branch " + slugify);
 												ScriptingEngine.newBranch(url, slugify);
-												resetMenueForLoadingFiles(orgBranches, loading, thisEvent);
-												resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+												getMenuReset().run();
 											} catch (IOException e) {
 												exp.uncaughtException(Thread.currentThread(), e);
 											} catch (GitAPIException e) {
@@ -674,7 +632,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
 						for (Ref r : branches) {
-							createRepoMenuItem(url, orgBranches, orgCommits, loadingCommits, loadCommitsEvent, onBranch, r);
+							createRepoMenuItem(url, orgBranches, onBranch, r,getMenuReset());
 						}
 					} catch (IOException e) {
 						exp.uncaughtException(Thread.currentThread(), e);
@@ -684,7 +642,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 					System.err.println("Refreshing menu Branches");
 					Platform.runLater(() -> {
 						orgBranches.hide();
-						orgBranches.getItems().remove(loading);
 						Platform.runLater(() -> {
 							orgBranches.show();
 						});
@@ -695,8 +652,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 			
 		};
 	}
-	private static void createRepoMenuItem(String url, Menu orgBranches, Menu orgCommits, MenuItem loadingCommits,
-			EventHandler<Event> loadCommitsEvent, final MenuItem onBranch, Ref r) {
+	private static void createRepoMenuItem(String url, Menu orgBranches,  final MenuItem onBranch, Ref r, Runnable menureset) {
 		String[] name2 = r.getName().split("/");
 		MenuItem tmp = new MenuItem(name2[name2.length - 1]);
 		Ref select = r;
@@ -708,7 +664,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				public void run() {
 					try {
 						switchToThisNewBranch(url, onBranch, select, myName);
-						resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
+						menureset.run();
+
 					} catch (IOException e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
@@ -757,16 +714,25 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		}.start();
 	}
 
-	private static void resetMenueForLoadingFiles(Menu orgFiles, MenuItem loading, EventHandler<Event> loadFiles) {
-		orgFiles.setOnShowing(loadFiles);
-		orgFiles.getItems().clear();
-		Platform.runLater(() -> orgFiles.getItems().add(loading));
+	private static void resetMenueForLoadingFiles(String string, Menu orgFiles,  EventHandler<Event> loadFiles) {
+		Platform.runLater(() -> {
+			try {
+				Platform.runLater(() ->{
+					orgFiles.getItems().clear();
+					Platform.runLater(() ->{
+						orgFiles.getItems().add(new MenuItem(string));
+						orgFiles.getItems().add(new SeparatorMenuItem());
+						orgFiles.setOnShowing(loadFiles);
+					});
+				});
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		});
 	}
 
-	private static EventHandler<Event> createLoadFileEvent(String url, Menu orgFiles, Menu orgCommits, Menu orgBranches,
-			MenuItem loading, MenuItem loadingCommits, MenuItem loadingBranches, EventHandler<Event> loadCommitsEvent,
-			EventHandler<Event> loadBranchesEvent) {
-		return new EventHandler<Event>() {
+	private static MenuResettingEventHandler createLoadFileEvent(String url, Menu orgFiles) {
+		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;
 
 			@Override
@@ -816,6 +782,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 											File fileSelected = ScriptingEngine.fileFromGit(url, string);
 											BowlerStudio.createFileTab(fileSelected);
 											BowlerStudioMenuWorkspace.add(url);
+											getMenuReset().run();
 										} catch (Exception e) {
 											exp.uncaughtException(Thread.currentThread(), e);
 										}
@@ -831,11 +798,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 						System.out.println("Refreshing menu");
 						Platform.runLater(() -> {
 							orgFiles.hide();
-							orgFiles.getItems().remove(loading);
 							Platform.runLater(() -> {
 								orgFiles.show();
-								resetMenueForLoadingFiles(orgCommits, loadingCommits, loadCommitsEvent);
-								resetMenueForLoadingFiles(orgBranches, loadingBranches, loadBranchesEvent);
+								
 							});
 						});
 					}

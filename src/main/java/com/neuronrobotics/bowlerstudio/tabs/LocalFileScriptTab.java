@@ -72,6 +72,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private Font myFont;
 
 	private static HashMap<String, String> langaugeMapping = new HashMap<>();
+	
+	private static LocalFileScriptTab selectedTab = null;
 
 	private class MySwingNode extends SwingNode {
 
@@ -353,6 +355,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			//resizeEvent();
 			SwingUtilities.invokeLater(() ->{
 				resizeEvent();
+				setSelectedTab(this);
 //				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
 //				spscrollPane.invalidate();
 //				spscrollPane.repaint();
@@ -559,5 +562,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				});
 			}
 		});
+	}
+
+	public static LocalFileScriptTab getSelectedTab() {
+		return selectedTab;
+	}
+
+	public static void setSelectedTab(LocalFileScriptTab selectedTab) {
+		//System.err.println("Currently selected "+selectedTab.file.getAbsolutePath());
+		LocalFileScriptTab.selectedTab = selectedTab;
 	}
 }
