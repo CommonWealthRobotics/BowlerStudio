@@ -105,7 +105,7 @@ public class AddFileToGistController extends Application {
 		});
 
 		Platform.runLater(() -> {
-			primaryStage.setTitle("Add File to Gist");
+			primaryStage.setTitle("Add File to Git Repo "+gitRepo);
 
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
