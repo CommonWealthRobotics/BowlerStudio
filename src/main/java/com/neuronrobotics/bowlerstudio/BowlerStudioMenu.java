@@ -56,7 +56,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-public class BowlerStudioMenu implements MenuRefreshEvent {
+public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -127,6 +127,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private static IssueReportingExceptionHandler exp = new IssueReportingExceptionHandler();
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+	private HashMap<String,Menu> vitaminTypeMenus = new HashMap<String, Menu>();
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
@@ -1268,26 +1269,33 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		}.start();
 		
 	}
-	private void addVitaminType(String s) {
-		Menu typeMenu =new Menu(s);
-		Platform.runLater(()->{
-			typeMenu.getItems().add(new MenuItem("Sizes:"));
-			typeMenu.getItems().add(new SeparatorMenuItem());
-		});
+	public void addVitaminType(String s) {
+		getTypeMenu(s);
 		ArrayList<String> sizes = Vitamins.listVitaminSizes(s);
 		for(String size:sizes) {
-			addSizesToMenu(typeMenu,size,s);
+			addSizesToMenu(size,s);
 		}
-		Platform.runLater(()->{
-			vitaminsMenu.getItems().add(typeMenu);
-		});
+		
+	}
+	public Menu getTypeMenu(String type) {
+		if(vitaminTypeMenus.get(type)==null) {
+			Menu typeMenu = new Menu(type);
+			vitaminTypeMenus.put(type, typeMenu);
+			Platform.runLater(()->{
+				vitaminsMenu.getItems().add(typeMenu);
+			});
+			Platform.runLater(()->{
+				typeMenu.getItems().add(new MenuItem("Sizes:"));
+				typeMenu.getItems().add(new SeparatorMenuItem());
+			});
+		}
+		return vitaminTypeMenus.get(type);
 	}
 	
-	
-	private void addSizesToMenu(Menu typeMenu, String size,String type) {
+	public  void addSizesToMenu( String size,String type) {
 		MenuItem sizeMenu =new MenuItem(size);
 		Platform.runLater(()->{
-			typeMenu.getItems().add(sizeMenu);
+			getTypeMenu(type).getItems().add(sizeMenu);
 		});
 		sizeMenu.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -1310,7 +1318,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	}
     @FXML
     void onCreateNewVitamin(ActionEvent event) {
-
+    	try {
+			NewVitaminWizardController.launchWizard(this);
+		} catch (Exception e) {
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+			
+		}
     }
     @FXML
     void onBowlerStudioHelp(ActionEvent event) {

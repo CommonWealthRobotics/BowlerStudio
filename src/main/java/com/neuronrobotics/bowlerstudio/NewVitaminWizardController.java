@@ -16,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Menu;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
@@ -53,7 +54,13 @@ public class NewVitaminWizardController  extends Application {
     @FXML // fx:id="measurmentsTable"
     private TableView<String> measurmentsTable; // Value injected by FXMLLoader
 
-    @FXML
+	private INewVitaminCallback callback;
+
+    public NewVitaminWizardController(INewVitaminCallback callback) {
+		this.callback = callback;
+	}
+
+	@FXML
     void onConfirmAndCreate(ActionEvent event) {
 
     }
@@ -95,11 +102,11 @@ public class NewVitaminWizardController  extends Application {
         
     }
     
-    public static void launchWizard() throws Exception {
+    public static void launchWizard(INewVitaminCallback callback) throws Exception {
 		Platform.runLater(() -> {
 			Stage s = new Stage();
 			new Thread(() -> {
-				NewVitaminWizardController controller = new NewVitaminWizardController();
+				NewVitaminWizardController controller = new NewVitaminWizardController(callback);
 				try {
 					controller.start(s);
 				} catch (Exception e) {
@@ -110,7 +117,26 @@ public class NewVitaminWizardController  extends Application {
     }
 
     public static void main(String [] args) throws Exception {
-    	NewVitaminWizardController.launchWizard();
+    	NewVitaminWizardController.launchWizard(new INewVitaminCallback() {
+			
+			@Override
+			public Menu getTypeMenu(String type) {
+				System.out.println("Get Vitamin Menu");
+
+				return new Menu(type);
+			}
+			
+			@Override
+			public void addVitaminType(String s) {
+				// TODO Auto-generated method stub
+				System.out.println("Add addVitaminType");
+			}
+			
+			@Override
+			public void addSizesToMenu(String size, String type) {
+				System.out.println("Add addSizesToMenu");
+			}
+		});
     }
     
 	@Override
