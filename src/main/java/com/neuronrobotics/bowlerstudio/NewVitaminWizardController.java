@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -26,12 +28,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class NewVitaminWizardController  extends Application {
-
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
+
+    @FXML // fx:id="typePane"
+    private AnchorPane typePane; // Value injected by FXMLLoader
 
     @FXML // fx:id="x1"
     private Font x1; // Value injected by FXMLLoader
@@ -48,31 +52,46 @@ public class NewVitaminWizardController  extends Application {
     @FXML // fx:id="typeComboBox"
     private ComboBox<String> typeComboBox; // Value injected by FXMLLoader
 
+    @FXML // fx:id="sizePane"
+    private AnchorPane sizePane; // Value injected by FXMLLoader
+
     @FXML // fx:id="sizeComboBox"
     private ComboBox<String> sizeComboBox; // Value injected by FXMLLoader
 
+    @FXML // fx:id="measurmentPane"
+    private AnchorPane measurmentPane; // Value injected by FXMLLoader
+
     @FXML // fx:id="measurmentsTable"
     private TableView<String> measurmentsTable; // Value injected by FXMLLoader
+    
+	private static INewVitaminCallback callback=null;
 
-	private INewVitaminCallback callback;
-
-    public NewVitaminWizardController(INewVitaminCallback callback) {
-		this.callback = callback;
-	}
+	private static Stage primaryStage;
 
 	@FXML
     void onConfirmAndCreate(ActionEvent event) {
-
+		try {
+			this.primaryStage.close();
+			primaryStage=null;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+			
+		}
     }
 
     @FXML
     void onConfirmSize(ActionEvent event) {
-
+    	sizePane.setDisable(true);
+        measurmentPane.setDisable(false);
+        typePane.setDisable(true);
     }
 
     @FXML
     void onConfirmType(ActionEvent event) {
-
+    	sizePane.setDisable(false);
+        measurmentPane.setDisable(true);
+        typePane.setDisable(true);
     }
 
     @FXML
@@ -100,13 +119,19 @@ public class NewVitaminWizardController  extends Application {
         assert sizeComboBox != null : "fx:id=\"sizeComboBox\" was not injected: check your FXML file 'newVitaminWizard.fxml'.";
         assert measurmentsTable != null : "fx:id=\"measurmentsTable\" was not injected: check your FXML file 'newVitaminWizard.fxml'.";
         
+        sizePane.setDisable(true);
+        measurmentPane.setDisable(true);
+        
     }
     
     public static void launchWizard(INewVitaminCallback callback) throws Exception {
+    	NewVitaminWizardController.callback=callback;
 		Platform.runLater(() -> {
 			Stage s = new Stage();
+			primaryStage = s;
 			new Thread(() -> {
-				NewVitaminWizardController controller = new NewVitaminWizardController(callback);
+				NewVitaminWizardController controller = new NewVitaminWizardController();
+				
 				try {
 					controller.start(s);
 				} catch (Exception e) {
@@ -117,6 +142,7 @@ public class NewVitaminWizardController  extends Application {
     }
 
     public static void main(String [] args) throws Exception {
+    	JavaFXInitializer.go();
     	NewVitaminWizardController.launchWizard(new INewVitaminCallback() {
 			
 			@Override
