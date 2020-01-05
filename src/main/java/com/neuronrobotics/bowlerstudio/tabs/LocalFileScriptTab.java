@@ -43,6 +43,7 @@ import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -52,6 +53,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
+	private static final IssueReportingExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER = new IssueReportingExceptionHandler();
 	private long lastRefresh = 0;
 	private ScriptingFileWidget scripting;
 
@@ -74,6 +76,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static HashMap<String, String> langaugeMapping = new HashMap<>();
 	
 	private static LocalFileScriptTab selectedTab = null;
+	static {
+		SwingUtilities.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
+
+	}
 
 	private class MySwingNode extends SwingNode {
 
@@ -212,7 +218,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public LocalFileScriptTab(File file) throws IOException {
-
+		Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		this.file = file;
 		setScripting(new ScriptingFileWidget(file));
 		setSpacing(5);
@@ -371,6 +377,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
 		textArea.getInputMap().put(keystroke, "f");
 		textArea.getActionMap().put("f", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4698223073831405851L;
+
 			public void actionPerformed(ActionEvent e) {
 
 				findTextWidget();
@@ -428,7 +439,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptFinished(Object result, Object previous, File source) {
-		// // TODO Auto-generated method stub
 		// SwingUtilities.invokeLater(new Runnable() {
 		// @Override
 		// public void run() {
@@ -459,7 +469,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptError(Throwable except, File source) {
-		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -470,29 +479,27 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	}
 
-	@SuppressWarnings("restriction")
 	public void findTextWidget() {
 		Platform.runLater(() -> {
 			Stage s = new Stage();
 			new Thread() {
 				public void run() {
+					Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
 
 					FindTextWidget controller = new FindTextWidget();
 					controller.setTextArea(textArea);
 					try {
 						controller.start(s);
 					} catch (Exception e) {
-						e.printStackTrace();
+						ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
 					}
 				}
 			}.start();
 		});
-		// DeviceManager.addConnection();
 	}
 
 	@Override
 	public void handle(WindowEvent event) {
-		// TODO Auto-generated method stub
 		getScripting().stop();
 	}
 
@@ -524,8 +531,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			try {
 				textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
+
 			}
 		});
 
@@ -552,11 +559,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		FxTimer.runLater(Duration.ofMillis(200), new Runnable() {
 			@Override
 			public void run() {
+				Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
 				SwingUtilities.invokeLater(() -> {
 					try {
 							textArea.setFont(myFont);
 					} catch (Throwable ex) {
-						System.err.println("Tab Font set failed " + file.getAbsolutePath());
+						ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), ex);
 						setFontLoop();
 					}
 				});
