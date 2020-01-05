@@ -11,6 +11,8 @@ import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 //import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
@@ -38,16 +40,21 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.kohsuke.github.*;
 import org.reactfx.util.FxTimer;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public class BowlerStudioMenu implements MenuRefreshEvent {
 
@@ -101,6 +108,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private Menu WindowMenu;
 	@FXML // fx:id="watchingRepos"
 	private Menu watchingRepos; // Value injected by FXMLLoader
+    @FXML
+    private Menu vitaminsMenu;
+
+    @FXML
+    private MenuItem addNewVitamin;
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
@@ -112,8 +124,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	private HashMap<String, String> messages = new HashMap<String, String>();
 	private static SimpleDateFormat format = new SimpleDateFormat("E 'the' dd 'in' MMM-yyyy 'at' HH:mm");
 	private static SimpleDateFormat formatSimple = new SimpleDateFormat("MM-dd");
-	private static IssueReportingExceptionHandler exp=new IssueReportingExceptionHandler();
-	
+	private static IssueReportingExceptionHandler exp = new IssueReportingExceptionHandler();
+	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
@@ -543,8 +556,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 	}
 
 	public static String slugify(String input) {
-		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-				.replaceAll("[^ \\w]", "").trim().replaceAll("\\s+", "-").toLowerCase(Locale.ENGLISH);
+		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+	    String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
+	    String slug = NONLATIN.matcher(normalized).replaceAll("").replace('-', '_');
+	    
+	    return slug.toLowerCase(Locale.ENGLISH);
 	}
 
 	private static void promptForNewBranch(String exampleName,String reasonForCreating,Consumer<String> resultEvent) {
@@ -1040,6 +1056,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		assert myRepos != null : "fx:id=\"myRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert watchingRepos != null : "fx:id=\"watchingRepos\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		assert workspacemenuHandle != null : "fx:id=\"workspacemenuHandle\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert vitaminsMenu != null : "fx:id=\"vitaminsMenu\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+		assert addNewVitamin != null : "fx:id=\"addNewVitamin\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
+
 		selfRef = this;
 		BowlerStudioMenuWorkspace.init(workspacemenuHandle);
 
@@ -1055,8 +1074,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		});
 		new Thread() {
 			public void run() {
-
-				ThreadUtil.wait(500);
 				try {
 					ScriptingEngine.setAutoupdate(true);
 					File f = ScriptingEngine.fileFromGit(
@@ -1090,6 +1107,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 				}
 			}
 		}.start();
+		
 
 		addMarlinGCODEDevice.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
@@ -1227,6 +1245,61 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 
 		}
 		WindowMenu.getItems().add(fontSelect);
+		
+		new Thread() {
+			public void run() {
+				setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+				try {
+					if(vitaminsMenu==null)
+						throw new RuntimeException("Vitamins menu was not inserted");
+					if(vitaminsMenu.getItems()==null)
+						throw new RuntimeException("Vitamins menu items are null");
+					Platform.runLater(()->{
+						vitaminsMenu.getItems().add(new SeparatorMenuItem());
+					});	
+					ArrayList<String> types = Vitamins.listVitaminTypes();
+					for(String s:types) {
+						addVitaminType(s);
+					}
+				} catch (Exception e) {
+					exp.uncaughtException(Thread.currentThread(), e);
+				}
+			}
+		}.start();
+		
+	}
+	private void addVitaminType(String s) {
+		Menu typeMenu =new Menu(s);
+		Platform.runLater(()->{
+			typeMenu.getItems().add(new MenuItem("Sizes:"));
+			typeMenu.getItems().add(new SeparatorMenuItem());
+		});
+		ArrayList<String> sizes = Vitamins.listVitaminSizes(s);
+		for(String size:sizes) {
+			addSizesToMenu(typeMenu,size,s);
+		}
+		Platform.runLater(()->{
+			vitaminsMenu.getItems().add(typeMenu);
+		});
+	}
+	
+	
+	private void addSizesToMenu(Menu typeMenu, String size,String type) {
+		MenuItem sizeMenu =new MenuItem(size);
+		Platform.runLater(()->{
+			typeMenu.getItems().add(sizeMenu);
+		});
+		sizeMenu.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				new Thread() {
+					public void run() {
+						LocalFileScriptTab tab =LocalFileScriptTab.getSelectedTab();
+						tab.insertString("CSG vitamin_"+slugify(type)+"_"+slugify(size)+" = Vitamins.get(\""+type+"\", \""+size+"\")\n");
+					}
+				}.start();
+			}
+		});
 	}
 
 	@FXML
@@ -1234,5 +1307,24 @@ public class BowlerStudioMenu implements MenuRefreshEvent {
 		setToLoggedIn();
 
 	}
+    @FXML
+    void onCreateNewVitamin(ActionEvent event) {
 
+    }
+    @FXML
+    void onBowlerStudioHelp(ActionEvent event) {
+    	new Thread(()->{
+    		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+    		    try {
+					Desktop.getDesktop().browse(new URI("https://hackaday.io/project/6423-bowlerstudio-a-robotics-development-platform"));
+				} catch (IOException e) {
+					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+					
+				} catch (URISyntaxException e) {
+					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+					
+				}
+    		}
+    	}) .start();
+    }
 }

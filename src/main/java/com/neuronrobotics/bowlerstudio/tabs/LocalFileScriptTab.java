@@ -572,4 +572,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		//System.err.println("Currently selected "+selectedTab.file.getAbsolutePath());
 		LocalFileScriptTab.selectedTab = selectedTab;
 	}
+
+	public void insertString(String string) {
+		int caretpos = textArea.getCaretPosition();
+		String text = textArea.getText();
+		String combined = text.substring(0,caretpos)+string+text.substring(caretpos,text.length()-1);
+		onScriptChanged(text, combined,  file);
+		SwingUtilities.invokeLater(() -> {
+			 textArea.setCaretPosition(caretpos+string.length());
+		});
+	}
 }
