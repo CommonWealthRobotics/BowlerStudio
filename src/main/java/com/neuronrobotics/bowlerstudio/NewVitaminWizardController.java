@@ -105,10 +105,9 @@ public class NewVitaminWizardController  extends Application {
 	private static INewVitaminCallback callback=null;
 
 	private static Stage primaryStage;
-	private String typeOfVitamin = null;
-	//private String sizeOfVitamin=null;
+	private static String typeOfVitaminString = null;
 
-	private String sizeOfVitaminString;
+	private static String sizeOfVitaminString = null;
 
 	@FXML
     void onConfirmAndCreate(ActionEvent event) {
@@ -120,12 +119,12 @@ public class NewVitaminWizardController  extends Application {
 				
 				if(newTypeRadio.isSelected()) {
 					if(isShaft.isSelected())
-						Vitamins.setIsShaft(typeOfVitamin);
+						Vitamins.setIsShaft(typeOfVitaminString);
 					if(isMotor.isSelected())
-						Vitamins.setIsActuator(typeOfVitamin);
+						Vitamins.setIsActuator(typeOfVitaminString);
 					GitHub github = PasswordManager.getGithub();
 					
-					String newName =typeOfVitamin+"CadGenerator";
+					String newName =typeOfVitaminString+"CadGenerator";
 					GHCreateRepositoryBuilder builder = github.createRepository(newName );
 					builder.description(newName + " Generates CAD vitamins " );
 					GHRepository gist=null;
@@ -137,19 +136,19 @@ public class NewVitaminWizardController  extends Application {
 						}
 					}
 					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
-					String filename = typeOfVitamin+".groovy";
-					Vitamins.setScript(typeOfVitamin, gitURL, filename);
+					String filename = typeOfVitaminString+".groovy";
+					Vitamins.setScript(typeOfVitaminString, gitURL, filename);
 					String measurments ="";
-					for(String key:Vitamins.getConfiguration( typeOfVitamin,sizeOfVitaminString).keySet()) {
+					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
 					}
-					for(String key:Vitamins.getConfiguration( typeOfVitamin,sizeOfVitaminString).keySet()) {
+					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
 						String string = key+"Value";
 						measurments+="\n	println \"Loaded from vitamins measurments "+string+":  \"+"+string+"+\" value is = \"+"+string;
 					}
 					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
 							"CSG generate(){\n" + 
-							"	String type= \""+typeOfVitamin+"\"\n" + 
+							"	String type= \""+typeOfVitaminString+"\"\n" + 
 							"	if(args==null)\n" + 
 							"		args=[\""+sizeOfVitaminString+" \"]\n" + 
 							"	// The variable that stores the current size of this vitamin\n"
@@ -170,13 +169,13 @@ public class NewVitaminWizardController  extends Application {
 					
 				}
 				
-				Vitamins.saveDatabaseForkIfMissing(typeOfVitamin);
+				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 				
 				if(newTypeRadio.isSelected()) {
-					callback.addVitaminType(typeOfVitamin);
+					callback.addVitaminType(typeOfVitaminString);
 				}else
 					if(!editExisting.isSelected())
-						callback.addSizesToMenu(sizeOfVitaminString, typeOfVitamin);
+						callback.addSizesToMenu(sizeOfVitaminString, typeOfVitaminString);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
@@ -192,6 +191,7 @@ public class NewVitaminWizardController  extends Application {
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 				
 			}
+			
 		}).start();
 
     }
@@ -251,7 +251,7 @@ public class NewVitaminWizardController  extends Application {
 			if(!editExisting.isSelected()) {
 				boolean exists = false;
 				// for existing types check for existing sizes
-				ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitamin);
+				ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitaminString);
 				for(String size:sizes) {
 					if(size.contentEquals(sizeOfVitaminString))
 						exists=true;
@@ -268,50 +268,67 @@ public class NewVitaminWizardController  extends Application {
 				}
 			}
 			new Thread(() -> {
-				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitamin, sizeComboBox.getSelectionModel().getSelectedItem());
-				HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
+				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitaminString, sizeComboBox.getSelectionModel().getSelectedItem());
 				for(String key:configsOld.keySet()) {
-					setupKeyValueToTable(key, configsOld.get(key));
+					setupKeyValueToTable(key, configsOld.get(key),sizeOfVitaminString);
 				}
 			}).start();
 
 		}
 		
-		if(Vitamins.isActuator(typeOfVitamin)) {
+		if(Vitamins.isActuator(typeOfVitaminString)) {
 			new Thread(() -> {
 				HashMap<String, Object> required = new HashMap<String, Object>();
 				required.put("MaxTorqueNewtonmeters", 0.0586);
-				required.put("source", "https://commonwealthrobotics.com");
 				required.put("MaxFreeSpeedRadPerSec", 46.5);
 				required.put("massKg", 0.11);
 				required.put("shaftType", "dShaft");
 				required.put("shaftSize", "5mm");
-				HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
-				for(String key:required.keySet()) {
-					Object value = required.get(key);
-					if(!configs.containsKey(key)) {
-						setupKeyValueToTable(key, value);
-					}
-				}
+				setRequiredFields(required);
 			}).start();
 		}
+		new Thread(() -> {
+			HashMap<String, Object> required = new HashMap<String, Object>();
+			required.put("massKg", 0.001);
+			required.put("source", "https://commonwealthrobotics.com");
+			required.put("massCentroidX", 0.0);
+			required.put("massCentroidY", 0.0);
+			required.put("massCentroidZ", 0.0);
+			setRequiredFields(required);
+		}).start();
     	sizePane.setDisable(true);
         measurmentPane.setDisable(false);
         typePane.setDisable(true);
     }
 
-	private void setupKeyValueToTable(String key, Object value) {
-		Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString).put(key, value);
-		Platform.runLater(() -> measurmentsTable.getItems()
-				.add(new MeasurmentConfig(key, Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString))));
+	private void setRequiredFields(HashMap<String, Object> required) {
+		// For each vitamin size in a given type
+		for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
+			HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitaminString, size);
+			// For every required key
+			for(String key:required.keySet()) {
+				// check to see if the current size has this key already
+				if(!configs.containsKey(key)) {
+					// enter a default value, but ensure that the key exists for downstream code
+					setupKeyValueToTable(key, required.get(key),size);
+				}
+			}
+		}
+	}
+
+	private void setupKeyValueToTable(String key, Object value, String size) {
+		Vitamins.getConfiguration(typeOfVitaminString, size).put(key, value);
+		if (size.contentEquals(sizeOfVitaminString))
+			Platform.runLater(() -> measurmentsTable.getItems()
+					.add(new MeasurmentConfig(key, Vitamins.getConfiguration(typeOfVitaminString, sizeOfVitaminString))));
 	}
 
     @FXML
     void onConfirmType(ActionEvent event) {
 
     	if(newTypeRadio.isSelected()) {
-    		typeOfVitamin=newTypeNameField.getText();
-    		if(typeOfVitamin.length()<2) {
+    		typeOfVitaminString=newTypeNameField.getText();
+    		if(typeOfVitaminString.length()<2) {
     			Platform.runLater(() -> {
     				Alert alert = new Alert(AlertType.WARNING);
     				alert.setTitle("No name specified!");
@@ -321,8 +338,8 @@ public class NewVitaminWizardController  extends Application {
     			});
     			return;
     		}
-    		String slug = BowlerStudioMenu.slugify(typeOfVitamin);
-    		if(!typeOfVitamin.contentEquals(slug)) {
+    		String slug = BowlerStudioMenu.slugify(typeOfVitaminString);
+    		if(!typeOfVitaminString.contentEquals(slug)) {
     			Platform.runLater(() -> {
     				Alert alert = new Alert(AlertType.WARNING);
     				alert.setTitle("Name Format Wrong");
@@ -334,20 +351,30 @@ public class NewVitaminWizardController  extends Application {
     			
     			return;
     		}
-    		typeOfVitamin=slug;
+    		typeOfVitaminString=slug;
     		sizeComboBox.setDisable(true);
     		editExisting.setDisable(true);
     		saveAndFork();
     	}else {
-    		typeOfVitamin=typeComboBox.getSelectionModel().getSelectedItem();
+    		typeOfVitaminString=typeComboBox.getSelectionModel().getSelectedItem();
     		saveAndFork();
-    		ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitamin);
+    		ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitaminString);
+			boolean hasSize=false;
+
     		for(String size:sizes) {
     			sizeComboBox.getItems().add(size);
+    			if(typeOfVitaminString!=null)
+    				if(size.contentEquals(typeOfVitaminString)) {
+    					hasSize=true;
+    				}
     		}
-    		if(sizes.size()>0)
-    			sizeComboBox.getSelectionModel().select(sizes.get(0));
-    		else {
+    		if(sizes.size()>0) {
+    			if(hasSize) {
+    				sizeComboBox.getSelectionModel().select(typeOfVitaminString);
+    			}else {
+    				sizeComboBox.getSelectionModel().select(sizes.get(0));
+    			}
+    		}else {
     			sizeComboBox.setDisable(true);
         		editExisting.setDisable(true);
         		editExisting.setSelected(false);
@@ -362,7 +389,7 @@ public class NewVitaminWizardController  extends Application {
 	private void saveAndFork() {
 		new Thread(() -> {
 			try {
-				Vitamins.saveDatabaseForkIfMissing(typeOfVitamin);
+				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 		    	sizePane.setDisable(false);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -377,9 +404,8 @@ public class NewVitaminWizardController  extends Application {
 	@FXML
     void onNewMeasurment(ActionEvent event) {
 		newMeasurmentButton.setDisable(true);
-		HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
 		TextInputDialog dialog = new TextInputDialog("lengthOfThing");
-		dialog.setTitle("Add new measurment to "+typeOfVitamin);
+		dialog.setTitle("Add new measurment to "+typeOfVitaminString);
 		dialog.setHeaderText("This measurment will be added to all instances of the vitamin");
 		dialog.setContentText("New measurment name:");
 
@@ -395,9 +421,9 @@ public class NewVitaminWizardController  extends Application {
 			// Traditional way to get the response value.
 			Optional<String> result2 = dialog2.showAndWait();
 			result2.ifPresent(name2 -> { 
-				setupKeyValueToTable(name,name2);
-				for(String size:Vitamins.listVitaminSizes(typeOfVitamin)) {
-					Vitamins.getConfiguration(typeOfVitamin, size).put(name,name2);
+				setupKeyValueToTable(name,name2,sizeOfVitaminString);
+				for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
+					Vitamins.getConfiguration(typeOfVitaminString, size).put(name,name2);
 				}
 			});
 			newMeasurmentButton.setDisable(false);
@@ -467,7 +493,10 @@ public class NewVitaminWizardController  extends Application {
 		for(String s:types) {
 			typeComboBox.getItems().add(s);
 		}
-		typeComboBox.getSelectionModel().select(types.get(0));
+		if(typeOfVitaminString==null)
+			typeComboBox.getSelectionModel().select(types.get(0));
+		else
+			typeComboBox.getSelectionModel().select(typeOfVitaminString);
 		isShaft.setDisable(true);
 		isMotor.setDisable(true);
     }
@@ -491,35 +520,37 @@ public class NewVitaminWizardController  extends Application {
 
     public static void main(String [] args) throws Exception {
     	JavaFXInitializer.go();
-    	NewVitaminWizardController.launchWizard(new INewVitaminCallback() {
-			
-			@Override
-			public Menu getTypeMenu(String type) {
-				System.out.println("Get Vitamin Menu");
-
-				return new Menu(type);
-			}
-			
-			@Override
-			public void addVitaminType(String s) {
-				getTypeMenu(s);
-				ArrayList<String> sizes = Vitamins.listVitaminSizes(s);
-				for(String size:sizes) {
-					addSizesToMenu(size,s);
+    	
+	    	NewVitaminWizardController.launchWizard(new INewVitaminCallback() {
+				
+				@Override
+				public Menu getTypeMenu(String type) {
+					System.out.println("Get Vitamin Menu");
+	
+					return new Menu(type);
 				}
-				System.out.println("Add addVitaminType "+s);
-			}
-			
-			@Override
-			public void addSizesToMenu(String size, String type) {
-				System.out.println("Add addSizesToMenu "+type+" "+size );
-			}
-		});
+				
+				@Override
+				public void addVitaminType(String s) {
+					getTypeMenu(s);
+					ArrayList<String> sizes = Vitamins.listVitaminSizes(s);
+					for(String size:sizes) {
+						addSizesToMenu(size,s);
+					}
+					System.out.println("Add addVitaminType "+s);
+				}
+				
+				@Override
+				public void addSizesToMenu(String size, String type) {
+					System.out.println("Add addSizesToMenu "+type+" "+size );
+				}
+			});
+    	
     }
     
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = AssetFactory.loadLayout("layout/newVitaminWizard.fxml");
+		FXMLLoader loader = AssetFactory.loadLayout("layout/newVitaminWizard.fxml",true);
 		Parent root;
 		//loader.setController(this);
 		// This is needed when loading on MAC
