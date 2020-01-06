@@ -28,6 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
@@ -98,7 +99,9 @@ public class NewVitaminWizardController  extends Application {
     private CheckBox isShaft; // Value injected by FXMLLoader
     @FXML // fx:id="editExisting"
     private CheckBox editExisting; // Value injected by FXMLLoader
-
+    @FXML // fx:id="editExisting"
+    private Button newMeasurmentButton;
+    
 	private static INewVitaminCallback callback=null;
 
 	private static Stage primaryStage;
@@ -166,6 +169,7 @@ public class NewVitaminWizardController  extends Application {
 							loader, "new CAD loader script");
 					
 				}
+				
 				Vitamins.saveDatabaseForkIfMissing(typeOfVitamin);
 				
 				if(newTypeRadio.isSelected()) {
@@ -266,19 +270,41 @@ public class NewVitaminWizardController  extends Application {
 			new Thread(() -> {
 				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitamin, sizeComboBox.getSelectionModel().getSelectedItem());
 				HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
-				for(String key:configsOld.keySet())
-					configs.put(key,configsOld.get(key));
-				for(String key:configs.keySet()) {
-					Platform.runLater(() ->measurmentsTable.getItems().add(new MeasurmentConfig(key, configs)));
+				for(String key:configsOld.keySet()) {
+					setupKeyValueToTable(key, configsOld.get(key));
 				}
 			}).start();
 
 		}
 		
+		if(Vitamins.isActuator(typeOfVitamin)) {
+			new Thread(() -> {
+				HashMap<String, Object> required = new HashMap<String, Object>();
+				required.put("MaxTorqueNewtonmeters", 0.0586);
+				required.put("source", "https://commonwealthrobotics.com");
+				required.put("MaxFreeSpeedRadPerSec", 46.5);
+				required.put("massKg", 0.11);
+				required.put("shaftType", "dShaft");
+				required.put("shaftSize", "5mm");
+				HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
+				for(String key:required.keySet()) {
+					Object value = required.get(key);
+					if(!configs.containsKey(key)) {
+						setupKeyValueToTable(key, value);
+					}
+				}
+			}).start();
+		}
     	sizePane.setDisable(true);
         measurmentPane.setDisable(false);
         typePane.setDisable(true);
     }
+
+	private void setupKeyValueToTable(String key, Object value) {
+		Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString).put(key, value);
+		Platform.runLater(() -> measurmentsTable.getItems()
+				.add(new MeasurmentConfig(key, Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString))));
+	}
 
     @FXML
     void onConfirmType(ActionEvent event) {
@@ -350,6 +376,7 @@ public class NewVitaminWizardController  extends Application {
  
 	@FXML
     void onNewMeasurment(ActionEvent event) {
+		newMeasurmentButton.setDisable(true);
 		HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitamin, sizeOfVitaminString);
 		TextInputDialog dialog = new TextInputDialog("lengthOfThing");
 		dialog.setTitle("Add new measurment to "+typeOfVitamin);
@@ -368,12 +395,12 @@ public class NewVitaminWizardController  extends Application {
 			// Traditional way to get the response value.
 			Optional<String> result2 = dialog2.showAndWait();
 			result2.ifPresent(name2 -> { 
-				configs.put(name,name2);
-				measurmentsTable.getItems().add(new MeasurmentConfig(name, configs));
+				setupKeyValueToTable(name,name2);
 				for(String size:Vitamins.listVitaminSizes(typeOfVitamin)) {
 					Vitamins.getConfiguration(typeOfVitamin, size).put(name,name2);
 				}
 			});
+			newMeasurmentButton.setDisable(false);
 			
 		});
 		

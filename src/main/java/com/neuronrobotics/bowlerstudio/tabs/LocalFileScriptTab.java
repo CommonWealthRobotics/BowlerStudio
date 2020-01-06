@@ -564,7 +564,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					try {
 							textArea.setFont(myFont);
 					} catch (Throwable ex) {
-						ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), ex);
+						//ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), ex);
 						setFontLoop();
 					}
 				});
