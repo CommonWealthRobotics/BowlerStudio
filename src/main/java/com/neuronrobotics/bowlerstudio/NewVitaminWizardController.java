@@ -9,7 +9,13 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.kohsuke.github.GHCreateRepositoryBuilder;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
@@ -97,20 +103,93 @@ public class NewVitaminWizardController  extends Application {
 
 	private static Stage primaryStage;
 	private String typeOfVitamin = null;
-	private String sizeOfVitamin=null;
+	//private String sizeOfVitamin=null;
 
 	private String sizeOfVitaminString;
 
 	@FXML
     void onConfirmAndCreate(ActionEvent event) {
-		try {
-			this.primaryStage.close();
-			primaryStage=null;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-			
-		}
+		sizePane.setDisable(true);
+        measurmentPane.setDisable(true);
+        typePane.setDisable(true);
+		new Thread(() -> {
+			try {
+				
+				if(newTypeRadio.isSelected()) {
+					if(isShaft.isSelected())
+						Vitamins.setIsShaft(typeOfVitamin);
+					if(isMotor.isSelected())
+						Vitamins.setIsActuator(typeOfVitamin);
+					GitHub github = PasswordManager.getGithub();
+					
+					String newName =typeOfVitamin+"CadGenerator";
+					GHCreateRepositoryBuilder builder = github.createRepository(newName );
+					builder.description(newName + " Generates CAD vitamins " );
+					GHRepository gist=null;
+					try {
+						gist = builder.create();
+					}catch(org.kohsuke.github.HttpException ex) {
+						if(ex.getMessage().contains("name already exists on this account")) {
+							gist = github.getRepository(PasswordManager.getLoginID()+"/"+newName);
+						}
+					}
+					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
+					String filename = typeOfVitamin+".groovy";
+					Vitamins.setScript(typeOfVitamin, gitURL, filename);
+					String measurments ="";
+					for(String key:Vitamins.getConfiguration( typeOfVitamin,sizeOfVitaminString).keySet()) {
+						measurments+="\n	def "+key+"Value = measurments."+key;
+					}
+					for(String key:Vitamins.getConfiguration( typeOfVitamin,sizeOfVitaminString).keySet()) {
+						String string = key+"Value";
+						measurments+="\n	println \"Loaded from vitamins measurments "+string+":  \"+"+string+"+\" value is = \"+"+string;
+					}
+					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
+							"CSG generate(){\n" + 
+							"	String type= \""+typeOfVitamin+"\"\n" + 
+							"	if(args==null)\n" + 
+							"		args=[\""+sizeOfVitaminString+" \"]\n" + 
+							"	// The variable that stores the current size of this vitamin\n"
+							+ "	StringParameter size = new StringParameter(	type+\" Default\"," + 
+							"args.get(0)," + 
+							"Vitamins.listVitaminSizes(type))\n" + 
+							"	HashMap<String,Object> measurments = Vitamins.getConfiguration( type,size.getStrValue())\n" + 
+							measurments+"\n"+
+							"	// Stub of a CAD object\n"+
+							"	CSG part = new Cube().toCSG()\n"+
+							"	return part\n" + 
+							"		.setParameter(size)\n" + 
+							"		.setRegenerate({generate()})\n" + 
+							"}\n" + 
+							"return generate() ";
+					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
+							loader, "new CAD loader script");
+					
+				}
+				Vitamins.saveDatabaseForkIfMissing(typeOfVitamin);
+				
+				if(newTypeRadio.isSelected()) {
+					callback.addVitaminType(typeOfVitamin);
+				}else
+					if(!editExisting.isSelected())
+						callback.addSizesToMenu(sizeOfVitaminString, typeOfVitamin);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
+			}
+			try {
+				Platform.runLater(() -> {
+					this.primaryStage.close();
+					primaryStage=null;
+				});
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				
+			}
+		}).start();
+
     }
 
     @FXML
@@ -193,8 +272,7 @@ public class NewVitaminWizardController  extends Application {
 					Platform.runLater(() ->measurmentsTable.getItems().add(new MeasurmentConfig(key, configs)));
 				}
 			}).start();
-		
-			
+
 		}
 		
     	sizePane.setDisable(true);
@@ -232,20 +310,42 @@ public class NewVitaminWizardController  extends Application {
     		}
     		typeOfVitamin=slug;
     		sizeComboBox.setDisable(true);
-    		
+    		editExisting.setDisable(true);
+    		saveAndFork();
     	}else {
     		typeOfVitamin=typeComboBox.getSelectionModel().getSelectedItem();
+    		saveAndFork();
     		ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitamin);
     		for(String size:sizes) {
     			sizeComboBox.getItems().add(size);
     		}
-    		sizeComboBox.getSelectionModel().select(sizes.get(0));
+    		if(sizes.size()>0)
+    			sizeComboBox.getSelectionModel().select(sizes.get(0));
+    		else {
+    			sizeComboBox.setDisable(true);
+        		editExisting.setDisable(true);
+        		editExisting.setSelected(false);
+        		
+    		}
     	}
-    	sizePane.setDisable(false);
         measurmentPane.setDisable(true);
         typePane.setDisable(true);
         
     }
+
+	private void saveAndFork() {
+		new Thread(() -> {
+			try {
+				Vitamins.saveDatabaseForkIfMissing(typeOfVitamin);
+		    	sizePane.setDisable(false);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				
+			}
+		}).start();
+
+	}
 
  
 	@FXML
@@ -284,6 +384,8 @@ public class NewVitaminWizardController  extends Application {
     void onSelectExistingTypeMode(ActionEvent event) {
     	newTypeNameField.setEditable(false);
     	typeComboBox.setDisable(false);
+    	isShaft.setDisable(true);
+		isMotor.setDisable(true);
     }
 
     @FXML

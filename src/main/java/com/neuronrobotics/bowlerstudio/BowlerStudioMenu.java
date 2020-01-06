@@ -561,7 +561,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	    String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
 	    String slug = NONLATIN.matcher(normalized).replaceAll("").replace('-', '_');
 	    
-	    return slug.toLowerCase(Locale.ENGLISH);
+	    return slug;
 	}
 
 	private static void promptForNewBranch(String exampleName,String reasonForCreating,Consumer<String> resultEvent) {
