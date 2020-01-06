@@ -145,13 +145,13 @@ public class NewVitaminWizardController  extends Application {
 					}
 					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
 						String string = key+"Value";
-						measurments+="\n	println \"Loaded from vitamins measurments "+string+":  \"+"+string+"+\" value is = \"+"+string;
+						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
 					}
 					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
 							"CSG generate(){\n" + 
 							"	String type= \""+typeOfVitaminString+"\"\n" + 
 							"	if(args==null)\n" + 
-							"		args=[\""+sizeOfVitaminString+" \"]\n" + 
+							"		args=[\""+sizeOfVitaminString+"\"]\n" + 
 							"	// The variable that stores the current size of this vitamin\n"
 							+ "	StringParameter size = new StringParameter(	type+\" Default\"," + 
 							"args.get(0)," + 
@@ -292,6 +292,7 @@ public class NewVitaminWizardController  extends Application {
 			HashMap<String, Object> required = new HashMap<String, Object>();
 			required.put("massKg", 0.001);
 			required.put("source", "https://commonwealthrobotics.com");
+			required.put("price", 0.01);
 			required.put("massCentroidX", 0.0);
 			required.put("massCentroidY", 0.0);
 			required.put("massCentroidZ", 0.0);
