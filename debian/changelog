@@ -1,3 +1,25 @@
+bowlerstudio (1.1.0) bionic; urgency=medium
+
+  * renamed the label on the git file add
+  * version bump
+  * Added a vitamins menu
+  * adding uncaught exception handlers
+  * Adding a new Vitamin wizard
+  * Adding the vitamin creation callbacks
+  * basic workflow added
+  * Basic editing of data
+  * Adding functioning New Vitamins wizard
+  * ensure that motors have all required fields
+  * Vitamins menu for editing works
+  * New vitamin wizard is working
+  * Close #98
+  * better issue reporting
+  * cleaned up codegen section
+  * sanatized configurations
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 06 Jan 2020 17:45:52 -0500
+
 bowlerstudio (1.0.11) bionic; urgency=medium
 
   * Only load menu items when the mouse enters the repository
