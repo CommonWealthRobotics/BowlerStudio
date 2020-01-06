@@ -584,7 +584,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	public void insertString(String string) {
 		int caretpos = textArea.getCaretPosition();
 		String text = textArea.getText();
-		String combined = text.substring(0,caretpos)+string+text.substring(caretpos,text.length()-1);
+		String substring = text.substring(0,caretpos);
+		String substring2;
+		try {
+		 substring2 = text.substring(caretpos,text.length()-1);
+		}catch(java.lang.StringIndexOutOfBoundsException ex) {
+			substring2="";
+		}
+		String combined = substring+string+substring2;
 		onScriptChanged(text, combined,  file);
 		SwingUtilities.invokeLater(() -> {
 			 textArea.setCaretPosition(caretpos+string.length());
