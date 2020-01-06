@@ -138,6 +138,7 @@ public class NewVitaminWizardController  extends Application {
 					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
 					String filename = typeOfVitaminString+".groovy";
 					Vitamins.setScript(typeOfVitaminString, gitURL, filename);
+					
 					String measurments ="";
 					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
@@ -166,7 +167,7 @@ public class NewVitaminWizardController  extends Application {
 							"return generate() ";
 					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
 							loader, "new CAD loader script");
-					
+					new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(typeOfVitaminString))).start();
 				}
 				
 				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);

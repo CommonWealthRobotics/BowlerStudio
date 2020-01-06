@@ -1280,12 +1280,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	public Menu getTypeMenu(String type) {
 		if(vitaminTypeMenus.get(type)==null) {
 			Menu typeMenu = new Menu(type);
+			MenuItem editScript = new MenuItem("Edit "+type+" Cad Generator...");
+			editScript.setOnAction(event -> {
+				new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
+			});
 			vitaminTypeMenus.put(type, typeMenu);
 			Platform.runLater(()->{
 				vitaminsMenu.getItems().add(typeMenu);
 			});
 			Platform.runLater(()->{
 				typeMenu.getItems().add(new MenuItem("Sizes:"));
+				typeMenu.getItems().add(new SeparatorMenuItem());
+				typeMenu.getItems().add(editScript);
 				typeMenu.getItems().add(new SeparatorMenuItem());
 			});
 		}
