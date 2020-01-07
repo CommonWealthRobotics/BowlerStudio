@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.time.Duration;
 import java.util.HashMap;
 
@@ -38,6 +39,8 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.MySwingNode;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -48,8 +51,11 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.FindTextWidget;
+import com.sun.javafx.sg.prism.NGExternalNode;
+import com.sun.javafx.stage.WindowHelper;
 
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
@@ -81,103 +87,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	}
 
-	private class MySwingNode extends SwingNode {
-
-		@Override
-		public double prefWidth(double height) {
-			try {
-				return super.prefWidth(height);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return prefWidthProperty().doubleValue();
-			}
-
-		}
-
-		@Override
-		public double prefHeight(double height) {
-			try {
-				return super.prefHeight(height);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return prefHeightProperty().doubleValue();
-			}
-
-		}
-		/**
-		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
-		 * This value corresponds to the minimum width of the Swing component.
-		 * 
-		 * @return the minimum width that the node should be resized to during layout
-		 */
-		@Override
-		public double maxWidth(double height) {
-			try {
-				return super.maxWidth(height);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return maxWidthProperty().doubleValue();
-			}
-
-		}
-
-		/**
-		 * Returns the {@code SwingNode}'s minimum height for use in layout
-		 * calculations. This value corresponds to the minimum height of the Swing
-		 * component.
-		 * 
-		 * @return the minimum height that the node should be resized to during layout
-		 */
-		@Override
-		public double maxHeight(double width) {
-			try {
-				return super.maxHeight(width);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return maxHeightProperty().doubleValue();
-			}
-		}
-
-		/**
-		 * Returns the {@code SwingNode}'s minimum width for use in layout calculations.
-		 * This value corresponds to the minimum width of the Swing component.
-		 * 
-		 * @return the minimum width that the node should be resized to during layout
-		 */
-		@Override
-		public double minWidth(double height) {
-			try {
-				return super.minWidth(height);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return minWidthProperty().doubleValue();
-			}
-
-		}
-
-		/**
-		 * Returns the {@code SwingNode}'s minimum height for use in layout
-		 * calculations. This value corresponds to the minimum height of the Swing
-		 * component.
-		 * 
-		 * @return the minimum height that the node should be resized to during layout
-		 */
-		@Override
-		public double minHeight(double width) {
-			try {
-				return super.minHeight(width);
-			} catch (Exception e) {
-				// System.out.println("Error in "+file);
-				// e.printStackTrace();
-				return minHeightProperty().doubleValue();
-			}
-		}
-	}
+	 
 
 	public class MyRSyntaxTextArea extends RSyntaxTextArea implements ComponentListener {
 
@@ -349,7 +259,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		spscrollPane = new RTextScrollPane(textArea);
 
-		swingNode = new MySwingNode();
+		swingNode = new MySwingNode(this);
 
 		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
 
