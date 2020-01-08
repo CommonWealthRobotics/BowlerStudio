@@ -1,3 +1,16 @@
+bowlerstudio (1.2.2) bionic; urgency=medium
+
+  * Resolve #100
+  * updating library
+  * This should address #104
+  * 1.2.0
+  * Close #106 and Close #105
+  * Catch and swallow printing exceptions Close #110
+  * Ensure #110 is handled properly in the future
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 08 Jan 2020 16:35:22 -0500
+
 bowlerstudio (1.1.0) bionic; urgency=medium
 
   * renamed the label on the git file add
