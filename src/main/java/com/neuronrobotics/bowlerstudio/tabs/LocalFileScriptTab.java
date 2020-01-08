@@ -336,12 +336,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			textArea.repaint();
 			
 			textArea.requestFocusInWindow();
-			FxTimer.runLater(Duration.ofMillis((int) 16), new Runnable() {
-				@Override
-				public void run() {
-					swingNode.setContent(spscrollPane);
-					swingNode.requestFocus();
-				}
+			FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+				swingNode.setContent(spscrollPane);
+				swingNode.requestFocus();
 			});
 		});
 		

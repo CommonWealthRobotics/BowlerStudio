@@ -319,45 +319,39 @@ public class BowlerStudio extends Application {
 				// StudioBuildInfo.getVersion());
 				myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 						"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
-				
-				ScriptingEngine.pull(myAssets);
+				renderSplashFrame(20, "DL'ing Image Assets");
 				lastVersion = ScriptingEngine.getBranch(myAssets);
-				if(StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
-					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
-				}else {
-					ScriptingEngine.deleteRepo(myAssets);
-					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
-					lastVersion = ScriptingEngine.getBranch(myAssets);
-				}
-				
-				
-				if (lastVersion == null) {
-					System.err.println("deleting currupt Asset Repo " + myAssets);
-					ScriptingEngine.deleteRepo(myAssets);
-					ScriptingEngine.filesInGit(myAssets, StudioBuildInfo.getVersion(), null);
-					lastVersion = ScriptingEngine.getBranch(myAssets);
-				}
 				System.err.println("Asset Repo " + myAssets);
 				System.err.println("Asset current ver " + lastVersion);
 
 				System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
-
-				if (lastVersion == null || !StudioBuildInfo.getVersion().contains(lastVersion)) {
-					renderSplashFrame(20, "DL'ing Image Assets");
-
+				
+				if(lastVersion!=null && StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
+					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
+					System.err.println("Studio version is the same");
+				}else {
+					ScriptingEngine.cloneRepo(myAssets, lastVersion);
 					System.err.println("\n\nnew version\n\n");
-					removeAssets(myAssets);
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
+					if(ScriptingEngine.checkOwner(myAssets)) {
+						ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
+					}else {
+						ScriptingEngine.deleteRepo(myAssets);
+						ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
+					}
+					lastVersion = ScriptingEngine.getBranch(myAssets);
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", lastVersion);
 					// force the mainline in when a version update happens
 					// this prevents developers from ending up with unsuable
 					// version of BowlerStudio
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", myAssets);
 					ConfigurationDatabase.save();
-
-				} else {
-					System.err.println("Studio version is the same");
 				}
-				System.err.println("Populating menu");
+				layoutFile = AssetFactory.loadFile("layout/default.css");
+				if (layoutFile == null || !layoutFile.exists()) {
+					ScriptingEngine.deleteRepo(myAssets);
+
+					throw new RuntimeException("Style sheet does not exist");
+				}
 
 				if (BowlerStudio.hasNetwork()) {
 					renderSplashFrame(25, "Populating Menu");
@@ -376,15 +370,7 @@ public class BowlerStudio extends Application {
 					StudioBuildInfo.getVersion());
 			renderSplashFrame(54, "Load Assets");
 			// Download and Load all of the assets
-			try {
 
-				AssetFactory.loadAsset("BowlerStudio.png");
-			} catch (Exception ex) {
-				renderSplashFrame(54, "Re-Loading Images");
-
-				removeAssets(myAssets);
-				AssetFactory.loadAllAssets();
-			}
 
 			renderSplashFrame(60, "Vitamins...");
 			// load the vitimins repo so the demo is always snappy
@@ -459,9 +445,7 @@ public class BowlerStudio extends Application {
 			// Log.enableInfoPrint();
 			renderSplashFrame(92, "Preload done");
 			// ThreadUtil.wait(100);
-			layoutFile = AssetFactory.loadFile("layout/default.css");
-			if (layoutFile == null || !layoutFile.exists())
-				throw new RuntimeException("Style sheet does not exist");
+			
 			try {
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
@@ -477,13 +461,13 @@ public class BowlerStudio extends Application {
 
 	}
 
-	private static void removeAssets(String myAssets)
-			throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception {
-		System.err.println("Clearing assets");
-		ScriptingEngine.deleteRepo(myAssets);
-		AssetFactory.setGitSource((String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-				StudioBuildInfo.getVersion());
-	}
+//	private static void removeAssets(String myAssets)
+//			throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception {
+//		System.err.println("Clearing assets");
+//		ScriptingEngine.deleteRepo(myAssets);
+//		AssetFactory.setGitSource((String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
+//				StudioBuildInfo.getVersion());
+//	}
 
 	public static void closeSplash() {
 		SplashManager.closeSplash();
