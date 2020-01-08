@@ -274,18 +274,19 @@ public class BowlerStudioController implements IScriptEventListener {
 								System.out.println(sw.toString());
 							}
 					}
-				} catch (Exception ex) {
+				} catch (Exception ex1) {
 
 				}
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				ex.printStackTrace(pw);
-				System.out.println(sw.toString());
-				ex.printStackTrace();
+				
 				try {
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					ex.printStackTrace(pw);
+					System.out.println(sw.toString());
+					ex.printStackTrace();
 					// space out the exception highlights, ensure any sub threads spawned here have time to finish
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
