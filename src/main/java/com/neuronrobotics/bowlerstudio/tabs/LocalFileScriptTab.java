@@ -494,7 +494,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		String substring = text.substring(0,caretpos);
 		String substring2;
 		try {
-		 substring2 = text.substring(caretpos,text.length()-1);
+		 substring2 = text.substring(caretpos,text.length());
 		}catch(java.lang.StringIndexOutOfBoundsException ex) {
 			substring2="";
 		}
