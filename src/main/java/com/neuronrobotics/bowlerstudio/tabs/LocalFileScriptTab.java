@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.IntBuffer;
 import java.time.Duration;
 import java.util.HashMap;
@@ -59,7 +60,18 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
-	private static final IssueReportingExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER = new IssueReportingExceptionHandler();
+	private static final UncaughtExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER =new UncaughtExceptionHandler() {
+		IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
+		@Override
+		public void uncaughtException(Thread t, Throwable e) {
+			if(reporter.getTitle(e).contains("java.awt.datatransfer.DataFlavor at line 503")) {
+				System.err.println("Known bug in the Swing system, nothing we can do but ignore it");
+				e.printStackTrace();
+				return;
+			}
+			reporter.uncaughtException(t, e);
+		}
+	};// new IssueReportingExceptionHandler();
 	private long lastRefresh = 0;
 	private ScriptingFileWidget scripting;
 
