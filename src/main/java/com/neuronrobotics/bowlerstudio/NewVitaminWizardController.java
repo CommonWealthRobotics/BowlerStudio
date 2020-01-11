@@ -276,8 +276,13 @@ public class NewVitaminWizardController  extends Application {
 			}).start();
 
 		}
+		if(newTypeRadio.isSelected()) {
+			Vitamins.getConfiguration(typeOfVitaminString, sizeOfVitaminString);
+		}
 		
-		if(Vitamins.isActuator(typeOfVitaminString)) {
+		if(Vitamins.isActuator(typeOfVitaminString) ||
+				(newTypeRadio.isSelected() && isMotor.isSelected())
+				) {
 			new Thread(() -> {
 				HashMap<String, Object> required = new HashMap<String, Object>();
 				required.put("MaxTorqueNewtonmeters", 0.0586);
@@ -305,6 +310,7 @@ public class NewVitaminWizardController  extends Application {
 
 	private void setRequiredFields(HashMap<String, Object> required) {
 		// For each vitamin size in a given type
+		
 		for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
 			HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitaminString, size);
 			// For every required key
