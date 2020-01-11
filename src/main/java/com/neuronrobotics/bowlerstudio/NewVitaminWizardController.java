@@ -285,9 +285,9 @@ public class NewVitaminWizardController  extends Application {
 				) {
 			new Thread(() -> {
 				HashMap<String, Object> required = new HashMap<String, Object>();
-				required.put("MaxTorqueNewtonmeters", 0.0586);
-				required.put("MaxFreeSpeedRadPerSec", 46.5);
-				required.put("massKg", 0.11);
+				required.put("MaxTorqueNewtonmeters", 0.001);
+				required.put("MaxFreeSpeedRadPerSec", 1);
+				required.put("massKg", 0.001);
 				required.put("shaftType", "dShaft");
 				required.put("shaftSize", "5mm");
 				setRequiredFields(required);
