@@ -1089,7 +1089,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							// demo
 							"exampleRobots.json"// File from within the Git repo
 					);
-
+					MenuItem newCreatureWiz= new MenuItem("New Creature..."); 
+					newCreatureWiz.setOnAction(event -> {
+						NewCreatureWizard.run();
+					});
+					Platform.runLater(() -> {
+						CreaturesMenu.getItems().add(new SeparatorMenuItem());
+						CreaturesMenu.getItems().add(newCreatureWiz);
+						CreaturesMenu.getItems().add(new SeparatorMenuItem());
+					});
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
 							.inlineFileScriptRun(f, null);

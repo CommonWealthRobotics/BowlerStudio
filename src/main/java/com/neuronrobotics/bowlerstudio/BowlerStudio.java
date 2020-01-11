@@ -346,16 +346,21 @@ public class BowlerStudio extends Application {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", myAssets);
 					ConfigurationDatabase.save();
 				}
-				layoutFile = AssetFactory.loadFile("layout/default.css");
-				if (layoutFile == null || !layoutFile.exists()) {
-					ScriptingEngine.deleteRepo(myAssets);
-
-					throw new RuntimeException("Style sheet does not exist");
-				}
+				
 
 				if (BowlerStudio.hasNetwork()) {
 					renderSplashFrame(25, "Populating Menu");
 				}
+			}else {
+				renderSplashFrame(20, "DL'ing Image Assets");
+				ScriptingEngine.cloneRepo(myAssets,null );
+				ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+			}
+			layoutFile = AssetFactory.loadFile("layout/default.css");
+			if (layoutFile == null || !layoutFile.exists()) {
+				ScriptingEngine.deleteRepo(myAssets);
+
+				throw new RuntimeException("Style sheet does not exist");
 			}
 			//SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 			renderSplashFrame(50, "Tutorials...");
