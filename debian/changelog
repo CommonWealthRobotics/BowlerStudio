@@ -1,3 +1,19 @@
+bowlerstudio (1.2.4) bionic; urgency=medium
+
+  * kernel
+  * build
+  * vitamins
+  * string insertion method no longer nibbles bytes off the end
+  * startup sequence with no files and no login tested working
+  * kernel
+  * close #113 By catching this stack trace and ignoring it
+  * version
+  * ensure that all new vitamins have teh required fields
+  * ensure starter data doesnt look right
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 14 Jan 2020 10:45:20 -0500
+
 bowlerstudio (1.2.2) bionic; urgency=medium
 
   * Resolve #100
