@@ -58,6 +58,7 @@ import com.sun.javafx.stage.WindowHelper;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
 	private static final UncaughtExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER =new UncaughtExceptionHandler() {
@@ -180,7 +181,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		case "MobilBaseXML":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
 			break;
-
+		case "Kotlin":
+			type  = SyntaxConstants.SYNTAX_STYLE_JAVA;
+			break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
