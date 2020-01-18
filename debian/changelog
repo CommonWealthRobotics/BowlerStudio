@@ -1,3 +1,17 @@
+bowlerstudio (1.3.1) bionic; urgency=medium
+
+  * Adding Kotlin
+  * tested kotlin tab working
+  * 1.3.0
+  * Close #126 By loading repos as list.
+  * kernel
+  * kernel
+  * removing stale depenancy
+  * adding 64 bit zipping
+  * adding 64 bit zipping
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 18 Jan 2020 18:15:39 -0500
+
 bowlerstudio (1.2.4) bionic; urgency=medium
 
   * kernel
