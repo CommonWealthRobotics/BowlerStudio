@@ -273,7 +273,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
 						}
 						// Watched repos
-						PagedIterable<GHRepository> watching = self.listSubscriptions();
+						List<GHRepository> watching = self.listSubscriptions().asList();
 						HashMap<String, Menu> ownerMenue = new HashMap<>();
 						for (GHRepository g : watching) {
 							if (ownerMenue.get(g.getOwnerName()) == null) {
