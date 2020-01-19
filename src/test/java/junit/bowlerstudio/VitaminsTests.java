@@ -3,31 +3,22 @@
  */
 package junit.bowlerstudio;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.neuronrobotics.bowlerstudio.NewVitaminWizardController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author hephaestus
  *
  */
 public class VitaminsTests {
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
 
 	@Test
 	public void testCreateVitamin() throws Exception {

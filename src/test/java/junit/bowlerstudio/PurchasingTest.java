@@ -1,34 +1,19 @@
-/**
- * 
- */
 package junit.bowlerstudio;
 
-import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.python.modules.synchronize;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Purchasing;
 import com.neuronrobotics.bowlerstudio.vitamins.PurchasingData;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author hephaestus
  *
  */
 public class PurchasingTest {
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
 
 	@Test
 	public void test() {

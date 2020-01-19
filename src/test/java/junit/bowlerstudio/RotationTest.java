@@ -1,6 +1,6 @@
 package junit.bowlerstudio;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.FileNotFoundException;
 
@@ -8,7 +8,6 @@ import javax.xml.transform.TransformerFactory;
 
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
-import org.junit.Test;
 
 import com.bulletphysics.linearmath.Transform;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -16,6 +15,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNRLegacy;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
+import org.junit.jupiter.api.Test;
 
 public class RotationTest {
 	RotationOrder[] list = { RotationOrder.ZYX
