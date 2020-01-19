@@ -436,10 +436,10 @@ configure(publishedProjects) {
         from(tasks.dokka)
     }
 
-    val shadowJar2 by tasks.creating(ShadowJar::class) {
+    val shadowJar = tasks.named<ShadowJar>("shadowJar") {
         setManifest()
         mergeServiceFiles()
-    }
+    }.get()
 
     val publicationName = "publication-$projectName-${name.toLowerCase()}"
 
@@ -450,7 +450,7 @@ configure(publishedProjects) {
                 from(components["java"])
                 artifact(tasks["sourcesJar"])
                 artifact(dokkaJar)
-                artifact(shadowJar2)
+                artifact(shadowJar)
             }
         }
     }
