@@ -3,109 +3,105 @@ package com.neuronrobotics.bowlerstudio.scripting;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-
 
 public class GithubLoginFX implements javafx.fxml.Initializable {
 
-	@FXML
-	private TextField username;
-	@FXML PasswordField password;
-	
-	private boolean done=false;
-	
-	private String [] creds = new String[]{"",""};
-	private Stage stage;
-	private Parent root;
-	private Scene scene;
+  @FXML private TextField username;
+  @FXML PasswordField password;
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		
-		reset();
-	}
-	
-	public void reset(){
-		done=false;
-		setCreds(new String[]{"",""});
-		password.clear();
-		getUsername().clear();
-		
+  private boolean done = false;
 
-	}
+  private String[] creds = new String[] {"", ""};
+  private Stage stage;
+  private Parent root;
+  private Scene scene;
 
-	@FXML public void anonMode() {
-		setCreds(null);
-		try {
-			// this should make anon mode stick
-			ScriptingEngine.setupAnyonmous();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finish();
-	}
-	private void finish(){
-		stage.close();
-		stage.hide();
-		done=true;
-	}
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
 
-	@FXML public void login() {
-		getCreds()[0]= getUsername().getText();
-		getCreds()[1]= password.getText();
-		if(getCreds()[0]==null||getCreds()[1]==null){
-			setCreds(null);
-		}else if(getCreds()[0].equals("")||getCreds()[1].equals("")){
-			setCreds(null);
-		}
-		
-		finish();
-	}
+    reset();
+  }
 
-	@FXML public void focusOnPw() {
-		password.requestFocus();
-	}
+  public void reset() {
+    done = false;
+    setCreds(new String[] {"", ""});
+    password.clear();
+    getUsername().clear();
+  }
 
-	public boolean isDone() {
-		return done;
-	}
+  @FXML
+  public void anonMode() {
+    setCreds(null);
+    try {
+      // this should make anon mode stick
+      ScriptingEngine.setupAnyonmous();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    finish();
+  }
 
-	public void setDone(boolean done) {
-		this.done = done;
-	}
+  private void finish() {
+    stage.close();
+    stage.hide();
+    done = true;
+  }
 
-	public String [] getCreds() {
-		return creds;
-	}
+  @FXML
+  public void login() {
+    getCreds()[0] = getUsername().getText();
+    getCreds()[1] = password.getText();
+    if (getCreds()[0] == null || getCreds()[1] == null) {
+      setCreds(null);
+    } else if (getCreds()[0].equals("") || getCreds()[1].equals("")) {
+      setCreds(null);
+    }
 
-	public void setCreds(String [] creds) {
-		this.creds = creds;
-	}
+    finish();
+  }
 
-	public void setStage(Stage stage, Parent root) {
-		this.stage = stage;
-		if(this.root==null){
-			this.root = root;
-			scene=  new Scene(root);
-		}
-		stage.setScene(scene);  
-	}
+  @FXML
+  public void focusOnPw() {
+    password.requestFocus();
+  }
 
-	public TextField getUsername() {
-		return username;
-	}
+  public boolean isDone() {
+    return done;
+  }
 
-	public void setUsername(TextField username) {
-		this.username = username;
-	}
+  public void setDone(boolean done) {
+    this.done = done;
+  }
 
+  public String[] getCreds() {
+    return creds;
+  }
 
+  public void setCreds(String[] creds) {
+    this.creds = creds;
+  }
+
+  public void setStage(Stage stage, Parent root) {
+    this.stage = stage;
+    if (this.root == null) {
+      this.root = root;
+      scene = new Scene(root);
+    }
+    stage.setScene(scene);
+  }
+
+  public TextField getUsername() {
+    return username;
+  }
+
+  public void setUsername(TextField username) {
+    this.username = username;
+  }
 }

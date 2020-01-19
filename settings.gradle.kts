@@ -29,13 +29,13 @@ include(":libraries:bowler-script-kernel")
 include(":libraries:bowler-script-kernel:java-bowler")
 include(":libraries:bowler-script-kernel:JCSG")
 
-///**
+// /**
 // * This configures the gradle build so we can use non-standard build file names.
 // * Additionally, this project can support sub-projects who's build file is written in Kotlin.
 // *
 // * @param project The project to configure.
 // */
-//fun configureGradleBuild(project: ProjectDescriptor) {
+// fun configureGradleBuild(project: ProjectDescriptor) {
 //    val projectBuildFileBaseName = project.name
 //    val gradleBuild = File(project.projectDir, "$projectBuildFileBaseName.gradle")
 //    val kotlinBuild = File(project.projectDir, "$projectBuildFileBaseName.gradle.kts")
@@ -54,6 +54,6 @@ include(":libraries:bowler-script-kernel:JCSG")
 //
 //    // Any nested children projects also get configured.
 //    project.children.forEach { configureGradleBuild(it) }
-//}
+// }
 //
-//configureGradleBuild(rootProject)
+// configureGradleBuild(rootProject)

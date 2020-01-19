@@ -1,10 +1,10 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.spotbugs.SpotBugsTask
 import info.solidsoft.gradle.pitest.PitestTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("com.diffplug.gradle.spotless")
@@ -20,7 +20,6 @@ plugins {
     `java-library`
     jacoco
     pmd
-    checkstyle
     application
 }
 
@@ -105,7 +104,7 @@ allprojects {
         format("extraneous") {
             target("src/**/*.fxml")
             trimTrailingWhitespace()
-            indentWithSpaces(2)
+            indentWithSpaces(4)
             endWithNewline()
         }
     }
@@ -115,7 +114,6 @@ configure(javaProjects) {
     apply {
         plugin("java")
         plugin("jacoco")
-        plugin("checkstyle")
         plugin("com.github.spotbugs")
         plugin("pmd")
     }
@@ -236,7 +234,7 @@ configure(javaProjects) {
             googleJavaFormat()
             removeUnusedImports()
             trimTrailingWhitespace()
-            indentWithSpaces(2)
+            indentWithSpaces(4)
             endWithNewline()
             // @Suppress("INACCESSIBLE_TYPE")
             // licenseHeaderFile(
@@ -244,10 +242,6 @@ configure(javaProjects) {
             //        spotlessLicenseHeaderDelimiter
             // )
         }
-    }
-
-    checkstyle {
-        toolVersion = property("checkstyle-tool.version") as String
     }
 
     spotbugs {
@@ -258,9 +252,9 @@ configure(javaProjects) {
     tasks.withType<SpotBugsTask> {
         @Suppress("UnstableApiUsage")
         reports {
-            xml.isEnabled = false
+            xml.isEnabled = true
             emacs.isEnabled = false
-            html.isEnabled = true
+            html.isEnabled = false
         }
     }
 
@@ -336,7 +330,7 @@ configure(kotlinProjects) {
     }
 }
 
-//val jacocoRootReport by tasks.creating(JacocoReport::class) {
+// val jacocoRootReport by tasks.creating(JacocoReport::class) {
 //    group = "verification"
 //    dependsOn(subprojects.flatMap { it.tasks.withType(JacocoReport::class) } - this)
 //
@@ -353,7 +347,7 @@ configure(kotlinProjects) {
 //        xml.isEnabled = true
 //        csv.isEnabled = false
 //    }
-//}
+// }
 
 configure(pitestProjects) {
     apply {
