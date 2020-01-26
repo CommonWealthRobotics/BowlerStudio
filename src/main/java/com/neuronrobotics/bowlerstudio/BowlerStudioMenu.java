@@ -467,7 +467,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
 
-						Iterable<RevCommit> commits = git.log().add(repo.resolve(branchName)).call();
+						Iterable<RevCommit> commits = git.log().add(repo.resolve(ScriptingEngine.getFullBranch(url))).call();
 
 						List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 						Platform.runLater(() -> {
