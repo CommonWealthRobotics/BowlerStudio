@@ -259,18 +259,22 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						}
 						GHMyself self = github.getMyself();
 						// Repos I own
-						myPublic = self.getAllRepositories();
-						HashMap<String, Menu> myownerMenue = new HashMap<>();
-						for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
-							GHRepository g = entry.getValue();
-							if (myownerMenue.get(g.getOwnerName()) == null) {
-								myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
-								Platform.runLater(() -> {
-									myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
-								});
+						try {
+							myPublic = self.getAllRepositories();
+							HashMap<String, Menu> myownerMenue = new HashMap<>();
+							for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+								GHRepository g = entry.getValue();
+								if (myownerMenue.get(g.getOwnerName()) == null) {
+									myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
+									Platform.runLater(() -> {
+										myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
+									});
+								}
+	
+								resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
 							}
-
-							resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
+						}catch(org.kohsuke.github.GHException ex ) {
+							// i have no public repso
 						}
 						// Watched repos
 						List<GHRepository> watching = self.listSubscriptions().asList();
@@ -467,7 +471,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
 
-						Iterable<RevCommit> commits = git.log().add(repo.resolve(ScriptingEngine.getFullBranch(url))).call();
+						Iterable<RevCommit> commits = git.log().add(repo.resolve(branchName)).call();
 
 						List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 						Platform.runLater(() -> {
