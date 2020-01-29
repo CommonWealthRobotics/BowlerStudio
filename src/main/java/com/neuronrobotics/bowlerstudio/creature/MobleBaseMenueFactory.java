@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.BowlerStudioMenuWorkspace;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -432,7 +433,8 @@ public class MobleBaseMenueFactory {
 					}
 					//BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
 					System.out.println("Creating gist at: " + gitURL);
-
+					
+					
 					System.out.println("copy Cad engine ");
 					device.setGitCadEngine(
 							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
@@ -477,7 +479,10 @@ public class MobleBaseMenueFactory {
 
 					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
 							xml, "new Robot content");
+					//Shut down the old robot
 					device.disconnect();
+					// add new robot to the workspace
+					BowlerStudioMenuWorkspace.add(gitURL);
 					if(loaderScript) {
 						ScriptingEngine.gitScriptRun(gitURL, "launch.groovy", null);
 						
