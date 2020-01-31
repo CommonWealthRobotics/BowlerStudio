@@ -342,9 +342,13 @@ public class WebTab extends Tab implements EventHandler<Event>{
       int currentIndex=history.getCurrentIndex();
 //      Out("currentIndex = "+currentIndex);
 //      Out(entryList.toString().replace("],","]\n"));
-
-      Platform.runLater(() -> 
-      history.go(1));
+    
+		Platform.runLater(() -> {
+			try {
+				history.go(1);
+			} catch (IndexOutOfBoundsException ex) {
+			}
+		});
       return entryList.get(currentIndex<entryList.size()-1?currentIndex+1:currentIndex).getUrl();
     }
 	
