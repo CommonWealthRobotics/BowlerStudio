@@ -192,13 +192,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	}
 
 	private void setToLoggedIn(final String name) {
-		if(name==null)
+		if (name == null)
 			return;
-		if(this.name!=null && name.contentEquals(this.name))
+		if (this.name != null && name.contentEquals(this.name))
 			return;
 		this.name = name;
 		// new Exception().printStackTrace();
-		FxTimer.runLater(Duration.ofMillis(100), () -> {
+		Platform.runLater( () -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + name);
 			new Thread() {
@@ -212,98 +212,144 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					}
 					if (!PasswordManager.hasNetwork())
 						return;
-					GitHub github = PasswordManager.getGithub();
-					while (github == null && !PasswordManager.loggedIn()) {
-						github = PasswordManager.getGithub();
+					GitHub gh = PasswordManager.getGithub();
+					while (gh == null && !PasswordManager.loggedIn()) {
+						gh = PasswordManager.getGithub();
 						ThreadUtil.wait(200);
 					}
-					try {
-						GHMyself myself = github.getMyself();
-						PagedIterable<GHGist> gists = myself.listGists();
-						Platform.runLater(() -> {
-							myGists.getItems().clear();
-						});
-						ThreadUtil.wait(20);
-						for (GHGist gist : gists) {
+					GitHub github = gh;
 
-							String url = gist.getGitPushUrl();
-							String desc = gist.getDescription();
-							if (desc == null || desc.length() == 0
-									|| desc.contentEquals("Adding new file from BowlerStudio")) {
-								desc = gist.getFiles().keySet().toArray()[0].toString();
-							}
-							String descriptionString = desc;
-							selfRef.messages.put(url, "GIST: " + descriptionString);
-							// Menu tmpGist = new Menu(desc);
-							// setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
-							setUpRepoMenue(myGists, url, true, true);
-						}
-						// Now load the users GIT repositories
-						// github.getMyOrganizations();
-						Platform.runLater(() -> myOrganizations.getItems().clear());
-						Platform.runLater(() -> myRepos.getItems().clear());
-						Platform.runLater(() -> watchingRepos.getItems().clear());
-
-						Map<String, GHOrganization> orgs = github.getMyOrganizations();
-						for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
-							// System.out.println("Org: "+org);
-							Menu OrgItem = new Menu(entry.getKey());
-							GHOrganization ghorg = entry.getValue();
-							Map<String, GHRepository> repos = ghorg.getRepositories();
-							for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
-								resetRepoMenue(OrgItem, entry1.getValue());
-							}
-							Platform.runLater(() -> {
-								myOrganizations.getItems().add(OrgItem);
-							});
-						}
-						GHMyself self = github.getMyself();
-						// Repos I own
-						try {
-							myPublic = self.getAllRepositories();
-							HashMap<String, Menu> myownerMenue = new HashMap<>();
-							for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
-								GHRepository g = entry.getValue();
-								if (myownerMenue.get(g.getOwnerName()) == null) {
-									myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
-									Platform.runLater(() -> {
-										myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
-									});
-								}
-	
-								resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
-							}
-						}catch(org.kohsuke.github.GHException ex ) {
-							// i have no public repso
-						}
-						// Watched repos
-						List<GHRepository> watching = self.listSubscriptions().asList();
-						HashMap<String, Menu> ownerMenue = new HashMap<>();
-						for (GHRepository g : watching) {
-							if (ownerMenue.get(g.getOwnerName()) == null) {
-								ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
-								Platform.runLater(() -> {
-									try {
-										watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
-									} catch (Exception e) {
-
-									}
-								});
-							}
-							resetRepoMenue(ownerMenue.get(g.getOwnerName()), g);
-						}
-
-					} catch (Exception e) {
-						exp.uncaughtException(Thread.currentThread(), e);
-					}
+					LoadGistMenu(github);
+					loadOrganizations(github);
+					loadMyRepos(github);
+					loadWatchingRepos(github);
 
 				}
+
+
 			}.start();
 
 		});
 
 	}
+	private void loadWatchingRepos(GitHub github) {
+		new Thread(() -> {
+			Platform.runLater(() -> watchingRepos.getItems().clear());
+			ThreadUtil.wait(20);
+			GHMyself self;
+			try {
+				self = github.getMyself();
+				// Watched repos
+				List<GHRepository> watching = self.listSubscriptions().asList();
+				HashMap<String, Menu> ownerMenue = new HashMap<>();
+				for (GHRepository g : watching) {
+					if (ownerMenue.get(g.getOwnerName()) == null) {
+						ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
+						Platform.runLater(() -> {
+							try {
+								watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
+							} catch (Exception e) {
 
+							}
+						});
+					}
+					resetRepoMenue(ownerMenue.get(g.getOwnerName()), g);
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
+
+			}
+		}).start();
+	}
+
+	private void loadMyRepos(GitHub github) {
+		new Thread(() -> {
+			Platform.runLater(() -> myRepos.getItems().clear());
+			ThreadUtil.wait(20);
+			// Repos I own
+			try {
+				GHMyself self = github.getMyself();
+				myPublic = self.getAllRepositories();
+				HashMap<String, Menu> myownerMenue = new HashMap<>();
+				for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+					GHRepository g = entry.getValue();
+					if (myownerMenue.get(g.getOwnerName()) == null) {
+						myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
+						Platform.runLater(() -> {
+							myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
+						});
+					}
+
+					resetRepoMenue(myownerMenue.get(g.getOwnerName()), g);
+				}
+			} catch (Exception ex) {
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), ex);
+				// i have no public repso
+			}
+		}).start();
+	}
+
+	private void loadOrganizations(GitHub github) {
+		new Thread(() -> {
+			Platform.runLater(() -> myOrganizations.getItems().clear());
+			ThreadUtil.wait(20);
+
+			Map<String, GHOrganization> orgs;
+			try {
+				orgs = github.getMyOrganizations();
+				for (Map.Entry<String, GHOrganization> entry : orgs.entrySet()) {
+					// System.out.println("Org: "+org);
+					Menu OrgItem = new Menu(entry.getKey());
+					GHOrganization ghorg = entry.getValue();
+					Map<String, GHRepository> repos = ghorg.getRepositories();
+					for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
+						resetRepoMenue(OrgItem, entry1.getValue());
+					}
+					Platform.runLater(() -> {
+						myOrganizations.getItems().add(OrgItem);
+					});
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+
+			}
+
+		}).start();
+	}
+
+	private void LoadGistMenu(GitHub github) {
+		new Thread(() -> {
+			GHMyself myself;
+			try {
+				myself = github.getMyself();
+				System.out.println("Loading all my Gists");
+				Platform.runLater(() -> {
+					myGists.getItems().clear();
+				});
+				List<GHGist> gists = myself.listGists().asList();
+				for (GHGist gist : gists) {
+
+					String url = gist.getGitPushUrl();
+					String desc = gist.getDescription();
+					if (desc == null || desc.length() == 0
+							|| desc.contentEquals("Adding new file from BowlerStudio")) {
+						desc = gist.getFiles().keySet().toArray()[0].toString();
+					}
+					String descriptionString = desc;
+					selfRef.messages.put(url, "GIST: " + descriptionString);
+					// Menu tmpGist = new Menu(desc);
+					// setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
+					setUpRepoMenue(myGists, url, true, true);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+
+			}
+		}).start();
+	}
 	public static String gitURLtoMessage(String url) {
 		while (true) {
 			try {
@@ -1331,8 +1377,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 	@FXML
 	void onRefresh(ActionEvent event) {
-		setToLoggedIn();
-
+		String current = this.name;//=null;
+		 this.name=null;
+		setToLoggedIn(current);
 	}
     @FXML
     void onCreateNewVitamin(ActionEvent event) {
