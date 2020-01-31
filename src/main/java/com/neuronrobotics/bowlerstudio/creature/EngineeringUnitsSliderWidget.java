@@ -68,10 +68,16 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		});
 		setpoint.setMaxWidth(width);
 		setpoint.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-			double val =Double.parseDouble(setpointValue.getText());
-			System.err.println("Slider done moving = "+newValue);
-			if(!newValue)
-				getListener().onSliderDoneMoving(this,val);
+			try {
+				double val =Double.parseDouble(setpointValue.getText());
+				System.err.println("Slider done moving = "+newValue);
+				if(!newValue)
+					getListener().onSliderDoneMoving(this,val);
+			}catch(java.lang.NumberFormatException ex) {
+				setValueLocal(0);
+				return;
+			}
+			
 		});
 		setpoint.valueProperty().addListener(this);
 		
