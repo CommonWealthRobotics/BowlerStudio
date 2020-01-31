@@ -454,6 +454,8 @@ public class BowlerStudio extends Application {
 			try {
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
+				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
+						"loadAll.groovy",null);
 			} catch (Exception e) {
 				reporter.uncaughtException(Thread.currentThread(), e);
 
