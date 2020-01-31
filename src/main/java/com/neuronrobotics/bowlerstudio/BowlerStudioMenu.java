@@ -1367,8 +1367,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				new Thread() {
 					public void run() {
 						LocalFileScriptTab tab =LocalFileScriptTab.getSelectedTab();
-						
-						tab.insertString("CSG vitamin_"+slugify(type)+"_"+slugify(size)+" = Vitamins.get(\""+type+"\", \""+size+"\")\n");
+						if(tab!=null)
+							tab.insertString("CSG vitamin_"+slugify(type)+"_"+slugify(size)+" = Vitamins.get(\""+type+"\", \""+size+"\")\n");
 					}
 				}.start();
 			}
