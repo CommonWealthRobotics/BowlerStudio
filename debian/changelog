@@ -1,3 +1,11 @@
+bowlerstudio (1.4.0) bionic; urgency=medium
+
+  * Stagger the opening of tabs to avoid collision
+  * Cleaned up the connection manager
+  * 1.4.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sat, 01 Feb 2020 16:56:21 -0500
+
 bowlerstudio (1.3.2) bionic; urgency=medium
 
   * removing junk
