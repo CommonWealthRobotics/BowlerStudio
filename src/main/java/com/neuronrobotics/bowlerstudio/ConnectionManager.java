@@ -438,9 +438,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				newDevice.getScriptingName(),
 				newDevice.getClass().getSimpleName(),
 				newDevice.getAddress());
-		plugins.add(new PluginManagerWidget(mp,icon));
-		
-
+		PluginManagerWidget e = new PluginManagerWidget(mp,icon);
+		plugins.add(e);
+		Platform.runLater(() -> accordion.getPanes().add(e));
+		Platform.runLater(() -> disconnectAll.setDisable(false));
 		
 		
 		mp.setName(newDevice.getScriptingName());
@@ -467,7 +468,6 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 					public void onConnect(BowlerAbstractDevice source) {
 					}
 				});
-		refreshItemTree();
 		if(	getBowlerStudioController()!=null)
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
@@ -476,29 +476,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		return BowlerStudioController.getBowlerStudio();
 	}
 
-	//this is needed because if you just remove one they all disapear
-	private static void refreshItemTree(){
-		Log.warning("Refreshing Tree size=" + plugins.size());
-		Platform.runLater(() -> {
-			accordion.getPanes().clear();
-			if (plugins.isEmpty())
-				return;
-			TitledPane last = null;
-			for (int i = 0; i < plugins.size(); i++) {
-				last = plugins.get(i);
-				accordion.getPanes().add(last);
-			}
 
-			if (!plugins.isEmpty()) {
-				disconnectAll.setDisable(false);
-				accordion.setExpandedPane(last);
-			} else {
-				disconnectAll.setDisable(true);
-			}
-		});
-
-	}
-	
 	private static void disconectAndRemoveDevice(PluginManager mp){
 		System.out.println("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
@@ -516,8 +494,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			if(p.getDevice()==bad){
 				Log.warning("Found Device " + bad.getScriptingName());
 				//new RuntimeException().printStackTrace();
-				plugins.remove(i);
-				refreshItemTree();
+				PluginManagerWidget torem = plugins.remove(i);
+				Platform.runLater(() ->accordion.getPanes().remove(torem));
+				if (plugins.isEmpty()){
+					Platform.runLater(() ->disconnectAll.setDisable(true));
+				}
 				return;
 			}
 		}

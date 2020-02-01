@@ -457,8 +457,9 @@ public class MobleBaseMenueFactory {
 					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
 							xml, "new Robot content");
 					//Shut down the old robot
-					device.disconnect();
-					ThreadUtil.wait(1000);
+					ConnectionManager.disconnectAll();
+					
+					ThreadUtil.wait(3000);
 					// add new robot to the workspace
 					BowlerStudioMenuWorkspace.add(gitURL);
 					ThreadUtil.wait(1000);
