@@ -453,29 +453,6 @@ public class MobleBaseMenueFactory {
 					}
 					device.setScriptingName(newName);
 					String xml = device.getXml();
-					boolean loaderScript = false;
-					if(xml.contains("<type>hidfast</type>")) {
-						// This device needs a loader script
-						ScriptingEngine.copyGitFile("https://github.com/OperationSmallKat/SmallKat_V2.git",
-								gitURL, 
-								"loadRobot.groovy");
-						
-						String loader = "//Uncommment this section to update device loader	\n"
-								+ "// ScriptingEngine.copyGitFile(\"https://github.com/OperationSmallKat/SmallKat_V2.git\",\n" + 
-								"//								\""+gitURL+"\", \n" + 
-								"//								\"loadRobot.groovy\")\n"
-								+ "MobileBase robot= ScriptingEngine.gitScriptRun(\n\t\""+gitURL+"\", \n" + 
-								"\t\"loadRobot.groovy\", \n" + 
-								"\t[\""+gitURL+"\",\n" + 
-								"\t\""+filename+"\",\n\t\"GameController_22\",\n\t\""+
-								device.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName()+
-								"\",\n\t\""+newName+"\"]\n);"
-										+ "\nprintln robot";
-						
-						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), "launch.groovy",
-								loader, "new Robot content");
-						loaderScript = true;
-					}
 
 					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
 							xml, "new Robot content");
@@ -483,18 +460,12 @@ public class MobleBaseMenueFactory {
 					device.disconnect();
 					// add new robot to the workspace
 					BowlerStudioMenuWorkspace.add(gitURL);
-					if(loaderScript) {
-						ScriptingEngine.gitScriptRun(gitURL, "launch.groovy", null);
-						
-						BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, "launch.groovy"));
-					}else {
-						MobileBase mb = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
-	
-						mb.setGitSelfSource(new String[] { gitURL, newName + ".xml" });
-						
-						BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
-						ConnectionManager.addConnection(mb, mb.getScriptingName());
-					}
+					
+					MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
+					
+					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+					ConnectionManager.addConnection(mb, mb.getScriptingName());
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
