@@ -452,6 +452,8 @@ public class BowlerStudio extends Application {
 			// ThreadUtil.wait(100);
 			
 			try {
+				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git");
+				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/DeviceProviders.git");
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
