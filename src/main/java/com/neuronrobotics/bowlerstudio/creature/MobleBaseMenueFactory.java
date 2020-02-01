@@ -458,12 +458,14 @@ public class MobleBaseMenueFactory {
 							xml, "new Robot content");
 					//Shut down the old robot
 					device.disconnect();
+					ThreadUtil.wait(1000);
 					// add new robot to the workspace
 					BowlerStudioMenuWorkspace.add(gitURL);
-					
+					ThreadUtil.wait(1000);
 					MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
-					
+					ThreadUtil.wait(1000);
 					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+					ThreadUtil.wait(1000);
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 					
 				} catch (IOException e) {
