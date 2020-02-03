@@ -190,7 +190,8 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void highlightException(File fileEngineRunByName, Throwable ex) {
-		bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
+		if(bowlerStudioControllerStaticReference!=null)
+			bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 
 	public static void clearHighlight() {
