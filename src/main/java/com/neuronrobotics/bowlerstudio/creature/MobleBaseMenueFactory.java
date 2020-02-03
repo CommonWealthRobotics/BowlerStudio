@@ -469,9 +469,6 @@ public class MobleBaseMenueFactory {
 					ThreadUtil.wait(1000);
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
