@@ -467,9 +467,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
 					orgRepo.getItems().addAll(updateRepo, addFile, orgFiles, orgCommits, orgBranches);
-					Platform.runLater(() -> {
+					//Platform.runLater(() -> {
 						repoMenue.getItems().add(orgRepo);
-					});
+					//});
 				});
 
 			}
