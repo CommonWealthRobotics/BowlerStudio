@@ -1,3 +1,12 @@
+bowlerstudio (1.4.1) bionic; urgency=medium
+
+  * remove junk exception handler
+  * close #142 Only highlight when the controller is open
+  * close #139
+  * 1.4.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Mon, 03 Feb 2020 18:48:44 -0500
+
 bowlerstudio (1.4.0) bionic; urgency=medium
 
   * Stagger the opening of tabs to avoid collision
