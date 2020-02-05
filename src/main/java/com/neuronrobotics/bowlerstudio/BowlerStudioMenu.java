@@ -435,7 +435,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 								exp.uncaughtException(Thread.currentThread(), e);
 							}
 							myEvent.run();
-							selfRef.setToLoggedIn();
+							//selfRef.onRefresh(null);
 						}
 
 					}.start();
@@ -454,7 +454,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							e.printStackTrace();
 						}
 						myEvent.run();
-						selfRef.setToLoggedIn();
+						//selfRef.onRefresh(null);
 					});
 				});
 				
@@ -790,10 +790,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			try {
 				Platform.runLater(() ->{
 					orgFiles.getItems().clear();
+					//orgFiles.hide();
 					Platform.runLater(() ->{
 						orgFiles.getItems().add(new MenuItem(string));
 						orgFiles.getItems().add(new SeparatorMenuItem());
 						orgFiles.setOnShowing(loadFiles);
+						//Platform.runLater(() ->orgFiles.show());
 					});
 				});
 			} catch (Throwable t) {
