@@ -184,6 +184,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		case "Kotlin":
 			type  = SyntaxConstants.SYNTAX_STYLE_JAVA;
 			break;
+		case "SVG":
+			type = SyntaxConstants.SYNTAX_STYLE_XML;
+			break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
