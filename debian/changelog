@@ -1,3 +1,13 @@
+bowlerstudio (1.4.2) bionic; urgency=medium
+
+  * kernel to close #144
+  * adding the SVG loader
+  * adding a parser for SVG
+  * 1.4.2
+  * kernel
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 04 Feb 2020 21:46:34 -0500
+
 bowlerstudio (1.4.1) bionic; urgency=medium
 
   * remove junk exception handler
