@@ -1321,6 +1321,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					ArrayList<String> types = Vitamins.listVitaminTypes();
 					for(String s:types) {
 						addVitaminType(s);
+						Vitamins.getVitaminFile(s, () -> {
+							Menu oldMenu =getTypeMenu(s);
+							Platform.runLater(()->{
+								oldMenu.getItems().clear();
+							});
+							vitaminTypeMenus.put(s, null);
+							addVitaminType(s);
+						}, false);
 					}
 				} catch (Exception e) {
 					exp.uncaughtException(Thread.currentThread(), e);
