@@ -1322,11 +1322,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					for(String s:types) {
 						addVitaminType(s);
 						Vitamins.getVitaminFile(s, () -> {
-							Menu oldMenu =getTypeMenu(s);
 							Platform.runLater(()->{
-								oldMenu.getItems().clear();
+								getTypeMenu(s).getItems().clear();
 							});
-							vitaminTypeMenus.put(s, null);
+							setUpSizes(getTypeMenu(s), s ) ;
 							addVitaminType(s);
 						}, false);
 					}
@@ -1348,22 +1347,28 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	public Menu getTypeMenu(String type) {
 		if(vitaminTypeMenus.get(type)==null) {
 			Menu typeMenu = new Menu(type);
-			MenuItem editScript = new MenuItem("Edit "+type+" Cad Generator...");
-			editScript.setOnAction(event -> {
-				new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
-			});
 			vitaminTypeMenus.put(type, typeMenu);
 			Platform.runLater(()->{
 				vitaminsMenu.getItems().add(typeMenu);
 			});
-			Platform.runLater(()->{
-				typeMenu.getItems().add(new MenuItem("Sizes:"));
-				typeMenu.getItems().add(new SeparatorMenuItem());
-				typeMenu.getItems().add(editScript);
-				typeMenu.getItems().add(new SeparatorMenuItem());
-			});
+			setUpSizes( typeMenu,  type );
 		}
 		return vitaminTypeMenus.get(type);
+	}
+	
+	private void setUpSizes(Menu typeMenu, String type ) {
+
+		MenuItem editScript = new MenuItem("Edit "+type+" Cad Generator...");
+		editScript.setOnAction(event -> {
+			new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
+		});
+
+		Platform.runLater(()->{
+			typeMenu.getItems().add(new MenuItem("Sizes:"));
+			typeMenu.getItems().add(new SeparatorMenuItem());
+			typeMenu.getItems().add(editScript);
+			typeMenu.getItems().add(new SeparatorMenuItem());
+		});
 	}
 	
 	public  void addSizesToMenu( String size,String type) {
