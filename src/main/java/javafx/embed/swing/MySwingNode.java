@@ -1,6 +1,7 @@
 package javafx.embed.swing;
 
-import javafx.scene.Node;
+import com.sun.javafx.stage.WindowHelper;
+
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
@@ -33,6 +34,19 @@ public class MySwingNode extends SwingNode {
     	   ex.printStackTrace();
        }
     }
+	
+	@Override
+	void setImageBounds(final int x, final int y, final int w, final int h) {
+		try {
+			// this can throw an NPE
+			Window win = getScene().getWindow();
+			super.setImageBounds(x, y, w, h);
+
+		} catch (java.lang.NullPointerException ex) {
+			ex.printStackTrace();
+		}
+
+	}
 
 	@Override
 	public double prefWidth(double height) {

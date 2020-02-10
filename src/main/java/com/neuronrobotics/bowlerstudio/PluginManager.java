@@ -25,7 +25,6 @@ import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -195,26 +194,26 @@ public class PluginManager {
 					}
 					RpcCommandPanel panel =new RpcCommandPanel(rpcEnc, dev,rc);
 
-					Platform.runLater(()->{
-						SwingNode sn = new SwingNode();
-						Stage dialog = new Stage();
-						dialog.setHeight(panel.getHeight());
-						dialog.setWidth(panel.getWidth());
-						dialog.initStyle(StageStyle.UTILITY);
-					    sn.setContent(panel);
-						Scene scene = new Scene(new Group(sn));
-						dialog.setScene(scene);
-						dialog.setOnCloseRequest(event -> {
-							rc.setSelected(false);
-						});
-						rc.selectedProperty().addListener(b ->{
-							 if(rc.isSelected()){
-								 dialog.show();
-							 }else{
-								 dialog.hide();
-							 }
-				        });
-					});
+//					Platform.runLater(()->{
+//						SwingNode sn = new SwingNode();
+//						Stage dialog = new Stage();
+//						dialog.setHeight(panel.getHeight());
+//						dialog.setWidth(panel.getWidth());
+//						dialog.initStyle(StageStyle.UTILITY);
+//					    sn.setContent(panel);
+//						Scene scene = new Scene(new Group(sn));
+//						dialog.setScene(scene);
+//						dialog.setOnCloseRequest(event -> {
+//							rc.setSelected(false);
+//						});
+//						rc.selectedProperty().addListener(b ->{
+//							 if(rc.isSelected()){
+//								 dialog.show();
+//							 }else{
+//								 dialog.hide();
+//							 }
+//				        });
+//					});
 					
 				}
 			}
