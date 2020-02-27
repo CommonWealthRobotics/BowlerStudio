@@ -139,7 +139,7 @@ public class BowlerStudioMenuWorkspace {
 				}
 				if(rank.get(url).intValue()!=i) {
 					rankChanged=true;
-					System.out.println("Rank changed : "+url+" to: "+i+" was: "+rank.get(url).intValue());
+					
 				}
 				rank.put(url,i);
 			}
@@ -150,11 +150,14 @@ public class BowlerStudioMenuWorkspace {
 					
 					new Thread(() -> {
 						for (String url : menu) {
-								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, 
-										url, 
-										false, 
-										false,
-										((ArrayList<String>) workspaceData.get(url)).get(0));
+							System.out.println("Workspace : "+url);
+								ArrayList<String> arrayList = (ArrayList<String>) workspaceData.get(url);
+								if(arrayList!=null)
+									BowlerStudioMenu.setUpRepoMenue(workspaceMenu, 
+											url, 
+											false, 
+											false,
+											arrayList.get(0));
 							
 						}
 						sorting = false;
