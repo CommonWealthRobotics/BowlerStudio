@@ -330,11 +330,16 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
 					System.err.println("Studio version is the same");
 				}else {
-					ScriptingEngine.cloneRepo(myAssets, lastVersion);
+					if(lastVersion!=null)
+						ScriptingEngine.cloneRepo(myAssets, lastVersion);
 					System.err.println("\n\nnew version\n\n");
-					if(ScriptingEngine.checkOwner(myAssets)) {
-						ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
-					}else {
+					try {
+						if(ScriptingEngine.checkOwner(myAssets)) {
+							ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
+						}else
+							throw new NullPointerException();
+					}catch(NullPointerException ex) {
+						//not the owner
 						ScriptingEngine.deleteRepo(myAssets);
 						ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
 					}
