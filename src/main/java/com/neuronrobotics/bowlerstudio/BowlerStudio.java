@@ -320,7 +320,11 @@ public class BowlerStudio extends Application {
 				myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 						"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 				renderSplashFrame(20, "DL'ing Image Assets");
-				lastVersion = ScriptingEngine.getBranch(myAssets);
+				File gitRepoFile = ScriptingEngine.uriToFile(myAssets);
+			    if (!gitRepoFile.exists()) {
+			    	lastVersion=null;
+			    }else
+			    	lastVersion = ScriptingEngine.getBranch(myAssets);
 				System.err.println("Asset Repo " + myAssets);
 				System.err.println("Asset current ver " + lastVersion);
 
