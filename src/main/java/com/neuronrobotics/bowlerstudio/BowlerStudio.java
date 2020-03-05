@@ -340,8 +340,12 @@ public class BowlerStudio extends Application {
 							throw new NullPointerException();
 					}catch(NullPointerException ex) {
 						//not the owner
-						ScriptingEngine.deleteRepo(myAssets);
-						ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
+						try {
+							ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+						}catch(Exception ex1) {
+							ScriptingEngine.deleteRepo(myAssets);
+							ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
+						}
 					}
 					lastVersion = ScriptingEngine.getBranch(myAssets);
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", lastVersion);
