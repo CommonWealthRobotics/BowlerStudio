@@ -104,7 +104,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
 						PhysicsEngine.get().clear();
-						new MobileBasePhysicsManager(base, baseCad, simplecad);
+						MobileBasePhysicsManager m =new MobileBasePhysicsManager(base, baseCad, simplecad);
 						//BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
 						oldParts = CreatureLab3dController.getEngine().getCsgMap().keySet();
 						BowlerStudioController.setCsg(PhysicsEngine.get().getCsgFromEngine());
@@ -128,8 +128,10 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 											System.out.println("ERROR Real time broken by: "+took+"ms");
 										}
 									}
+									PhysicsEngine.get().clear();
+									m.clear();
 								}catch(Exception e){
-									
+									e.printStackTrace();
 								}
 							}
 						};

@@ -130,7 +130,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rootItem.setExpanded(true);
 		HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 		HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
-
 		try {
 			MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
 		} catch (Exception e) {
