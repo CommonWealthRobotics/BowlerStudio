@@ -1,3 +1,15 @@
+bowlerstudio (1.4.7) bionic; urgency=medium
+
+  * check the owner updated to not fail
+  * 1.4.6
+  * assets spoolup procedure
+  * clearing physics on exit
+  * startup with no assets working
+  * address the memory leak
+  * addressed memory leak
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Fri, 06 Mar 2020 15:42:36 -0500
+
 bowlerstudio (1.4.5) bionic; urgency=medium
 
   * 1.4.5
