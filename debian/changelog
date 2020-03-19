@@ -1,3 +1,10 @@
+bowlerstudio (1.5.1) bionic; urgency=medium
+
+  * kernel
+  * 1.5.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Thu, 19 Mar 2020 14:53:57 -0400
+
 bowlerstudio (1.5.0) bionic; urgency=medium
 
   * chasing down memory leak and found this
