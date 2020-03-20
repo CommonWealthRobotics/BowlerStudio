@@ -55,6 +55,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
@@ -1321,7 +1322,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					Platform.runLater(()->{
 						vitaminsMenu.getItems().add(new SeparatorMenuItem());
 					});	
-					ArrayList<String> types = Vitamins.listVitaminTypes();
+					List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
 					for(String s:types) {
 						addVitaminType(s);
 						Vitamins.getVitaminFile(s, () -> {
