@@ -954,14 +954,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				PasswordManager.checkInternet();
 				ScriptingEngine.setLoginManager(new GitHubLoginManager());
 				setName("Login Gist Thread");
+				
 				try {
 					ScriptingEngine.logout();
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						exp.uncaughtException(Thread.currentThread(), e);
+					while(!ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode()) {
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+							exp.uncaughtException(Thread.currentThread(), e);
+						}
+						ScriptingEngine.login();
 					}
-					ScriptingEngine.login();
 				} catch (IOException e) {
 					exp.uncaughtException(Thread.currentThread(), e);
 				}
@@ -1269,8 +1272,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				if (PasswordManager.hasNetwork() && !PasswordManager.loggedIn()) {
 					new Thread(() -> {
 						try {
-							ScriptingEngine.login();
-						} catch (IOException e) {
+							onLogin(null);
+						} catch (Exception e) {
 							exp.uncaughtException(Thread.currentThread(), e);
 						}
 					}).start();

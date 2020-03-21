@@ -56,7 +56,7 @@ public class BowlerStudioModularFrame {
 
 	private DockPane dockPane;
 
-	private BowlerStudioMenu menueController;
+	public BowlerStudioMenu menueController;
 
 	// private InvalidationListener connectionManagerRemover;
 

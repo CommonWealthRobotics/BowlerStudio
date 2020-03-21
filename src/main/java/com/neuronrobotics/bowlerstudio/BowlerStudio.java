@@ -722,6 +722,8 @@ public class BowlerStudio extends Application {
 					
 				});
 				closeSplash();
+				if(!ScriptingEngine.isLoginSuccess()||PasswordManager.isAnonMode())
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().menueController.onLogin(null);
 				
 			} catch (Throwable e) {
 				reporter.uncaughtException(Thread.currentThread(), e);
@@ -747,7 +749,7 @@ public class BowlerStudio extends Application {
 
 				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
-				if (ScriptingEngine.isLoginSuccess())
+				if (ScriptingEngine.isLoginSuccess()&&!PasswordManager.isAnonMode())
 					ConfigurationDatabase.save();
 				if(isDeleteFlag())
 					ScriptingEngine.deleteCache();
