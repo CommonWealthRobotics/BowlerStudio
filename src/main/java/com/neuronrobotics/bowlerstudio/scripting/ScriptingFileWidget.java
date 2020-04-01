@@ -352,7 +352,9 @@ public class ScriptingFileWidget extends BorderPane implements
 					reset();
 		
 					for (IScriptEventListener l : listeners) {
+						try {
 						l.onScriptError(new Exception(ex),currentFile);
+						}catch (Throwable e) {}
 					}
 				}
 
