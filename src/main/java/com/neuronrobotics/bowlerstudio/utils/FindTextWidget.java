@@ -147,6 +147,18 @@ public class FindTextWidget extends Application {
 			if(pos>=intLengthOfRemove){
 				String firstHalf = current.substring(0,pos-intLengthOfRemove);
 				String secondtHalf = current.substring(pos );
+				if(direction>0) {
+					if(secondtHalf.length()<=intLengthOfRemove) {
+						//bail
+						return;
+					}
+				}
+				else {
+					if(firstHalf.length()<=intLengthOfRemove) {
+						//bail
+						return;
+					}
+				}
 				String newContent = firstHalf + replace + secondtHalf;
 				SwingUtilities.invokeLater(() ->{
 					textArea.setText(newContent);
