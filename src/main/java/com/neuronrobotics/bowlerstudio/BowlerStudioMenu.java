@@ -603,6 +603,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						exp.uncaughtException(Thread.currentThread(), e);
 					} catch (GitAPIException e) {
 						exp.uncaughtException(Thread.currentThread(), e);
+					} catch (Throwable e) {
+						exp.uncaughtException(Thread.currentThread(), e);
 					}
 
 				}).start();
