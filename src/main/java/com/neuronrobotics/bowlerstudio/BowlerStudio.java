@@ -736,8 +736,10 @@ public class BowlerStudio extends Application {
 
 				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
-				if (ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode())
-					ConfigurationDatabase.save();
+				if(PasswordManager.hasNetwork()) {
+					if (ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode())
+						ConfigurationDatabase.save();
+				}
 				if (isDeleteFlag())
 					ScriptingEngine.deleteCache();
 				System.exit(0);
