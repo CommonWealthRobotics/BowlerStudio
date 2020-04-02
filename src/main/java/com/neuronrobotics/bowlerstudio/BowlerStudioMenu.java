@@ -315,8 +315,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					});
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				PasswordManager.checkInternet();
+				if(PasswordManager.hasNetwork())
+					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 
 			}
 
