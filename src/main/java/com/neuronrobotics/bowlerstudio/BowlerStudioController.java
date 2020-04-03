@@ -8,13 +8,11 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.Line3D;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.common.NonBowlerDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Polygon;
@@ -26,26 +24,18 @@ import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
 
-import org.kohsuke.github.GHRepository;
-import org.reactfx.util.FxTimer;
-
 import java.awt.Color;
 //import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.time.Duration;
-//import org.bytedeco.javacpp.DoublePointer;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioController implements IScriptEventListener {
