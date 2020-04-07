@@ -271,15 +271,6 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			if (PasswordManager.hasNetwork()) {
 				ScriptingEngine.setLoginManager(new GitHubLoginManager());
-				try {
-					ScriptingEngine.login();
-					renderSplashFrame(10, "Login OK!");
-
-				} catch (Exception e) {
-					// e.printStackTrace();
-					ScriptingEngine.setupAnyonmous();
-					renderSplashFrame(10, "No Login Found");
-				}
 			}
 
 			String myAssets = AssetFactory.getGitSource();
