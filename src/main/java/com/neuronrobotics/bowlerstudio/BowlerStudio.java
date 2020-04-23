@@ -13,6 +13,7 @@ import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
+import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.imageprovider.NativeResource;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
@@ -723,6 +724,7 @@ public class BowlerStudio extends Application {
 		new Thread() {
 
 			public void run() {
+				FileChangeWatcher.clearAll();
 				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 				renderSplashFrame(100, "Saving state..");
