@@ -712,11 +712,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						for (Ref r : branches) {
 							createRepoMenuItem(url, orgBranches, onBranch, r,getMenuReset());
 						}
-					} catch (IOException e) {
+					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
-					} catch (GitAPIException e) {
-						exp.uncaughtException(Thread.currentThread(), e);
-					}
+					} 
 					System.err.println("Refreshing menu Branches");
 					Platform.runLater(() -> {
 						orgBranches.hide();

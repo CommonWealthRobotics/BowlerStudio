@@ -39,7 +39,7 @@ public class BowlerStudioMenuWorkspace {
 					try {
 
 						ScriptingEngine.pull(o);
-					} catch (Exception e) {
+					} catch (Throwable e) {
 						workspaceData.remove(o);
 						i--;
 					}
