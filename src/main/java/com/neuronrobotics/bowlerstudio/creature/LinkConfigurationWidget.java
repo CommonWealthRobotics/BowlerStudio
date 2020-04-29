@@ -241,6 +241,7 @@ public class LinkConfigurationWidget extends GridPane {
 		add(scale, 1, 0);
 		add(new Text("(unitless)"), 2, 0);
 
+		double min = activLink.getDeviceMinimumValue();
 		lowerBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -267,11 +268,12 @@ public class LinkConfigurationWidget extends GridPane {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, conf.getLowerLimit() < 1 ? conf.getLowerLimit() : 1, // min
+		}, min, // min
 				conf.getStaticOffset(), // max
 				conf.getLowerLimit(), // current
 				150, "device units", true);
 
+		double max = activLink.getDeviceMaximumValue();
 		upperBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -294,7 +296,7 @@ public class LinkConfigurationWidget extends GridPane {
 					manager.generateCad();
 
 			}
-		}, conf.getStaticOffset(), conf.getUpperLimit() > 180 ? conf.getUpperLimit() : 180, conf.getUpperLimit(), 150,
+		}, conf.getStaticOffset(), max, conf.getUpperLimit(), 150,
 				"device units", true);
 		
 		zeroValue = conf.getStaticOffset();
@@ -325,7 +327,9 @@ public class LinkConfigurationWidget extends GridPane {
 
 			}
 		}, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
-
+		zero.setAllowResize(false);
+		upperBound.setAllowResize(false);
+		lowerBound.setAllowResize(false);
 		final ComboBox<String> channel = new ComboBox<>();
 		for (int i = 0; i < 24; i++) {
 			channel.getItems().add(Integer.toString(i));
