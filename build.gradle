@@ -308,6 +308,9 @@ dependencies {
 	compile group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
 	// https://mvnrepository.com/artifact/de.dfki.mary/marytts-lang-en
 	compile group: 'de.dfki.mary', name: 'marytts-lang-en', version: '5.2'
+	//https://github.com/HanSolo/Medusa
+	compile group: 'eu.hansolo', name: 'Medusa', version: '7.1'
+	
 }
 
 // create a fat-jar (class files plus dependencies
