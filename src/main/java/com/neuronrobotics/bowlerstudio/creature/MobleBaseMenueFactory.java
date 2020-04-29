@@ -5,6 +5,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioMenuWorkspace;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -54,7 +55,7 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
 
 		boolean creatureIsOwnedByUser = false;
 
@@ -122,303 +123,315 @@ public class MobleBaseMenueFactory {
 				}
 			});
 		});
-
-		TreeItem<String> legs = loadLimbs(device, view, device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
-				widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-		TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
-				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-		TreeItem<String> steer = loadLimbs(device, view, device.getSteerable(), "Steerable Wheels", rootItem,
-				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-		TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Fixed Wheels", rootItem,
-				callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-
-		TreeItem<String> addleg;
 		try {
-			addleg = new TreeItem<String>("Add Leg", AssetFactory.loadIcon("Add-Leg.png"));
-		} catch (Exception e1) {
-			addleg = new TreeItem<String>("Add Leg");
-		}
-		boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
-		callbackMapForTreeitems.put(addleg, () -> {
-			// TODO Auto-generated method stub
-			System.out.println("Adding Leg");
-			String xmlContent;
+			TreeItem<String> legs = loadLimbs(device, view, device.getLegs(), "Legs", rootItem, callbackMapForTreeitems,
+					widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+			TreeItem<String> arms = loadLimbs(device, view, device.getAppendages(), "Arms", rootItem,
+					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+			TreeItem<String> steer = loadLimbs(device, view, device.getSteerable(), "Steerable Wheels", rootItem,
+					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+			TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Fixed Wheels", rootItem,
+					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+
+			TreeItem<String> addleg;
 			try {
-				xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
-						"defaultleg.xml")[0];
-				DHParameterKinematics newLeg = new DHParameterKinematics(null,
-						IOUtils.toInputStream(xmlContent, "UTF-8"));
-				System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
-				addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
-						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				addleg = new TreeItem<String>("Add Leg", AssetFactory.loadIcon("Add-Leg.png"));
+			} catch (Exception e1) {
+				addleg = new TreeItem<String>("Add Leg");
 			}
-
-		});
-		TreeItem<String> regnerate = new TreeItem<String>("Generate Cad", AssetFactory.loadIcon("Generate-Cad.png"));
-
-		callbackMapForTreeitems.put(regnerate, () -> {
-			creatureLab.generateCad();
-
-		});
-		TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL", AssetFactory.loadIcon("Printable-Cad.png"));
-
-		callbackMapForTreeitems.put(kinematics, () -> {
-			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-			if (!defaultStlDir.exists()) {
-				defaultStlDir.mkdirs();
-			}
-			Platform.runLater(() -> {
-				DirectoryChooser chooser = new DirectoryChooser();
-				chooser.setTitle("Select Output Directory For .STL files");
-
-				chooser.setInitialDirectory(defaultStlDir);
-				File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
-				new Thread() {
-
-					public void run() {
-						MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
-						if (baseDirForFiles == null) {
-							return;
-						}
-						ArrayList<File> files;
-						try {
-							files = baseManager.generateStls((MobileBase) device, baseDirForFiles, true);
-							Platform.runLater(() -> {
-								Alert alert = new Alert(AlertType.INFORMATION);
-								alert.setTitle("Stl Export Success!");
-								alert.setHeaderText("Stl Export Success");
-								alert.setContentText(
-										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
-								alert.setWidth(500);
-								alert.initModality(Modality.APPLICATION_MODAL);
-								alert.show();
-							});
-						} catch (Exception e) {
-							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
-						}
-
-					}
-				}.start();
-			});
-
-		});
-		TreeItem<String> printable = new TreeItem<String>("Printable Cad", AssetFactory.loadIcon("Printable-Cad.png"));
-
-		callbackMapForTreeitems.put(printable, () -> {
-			File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-			if (!defaultStlDir.exists()) {
-				defaultStlDir.mkdirs();
-			}
-			Platform.runLater(() -> {
-				DirectoryChooser chooser = new DirectoryChooser();
-				chooser.setTitle("Select Output Directory For .STL files");
-
-				chooser.setInitialDirectory(defaultStlDir);
-				File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
-				new Thread() {
-
-					public void run() {
-						MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
-						if (baseDirForFiles == null) {
-							return;
-						}
-						ArrayList<File> files;
-						try {
-							files = baseManager.generateStls((MobileBase) device, baseDirForFiles, false);
-							Platform.runLater(() -> {
-								Alert alert = new Alert(AlertType.INFORMATION);
-								alert.setTitle("Stl Export Success!");
-								alert.setHeaderText("Stl Export Success");
-								alert.setContentText(
-										"All SLT's for the Creature Generated at\n" + files.get(0).getAbsolutePath());
-								alert.setWidth(500);
-								alert.initModality(Modality.APPLICATION_MODAL);
-								alert.show();
-							});
-						} catch (Exception e) {
-							BowlerStudioController.highlightException(baseManager.getCadScript(), e);
-						}
-
-					}
-				}.start();
-			});
-
-		});
-		
-		
-		TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
-		callbackMapForTreeitems.put(setCAD, () -> {
-			PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
-				Log.warn("Loading cad engine");
+			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
+			callbackMapForTreeitems.put(addleg, () -> {
+				// TODO Auto-generated method stub
+				System.out.println("Adding Leg");
+				String xmlContent;
 				try {
-					creatureLab.setGitCadEngine(gitsId, file, device);
-					File code = ScriptingEngine.fileFromGit(gitsId, file);
+					xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+							"defaultleg.xml")[0];
+					DHParameterKinematics newLeg = new DHParameterKinematics(null,
+							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
+					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
+							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+			TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
+					AssetFactory.loadIcon("Generate-Cad.png"));
+
+			callbackMapForTreeitems.put(regnerate, () -> {
+				creatureLab.generateCad();
+
+			});
+			TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",
+					AssetFactory.loadIcon("Printable-Cad.png"));
+
+			callbackMapForTreeitems.put(kinematics, () -> {
+				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				Platform.runLater(() -> {
+					DirectoryChooser chooser = new DirectoryChooser();
+					chooser.setTitle("Select Output Directory For .STL files");
+
+					chooser.setInitialDirectory(defaultStlDir);
+					File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+					new Thread() {
+
+						public void run() {
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
+							if (baseDirForFiles == null) {
+								return;
+							}
+							ArrayList<File> files;
+							try {
+								files = baseManager.generateStls((MobileBase) device, baseDirForFiles, true);
+								Platform.runLater(() -> {
+									Alert alert = new Alert(AlertType.INFORMATION);
+									alert.setTitle("Stl Export Success!");
+									alert.setHeaderText("Stl Export Success");
+									alert.setContentText("All SLT's for the Creature Generated at\n"
+											+ files.get(0).getAbsolutePath());
+									alert.setWidth(500);
+									alert.initModality(Modality.APPLICATION_MODAL);
+									alert.show();
+								});
+							} catch (Exception e) {
+								BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+							}
+
+						}
+					}.start();
+				});
+
+			});
+			TreeItem<String> printable = new TreeItem<String>("Printable Cad",
+					AssetFactory.loadIcon("Printable-Cad.png"));
+
+			callbackMapForTreeitems.put(printable, () -> {
+				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				if (!defaultStlDir.exists()) {
+					defaultStlDir.mkdirs();
+				}
+				Platform.runLater(() -> {
+					DirectoryChooser chooser = new DirectoryChooser();
+					chooser.setTitle("Select Output Directory For .STL files");
+
+					chooser.setInitialDirectory(defaultStlDir);
+					File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+					new Thread() {
+
+						public void run() {
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
+							if (baseDirForFiles == null) {
+								return;
+							}
+							ArrayList<File> files;
+							try {
+								files = baseManager.generateStls((MobileBase) device, baseDirForFiles, false);
+								Platform.runLater(() -> {
+									Alert alert = new Alert(AlertType.INFORMATION);
+									alert.setTitle("Stl Export Success!");
+									alert.setHeaderText("Stl Export Success");
+									alert.setContentText("All SLT's for the Creature Generated at\n"
+											+ files.get(0).getAbsolutePath());
+									alert.setWidth(500);
+									alert.initModality(Modality.APPLICATION_MODAL);
+									alert.show();
+								});
+							} catch (Exception e) {
+								BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+							}
+
+						}
+					}.start();
+				});
+
+			});
+
+			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
+			callbackMapForTreeitems.put(setCAD, () -> {
+				PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
+					Log.warn("Loading cad engine");
+					try {
+						creatureLab.setGitCadEngine(gitsId, file, device);
+						File code = ScriptingEngine.fileFromGit(gitsId, file);
+						BowlerStudio.createFileTab(code);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+			});
+			TreeItem<String> editCAD = new TreeItem<>("Edit CAD Engine...",
+					AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+			callbackMapForTreeitems.put(editCAD, () -> {
+				try {
+					File code = ScriptingEngine.fileFromGit(device.getGitCadEngine()[0], device.getGitCadEngine()[1]);
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
-		});
-		TreeItem<String> editCAD = new TreeItem<>("Edit CAD Engine...", AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-		callbackMapForTreeitems.put(editCAD, () -> {
-			try {
-				File code = ScriptingEngine.fileFromGit(device.getGitCadEngine()[0], device.getGitCadEngine()[1]);
-				BowlerStudio.createFileTab(code);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		TreeItem<String> resetWalking = new TreeItem<>("Set Walking Engine...",
-				AssetFactory.loadIcon("Set-Walking-Engine.png"));
-		callbackMapForTreeitems.put(resetWalking, () -> {
-			PromptForGit.prompt("Select a Walking Engine From a Gist", device.getGitWalkingEngine()[0],
-					(gitsId, file) -> {
-						Log.warn("Loading walking engine");
-						try {
-							creatureLab.setGitWalkingEngine(gitsId, file, device);
-							File code = ScriptingEngine.fileFromGit(gitsId, file);
-							BowlerStudio.createFileTab(code);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
-		});
-		TreeItem<String> editWalking = new TreeItem<>("Edit Walking Engine...",
-				AssetFactory.loadIcon("Edit-Walking-Engine.png"));
-		callbackMapForTreeitems.put(editWalking, () -> {
-			try {
-				File code = ScriptingEngine.fileFromGit(device.getGitWalkingEngine()[0],
-						device.getGitWalkingEngine()[1]);
-				BowlerStudio.createFileTab(code);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-
-		TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
-
-		callbackMapForTreeitems.put(addFixed, () -> {
-			// TODO Auto-generated method stub
-			System.out.println("Adding Fixed Wheel");
-			try {
-				String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
-						"defaultFixed.xml")[0];
-				DHParameterKinematics newArm = new DHParameterKinematics(null,
-						IOUtils.toInputStream(xmlContent, "UTF-8"));
-				System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
-				addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
-						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		});
-		TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
-				AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
-
-		callbackMapForTreeitems.put(addsteerable, () -> {
-			// TODO Auto-generated method stub
-			System.out.println("Adding Steerable Wheel");
-			try {
-				String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
-						"defaultSteerable.xml")[0];
-				DHParameterKinematics newArm = new DHParameterKinematics(null,
-						IOUtils.toInputStream(xmlContent, "UTF-8"));
-				System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
-				addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
-						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		});
-		TreeItem<String> imuCenter = new TreeItem<>("Imu center", AssetFactory.loadIcon("Advanced-Configuration.png"));
-
-		callbackMapForTreeitems.put(imuCenter, () -> {
-			TransformWidget imu = new TransformWidget("IMU center", device.getIMUFromCentroid(), new IOnTransformChange() {
-
-				@Override
-				public void onTransformChaging(TransformNR newTrans) {}
-
-				@Override
-				public void onTransformFinished(TransformNR newTrans) {
-					MobileBaseCadManager manager = MobileBaseCadManager.get(device);
-					if(manager!=null)manager.generateCad();
-					device.setIMUFromCentroid(newTrans);
-				}
-				
+			TreeItem<String> resetWalking = new TreeItem<>("Set Walking Engine...",
+					AssetFactory.loadIcon("Set-Walking-Engine.png"));
+			callbackMapForTreeitems.put(resetWalking, () -> {
+				PromptForGit.prompt("Select a Walking Engine From a Gist", device.getGitWalkingEngine()[0],
+						(gitsId, file) -> {
+							Log.warn("Loading walking engine");
+							try {
+								creatureLab.setGitWalkingEngine(gitsId, file, device);
+								File code = ScriptingEngine.fileFromGit(gitsId, file);
+								BowlerStudio.createFileTab(code);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						});
 			});
-			if (widgetMapForTreeitems.get(imuCenter) == null) {
-				widgetMapForTreeitems.put(imuCenter,new Group( imu));
+			TreeItem<String> editWalking = new TreeItem<>("Edit Walking Engine...",
+					AssetFactory.loadIcon("Edit-Walking-Engine.png"));
+			callbackMapForTreeitems.put(editWalking, () -> {
+				try {
+					File code = ScriptingEngine.fileFromGit(device.getGitWalkingEngine()[0],
+							device.getGitWalkingEngine()[1]);
+					BowlerStudio.createFileTab(code);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 
+			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
+
+			callbackMapForTreeitems.put(addFixed, () -> {
+				// TODO Auto-generated method stub
+				System.out.println("Adding Fixed Wheel");
+				try {
+					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+							"defaultFixed.xml")[0];
+					DHParameterKinematics newArm = new DHParameterKinematics(null,
+							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
+							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
+					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
+
+			callbackMapForTreeitems.put(addsteerable, () -> {
+				// TODO Auto-generated method stub
+				System.out.println("Adding Steerable Wheel");
+				try {
+					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+							"defaultSteerable.xml")[0];
+					DHParameterKinematics newArm = new DHParameterKinematics(null,
+							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
+							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+			TreeItem<String> imuCenter = new TreeItem<>("Imu center",
+					AssetFactory.loadIcon("Advanced-Configuration.png"));
+
+			callbackMapForTreeitems.put(imuCenter, () -> {
+				TransformWidget imu = new TransformWidget("IMU center", device.getIMUFromCentroid(),
+						new IOnTransformChange() {
+
+							@Override
+							public void onTransformChaging(TransformNR newTrans) {
+							}
+
+							@Override
+							public void onTransformFinished(TransformNR newTrans) {
+								MobileBaseCadManager manager = MobileBaseCadManager.get(device);
+								if (manager != null)
+									manager.generateCad();
+								device.setIMUFromCentroid(newTrans);
+							}
+
+						});
+				if (widgetMapForTreeitems.get(imuCenter) == null) {
+					widgetMapForTreeitems.put(imuCenter, new Group(imu));
+
+				}
+
+			});
+			TreeItem<String> bodymass = new TreeItem<>("Adjust Body Mass",
+					AssetFactory.loadIcon("Advanced-Configuration.png"));
+
+			callbackMapForTreeitems.put(bodymass, () -> {
+				if (widgetMapForTreeitems.get(bodymass) == null) {
+					widgetMapForTreeitems.put(bodymass, new AdjustbodyMassWidget(device));
+
+				}
+
+			});
+			TreeItem<String> item = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
+
+			callbackMapForTreeitems.put(item, () -> {
+				// TODO Auto-generated method stub
+				System.out.println("Adding Arm");
+				try {
+					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+							"defaultarm.xml")[0];
+					DHParameterKinematics newArm = new DHParameterKinematics(null,
+							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
+							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+
+			rootItem.getChildren().addAll(bodymass, imuCenter, physics, regnerate, printable, kinematics, item, addleg,
+					addFixed, addsteerable);
+
+			if (creatureIsOwnedByUser) {
+				rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
 			}
-
-		});
-		TreeItem<String> bodymass = new TreeItem<>("Adjust Body Mass", AssetFactory.loadIcon("Advanced-Configuration.png"));
-
-		callbackMapForTreeitems.put(bodymass, () -> {
-			if (widgetMapForTreeitems.get(bodymass) == null) {
-				widgetMapForTreeitems.put(bodymass, new AdjustbodyMassWidget(device));
-
-			}
-
-		});
-		TreeItem<String> item = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
-
-		callbackMapForTreeitems.put(item, () -> {
-			// TODO Auto-generated method stub
-			System.out.println("Adding Arm");
-			try {
-				String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
-						"defaultarm.xml")[0];
-				DHParameterKinematics newArm = new DHParameterKinematics(null,
-						IOUtils.toInputStream(xmlContent, "UTF-8"));
-				System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
-				addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
-						widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		});
-		
-		rootItem.getChildren().addAll(bodymass,imuCenter,physics, regnerate, printable, kinematics, item, addleg, addFixed, addsteerable);
-
-		if (creatureIsOwnedByUser) {
-			rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
+		} catch (Exception e) {
+			new IssueReportingExceptionHandler().except(e);
 		}
 	}
 
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
 		return new Thread() {
 			public void run() {
-				
+
 				device.setScriptingName(newName);
 				String filename = newName + ".xml";
 				GitHub github = PasswordManager.getGithub();
-				
+
 				GHCreateRepositoryBuilder builder = github.createRepository(newName);
 				builder.description(newName + " copy of " + oldname);
-				GHRepository gist=null;
+				GHRepository gist = null;
 				try {
 					try {
 						gist = builder.create();
-					}catch(org.kohsuke.github.HttpException ex) {
-						if(ex.getMessage().contains("name already exists on this account")) {
-							gist = github.getRepository(PasswordManager.getLoginID()+"/"+newName);
+					} catch (org.kohsuke.github.HttpException ex) {
+						if (ex.getMessage().contains("name already exists on this account")) {
+							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
 						}
 					}
-					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
+					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
 
 					System.out.println("Creating new Robot repo");
 					while (true) {
@@ -431,34 +444,32 @@ public class MobleBaseMenueFactory {
 						ThreadUtil.wait(500);
 						Log.warn(gist + " not built yet");
 					}
-					//BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
+					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
 					System.out.println("Creating gist at: " + gitURL);
-					
-					
+
 					System.out.println("copy Cad engine ");
 					device.setGitCadEngine(
 							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-					System.out.println("copy walking engine Was: " + device.getGitWalkingEngine()[0]+" "+device.getGitWalkingEngine()[1]);
-					device.setGitWalkingEngine(copyGitFile(device.getGitWalkingEngine()[0], gitURL,
-							device.getGitWalkingEngine()[1]));
+					System.out.println("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
+							+ device.getGitWalkingEngine()[1]);
+					device.setGitWalkingEngine(
+							copyGitFile(device.getGitWalkingEngine()[0], gitURL, device.getGitWalkingEngine()[1]));
 					// System.out.println("is now "+device.getGitWalkingEngine());
 					for (DHParameterKinematics dh : device.getAllDHChains()) {
 						// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
-						dh.setGitCadEngine(
-								copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+						dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
 
 						// System.out.println("copy Leg Dh engine ");
-						dh.setGitDhEngine(
-								copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+						dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
 					}
 					device.setScriptingName(newName);
 					String xml = device.getXml();
 
-					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename,
-							xml, "new Robot content");
-					//Shut down the old robot
+					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, xml,
+							"new Robot content");
+					// Shut down the old robot
 					ConnectionManager.disconnectAll();
-					
+
 					ThreadUtil.wait(3000);
 					// add new robot to the workspace
 					BowlerStudioMenuWorkspace.add(gitURL);
@@ -468,7 +479,7 @@ public class MobleBaseMenueFactory {
 					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
 					ThreadUtil.wait(1000);
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
-					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
