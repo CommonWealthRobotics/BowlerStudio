@@ -25,11 +25,16 @@ import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.Gauge.KnobType;
+import eu.hansolo.medusa.Gauge.NeedleShape;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
+import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
+import eu.hansolo.medusa.TickLabelOrientation;
+import eu.hansolo.medusa.TickMarkType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -47,6 +52,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.java.games.input.Component;
@@ -72,10 +78,13 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	private Button jogminus= new Button("-");
 	private LinkConfiguration conf;
 	private Gauge gauge;
+	private Section bounds;
+	private Section boundsPossible;
+	private LinkConfigurationWidget theWidget;
 	
-	
-	public LinkSliderWidget(int linkIndex, DHParameterKinematics d) {
-
+	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget theWidget) {
+		this.theWidget = theWidget;
+		setTrimController(theWidget);
 		this.linkIndex = linkIndex;
 		this.device = d;
 		this.conf = d.getLinkConfiguration(linkIndex);
@@ -124,20 +133,31 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		
 		VBox allParts = new VBox();
 		allParts.getChildren().add(panel);
-		
-		gauge = GaugeBuilder.create().skinType(SkinType.GAUGE).animated(false)
-				.decimals(2)
-				.thresholdVisible(true)
-				.lcdVisible(true)
-				.lcdDesign(LcdDesign.STANDARD) 
-                .lcdFont(LcdFont.DIGITAL_BOLD)  
-                .tickLabelDecimals(1) 
-                .tickLabelLocation(TickLabelLocation.INSIDE)                                     // Should tick labels be inside or outside Scale (INSIDE, OUTSIDE)
-                .tickLabelSectionsVisible(true)
-                .tickMarkSectionsVisible(true)
-		        .title("Link Bounds").unit("degrees").build();
+		double spread = 40;
+		bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
+		boundsPossible = new Section(0, 0, Color.ORANGE);
+		gauge=GaugeBuilder.create()
+        .foregroundBaseColor(Color.BLACK)
+        .prefSize(300, 300)
+        .startAngle(360-(spread/2))
+        .angleRange(360-spread)
+        .minValue(-180+(spread/2))
+        .maxValue(180-(spread/2))
+        .tickLabelLocation(TickLabelLocation.OUTSIDE)
+        .tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
+        .minorTickMarksVisible(false)
+        .majorTickMarkType(TickMarkType.BOX)
+        .valueVisible(true)
+        .knobType(KnobType.FLAT)
+        .needleShape(NeedleShape.FLAT)
+        .needleColor(Color.RED)
+        .sectionsVisible(true)
+        .sections(boundsPossible,bounds)
+        .tickLabelsVisible(false)        
+        .decimals(2)  
+        .build();
 		event(conf);
-		allParts.getChildren().add(gauge);
+		allParts.getChildren().addAll(gauge,theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
@@ -146,12 +166,16 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	@Override
 	public void event(LinkConfiguration newConf) {
 		double rANGE = getAbstractLink().getMaxEngineeringUnits()-getAbstractLink().getMinEngineeringUnits();
-	
-		gauge.setMaxValue(getAbstractLink().getDeviceMaxEngineeringUnits());
-		gauge.setMinValue(getAbstractLink().getDeviceMinEngineeringUnits());
-		gauge.setStartAngle(getAbstractLink().getMinEngineeringUnits()) ;                                                                // Start angle of Scale (bottom -> 0, direction -> CCW)
-		gauge.setAngleRange(rANGE) ;
-		gauge.setTitle("Link range = "+rANGE);
+		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()-getAbstractLink().getDeviceMinEngineeringUnits();
+		Platform.runLater(()-> {
+			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
+			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
+			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
+			boundsPossible.setStop(getAbstractLink().getDeviceMaxEngineeringUnits());
+//			gauge.setMaxValue(getAbstractLink().getDeviceMaxEngineeringUnits());
+//			gauge.setMinValue(getAbstractLink().getDeviceMinEngineeringUnits());
+			gauge.setTitle("Link Range "+String.format("%.2f", rANGE)+"\nOf Possible "+String.format("%.2f", theoreticalRange));
+		});
 		getSetpoint().setLowerBound(getAbstractLink().getMinEngineeringUnits());
 		getSetpoint().setUpperBound(getAbstractLink().getMaxEngineeringUnits());
 
@@ -287,7 +311,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		// TODO Auto-generated method stub
 		try {
 			getSetpoint().setValue(arg1);
-			gauge.setValue(arg1);
+			Platform.runLater(()->gauge.setValue(arg1));
 		} catch (Exception ex) {
 			return;
 		}

@@ -626,7 +626,11 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
-		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh);
+		//LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		//lsw.setTrimController(confWidget);
+		LinkConfigurationWidget confWidget =new LinkConfigurationWidget(conf, dh.getFactory(),
+				MobileBaseCadManager.get(base));
+		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,confWidget);
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
@@ -759,8 +763,7 @@ public class MobleBaseMenueFactory {
 
 		link.getChildren().addAll(design);
 
-		LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
-		lsw.setTrimController(confWidget);
+		
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);
 

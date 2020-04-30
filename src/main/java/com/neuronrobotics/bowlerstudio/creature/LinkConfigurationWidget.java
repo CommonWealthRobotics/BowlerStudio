@@ -305,13 +305,18 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				conf.setStaticOffset(newAngleDegrees);
-
-				activLink.setTargetEngineeringUnits(0);
-				activLink.flush(0);
+				updateZeroValue(newAngleDegrees);
 			}
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				updateZeroValue(newAngleDegrees);
+				if (manager != null)
+					manager.generateCad();
+
+			}
+
+			private void updateZeroValue(double newAngleDegrees) {
 				double diff = zeroValue-newAngleDegrees;
 				zeroValue=newAngleDegrees;
 				setLowerBound(conf.getLowerLimit()-diff);
@@ -319,11 +324,6 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				//myLinkSliderWidget.getSetpoint().setValue(0);
 				activLink.setTargetEngineeringUnits(0);
 				activLink.flush(0);
-				upperBound.setLowerBound(newAngleDegrees);
-				lowerBound.setUpperBound(newAngleDegrees);
-				if (manager != null)
-					manager.generateCad();
-
 			}
 		}, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
 		zero.setAllowResize(false);
