@@ -17,14 +17,15 @@ public class MyApp extends Application {
     	MobileBase base = MobileBaseLoader.fromGit("https://github.com/OperationSmallKat/greycat.git", "MediumKat.xml");
     	DHParameterKinematics limb = base.getLegs().get(0);
     	int index = 2;
-    	LinkSliderWidget lsw = new LinkSliderWidget(index,  limb);
-    	
     	LinkConfiguration conf=limb.getLinkConfiguration(index);
 		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(conf, limb.getFactory(),
-				MobileBaseCadManager.get(base));		
-    	lsw.setTrimController(theWidget);
+				MobileBaseCadManager.get(base));
+    	LinkSliderWidget lsw = new LinkSliderWidget(index,  limb,theWidget);
+    	
+    			
+    	
     	VBox box = new VBox();
-    	box.getChildren().addAll(lsw,theWidget);
+    	box.getChildren().addAll(lsw);
         Group root = new Group(box);
         Scene scene = new Scene(root, 800, 900);
 
