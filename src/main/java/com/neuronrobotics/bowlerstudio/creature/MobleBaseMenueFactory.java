@@ -599,22 +599,24 @@ public class MobleBaseMenueFactory {
 	}
 
 	@SuppressWarnings("restriction")
-	private static void setHardwareConfig(MobileBase base, LinkConfiguration conf, LinkFactory factory,
+	private static LinkConfigurationWidget setHardwareConfig(MobileBase base, LinkConfiguration conf, LinkFactory factory,
 			TreeItem<String> rootItem, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, LinkSliderWidget widget) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
+		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(conf, factory,
+				MobileBaseCadManager.get(base));
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(hwConf, new Group(new LinkConfigurationWidget(conf, factory,
-						widget.getSetpoint(), MobileBaseCadManager.get(base))));
+				widgetMapForTreeitems.put(hwConf, new Group(theWidget));
 			}
 			BowlerStudio.select(base, conf);
 		});
 		rootItem.getChildren().add(hwConf);
+		return theWidget;
 	}
 
 	@SuppressWarnings("restriction")
@@ -624,7 +626,7 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
 
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
-		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dhLink, dh);
+		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh);
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
@@ -650,7 +652,7 @@ public class MobleBaseMenueFactory {
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
-			setHardwareConfig(base, co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems, lsw);
+			setHardwareConfig(base, co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
 
 		TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),
@@ -685,7 +687,7 @@ public class MobleBaseMenueFactory {
 							slaveFactory.getLink(newLink);
 							try {
 								setHardwareConfig(base, newLink, slaveFactory, slaves, callbackMapForTreeitems,
-										widgetMapForTreeitems, lsw);
+										widgetMapForTreeitems);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -757,8 +759,8 @@ public class MobleBaseMenueFactory {
 
 		link.getChildren().addAll(design);
 
-		setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems, lsw);
-
+		LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		lsw.setTrimController(confWidget);
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);
 

@@ -38,7 +38,7 @@ import javafx.scene.text.Text;
 import java.time.Duration;
 
 @SuppressWarnings("restriction")
-public class LinkConfigurationWidget extends GridPane {
+public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 	// private int index;
 	private LinkConfiguration conf;
@@ -47,7 +47,7 @@ public class LinkConfigurationWidget extends GridPane {
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
 	private MobileBaseCadManager manager;
-	private EngineeringUnitsSliderWidget setpointSLider;
+	//private EngineeringUnitsSliderWidget setpointSLider;
 	
 	private double zeroValue =0;
 
@@ -60,12 +60,11 @@ public class LinkConfigurationWidget extends GridPane {
 		}
 	}
 
-	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory,
-			EngineeringUnitsSliderWidget slide, MobileBaseCadManager manager) {
+	public LinkConfigurationWidget(LinkConfiguration congiuration, LinkFactory factory, MobileBaseCadManager manager) {
 		// this.index = index;
 		// this.congiuration = congiuration;
 		conf = congiuration;
-		this.setpointSLider = slide;
+		//this.setpointSLider = slide;
 		this.manager = manager;
 		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
@@ -317,7 +316,7 @@ public class LinkConfigurationWidget extends GridPane {
 				zeroValue=newAngleDegrees;
 				setLowerBound(conf.getLowerLimit()-diff);
 				setUpperBound(conf.getUpperLimit()-diff);
-				setpointSLider.setValue(0);
+				//myLinkSliderWidget.getSetpoint().setValue(0);
 				activLink.setTargetEngineeringUnits(0);
 				activLink.flush(0);
 				upperBound.setLowerBound(newAngleDegrees);
@@ -408,7 +407,19 @@ public class LinkConfigurationWidget extends GridPane {
 //		add(newShaft, 1, 16);
 
 	}
-
+	
+	public void trimPlus() {
+		if(conf.getScale()>0)
+			zero.jogPlusOne();
+		else
+			zero.jogMinusOne();
+	}
+	public void trimMinus() {
+		if(conf.getScale()<0)
+			zero.jogPlusOne();
+		else
+			zero.jogMinusOne();
+	}
 	private double setUpperBound(double newAngleDegrees) {
 		
 		double upperLimit = newAngleDegrees<=activLink.getDeviceMaximumValue()?newAngleDegrees:activLink.getDeviceMaximumValue();
@@ -417,10 +428,10 @@ public class LinkConfigurationWidget extends GridPane {
 		double eng = 0;
 		if (conf.getScale() < 0) {
 			eng = (activLink.getMinEngineeringUnits());
-			setpointSLider.setLowerBound(eng);
+			//myLinkSliderWidget.getSetpoint().setLowerBound(eng);
 		} else {
 			eng = (activLink.getMaxEngineeringUnits());
-			setpointSLider.setUpperBound(eng);
+			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
 
 		return eng;
@@ -434,10 +445,10 @@ public class LinkConfigurationWidget extends GridPane {
 		double eng = 0;
 		if (conf.getScale() > 0) {
 			eng = (activLink.getMinEngineeringUnits());
-			setpointSLider.setLowerBound(eng);
+			//myLinkSliderWidget.getSetpoint().setLowerBound(eng);
 		} else {
 			eng = (activLink.getMaxEngineeringUnits());
-			setpointSLider.setUpperBound(eng);
+			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
 
 		return eng;
@@ -458,28 +469,8 @@ public class LinkConfigurationWidget extends GridPane {
 		for (String s : Vitamins.listVitaminSizes(selectedItem)) {
 			shaftSize.getItems().add(s);
 		}
-		// editShaft.setText("Edit "+ conf.getShaftSize());
 	}
 
-//	private void test(String type) throws IOException {
-//		try {
-//			Vitamins.saveDatabase(type);
-//
-//		} catch (org.eclipse.jgit.api.errors.TransportException e) {
-//			GitHub github = PasswordManager.getGithub();
-//
-//			GHRepository repo = github.getUser("madhephaestus").getRepository("Hardware-Dimensions");
-//			GHRepository forked = repo.fork();
-//			System.out.println("Vitamins forked to " + forked.getGitTransportUrl());
-//			Vitamins.setGitRepoDatabase(
-//					"https://github.com/" + github.getMyself().getLogin() + "/Hardware-Dimensions.git");
-//			System.out.println("Loading new files");
-//			//
-//
-//		} catch (Exception ex) {
-//			// ex.printStackTrace(MainController.getOut());
-//		}
-//	}
 
 
 

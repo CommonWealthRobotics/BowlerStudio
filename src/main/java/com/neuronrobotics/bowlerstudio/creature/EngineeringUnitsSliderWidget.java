@@ -113,7 +113,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			jogMinusOne();
 		});
 	}
-	private void jogMinusOne() {
+	public void jogMinusOne() {
 		double value = getValue()-1;
 		setValue(value);
 		getListener().onSliderMoving(this,value);
