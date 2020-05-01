@@ -599,23 +599,23 @@ public class MobleBaseMenueFactory {
 	}
 
 	@SuppressWarnings("restriction")
-	private static LinkConfigurationWidget setHardwareConfig(MobileBase base, LinkConfiguration conf, LinkFactory factory,
-			TreeItem<String> rootItem, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) throws Exception {
+	private static LinkConfigurationWidget setHardwareConfig(MobileBase myBase, LinkConfiguration MyConf, LinkFactory myLinkFactory,
+			TreeItem<String> rootItem1, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems1,
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems1) throws Exception {
 
-		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
+		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
-		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(conf, factory,
-				MobileBaseCadManager.get(base));
-		callbackMapForTreeitems.put(hwConf, () -> {
-			if (widgetMapForTreeitems.get(hwConf) == null) {
+		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(MyConf, myLinkFactory,
+				MobileBaseCadManager.get(myBase));
+		callbackMapForTreeitems1.put(hwConf, () -> {
+			if (widgetMapForTreeitems1.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				widgetMapForTreeitems.put(hwConf, new Group(theWidget));
+				widgetMapForTreeitems1.put(hwConf, new Group(theWidget));
 			}
-			BowlerStudio.select(base, conf);
+			BowlerStudio.select(myBase, MyConf);
 		});
-		rootItem.getChildren().add(hwConf);
+		rootItem1.getChildren().add(hwConf);
 		return theWidget;
 	}
 
@@ -624,14 +624,27 @@ public class MobleBaseMenueFactory {
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
-
+		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
 		//LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		//lsw.setTrimController(confWidget);
 		LinkConfigurationWidget confWidget =new LinkConfigurationWidget(conf, dh.getFactory(),
 				MobileBaseCadManager.get(base));
 		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,confWidget);
-		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
+		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
+				AssetFactory.loadIcon("Hardware-Config.png"));
+
+		callbackMapForTreeitems.put(hwConf, () -> {
+			if (widgetMapForTreeitems.get(hwConf) == null) {
+				// create the widget for the leg when looking at it for the
+				// first time
+				Platform.runLater(()->widgetMapForTreeitems.put(hwConf, lsw));
+			}
+			//BowlerStudio.select(base, conf);
+		});
+		link.getChildren().add(hwConf);
+		
+		
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
 				// create the widget for the leg when looking at it for the
@@ -643,7 +656,7 @@ public class MobleBaseMenueFactory {
 				lsw.setGameController(controller);
 			}
 			try {
-				BowlerStudio.select(base, conf);
+				//BowlerStudio.select(base, conf);
 			} catch (Exception ex) {
 				System.err.println("Linb not loaded yet");
 			}

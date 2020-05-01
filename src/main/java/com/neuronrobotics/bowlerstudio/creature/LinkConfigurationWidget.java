@@ -256,7 +256,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				try {
 					activLink.setUseLimits(false);
-					activLink.setTargetEngineeringUnits(setLowerBound(newAngleDegrees) + 0.01);
+					activLink.setTargetEngineeringUnits(setLowerBound(newAngleDegrees));
 					activLink.flush(0);
 					activLink.setUseLimits(true);
 					if (manager != null)
@@ -277,7 +277,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				double eng = setUpperBound(newAngleDegrees - 0.00001);
+				double eng = setUpperBound(newAngleDegrees );
 				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
@@ -287,7 +287,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				activLink.setUseLimits(false);
-				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees) - 0.00001);
+				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees) );
 				activLink.flush(0);
 				activLink.setUseLimits(true);
 				zero.setUpperBound(newAngleDegrees);
@@ -420,7 +420,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		else
 			zero.jogMinusOne();
 	}
-	private double setUpperBound(double newAngleDegrees) {
+	public double setUpperBound(double newAngleDegrees) {
 		
 		double upperLimit = newAngleDegrees<=activLink.getDeviceMaximumValue()?newAngleDegrees:activLink.getDeviceMaximumValue();
 		conf.setUpperLimit(upperLimit);
@@ -437,7 +437,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		return eng;
 	}
 
-	private double setLowerBound(double newAngleDegrees) {
+	public double setLowerBound(double newAngleDegrees) {
 		double lowerLimit = newAngleDegrees>=activLink.getDeviceMinimumValue()?newAngleDegrees:activLink.getDeviceMinimumValue();
 		conf.setLowerLimit(lowerLimit);
 		lowerBound.setValue(lowerLimit);

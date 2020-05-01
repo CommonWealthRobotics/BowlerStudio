@@ -81,6 +81,11 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	private Section bounds;
 	private Section boundsPossible;
 	private LinkConfigurationWidget theWidget;
+	private TextField engineeringUpper=new TextField("0");
+	private TextField engineeringLower=new TextField("0");
+	
+	private Label engineeringUpperPossible=new Label("0");
+	private Label engineeringLowerPossible=new Label("0");
 	
 	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget theWidget) {
 		this.theWidget = theWidget;
@@ -122,23 +127,12 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		jogplus.setOnAction(event->{
 			getTrimController().trimPlus();
 		});
-		HBox trimBox = new HBox();
-		trimBox.getChildren().add(new Label("Trim"));
-		trimBox.getChildren().add(jogminus);
-		trimBox.getChildren().add(jogplus);
-		panel.add(new Text("#" + linkIndex), 0, 0);
-		panel.add(name, 1, 0);
-		panel.add(getSetpoint(), 2, 0);
-		panel.add(trimBox, 2, 1);
-		
-		VBox allParts = new VBox();
-		allParts.getChildren().add(panel);
-		double spread = 40;
+		double spread = 0;
 		bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
 		boundsPossible = new Section(0, 0, Color.ORANGE);
 		gauge=GaugeBuilder.create()
         .foregroundBaseColor(Color.BLACK)
-        .prefSize(300, 300)
+        .prefSize(200,200)
         .startAngle(360-(spread/2))
         .angleRange(360-spread)
         .minValue(-180+(spread/2))
@@ -157,7 +151,83 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
         .decimals(2)  
         .build();
 		event(conf);
-		allParts.getChildren().addAll(gauge,theWidget);
+		
+		engineeringUpper.setOnAction(event->{
+			try {
+				double num = Double.parseDouble(engineeringUpper.getText());
+				if(num>getAbstractLink().getDeviceMaxEngineeringUnits()) {
+					throw new RuntimeException();
+				}
+				double linkUnits = getAbstractLink().toLinkUnits(num);
+				if(conf.getScale()>0)
+					theWidget.setUpperBound(linkUnits);
+				else
+					theWidget.setLowerBound(linkUnits);
+			}catch(Exception e){
+				Platform.runLater(()-> engineeringUpper.setText(String.format("%.2f",getAbstractLink().getMaxEngineeringUnits())));
+			}
+		});
+		engineeringLower.setOnAction(event->{
+			try {
+				double num = Double.parseDouble(engineeringLower.getText());
+				if(num<getAbstractLink().getDeviceMinEngineeringUnits()) {
+					throw new RuntimeException();
+				}
+				double linkUnits = getAbstractLink().toLinkUnits(num);
+				if(conf.getScale()<0)
+					theWidget.setUpperBound(linkUnits);
+				else
+					theWidget.setLowerBound(linkUnits);
+			}catch(Exception e){
+				Platform.runLater(()-> engineeringLower.setText(String.format("%.2f",getAbstractLink().getMinEngineeringUnits())));
+			}
+		});
+		
+		HBox upperLimBox1 = new HBox();
+		HBox lowerLimBox1 = new HBox();
+		VBox limits1 = new VBox();
+		engineeringUpper.setPrefWidth(80);
+		engineeringLower.setPrefWidth(80);
+		upperLimBox1.getChildren().addAll(new Label("Upper: "),engineeringUpperPossible);
+		lowerLimBox1.getChildren().addAll(new Label("Lower: "),engineeringLowerPossible);
+		limits1.getChildren().addAll(new Label("Range"),upperLimBox1,lowerLimBox1);
+		
+		HBox trimBox = new HBox();
+		HBox upperLimBox = new HBox();
+		HBox lowerLimBox = new HBox();
+		VBox limits = new VBox();
+		engineeringUpper.setPrefWidth(80);
+		engineeringLower.setPrefWidth(80);
+		upperLimBox.getChildren().addAll(new Label("Upper: "),engineeringUpper);
+		lowerLimBox.getChildren().addAll(new Label("Lower: "),engineeringLower);
+		limits.getChildren().addAll(new Label("Limits"),upperLimBox,lowerLimBox);
+		
+		trimBox.getChildren().add(new Label("Trim"));
+		trimBox.getChildren().add(jogminus);
+		trimBox.getChildren().add(jogplus);
+		panel.setHgap(5);
+		panel.setVgap(5);
+		panel.add(new Text("#" + linkIndex), 0, 0);
+		panel.add(name, 1, 0);
+		panel.add(getSetpoint(), 2, 0);
+		
+		
+		GridPane calibration = new GridPane();
+		calibration.setHgap(5);
+		calibration.setVgap(5);
+		calibration.getColumnConstraints().add(new ColumnConstraints(180));
+		calibration.getColumnConstraints().add(new ColumnConstraints(100));
+		calibration.getColumnConstraints().add(new ColumnConstraints(120)); 
+		calibration.getRowConstraints().add(new RowConstraints(80)); 
+		calibration.getRowConstraints().add(new RowConstraints(150)); 
+
+		calibration.add(trimBox, 1, 1);
+		calibration.add(limits, 0, 0);
+		calibration.add(limits1, 1, 0);
+		calibration.add(gauge, 0, 1);
+		
+		VBox allParts = new VBox();
+		allParts.getChildren().addAll(panel,calibration,theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
@@ -168,6 +238,10 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		double rANGE = getAbstractLink().getMaxEngineeringUnits()-getAbstractLink().getMinEngineeringUnits();
 		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()-getAbstractLink().getDeviceMinEngineeringUnits();
 		Platform.runLater(()-> {
+			engineeringUpper.setText(String.format("%.2f",getAbstractLink().getMaxEngineeringUnits()));
+			engineeringLower.setText(String.format("%.2f",getAbstractLink().getMinEngineeringUnits()));
+			engineeringUpperPossible.setText(String.format("%.2f",getAbstractLink().getDeviceMaxEngineeringUnits()));
+			engineeringLowerPossible.setText(String.format("%.2f",getAbstractLink().getDeviceMinEngineeringUnits()));
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
 			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
 			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
