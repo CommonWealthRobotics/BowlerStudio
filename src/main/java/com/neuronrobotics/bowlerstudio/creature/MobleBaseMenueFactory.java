@@ -613,7 +613,7 @@ public class MobleBaseMenueFactory {
 				// first time
 				widgetMapForTreeitems1.put(hwConf, new Group(theWidget));
 			}
-			BowlerStudio.select(myBase, MyConf);
+			//BowlerStudio.select(myBase, MyConf);
 		});
 		rootItem1.getChildren().add(hwConf);
 		return theWidget;
@@ -640,7 +640,7 @@ public class MobleBaseMenueFactory {
 				// first time
 				Platform.runLater(()->widgetMapForTreeitems.put(hwConf, lsw));
 			}
-			//BowlerStudio.select(base, conf);
+			BowlerStudio.select(base, dh);
 		});
 		link.getChildren().add(hwConf);
 		
@@ -656,7 +656,7 @@ public class MobleBaseMenueFactory {
 				lsw.setGameController(controller);
 			}
 			try {
-				//BowlerStudio.select(base, conf);
+				BowlerStudio.select(base, dh);
 			} catch (Exception ex) {
 				System.err.println("Linb not loaded yet");
 			}
@@ -769,7 +769,7 @@ public class MobleBaseMenueFactory {
 				}));
 			}
 			try {
-				BowlerStudio.select(base, conf);
+				BowlerStudio.select(base, dh);
 			} catch (java.lang.NullPointerException e) {
 			} // selecting before limb loaded
 		});
