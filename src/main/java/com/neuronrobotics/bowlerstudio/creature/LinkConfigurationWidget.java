@@ -245,11 +245,11 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				double eng = setLowerBound(newAngleDegrees);
-				activLink.setUseLimits(false);
-				activLink.setTargetEngineeringUnits(eng);
-				activLink.flush(0);
-				activLink.setUseLimits(true);
+					double eng = setLowerBound(newAngleDegrees);
+					activLink.setUseLimits(false);
+					activLink.setTargetEngineeringUnits(eng);
+					activLink.flush(0);
+					activLink.setUseLimits(true);
 			}
 
 			@Override
