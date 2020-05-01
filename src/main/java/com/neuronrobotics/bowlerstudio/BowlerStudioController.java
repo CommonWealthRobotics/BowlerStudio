@@ -20,6 +20,7 @@ import eu.mihosoft.vrl.v3d.Vertex;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
@@ -93,6 +94,11 @@ public class BowlerStudioController implements IScriptEventListener {
 		public void setSelectedCsg(Collection<CSG> selectedCsg) {
 			CreatureLab3dController.getEngine().setSelectedCsg(new ArrayList<>(selectedCsg));
 
+		}
+
+		@Override
+		public void setSelected(Affine rootListener) {
+			CreatureLab3dController.getEngine().setSelected(rootListener);
 		}
 	};
 
