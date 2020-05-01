@@ -1282,6 +1282,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 		resetMouseTime();
 	}
+	public void setSelected(Affine rootListener) {
+		focusToAffine(new TransformNR(), rootListener);
+	}
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
@@ -1307,7 +1310,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		if (scg == this.selectedCsg||focusing)
 			return;
 		this.selectedCsg = scg;
-		focusing=true;
+		
 		for (CSG key : getCsgMap().keySet()) {
 
 			Platform.runLater(() -> {
@@ -1355,12 +1358,22 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			poseToMove.translateZ(zcenter);
 		}
 
+		Affine manipulator2 = selectedCsg.getManipulator();
+		
+		focusToAffine(poseToMove, manipulator2);
+		resetMouseTime();
+	}
 
+	private void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
+		if (focusing)
+			return;
+		focusing=true;
 		Platform.runLater(() -> {
 			Affine centering = TransformFactory.nrToAffine(poseToMove);
 			// this section keeps the camera orented the same way to avoid whipping
 			// around
-			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(selectedCsg.getManipulator());
+			
+			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(manipulator2);
 			rotationOnlyCOmponentOfManipulator.setX(0);
 			rotationOnlyCOmponentOfManipulator.setY(0);
 			rotationOnlyCOmponentOfManipulator.setZ(0);
@@ -1368,9 +1381,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			TransformNR startSelectNr = perviousTarget.copy();
 			TransformNR targetNR;// =
 									// TransformFactory.affineToNr(selectedCsg.getManipulator());
-			if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1 || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-					|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-				targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
+			if (Math.abs(manipulator2.getTx()) > 0.1 || Math.abs(manipulator2.getTy()) > 0.1
+					|| Math.abs(manipulator2.getTz()) > 0.1) {
+				targetNR = TransformFactory.affineToNr(manipulator2);
 			} else {
 				targetNR = TransformFactory.affineToNr(centering);
 			}
@@ -1382,11 +1395,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			removeAllFocusTransforms();
 			focusGroup.getTransforms().add(interpolator);
 			try {
-				if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-						|| Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-						|| Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+				if (Math.abs(manipulator2.getTx()) > 0.1
+						|| Math.abs(manipulator2.getTy()) > 0.1
+						|| Math.abs(manipulator2.getTz()) > 0.1) {
 					// Platform.runLater(() -> {
-					focusGroup.getTransforms().add(selectedCsg.getManipulator());
+					focusGroup.getTransforms().add(manipulator2);
 					focusGroup.getTransforms().add(correction);
 					// });
 
@@ -1399,7 +1412,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 			focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
 		});
-		resetMouseTime();
 	}
 
 	private void resetMouseTime() {
@@ -1516,5 +1528,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
 	}
+
 
 }
