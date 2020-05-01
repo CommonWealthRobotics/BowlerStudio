@@ -179,12 +179,13 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(!button.isPressed()){
 			// button released
 			//Log.info(button.getText()+" Button released ");
-			try {
-				TransformNR t = getKin().getCurrentTaskSpaceTransform();
-				getKin().setDesiredTaskSpaceTransform(t,  0);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//			try {
+//				TransformNR t = getKin().getCurrentTaskSpaceTransform();
+//				if(getKin().checkTaskSpaceTransform(t))
+//					getKin().setDesiredTaskSpaceTransform(t,  0);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
 			if(button == px){
 				x=0;
 			}
@@ -369,20 +370,23 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					
 					try {
 						if(getMobilebase()==null){
-							current = getKin().getCurrentPoseTarget();
+							current = getKin().getCurrentPoseTarget().copy();
 							current.translateX(inc*x);
 							current.translateY(inc*y);
 							current.translateZ(inc*slider);
 							current.setRotation(new RotationNR());
-							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
-							jogTHreadHandle.setToSet(toSet, toSeconds);
+							if(!jogTHreadHandle.setTarget(current, toSeconds)) {
+								current.translateX(-inc*x);
+								current.translateY(-inc*y);
+								current.translateZ(-inc*slider);
+							}
 							//Log.enableDebugPrint();
 							//System.out.println("Loop Jogging to: "+toSet);
 						}else{
 							TransformNR toSet = current.copy();
 							double toSeconds=seconds;
-							jogTHreadHandle.setToSet(toSet, toSeconds);
+							jogTHreadHandle.setTarget(toSet, toSeconds);
 						}
 							
 					} catch (Exception e) {
@@ -442,10 +446,15 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			new RuntimeException("Jog thread finished").printStackTrace();
 		}
 
-		public void setToSet(TransformNR toSet,double toSeconds) {
+		public boolean setTarget(TransformNR toSet,double toSeconds) {
 			this.toSet = toSet.copy();
+			if(getMobilebase()==null) {
+				if(!getKin().checkTaskSpaceTransform(toSet))
+					return false;
+			}
 			this.toSeconds = toSeconds;
 			controlThreadRunning=true;
+			return true;
 		}
 		
 	}
