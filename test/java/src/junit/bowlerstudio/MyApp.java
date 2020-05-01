@@ -19,7 +19,7 @@ public class MyApp extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
     	MobileBase base = MobileBaseLoader.fromGit("https://github.com/OperationSmallKat/greycat.git", "MediumKat.xml");
-    	DHParameterKinematics limb = base.getLegs().get(0);
+    	DHParameterKinematics limb = base.getLegs().get(1);
     	int index = 2;
     	LinkConfiguration conf=limb.getLinkConfiguration(index);
 		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(conf, limb.getFactory(),
