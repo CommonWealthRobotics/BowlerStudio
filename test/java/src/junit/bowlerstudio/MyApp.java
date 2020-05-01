@@ -1,5 +1,9 @@
-package com.neuronrobotics.bowlerstudio.creature;
+package junit.bowlerstudio;
 
+import com.neuronrobotics.bowlerstudio.creature.LinkConfigurationWidget;
+import com.neuronrobotics.bowlerstudio.creature.LinkSliderWidget;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
