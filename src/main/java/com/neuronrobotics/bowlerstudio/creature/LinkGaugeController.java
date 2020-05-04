@@ -88,7 +88,6 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 	public void setSIZE(int sIZE_OF_GAUGE) {
 		SIZE_OF_GAUGE = sIZE_OF_GAUGE;
 		getGauge().setPrefSize(getSIZE(), getSIZE());
-		getGauge().relocate(-SIZE_OF_GAUGE/2, -SIZE_OF_GAUGE/2);
 	}
 
 }

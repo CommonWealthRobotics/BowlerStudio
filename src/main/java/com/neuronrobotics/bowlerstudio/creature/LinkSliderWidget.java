@@ -95,7 +95,7 @@ public class LinkSliderWidget extends Group
 	private Node gauge;
 	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
 	private static Affine offsetGauge = null;
-
+	private static Affine offsetGaugeTranslate = null;
 	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget theWidget) {
 		this.theWidget = theWidget;
 		setTrimController(theWidget);
@@ -401,12 +401,15 @@ public class LinkSliderWidget extends Group
 			linkGaugeController3d = new LinkGaugeController();
 			BowlerStudioController.addUserNode(linkGaugeController3d.getGauge());
 			offsetGauge = new Affine();
+			offsetGaugeTranslate = new Affine();
 			linkGaugeController3d.setSIZE(60);
 		}
 		
-//		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
-////		TransformNR offsetter2 = new TransformNR().translateX(d - 1).translateY(-d - 1);
-////		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGauge));
+		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
+		TransformNR offsetter2 = new TransformNR()
+				.translateX(-d - 1)
+				.translateY(-d - 1);
+		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGaugeTranslate));
 
 		TransformNR offsetter = new TransformNR();
 
@@ -422,8 +425,9 @@ public class LinkSliderWidget extends Group
 		else
 			linkGaugeController3d.getGauge().getTransforms()
 					.add(device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+		
 		linkGaugeController3d.getGauge().getTransforms().add(offsetGauge);
-
+		linkGaugeController3d.getGauge().getTransforms().add(offsetGaugeTranslate);
 	}
 
 }
