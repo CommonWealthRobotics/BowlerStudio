@@ -37,6 +37,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 					.majorTickMarkType(TickMarkType.BOX).valueVisible(true).knobType(KnobType.FLAT)
 					.needleShape(NeedleShape.FLAT).needleColor(Color.RED).sectionsVisible(true)
 					.sections(boundsPossible, bounds).tickLabelsVisible(false).decimals(2).build();
+			gauge.setInteractive(false);
 		}
 		return gauge;
 	}

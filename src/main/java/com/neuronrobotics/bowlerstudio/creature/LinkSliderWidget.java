@@ -407,8 +407,8 @@ public class LinkSliderWidget extends Group
 		
 		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
 		TransformNR offsetter2 = new TransformNR()
-				.translateX(-d - 1)
-				.translateY(-d - 1);
+				.translateX(-d )
+				.translateY(-d );
 		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGaugeTranslate));
 
 		TransformNR offsetter = new TransformNR();
