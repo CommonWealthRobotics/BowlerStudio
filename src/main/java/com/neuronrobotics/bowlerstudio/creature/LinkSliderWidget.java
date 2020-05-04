@@ -4,7 +4,9 @@ import java.time.Duration;
 
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -23,6 +25,8 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.javafx.geom.transform.Affine3D;
+import com.sun.javafx.geom.transform.BaseTransform;
 
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.KnobType;
@@ -40,6 +44,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -54,13 +59,16 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
 
 @SuppressWarnings("restriction")
-public class LinkSliderWidget extends Group implements IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener {
+public class LinkSliderWidget extends Group
+		implements IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -72,21 +80,22 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	private boolean stop;
 	private double seconds;
 	private String paramsKey;
-	private ITrimControl trimController=null;
+	private ITrimControl trimController = null;
 	// private EngineeringUnitsSliderWidget slide;
-	private Button jogplus= new Button("+");
-	private Button jogminus= new Button("-");
+	private Button jogplus = new Button("+");
+	private Button jogminus = new Button("-");
 	private LinkConfiguration conf;
-	private Gauge gauge;
-	private Section bounds;
-	private Section boundsPossible;
+
 	private LinkConfigurationWidget theWidget;
-	private TextField engineeringUpper=new TextField("0");
-	private TextField engineeringLower=new TextField("0");
-	
-	private Label engineeringUpperPossible=new Label("0");
-	private Label engineeringLowerPossible=new Label("0");
-	
+	private TextField engineeringUpper = new TextField("0");
+	private TextField engineeringLower = new TextField("0");
+
+	private Label engineeringUpperPossible = new Label("0");
+	private Label engineeringLowerPossible = new Label("0");
+	private Node gauge;
+	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
+	private static Affine offsetGauge = null;
+
 	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget theWidget) {
 		this.theWidget = theWidget;
 		setTrimController(theWidget);
@@ -121,87 +130,69 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 																		// 2 is
 																		// 300
 																		// wide
-		jogminus.setOnAction(event->{
+		jogminus.setOnAction(event -> {
 			getTrimController().trimMinus();
 		});
-		jogplus.setOnAction(event->{
+		jogplus.setOnAction(event -> {
 			getTrimController().trimPlus();
 		});
-		double spread = 0;
-		bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
-		boundsPossible = new Section(0, 0, Color.ORANGE);
-		gauge=GaugeBuilder.create()
-        .foregroundBaseColor(Color.BLACK)
-        .prefSize(200,200)
-        .startAngle(360-(spread/2))
-        .angleRange(360-spread)
-        .minValue(-180+(spread/2))
-        .maxValue(180-(spread/2))
-        .tickLabelLocation(TickLabelLocation.OUTSIDE)
-        .tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
-        .minorTickMarksVisible(false)
-        .majorTickMarkType(TickMarkType.BOX)
-        .valueVisible(true)
-        .knobType(KnobType.FLAT)
-        .needleShape(NeedleShape.FLAT)
-        .needleColor(Color.RED)
-        .sectionsVisible(true)
-        .sections(boundsPossible,bounds)
-        .tickLabelsVisible(false)        
-        .decimals(2)  
-        .build();
-		event(conf);
-		
-		engineeringUpper.setOnAction(event->{
+
+		LinkGaugeController linkGaugeController = new LinkGaugeController();
+		gauge = linkGaugeController.getGauge();
+		linkGaugeController.setLink(conf, getAbstractLink());
+
+		engineeringUpper.setOnAction(event -> {
 			try {
 				double num = Double.parseDouble(engineeringUpper.getText());
-				if(num>getAbstractLink().getDeviceMaxEngineeringUnits()) {
+				if (num > getAbstractLink().getDeviceMaxEngineeringUnits()) {
 					throw new RuntimeException();
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
-				if(conf.getScale()>0)
+				if (conf.getScale() > 0)
 					theWidget.setUpperBound(linkUnits);
 				else
 					theWidget.setLowerBound(linkUnits);
-			}catch(Exception e){
-				Platform.runLater(()-> engineeringUpper.setText(String.format("%.2f",getAbstractLink().getMaxEngineeringUnits())));
+			} catch (Exception e) {
+				Platform.runLater(() -> engineeringUpper
+						.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits())));
 			}
 		});
-		engineeringLower.setOnAction(event->{
+		engineeringLower.setOnAction(event -> {
 			try {
 				double num = Double.parseDouble(engineeringLower.getText());
-				if(num<getAbstractLink().getDeviceMinEngineeringUnits()) {
+				if (num < getAbstractLink().getDeviceMinEngineeringUnits()) {
 					throw new RuntimeException();
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
-				if(conf.getScale()<0)
+				if (conf.getScale() < 0)
 					theWidget.setUpperBound(linkUnits);
 				else
 					theWidget.setLowerBound(linkUnits);
-			}catch(Exception e){
-				Platform.runLater(()-> engineeringLower.setText(String.format("%.2f",getAbstractLink().getMinEngineeringUnits())));
+			} catch (Exception e) {
+				Platform.runLater(() -> engineeringLower
+						.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits())));
 			}
 		});
-		
+
 		HBox upperLimBox1 = new HBox();
 		HBox lowerLimBox1 = new HBox();
 		VBox limits1 = new VBox();
 		engineeringUpper.setPrefWidth(80);
 		engineeringLower.setPrefWidth(80);
-		upperLimBox1.getChildren().addAll(new Label("Upper: "),engineeringUpperPossible);
-		lowerLimBox1.getChildren().addAll(new Label("Lower: "),engineeringLowerPossible);
-		limits1.getChildren().addAll(new Label("Range"),upperLimBox1,lowerLimBox1);
-		
+		upperLimBox1.getChildren().addAll(new Label("Upper: "), engineeringUpperPossible);
+		lowerLimBox1.getChildren().addAll(new Label("Lower: "), engineeringLowerPossible);
+		limits1.getChildren().addAll(new Label("Range"), upperLimBox1, lowerLimBox1);
+
 		HBox trimBox = new HBox();
 		HBox upperLimBox = new HBox();
 		HBox lowerLimBox = new HBox();
 		VBox limits = new VBox();
 		engineeringUpper.setPrefWidth(80);
 		engineeringLower.setPrefWidth(80);
-		upperLimBox.getChildren().addAll(new Label("Upper: "),engineeringUpper);
-		lowerLimBox.getChildren().addAll(new Label("Lower: "),engineeringLower);
-		limits.getChildren().addAll(new Label("Limits"),upperLimBox,lowerLimBox);
-		
+		upperLimBox.getChildren().addAll(new Label("Upper: "), engineeringUpper);
+		lowerLimBox.getChildren().addAll(new Label("Lower: "), engineeringLower);
+		limits.getChildren().addAll(new Label("Limits"), upperLimBox, lowerLimBox);
+
 		trimBox.getChildren().add(new Label("Trim"));
 		trimBox.getChildren().add(jogminus);
 		trimBox.getChildren().add(jogplus);
@@ -210,50 +201,44 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		panel.add(new Text("#" + linkIndex), 0, 0);
 		panel.add(name, 1, 0);
 		panel.add(getSetpoint(), 2, 0);
-		
-		
+
 		GridPane calibration = new GridPane();
 		calibration.setHgap(5);
 		calibration.setVgap(5);
 		calibration.getColumnConstraints().add(new ColumnConstraints(180));
 		calibration.getColumnConstraints().add(new ColumnConstraints(100));
-		calibration.getColumnConstraints().add(new ColumnConstraints(120)); 
-		calibration.getRowConstraints().add(new RowConstraints(80)); 
-		calibration.getRowConstraints().add(new RowConstraints(150)); 
+		calibration.getColumnConstraints().add(new ColumnConstraints(120));
+		calibration.getRowConstraints().add(new RowConstraints(80));
+		calibration.getRowConstraints().add(new RowConstraints(150));
 
 		calibration.add(trimBox, 1, 1);
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
 		calibration.add(gauge, 0, 1);
-		
+
 		VBox allParts = new VBox();
-		allParts.getChildren().addAll(panel,calibration,theWidget);
+		allParts.getChildren().addAll(panel, calibration, theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
-
+		event(conf);
 	}
+
 	@Override
 	public void event(LinkConfiguration newConf) {
-		double rANGE = getAbstractLink().getMaxEngineeringUnits()-getAbstractLink().getMinEngineeringUnits();
-		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()-getAbstractLink().getDeviceMinEngineeringUnits();
-		Platform.runLater(()-> {
-			engineeringUpper.setText(String.format("%.2f",getAbstractLink().getMaxEngineeringUnits()));
-			engineeringLower.setText(String.format("%.2f",getAbstractLink().getMinEngineeringUnits()));
-			engineeringUpperPossible.setText(String.format("%.2f",getAbstractLink().getDeviceMaxEngineeringUnits()));
-			engineeringLowerPossible.setText(String.format("%.2f",getAbstractLink().getDeviceMinEngineeringUnits()));
-			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
-			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
-			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
-			boundsPossible.setStop(getAbstractLink().getDeviceMaxEngineeringUnits());
-//			gauge.setMaxValue(getAbstractLink().getDeviceMaxEngineeringUnits());
-//			gauge.setMinValue(getAbstractLink().getDeviceMinEngineeringUnits());
-			gauge.setTitle("Link Range "+String.format("%.2f", rANGE)+"\nOf Possible "+String.format("%.2f", theoreticalRange));
+
+		Platform.runLater(() -> {
+			engineeringUpper.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits()));
+			engineeringLower.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits()));
+			engineeringUpperPossible.setText(String.format("%.2f", getAbstractLink().getDeviceMaxEngineeringUnits()));
+			engineeringLowerPossible.setText(String.format("%.2f", getAbstractLink().getDeviceMinEngineeringUnits()));
+
 		});
 		getSetpoint().setLowerBound(getAbstractLink().getMinEngineeringUnits());
 		getSetpoint().setUpperBound(getAbstractLink().getMaxEngineeringUnits());
 
 	}
+
 	public void setUpperBound(double newBound) {
 		getSetpoint().setUpperBound(newBound);
 	}
@@ -353,17 +338,17 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		// TODO Auto-generated method stub
 		try {
-				if (newAngleDegrees > device.getAbstractLink(linkIndex).getMaxEngineeringUnits()) {
-					newAngleDegrees=device.getAbstractLink(linkIndex).getMaxEngineeringUnits();
-				}
-				if(newAngleDegrees <device.getAbstractLink(linkIndex).getMinEngineeringUnits()) {
-					newAngleDegrees=device.getAbstractLink(linkIndex).getMinEngineeringUnits();
-				}
-				device.setDesiredJointAxisValue(linkIndex, newAngleDegrees, 0);
+			if (newAngleDegrees > device.getAbstractLink(linkIndex).getMaxEngineeringUnits()) {
+				newAngleDegrees = device.getAbstractLink(linkIndex).getMaxEngineeringUnits();
+			}
+			if (newAngleDegrees < device.getAbstractLink(linkIndex).getMinEngineeringUnits()) {
+				newAngleDegrees = device.getAbstractLink(linkIndex).getMinEngineeringUnits();
+			}
+			device.setDesiredJointAxisValue(linkIndex, newAngleDegrees, 0);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		;
 
@@ -385,7 +370,6 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 		// TODO Auto-generated method stub
 		try {
 			getSetpoint().setValue(arg1);
-			Platform.runLater(()->gauge.setValue(arg1));
 		} catch (Exception ex) {
 			return;
 		}
@@ -400,17 +384,46 @@ public class LinkSliderWidget extends Group implements IJInputEventListener, IOn
 	}
 
 	public ITrimControl getTrimController() {
-			return trimController;
+		return trimController;
 	}
 
 	public void setTrimController(ITrimControl trimController) {
 		this.trimController = trimController;
 	}
 
-
-
 	public AbstractLink getAbstractLink() {
 		return device.getAbstractLink(linkIndex);
+	}
+
+	public void enable() {
+
+		if (linkGaugeController3d == null) {
+			linkGaugeController3d = new LinkGaugeController();
+			BowlerStudioController.addUserNode(linkGaugeController3d.getGauge());
+			offsetGauge = new Affine();
+			linkGaugeController3d.setSIZE(60);
+		}
+		
+//		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
+////		TransformNR offsetter2 = new TransformNR().translateX(d - 1).translateY(-d - 1);
+////		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGauge));
+
+		TransformNR offsetter = new TransformNR();
+
+		double theta = Math.toDegrees(device.getDhParametersChain().getLinks().get(linkIndex).getTheta());
+		offsetter.setRotation(new RotationNR(0, 90 + theta, 0));
+
+		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter, offsetGauge));
+
+		linkGaugeController3d.getGauge().getTransforms().clear();
+		linkGaugeController3d.setLink(conf, getAbstractLink());
+		if (linkIndex == 0)
+			linkGaugeController3d.getGauge().getTransforms().add(device.getRootListener());
+		else
+			linkGaugeController3d.getGauge().getTransforms()
+					.add(device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+		linkGaugeController3d.getGauge().getTransforms().add(offsetGauge);
+
 	}
 
 }

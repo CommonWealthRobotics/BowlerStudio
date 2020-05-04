@@ -639,8 +639,12 @@ public class MobleBaseMenueFactory {
 				// create the widget for the leg when looking at it for the
 				// first time
 				Platform.runLater(()->widgetMapForTreeitems.put(hwConf, lsw));
+				lsw.enable();
 			}
-			BowlerStudio.select(base, dh);
+			if(linkIndex==0)
+				BowlerStudio.select(base, dh);
+			else
+				BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
 		});
 		link.getChildren().add(hwConf);
 		
@@ -656,10 +660,14 @@ public class MobleBaseMenueFactory {
 				lsw.setGameController(controller);
 			}
 			try {
-				BowlerStudio.select(base, dh);
+				if(linkIndex==0)
+					BowlerStudio.select(base, dh);
+				else
+					BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
 			} catch (Exception ex) {
-				System.err.println("Linb not loaded yet");
+				System.err.println("Limb not loaded yet");
 			}
+			lsw.enable();
 			// select( base, dh);
 			// activate controller
 		});

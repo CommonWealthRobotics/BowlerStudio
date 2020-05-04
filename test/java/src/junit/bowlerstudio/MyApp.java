@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.creature.LinkConfigurationWidget;
 import com.neuronrobotics.bowlerstudio.creature.LinkSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -18,6 +19,8 @@ public class MyApp extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
+				"loadAll.groovy", null);
     	MobileBase base = MobileBaseLoader.fromGit("https://github.com/OperationSmallKat/greycat.git", "MediumKat.xml");
     	DHParameterKinematics limb = base.getLegs().get(1);
     	int index = 2;

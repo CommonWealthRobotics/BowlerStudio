@@ -39,6 +39,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
+import javafx.scene.transform.Affine;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -192,7 +193,11 @@ public class BowlerStudio extends Application {
 		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
 		 */
 	}
-
+	public static void select(Affine globalPositionListener) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			CreatureLab3dController.getEngine().setSelected(globalPositionListener);
+		}
+	}
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
@@ -778,4 +783,6 @@ public class BowlerStudio extends Application {
 	public static void exit() {
 		closeBowlerStudio();
 	}
+
+
 }
