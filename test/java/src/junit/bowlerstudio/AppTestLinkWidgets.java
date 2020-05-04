@@ -15,7 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MyApp extends Application {
+public class AppTestLinkWidgets extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {

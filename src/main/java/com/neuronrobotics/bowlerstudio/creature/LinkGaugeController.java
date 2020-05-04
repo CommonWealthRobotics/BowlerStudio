@@ -27,16 +27,29 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	public Gauge getGauge() {
 		if (gauge == null) {
-			double spread = 0;
+			double spread = 60;
 			bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
 			boundsPossible = new Section(0, 0, Color.ORANGE);
-			gauge = GaugeBuilder.create().foregroundBaseColor(Color.BLACK).prefSize(getSIZE(), getSIZE())
-					.startAngle(360 - (spread / 2)).angleRange(360 - spread).minValue(-180 + (spread / 2))
-					.maxValue(180 - (spread / 2)).tickLabelLocation(TickLabelLocation.OUTSIDE)
-					.tickLabelOrientation(TickLabelOrientation.ORTHOGONAL).minorTickMarksVisible(false)
-					.majorTickMarkType(TickMarkType.BOX).valueVisible(true).knobType(KnobType.FLAT)
-					.needleShape(NeedleShape.FLAT).needleColor(Color.RED).sectionsVisible(true)
-					.sections(boundsPossible, bounds).tickLabelsVisible(false).decimals(2).build();
+			gauge = GaugeBuilder
+					.create()
+					.decimals(2)
+					.foregroundBaseColor(Color.BLACK)
+					.prefSize(getSIZE(), getSIZE())
+					.startAngle(360 - (spread / 2))
+					.angleRange(360 - spread)
+					.minValue(-180 + (spread / 2))
+					.maxValue(180 - (spread / 2))
+					.tickLabelLocation(TickLabelLocation.OUTSIDE)
+					.tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
+					.minorTickMarksVisible(false)
+					.majorTickMarkType(TickMarkType.BOX)
+					.valueVisible(true)
+					.knobType(KnobType.FLAT)
+					.needleShape(NeedleShape.FLAT)
+					.needleColor(Color.RED)
+					.sectionsVisible(true)
+					.sections(boundsPossible, bounds)
+					.build();
 			gauge.setInteractive(false);
 		}
 		return gauge;
