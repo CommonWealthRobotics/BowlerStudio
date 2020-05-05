@@ -89,7 +89,8 @@ public class LinkSliderWidget extends Group
 	private LinkConfigurationWidget theWidget;
 	private TextField engineeringUpper = new TextField("0");
 	private TextField engineeringLower = new TextField("0");
-
+	private Label engineeringTotalLimited = new Label("0");
+	private Label engineeringTotalPossible = new Label("0");
 	private Label engineeringUpperPossible = new Label("0");
 	private Label engineeringLowerPossible = new Label("0");
 	private Node gauge;
@@ -181,7 +182,7 @@ public class LinkSliderWidget extends Group
 		engineeringLower.setPrefWidth(80);
 		upperLimBox1.getChildren().addAll(new Label("Upper: "), engineeringUpperPossible);
 		lowerLimBox1.getChildren().addAll(new Label("Lower: "), engineeringLowerPossible);
-		limits1.getChildren().addAll(new Label("Range"), upperLimBox1, lowerLimBox1);
+		limits1.getChildren().addAll(new Label("Possible Range"), upperLimBox1, lowerLimBox1,engineeringTotalPossible);
 
 		HBox trimBox = new HBox();
 		HBox upperLimBox = new HBox();
@@ -191,7 +192,7 @@ public class LinkSliderWidget extends Group
 		engineeringLower.setPrefWidth(80);
 		upperLimBox.getChildren().addAll(new Label("Upper: "), engineeringUpper);
 		lowerLimBox.getChildren().addAll(new Label("Lower: "), engineeringLower);
-		limits.getChildren().addAll(new Label("Limits"), upperLimBox, lowerLimBox);
+		limits.getChildren().addAll(new Label("Software Limits"), upperLimBox, lowerLimBox,engineeringTotalLimited);
 
 		trimBox.getChildren().add(new Label("Trim"));
 		trimBox.getChildren().add(jogminus);
@@ -206,9 +207,9 @@ public class LinkSliderWidget extends Group
 		calibration.setHgap(5);
 		calibration.setVgap(5);
 		calibration.getColumnConstraints().add(new ColumnConstraints(180));
-		calibration.getColumnConstraints().add(new ColumnConstraints(100));
+		calibration.getColumnConstraints().add(new ColumnConstraints(180));
 		calibration.getColumnConstraints().add(new ColumnConstraints(120));
-		calibration.getRowConstraints().add(new RowConstraints(80));
+		calibration.getRowConstraints().add(new RowConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(150));
 
 		calibration.add(trimBox, 1, 1);
@@ -226,8 +227,13 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void event(LinkConfiguration newConf) {
-
+		double rANGE = getAbstractLink().getMaxEngineeringUnits() - getAbstractLink().getMinEngineeringUnits();
+		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()
+				- getAbstractLink().getDeviceMinEngineeringUnits();
 		Platform.runLater(() -> {
+			engineeringTotalPossible.setText("Possible Range "
+					+ String.format("%.2f", theoreticalRange));
+			engineeringTotalLimited.setText("Link Range " + String.format("%.2f", rANGE));
 			engineeringUpper.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits()));
 			engineeringLower.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits()));
 			engineeringUpperPossible.setText(String.format("%.2f", getAbstractLink().getDeviceMaxEngineeringUnits()));
@@ -402,7 +408,7 @@ public class LinkSliderWidget extends Group
 			BowlerStudioController.addUserNode(linkGaugeController3d.getGauge());
 			offsetGauge = new Affine();
 			offsetGaugeTranslate = new Affine();
-			linkGaugeController3d.setSIZE(60);
+			linkGaugeController3d.setSIZE(100);
 		}
 		
 		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;

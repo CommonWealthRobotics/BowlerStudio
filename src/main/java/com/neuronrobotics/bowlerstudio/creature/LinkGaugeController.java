@@ -15,6 +15,8 @@ import eu.hansolo.medusa.TickMarkType;
 import eu.hansolo.medusa.Gauge.KnobType;
 import eu.hansolo.medusa.Gauge.NeedleShape;
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 
 public class LinkGaugeController implements ILinkListener, ILinkConfigurationChangeListener {
@@ -30,6 +32,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 			double spread = 60;
 			bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
 			boundsPossible = new Section(0, 0, Color.ORANGE);
+			
 			gauge = GaugeBuilder
 					.create()
 					.decimals(2)
@@ -42,6 +45,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 					.tickLabelLocation(TickLabelLocation.OUTSIDE)
 					.tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
 					.minorTickMarksVisible(false)
+					//.tickLabelsVisible(false)
 					.majorTickMarkType(TickMarkType.BOX)
 					.valueVisible(true)
 					.knobType(KnobType.FLAT)
@@ -50,9 +54,28 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 					.sectionsVisible(true)
 					.sections(boundsPossible, bounds)
 					.build();
-			gauge.setInteractive(false);
+			Platform.runLater(() -> {
+				gauge.setInteractive(false);
+				gauge.setTitle("");
+				//turnOffPickOnBoundsFor(gauge);
+			});
+			
 		}
 		return gauge;
+	}
+
+	private boolean turnOffPickOnBoundsFor(Node n) {
+		boolean result = false;
+		n.setPickOnBounds(false);
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				if (turnOffPickOnBoundsFor(c)) {
+					result = true;
+				}
+			}
+		}
+		n.setMouseTransparent(!result);
+		return result;
 	}
 
 	public void setLink(LinkConfiguration lf, AbstractLink l) {
@@ -73,16 +96,13 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void event(LinkConfiguration newConf) {
-		double rANGE = getAbstractLink().getMaxEngineeringUnits() - getAbstractLink().getMinEngineeringUnits();
-		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()
-				- getAbstractLink().getDeviceMinEngineeringUnits();
+		
 		Platform.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
 			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
 			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
 			boundsPossible.setStop(getAbstractLink().getDeviceMaxEngineeringUnits());
-			gauge.setTitle("Link Range " + String.format("%.2f", rANGE) + "\nOf Possible "
-					+ String.format("%.2f", theoreticalRange));
+			
 		});
 	}
 
