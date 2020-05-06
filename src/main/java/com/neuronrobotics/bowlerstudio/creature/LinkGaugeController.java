@@ -51,13 +51,14 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 					.knobType(KnobType.FLAT)
 					.needleShape(NeedleShape.FLAT)
 					.needleColor(Color.RED)
+					.tickLabelsVisible(true)
 					.sectionsVisible(true)
 					.sections(boundsPossible, bounds)
 					.build();
 			Platform.runLater(() -> {
 				gauge.setInteractive(false);
 				gauge.setTitle("");
-				//turnOffPickOnBoundsFor(gauge);
+				turnOffPickOnBoundsFor(gauge);
 			});
 			
 		}
@@ -96,13 +97,12 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void event(LinkConfiguration newConf) {
-		
 		Platform.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
 			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
 			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
 			boundsPossible.setStop(getAbstractLink().getDeviceMaxEngineeringUnits());
-			
+			gauge.setTitle("Link Bounds");
 		});
 	}
 

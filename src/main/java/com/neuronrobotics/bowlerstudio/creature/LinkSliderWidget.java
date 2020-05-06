@@ -192,7 +192,7 @@ public class LinkSliderWidget extends Group
 		engineeringLower.setPrefWidth(80);
 		upperLimBox.getChildren().addAll(new Label("Upper: "), engineeringUpper);
 		lowerLimBox.getChildren().addAll(new Label("Lower: "), engineeringLower);
-		limits.getChildren().addAll(new Label("Software Limits"), upperLimBox, lowerLimBox,engineeringTotalLimited);
+		limits.getChildren().addAll(new Label("Desired Limits"), upperLimBox, lowerLimBox,engineeringTotalLimited);
 
 		trimBox.getChildren().add(new Label("Trim"));
 		trimBox.getChildren().add(jogminus);
@@ -408,7 +408,7 @@ public class LinkSliderWidget extends Group
 			BowlerStudioController.addUserNode(linkGaugeController3d.getGauge());
 			offsetGauge = new Affine();
 			offsetGaugeTranslate = new Affine();
-			linkGaugeController3d.setSIZE(100);
+			linkGaugeController3d.setSIZE(60);
 		}
 		
 		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
