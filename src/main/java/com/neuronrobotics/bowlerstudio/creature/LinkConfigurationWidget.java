@@ -267,9 +267,9 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, min, // min
-				conf.getStaticOffset(), // max
-				conf.getLowerLimit(), // current
+		}, (int)min, // min
+				(int)conf.getStaticOffset(), // max
+				(int)conf.getLowerLimit(), // current
 				150, "device units", true);
 
 		double max = activLink.getDeviceMaximumValue();
@@ -295,7 +295,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					manager.generateCad();
 
 			}
-		}, conf.getStaticOffset(), max, conf.getUpperLimit(), 150,
+		}, (int)conf.getStaticOffset(), (int)max, (int)conf.getUpperLimit(), 150,
 				"device units", true);
 		
 		zeroValue = conf.getStaticOffset();
@@ -304,28 +304,22 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				if(newAngleDegrees<conf.getLowerLimit() || newAngleDegrees>conf.getUpperLimit())
+					return;
 				conf.setStaticOffset(newAngleDegrees);
 				updateZeroValue(newAngleDegrees);
 			}
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				if(newAngleDegrees<conf.getLowerLimit() || newAngleDegrees>conf.getUpperLimit())
+					return;
 				updateZeroValue(newAngleDegrees);
 				if (manager != null)
 					manager.generateCad();
 
 			}
-
-			private void updateZeroValue(double newAngleDegrees) {
-				double diff = zeroValue-newAngleDegrees;
-				zeroValue=newAngleDegrees;
-				setLowerBound(conf.getLowerLimit()-diff);
-				setUpperBound(conf.getUpperLimit()-diff);
-				//myLinkSliderWidget.getSetpoint().setValue(0);
-				activLink.setTargetEngineeringUnits(0);
-				activLink.flush(0);
-			}
-		}, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(), 150, "device units", true);
+		}, (int)conf.getLowerLimit(), (int)conf.getUpperLimit(), (int)conf.getStaticOffset(), 150, "device units", true);
 		zero.setAllowResize(false);
 		upperBound.setAllowResize(false);
 		lowerBound.setAllowResize(false);
@@ -420,6 +414,19 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		else
 			zero.jogMinusOne();
 	}
+	private void updateZeroValue(double newAngleDegrees) {
+		double diff = zeroValue-newAngleDegrees;
+		zeroValue=newAngleDegrees;
+		setLowerBound(conf.getLowerLimit()-diff);
+		setUpperBound(conf.getUpperLimit()-diff);
+		//myLinkSliderWidget.getSetpoint().setValue(0);
+		upperBound.setLowerBound((int)newAngleDegrees);
+		lowerBound.setUpperBound((int)newAngleDegrees);
+		try {
+			activLink.setTargetEngineeringUnits(0);
+			activLink.flush(0);
+		}catch(Exception ex) {}
+	}
 	public double setUpperBound(double newAngleDegrees) {
 		
 		double upperLimit = newAngleDegrees<=activLink.getDeviceMaximumValue()?newAngleDegrees:activLink.getDeviceMaximumValue();
@@ -433,7 +440,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			eng = (activLink.getMaxEngineeringUnits());
 			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
-
+		zero.setUpperBound((int)newAngleDegrees);
 		return eng;
 	}
 
@@ -450,7 +457,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			eng = (activLink.getMaxEngineeringUnits());
 			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
-
+		zero.setLowerBound((int)newAngleDegrees);
 		return eng;
 
 	}

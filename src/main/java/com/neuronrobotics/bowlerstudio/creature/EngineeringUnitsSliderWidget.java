@@ -167,7 +167,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 				val=setpoint.getMin();
 		}
 		double range = Math.abs(setpoint.getMax()-setpoint.getMin());
-		setpoint.setMajorTickUnit(range);
+		if(range>0)
+			setpoint.setMajorTickUnit(range);
 		setpoint.setValue(val);
 		setpointValue.setText(getFormatted(setpoint.getValue()));
 		setpoint.valueProperty().addListener(this);
