@@ -31,9 +31,9 @@ import java.util.HashMap;
 
 import javax.management.RuntimeErrorException;
 
-public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, IOnTransformChange,IJInputEventListener {
+public class JogMobileBase extends GridPane implements  IJInputEventListener {
 	double defauletSpeed=0.05;
-	private AbstractKinematicsNR kin;
+	private MobileBase mobilebase=null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("",AssetFactory.loadIcon("Minus-X.png"));
 	Button py = new Button("",AssetFactory.loadIcon("Plus-Y.png"));
@@ -45,29 +45,21 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	Button conf = new Button("Configure...",AssetFactory.loadIcon("Configure-Game-Controller.png"));
 	TextField increment=new TextField(Double.toString(defauletSpeed));
 	TextField sec=new TextField("0.01");
-	private TransformWidget transformCurrent;
-	private TransformWidget transformTarget;
 	private BowlerJInputDevice gameController=null;
 	double x,y,rz,slider=0;
 	private boolean stop=true;
 	private jogThread jogTHreadHandle;
 	private String paramsKey;
 	private GridPane buttons;
-	private static ArrayList<JogWidget> allWidgets=new ArrayList<JogWidget>();
+	private static ArrayList<JogMobileBase> allWidgets=new ArrayList<JogMobileBase>();
 	
-	public JogWidget(DHParameterKinematics kinimatics){
+	public JogMobileBase(MobileBase kinimatics){
 		allWidgets.add(this);
-		this.setKin(kinimatics);
-		
-		if(MobileBase.class.isInstance(kinimatics)){
-			py = new Button("",AssetFactory.loadIcon("Rotation-Z.png"));
-			ny = new Button("",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
-			
-		}
-
-		getKin().addPoseUpdateListener(this);
-
-		
+		if(!kinimatics.isAvailable())
+			kinimatics.connect();
+		mobilebase=kinimatics;
+		py = new Button("",AssetFactory.loadIcon("Rotation-Z.png"));
+		ny = new Button("",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
 		px.setOnMousePressed(	event -> {try {handle( (Button)event.getSource()); }catch(Throwable T) {T.printStackTrace();}});
 		nx.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
 		py.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
@@ -142,28 +134,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		buttons.add(	new Label("sec"), 
 				3, 
 				3);
-		if(!MobileBase.class.isInstance(kinimatics)){
-			buttons.add(	pz, 
-					3, 
-					0);
-			buttons.add(	nz, 
-					3, 
-					1);
-		}
+		
+
+	
 		
 		add(	buttons, 
 				0, 
 				0);
-		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
-		transformCurrent.setDisable(true);
-		transformTarget = new TransformWidget("Current Target", getKin().getCurrentPoseTarget(), this);
 
-		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Current Pose", transformCurrent));
-		advancedPanel.getPanes().add(new TitledPane("Current Target", transformTarget));
-		add(	advancedPanel, 
-				0, 
-				1);
 		jogTHreadHandle = new jogThread();
 		jogTHreadHandle.start();
 		controllerLoop();
@@ -196,14 +174,21 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			if(button == nx){
 				x=0;
 			}
-			
+			if(mobilebase==null){
 				if(button == py){
 					y=0;
 				}
 				if(button == ny){
 					y=0;
 				}
-		
+			}else{
+				if(button == py){
+					rz=0;
+				}
+				if(button == ny){
+					rz=0;
+				}
+			}
 			if(button == pz){
 				slider=0;
 			}
@@ -221,13 +206,21 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(button == nx){
 			x=-1;
 		}
+		if(mobilebase==null){
 			if(button == py){
 				y=1;
 			}
 			if(button == ny){
 				y=-1;
 			}
-	
+		}else{
+			if(button == py){
+				rz=1;
+			}
+			if(button == ny){
+				rz=-1;
+			}
+		}
 		if(button == pz){
 			slider=1;
 		}
@@ -244,8 +237,11 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	}
 	
 	public void home(){
-
-		homeLimb(getKin());
+		
+			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
+			for(DHParameterKinematics c:getMobilebase().getAllDHChains()){
+					homeLimb(c);
+			}
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
@@ -262,61 +258,6 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 
 	}
 
-	@Override
-	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		// TODO Auto-generated method stub
-		if(pose != null &&transformCurrent!=null)
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					transformCurrent.updatePose(pose);
-				}
-			});
-	}
-
-	@Override
-	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,
-			TransformNR pose) {
-		if(pose != null &&transformTarget!=null)
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				transformTarget.updatePose(pose);
-			}
-		});
-	}
-	
-	@Override
-	public void onTransformChaging(TransformNR newTrans) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void onTransformFinished(TransformNR newTrans) {
-		try {
-			getKin().setDesiredTaskSpaceTransform(newTrans,  Double.parseDouble(sec.getText()));
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public AbstractKinematicsNR getKin() {
-		
-		return kin;
-	}
-	public void setKin(AbstractKinematicsNR kin) {
-		if(!kin.isAvailable())
-			kin.connect();
-		this.kin = kin;
-		try {
-			kin.setDesiredTaskSpaceTransform( kin.calcHome(),0);
-		} catch (Exception e) {}
-	}
-	
-	
 	private void controllerLoop(){
 		//System.out.println("controllerLoop");
 		double seconds=.1;
@@ -349,21 +290,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 					current.translateZ(inc*slider);
 					
 					try {
-						
-							current = getKin().getCurrentPoseTarget().copy();
-							current.translateX(inc*x);
-							current.translateY(inc*y);
-							current.translateZ(inc*slider);
-							current.setRotation(new RotationNR());
-							double toSeconds=seconds;
-							if(!jogTHreadHandle.setTarget(current, toSeconds)) {
-								current.translateX(-inc*x);
-								current.translateY(-inc*y);
-								current.translateZ(-inc*slider);
-							}
-							//Log.enableDebugPrint();
-							//System.out.println("Loop Jogging to: "+toSet);
-						
+						TransformNR toSet = current.copy();
+						double toSeconds=seconds;
+						jogTHreadHandle.setTarget(toSet, toSeconds);
+				
 							
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -393,15 +323,14 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		private TransformNR toSet;
 		private double toSeconds=.016;
 		public void run(){
-			setName("Jog Widget Set Drive Arc Command "+getKin().getScriptingName());
-			while(kin.isAvailable()){
+			setName("Jog Widget Set Drive Arc Command "+mobilebase.getScriptingName());
+			while(mobilebase.isAvailable()){
 				//System.out.println("Jog loop");
 				if(controlThreadRunning){
 					
+						//toSet.setZ(0);
 						try {
-							//Log.enableDebugPrint();
-							//System.out.println("Jogging to: "+toSet);
-							getKin().setDesiredTaskSpaceTransform(toSet,  toSeconds);
+							getMobilebase().DriveArc(toSet, toSeconds);
 						} catch (Exception e) {
 							e.printStackTrace();
 							//BowlerStudioController.highlightException(null, e);
@@ -416,9 +345,6 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 
 		public boolean setTarget(TransformNR toSet,double toSeconds) {
 			this.toSet = toSet.copy();
-		
-			if(!getKin().checkTaskSpaceTransform(toSet))
-				return false;
 			this.toSeconds = toSeconds;
 			controlThreadRunning=true;
 			return true;
@@ -450,18 +376,20 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
 			//System.out.println("Stoping on="+comp.getName());
 			stop=true;
-			try {
-				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(),  0);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 		}else
 			stop=false;
 		
 		
 	}
 
+	public MobileBase getMobilebase() {
+		return mobilebase;
+	}
+
+	public void setMobilebase(MobileBase mobilebase) {
+		this.mobilebase = mobilebase;
+	}
 
 	public BowlerJInputDevice getGameController() {
 		return gameController;

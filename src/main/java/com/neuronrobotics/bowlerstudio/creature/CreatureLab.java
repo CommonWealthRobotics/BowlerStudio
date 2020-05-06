@@ -135,7 +135,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	
 		tree.setPrefWidth(325);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		JogWidget walkWidget = new JogWidget(device);
+		JogMobileBase walkWidget = new JogMobileBase(device);
 		tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
 			@Override
