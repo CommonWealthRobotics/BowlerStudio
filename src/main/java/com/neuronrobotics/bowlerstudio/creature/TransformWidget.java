@@ -69,12 +69,18 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimeth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(60)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(200)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(60)); // units
 	    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
 	    setHgap(20);// gab between elements
 	    
+	    tx.showSlider(false);
+	    ty.showSlider(false);
+	    tz.showSlider(false);
+	    tilt.showSlider(false);
+	    azimeth.showSlider(false);
+	    elevation.showSlider(false);
 	    
 	    add(	new Text(title), 
 	    		1,  0);
@@ -91,9 +97,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  1);
 	
 		 add(	new Text("Tilt"), 
-	    		3,  1);
+	    		0,  4);
 		 add(	tilt, 
-	    		4,  1);
+	    		1,  4);
 	    //Y line
 	    add(	new Text("Y"), 
 	    		0,  2);
@@ -101,9 +107,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  2);
 	
 		 add(	new Text("Elevation"), 
-	    		3,  2);
+	    		0,  5);
 		 add(	elevation, 
-				4,  2);
+				1,  5);
 	    //Z line
 	    add(	new Text("Z"), 
 	    		0,  3);
@@ -111,9 +117,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  3);
 	
 		 add(	new Text("Azimuth"), 
-	    		3,  3);
+	    		0,  6);
 		 add(	azimeth, 
-	    		4,  3);
+	    		1,  6);
 	}
 	
 	private 	TransformNR getCurrent(){
