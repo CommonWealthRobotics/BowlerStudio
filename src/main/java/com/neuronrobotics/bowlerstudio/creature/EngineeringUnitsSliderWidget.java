@@ -18,6 +18,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private boolean allowResize=true;
 	private Button jogplus= new Button("+");
 	private Button jogminus= new Button("-");
+	private double instantValueStore =0;
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener,double min, double max,  double current, double width, String units, boolean intCast){
 		this(listener, min, max, current, width, units);
 		this.intCast = intCast;
@@ -29,7 +30,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
 		setpoint = new Slider();
-		
+		instantValueStore=current;
 		if(min>max){
 			double minStart = min;
 			min=max;
@@ -61,7 +62,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			//System.out.println("Setpoint Text changed to "+val);
 			
 			Platform.runLater(() -> {
-				setValueLocal(val);
+				setValue(val);
 
 				getListener().onSliderMoving(this,val);
 				getListener().onSliderDoneMoving(this,val);
@@ -75,7 +76,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 				if(!newValue)
 					getListener().onSliderDoneMoving(this,val);
 			}catch(java.lang.NumberFormatException ex) {
-				setValueLocal(0);
+				setValue(0);
 				return;
 			}
 			
@@ -83,27 +84,28 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.valueProperty().addListener(this);
 		
 		String unitsString = "("+units+")";
-		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
+		
 		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(unitsString.length()*7)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
 		
 		
 		add(	setpoint, 
-				0, 
+				4, 
 				0);
 		add(	jogplus, 
-				2, 
-				0);
-		add(	jogminus, 
 				1, 
 				0);
+		add(	jogminus, 
+				0, 
+				0);
 		add(	setpointValue, 
-				3, 
+				2, 
 				0);
 		add(	new Text(unitsString), 
-				4, 
+				3, 
 				0);
 		
 		jogplus.setOnAction(event->{
@@ -146,14 +148,6 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	
 	public void setValue(double value){
-		
-		Platform.runLater(() -> {
-				setValueLocal(value);
-		});
-
-	}
-	private void setValueLocal(double value) {
-		setpoint.valueProperty().removeListener(this);
 		double val = value;
 		if(val>setpoint.getMax()){
 			if(isAllowResize())
@@ -166,17 +160,26 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			else
 				val=setpoint.getMin();
 		}
+		instantValueStore=val;
+		double toSet = val;
+		Platform.runLater(() -> {
+				setValueLocal(toSet);
+		});
+
+	}
+	private void setValueLocal(double value) {
+		setpoint.valueProperty().removeListener(this);
 		double range = Math.abs(setpoint.getMax()-setpoint.getMin());
 		if(range>0)
 			setpoint.setMajorTickUnit(range);
-		setpoint.setValue(val);
+		setpoint.setValue(value);
 		setpointValue.setText(getFormatted(setpoint.getValue()));
 		setpoint.valueProperty().addListener(this);
 		//System.out.println("Setpoint changed to "+val);
 	}
 	
 	public double getValue(){
-		return setpoint.getValue();
+		return instantValueStore;
 	}
 	
 	public  String getFormatted(double value){
@@ -213,5 +216,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 	public void setAllowResize(boolean allowResize) {
 		this.allowResize = allowResize;
+	}
+	public void showSlider(boolean b) {
+		setpoint.setVisible(b);
 	}
 }
