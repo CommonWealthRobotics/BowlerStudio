@@ -116,12 +116,16 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 	public void jogMinusOne() {
 		double value = getValue()-1;
+		if(value<setpoint.getMin())
+			return;
 		setValue(value);
 		getListener().onSliderMoving(this,value);
 		getListener().onSliderDoneMoving(this, value);
 	}
 	public void jogPlusOne() {
 		double value = getValue()+1;
+		if(value>setpoint.getMax())
+			return;
 		setValue(value);
 		getListener().onSliderMoving(this,value);
 		getListener().onSliderDoneMoving(this, value);
