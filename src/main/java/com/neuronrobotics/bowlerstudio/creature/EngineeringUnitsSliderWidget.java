@@ -89,12 +89,11 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(unitsString.length()*7)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(width+20)); // column 2 is 100 wide
 		
 		
 		add(	setpoint, 
-				4, 
-				0);
+				2, 
+				1);
 		add(	jogplus, 
 				1, 
 				0);
