@@ -776,10 +776,10 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
-			try {
+			if(linkIndex==0)
 				BowlerStudio.select(base, dh);
-			} catch (java.lang.NullPointerException e) {
-			} // selecting before limb loaded
+			else
+				BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
 		});
 
 		link.getChildren().addAll(design);
