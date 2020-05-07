@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -242,7 +243,14 @@ public class LinkSliderWidget extends Group
 		});
 		getSetpoint().setLowerBound(getAbstractLink().getMinEngineeringUnits());
 		getSetpoint().setUpperBound(getAbstractLink().getMaxEngineeringUnits());
-
+		if(device.checkTaskSpaceTransform(device.getCurrentPoseTarget()))
+			try {
+				device.setDesiredTaskSpaceTransform(device.getCurrentPoseTarget(), 0);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				
+			}
 	}
 
 	public void setUpperBound(double newBound) {

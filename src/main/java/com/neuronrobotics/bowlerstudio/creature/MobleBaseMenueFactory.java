@@ -934,12 +934,22 @@ public class MobleBaseMenueFactory {
 										public void onTransformChaging(TransformNR newTrans) {
 											Log.debug("Limb to base" + newTrans.toString());
 											dh.setRobotToFiducialTransform(newTrans);
-											dh.getCurrentTaskSpaceTransform();
-											// this calls the render update function attachec as the on jointspace
-											// update
-											double[] joint = dh.getCurrentJointSpaceVector();
-											dh.getChain().getChain(joint);
-											Platform.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
+											if(dh.checkTaskSpaceTransform(dh.getCurrentPoseTarget())) {
+												try {
+													dh.setDesiredTaskSpaceTransform(dh.getCurrentPoseTarget(), 0);
+												} catch (Exception e) {
+													// TODO Auto-generated catch block
+													new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+													
+												}
+											}else {
+												dh.getCurrentTaskSpaceTransform();
+												// this calls the render update function attachec as the on jointspace
+												// update
+												double[] joint = dh.getCurrentJointSpaceVector();
+												dh.getChain().getChain(joint);
+												Platform.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
+											}
 										}
 									})));
 				} catch (Exception ex) {

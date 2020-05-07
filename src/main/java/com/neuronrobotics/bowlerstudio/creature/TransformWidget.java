@@ -70,7 +70,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				//initialState.setTiltDegrees(newAngleDegrees);
+				initialState.setTiltDegrees(newAngleDegrees);
 			}
 		}, -179.99, 179.99, t, 100,"degrees");
 		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
@@ -80,7 +80,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				//initialState.setElevationDegrees(newAngleDegrees);
+				initialState.setElevationDegrees(newAngleDegrees);
 			}
 		}, -89.99, 89.99, e, 100,"degrees");
 		azimeth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
@@ -90,7 +90,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				//initialState.setAzimuthDegrees(newAngleDegrees);
+				initialState.setAzimuthDegrees(newAngleDegrees);
 			}
 		}, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);

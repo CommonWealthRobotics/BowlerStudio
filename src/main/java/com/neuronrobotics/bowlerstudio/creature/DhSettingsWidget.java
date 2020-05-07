@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -21,12 +22,12 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	private EngineeringUnitsSliderWidget theta;
 	private EngineeringUnitsSliderWidget alpha;
 	private EngineeringUnitsSliderWidget radius;
-	private DHParameterKinematics device2;
+	private DHParameterKinematics dh;
 	private IOnEngineeringUnitsChange externalListener;
 	
 	public DhSettingsWidget(DHLink dhLink,DHParameterKinematics device2,IOnEngineeringUnitsChange externalListener ){
 		this.dhLink = dhLink;
-		this.device2 = device2;
+		this.dh = device2;
 	
 		this.externalListener = externalListener;
 		
@@ -92,10 +93,26 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 
 		if(externalListener!=null)
 			externalListener.onSliderMoving(source, newAngleDegrees);
-		//this calls the render update function attachec as the on jointspace update	
-		double[] joint=device2.getCurrentJointSpaceVector();
-		device2.getChain().getChain(joint);
-		Platform.runLater(()->device2.onJointSpaceUpdate(device2, joint));
+//		//this calls the render update function attachec as the on jointspace update	
+//		double[] joint=device2.getCurrentJointSpaceVector();
+//		device2.getChain().getChain(joint);
+//		Platform.runLater(()->device2.onJointSpaceUpdate(device2, joint));
+		if(dh.checkTaskSpaceTransform(dh.getCurrentPoseTarget())) {
+			try {
+				dh.setDesiredTaskSpaceTransform(dh.getCurrentPoseTarget(), 0);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				
+			}
+		}else {
+			dh.getCurrentTaskSpaceTransform();
+			// this calls the render update function attachec as the on jointspace
+			// update
+			double[] joint = dh.getCurrentJointSpaceVector();
+			dh.getChain().getChain(joint);
+			Platform.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
+		}
 	}
 
 	@Override
