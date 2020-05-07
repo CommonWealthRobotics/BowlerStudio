@@ -799,6 +799,7 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(), AssetFactory.loadIcon("Move-Limb.png"));
 		JogWidget widget = new JogWidget(dh);
 		callbackMapForTreeitems.put(dhItem, () -> {
+
 			if (widgetMapForTreeitems.get(dhItem) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
@@ -806,12 +807,13 @@ public class MobleBaseMenueFactory {
 				VBox jog = new VBox(10);
 				jog.getChildren().add(new Label("Jog Limb"));
 				jog.getChildren().add(widget);
-				widgetMapForTreeitems.put(dhItem, new Group(new JogWidget(dh)));
+				widgetMapForTreeitems.put(dhItem, new Group(jog));
 			}
 			BowlerJInputDevice controller = creatureLab.getController();
 			if (controller != null) {
 				widget.setGameController(controller);
 			}
+			widget.setCurrent(dh.getCurrentPoseTarget());
 			BowlerStudio.select(base, dh);
 
 		});

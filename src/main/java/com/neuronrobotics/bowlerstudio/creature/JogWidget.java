@@ -154,7 +154,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 		add(	buttons, 
 				0, 
 				0);
-		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentPoseTarget(), this);
+		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentTaskSpaceTransform(), this);
 		transformCurrent.setDisable(true);
 		transformTarget = new TransformWidget("Current Target", getKin().getCurrentPoseTarget(), this);
 
@@ -269,7 +269,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					transformCurrent.updatePose(pose);
+					transformCurrent.updatePose(getKin().getCurrentTaskSpaceTransform());
 				}
 			});
 	}
@@ -278,12 +278,7 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source,
 			TransformNR pose) {
 		if(pose != null &&transformTarget!=null)
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				transformTarget.updatePose(pose);
-			}
-		});
+			transformTarget.updatePose(getKin().getCurrentPoseTarget());
 	}
 	
 	@Override
@@ -504,6 +499,10 @@ public class JogWidget extends GridPane implements ITaskSpaceUpdateListenerNR, I
 				}
 			}
 		}.start();
+	}
+
+	public void setCurrent(TransformNR currentPoseTarget) {
+		jogTHreadHandle.setTarget(currentPoseTarget, 0);
 	}
 
 

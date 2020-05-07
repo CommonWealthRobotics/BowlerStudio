@@ -29,7 +29,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField ty;
 //	private TextField tz;
 	private TransformNR initialState;
-	
+	private RotationNR storeRotation;
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
 		this.initialState = is;
@@ -44,28 +44,55 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		ty = new EngineeringUnitsSliderWidget(this,  initialState.getY(), 100,"mm");
 		tz = new EngineeringUnitsSliderWidget(this,  initialState.getZ(), 100,"mm");
 		
-		RotationNR rot = initialState.getRotation();
+		storeRotation = initialState.getRotation();
 		double  t=0;
 		try{
-			t=Math.toDegrees(rot.getRotationTilt());
+			t=Math.toDegrees(storeRotation.getRotationTilt());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		double  e=0;
 		try{
-			e=Math.toDegrees(rot.getRotationElevation());
+			e=Math.toDegrees(storeRotation.getRotationElevation());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		double  a=0;
 		try{
-			a=Math.toDegrees(rot.getRotationAzimuth());
+			a=Math.toDegrees(storeRotation.getRotationAzimuth());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100,"degrees");
-		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100,"degrees");
+		tilt = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				//initialState.setTiltDegrees(newAngleDegrees);
+			}
+		}, -179.99, 179.99, t, 100,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				//initialState.setElevationDegrees(newAngleDegrees);
+			}
+		}, -89.99, 89.99, e, 100,"degrees");
+		azimeth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				//initialState.setAzimuthDegrees(newAngleDegrees);
+			}
+		}, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimeth.setAllowResize(false);
@@ -127,11 +154,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				tx.getValue(),
 				ty.getValue(),
 				tz.getValue(),
-				new RotationNR( 
-						tilt.getValue(),
-						azimeth.getValue(),
-						elevation.getValue()
-						));
+				initialState.getRotation());
 
 		
 		return tmp;
@@ -158,9 +181,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		TransformNR pose = p;
 		
 		
-		tx.setValue(pose.getX());
-		ty.setValue(pose.getY());
-		tz.setValue(pose.getZ());
+		Platform.runLater(() -> tx.setValue(pose.getX()));
+		Platform.runLater(() -> ty.setValue(pose.getY()));
+		Platform.runLater(() -> tz.setValue(pose.getZ()));
 		
 		RotationNR rot = pose.getRotation();
 		double  t=0;
@@ -181,9 +204,14 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		tilt.setValue(t);
-		elevation .setValue(e);
-		azimeth .setValue(a);
+		double tiltVar=t;
+		double eVar=e;
+		double aVar=a;
+		Platform.runLater(() -> tilt.setValue(tiltVar));
+		Platform.runLater(() -> elevation .setValue(eVar));
+		Platform.runLater(() -> azimeth .setValue(aVar));
+		// Set the rotation after setting the UI so the read will load the rotation in its pure form
+		initialState = p;
 	}
 
 }
