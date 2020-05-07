@@ -321,6 +321,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			}
 		}, (int)conf.getLowerLimit(), (int)conf.getUpperLimit(), (int)conf.getStaticOffset(), 150, "device units", true);
 		zero.setAllowResize(false);
+		zero.showSlider(false);
 		upperBound.setAllowResize(false);
 		lowerBound.setAllowResize(false);
 		final ComboBox<String> channel = new ComboBox<>();
