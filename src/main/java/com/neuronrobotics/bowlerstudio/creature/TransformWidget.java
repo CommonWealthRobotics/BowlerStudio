@@ -66,31 +66,44 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tilt = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
-			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setTiltDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				initialState.setTiltDegrees(newAngleDegrees);
+				initialState.setTiltDegrees(newAngleDegrees);				
+				onChange.onTransformFinished(getCurrent());
+
 			}
 		}, -179.99, 179.99, t, 100,"degrees");
 		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
-			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setElevationDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				initialState.setElevationDegrees(newAngleDegrees);
+				onChange.onTransformFinished(getCurrent());
 			}
 		}, -89.99, 89.99, e, 100,"degrees");
 		azimeth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
-			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {}
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setAzimuthDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
 			
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				initialState.setAzimuthDegrees(newAngleDegrees);
+				onChange.onTransformFinished(getCurrent());
 			}
 		}, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);
@@ -105,16 +118,13 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    tx.showSlider(false);
 	    ty.showSlider(false);
 	    tz.showSlider(false);
-	    tilt.showSlider(false);
-	    azimeth.showSlider(false);
-	    elevation.showSlider(false);
+//	    tilt.showSlider(false);
+//	    azimeth.showSlider(false);
+//	    elevation.showSlider(false);
 	    
 	    add(	new Text(title), 
 	    		1,  0);
-//	    add(	new Text("(r)W"), 
-//	    		3,  0);
-//	    add(	rw, 
-//	    		4,  0);
+
 	    // These all seem out of order here, but it is because the 
 	    // screen is rotating the orenation of this interface from BowlerStudio3dEngine.getOffsetforvisualization()
 	    //X line
