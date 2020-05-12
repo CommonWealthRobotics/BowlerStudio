@@ -6,8 +6,10 @@ package com.neuronrobotics.bowlerstudio;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHRepository;
@@ -270,7 +272,8 @@ public class NewVitaminWizardController  extends Application {
 			}
 			new Thread(() -> {
 				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitaminString, sizeComboBox.getSelectionModel().getSelectedItem());
-				for(String key:configsOld.keySet()) {
+
+				for(String key:configsOld.keySet().stream().sorted().collect(Collectors.toList())) {
 					setupKeyValueToTable(key, configsOld.get(key),sizeOfVitaminString);
 				}
 			}).start();
@@ -314,7 +317,7 @@ public class NewVitaminWizardController  extends Application {
 		for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
 			HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitaminString, size);
 			// For every required key
-			for(String key:required.keySet()) {
+			for(String key:required.keySet().stream().sorted().collect(Collectors.toList())) {
 				// check to see if the current size has this key already
 				if(!configs.containsKey(key)) {
 					// enter a default value, but ensure that the key exists for downstream code
