@@ -381,6 +381,8 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+		if(getSetpoint().isEditing())
+			return;
 		// TODO Auto-generated method stub
 		try {
 			getSetpoint().setValue(arg1);

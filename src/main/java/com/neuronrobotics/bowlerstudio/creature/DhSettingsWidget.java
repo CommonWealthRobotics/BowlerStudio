@@ -57,7 +57,6 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 														Math.toDegrees(dhLink.getAlpha()),
 														180,"degrees");
 		delta.showSlider(false);
-		theta.showSlider(false);
 		radius.showSlider(false);
 		alpha.showSlider(false);
 		GridPane gridpane = new GridPane();

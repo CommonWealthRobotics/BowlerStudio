@@ -21,8 +21,8 @@ public class AppTestLinkWidgets extends Application {
 	public void start(Stage stage) throws Exception {
 		ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
 				"loadAll.groovy", null);
-    	MobileBase base = MobileBaseLoader.fromGit("https://github.com/OperationSmallKat/greycat.git", "MediumKat.xml");
-    	DHParameterKinematics limb = base.getLegs().get(1);
+    	MobileBase base = MobileBaseLoader.fromGit("https://github.com/Hephaestus-Arm/HephaestusArm2.git", "hephaestus.xml");
+    	DHParameterKinematics limb = base.getAllDHChains().get(0);
     	int index = 2;
     	LinkConfiguration conf=limb.getLinkConfiguration(index);
 		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(conf, limb.getFactory(),

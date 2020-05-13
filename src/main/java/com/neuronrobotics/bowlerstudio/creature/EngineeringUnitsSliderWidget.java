@@ -19,6 +19,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private Button jogplus= new Button("+");
 	private Button jogminus= new Button("-");
 	private double instantValueStore =0;
+	private boolean editing =false;
+
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener,double min, double max,  double current, double width, String units, boolean intCast){
 		this(listener, min, max, current, width, units);
 		this.intCast = intCast;
@@ -26,6 +28,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener,  double current, double width, String units){
 		this(listener, current/2, current*2, current, width, units);
 	
+	}
+	private void onSliderMoving(EngineeringUnitsSliderWidget source,double newAngleDegrees) {
+		editing=true;
+		getListener().onSliderMoving(this,newAngleDegrees);
+	}
+	private void onSliderDoneMoving(EngineeringUnitsSliderWidget source,double newAngleDegrees) {
+		editing=false;
+		getListener().onSliderDoneMoving(this,newAngleDegrees);
 	}
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current, double width, String units){
 		this.setListener(listener);
@@ -56,6 +66,23 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setMinorTickCount(5);
 		//setpoint.setBlockIncrement(range/100);
 		setpointValue = new TextField(getFormatted(current));
+		setpointValue.focusedProperty().addListener(new ChangeListener<Boolean>()
+		{
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+		    {
+		        if (newPropertyValue)
+		        {
+		            System.out.println("Textfield on focus");
+		            editing=true;
+		        }
+		        else
+		        {
+		            System.out.println("Textfield out focus");
+		            editing=false;
+		        }
+		    }
+		});
 		setpointValue.setOnAction(event -> {
 			String txt =setpointValue.getText();
 			double val =Double.parseDouble(txt);
@@ -64,8 +91,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			Platform.runLater(() -> {
 				setValue(val);
 
-				getListener().onSliderMoving(this,val);
-				getListener().onSliderDoneMoving(this,val);
+				onSliderMoving(this,val);
+				onSliderDoneMoving(this,val);
 			});
 		});
 		setpoint.setMaxWidth(width);
@@ -74,7 +101,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 				double val =Double.parseDouble(setpointValue.getText());
 				//System.err.println("Slider done moving = "+newValue);
 				if(!newValue)
-					getListener().onSliderDoneMoving(this,val);
+					onSliderDoneMoving(this,val);
 			}catch(java.lang.NumberFormatException ex) {
 				setValue(0);
 				return;
@@ -119,16 +146,16 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		if(value<setpoint.getMin())
 			return;
 		setValue(value);
-		getListener().onSliderMoving(this,value);
-		getListener().onSliderDoneMoving(this, value);
+		onSliderMoving(this,value);
+		onSliderDoneMoving(this, value);
 	}
 	public void jogPlusOne() {
 		double value = getValue()+1;
 		if(value>setpoint.getMax())
 			return;
 		setValue(value);
-		getListener().onSliderMoving(this,value);
-		getListener().onSliderDoneMoving(this, value);
+		onSliderMoving(this,value);
+		onSliderDoneMoving(this, value);
 	}
 	public void setUpperBound(double newBound){
 		setpoint.setMax(newBound);
@@ -145,12 +172,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private void updateValue(){
 		Platform.runLater(() -> {
 			setpointValue.setText(getFormatted(setpoint.getValue()));
-			getListener().onSliderMoving(this,setpoint.getValue());
+			onSliderMoving(this,setpoint.getValue());
 		});
 	}
 
 	
 	public void setValue(double value){
+		if(editing)
+			return;// do not overwrite an editing field
 		double val = value;
 		if(val>setpoint.getMax()){
 			if(isAllowResize())
@@ -222,5 +251,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 	public void showSlider(boolean b) {
 		setpoint.setVisible(b);
+	}
+	public boolean isEditing() {
+		return editing;
 	}
 }
