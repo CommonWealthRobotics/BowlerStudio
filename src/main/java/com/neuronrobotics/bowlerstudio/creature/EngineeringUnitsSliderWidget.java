@@ -73,12 +73,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		    {
 		        if (newPropertyValue)
 		        {
-		            System.out.println("Textfield on focus");
+		           // System.out.println("Textfield on focus");
 		            editing=true;
 		        }
 		        else
 		        {
-		            System.out.println("Textfield out focus");
+		            //System.out.println("Textfield out focus");
 		            editing=false;
 		        }
 		    }
@@ -89,6 +89,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			//System.out.println("Setpoint Text changed to "+val);
 			
 			Platform.runLater(() -> {
+				editing=false;
 				setValue(val);
 
 				onSliderMoving(this,val);
