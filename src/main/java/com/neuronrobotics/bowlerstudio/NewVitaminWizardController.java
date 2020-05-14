@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -142,13 +143,15 @@ public class NewVitaminWizardController  extends Application {
 					Vitamins.setScript(typeOfVitaminString, gitURL, filename);
 					
 					String measurments ="";
-					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
+					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
 					}
-					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
-						String string = key+"Value";
-						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
-					}
+					measurments+="\nfor(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))";
+					measurments+="\nprintln \""+ typeOfVitaminString+" value \"+key+\" \"+measurments.get(key)";
+//					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
+//						String string = key+"Value";
+//						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
+//					}
 					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
 							"CSG generate(){\n" + 
 							"	String type= \""+typeOfVitaminString+"\"\n" + 
@@ -501,6 +504,7 @@ public class NewVitaminWizardController  extends Application {
         newTypeRadio.setToggleGroup(groupForType);
         newTypeNameField.setEditable(false);
         ArrayList<String> types = Vitamins.listVitaminTypes();
+        
 		for(String s:types) {
 			typeComboBox.getItems().add(s);
 		}
