@@ -69,7 +69,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	    gridpane.getRowConstraints().add(new RowConstraints(70)); // 
 		gridpane.add(new Text("Height (D value)"), 0, 0);
 		gridpane.add(delta, 1, 0);
-		gridpane.add(new Text("Length (R value)"), 0, 1);
+		gridpane.add(new Text("Length (A value)"), 0, 1);
 		gridpane.add(radius, 1, 1);
 
 		gridpane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
