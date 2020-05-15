@@ -120,7 +120,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	@Override
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 			double newAngleDegrees) {
-		// TODO Auto-generated method stub
+		onSliderMoving(source,newAngleDegrees);
 		if(externalListener!=null)
 			externalListener.onSliderDoneMoving(source, newAngleDegrees);
 	}
