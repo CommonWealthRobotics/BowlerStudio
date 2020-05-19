@@ -279,26 +279,15 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
 			List<String> listOfScopes = Arrays.asList("repo", "gist", 
-					"user:email");
+					"user");
 			PasswordManager.setListOfScopes(listOfScopes);
 			GitHubWebFlow.setMyAPI(()->{
+				String line = System.getProperty("API-ID");
+				if(line!=null)
+					return line;
 				return "1edf79fae494c232d4d2";
 			});
 			GitHubWebFlow.setName(new NameGetter());
-			GitHubWebFlow flow=new GitHubWebFlow();
-			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
-				
-				@Override
-				public String twoFactorAuthCodePrompt() {
-					// TODO Auto-generated method stub
-					return flow.twoFactorAuthCodePrompt();
-				}
-				
-				@Override
-				public String[] prompt(String loginID) {
-					return flow.prompt(null);// force the prompt for username
-				}
-			});
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
 				if (ScriptingEngine.isLoginSuccess()) {
