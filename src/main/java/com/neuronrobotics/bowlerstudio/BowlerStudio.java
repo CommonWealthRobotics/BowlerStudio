@@ -278,6 +278,9 @@ public class BowlerStudio extends Application {
 			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
+			List<String> listOfScopes = Arrays.asList("repo", "gist", 
+					"user:email");
+			PasswordManager.setListOfScopes(listOfScopes);
 			GitHubWebFlow.setMyAPI(()->{
 				return "1edf79fae494c232d4d2";
 			});
