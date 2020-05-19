@@ -953,7 +953,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 		new Thread() {
 			public void run() {
 				PasswordManager.checkInternet();
-				ScriptingEngine.setLoginManager(new GitHubLoginManager());
 				setName("Login Gist Thread");
 				
 				try {

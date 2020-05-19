@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
+import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -281,6 +282,20 @@ public class BowlerStudio extends Application {
 				return "1edf79fae494c232d4d2";
 			});
 			GitHubWebFlow.setName(new NameGetter());
+			GitHubWebFlow flow=new GitHubWebFlow();
+			ScriptingEngine.setLoginManager(new IGitHubLoginManager() {
+				
+				@Override
+				public String twoFactorAuthCodePrompt() {
+					// TODO Auto-generated method stub
+					return flow.twoFactorAuthCodePrompt();
+				}
+				
+				@Override
+				public String[] prompt(String loginID) {
+					return flow.prompt(null);// force the prompt for username
+				}
+			});
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
 				if (ScriptingEngine.isLoginSuccess()) {
@@ -339,7 +354,7 @@ public class BowlerStudio extends Application {
 								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
 							} catch (Exception ex1) {
 								ScriptingEngine.deleteRepo(myAssets);
-								ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
+								ScriptingEngine.cloneRepo(myAssets,null);
 							}
 						}
 						lastVersion = ScriptingEngine.getBranch(myAssets);
