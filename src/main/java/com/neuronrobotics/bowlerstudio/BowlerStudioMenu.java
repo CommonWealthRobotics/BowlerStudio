@@ -1401,7 +1401,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	void onRefresh(ActionEvent event) {
 		String current = this.name;//=null;
 		 this.name=null;
-		setToLoggedIn(current);
+		 if(PasswordManager.loggedIn())
+			 setToLoggedIn(current);
+		 			 
 	}
     @FXML
     void onCreateNewVitamin(ActionEvent event) {
