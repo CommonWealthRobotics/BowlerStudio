@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
+import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -275,10 +276,11 @@ public class BowlerStudio extends Application {
 		if (args.length == 0) {
 			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
-			if (PasswordManager.hasNetwork()) {
-				ScriptingEngine.setLoginManager(new GitHubLoginManager());
-			}
-
+			// switching to Web Flow auth
+			GitHubWebFlow.setMyAPI(()->{
+				return "1edf79fae494c232d4d2";
+			});
+			GitHubWebFlow.setName(new NameGetter());
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
 				if (ScriptingEngine.isLoginSuccess()) {
