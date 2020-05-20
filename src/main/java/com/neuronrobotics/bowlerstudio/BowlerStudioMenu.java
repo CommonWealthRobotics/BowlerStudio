@@ -217,7 +217,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					if (!PasswordManager.hasNetwork())
 						return;
 					GitHub gh = PasswordManager.getGithub();
-					while (gh == null && !PasswordManager.loggedIn()) {
+					while (gh == null || !PasswordManager.loggedIn()) {
 						gh = PasswordManager.getGithub();
 						ThreadUtil.wait(200);
 					}
