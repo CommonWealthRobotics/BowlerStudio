@@ -34,6 +34,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -57,7 +58,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
+public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -109,11 +110,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	private Menu WindowMenu;
 	@FXML // fx:id="watchingRepos"
 	private Menu watchingRepos; // Value injected by FXMLLoader
-    @FXML
-    private Menu vitaminsMenu;
+	@FXML
+	private Menu vitaminsMenu;
 
-    @FXML
-    private MenuItem addNewVitamin;
+	@FXML
+	private MenuItem addNewVitamin;
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
@@ -128,7 +129,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 	private static IssueReportingExceptionHandler exp = new IssueReportingExceptionHandler();
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-	private HashMap<String,Menu> vitaminTypeMenus = new HashMap<String, Menu>();
+	private HashMap<String, Menu> vitaminTypeMenus = new HashMap<String, Menu>();
+
 	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
 		bowlerStudioModularFrame = tl;
 	}
@@ -166,10 +168,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					} else {
 						mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
 					}
-					if(mb!=null)
+					if (mb != null)
 						ConnectionManager.addConnection(mb, mb.getScriptingName());
 					else
-						System.out.println("\r\n\r\nNO MOBILE BASE found at "+id+"\t"+file);
+						System.out.println("\r\n\r\nNO MOBILE BASE found at " + id + "\t" + file);
 
 				} catch (Exception e) {
 					BowlerStudio.printStackTrace(e);
@@ -202,7 +204,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			return;
 		this.name = name;
 		// new Exception().printStackTrace();
-		Platform.runLater( () -> {
+		Platform.runLater(() -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + name);
 			new Thread() {
@@ -230,12 +232,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 				}
 
-
 			}.start();
 
 		});
 
 	}
+
 	private void loadWatchingRepos(GitHub github) {
 		new Thread(() -> {
 			Platform.runLater(() -> watchingRepos.getItems().clear());
@@ -316,7 +318,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				}
 			} catch (Exception e) {
 				PasswordManager.checkInternet();
-				if(PasswordManager.hasNetwork())
+				if (PasswordManager.hasNetwork())
 					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 
 			}
@@ -338,8 +340,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 					String url = gist.getGitPushUrl();
 					String desc = gist.getDescription();
-					if (desc == null || desc.length() == 0
-							|| desc.contentEquals("Adding new file from BowlerStudio")) {
+					if (desc == null || desc.length() == 0 || desc.contentEquals("Adding new file from BowlerStudio")) {
 						desc = gist.getFiles().keySet().toArray()[0].toString();
 					}
 					String descriptionString = desc;
@@ -355,6 +356,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			}
 		}).start();
 	}
+
 	public static String gitURLtoMessage(String url) {
 		while (true) {
 			try {
@@ -395,7 +397,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				Menu orgCommits = new Menu("Commits");
 				Menu orgBranches = new Menu("Branches");
 
-
 				MenuItem updateRepo = new MenuItem("Update Repo...");
 				MenuItem addToWs = new MenuItem("Add Repo to Workspace");
 				addToWs.setOnAction(event -> {
@@ -416,11 +417,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						try {
 //							System.err.println("\n\nCommit event Detected " + url + " on branch "
 //									+ ScriptingEngine.getBranch(url));
-							//new RuntimeException().printStackTrace();
-							Platform.runLater(() ->resetMenueForLoadingFiles("Files:",orgFiles,  loadFilesEvent));
-							Platform.runLater(() ->resetMenueForLoadingFiles("Commits:",orgCommits, loadCommitsEvent));
-							Platform.runLater(() ->resetMenueForLoadingFiles("Branches:",orgBranches, loadBranchesEvent));
-							
+							// new RuntimeException().printStackTrace();
+							Platform.runLater(() -> resetMenueForLoadingFiles("Files:", orgFiles, loadFilesEvent));
+							Platform.runLater(
+									() -> resetMenueForLoadingFiles("Commits:", orgCommits, loadCommitsEvent));
+							Platform.runLater(
+									() -> resetMenueForLoadingFiles("Branches:", orgBranches, loadBranchesEvent));
+
 						} catch (Throwable e) {
 							exp.uncaughtException(Thread.currentThread(), e);
 						}
@@ -440,7 +443,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 								exp.uncaughtException(Thread.currentThread(), e);
 							}
 							myEvent.run();
-							//selfRef.onRefresh(null);
+							// selfRef.onRefresh(null);
 						}
 
 					}.start();
@@ -459,22 +462,22 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							e.printStackTrace();
 						}
 						myEvent.run();
-						//selfRef.onRefresh(null);
+						// selfRef.onRefresh(null);
 					});
 				});
-				
+
 				ScriptingEngine.addOnCommitEventListeners(url, myEvent);
 				orgRepo.setOnShowing(event -> {
-					//On showing the menu, set up the rest of the handlers
+					// On showing the menu, set up the rest of the handlers
 					new Thread(myEvent).start();
 				});
 				Platform.runLater(() -> {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
 					orgRepo.getItems().addAll(updateRepo, addFile, orgFiles, orgCommits, orgBranches);
-					//Platform.runLater(() -> {
-						repoMenue.getItems().add(orgRepo);
-					//});
+					// Platform.runLater(() -> {
+					repoMenue.getItems().add(orgRepo);
+					// });
 				});
 
 			}
@@ -522,72 +525,77 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
 
-						Iterable<RevCommit> commits = git.log().add(repo.resolve(branchName)).call();
+						ObjectId resolve = repo.resolve(branchName);
+						if (resolve != null) {
+							Iterable<RevCommit> commits = git.log().add(resolve).call();
 
-						List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
-						Platform.runLater(() -> {
-							try {
-								orgCommits.getItems().add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
-							} catch (IOException e) {
-								exp.uncaughtException(Thread.currentThread(), e);
-							}
-							orgCommits.getItems().add(new SeparatorMenuItem());
-						});
-						RevCommit previous =null;
-						for (RevCommit commit : commitsList) {
-							String date = format.format(new Date(commit.getCommitTime() * 1000L));
-							String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
-									+ date + "\r\n" + commit.getFullMessage()
-									+ "\r\n" + "---------------------------------------------------\r\n";//+
-									//previous==null?"":getDiffOfCommit(previous,commit, repo, git);
-							
-							previous=commit;
-							String string = date + " " +commit.getAuthorIdent().getName()+" "+ commit.getShortMessage();
-							if (string.length() > 80)
-								string = string.substring(0, 80);
-							//MenuItem tmp = new MenuItem(string);
-							CustomMenuItem tmp = new CustomMenuItem(new Label(string));
-							Tooltip tooltip = new Tooltip(fullData);
-							Tooltip.install(tmp.getContent(), tooltip);
-							tmp.setOnAction(ev -> {
-								new Thread() {
-									public void run() {
-										System.out.println("Selecting \r\n\r\n" + fullData);
-										
-										
-										String branch;
-										try {
-											branch = ScriptingEngine.getBranch(url);
-										} catch (IOException e1) {
-											branch="newBranch";
-										}
-										
-
-										String dateString = formatSimple.format( new Date(commit.getCommitTime() * 1000L)   );
-										promptForNewBranch(branch+"-"+dateString,"Creating Branch From Commit:\n\n"+fullData,newBranch -> {
-											new Thread() {
-												public void run() {
-													try {
-														String slugify = slugify(newBranch);
-														System.out.println("Creating " + slugify);
-														ScriptingEngine.setCommitContentsAsCurrent(url, slugify,
-																commit);
-													} catch (IOException e) {
-														exp.uncaughtException(Thread.currentThread(), e);
-													} catch (GitAPIException e) {
-														exp.uncaughtException(Thread.currentThread(), e);
-													}
-												}
-											}.start();
-										});
-
-									}
-								}.start();
-
-							});
+							List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 							Platform.runLater(() -> {
-								orgCommits.getItems().add(tmp);
+								try {
+									orgCommits.getItems()
+											.add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
+								} catch (IOException e) {
+									exp.uncaughtException(Thread.currentThread(), e);
+								}
+								orgCommits.getItems().add(new SeparatorMenuItem());
 							});
+							RevCommit previous = null;
+							for (RevCommit commit : commitsList) {
+								String date = format.format(new Date(commit.getCommitTime() * 1000L));
+								String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
+										+ date + "\r\n" + commit.getFullMessage() + "\r\n"
+										+ "---------------------------------------------------\r\n";// +
+								// previous==null?"":getDiffOfCommit(previous,commit, repo, git);
+
+								previous = commit;
+								String string = date + " " + commit.getAuthorIdent().getName() + " "
+										+ commit.getShortMessage();
+								if (string.length() > 80)
+									string = string.substring(0, 80);
+								// MenuItem tmp = new MenuItem(string);
+								CustomMenuItem tmp = new CustomMenuItem(new Label(string));
+								Tooltip tooltip = new Tooltip(fullData);
+								Tooltip.install(tmp.getContent(), tooltip);
+								tmp.setOnAction(ev -> {
+									new Thread() {
+										public void run() {
+											System.out.println("Selecting \r\n\r\n" + fullData);
+
+											String branch;
+											try {
+												branch = ScriptingEngine.getBranch(url);
+											} catch (IOException e1) {
+												branch = "newBranch";
+											}
+
+											String dateString = formatSimple
+													.format(new Date(commit.getCommitTime() * 1000L));
+											promptForNewBranch(branch + "-" + dateString,
+													"Creating Branch From Commit:\n\n" + fullData, newBranch -> {
+														new Thread() {
+															public void run() {
+																try {
+																	String slugify = slugify(newBranch);
+																	System.out.println("Creating " + slugify);
+																	ScriptingEngine.setCommitContentsAsCurrent(url,
+																			slugify, commit);
+																} catch (IOException e) {
+																	exp.uncaughtException(Thread.currentThread(), e);
+																} catch (GitAPIException e) {
+																	exp.uncaughtException(Thread.currentThread(), e);
+																}
+															}
+														}.start();
+													});
+
+										}
+									}.start();
+
+								});
+								Platform.runLater(() -> {
+									orgCommits.getItems().add(tmp);
+								});
+							}
 						}
 						git.close();
 						Platform.runLater(() -> {
@@ -615,13 +623,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 	public static String slugify(String input) {
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-	    String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
-	    String slug = NONLATIN.matcher(normalized).replaceAll("").replace('-', '_');
-	    
-	    return slug;
+		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
+		String slug = NONLATIN.matcher(normalized).replaceAll("").replace('-', '_');
+
+		return slug;
 	}
 
-	private static void promptForNewBranch(String exampleName,String reasonForCreating,Consumer<String> resultEvent) {
+	private static void promptForNewBranch(String exampleName, String reasonForCreating, Consumer<String> resultEvent) {
 		Platform.runLater(() -> {
 			TextInputDialog dialog = new TextInputDialog(exampleName);
 			dialog.setTitle("Create New Branch");
@@ -638,6 +646,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;
 			EventHandler<Event> thisEvent = this;
+
 			@Override
 			public void handle(Event event) {
 				if (gistFlag) {
@@ -664,18 +673,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 						gistFlag = false;
 					});
 					MenuItem newBranchItem = new MenuItem("New Branch...");
-					String newBranchName="";
+					String newBranchName = "";
 					try {
 						newBranchName = ScriptingEngine.getBranch(url);
-					} catch (IOException e1) {}
-					String newBranchName1=newBranchName;
+					} catch (IOException e1) {
+					}
+					String newBranchName1 = newBranchName;
 
-					String dateString = formatSimple.format( new Date()   );
+					String dateString = formatSimple.format(new Date());
 
 					newBranchItem.setOnAction(event1 -> {
-						promptForNewBranch(newBranchName1+"-"+dateString,
-								"Create a new Branch from "+newBranchName1,
-								newBranch -> {
+						promptForNewBranch(newBranchName1 + "-" + dateString,
+								"Create a new Branch from " + newBranchName1, newBranch -> {
 									new Thread() {
 										public void run() {
 											try {
@@ -694,13 +703,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 					});
 					Platform.runLater(() -> {
-						
+
 						try {
 							onBranch.setText("On Branch " + ScriptingEngine.getBranch(url));
 							orgBranches.getItems().add(onBranch);
 						} catch (IOException e) {
 							exp.uncaughtException(Thread.currentThread(), e);
-							
+
 						}
 						orgBranches.getItems().add(new SeparatorMenuItem());
 						orgBranches.getItems().add(newBranchItem);
@@ -710,11 +719,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
 						for (Ref r : branches) {
-							createRepoMenuItem(url, orgBranches, onBranch, r,getMenuReset());
+							createRepoMenuItem(url, orgBranches, onBranch, r, getMenuReset());
 						}
 					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
-					} 
+					}
 					System.err.println("Refreshing menu Branches");
 					Platform.runLater(() -> {
 						orgBranches.hide();
@@ -725,10 +734,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				}).start();
 			}
 
-			
 		};
 	}
-	private static void createRepoMenuItem(String url, Menu orgBranches,  final MenuItem onBranch, Ref r, Runnable menureset) {
+
+	private static void createRepoMenuItem(String url, Menu orgBranches, final MenuItem onBranch, Ref r,
+			Runnable menureset) {
 		String[] name2 = r.getName().split("/");
 		MenuItem tmp = new MenuItem(name2[name2.length - 1]);
 		Ref select = r;
@@ -754,8 +764,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 					ScriptingEngine.checkout(url, select);
 					String s = ScriptingEngine.getBranch(url);
 					if (myName.contentEquals(s))
-						System.out.println("Changing from " + was + " to " + myName + " is now "
-								+ s + "... Success!");
+						System.out.println("Changing from " + was + " to " + myName + " is now " + s + "... Success!");
 					onBranch.setText("On Branch " + s);
 				}
 			}.start();
@@ -765,6 +774,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			orgBranches.getItems().add(tmp);
 		});
 	}
+
 	@FXML
 	public void onLoadFile(ActionEvent e) {
 		new Thread() {
@@ -790,17 +800,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 		}.start();
 	}
 
-	private static void resetMenueForLoadingFiles(String string, Menu orgFiles,  EventHandler<Event> loadFiles) {
+	private static void resetMenueForLoadingFiles(String string, Menu orgFiles, EventHandler<Event> loadFiles) {
 		Platform.runLater(() -> {
 			try {
-				Platform.runLater(() ->{
+				Platform.runLater(() -> {
 					orgFiles.getItems().clear();
-					//orgFiles.hide();
-					Platform.runLater(() ->{
+					// orgFiles.hide();
+					Platform.runLater(() -> {
 						orgFiles.getItems().add(new MenuItem(string));
 						orgFiles.getItems().add(new SeparatorMenuItem());
 						orgFiles.setOnShowing(loadFiles);
-						//Platform.runLater(() ->orgFiles.show());
+						// Platform.runLater(() ->orgFiles.show());
 					});
 				});
 			} catch (Throwable t) {
@@ -878,7 +888,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							orgFiles.hide();
 							Platform.runLater(() -> {
 								orgFiles.show();
-								
+
 							});
 						});
 					}
@@ -954,10 +964,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			public void run() {
 				PasswordManager.checkInternet();
 				setName("Login Gist Thread");
-				
+
 				try {
 					ScriptingEngine.logout();
-					while(!ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode()) {
+					while (!ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode()) {
 						try {
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
@@ -1148,7 +1158,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 							// demo
 							"exampleRobots.json"// File from within the Git repo
 					);
-					MenuItem newCreatureWiz= new MenuItem("New Creature..."); 
+					MenuItem newCreatureWiz = new MenuItem("New Creature...");
 					newCreatureWiz.setOnAction(event -> {
 						NewCreatureWizard.run();
 					});
@@ -1175,7 +1185,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				}
 			}
 		}.start();
-		
 
 		addMarlinGCODEDevice.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
@@ -1313,26 +1322,26 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 		}
 		WindowMenu.getItems().add(fontSelect);
-		
+
 		new Thread() {
 			public void run() {
 				setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 				try {
-					if(vitaminsMenu==null)
+					if (vitaminsMenu == null)
 						throw new RuntimeException("Vitamins menu was not inserted");
-					if(vitaminsMenu.getItems()==null)
+					if (vitaminsMenu.getItems() == null)
 						throw new RuntimeException("Vitamins menu items are null");
-					Platform.runLater(()->{
+					Platform.runLater(() -> {
 						vitaminsMenu.getItems().add(new SeparatorMenuItem());
-					});	
+					});
 					List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
-					for(String s:types) {
+					for (String s : types) {
 						addVitaminType(s);
 						Vitamins.getVitaminFile(s, () -> {
-							Platform.runLater(()->{
+							Platform.runLater(() -> {
 								getTypeMenu(s).getItems().clear();
 							});
-							setUpSizes(getTypeMenu(s), s ) ;
+							setUpSizes(getTypeMenu(s), s);
 							addVitaminType(s);
 						}, false);
 					}
@@ -1341,46 +1350,48 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 				}
 			}
 		}.start();
-		
+
 	}
+
 	public void addVitaminType(String s) {
 		getTypeMenu(s);
 		ArrayList<String> sizes = Vitamins.listVitaminSizes(s);
-		for(String size:sizes) {
-			addSizesToMenu(size,s);
+		for (String size : sizes) {
+			addSizesToMenu(size, s);
 		}
-		
+
 	}
+
 	public Menu getTypeMenu(String type) {
-		if(vitaminTypeMenus.get(type)==null) {
+		if (vitaminTypeMenus.get(type) == null) {
 			Menu typeMenu = new Menu(type);
 			vitaminTypeMenus.put(type, typeMenu);
-			Platform.runLater(()->{
+			Platform.runLater(() -> {
 				vitaminsMenu.getItems().add(typeMenu);
 			});
-			setUpSizes( typeMenu,  type );
+			setUpSizes(typeMenu, type);
 		}
 		return vitaminTypeMenus.get(type);
 	}
-	
-	private void setUpSizes(Menu typeMenu, String type ) {
 
-		MenuItem editScript = new MenuItem("Edit "+type+" Cad Generator...");
+	private void setUpSizes(Menu typeMenu, String type) {
+
+		MenuItem editScript = new MenuItem("Edit " + type + " Cad Generator...");
 		editScript.setOnAction(event -> {
 			new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
 		});
 
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			typeMenu.getItems().add(new MenuItem("Sizes:"));
 			typeMenu.getItems().add(new SeparatorMenuItem());
 			typeMenu.getItems().add(editScript);
 			typeMenu.getItems().add(new SeparatorMenuItem());
 		});
 	}
-	
-	public  void addSizesToMenu( String size,String type) {
-		MenuItem sizeMenu =new MenuItem(size);
-		Platform.runLater(()->{
+
+	public void addSizesToMenu(String size, String type) {
+		MenuItem sizeMenu = new MenuItem(size);
+		Platform.runLater(() -> {
 			getTypeMenu(type).getItems().add(sizeMenu);
 		});
 		sizeMenu.setOnAction(new EventHandler<ActionEvent>() {
@@ -1388,9 +1399,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 			public void handle(ActionEvent event) {
 				new Thread() {
 					public void run() {
-						LocalFileScriptTab tab =LocalFileScriptTab.getSelectedTab();
-						if(tab!=null)
-							tab.insertString("CSG vitamin_"+slugify(type)+"_"+slugify(size)+" = Vitamins.get(\""+type+"\", \""+size+"\")\n");
+						LocalFileScriptTab tab = LocalFileScriptTab.getSelectedTab();
+						if (tab != null)
+							tab.insertString("CSG vitamin_" + slugify(type) + "_" + slugify(size) + " = Vitamins.get(\""
+									+ type + "\", \"" + size + "\")\n");
 					}
 				}.start();
 			}
@@ -1399,35 +1411,38 @@ public class BowlerStudioMenu implements MenuRefreshEvent,INewVitaminCallback {
 
 	@FXML
 	void onRefresh(ActionEvent event) {
-		String current = this.name;//=null;
-		 this.name=null;
-		 if(PasswordManager.loggedIn())
-			 setToLoggedIn(current);
-		 			 
+		String current = this.name;// =null;
+		this.name = null;
+		if (PasswordManager.loggedIn())
+			setToLoggedIn(current);
+
 	}
-    @FXML
-    void onCreateNewVitamin(ActionEvent event) {
-    	try {
+
+	@FXML
+	void onCreateNewVitamin(ActionEvent event) {
+		try {
 			NewVitaminWizardController.launchWizard(this);
 		} catch (Exception e) {
 			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-			
+
 		}
-    }
-    @FXML
-    void onBowlerStudioHelp(ActionEvent event) {
-    	new Thread(()->{
-    		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-    		    try {
-					Desktop.getDesktop().browse(new URI("https://hackaday.io/project/6423-bowlerstudio-a-robotics-development-platform"));
+	}
+
+	@FXML
+	void onBowlerStudioHelp(ActionEvent event) {
+		new Thread(() -> {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				try {
+					Desktop.getDesktop().browse(
+							new URI("https://hackaday.io/project/6423-bowlerstudio-a-robotics-development-platform"));
 				} catch (IOException e) {
 					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-					
+
 				} catch (URISyntaxException e) {
 					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-					
+
 				}
-    		}
-    	}) .start();
-    }
+			}
+		}).start();
+	}
 }
