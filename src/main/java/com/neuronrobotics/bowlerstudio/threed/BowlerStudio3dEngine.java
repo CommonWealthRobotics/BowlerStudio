@@ -710,7 +710,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		if(current==null)
 			return new MeshView();
 		if(!lookGroup.getChildren().contains(current)) {
-			Platform.runLater(()->lookGroup.getChildren().add(current));
+			Platform.runLater(() -> {
+				try {
+					lookGroup.getChildren().add(current);
+				} catch (Throwable e) {
+					// duplicate
+				}
+			});
 			Axis axis = new Axis();
 			Platform.runLater(()->axis.getTransforms().add(currentCsg.getManipulator()));
 			axisMap.put(current, axis);
