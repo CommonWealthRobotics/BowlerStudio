@@ -480,8 +480,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private static void disconectAndRemoveDevice(PluginManager mp){
 		System.out.println("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
-		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp))
-			mp.getDevice().disconnect();	
+		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp)) {
+			try {
+				mp.getDevice().disconnect();
+			}catch(Throwable t) {
+				BowlerStudio.printStackTrace(t);
+			}
+			
+		}
 		DeviceManager.remove(mp.getDevice());
 	}
 
