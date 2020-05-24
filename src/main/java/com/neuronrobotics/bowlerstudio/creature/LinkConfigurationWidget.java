@@ -344,14 +344,15 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		channel.getSelectionModel().select(conf.getHardwareIndex());
 
 		final ComboBox<String> comboBox = new ComboBox<>();
-		for (LinkType type : LinkType.values()) {
-			comboBox.getItems().add(type.getName());
+		for (String type : LinkType.getUserDefined()) {
+			comboBox.getItems().add(type);
 		}
+		comboBox.getItems().add("virtual");
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
-				conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
+				conf.setTypeString(comboBox.getSelectionModel().getSelectedItem());
 				System.out.println("Link type changed to " + conf.getTypeString());
 				if (manager != null)
 					manager.generateCad();
