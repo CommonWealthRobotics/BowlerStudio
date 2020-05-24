@@ -55,9 +55,9 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root, boolean creatureIsOwnedByUser) {
 
-		boolean creatureIsOwnedByUser = false;
+		//boolean creatureIsOwnedByUser = false;
 
 		TreeItem<String> editXml = new TreeItem<String>("Edit Robot XML..",
 				AssetFactory.loadIcon("Script-Tab-RobotXML.png"));
@@ -85,7 +85,7 @@ public class MobleBaseMenueFactory {
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
 				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
-				creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
+				
 				callbackMapForTreeitems.put(publish, () -> {
 
 					CommitWidget.commit(source, device.getXml());
@@ -98,13 +98,13 @@ public class MobleBaseMenueFactory {
 		}
 
 		if (creatureIsOwnedByUser) {
-			rootItem.getChildren().addAll(publish);
+			if(root)rootItem.getChildren().addAll(publish);
 
 		}
 
 		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",
 				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
-		rootItem.getChildren().addAll(makeCopy);
+		if(root)rootItem.getChildren().addAll(makeCopy);
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(() -> {
 				String oldname = device.getScriptingName();
@@ -381,9 +381,9 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
-			TreeItem<String> item = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
+			TreeItem<String> addArm = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
 
-			callbackMapForTreeitems.put(item, () -> {
+			callbackMapForTreeitems.put(addArm, () -> {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Arm");
 				try {
@@ -395,17 +395,19 @@ public class MobleBaseMenueFactory {
 					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					new IssueReportingExceptionHandler().except(e);
+
 				}
 
 			});
 
-			rootItem.getChildren().addAll(bodymass, imuCenter, physics, regnerate, printable, kinematics, item, addleg,
+			rootItem.getChildren().addAll(bodymass, imuCenter);
+			if(root)rootItem.getChildren().addAll( physics, regnerate, printable, kinematics);
+			rootItem.getChildren().addAll( addArm, addleg,
 					addFixed, addsteerable);
-
 			if (creatureIsOwnedByUser) {
-				rootItem.getChildren().addAll(editXml, editWalking, editCAD, resetWalking, setCAD);
+				if(root)rootItem.getChildren().addAll(editXml  );
+				rootItem.getChildren().addAll( editWalking, editCAD, resetWalking, setCAD);
 			}
 		} catch (Exception e) {
 			new IssueReportingExceptionHandler().except(e);
@@ -623,11 +625,19 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner) throws Exception {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
 		//LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		//lsw.setTrimController(confWidget);
+		
+		if(dhLink.getSlaveMobileBase()!=null) {
+			TreeItem<String> mobile = new TreeItem<>("Sub-Base " + dhLink.getSlaveMobileBase().getScriptingName(),
+					AssetFactory.loadIcon("creature.png"));
+			load(dhLink.getSlaveMobileBase(), view, mobile, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,false,isOwner);
+			link.getChildren().add(mobile);
+		}
+		
 		LinkConfigurationWidget confWidget =new LinkConfigurationWidget(conf, dh.getFactory(),
 				MobileBaseCadManager.get(base));
 		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,confWidget);
@@ -853,7 +863,7 @@ public class MobleBaseMenueFactory {
 		int j = 0;
 		for (LinkConfiguration conf : dh.getFactory().getLinkConfigurations()) {
 			loadSingleLink(j++, base, view, conf, dh, dhItem, callbackMapForTreeitems, widgetMapForTreeitems,
-					creatureLab);
+					creatureLab, creatureIsOwnedByUser);
 		}
 
 		TreeItem<String> addLink = new TreeItem<>("Add Link", AssetFactory.loadIcon("Add-Link.png"));
@@ -900,7 +910,7 @@ public class MobleBaseMenueFactory {
 
 							try {
 								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
-										callbackMapForTreeitems, widgetMapForTreeitems, creatureLab);
+										callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,creatureIsOwnedByUser);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

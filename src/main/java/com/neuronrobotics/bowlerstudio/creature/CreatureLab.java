@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
@@ -130,8 +131,17 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rootItem.setExpanded(true);
 		HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 		HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
-		
-		MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
+		File source;
+		boolean creatureIsOwnedByUser=false;
+		try {
+			source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+			creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
+		} catch (GitAPIException | IOException e) {
+			// TODO Auto-generated catch block
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+			
+		}
+		MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this,true,creatureIsOwnedByUser);
 	
 		tree.setPrefWidth(325);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
