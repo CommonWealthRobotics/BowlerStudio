@@ -33,7 +33,7 @@ import javax.management.RuntimeErrorException;
 
 public class JogWidget extends GridPane
 		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IJInputEventListener {
-	double defauletSpeed = 0.05;
+	double defauletSpeed = 0.2;
 	private AbstractKinematicsNR kin;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));

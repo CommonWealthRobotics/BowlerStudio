@@ -32,7 +32,7 @@ import java.util.HashMap;
 import javax.management.RuntimeErrorException;
 
 public class JogMobileBase extends GridPane implements  IJInputEventListener {
-	double defauletSpeed=0.05;
+	double defauletSpeed=0.1;
 	private MobileBase mobilebase=null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("",AssetFactory.loadIcon("Minus-X.png"));
