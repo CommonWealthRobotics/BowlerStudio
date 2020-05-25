@@ -58,7 +58,9 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root, boolean creatureIsOwnedByUser) {
 
 		//boolean creatureIsOwnedByUser = false;
-
+		callbackMapForTreeitems.put(rootItem, () -> {
+			BowlerStudio.select(device);
+		});
 		TreeItem<String> editXml = new TreeItem<String>("Edit Robot XML..",
 				AssetFactory.loadIcon("Script-Tab-RobotXML.png"));
 		callbackMapForTreeitems.put(editXml, () -> {
@@ -72,13 +74,13 @@ public class MobleBaseMenueFactory {
 		});
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",
 				AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
+		
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
 				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
 
 			}
 		});
-
 		TreeItem<String> publish;
 		publish = new TreeItem<String>("Publish", AssetFactory.loadIcon("Publish.png"));
 
@@ -631,12 +633,7 @@ public class MobleBaseMenueFactory {
 		//LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		//lsw.setTrimController(confWidget);
 		
-		if(dhLink.getSlaveMobileBase()!=null) {
-			TreeItem<String> mobile = new TreeItem<>("Sub-Base " + dhLink.getSlaveMobileBase().getScriptingName(),
-					AssetFactory.loadIcon("creature.png"));
-			load(dhLink.getSlaveMobileBase(), view, mobile, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,false,isOwner);
-			link.getChildren().add(mobile);
-		}
+		
 		
 		LinkConfigurationWidget confWidget =new LinkConfigurationWidget(conf, dh.getFactory(),
 				MobileBaseCadManager.get(base));
