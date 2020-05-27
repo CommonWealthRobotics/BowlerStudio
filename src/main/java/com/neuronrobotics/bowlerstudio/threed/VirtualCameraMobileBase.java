@@ -33,10 +33,7 @@ public class VirtualCameraMobileBase {
 	private Group manipulationFrame;
 	long timeSinceLastUpdate=System.currentTimeMillis();
 	boolean error=false;
-	static {
-		Platform.runLater(
-				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
-	}
+	
 
 	private Affine affine=new Affine();
 
@@ -47,7 +44,8 @@ public class VirtualCameraMobileBase {
 
 		manipulationFrame = new Group();
 		camera.getTransforms().add(zoomAffine);
-
+		Platform.runLater(
+				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
 		cameraFrame.getTransforms().add(getOffset());
 		manipulationFrame.getChildren().addAll(camera, hand);
 		cameraFrame.getChildren().add(manipulationFrame);
@@ -63,7 +61,7 @@ public class VirtualCameraMobileBase {
 		if(System.currentTimeMillis()-timeSinceLastUpdate>16) {
 			timeSinceLastUpdate=System.currentTimeMillis();
 			error=false;
-			Platform.runLater(()->TransformFactory.nrToAffine(myGlobal, affine));
+			TransformFactory.nrToAffine(myGlobal, affine);
 		}else {
 			// too soon
 			error=true;
@@ -96,7 +94,7 @@ public class VirtualCameraMobileBase {
 				elOffset + Math.toDegrees(
 						newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())));
 //		 global.getRotation().setStorage(nr);
-		// System.err.println("Camera tilt="+global);
+		System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 		updatePositions();
