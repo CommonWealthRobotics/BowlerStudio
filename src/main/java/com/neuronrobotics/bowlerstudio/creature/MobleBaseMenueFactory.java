@@ -941,7 +941,7 @@ public class MobleBaseMenueFactory {
 										public void onTransformChaging(TransformNR newTrans) {
 											Log.debug("Limb to base" + newTrans.toString());
 											dh.setRobotToFiducialTransform(newTrans);
-											
+											dh.refreshPose();
 										}
 									})));
 				} catch (Exception ex) {

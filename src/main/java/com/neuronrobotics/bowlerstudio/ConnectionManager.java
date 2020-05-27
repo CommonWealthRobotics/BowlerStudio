@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.threed.VirtualCameraDevice;
 import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -121,7 +120,6 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void addConnection(BowlerAbstractDevice newDevice, String name) {
-		if(!VirtualCameraDevice.class.isInstance(newDevice))
 			DeviceManager.addConnection(newDevice, name);
 		
 	}
@@ -405,8 +403,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	@Override
 	public void onNewDeviceAdded(BowlerAbstractDevice newDevice) {
-		if(VirtualCameraDevice.class.isInstance(newDevice))
-			return;
+
 		PluginManager mp;
 		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+newDevice.getScriptingName() );
 		mp = new PluginManager(newDevice);

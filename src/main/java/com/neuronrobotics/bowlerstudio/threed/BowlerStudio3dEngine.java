@@ -174,7 +174,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private Group group;
 	private boolean captureMouse = false;
 
-	private VirtualCameraDevice virtualcam;
 
 	private VirtualCameraMobileBase flyingCamera;
 	private Group hand;
@@ -285,7 +284,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-			getVirtualcam().setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
+			getVirtualcam().setZoomDepth(VirtualCameraMobileBase.getDefaultZoomDepth());
 			getFlyingCamera().updatePositions();
 		});
 
@@ -834,20 +833,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 
-		setVirtualcam(new VirtualCameraDevice(camera, hand));
+		setVirtualcam(new VirtualCameraMobileBase(camera, hand));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
 
-				return virtualcam;
+				throw new RuntimeException("No virtual camera availible!");
 			}
 		});
 
-		try {
-			setFlyingCamera(new VirtualCameraMobileBase());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
 		// TODO reorent the start camera
 		moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 		defautcameraView = getFlyingCamera().getFiducialToGlobalTransform();
@@ -1240,12 +1235,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		world.getChildren().remove(manipulator);
 	}
 
-	public VirtualCameraDevice getVirtualcam() {
-		return virtualcam;
+	public VirtualCameraMobileBase getVirtualcam() {
+		return flyingCamera;
 	}
 
-	public void setVirtualcam(VirtualCameraDevice virtualcam) {
-		this.virtualcam = virtualcam;
+	public void setVirtualcam(VirtualCameraMobileBase virtualcam) {
+		this.flyingCamera = virtualcam;
 	}
 
 	public VirtualCameraMobileBase getFlyingCamera() {

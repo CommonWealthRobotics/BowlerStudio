@@ -1,80 +1,142 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.transform.Affine;
+
+import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-public class VirtualCameraMobileBase extends MobileBase {
-	
-	private final static class IDriveEngineImplementation implements IDriveEngine {
+public class VirtualCameraMobileBase {
+	private TransformNR myGlobal = new TransformNR();
+	double azOffset = 0;
+	double elOffset = 0;
+	double tlOffset = 0;
+	TransformNR pureTrans = new TransformNR();
+	private static final int DEFAULT_ZOOM_DEPTH = -1500;
+	private PerspectiveCamera camera;
+	private Group hand;
+	private final Group cameraFrame = new Group();
 
-		double azOffset =0;
-		double elOffset =0;
-		double tlOffset =0;
-		TransformNR pureTrans = new TransformNR();
-		@Override
-		public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
-			// TODO Auto-generated method stub
-			
-		}
+	private double zoomDepth = getDefaultZoomDepth();
+	private Affine zoomAffine = new Affine();
+	private static final Affine offset = new Affine();
+	private Group manipulationFrame;
+	long timeSinceLastUpdate=System.currentTimeMillis();
+	boolean error=false;
+	static {
+		Platform.runLater(
+				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
+	}
 
-		@Override
-		public void DriveVelocityArc(MobileBase source, double degreesPerSecond, double cmRadius) {
-			// TODO Auto-generated method stub
-			
-		}
+	private Affine affine=new Affine();
 
-		@Override
-		public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
-			try{
-				pureTrans.setX(newPose.getX());
-				pureTrans.setY(newPose.getY());
-				pureTrans.setZ(newPose.getZ());
-															
-				TransformNR global= source.getFiducialToGlobalTransform().times(pureTrans);
-				//RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
-				//System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
-//				Rotation n = newPose.getRotation().getStorage();
-//				Rotation g = global.getRotation().getStorage();
-//				Rotation nr =n.compose(g, RotationNR.getConvention());
-				
-				global.setRotation(	new RotationNR(	
-						tlOffset+(Math.toDegrees(newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())%360),
-						azOffset+(Math.toDegrees(newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth())%360), 
-						elOffset+Math.toDegrees(newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())
-											));
-//				 global.getRotation().setStorage(nr);
-				//System.err.println("Camera  tilt="+global);
-				// New target calculated appliaed to global offset
-				source.setGlobalToFiducialTransform(global);
-			}catch (Exception ex){
-				ex.printStackTrace();
-			}
+	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand) {
+		this.hand = hand;
+		this.setCamera(camera);
+		// System.out.println("Setting camera frame transform");
+
+		manipulationFrame = new Group();
+		camera.getTransforms().add(zoomAffine);
+
+		cameraFrame.getTransforms().add(getOffset());
+		manipulationFrame.getChildren().addAll(camera, hand);
+		cameraFrame.getChildren().add(manipulationFrame);
+		// new RuntimeException().printStackTrace();
+		setZoomDepth(DEFAULT_ZOOM_DEPTH);
+	}
+
+	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
+		myGlobal = defautcameraView;
+	}
+
+	public void updatePositions() {
+		if(System.currentTimeMillis()-timeSinceLastUpdate>16) {
+			timeSinceLastUpdate=System.currentTimeMillis();
+			error=false;
+			Platform.runLater(()->TransformFactory.nrToAffine(myGlobal, affine));
+		}else {
+			// too soon
+			error=true;
 		}
 	}
-	private static IDriveEngine de = new IDriveEngineImplementation();
-	private static ArrayList<VirtualCameraMobileBase> bases= new ArrayList<VirtualCameraMobileBase>(); 
-	public  VirtualCameraMobileBase() throws Exception{
-		//super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d","flyingCamera.xml")[0], "UTF-8"));
-		super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
-		//setDriveType(DrivingType.WALKING);
-		
-		setWalkingDriveEngine(getDriveEngine());
-		bases.add(this);
+
+	public TransformNR getFiducialToGlobalTransform() {
+		return myGlobal;
 	}
-	public static IDriveEngine getDriveEngine() {
-		return de;
+
+	public void DriveArc(TransformNR newPose, double seconds) {
+		// TODO Auto-generated method stub
+		pureTrans.setX(newPose.getX());
+		pureTrans.setY(newPose.getY());
+		pureTrans.setZ(newPose.getZ());
+
+		TransformNR global = getFiducialToGlobalTransform().times(pureTrans);
+		// RotationNR finalRot =
+		// TransformNR(0,0,0,globalRot).times(newPose).getRotation();
+		// System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
+//		Rotation n = newPose.getRotation().getStorage();
+//		Rotation g = global.getRotation().getStorage();
+//		Rotation nr =n.compose(g, RotationNR.getConvention());
+
+		global.setRotation(new RotationNR(
+				tlOffset + (Math.toDegrees(
+						newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt()) % 360),
+				azOffset + (Math.toDegrees(
+						newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth()) % 360),
+				elOffset + Math.toDegrees(
+						newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())));
+//		 global.getRotation().setStorage(nr);
+		// System.err.println("Camera tilt="+global);
+		// New target calculated appliaed to global offset
+		setGlobalToFiducialTransform(global);
+		updatePositions();
 	}
-	public static void setDriveEngine(IDriveEngine de) {
-		VirtualCameraMobileBase.de = de;
-		for(VirtualCameraMobileBase base:bases){
-			base.setWalkingDriveEngine(getDriveEngine());
-		}
+
+	public PerspectiveCamera getCamera() {
+		return camera;
+	}
+
+	public Group getCameraGroup() {
+		return getCameraFrame();
+	}
+
+	private void setCamera(PerspectiveCamera camera) {
+		this.camera = camera;
+	}
+
+	public Group getCameraFrame() {
+		return cameraFrame;
+	}
+
+	public double getZoomDepth() {
+		return zoomDepth;
+	}
+
+	public void setZoomDepth(double zoomDepth) {
+		if (zoomDepth > -2)
+			zoomDepth = -2;
+		if (zoomDepth < -5000)
+			zoomDepth = -5000;
+		this.zoomDepth = zoomDepth;
+		zoomAffine.setTz(getZoomDepth());
+	}
+
+	public static int getDefaultZoomDepth() {
+		return DEFAULT_ZOOM_DEPTH;
+	}
+
+	public static Affine getOffset() {
+		return offset;
 	}
 
 }
