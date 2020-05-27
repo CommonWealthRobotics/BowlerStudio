@@ -50,9 +50,12 @@ public class VirtualCameraMobileBase {
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
 		myGlobal = defautcameraView;
+		Platform.runLater(
+				() ->updatePositions());
 	}
 
 	public void updatePositions() {
+		
 		if(System.currentTimeMillis()-timeSinceLastUpdate>16) {
 			timeSinceLastUpdate=System.currentTimeMillis();
 			error=false;
@@ -85,7 +88,7 @@ public class VirtualCameraMobileBase {
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
-		updatePositions();
+		
 	}
 
 	public PerspectiveCamera getCamera() {
