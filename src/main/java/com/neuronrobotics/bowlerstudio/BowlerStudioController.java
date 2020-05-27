@@ -213,7 +213,11 @@ public class BowlerStudioController implements IScriptEventListener {
 					}
 					BowlerStudioModularFrame.getBowlerStudioModularFrame()
 							.setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
-					widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
+					try {
+						widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
+					}catch(java.lang.NullPointerException e) {
+						return;
+					}
 					// System.out.println("Highlighting "+fileEngineRunByName+" at line
 					// "+lineNumber+" to color "+color);
 					StackTraceElement[] stackTrace = ex.getStackTrace();
