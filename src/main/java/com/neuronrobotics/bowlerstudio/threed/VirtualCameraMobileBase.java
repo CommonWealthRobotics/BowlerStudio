@@ -1,9 +1,6 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
-import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
@@ -11,10 +8,6 @@ import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
-
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.util.ArrayList;
 
 public class VirtualCameraMobileBase {
 	private TransformNR myGlobal = new TransformNR();
@@ -35,7 +28,7 @@ public class VirtualCameraMobileBase {
 	boolean error=false;
 	
 
-	private Affine affine=new Affine();
+	private Affine camerUserPerspective=new Affine();
 
 	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand) {
 		this.hand = hand;
@@ -48,9 +41,11 @@ public class VirtualCameraMobileBase {
 				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
 		cameraFrame.getTransforms().add(getOffset());
 		manipulationFrame.getChildren().addAll(camera, hand);
+		manipulationFrame.getTransforms().add(camerUserPerspective);
 		cameraFrame.getChildren().add(manipulationFrame);
 		// new RuntimeException().printStackTrace();
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
+		updatePositions();
 	}
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
@@ -61,7 +56,7 @@ public class VirtualCameraMobileBase {
 		if(System.currentTimeMillis()-timeSinceLastUpdate>16) {
 			timeSinceLastUpdate=System.currentTimeMillis();
 			error=false;
-			TransformFactory.nrToAffine(myGlobal, affine);
+			TransformFactory.nrToAffine(myGlobal, camerUserPerspective);
 		}else {
 			// too soon
 			error=true;
@@ -79,13 +74,6 @@ public class VirtualCameraMobileBase {
 		pureTrans.setZ(newPose.getZ());
 
 		TransformNR global = getFiducialToGlobalTransform().times(pureTrans);
-		// RotationNR finalRot =
-		// TransformNR(0,0,0,globalRot).times(newPose).getRotation();
-		// System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
-//		Rotation n = newPose.getRotation().getStorage();
-//		Rotation g = global.getRotation().getStorage();
-//		Rotation nr =n.compose(g, RotationNR.getConvention());
-
 		global.setRotation(new RotationNR(
 				tlOffset + (Math.toDegrees(
 						newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt()) % 360),
@@ -94,7 +82,7 @@ public class VirtualCameraMobileBase {
 				elOffset + Math.toDegrees(
 						newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())));
 //		 global.getRotation().setStorage(nr);
-		System.err.println("Camera tilt="+global);
+		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 		updatePositions();
