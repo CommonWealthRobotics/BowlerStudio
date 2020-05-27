@@ -45,7 +45,7 @@ public class VirtualCameraMobileBase {
 		cameraFrame.getChildren().add(manipulationFrame);
 		// new RuntimeException().printStackTrace();
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
-		updatePositions();
+		Platform.runLater(() -> updatePositions());
 	}
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
