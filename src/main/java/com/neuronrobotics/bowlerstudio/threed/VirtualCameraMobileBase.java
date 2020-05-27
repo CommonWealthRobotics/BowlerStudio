@@ -24,7 +24,7 @@ public class VirtualCameraMobileBase {
 	private Affine zoomAffine = new Affine();
 	private static final Affine offset = new Affine();
 	private Group manipulationFrame;
-	long timeSinceLastUpdate=System.currentTimeMillis();
+	long timeSinceLastUpdate=System.currentTimeMillis()-17;
 	boolean error=false;
 	
 
@@ -50,8 +50,7 @@ public class VirtualCameraMobileBase {
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
 		myGlobal = defautcameraView;
-		Platform.runLater(
-				() ->updatePositions());
+		updatePositions();
 	}
 
 	public void updatePositions() {

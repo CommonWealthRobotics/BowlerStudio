@@ -253,8 +253,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		Scene s = new Scene(group);
 		// handleKeyboard(s);
 		handleMouse(getSubScene());
-		getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
+		
 		Platform.runLater(() -> {
+			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			setScene(s);
 			rebuildingUIOnerror = false;
 
