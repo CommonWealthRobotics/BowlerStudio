@@ -258,7 +258,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			setScene(s);
 			rebuildingUIOnerror = false;
-
 		});
 	}
 
@@ -842,7 +841,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		// TODO reorent the start camera
 		Platform.runLater(() -> {
-			moveCamera(defautcameraView, 0);
+			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 		});
 
 	}
