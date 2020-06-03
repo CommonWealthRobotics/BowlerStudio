@@ -69,7 +69,7 @@ public class VirtualCameraMobileBase {
 		return myGlobal;
 	}
 
-	public void DriveArc(TransformNR newPose, double seconds) {
+	public void DriveArc(TransformNR newPose) {
 		// TODO Auto-generated method stub
 		pureTrans.setX(newPose.getX());
 		pureTrans.setY(newPose.getY());

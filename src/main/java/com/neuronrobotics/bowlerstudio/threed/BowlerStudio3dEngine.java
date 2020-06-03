@@ -985,9 +985,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						double finaSpeedDiff = ((double) (finaSpeedScale - diff));
 						double sineScale = (finaSpeedDiff / ((double) (timeForAutospin / 2)));
 						scale = 1 - Math.sin(sineScale * (Math.PI / 2));
-						moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5 * scale, 0)), 0);
+						moveCamera(new TransformNR(0, 0, 0, new RotationNR(0, 0.5 * scale, 0)));
 					} else {
-						moveCamera(autoSpinSpeed, 0);
+						moveCamera(autoSpinSpeed);
 					}
 
 				}
@@ -1088,14 +1088,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							));
 
 					if (me.isPrimaryButtonDown()) {
-						moveCamera(trans, 0);
+						moveCamera(trans);
 					}
 				} else if (me.isMiddleButtonDown()) {
 
 				} else if (me.isSecondaryButtonDown()) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
 					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
-							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()), 0);
+							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()));
 				}
 			}
 		});
@@ -1120,8 +1120,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	}
 
-	private void moveCamera(TransformNR newPose, double seconds) {
-		getFlyingCamera().DriveArc(newPose, seconds);
+	private void moveCamera(TransformNR newPose) {
+		getFlyingCamera().DriveArc(newPose);
 
 	}
 
