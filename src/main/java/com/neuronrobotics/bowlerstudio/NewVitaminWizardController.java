@@ -146,13 +146,17 @@ public class NewVitaminWizardController  extends Application {
 					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
 					}
-					measurments+="\nfor(String key:measurments.keySet().stream().sorted().collect(Collectors.toList()))";
-					measurments+="\nprintln \""+ typeOfVitaminString+" value \"+key+\" \"+measurments.get(key)";
+					measurments+="\n\tfor(String key:measurments.keySet().stream().sorted().collect(Collectors.toList())){";
+					measurments+="\n\t\tprintln \""+ typeOfVitaminString+" value \"+key+\" \"+measurments.get(key);\n}";
 //					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
 //						String string = key+"Value";
 //						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
 //					}
 					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
+							"import java.util.stream.Collectors;\n" + 
+							"import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;\n" + 
+							"import eu.mihosoft.vrl.v3d.CSG;\n" + 
+							"import eu.mihosoft.vrl.v3d.Cube;\n" + 
 							"CSG generate(){\n" + 
 							"	String type= \""+typeOfVitaminString+"\"\n" + 
 							"	if(args==null)\n" + 
