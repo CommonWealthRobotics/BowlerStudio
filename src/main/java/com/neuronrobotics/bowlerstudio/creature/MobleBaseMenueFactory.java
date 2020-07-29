@@ -15,6 +15,7 @@ import com.neuronrobotics.nrconsole.util.PromptForGit;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.*;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
@@ -55,9 +56,10 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root, boolean creatureIsOwnedByUser) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
+			boolean creatureIsOwnedByUser) {
 
-		//boolean creatureIsOwnedByUser = false;
+		// boolean creatureIsOwnedByUser = false;
 		callbackMapForTreeitems.put(rootItem, () -> {
 			BowlerStudio.select(device);
 		});
@@ -74,7 +76,7 @@ public class MobleBaseMenueFactory {
 		});
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",
 				AssetFactory.loadIcon("Physics-Creature-Simulation.png"));
-		
+
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
 				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
@@ -87,7 +89,7 @@ public class MobleBaseMenueFactory {
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
 				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
-				
+
 				callbackMapForTreeitems.put(publish, () -> {
 
 					CommitWidget.commit(source, device.getXml());
@@ -100,13 +102,15 @@ public class MobleBaseMenueFactory {
 		}
 
 		if (creatureIsOwnedByUser) {
-			if(root)rootItem.getChildren().addAll(publish);
+			if (root)
+				rootItem.getChildren().addAll(publish);
 
 		}
 
 		TreeItem<String> makeCopy = new TreeItem<>("Make Copy of Creature",
 				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
-		if(root)rootItem.getChildren().addAll(makeCopy);
+		if (root)
+			rootItem.getChildren().addAll(makeCopy);
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			Platform.runLater(() -> {
 				String oldname = device.getScriptingName();
@@ -133,6 +137,9 @@ public class MobleBaseMenueFactory {
 			TreeItem<String> steer = loadLimbs(device, view, device.getSteerable(), "Steerable Wheels", rootItem,
 					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 			TreeItem<String> drive = loadLimbs(device, view, device.getDrivable(), "Fixed Wheels", rootItem,
+					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+			ArrayList<DHParameterKinematics> paraGroups = device.getAllParallelGroups();
+			TreeItem<String> paralell = loadLimbs(device, view, paraGroups, "Paralell", rootItem,
 					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
 
 			TreeItem<String> addleg;
@@ -404,12 +411,13 @@ public class MobleBaseMenueFactory {
 			});
 
 			rootItem.getChildren().addAll(bodymass, imuCenter);
-			if(root)rootItem.getChildren().addAll( physics, regnerate, printable, kinematics);
-			rootItem.getChildren().addAll( addArm, addleg,
-					addFixed, addsteerable);
+			if (root)
+				rootItem.getChildren().addAll(physics, regnerate, printable, kinematics);
+			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
-				if(root)rootItem.getChildren().addAll(editXml  );
-				rootItem.getChildren().addAll( editWalking, editCAD, resetWalking, setCAD);
+				if (root)
+					rootItem.getChildren().addAll(editXml);
+				rootItem.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
 			}
 		} catch (Exception e) {
 			new IssueReportingExceptionHandler().except(e);
@@ -603,13 +611,14 @@ public class MobleBaseMenueFactory {
 	}
 
 	@SuppressWarnings("restriction")
-	private static LinkConfigurationWidget setHardwareConfig(MobileBase myBase, LinkConfiguration MyConf, LinkFactory myLinkFactory,
-			TreeItem<String> rootItem1, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems1,
+	private static LinkConfigurationWidget setHardwareConfig(MobileBase myBase, LinkConfiguration MyConf,
+			LinkFactory myLinkFactory, TreeItem<String> rootItem1,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems1,
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems1) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
-		LinkConfigurationWidget theWidget =new LinkConfigurationWidget(MyConf, myLinkFactory,
+		LinkConfigurationWidget theWidget = new LinkConfigurationWidget(MyConf, myLinkFactory,
 				MobileBaseCadManager.get(myBase));
 		callbackMapForTreeitems1.put(hwConf, () -> {
 			if (widgetMapForTreeitems1.get(hwConf) == null) {
@@ -617,7 +626,7 @@ public class MobleBaseMenueFactory {
 				// first time
 				widgetMapForTreeitems1.put(hwConf, new Group(theWidget));
 			}
-			//BowlerStudio.select(myBase, MyConf);
+			// BowlerStudio.select(myBase, MyConf);
 		});
 		rootItem1.getChildren().add(hwConf);
 		return theWidget;
@@ -627,17 +636,17 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner) throws Exception {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
+			throws Exception {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
-		//LinkConfigurationWidget confWidget =setHardwareConfig(base, conf, dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
-		//lsw.setTrimController(confWidget);
-		
-		
-		
-		LinkConfigurationWidget confWidget =new LinkConfigurationWidget(conf, dh.getFactory(),
+		// LinkConfigurationWidget confWidget =setHardwareConfig(base, conf,
+		// dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
+		// lsw.setTrimController(confWidget);
+
+		LinkConfigurationWidget confWidget = new LinkConfigurationWidget(conf, dh.getFactory(),
 				MobileBaseCadManager.get(base));
-		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,confWidget);
+		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh, confWidget);
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 
@@ -645,17 +654,16 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				Platform.runLater(()->widgetMapForTreeitems.put(hwConf, lsw));
+				Platform.runLater(() -> widgetMapForTreeitems.put(hwConf, lsw));
 				lsw.enable();
 			}
-			if(linkIndex==0)
+			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
 			else
-				BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
+				BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
 		link.getChildren().add(hwConf);
-		
-		
+
 		callbackMapForTreeitems.put(link, () -> {
 			if (widgetMapForTreeitems.get(link) == null) {
 				// create the widget for the leg when looking at it for the
@@ -667,10 +675,10 @@ public class MobleBaseMenueFactory {
 				lsw.setGameController(controller);
 			}
 			try {
-				if(linkIndex==0)
+				if (linkIndex == 0)
 					BowlerStudio.select(base, dh);
 				else
-					BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
+					BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 			} catch (Exception ex) {
 				System.err.println("Limb not loaded yet");
 			}
@@ -783,15 +791,14 @@ public class MobleBaseMenueFactory {
 					}
 				}));
 			}
-			if(linkIndex==0)
+			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
 			else
-				BowlerStudio.select(dh.getAbstractLink(linkIndex-1).getGlobalPositionListener());
+				BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
 
 		link.getChildren().addAll(design);
 
-		
 		link.getChildren().addAll(slaves, remove);
 		rootItem.getChildren().add(0, link);
 
@@ -858,66 +865,76 @@ public class MobleBaseMenueFactory {
 
 		});
 		int j = 0;
-		for (LinkConfiguration conf : dh.getFactory().getLinkConfigurations()) {
-			loadSingleLink(j++, base, view, conf, dh, dhItem, callbackMapForTreeitems, widgetMapForTreeitems,
-					creatureLab, creatureIsOwnedByUser);
-		}
+		try {
+			for (LinkConfiguration conf : dh.getFactory().getLinkConfigurations()) {
 
-		TreeItem<String> addLink = new TreeItem<>("Add Link", AssetFactory.loadIcon("Add-Link.png"));
+				loadSingleLink(j++, base, view, conf, dh, dhItem, callbackMapForTreeitems, widgetMapForTreeitems,
+						creatureLab, creatureIsOwnedByUser);
 
-		callbackMapForTreeitems.put(addLink, () -> {
-			// if(widgetMapForTreeitems.get(advanced)==null){
-			// //create the widget for the leg when looking at it for the first
-			// time
-			// widgetMapForTreeitems.put(advanced, new DhChainWidget(dh,
-			// creatureLab));
-			// }
-			Platform.runLater(() -> {
-				TextInputDialog dialog = new TextInputDialog("Link_" + dh.getLinkConfigurations().size());
-				dialog.setTitle("Add a new link of");
-				dialog.setHeaderText("Set the scripting name for this link");
-				dialog.setContentText("Please the name of the new link:");
+			}
 
-				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
-				if (result.isPresent()) {
-					view.getSelectionModel().select(rootItem);
-					new Thread() {
-						public void run() {
-							System.out.println("Your new link: " + result.get());
-							LinkConfiguration newLink = new LinkConfiguration();
-							ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory().getLinkConfigurations();
+			TreeItem<String> addLink = new TreeItem<>("Add Link", AssetFactory.loadIcon("Add-Link.png"));
 
-							int numOfLinks = linkConfigurations.size();
+			callbackMapForTreeitems.put(addLink, () -> {
+				// if(widgetMapForTreeitems.get(advanced)==null){
+				// //create the widget for the leg when looking at it for the first
+				// time
+				// widgetMapForTreeitems.put(advanced, new DhChainWidget(dh,
+				// creatureLab));
+				// }
+				Platform.runLater(() -> {
+					TextInputDialog dialog = new TextInputDialog("Link_" + dh.getLinkConfigurations().size());
+					dialog.setTitle("Add a new link of");
+					dialog.setHeaderText("Set the scripting name for this link");
+					dialog.setContentText("Please the name of the new link:");
 
-							LinkType typeOfLink;
-							try {
-								typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeEnum();
-							} catch (Exception ex) {
-								typeOfLink = LinkType.VIRTUAL;
+					// Traditional way to get the response value.
+					Optional<String> result = dialog.showAndWait();
+					if (result.isPresent()) {
+						view.getSelectionModel().select(rootItem);
+						new Thread() {
+							public void run() {
+								System.out.println("Your new link: " + result.get());
+								LinkConfiguration newLink = new LinkConfiguration();
+								ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory()
+										.getLinkConfigurations();
+
+								int numOfLinks = linkConfigurations.size();
+
+								LinkType typeOfLink;
+								try {
+									typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeEnum();
+								} catch (Exception ex) {
+									typeOfLink = LinkType.VIRTUAL;
+								}
+								if (typeOfLink == null)
+									typeOfLink = LinkType.VIRTUAL;
+								newLink.setType(typeOfLink);
+								newLink.setTypeString(typeOfLink.toString());
+								getNextChannel(base, newLink);
+								newLink.setName(result.get());
+								if (dh != null)
+									dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
+
+								try {
+									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
+											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+											creatureIsOwnedByUser);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								creatureLab.generateCad();
 							}
-							if (typeOfLink == null)
-								typeOfLink = LinkType.VIRTUAL;
-							newLink.setType(typeOfLink);
-							newLink.setTypeString(typeOfLink.toString());
-							getNextChannel(base, newLink);
-							newLink.setName(result.get());
-							if (dh != null)
-								dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
-
-							try {
-								loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh, dhItem,
-										callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,creatureIsOwnedByUser);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							creatureLab.generateCad();
-						}
-					}.start();
-				}
+						}.start();
+					}
+				});
 			});
-		});
+			dhItem.getChildren().addAll(addLink, remove);
+
+		} catch (Throwable T) {
+			T.printStackTrace();
+		}
 
 		TreeItem<String> PlaceLimb = new TreeItem<>("Move Root Of Limb",
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
@@ -967,7 +984,6 @@ public class MobleBaseMenueFactory {
 //			}
 //
 //		});
-		dhItem.getChildren().addAll(addLink, remove);
 		if (creatureIsOwnedByUser) {
 			// TreeItem<String> owner = new
 			// TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
