@@ -935,7 +935,23 @@ public class MobleBaseMenueFactory {
 		} catch (Throwable T) {
 			T.printStackTrace();
 		}
+		TreeItem<String> parallel = new TreeItem<>("Parallel Settings",
+				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
+		callbackMapForTreeitems.put(parallel, () -> {
+			if (widgetMapForTreeitems.get(parallel) == null) {
+				// create the widget for the leg when looking at it for the
+				// first time
+				try {					
+					widgetMapForTreeitems.put(parallel,new ParallelWidget( base,dh,creatureLab));
+				} catch (Exception ex) {
+					BowlerStudio.printStackTrace(ex);
+				}
+			}
+
+		});
+		dhItem.getChildren().addAll(parallel);
+		
 		TreeItem<String> PlaceLimb = new TreeItem<>("Move Root Of Limb",
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
