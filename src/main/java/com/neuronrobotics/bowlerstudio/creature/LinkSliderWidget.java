@@ -247,9 +247,14 @@ public class LinkSliderWidget extends Group
 			try {
 				device.setDesiredTaskSpaceTransform(device.getCurrentPoseTarget(), 0);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-				
+				try {
+					device.setDesiredTaskSpaceTransform(device.calcHome(), 0);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
+					
+				}
+
 			}
 	}
 

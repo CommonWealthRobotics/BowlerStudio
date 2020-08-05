@@ -816,7 +816,7 @@ public class MobleBaseMenueFactory {
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(), AssetFactory.loadIcon("Move-Limb.png"));
-		JogWidget widget = new JogWidget(dh);
+		JogWidget widget = new JogWidget(dh,base);
 		callbackMapForTreeitems.put(dhItem, () -> {
 
 			if (widgetMapForTreeitems.get(dhItem) == null) {

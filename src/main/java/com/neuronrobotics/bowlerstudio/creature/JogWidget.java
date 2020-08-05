@@ -35,7 +35,7 @@ import javax.management.RuntimeErrorException;
 public class JogWidget extends GridPane
 		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IJInputEventListener {
 	double defauletSpeed = 0.2;
-	private AbstractKinematicsNR kin;
+	private DHParameterKinematics kinematics;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
 	Button py = new Button("", AssetFactory.loadIcon("Plus-Y.png"));
@@ -56,16 +56,13 @@ public class JogWidget extends GridPane
 	private String paramsKey;
 	private GridPane buttons;
 	private static ArrayList<JogWidget> allWidgets = new ArrayList<JogWidget>();
+	private MobileBase source;
 
-	public JogWidget(DHParameterKinematics kinimatics) {
+	public JogWidget(DHParameterKinematics k,MobileBase source) {
+		this.source = source;
 		allWidgets.add(this);
-		this.setKin(kinimatics);
+		this.setKin(k);
 
-		if (MobileBase.class.isInstance(kinimatics)) {
-			py = new Button("", AssetFactory.loadIcon("Rotation-Z.png"));
-			ny = new Button("", AssetFactory.loadIcon("Rotation-Neg-Z.png"));
-
-		}
 
 		getKin().addPoseUpdateListener(this);
 
@@ -210,10 +207,9 @@ public class JogWidget extends GridPane
 
 		buttons.add(sec, 2, 3);
 		buttons.add(new Label("sec"), 3, 3);
-		if (!MobileBase.class.isInstance(kinimatics)) {
 			buttons.add(pz, 3, 0);
 			buttons.add(nz, 3, 1);
-		}
+		
 
 		add(buttons, 0, 0);
 		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentTaskSpaceTransform(), this);
@@ -371,19 +367,23 @@ public class JogWidget extends GridPane
 
 	}
 
-	public AbstractKinematicsNR getKin() {
-
-		return kin;
+	public DHParameterKinematics getKin() {
+		if(source.getParallelGroup(kinematics)!=null) {
+			return source.getParallelGroup(kinematics);
+		}
+			
+		return kinematics;
 	}
 
-	public void setKin(AbstractKinematicsNR kin) {
+	public void setKin(DHParameterKinematics kin) {
 		if (!kin.isAvailable())
 			kin.connect();
-		this.kin = kin;
-		try {
-			kin.setDesiredTaskSpaceTransform(kin.calcHome(), 0);
-		} catch (Exception e) {
-		}
+		this.kinematics = kin;
+		
+//		try {
+//			kin.setDesiredTaskSpaceTransform(kin.calcHome(), 0);
+//		} catch (Exception e) {
+//		}
 	}
 
 	private void controllerLoop() {
@@ -461,7 +461,7 @@ public class JogWidget extends GridPane
 
 		public void run() {
 			setName("Jog Widget Set Drive Arc Command " + getKin().getScriptingName());
-			while (kin.isAvailable()) {
+			while (source.isAvailable()) {
 				// System.out.println("Jog loop");
 				if (controlThreadRunning) {
 

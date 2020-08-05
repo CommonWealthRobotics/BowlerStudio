@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import org.jfree.util.Log;
 
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -18,9 +19,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ParallelWidget extends Group {
+	VBox boxTop = new VBox();
 	VBox box = new VBox();
 	VBox relativeToControls = new VBox();
     CheckBox useRelative = new CheckBox("This limb is relative to another link");
+    CheckBox useParallel = new CheckBox("This limb is part of a parallel group");
 	TransformWidget e;
 	TextField groupName = new TextField();
 	ComboBox<String> relativeName = new ComboBox<String>();
@@ -39,11 +42,24 @@ public class ParallelWidget extends Group {
 	}
 
 	public ParallelWidget(MobileBase b, DHParameterKinematics d, CreatureLab c) {
-		Platform.runLater(() -> getChildren().add(box));
-
 		this.base = b;
 		this.dh = d;
 		this.creatureLab = c;
+		
+		
+		useParallel.setSelected(false);
+		useParallel.setOnAction(event -> {
+			box.setDisable(!useParallel.isSelected());
+			if(useParallel.isSelected()) {
+				if(groupName.getText().length()>0) {
+					setupAddReferenceSection();
+				}
+			}else {
+				getGroup().removeLimb(dh);
+				useRelative.setSelected(false);
+			}
+		});
+			
 		useRelative.setSelected(false);
 		useRelative.setOnAction(event -> {
 			relativeToControls.setDisable(!useRelative.isSelected());
@@ -65,6 +81,7 @@ public class ParallelWidget extends Group {
 			} else {
 				relativeToControls.setDisable(true);
 			}
+			home();
 		});
 
 		relativeName.setOnAction(event -> {
@@ -73,20 +90,18 @@ public class ParallelWidget extends Group {
 			String refLimbName = relativeName.getValue();
 			setNewReferencedLimb(base, refLimbName);
 			relIndex.setDisable(false);
+			
 		});
 		relIndex.setOnAction(event -> {
 			if (resetting)
 				return;
-			getGroup().setupReferencedLimb(dh, robotToFiducialTransform, relativeName.getValue(), relIndex.getValue());
-			e.setDisable(false);
+			try {
+				getGroup().setupReferencedLimb(dh, robotToFiducialTransform, relativeName.getValue(), relIndex.getValue());
+				e.setDisable(false);
+			}catch(java.lang.NullPointerException e) {}
+			home();
 		});
 
-		Platform.runLater(() -> box.getChildren().add(row("Parallel Group Name", groupName)));
-		Platform.runLater(() -> box.getChildren().add(useRelative));
-		Platform.runLater(() -> box.getChildren().add(relativeToControls));
-
-		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative", relativeName)));
-		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative index", relIndex)));
 
 		e = new TransformWidget("Parallel Tip Offset", robotToFiducialTransform, new IOnTransformChange() {
 
@@ -94,9 +109,10 @@ public class ParallelWidget extends Group {
 			public void onTransformFinished(TransformNR newTrans) {
 				if (resetting)
 					return;
-				// Force a cad regeneration
-				creatureLab.onSliderDoneMoving(null, 0);
+				home();
 			}
+
+			
 
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
@@ -106,21 +122,34 @@ public class ParallelWidget extends Group {
 				System.out.println("Tip offset for "+dh.getScriptingName()+" "+newTrans);
 				getGroup().setTipOffset(dh, newTrans);
 				dh.refreshPose();
+				home();
 			}
 		});
+		Platform.runLater(() -> getChildren().add(boxTop));
+		Platform.runLater(() -> boxTop.getChildren().add(useParallel));
+		Platform.runLater(() -> boxTop.getChildren().add(box));
+		Platform.runLater(() -> box.getChildren().add(row("Parallel Group Name", groupName)));
+		Platform.runLater(() -> box.getChildren().add(useRelative));
+		Platform.runLater(() -> box.getChildren().add(relativeToControls));
 
+		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative", relativeName)));
+		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative index", relIndex)));
 		Platform.runLater(() -> relativeToControls.getChildren().add(e));
 	}
-
+	private void home() {
+		try {
+			getGroup().setDesiredTaskSpaceTransform(getGroup().calcHome(),0);
+		} catch (Exception e) {}
+	}
 	private void setupAddReferenceSection() {
-		base.getParallelGroup(groupName.getText()).addLimb(dh, null, "", 0);
+		base.getParallelGroup(groupName.getText()).setupReferencedLimbStartup(dh, null, "", 0);
 		Platform.runLater(() -> relativeName.getItems().clear());
 		for (DHParameterKinematics l : base.getAllDHChains()) {
 			if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
 				Platform.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
 			}
 		}
-		Platform.runLater(() -> relativeName.setDisable(false));
+		
 		relIndex.setDisable(true);
 		e.setDisable(true);
 	}
@@ -135,15 +164,16 @@ public class ParallelWidget extends Group {
 		Platform.runLater(() -> groupName.setText(""));
 		Platform.runLater(() -> relativeName.getItems().clear());
 		Platform.runLater(() -> relIndex.getItems().clear());
-		Platform.runLater(() -> relativeName.setDisable(true));
+		
 		Platform.runLater(() -> relIndex.setDisable(true));
 		Platform.runLater(() -> e.setDisable(true));
 
 		if (getGroup() == null) {
-			Platform.runLater(() -> relativeName.setDisable(true));
-			Platform.runLater(() -> relIndex.setDisable(true));
-			Platform.runLater(() -> e.setDisable(true));
+			useParallel.setSelected(false);
+			box.setDisable(true);
 		} else {
+			useParallel.setSelected(true);
+			box.setDisable(false);
 			Platform.runLater(() -> groupName.setText(getGroup().getNameOfParallelGroup()));
 			for (DHParameterKinematics l : base.getAllDHChains()) {
 				if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
@@ -151,7 +181,6 @@ public class ParallelWidget extends Group {
 					Platform.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
 				}
 			}
-			Platform.runLater(() -> relativeName.setDisable(false));
 
 			if (getGroup().getTipOffset(dh) != null) {
 				Platform.runLater(() ->useRelative.setSelected(true));
@@ -164,10 +193,14 @@ public class ParallelWidget extends Group {
 				setNewReferencedLimb(base, refLimbName);
 				Platform.runLater(() -> relativeName.setValue(refLimbName));
 				Platform.runLater(() -> relIndex.setValue(getGroup().getTipOffsetRelativeIndex(dh)));
+			}else {
+				Platform.runLater(() ->useRelative.setSelected(false));
+				Platform.runLater(() ->relativeToControls.setDisable(true));
 			}
 		}
 		e.updatePose(robotToFiducialTransform);
 		Platform.runLater(() -> resetting = false);
+		home();
 	}
 
 	private void setNewReferencedLimb(MobileBase base, String refLimbName) {
