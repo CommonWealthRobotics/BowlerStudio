@@ -639,7 +639,12 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
 			throws Exception {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
-		DHLink dhLink = dh.getChain().getLinks().get(linkIndex);
+		DHLink dhLink;
+		try {
+		 dhLink = dh.getChain().getLinks().get(linkIndex);
+		}catch(java.lang.IndexOutOfBoundsException ex) {
+			return;
+		}
 		// LinkConfigurationWidget confWidget =setHardwareConfig(base, conf,
 		// dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		// lsw.setTrimController(confWidget);
