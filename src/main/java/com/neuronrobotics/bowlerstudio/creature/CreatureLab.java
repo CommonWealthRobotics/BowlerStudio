@@ -96,9 +96,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				try {
 					root = loader.load();
 					finishLoading(device);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			});
 

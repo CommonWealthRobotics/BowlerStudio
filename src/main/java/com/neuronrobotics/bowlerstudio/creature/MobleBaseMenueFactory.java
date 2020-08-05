@@ -948,7 +948,7 @@ public class MobleBaseMenueFactory {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-
+			((ParallelWidget)widgetMapForTreeitems.get(parallel)).configure(base, dh, creatureLab);
 		});
 		dhItem.getChildren().addAll(parallel);
 		

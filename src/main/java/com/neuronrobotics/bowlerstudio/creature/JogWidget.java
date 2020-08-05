@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -308,17 +309,24 @@ public class JogWidget extends GridPane
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
-		double[] joints = c.getCurrentJointSpaceVector();
-		for (int i = 0; i < c.getNumberOfLinks(); i++) {
-			joints[i] = 0;
-		}
+//		double[] joints = c.getCurrentJointSpaceVector();
+//		for (int i = 0; i < c.getNumberOfLinks(); i++) {
+//			joints[i] = 0;
+//		}
+//		try {
+//			c.setDesiredJointSpaceVector(joints, 0);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		TransformNR t = c.calcHome();
 		try {
-			c.setDesiredJointSpaceVector(joints, 0);
+			c.setDesiredTaskSpaceTransform(t, 0);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+			
 		}
-
 	}
 
 	@Override

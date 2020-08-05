@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-
 import org.jfree.util.Log;
 
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -8,6 +7,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 
+import javafx.application.Platform;
 import javafx.scene.*;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -17,106 +17,141 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ParallelWidget extends Group {
-	static VBox box = new VBox();
-	ParallelGroup group;
+	VBox box = new VBox();
 	TransformWidget e;
 	TextField groupName = new TextField();
 	ComboBox<String> relName = new ComboBox<String>();
 	ComboBox<Integer> relIndex = new ComboBox<Integer>();
 	TransformNR robotToFiducialTransform = new TransformNR();
-	private HBox row(String label,Node tf) {
-		HBox h= new HBox();
+	private MobileBase base;
+	private DHParameterKinematics dh;
+	private CreatureLab creatureLab;
+	boolean resetting = false;
+
+	private HBox row(String label, Node tf) {
+		HBox h = new HBox();
 		h.getChildren().add(new Label(label));
 		h.getChildren().add(tf);
 		return h;
 	}
-	public ParallelWidget(MobileBase base,DHParameterKinematics dh, CreatureLab creatureLab) {
-		super(box);
-		group = base.getParallelGroup(dh);
-		
 
-		groupName.setOnAction(event->{
-			if(group!=null) {
-				base.shutDownParallel(group);
+	public ParallelWidget(MobileBase b, DHParameterKinematics d, CreatureLab c) {
+		Platform.runLater(() -> getChildren().add(box));
+		this.base = b;
+		this.dh = d;
+		this.creatureLab = c;
+
+		groupName.setOnAction(event -> {
+			if (resetting)
+				return;
+			if (getGroup() != null) {
+				base.shutDownParallel(getGroup());
 			}
-			if(groupName.getText().length()>0) {
-				group = base.getParallelGroup(groupName.getText());
-				group.addLimb(dh, null, "", 0);
+			if (groupName.getText().length() > 0) {
+				base.getParallelGroup(groupName.getText()).addLimb(dh, null, "", 0);
 				relName.getItems().clear();
-				for(DHParameterKinematics l:base.getAllDHChains()) {
-					if(!l.getScriptingName().contentEquals(dh.getScriptingName())) {
+				for (DHParameterKinematics l : base.getAllDHChains()) {
+					if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
 						relName.getItems().add(l.getScriptingName());
 					}
 				}
 				relName.setDisable(false);
 				relIndex.setDisable(true);
 				e.setDisable(true);
-			}else {
+			} else {
 				relName.setDisable(true);
 				relIndex.setDisable(true);
 				e.setDisable(true);
 			}
 		});
-		
-		relName.setOnAction(event->{
+
+		relName.setOnAction(event -> {
+			if (resetting)
+				return;
 			String refLimbName = relName.getValue();
 			setNewReferencedLimb(base, refLimbName);
-			group.setupReferencedLimb(dh,robotToFiducialTransform,relName.getValue(),0);
+			getGroup().setupReferencedLimb(dh, robotToFiducialTransform, relName.getValue(), 0);
 			relIndex.setDisable(false);
 		});
-		relIndex.setOnAction(event->{
-			group.setupReferencedLimb(dh,robotToFiducialTransform,relName.getValue(),relIndex.getValue());
+		relIndex.setOnAction(event -> {
+			if (resetting)
+				return;
+			getGroup().setupReferencedLimb(dh, robotToFiducialTransform, relName.getValue(), relIndex.getValue());
 			e.setDisable(false);
 		});
-		
-		if(group ==null) {
-			relName.setDisable(true);
-			relIndex.setDisable(true);
-		}else {
-			groupName.setText(group.getNameOfParallelGroup());
-			if(group.getTipOffset(dh)!=null) {
-				robotToFiducialTransform=group.getTipOffset(dh);
-				relName.getItems().clear();
-				for(DHParameterKinematics l:base.getAllDHChains()) {
-					if(!l.getScriptingName().contentEquals(dh.getScriptingName())) {
-						relName.getItems().add(l.getScriptingName());
-					}
+
+		Platform.runLater(() -> box.getChildren().add(row("Parallel Group Name", groupName)));
+		Platform.runLater(() -> box.getChildren().add(row("Limb Relative", relName)));
+		Platform.runLater(() -> box.getChildren().add(row("Limb Relative index", relIndex)));
+
+		e = new TransformWidget("Parallel Tip Offset", robotToFiducialTransform, new IOnTransformChange() {
+
+			@Override
+			public void onTransformFinished(TransformNR newTrans) {
+				if (resetting)
+					return;
+				// Force a cad regeneration
+				creatureLab.onSliderDoneMoving(null, 0);
+			}
+
+			@Override
+			public void onTransformChaging(TransformNR newTrans) {
+				if (resetting)
+					return;
+				robotToFiducialTransform = newTrans;
+				System.out.println("Tip offset for "+dh.getScriptingName()+" "+newTrans);
+				getGroup().setTipOffset(dh, newTrans);
+				dh.refreshPose();
+			}
+		});
+
+		Platform.runLater(() -> box.getChildren().add(e));
+	}
+
+	public void configure(MobileBase b, DHParameterKinematics dh, CreatureLab creatureLab) {
+		resetting = true;
+		this.base = b;
+		this.dh = dh;
+		this.creatureLab = creatureLab;
+		System.out.println("Configuring arm " + dh.getScriptingName());
+		robotToFiducialTransform = new TransformNR();
+		Platform.runLater(() -> groupName.setText(""));
+		Platform.runLater(() -> relName.getItems().clear());
+		Platform.runLater(() -> relIndex.getItems().clear());
+		Platform.runLater(() -> relName.setDisable(true));
+		Platform.runLater(() -> relIndex.setDisable(true));
+		Platform.runLater(() -> e.setDisable(true));
+
+		if (getGroup() == null) {
+			Platform.runLater(() -> relName.setDisable(true));
+			Platform.runLater(() -> relIndex.setDisable(true));
+			Platform.runLater(() -> e.setDisable(true));
+		} else {
+			Platform.runLater(() -> groupName.setText(getGroup().getNameOfParallelGroup()));
+			for (DHParameterKinematics l : base.getAllDHChains()) {
+				if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
+					System.out.println("Adding Option "+l.getScriptingName());
+					Platform.runLater(() -> relName.getItems().add(l.getScriptingName()));
 				}
-				String refLimbName = group.getTipOffsetRelativeName(dh);
+			}
+			Platform.runLater(() -> relName.setDisable(false));
+
+			if (getGroup().getTipOffset(dh) != null) {
+				Platform.runLater(() -> relIndex.setDisable(false));
+				Platform.runLater(() -> e.setDisable(false));
+				robotToFiducialTransform = getGroup().getTipOffset(dh);
+				Platform.runLater(() -> e.updatePose(robotToFiducialTransform));
+				String refLimbName = getGroup().getTipOffsetRelativeName(dh);
 				setNewReferencedLimb(base, refLimbName);
-				relIndex.setValue(group.getTipOffsetRelativeIndex(dh));
+				Platform.runLater(() -> relIndex.setValue(getGroup().getTipOffsetRelativeIndex(dh)));
 			}
 		}
-		
-		
-		box.getChildren().add(row("Parallel Group Name",groupName));
-		box.getChildren().add(row("Limb Relative",relName));
-		box.getChildren().add(row("Limb Relative index",relIndex));
-		
-		e = new TransformWidget("Parallel Tip Offset",
-									robotToFiducialTransform, new IOnTransformChange() {
-
-										@Override
-										public void onTransformFinished(TransformNR newTrans) {
-											// Force a cad regeneration
-											creatureLab.onSliderDoneMoving(null, 0);
-										}
-
-										@Override
-										public void onTransformChaging(TransformNR newTrans) {
-											Log.debug("Limb to base" + newTrans.toString());
-											robotToFiducialTransform=newTrans;
-											group.setTipOffset(dh, newTrans);
-											dh.refreshPose();
-										}
-									});
-		if(group.getTipOffset(dh)==null) {
-			 e.setDisable(true);
-		}
-		box.getChildren().add(e);
+		e.updatePose(robotToFiducialTransform);
+		Platform.runLater(() -> resetting = false);
 	}
+
 	private void setNewReferencedLimb(MobileBase base, String refLimbName) {
-		relName.setValue(refLimbName);
+		Platform.runLater(() -> relName.setValue(refLimbName));
 		DHParameterKinematics referencedLimb = null;
 		for (DHParameterKinematics lm : base.getAllDHChains()) {
 			if (lm.getScriptingName().toLowerCase().contentEquals(refLimbName.toLowerCase())) {
@@ -124,9 +159,17 @@ public class ParallelWidget extends Group {
 				referencedLimb = lm;
 			}
 		}
-		relIndex.getItems().clear();
-		for(int i=0;i<referencedLimb.getNumberOfLinks();i++) {
-			relIndex.getItems().add(i);
-		}
+		Platform.runLater(() -> relIndex.getItems().clear());
+		DHParameterKinematics rl = referencedLimb;
+		Platform.runLater(() -> {
+			for (int i = 0; i < rl.getNumberOfLinks(); i++) {
+				relIndex.getItems().add(i);
+			}
+		});
 	}
+
+	public ParallelGroup getGroup() {
+		return base.getParallelGroup(dh);
+	}
+
 }
