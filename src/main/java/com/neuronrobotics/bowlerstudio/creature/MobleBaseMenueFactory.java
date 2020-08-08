@@ -864,6 +864,8 @@ public class MobleBaseMenueFactory {
 					if (base.getDrivable().contains(dh)) {
 						base.getDrivable().remove(dh);
 					}
+					if(base.getParallelGroup(dh)!=null)
+						base.getParallelGroup(dh).removeLimb(dh);
 					creatureLab.generateCad();
 				}
 			});
