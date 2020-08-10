@@ -7,7 +7,6 @@ import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.*;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
-import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
