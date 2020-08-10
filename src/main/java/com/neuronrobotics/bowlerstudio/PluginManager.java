@@ -9,11 +9,9 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
-import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
-import com.neuronrobotics.replicator.driver.NRPrinter;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -57,7 +55,6 @@ public class PluginManager {
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
 		
 		//Ipid
-		addPlugin(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
 		// Image s
 //		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
 //		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
@@ -71,7 +68,6 @@ public class PluginManager {
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, DhLab.class));
 		addPlugin(new DeviceSupportPluginMap(MobileBase.class, CreatureLab.class));
 		//NRPrinter
-		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
 		//Bowler Cam
 		addPlugin(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
 		//LinearPhysicsEngine

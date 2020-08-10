@@ -300,28 +300,27 @@ public class JogWidget extends GridPane
 	}
 
 	public void home() {
-
-		homeLimb(getKin());
+		new Thread(()->{
+			homeLimb(getKin());
+		}).start();
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
-//		double[] joints = c.getCurrentJointSpaceVector();
-//		for (int i = 0; i < c.getNumberOfLinks(); i++) {
-//			joints[i] = 0;
-//		}
-//		try {
-//			c.setDesiredJointSpaceVector(joints, 0);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		
 		TransformNR t = c.calcHome();
 		try {
 			c.setDesiredTaskSpaceTransform(t, 0);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-			
+			double[] joints = c.getCurrentJointSpaceVector();
+			for (int i = 0; i < c.getNumberOfLinks(); i++) {
+				joints[i] = 0;
+			}
+			try {
+				c.setDesiredJointSpaceVector(joints, 0);
+			} catch (Exception ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
 		}
 	}
 

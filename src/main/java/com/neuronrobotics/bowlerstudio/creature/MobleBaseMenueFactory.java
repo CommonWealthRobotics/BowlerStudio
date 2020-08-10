@@ -724,7 +724,7 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							System.out.println("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							newLink.setType(conf.getTypeEnum());
+							//newLink.setType(conf.getTypeEnum());
 							newLink.setTypeString(conf.getTypeString());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
@@ -908,15 +908,15 @@ public class MobleBaseMenueFactory {
 
 								int numOfLinks = linkConfigurations.size();
 
-								LinkType typeOfLink;
+								String typeOfLink;
 								try {
-									typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeEnum();
+									typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeString();
 								} catch (Exception ex) {
-									typeOfLink = LinkType.VIRTUAL;
+									typeOfLink = LinkType.VIRTUAL.getName();
 								}
 								if (typeOfLink == null)
-									typeOfLink = LinkType.VIRTUAL;
-								newLink.setType(typeOfLink);
+									typeOfLink = LinkType.VIRTUAL.getName();
+								//newLink.setType(typeOfLink);
 								newLink.setTypeString(typeOfLink.toString());
 								getNextChannel(base, newLink);
 								newLink.setName(result.get());

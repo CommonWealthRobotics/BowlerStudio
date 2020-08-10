@@ -19,7 +19,6 @@ import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.imageprovider.NativeResource;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
-import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
@@ -413,7 +412,7 @@ public class BowlerStudio extends Application {
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
-				Slic3r.setExecutableLocation("/usr/bin/slic3r");
+				//Slic3r.setExecutableLocation("/usr/bin/slic3r");
 
 			} else if (NativeResource.isWindows()) {
 				arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";

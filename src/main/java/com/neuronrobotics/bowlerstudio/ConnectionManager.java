@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
 
-import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
@@ -350,10 +349,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			HokuyoURGDevice p = new HokuyoURGDevice(new NRSerialPort(letter, 115200));
-			p.connect();
-			String name = "lidar";
-			addConnection(p,name);
+
 		});
 		
 	}
