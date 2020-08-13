@@ -24,7 +24,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	private EngineeringUnitsSliderWidget radius;
 	private DHParameterKinematics dh;
 	private IOnEngineeringUnitsChange externalListener;
-	
+	private DhSettingsWidget self =this;
 	public DhSettingsWidget(DHLink dhLink,DHParameterKinematics device2,IOnEngineeringUnitsChange externalListener ){
 		this.dhLink = dhLink;
 		this.dh = device2;
@@ -37,7 +37,25 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 				dhLink.getDelta(),
 				180," mm ");
 		
-		theta = new EngineeringUnitsSliderWidget(this,
+		theta = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				double[] joint = dh.getCurrentJointSpaceVector();
+				dhLink.setTheta(Math.toRadians(newAngleDegrees));
+				if(externalListener!=null)
+					externalListener.onSliderMoving(source, newAngleDegrees);
+				
+				dh.getChain().getChain(joint);
+				dh.updateCadLocations();
+			}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				if(externalListener!=null)
+					externalListener.onSliderDoneMoving(source, newAngleDegrees);
+			}
+		},
 				-180,
 				180,
 				Math.toDegrees(dhLink.getTheta()),
@@ -88,10 +106,10 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 
 	@Override
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-		dhLink.setTheta(Math.toRadians(theta.getValue()));
-		dhLink.setAlpha(Math.toRadians(alpha.getValue()));
-		dhLink.setRadius(radius.getValue());
-		dhLink.setDelta(delta.getValue());
+		if(source==theta)dhLink.setTheta(Math.toRadians(newAngleDegrees));
+		if(source==alpha)dhLink.setAlpha(Math.toRadians(newAngleDegrees));
+		if(source==radius)dhLink.setRadius(newAngleDegrees);
+		if(source==delta)dhLink.setDelta(newAngleDegrees);
 
 		if(externalListener!=null)
 			externalListener.onSliderMoving(source, newAngleDegrees);
@@ -121,6 +139,8 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
 			double newAngleDegrees) {
 		onSliderMoving(source,newAngleDegrees);
+		double[] joint = dh.getCurrentJointSpaceVector();
+		dh.getChain().getChain(joint);
 		if(externalListener!=null)
 			externalListener.onSliderDoneMoving(source, newAngleDegrees);
 	}

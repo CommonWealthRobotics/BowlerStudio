@@ -345,24 +345,24 @@ public class JogWidget extends GridPane
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
 		// TODO Auto-generated method stub
-
+		jogTHreadHandle.setTarget(newTrans, 0);
 	}
 
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
-
-		new Thread(() -> {
-			try {
-				getKin().setDesiredTaskSpaceTransform(newTrans, Double.parseDouble(sec.getText()));
-
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}).start();
+		jogTHreadHandle.setTarget(newTrans, 0);
+//		new Thread(() -> {
+//			try {
+//				getKin().setDesiredTaskSpaceTransform(newTrans, Double.parseDouble(sec.getText()));
+//
+//			} catch (NumberFormatException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (Throwable e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}).start();
 
 	}
 
