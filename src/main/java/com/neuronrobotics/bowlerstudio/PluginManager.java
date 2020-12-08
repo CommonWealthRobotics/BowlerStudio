@@ -3,15 +3,12 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
-import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.*;
-import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
@@ -20,20 +17,14 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import java.util.ArrayList;
 
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
@@ -50,7 +41,6 @@ public class PluginManager {
 	// tabs list for objects of that type
 	static{
 		//DyIO
-		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOControl.class));
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
 		
 		//Ipid
@@ -227,7 +217,7 @@ public class PluginManager {
 			if(c.getDevice().isInstance(dev)){
 				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
-					if( 	DyIOControl.class ==c.getPlugin() ||
+					if( 	
 							BootloaderPanel.class ==c.getPlugin()||
 							CreatureLab.class ==c.getPlugin()
 							){
