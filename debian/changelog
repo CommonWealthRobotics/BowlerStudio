@@ -1,3 +1,182 @@
+bowlerstudio (1.13.1) bionic; urgency=medium
+
+  [ Octogonapus ]
+  * Create gradle-wrapper-validation.yml
+
+  [ Kevin Harrington ]
+  * Delete .DS_Store
+  * Delete .DS_Store
+  * Delete .DS_Store
+  * Close #169
+  * 1.5.4 start
+  * close #170
+  * close 159
+  * 1.5.5
+  * close #163
+  * close #179
+  * Better logging for #175
+  * Close #177
+  * to 1.5.7
+  * close #178
+  * to 1.5.8
+  * more robust to networless startup
+  * Loading application stable with no network
+  * update to gradle 6.2
+  * Delete readme.html
+  * unused imports
+  * 1.5.10
+  * serial update
+  * close #160
+  * only call login once
+  * JCSG
+  * kernel
+  * kernel
+  * kernel
+  * kernel
+  * updated issue reporting
+  * kernel
+  * 1.5.13
+  * clear all watched files on exit
+  * Also for #190
+  * 1.5.14
+  * #194 Catch the exception pull throws and remove the junk URL
+  * 1.5.15
+  * adding dependant API to solve #195
+  * adding the engineering units
+  * To begin with for #195 link limits to zero
+  * added to support #195
+  * Adding jog buttons and limit-zero linking for #195
+  * kernel
+  * attempting to add the gauge display #195
+  * Adding a test widget to test the link configurations
+  * Implementing the bounds on the dial gauge.
+  * fix java-bowler javadoc
+  * Moving tester app into test sources
+  * #195 Adding the ability to set limits in engineering units
+  * Adding calibration widget
+  * changing what link to look at
+  * focus on the limb root, not the links, keeps the camera orentation clean
+  * formatting
+  * adding interface to focus on affine
+  * creating the focus on affine function
+  * 1.6.1
+  * updating the Jog Widget
+  * 1.6.2
+  * Update LICENSE
+  * java bowler
+  * kernel
+  * kernel
+  * bugfix
+  * kernel
+  * adding a link gauge controller class
+  * setting the gauge at the link
+  * hanging of the gauge widget from the 3d display
+  * alligned the link gauge center
+  * Allign the link gauge limits with the devices limits
+  * kernel
+  * testing the gauge display
+  * Close #184 and only report once when the same exception is thrown.
+  * tuning the gauge display
+  * 1.6.4
+  * Close #196
+  * 1.6.4
+  * Adding an instantanious storage and retrival value
+  * Split the Mobile base jog off from the limb jog widgets
+  * Change the display format to remove the sliders that make no sense for positions.
+  * 1.6.6
+  * 1.6.7
+  * kernel
+  * ensure the target is not changed unless changed explicatly.
+  * 1.7.0
+  * move the target as adjusting the link configuration to see if
+  * 1.7.1
+  * no sliders for DH parameters
+  * Move the slider underneith the rest of the Engineering Units widget
+  * no slider for the zero value
+  * Focus the D-H widget on the link before the link being adjusted
+  * bound the jogging to the limits set in the slider
+  * Add events to jogging the angles
+  * dont zero out the rotation in the jog widget
+  * nrjavaserial
+  * kernel
+  * formatting
+  * sort the fields
+  * link slider less jumpy
+  * 1.7.2
+  * fixed the editing of an event
+  * sort the list of possible vitamins
+  * bugfix in DH widget
+  * spacing out the dh widgets
+  * correct name of A value
+  * Switching to webflow
+  * WebFlow enabled for BowlerStudio
+  * do not go into unknown state when refresh is hit after login
+  * switching to the defined scopes
+  * 1.8.1
+  * take key from the command line
+  * close #198
+  * close #175 again
+  * 1.8.2
+  * check for exceptions in the UI thread
+  * Catch and print the users exception rather than reporting it
+  * kernel
+  * only provide as opotions the link types from the userdefined area
+  * kernel
+  * pass the owner down through the menuies
+  * kernel
+  * support multible bases at the root level for comprehention
+  * select the correct base at root
+  * kernel events
+  * 1.9.0
+  * move this function into the transform set for the limb
+  * update the limb locations on set of the root transform
+  * adjusting the job speed
+  * close #200
+  * COmpressing camera control into single class
+  * move affin into contructor
+  * cleanup
+  * camera startup orentation
+  * Camera startup returned to original framing
+  * startup camera must be in UI thread
+  * 1.9.3
+  * kernel
+  * 1.9.4
+  * this fixes the default orentation
+  * removing junk api
+  * code generation section
+  * kernel
+  * kernel
+  * adding version number
+  * 1.9.6
+  * adding paralell robots to the menufactory
+  * adding parallel widget
+  * mod the paralell widget
+  * make the parallel widget work
+  * updated teh parallel widget
+  * kernel
+  * version
+  * catch exception caused by paralell groups
+  * renaming
+  * adding and removing working
+  * kernel
+  * close #212
+  * kernel
+  * 1.10.5
+  * dropping synchronized
+  * cleaning out cruft and switching PID ticks to float from integer
+  * compile
+  * DH settings more intuitive in the UI
+  * 1.11.0
+  * adding perms for deleting repos
+  * 1.12.0
+  * updating commons-io
+  * kernel
+  * remove DyIO classes
+  * Full installer release to add --force-gpu to linux installer
+  * 1.13.1
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Tue, 08 Dec 2020 15:47:24 -0500
+
 bowlerstudio (1.5.3) bionic; urgency=medium
 
   * password manager
