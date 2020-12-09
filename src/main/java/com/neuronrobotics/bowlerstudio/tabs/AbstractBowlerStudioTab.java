@@ -12,7 +12,7 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IConnectionEventListener;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
+//import com.sun.javafx.scene.control.skin.TabPaneSkin;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
@@ -101,9 +101,9 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
     	BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(this);
     }
 //
-    private TabPaneBehavior getBehavior() {
-        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
-    }
+//    private TabPaneBehavior getBehavior() {
+//        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
+//    }
 
 	public void setActive(boolean a){
 		active=a;
