@@ -1,10 +1,32 @@
 buildscript {
     repositories {
-        jcenter()
+        [ jcenter(), mavenCentral()]
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
     }
+}
+plugins {
+ 	id 'java'
+ 	id 'signing'
+ 	id 'eclipse'
+ 	id 'maven'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
+	id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+
+javafx {
+    version = "11"
+    modules = [ 
+    'javafx.base',
+    'javafx.controls',
+    'javafx.fxml',
+    'javafx.graphics',
+    'javafx.media',
+    'javafx.swing',
+    'javafx.web',
+     ]
 }
 
 boolean is64Bit() {
@@ -59,16 +81,9 @@ String getOsArch() {
 }
 
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'java'
-apply plugin: 'signing'
-apply plugin: 'maven'
-apply plugin: 'application'
-
 //apply plugin: 'edu.sc.seis.launch4j'
 
-sourceCompatibility = '1.8'
+sourceCompatibility = '1.11'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
