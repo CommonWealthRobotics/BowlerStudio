@@ -378,3 +378,6 @@ shadowJar {
 //	//    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
 //	jvmArgs = ['-Dprism.forceGPU=true']
 //}
+run {
+    jvmArgs = ['']
+}
