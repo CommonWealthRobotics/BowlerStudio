@@ -266,12 +266,12 @@ public class BowlerStudio extends Application {
 
 		});
 		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
-		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
-			@Override
-			public void onShape(CSG newShape) {
-				BowlerStudioController.addCsg(newShape);
-			}
-		});
+//		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
+//			@Override
+//			public void onShape(CSG newShape) {
+//				BowlerStudioController.addCsg(newShape);
+//			}
+//		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Loging In...");
