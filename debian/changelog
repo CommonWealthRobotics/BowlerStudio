@@ -1,3 +1,12 @@
+bowlerstudio (1.14.0) bionic; urgency=medium
+
+  * fix l;aunching bug
+  * remove the junk progress viewer
+  * kernel version change
+  * adding SVGLoad API
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Wed, 30 Dec 2020 15:32:07 -0500
+
 bowlerstudio (1.13.3) bionic; urgency=medium
 
   * adding 1.13.3
