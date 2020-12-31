@@ -10,10 +10,6 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
-import com.neuronrobotics.video.OSUtil;
-
-import sun.launcher.resources.launcher;
-
 public class SVGExternalEditor implements IExternalEditor {
 
 	@Override
