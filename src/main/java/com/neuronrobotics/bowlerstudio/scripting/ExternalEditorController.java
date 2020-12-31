@@ -16,7 +16,7 @@ public class ExternalEditorController {
 	boolean hasEditor = false;
 	private Button advanced = new Button("Ext. Edit");
 	private ImageView image=new ImageView();
-	private static ArrayList<IExternalEditor> editors;
+	private static ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
 	static {
 		editors.add(new SVGExternalEditor());
 	}
@@ -41,12 +41,14 @@ public class ExternalEditorController {
 		}
 		if(hasEditor) {
 			advanced.setGraphic(image);
+			advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
+			advanced.setText(myEditor.nameOfEditor());
+			
+			advanced.setOnAction(event -> {
+				myEditor.launch(currentFile);
+			});
 		}
-		advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
-		
-		advanced.setOnAction(event -> {
-			myEditor.launch(currentFile);
-		});
+
 	}
 	
 	public Node getControl() {
