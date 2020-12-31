@@ -22,6 +22,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -54,7 +55,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
-	private Button publish = new Button("Publish");
+	private Button publish = new Button("Save");
 	
 
 	private String addr;
@@ -106,7 +107,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	    		}
 	    	}.start();
 		});
-		
+		runfx.setTooltip(new Tooltip("Run this code and display the result"));
 		publish.setOnAction(e -> {
 			new Thread(()->{
 				save();
@@ -114,7 +115,7 @@ public class ScriptingFileWidget extends BorderPane implements
 			}).start();
 
 		});
-		
+		publish.setTooltip(new Tooltip("Save this code to Git"));
 
 
 		// Set up the run controls and the code area
