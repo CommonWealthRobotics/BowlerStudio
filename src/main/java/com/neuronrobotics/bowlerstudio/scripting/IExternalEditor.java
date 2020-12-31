@@ -28,9 +28,12 @@ public interface IExternalEditor {
 	
 	default void run(File dir,String... finalCommand) {
 		List<String> asList = Arrays.asList(finalCommand);
+		String command ="";
 		System.out.println("Running:\n\n");
 		for(String s:asList)
-			System.out.print(s+" ");
+			command+=(s+" ");
+		String cmd = command;
+		System.out.println(command);
 		System.out.println("\nIn "+dir.getAbsolutePath());
 		System.out.println("\n\n");
 		
@@ -69,19 +72,20 @@ public interface IExternalEditor {
 				System.out.println("");
 					
 			} catch (Throwable e) {
+				
 				Platform.runLater(()->{
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle(nameOfEditor()+" is missing");
-					alert.setHeaderText("failed to run "+finalCommand);
+					alert.setHeaderText("failed to run "+cmd);
 					alert.setContentText("Close to bring me to the install website");
 					alert.showAndWait();
 					new Thread(() -> {
-						try {
-							BowlerStudio.openExternalWebpage(getInstallURL());
-						} catch (MalformedURLException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+//						try {
+//							BowlerStudio.openExternalWebpage(getInstallURL());
+//						} catch (MalformedURLException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						}
 					}).start();
 				});
 			

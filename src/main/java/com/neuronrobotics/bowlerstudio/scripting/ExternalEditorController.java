@@ -19,6 +19,7 @@ public class ExternalEditorController {
 	private static ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
 	static {
 		editors.add(new SVGExternalEditor());
+		editors.add(new EclipseExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f){
