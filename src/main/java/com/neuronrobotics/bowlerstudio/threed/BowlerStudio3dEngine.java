@@ -506,12 +506,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgSourceFile.put(currentCsg, source);
 
 		MeshView current = getCsgMap().get(currentCsg);
-
+		
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
+		Menu infomenu = new Menu("Info...");
+		infomenu.getItems().add(new MenuItem("Name= "+currentCsg.getName()));
+		infomenu.getItems().add(new MenuItem("Total X= "+currentCsg.getTotalX()));
+		infomenu.getItems().add(new MenuItem("Total Y= "+currentCsg.getTotalY()));
+		infomenu.getItems().add(new MenuItem("Total Z= "+currentCsg.getTotalZ()));
+		cm.getItems().add(infomenu);
 
 		Set<String> params = currentCsg.getParameters();
+		
 		if (params != null) {
 			Menu parameters = new Menu("Parameters...");
 
@@ -718,6 +725,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			axisMap.put(current, axis);
 			Platform.runLater(()->lookGroup.getChildren().add(axis));
 		}
+		
 		// Log.warning("Adding new axis");
 		return current;
 	}
