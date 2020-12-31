@@ -65,7 +65,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	final TextField fileListBox = new TextField();
 	final TextField fileNameBox = new TextField();
 	private File currentFile = null;
-
+	ExternalEditorController externalEditorController;
 	private HBox controlPane;
 	private String currentGist;
 	private boolean updateneeded = false;
@@ -73,19 +73,14 @@ public class ScriptingFileWidget extends BorderPane implements
 //	private ImageView image=new ImageView();
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
-		this(ScriptingWidgetType.FILE);
-		this.currentFile = currentFile;
+		this(ScriptingWidgetType.FILE,currentFile);
+		
 		loadCodeFromFile(currentFile);
 		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
 		publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
-//		try {
-//			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 	}
 	
 	private void startStopAction(){
@@ -97,9 +92,9 @@ public class ScriptingFileWidget extends BorderPane implements
 		runfx.setDisable(false);
 	}
 
-	private ScriptingFileWidget(ScriptingWidgetType type) {
+	private ScriptingFileWidget(ScriptingWidgetType type,File currentFile) {
 		this.type = type;
-
+		this.currentFile = currentFile;
 		runfx.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
@@ -120,31 +115,6 @@ public class ScriptingFileWidget extends BorderPane implements
 
 		});
 		
-		
-//		runsaveAs.setOnAction(e -> {
-//	    	new Thread(){
-//	    		public void run(){
-//	    			updateFile();
-//	    			save();
-//	    		}
-//	    	}.start();
-//
-//		});
-
-		// String ctrlSave = "CTRL Save";
-//		fileLabel.setOnMouseEntered(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getAbsolutePath());
-//			});
-//		});
-//
-//		fileLabel.setOnMouseExited(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getName());
-//			});
-//		});
 
 
 		// Set up the run controls and the code area
@@ -178,9 +148,10 @@ public class ScriptingFileWidget extends BorderPane implements
 		        fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a little bit
 		    });
 		});
+		externalEditorController = new ExternalEditorController(currentFile);
 
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(new ExternalEditorController(currentFile).getControl());
+		controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
