@@ -138,7 +138,9 @@ public class AddFileToGistController extends Application {
 			}
 			System.out.println("Adding new file"+text+" to "+gitRepo);
 			try {
-				ScriptingEngine.pushCodeToGit(gitRepo, ScriptingEngine.getFullBranch(gitRepo), text, "//Your code here",
+				
+				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents();
+				ScriptingEngine.pushCodeToGit(gitRepo, ScriptingEngine.getFullBranch(gitRepo), text, defaultContents,
 						message);
 				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
 				
