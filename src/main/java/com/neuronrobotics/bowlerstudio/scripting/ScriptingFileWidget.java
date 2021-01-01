@@ -20,6 +20,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -56,6 +57,7 @@ public class ScriptingFileWidget extends BorderPane implements
 
 	private Button runfx = new Button("Run");
 	private Button publish = new Button("Save");
+	private CheckBox autoRun = new CheckBox();
 	
 
 	private String addr;
@@ -116,7 +118,7 @@ public class ScriptingFileWidget extends BorderPane implements
 
 		});
 		publish.setTooltip(new Tooltip("Save this code to Git"));
-
+		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
 
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -149,10 +151,11 @@ public class ScriptingFileWidget extends BorderPane implements
 		        fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a little bit
 		    });
 		});
-		externalEditorController = new ExternalEditorController(currentFile);
-
+		externalEditorController = new ExternalEditorController(currentFile,autoRun);
+		
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(externalEditorController.getControl());
+		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
@@ -477,6 +480,9 @@ public class ScriptingFileWidget extends BorderPane implements
 												.get(fileThatChanged.getAbsolutePath())));
 										if(content.length()>2)// ensures tha the file contents never get wiped out on the user
 											setCode(content);
+										if(autoRun.isSelected()) {
+											start();
+										}
 									} catch (UnsupportedEncodingException e1) {
 										// TODO Auto-generated catch block
 										e1.printStackTrace();

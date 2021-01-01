@@ -128,16 +128,8 @@ public class NewVitaminWizardController  extends Application {
 					GitHub github = PasswordManager.getGithub();
 					
 					String newName =typeOfVitaminString+"CadGenerator";
-					GHCreateRepositoryBuilder builder = github.createRepository(newName );
-					builder.description(newName + " Generates CAD vitamins " );
-					GHRepository gist=null;
-					try {
-						gist = builder.create();
-					}catch(org.kohsuke.github.HttpException ex) {
-						if(ex.getMessage().contains("name already exists on this account")) {
-							gist = github.getRepository(PasswordManager.getLoginID()+"/"+newName);
-						}
-					}
+					GHRepository gist = ScriptingEngine.makeNewRepo(newName,newName + " Generates CAD vitamins ");
+					
 					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
 					String filename = typeOfVitaminString+".groovy";
 					Vitamins.setScript(typeOfVitaminString, gitURL, filename);

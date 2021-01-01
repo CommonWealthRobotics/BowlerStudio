@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,10 +20,10 @@ public class ExternalEditorController {
 	private static ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
 	static {
 		editors.add(new SVGExternalEditor());
-		editors.add(new EclipseExternalEditor());
+		editors.add(new GroovyEclipseExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
-	public ExternalEditorController(File f){
+	public ExternalEditorController(File f, CheckBox autoRun){
 		this.currentFile = f;
 		try {
 			Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");
@@ -47,6 +48,7 @@ public class ExternalEditorController {
 			
 			advanced.setOnAction(event -> {
 				myEditor.launch(currentFile);
+				autoRun.setSelected(true);
 			});
 		}
 
