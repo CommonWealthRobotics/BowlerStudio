@@ -76,6 +76,11 @@ public class EclipseExternalEditor implements IExternalEditor {
 				File classpath = new File(dir.getAbsolutePath() + "/.classpath");
 				File project = new File(dir.getAbsolutePath() + "/.project");
 				String name = dir.getName();
+				if(dir.getAbsolutePath().contains("gist.github.com")) {
+					String name2 = file.getName();
+					String[] split = name2.split("\\.");
+					name=split[0];
+				}
 				if (!ignore.exists() || !classpath.exists() || !project.exists()) {
 					String content = "";
 					if (ignore.exists())
@@ -151,7 +156,7 @@ public class EclipseExternalEditor implements IExternalEditor {
 				File projects = new File(ws + "/" + ".metadata/.plugins/org.eclipse.core.resources/.projects/");
 				// For each pathname in the pathnames array
 				for (String pathname : projects.list()) {
-					if (pathname.endsWith(name)) {
+					if (pathname.endsWith(name)||pathname.endsWith(dir.getName())) {
 						System.out.println("Project is already in the workspace!");
 						return;
 					}
@@ -178,7 +183,7 @@ public class EclipseExternalEditor implements IExternalEditor {
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
 		ScriptingEngine.pull("https://github.com/madhephaestus/SVGBowlerExtrude.git");
-		File f = ScriptingEngine.fileFromGit("https://github.com/madhephaestus/SVGBowlerExtrude.git", "test.groovy");
+		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
 
 		new EclipseExternalEditor().launch(f);
 	}
