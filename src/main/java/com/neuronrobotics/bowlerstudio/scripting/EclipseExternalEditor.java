@@ -93,8 +93,11 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					setUpEclipseProjectFiles(dir, project, name);
 
 				}
+				String lockFile=ws + delim()+".metadata"+delim()+".lock";
+				if (OSUtil.isWindows()) 
+					lockFile = "C:\\RBE\\eclipse-workspace\\.metadata\\.lock";
 				try {
-					File lock = new File(ws + delim()+".metadata"+delim()+".lock");
+					File lock = new File(lockFile);
 					if (lock.exists()) {
 						RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 
@@ -131,7 +134,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				if (OSUtil.isLinux())
 					run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isWindows())
-					run(dir, eclipseEXE, "\""+dir.getAbsolutePath() + delim()+"\"");
+					run(dir, eclipseEXE, dir.getAbsolutePath() + delim());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
