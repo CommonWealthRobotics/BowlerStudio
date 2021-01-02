@@ -30,7 +30,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}	
 	
 	protected boolean OSSupportsEclipse() {
-		return OSUtil.isLinux();
+		return OSUtil.isLinux()||OSUtil.isWindows();
 	}
 
 	@Override
