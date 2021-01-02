@@ -15,10 +15,9 @@ import org.eclipse.jgit.lib.Repository;
 import com.neuronrobotics.video.OSUtil;
 
 public abstract class EclipseExternalEditor implements IExternalEditor {
-	
-	protected abstract void setUpEclipseProjectFiles(File dir , File project, String name) throws IOException, MalformedURLException;
 
-
+	protected abstract void setUpEclipseProjectFiles(File dir, File project, String name)
+			throws IOException, MalformedURLException;
 
 	protected static String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -27,10 +26,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			sb.append((char) cp);
 		}
 		return sb.toString();
-	}	
-	
+	}
+
 	protected boolean OSSupportsEclipse() {
-		return OSUtil.isLinux()||OSUtil.isWindows();
+		return OSUtil.isLinux() || OSUtil.isWindows();
 	}
 
 	@Override
@@ -49,28 +48,29 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} if (OSUtil.isWindows()){
-				eclipseEXE="\"C:\\RBE\\sloeber\\eclipse.exe\"";
-			}else {
+			}
+			if (OSUtil.isWindows()) {
+				eclipseEXE = "\"C:\\RBE\\sloeber\\eclipse.exe\"";
+			} else {
 				System.out.println("OS is not supported!");
 				return;
 			}
 			try {
 				Repository repository = ScriptingEngine.locateGit(file).getRepository();
 				File dir = repository.getWorkTree();
-				String remoteURL= ScriptingEngine.locateGitUrlString(file);
-				String branch=ScriptingEngine.getBranch(remoteURL);
+				String remoteURL = ScriptingEngine.locateGitUrlString(file);
+				String branch = ScriptingEngine.getBranch(remoteURL);
 				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + "/eclipse";
 				File ignore = new File(dir.getAbsolutePath() + "/.gitignore");
-				
+
 				File project = new File(dir.getAbsolutePath() + "/.project");
 				String name = dir.getName();
-				if(dir.getAbsolutePath().contains("gist.github.com")) {
+				if (dir.getAbsolutePath().contains("gist.github.com")) {
 					String name2 = file.getName();
 					String[] split = name2.split("\\.");
-					name=split[0];
+					name = split[0];
 				}
-				if (!ignore.exists() ||  !project.exists()) {
+				if (!ignore.exists() || !project.exists()) {
 					String content = "";
 					if (ignore.exists())
 						try {
@@ -79,22 +79,25 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							e.printStackTrace();
 						}
 
-					content += "/.project\n" + "/.classpath\n"+ "/.cproject\n"  + "/cache/\n" + "/*.class";
+					content += "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
 					ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content, "Ignore the project files");
 
-
-					setUpEclipseProjectFiles( dir,project, name);
+					setUpEclipseProjectFiles(dir, project, name);
 
 				}
-				File lock = new File(ws + "/.metadata/.lock");
-				RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 				try {
-					FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
-					fileLock.release();
-					raFile.close();
+					File lock = new File(ws + "/.metadata/.lock");
+					if (lock.exists()) {
+						RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 
-					if (OSUtil.isLinux()) run(dir, "bash", eclipseEXE, "-data", ws);
-					if (OSUtil.isWindows()) run(dir, eclipseEXE, "-data", ws);
+						FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
+						fileLock.release();
+						raFile.close();
+					}
+					if (OSUtil.isLinux())
+						run(dir, "bash", eclipseEXE, "-data", ws);
+					if (OSUtil.isWindows())
+						run(dir, eclipseEXE, "-data", ws);
 					try {
 						Thread.sleep(30000);
 					} catch (InterruptedException e) {
@@ -109,21 +112,24 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}
 				File projects = new File(ws + "/" + ".metadata/.plugins/org.eclipse.core.resources/.projects/");
 				// For each pathname in the pathnames array
-				for (String pathname : projects.list()) {
-					if (pathname.endsWith(name)||pathname.endsWith(dir.getName())) {
-						System.out.println("Project is already in the workspace!");
-						return;
+				if (projects.exists()) {
+					for (String pathname : projects.list()) {
+						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
+							System.out.println("Project is already in the workspace!");
+							return;
+						}
 					}
 				}
-				if (OSUtil.isLinux()) run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + "/");
-				if (OSUtil.isWindows()) run(dir,  eclipseEXE, dir.getAbsolutePath() + "/");
+				if (OSUtil.isLinux())
+					run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + "/");
+				if (OSUtil.isWindows())
+					run(dir, eclipseEXE, dir.getAbsolutePath() + "/");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
 	}
-
 
 	@Override
 	public String nameOfEditor() {

@@ -46,12 +46,7 @@ public interface IExternalEditor {
 				pb.directory(dir);
 				// startinf the process
 				Process process = pb.start();
-				process.waitFor();
-				int ev = process.exitValue();
-				// System.out.println("Running "+commands);
-				if (ev != 0) {
-					System.out.println("ERROR PROCESS Process exited with " + ev);
-				}
+				
 				// for reading the ouput from stream
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				BufferedReader errInput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -65,6 +60,12 @@ public interface IExternalEditor {
 					if (e != null)
 						System.err.println(e);
 					//
+				}
+				process.waitFor();
+				int ev = process.exitValue();
+				// System.out.println("Running "+commands);
+				if (ev != 0) {
+					System.out.println("ERROR PROCESS Process exited with " + ev);
 				}
 				while (process.isAlive()) {
 					Thread.sleep(100);
