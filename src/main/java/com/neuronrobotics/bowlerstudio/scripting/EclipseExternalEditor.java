@@ -49,7 +49,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else {
+			} if (OSUtil.isWindows()){
+				eclipseEXE="\"C:\\RBE\\sloeber\\eclipse.exe\"";
+			}else {
 				System.out.println("OS is not supported!");
 				return;
 			}
@@ -92,6 +94,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					raFile.close();
 
 					if (OSUtil.isLinux()) run(dir, "bash", eclipseEXE, "-data", ws);
+					if (OSUtil.isWindows()) run(dir, eclipseEXE, "-data", ws);
 					try {
 						Thread.sleep(30000);
 					} catch (InterruptedException e) {
@@ -113,6 +116,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				}
 				if (OSUtil.isLinux()) run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + "/");
+				if (OSUtil.isWindows()) run(dir,  eclipseEXE, dir.getAbsolutePath() + "/");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
