@@ -54,8 +54,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			if (OSUtil.isWindows()) {
+			}else if (OSUtil.isWindows()) {
 				eclipseEXE = "\"C:\\RBE\\sloeber\\eclipse.exe\"";
 			} else {
 				System.out.println("OS is not supported!");
