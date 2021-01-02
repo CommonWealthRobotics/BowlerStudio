@@ -81,12 +81,12 @@ public interface IExternalEditor {
 					alert.setContentText("Close to bring me to the install website");
 					alert.showAndWait();
 					new Thread(() -> {
-//						try {
-//							BowlerStudio.openExternalWebpage(getInstallURL());
-//						} catch (MalformedURLException e1) {
-//							// TODO Auto-generated catch block
-//							e1.printStackTrace();
-//						}
+						try {
+							BowlerStudio.openExternalWebpage(getInstallURL());
+						} catch (MalformedURLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}).start();
 				});
 			

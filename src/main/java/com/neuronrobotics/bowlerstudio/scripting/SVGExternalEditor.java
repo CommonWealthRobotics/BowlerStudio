@@ -31,7 +31,20 @@ public class SVGExternalEditor implements IExternalEditor {
 		try {
 			File dir = ScriptingEngine.locateGit(file).getRepository().getWorkTree();
 			if(OSUtil.isLinux())run(dir,"inkscape",filename);
-			if(OSUtil.isWindows())run(dir,"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"",filename);
+			if(OSUtil.isWindows()) {
+				String exe="inkscape.exe";
+				String [] options = {"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"","\"C:\\Program Files\\Inkscape\\inkscape.exe\""};
+				for (int i=0;i<options.length;i++) {
+					if(new File(options[i]).exists()) {
+						exe=options[i];
+						break;
+					}
+				}
+				
+				run(dir,"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"",filename);
+			
+			
+			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
