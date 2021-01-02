@@ -10,6 +10,8 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
+import com.neuronrobotics.video.OSUtil;
+
 public class SVGExternalEditor implements IExternalEditor {
 
 	@Override
@@ -23,13 +25,13 @@ public class SVGExternalEditor implements IExternalEditor {
 	@Override
 	public void launch(File file) {
 		String filename = file.getAbsolutePath();
-		//if(OSUtil.isWindows()) {
-		//	filename="\""+filename+"\"";
-		//}
+		if(OSUtil.isWindows()) {
+			filename="\""+filename+"\"";
+		}
 		try {
 			File dir = ScriptingEngine.locateGit(file).getRepository().getWorkTree();
-			run(dir,"inkscape",filename);
-			
+			if(OSUtil.isLinux())run(dir,"inkscape",filename);
+			if(OSUtil.isWindows())run(dir,"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"",filename);
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
