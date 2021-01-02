@@ -18,6 +18,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	protected abstract void setUpEclipseProjectFiles(File dir, File project, String name)
 			throws IOException, MalformedURLException;
+	
+	protected abstract boolean checkForExistingProjectFiles(File dir );
 
 	protected static String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -32,7 +34,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		return OSUtil.isLinux() || OSUtil.isWindows();
 	}
 	
-	private String delim() {
+	protected String delim() {
 		if (OSUtil.isWindows())
 			return "\\";
 		return "/";
@@ -74,7 +76,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					String[] split = name2.split("\\.");
 					name = split[0];
 				}
-				if (!ignore.exists() || !project.exists()) {
+				if (!ignore.exists() || !project.exists() ||!checkForExistingProjectFiles(dir)) {
 					String content = "";
 					String toIgnore = "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
 

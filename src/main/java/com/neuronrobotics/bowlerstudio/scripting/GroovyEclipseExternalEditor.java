@@ -32,7 +32,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	
 	protected void setUpEclipseProjectFiles(File dir , File project, String name) throws IOException, MalformedURLException {
 		
-		File classpath = new File(dir.getAbsolutePath() + "/.classpath");
+		File classpath = new File(dir.getAbsolutePath() + delim()+".classpath");
 		String ProjectContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<projectDescription>\n"
 				+ "	<name>" + name + "</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
 				+ "	</projects>\n" + "	<buildSpec>\n" + "		<buildCommand>\n"
@@ -60,8 +60,8 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		} finally {
 			is.close();
 		}
-		String jar = System.getProperty("user.home") + "/bin/BowlerStudioInstall/" + latestVersionString
-				+ "/BowlerStudio.jar";
+		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
+				+delim()+ "BowlerStudio.jar";
 		String classpathContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"
 				+ "	<classpathentry kind=\"src\" path=\"\"/>\n"
 				+ "	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\">\n"
@@ -78,6 +78,14 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
 
 		new GroovyEclipseExternalEditor().launch(f);
+	}
+
+
+
+	@Override
+	protected boolean checkForExistingProjectFiles(File dir ) {
+		File classpath = new File(dir.getAbsolutePath() + delim()+".classpath");
+		return classpath.exists();
 	}
 
 }
