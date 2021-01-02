@@ -62,7 +62,6 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				String branch = ScriptingEngine.getBranch(remoteURL);
 				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + "/eclipse";
 				File ignore = new File(dir.getAbsolutePath() + "/.gitignore");
-
 				File project = new File(dir.getAbsolutePath() + "/.project");
 				String name = dir.getName();
 				if (dir.getAbsolutePath().contains("gist.github.com")) {
@@ -72,16 +71,18 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}
 				if (!ignore.exists() || !project.exists()) {
 					String content = "";
+					String toIgnore = "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
+
 					if (ignore.exists())
 						try {
 							content = new String(Files.readAllBytes(Paths.get(ignore.getAbsolutePath())));
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-
-					content += "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
-					ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content, "Ignore the project files");
-
+					if(!content.contains(toIgnore)) {
+						content += toIgnore;
+						ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content, "Ignore the project files");
+					}
 					setUpEclipseProjectFiles(dir, project, name);
 
 				}
