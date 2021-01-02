@@ -31,6 +31,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	protected boolean OSSupportsEclipse() {
 		return OSUtil.isLinux() || OSUtil.isWindows();
 	}
+	
+	private String delim() {
+		if (OSUtil.isWindows())
+			return "\\";
+		return "/";
+	}
 
 	@Override
 	public void launch(File file) {
@@ -60,9 +66,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				File dir = repository.getWorkTree();
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
-				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + "/eclipse";
-				File ignore = new File(dir.getAbsolutePath() + "/.gitignore");
-				File project = new File(dir.getAbsolutePath() + "/.project");
+				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim()+"eclipse";
+				File ignore = new File(dir.getAbsolutePath() + delim()+".gitignore");
+				File project = new File(dir.getAbsolutePath() + delim()+".project");
 				String name = dir.getName();
 				if (dir.getAbsolutePath().contains("gist.github.com")) {
 					String name2 = file.getName();
@@ -87,7 +93,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 				}
 				try {
-					File lock = new File(ws + "/.metadata/.lock");
+					File lock = new File(ws + delim()+".metadata"+delim()+".lock");
 					if (lock.exists()) {
 						RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 
@@ -98,7 +104,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					if (OSUtil.isLinux())
 						run(dir, "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isWindows())
-						run(dir, eclipseEXE, "-data", ws);
+						run(dir, eclipseEXE);
 					try {
 						Thread.sleep(30000);
 					} catch (InterruptedException e) {
@@ -111,7 +117,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					// lock failed eclipse is open already
 					System.out.println("Eclipse is already open");
 				}
-				File projects = new File(ws + "/" + ".metadata/.plugins/org.eclipse.core.resources/.projects/");
+				File projects = new File(ws + delim()+"" + ".metadata"+delim()+".plugins"+delim()+"org.eclipse.core.resources"+delim()+".projects"+delim());
 				// For each pathname in the pathnames array
 				if (projects.exists()) {
 					for (String pathname : projects.list()) {
@@ -122,9 +128,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				}
 				if (OSUtil.isLinux())
-					run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + "/");
+					run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isWindows())
-					run(dir, eclipseEXE, dir.getAbsolutePath() + "/");
+					run(dir, eclipseEXE, "\""+dir.getAbsolutePath() + delim()+"\"");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
