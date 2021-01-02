@@ -290,7 +290,8 @@ public class ScriptingFileWidget extends BorderPane implements
 						String message = "This script needs a variable defined before you use it: ";
 					
 						String stackTrace = d.getMessage();
-						
+						if(stackTrace==null)
+							stackTrace="";
 						if(stackTrace.contains("dyio"))
 							message+="dyio";
 						else if(stackTrace.contains("camera"))
