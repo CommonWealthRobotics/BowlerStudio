@@ -35,10 +35,12 @@ public class SVGExternalEditor implements IExternalEditor {
 		}
 		try {
 			File dir = ScriptingEngine.locateGit(file).getRepository().getWorkTree();
-			if(OSUtil.isLinux())run(dir,"inkscape",filename);
+			if(OSUtil.isLinux())
+				run(dir,"inkscape",filename);
 			if(OSUtil.isWindows()) {
 				String exe="inkscape.exe";
-				String [] options = {"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"","\"C:\\Program Files\\Inkscape\\inkscape.exe\""};
+				String [] options = {"C:\\Program Files\\Inkscape\\bin\\inkscape.exe",
+						"C:\\Program Files\\Inkscape\\inkscape.exe"};
 				for (int i=0;i<options.length;i++) {
 					if(new File(options[i]).exists()) {
 						exe=options[i];
@@ -46,9 +48,7 @@ public class SVGExternalEditor implements IExternalEditor {
 					}
 				}
 				
-				run(dir,"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"",filename);
-			
-				
+				run(dir,"\""+exe+"\"",filename);	
 			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block
@@ -63,7 +63,7 @@ public class SVGExternalEditor implements IExternalEditor {
 	}
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://inkscape.org/release/inkscape-1.0.1/");
+		return new URL("https://inkscape.org/release/");
 	}
 	@Override
 	public String nameOfEditor() {
