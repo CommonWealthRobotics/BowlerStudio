@@ -14,16 +14,19 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 
 public interface IExternalEditor {
 	
 	boolean isSupportedByExtention(File file);
 	
-	void launch(File file);
+	void launch(File file, Button advanced);
 	
 	String nameOfEditor();
 	
 	URL getInstallURL() throws MalformedURLException;
+	
+	void onProcessExit(int ev);
 	
 	
 	default void run(File dir,String... finalCommand) {
@@ -71,6 +74,7 @@ public interface IExternalEditor {
 					Thread.sleep(100);
 				}
 				System.out.println("");
+				onProcessExit(ev);
 					
 			} catch (Throwable e) {
 				

@@ -14,12 +14,16 @@ import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.video.OSUtil;
 
+import javafx.scene.control.Button;
+
 public abstract class EclipseExternalEditor implements IExternalEditor {
+
+	protected Button advanced;
 
 	protected abstract void setUpEclipseProjectFiles(File dir, File project, String name)
 			throws IOException, MalformedURLException;
-	
-	protected abstract boolean checkForExistingProjectFiles(File dir );
+
+	protected abstract boolean checkForExistingProjectFiles(File dir);
 
 	protected static String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -33,7 +37,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	protected boolean OSSupportsEclipse() {
 		return OSUtil.isLinux() || OSUtil.isWindows();
 	}
-	
+
 	protected String delim() {
 		if (OSUtil.isWindows())
 			return "\\";
@@ -41,7 +45,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file) {
+	public void launch(File file, Button advanced) {
+		this.advanced = advanced;
 		new Thread(() -> {
 			String eclipseEXE = "eclipse";
 			if (OSUtil.isLinux()) {
@@ -56,7 +61,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}else if (OSUtil.isWindows()) {
+			} else if (OSUtil.isWindows()) {
 				eclipseEXE = "\"C:\\RBE\\sloeber\\eclipse.exe\"";
 			} else {
 				System.out.println("OS is not supported!");
@@ -67,16 +72,18 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				File dir = repository.getWorkTree();
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
-				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim()+"eclipse";
-				File ignore = new File(dir.getAbsolutePath() + delim()+".gitignore");
-				File project = new File(dir.getAbsolutePath() + delim()+".project");
+				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse";
+				if (OSUtil.isWindows())
+					ws = "C:\\RBE\\eclipse-workspace";
+				File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
+				File project = new File(dir.getAbsolutePath() + delim() + ".project");
 				String name = dir.getName();
 				if (dir.getAbsolutePath().contains("gist.github.com")) {
 					String name2 = file.getName();
 					String[] split = name2.split("\\.");
 					name = split[0];
 				}
-				if (!ignore.exists() || !project.exists() ||!checkForExistingProjectFiles(dir)) {
+				if (!ignore.exists() || !project.exists() || !checkForExistingProjectFiles(dir)) {
 					String content = "";
 					String toIgnore = "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
 
@@ -86,47 +93,40 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					if(!content.contains(toIgnore)) {
+					if (!content.contains(toIgnore)) {
 						content += toIgnore;
-						ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content, "Ignore the project files");
+						ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content,
+								"Ignore the project files");
 					}
 					setUpEclipseProjectFiles(dir, project, name);
 
 				}
-				String lockFile=ws + delim()+".metadata"+delim()+".lock";
-				if (OSUtil.isWindows()) 
-					lockFile = "C:\\RBE\\eclipse-workspace\\.metadata\\.lock";
-				try {
-					File lock = new File(lockFile);
-					if (lock.exists()) {
-						RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 
-						FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
-						fileLock.release();
-						raFile.close();
-					}
+				if(!isEclipseOpen( ws)) {
 					if (OSUtil.isLinux())
 						run(dir, "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isWindows())
-						run(dir, eclipseEXE);
-					try {
-						Thread.sleep(30000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						run(dir, eclipseEXE, "-data", ws);
+					while (!isEclipseOpen( ws)) {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					System.out.println("Adding project to eclipse..");
-
-				} catch (Exception ex) {
-					// lock failed eclipse is open already
+					
+				}else {
 					System.out.println("Eclipse is already open");
 				}
-				File projects = new File(ws + delim()+"" + ".metadata"+delim()+".plugins"+delim()+"org.eclipse.core.resources"+delim()+".projects"+delim());
+				File projects = new File(ws + delim() + "" + ".metadata" + delim() + ".plugins" + delim()
+						+ "org.eclipse.core.resources" + delim() + ".projects" + delim());
 				// For each pathname in the pathnames array
 				if (projects.exists()) {
 					for (String pathname : projects.list()) {
 						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
 							System.out.println("Project is already in the workspace!");
+							advanced.setDisable(false);
 							return;
 						}
 					}
@@ -141,11 +141,30 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			}
 		}).start();
 	}
+	
+	private boolean isEclipseOpen(String ws) {
+		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
+		try {
+			File lock = new File(lockFile);
+			if (lock.exists()) {
+				RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
+
+				FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
+				fileLock.release();
+				raFile.close();
+			}
+
+		} catch (Exception ex) {
+			// lock failed eclipse is open already
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public String nameOfEditor() {
 
-		return "Eclipse IDE";
+		return "Eclipse";
 	}
 
 	@Override

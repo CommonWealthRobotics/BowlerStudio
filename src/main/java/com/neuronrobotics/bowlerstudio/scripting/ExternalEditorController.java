@@ -15,7 +15,7 @@ import javafx.scene.image.ImageView;
 public class ExternalEditorController {
 	private File currentFile;
 	boolean hasEditor = false;
-	private Button advanced = new Button("Ext. Edit");
+	private Button advanced = new Button();
 	private ImageView image=new ImageView();
 	private static ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
 	static {
@@ -47,7 +47,8 @@ public class ExternalEditorController {
 			advanced.setText(myEditor.nameOfEditor());
 			
 			advanced.setOnAction(event -> {
-				myEditor.launch(currentFile);
+				advanced.setDisable(true);
+				myEditor.launch(currentFile,advanced);
 				autoRun.setSelected(true);
 			});
 		}

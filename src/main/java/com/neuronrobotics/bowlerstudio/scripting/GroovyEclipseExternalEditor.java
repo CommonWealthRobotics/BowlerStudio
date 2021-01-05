@@ -27,7 +27,10 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 			}
 		return false;
 	}
-
+	
+	public void onProcessExit(int ev) {
+		advanced.setDisable(false);
+	}
 
 	
 	protected void setUpEclipseProjectFiles(File dir , File project, String name) throws IOException, MalformedURLException {
@@ -77,7 +80,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		ScriptingEngine.pull("https://github.com/madhephaestus/SVGBowlerExtrude.git");
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
 
-		new GroovyEclipseExternalEditor().launch(f);
+		new GroovyEclipseExternalEditor().launch(f, new javafx.scene.control.Button());
 	}
 
 

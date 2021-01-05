@@ -12,7 +12,11 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.neuronrobotics.video.OSUtil;
 
+import javafx.scene.control.Button;
+
 public class SVGExternalEditor implements IExternalEditor {
+
+	private Button advanced;
 
 	@Override
 	public boolean isSupportedByExtention(File file) {
@@ -23,7 +27,8 @@ public class SVGExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file) {
+	public void launch(File file, Button advanced) {
+		this.advanced = advanced;
 		String filename = file.getAbsolutePath();
 		if(OSUtil.isWindows()) {
 			filename="\""+filename+"\"";
@@ -43,16 +48,18 @@ public class SVGExternalEditor implements IExternalEditor {
 				
 				run(dir,"\"C:\\Program Files\\Inkscape\\bin\\inkscape.exe\"",filename);
 			
-			
+				
 			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
+	}
+	public void onProcessExit(int ev) {
+		advanced.setDisable(false);
 	}
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
@@ -66,7 +73,7 @@ public class SVGExternalEditor implements IExternalEditor {
 	public static void main(String [] args) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		File f =ScriptingEngine.fileFromGit("https://github.com/Technocopia/Graphics.git", "Graphics/SimplifiedLogo/simplified logo.svg");
 		
-		new SVGExternalEditor().launch(f);
+		new SVGExternalEditor().launch(f,new Button());
 	}
 
 }
