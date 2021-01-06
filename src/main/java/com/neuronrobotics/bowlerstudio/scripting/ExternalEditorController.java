@@ -21,6 +21,7 @@ public class ExternalEditorController {
 	static {
 		editors.add(new SVGExternalEditor());
 		editors.add(new GroovyEclipseExternalEditor());
+		editors.add(new ArduinoExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.video.OSUtil;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -18,7 +19,16 @@ import javafx.scene.control.Button;
 
 public interface IExternalEditor {
 	
-	boolean isSupportedByExtention(File file);
+	
+	Class getSupportedLangauge();
+	
+	default boolean isSupportedByExtention(File file) {
+		if(getSupportedLangauge()!=null)
+			if (getSupportedLangauge().isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {
+				return true;
+			}
+		return false;
+	}
 	
 	void launch(File file, Button advanced);
 	
@@ -28,6 +38,11 @@ public interface IExternalEditor {
 	
 	void onProcessExit(int ev);
 	
+	default String delim() {
+		if (OSUtil.isWindows())
+			return "\\";
+		return "/";
+	}
 	
 	default void run(File dir,String... finalCommand) {
 		List<String> asList = Arrays.asList(finalCommand);

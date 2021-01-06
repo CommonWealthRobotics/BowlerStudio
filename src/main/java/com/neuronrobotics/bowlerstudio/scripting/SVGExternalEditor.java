@@ -18,13 +18,6 @@ public class SVGExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 
-	@Override
-	public boolean isSupportedByExtention(File file) {
-		if(SvgLoader.class.isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))){
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public void launch(File file, Button advanced) {
@@ -74,6 +67,13 @@ public class SVGExternalEditor implements IExternalEditor {
 		File f =ScriptingEngine.fileFromGit("https://github.com/Technocopia/Graphics.git", "Graphics/SimplifiedLogo/simplified logo.svg");
 		
 		new SVGExternalEditor().launch(f,new Button());
+	}
+
+	@Override
+	public Class getSupportedLangauge() {
+		if (OSUtil.isLinux() || OSUtil.isWindows())
+			return SvgLoader.class;
+		return null;
 	}
 
 }

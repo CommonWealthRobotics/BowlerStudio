@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Reader;
@@ -38,11 +40,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		return OSUtil.isLinux() || OSUtil.isWindows();
 	}
 
-	protected String delim() {
-		if (OSUtil.isWindows())
-			return "\\";
-		return "/";
-	}
+
 
 	@Override
 	public void launch(File file, Button advanced) {
@@ -101,7 +99,37 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					setUpEclipseProjectFiles(dir, project, name);
 
 				}
-
+				
+				File currentws = null;
+				if (OSUtil.isLinux())
+					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
+				if (OSUtil.isWindows())
+					currentws= new File("C:\\RBE\\sloeber\\configuration\\.settings\\org.eclipse.ui.ide.prefs");
+				try {
+					BufferedReader reader;
+					try {
+						reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
+						String line = reader.readLine();
+						while (line != null) {
+							//System.out.println(line);
+							// read next line
+							line = reader.readLine();
+							if(line.contains("RECENT_WORKSPACES=")) {
+								String[] split = line
+										.split("=");
+								String[] split2 = split[1].split("\\\\n");
+								ws=split2[0];
+							}
+						}
+						reader.close();
+					} catch (IOException e) {
+						//e.printStackTrace();
+					}
+			
+				}catch(Exception ex) {
+					//ex.printStackTrace();
+				}
+				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
 					if (OSUtil.isLinux())
 						run(dir, "bash", eclipseEXE, "-data", ws);
@@ -117,15 +145,16 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 					
 				}else {
-					System.out.println("Eclipse is already open");
+					System.out.println("Eclipse is already open at "+ws);
 				}
-				File projects = new File(ws + delim() + "" + ".metadata" + delim() + ".plugins" + delim()
+				
+				File projects = new File(ws + delim() + ".metadata" + delim() + ".plugins" + delim()
 						+ "org.eclipse.core.resources" + delim() + ".projects" + delim());
 				// For each pathname in the pathnames array
 				if (projects.exists()) {
 					for (String pathname : projects.list()) {
 						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
-							System.out.println("Project is already in the workspace!");
+							System.out.println("Project "+name+" is already in the workspace!");
 							advanced.setDisable(false);
 							return;
 						}

@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio.scripting;
 import java.io.File;
 
 import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
+import com.neuronrobotics.video.OSUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,14 +21,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
-	@Override
-	public boolean isSupportedByExtention(File file) {
-		if (OSSupportsEclipse())
-			if (GroovyHelper.class.isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {
-				return true;
-			}
-		return false;
-	}
 	
 	public void onProcessExit(int ev) {
 		advanced.setDisable(false);
@@ -89,6 +83,13 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	protected boolean checkForExistingProjectFiles(File dir ) {
 		File classpath = new File(dir.getAbsolutePath() + delim()+".classpath");
 		return classpath.exists();
+	}
+
+	@Override
+	public Class getSupportedLangauge() {
+		if (OSUtil.isLinux() || OSUtil.isWindows())
+			return GroovyHelper.class;
+		return null;
 	}
 
 }
