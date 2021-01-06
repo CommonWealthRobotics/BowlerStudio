@@ -7,6 +7,7 @@ import java.net.URL;
 
 import org.eclipse.jgit.lib.Repository;
 
+import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.video.OSUtil;
 
 import javafx.scene.control.Button;
@@ -23,9 +24,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			repository = ScriptingEngine.locateGit(file).getRepository();
 			File dir = repository.getWorkTree();
 			if (OSUtil.isLinux())
-				run(dir, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", dir.getAbsolutePath() + delim());
+				run(dir, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
 			if (OSUtil.isWindows())
-				run(dir, "C:\\RBE\\arduino-1.8.5\\arduino.exe", dir.getAbsolutePath() + delim());
+				run(dir, "C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,5 +58,13 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			return ArduinoLoader.class;
 		return null;
 	}
+	public static void main(String[] args) throws Exception {
+		JavaFXInitializer.go();
+		ScriptingEngine.pull("https://github.com/OperationSmallKat/LunaMotherboardFirmware.git");
+		File f = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/LunaMotherboardFirmware.git", "LunaMotherboardFirmware.ino");
 
+		new ArduinoExternalEditor().launch(f, new javafx.scene.control.Button());
+	}
+
+	
 }
