@@ -114,11 +114,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							//System.out.println(line);
 							// read next line
 							line = reader.readLine();
-							if(line.contains("RECENT_WORKSPACES=")) {
+							if(line.startsWith("RECENT_WORKSPACES=")) {
 								String[] split = line
 										.split("=");
 								String[] split2 = split[1].split("\\\\n");
 								ws=split2[0];
+								System.out.println("Using workspace config: "+line);
 							}
 						}
 						reader.close();
@@ -142,6 +143,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						System.out.println("Waiting for workspace "+ws);
+						
 					}
 					
 				}else {
