@@ -71,7 +71,6 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	}
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
-		ScriptingEngine.pull("https://github.com/madhephaestus/SVGBowlerExtrude.git");
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
 
 		new GroovyEclipseExternalEditor().launch(f, new javafx.scene.control.Button());

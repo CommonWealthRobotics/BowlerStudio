@@ -71,8 +71,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
 				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse";
-				if (OSUtil.isWindows())
-					ws = "C:\\RBE\\eclipse-workspace";
+
 				File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
 				File project = new File(dir.getAbsolutePath() + delim() + ".project");
 				String name = dir.getName();
@@ -105,37 +104,46 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
 				if (OSUtil.isWindows())
 					currentws= new File("C:\\RBE\\sloeber\\configuration\\.settings\\org.eclipse.ui.ide.prefs");
+				
 				try {
-					BufferedReader reader;
-					try {
-						reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
-						String line = reader.readLine();
-						while (line != null) {
-							//System.out.println(line);
-							// read next line
-							line = reader.readLine();
-							if(line.startsWith("RECENT_WORKSPACES=")) {
-								String[] split = line
-										.split("=");
-								String[] split2 = split[1].split("\\\\n");
-								ws=split2[0];
-								System.out.println("Using workspace config: "+line);
+					BufferedReader reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
+					String line = reader.readLine();
+					while (line != null) {
+						//System.out.println(line);
+						// read next line
+						line = reader.readLine();
+						if(line.startsWith("RECENT_WORKSPACES=")) {
+							String[] split = line
+									.split("=");
+							String[] split2 = split[1].split("\\\\n");
+							if(OSUtil.isWindows()) {
+								String replaceAll = split2[0]
+										.replace("\\:", ":");
+								String replaceAll2 = replaceAll
+										.replace("\\\\", "\\");
+								
+								ws=replaceAll2;
+							}else {
+								ws= split2[0];
 							}
+							System.out.println("Using workspace config: "+line);
+							
+							break;
 						}
-						reader.close();
-					} catch (IOException e) {
-						//e.printStackTrace();
 					}
-			
+					reader.close();
+				
+
 				}catch(Exception ex) {
-					//ex.printStackTrace();
+					ex.printStackTrace();
 				}
+				
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
 					if (OSUtil.isLinux())
-						run(dir, "bash", eclipseEXE, "-data", ws);
+						run( ScriptingEngine.getWorkspace(), "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isWindows())
-						run(dir, eclipseEXE, "-data", ws);
+						run(ScriptingEngine.getWorkspace() , eclipseEXE, "-data", ws);
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -176,6 +184,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	
 	private boolean isEclipseOpen(String ws) {
 		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
+		System.out.println("Checking WS "+lockFile);
 		try {
 			File lock = new File(lockFile);
 			if (lock.exists()) {
