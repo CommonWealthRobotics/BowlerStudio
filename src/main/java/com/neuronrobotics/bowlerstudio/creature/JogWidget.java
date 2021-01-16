@@ -52,17 +52,15 @@ public class JogWidget extends GridPane
 	private BowlerJInputDevice gameController = null;
 	double x, y, rz, slider = 0;
 	private boolean stop = true;
-	private jogThread jogTHreadHandle;
 	private String paramsKey;
 	private GridPane buttons;
 	private static ArrayList<JogWidget> allWidgets = new ArrayList<JogWidget>();
 	private MobileBase source;
 
-	public JogWidget(DHParameterKinematics k,MobileBase source) {
+	public JogWidget(DHParameterKinematics k, MobileBase source) {
 		this.source = source;
 		allWidgets.add(this);
 		this.setKin(k);
-
 
 		getKin().addPoseUpdateListener(this);
 
@@ -207,9 +205,8 @@ public class JogWidget extends GridPane
 
 		buttons.add(sec, 2, 3);
 		buttons.add(new Label("sec"), 3, 3);
-			buttons.add(pz, 3, 0);
-			buttons.add(nz, 3, 1);
-		
+		buttons.add(pz, 3, 0);
+		buttons.add(nz, 3, 1);
 
 		add(buttons, 0, 0);
 		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentTaskSpaceTransform(), this);
@@ -220,8 +217,7 @@ public class JogWidget extends GridPane
 		advancedPanel.getPanes().add(new TitledPane("Current Pose", transformCurrent));
 		advancedPanel.getPanes().add(new TitledPane("Current Target", transformTarget));
 		add(advancedPanel, 0, 1);
-		jogTHreadHandle = new jogThread();
-		jogTHreadHandle.start();
+
 		controllerLoop();
 
 	}
@@ -300,13 +296,13 @@ public class JogWidget extends GridPane
 	}
 
 	public void home() {
-		new Thread(()->{
+		new Thread(() -> {
 			homeLimb(getKin());
 		}).start();
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
-		
+
 		TransformNR t = c.calcHome();
 		try {
 			c.setDesiredTaskSpaceTransform(t, 0);
@@ -345,12 +341,12 @@ public class JogWidget extends GridPane
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
 		// TODO Auto-generated method stub
-		jogTHreadHandle.setTarget(newTrans, 0);
+		JogThread.setTarget(getKin(), newTrans, 0);
 	}
 
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
-		jogTHreadHandle.setTarget(newTrans, 0);
+		JogThread.setTarget(getKin(), newTrans, 0);
 //		new Thread(() -> {
 //			try {
 //				getKin().setDesiredTaskSpaceTransform(newTrans, Double.parseDouble(sec.getText()));
@@ -367,10 +363,10 @@ public class JogWidget extends GridPane
 	}
 
 	public DHParameterKinematics getKin() {
-		if(source.getParallelGroup(kinematics)!=null) {
+		if (source.getParallelGroup(kinematics) != null) {
 			return source.getParallelGroup(kinematics);
 		}
-			
+
 		return kinematics;
 	}
 
@@ -378,7 +374,7 @@ public class JogWidget extends GridPane
 		if (!kin.isAvailable())
 			kin.connect();
 		this.kinematics = kin;
-		
+
 //		try {
 //			kin.setDesiredTaskSpaceTransform(kin.calcHome(), 0);
 //		} catch (Exception e) {
@@ -386,110 +382,74 @@ public class JogWidget extends GridPane
 	}
 
 	private void controllerLoop() {
-		// System.out.println("controllerLoop");
-		double seconds = .1;
-		if (getGameController() != null || stop == false) {
-			try {
-				seconds = Double.parseDouble(sec.getText());
-				if (!stop) {
+		new Thread(() -> {
+			// System.out.println("controllerLoop");
+			double seconds = .1;
+			if (getGameController() != null || stop == false) {
+				try {
+					seconds = Double.parseDouble(sec.getText());
+					if (!stop) {
 
-					double inc;
-					try {
-						inc = Double.parseDouble(increment.getText()) * 1000 * seconds;// convert to mm
+						double inc;
+						try {
+							inc = Double.parseDouble(increment.getText()) * 1000 * seconds;// convert to mm
 
-					} catch (Exception e) {
-						inc = defauletSpeed;
-						Platform.runLater(() -> {
-							try {
-								increment.setText(Double.toString(defauletSpeed));
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						});
-					}
-					// double rxl=0;
-					double ryl = inc / 20 * slider;
-					double rzl = inc / 2 * rz;
-					TransformNR current = new TransformNR(0, 0, 0, new RotationNR(0, rzl, 0));
-					current.translateX(inc * x);
-					current.translateY(inc * y);
-					current.translateZ(inc * slider);
-
-					try {
-
-						current = getKin().getCurrentPoseTarget().copy();
+						} catch (Exception e) {
+							inc = defauletSpeed;
+							Platform.runLater(() -> {
+								try {
+									increment.setText(Double.toString(defauletSpeed));
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							});
+						}
+						// double rxl=0;
+						double ryl = inc / 20 * slider;
+						double rzl = inc / 2 * rz;
+						TransformNR current = new TransformNR(0, 0, 0, new RotationNR(0, rzl, 0));
 						current.translateX(inc * x);
 						current.translateY(inc * y);
 						current.translateZ(inc * slider);
-						// current.setRotation(new RotationNR());
-						double toSeconds = seconds;
-						if (!jogTHreadHandle.setTarget(current, toSeconds)) {
-							current.translateX(-inc * x);
-							current.translateY(-inc * y);
-							current.translateZ(-inc * slider);
+
+						try {
+
+							current = getKin().getCurrentPoseTarget().copy();
+							current.translateX(inc * x);
+							current.translateY(inc * y);
+							current.translateZ(inc * slider);
+							// current.setRotation(new RotationNR());
+							double toSeconds = seconds;
+							if (!JogThread.setTarget(getKin(), current, toSeconds)) {
+								current.translateX(-inc * x);
+								current.translateY(-inc * y);
+								current.translateZ(-inc * slider);
+							}
+							// Log.enableDebugPrint();
+							// System.out.println("Loop Jogging to: "+toSet);
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-						// Log.enableDebugPrint();
-						// System.out.println("Loop Jogging to: "+toSet);
-
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (seconds < .01) {
-				seconds = .01;
-				sec.setText(".01");
-			}
-			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
-				@Override
-				public void run() {
-					controllerLoop();
-					// System.out.println("Controller loop!");
+				if (seconds < .01) {
+					seconds = .01;
+					sec.setText(".01");
 				}
-			});
-		}
-	}
+				FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
+					@Override
+					public void run() {
 
-	private class jogThread extends Thread {
-		private boolean controlThreadRunning = false;
-		private TransformNR toSet;
-		private double toSeconds = .016;
+						controllerLoop();
 
-		public void run() {
-			setName("Jog Widget Set Drive Arc Command " + getKin().getScriptingName());
-			while (source.isAvailable()) {
-				// System.out.println("Jog loop");
-				if (controlThreadRunning) {
-
-					try {
-						// Log.enableDebugPrint();
-						// System.out.println("Jogging to: "+toSet);
-						getKin().setDesiredTaskSpaceTransform(toSet, toSeconds);
-					} catch (Exception e) {
-						e.printStackTrace();
-						// BowlerStudioController.highlightException(null, e);
 					}
-
-					controlThreadRunning = false;
-				}
-				ThreadUtil.wait((int) (toSeconds * 1000));
+				});
 			}
-			new RuntimeException("Jog thread finished").printStackTrace();
-		}
-
-		public boolean setTarget(TransformNR toSet, double toSeconds) {
-			this.toSet = toSet.copy();
-
-			if (!getKin().checkTaskSpaceTransform(toSet))
-				return false;
-			this.toSeconds = toSeconds;
-			controlThreadRunning = true;
-			return true;
-		}
-
+		}).start();
 	}
 
 	@Override
@@ -570,7 +530,7 @@ public class JogWidget extends GridPane
 	}
 
 	public void setCurrent(TransformNR currentPoseTarget) {
-		jogTHreadHandle.setTarget(currentPoseTarget, 0);
+		JogThread.setTarget(getKin(), currentPoseTarget, 0);
 	}
 
 }

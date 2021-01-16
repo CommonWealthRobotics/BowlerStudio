@@ -31,121 +31,180 @@ import java.util.HashMap;
 
 import javax.management.RuntimeErrorException;
 
-public class JogMobileBase extends GridPane implements  IJInputEventListener {
-	double defauletSpeed=0.1;
-	private MobileBase mobilebase=null;
+public class JogMobileBase extends GridPane implements IJInputEventListener {
+	double defauletSpeed = 0.1;
+	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
-	Button nx = new Button("",AssetFactory.loadIcon("Minus-X.png"));
-	Button py = new Button("",AssetFactory.loadIcon("Plus-Y.png"));
-	Button ny = new Button("",AssetFactory.loadIcon("Minus-Y.png"));
-	Button pz = new Button("",AssetFactory.loadIcon("Plus-Z.png"));
-	Button nz = new Button("",AssetFactory.loadIcon("Minus-Z.png"));
-	Button home = new Button("",AssetFactory.loadIcon("Home.png"));
-	Button game = new Button("Add Game Controller",AssetFactory.loadIcon("Add-Game-Controller.png"));
-	Button conf = new Button("Configure...",AssetFactory.loadIcon("Configure-Game-Controller.png"));
-	TextField increment=new TextField(Double.toString(defauletSpeed));
-	TextField sec=new TextField("0.01");
-	private BowlerJInputDevice gameController=null;
-	double x,y,rz,slider=0;
-	private boolean stop=true;
-	private jogThread jogTHreadHandle;
+	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
+	Button py = new Button("", AssetFactory.loadIcon("Plus-Y.png"));
+	Button ny = new Button("", AssetFactory.loadIcon("Minus-Y.png"));
+	Button pz = new Button("", AssetFactory.loadIcon("Plus-Z.png"));
+	Button nz = new Button("", AssetFactory.loadIcon("Minus-Z.png"));
+	Button home = new Button("", AssetFactory.loadIcon("Home.png"));
+	Button game = new Button("Add Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
+	Button conf = new Button("Configure...", AssetFactory.loadIcon("Configure-Game-Controller.png"));
+	TextField increment = new TextField(Double.toString(defauletSpeed));
+	TextField sec = new TextField("0.01");
+	private BowlerJInputDevice gameController = null;
+	double x, y, rz, slider = 0;
+	private boolean stop = true;
 	private String paramsKey;
 	private GridPane buttons;
-	private static ArrayList<JogMobileBase> allWidgets=new ArrayList<JogMobileBase>();
-	
-	public JogMobileBase(MobileBase kinimatics){
+	private static ArrayList<JogMobileBase> allWidgets = new ArrayList<JogMobileBase>();
+
+	public JogMobileBase(MobileBase kinimatics) {
 		allWidgets.add(this);
-		if(!kinimatics.isAvailable())
+		if (!kinimatics.isAvailable())
 			kinimatics.connect();
-		mobilebase=kinimatics;
-		py = new Button("",AssetFactory.loadIcon("Rotation-Z.png"));
-		ny = new Button("",AssetFactory.loadIcon("Rotation-Neg-Z.png"));
-		px.setOnMousePressed(	event -> {try {handle( (Button)event.getSource()); }catch(Throwable T) {T.printStackTrace();}});
-		nx.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		py.setOnMousePressed(	event ->{try { handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		ny.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		pz.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		nz.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		home.setOnMousePressed(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		
-		px.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		nx.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		py.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		ny.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		pz.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		nz.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
-		home.setOnMouseReleased(	event -> {try {handle( (Button)event.getSource() ); }catch(Throwable T) {T.printStackTrace();}});
+		mobilebase = kinimatics;
+		py = new Button("", AssetFactory.loadIcon("Rotation-Z.png"));
+		ny = new Button("", AssetFactory.loadIcon("Rotation-Neg-Z.png"));
+		px.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		nx.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		py.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		ny.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		pz.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		nz.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		home.setOnMousePressed(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+
+		px.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		nx.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		py.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		ny.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		pz.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		nz.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
+		home.setOnMouseReleased(event -> {
+			try {
+				handle((Button) event.getSource());
+			} catch (Throwable T) {
+				T.printStackTrace();
+			}
+		});
 		game.setOnAction(event -> {
-			if(getGameController() == null){
-				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController"));
-				if(getGameController()==null){
+			if (getGameController() == null) {
+				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
+						"jogController"));
+				if (getGameController() == null) {
 					ConnectionManager.onConnectGamePad("jogController");
-					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class, "jogController"));
+					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
+							"jogController"));
 				}
-				
-			}else{
+
+			} else {
 				RemoveGameController();
 			}
 		});
 		conf.setOnAction(event -> {
-			if(getGameController() != null){
-				runControllerMap();				
+			if (getGameController() != null) {
+				runControllerMap();
 			}
 		});
-		
+
 		buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 300 wide
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 2 is 100 wide
-	    
-		buttons.getRowConstraints().add(new RowConstraints(40)); // 
-		buttons. getRowConstraints().add(new RowConstraints(40)); // 
-		buttons. getRowConstraints().add(new RowConstraints(40)); // 
-		buttons.getRowConstraints().add(new RowConstraints(40)); // 
-		
-		buttons.add(	py, 
-				0, 
-				1);
-		buttons.add(	home, 
-				1, 
-				1);
-		buttons.add(	ny, 
-				2, 
-				1);
-		
-		
-		buttons.add(	px, 
-				1, 
-				0);
-		
-		buttons.add(	nx, 
-				1, 
-				2);
-		buttons.add(	increment, 
-				0, 
-				3);
-		buttons.add(	new Label("m/s"), 
-				1, 
-				3);
-		
-		buttons.add(	sec, 
-				2, 
-				3);
-		buttons.add(	new Label("sec"), 
-				3, 
-				3);
-		
 
-	
-		
-		add(	buttons, 
-				0, 
-				0);
+		buttons.getRowConstraints().add(new RowConstraints(40)); //
+		buttons.getRowConstraints().add(new RowConstraints(40)); //
+		buttons.getRowConstraints().add(new RowConstraints(40)); //
+		buttons.getRowConstraints().add(new RowConstraints(40)); //
 
-		jogTHreadHandle = new jogThread();
-		jogTHreadHandle.start();
+		buttons.add(py, 0, 1);
+		buttons.add(home, 1, 1);
+		buttons.add(ny, 2, 1);
+
+		buttons.add(px, 1, 0);
+
+		buttons.add(nx, 1, 2);
+		buttons.add(increment, 0, 3);
+		buttons.add(new Label("m/s"), 1, 3);
+
+		buttons.add(sec, 2, 3);
+		buttons.add(new Label("sec"), 3, 3);
+
+		add(buttons, 0, 0);
+
 		controllerLoop();
-		
+
 	}
 
 	private BowlerJInputDevice RemoveGameController() {
@@ -155,12 +214,12 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 		setGameController(null);
 		return stale;
 	}
-	
-	private void handle(final Button button ){
 
-		if(!button.isPressed()){
+	private void handle(final Button button) {
+
+		if (!button.isPressed()) {
 			// button released
-			//Log.info(button.getText()+" Button released ");
+			// Log.info(button.getText()+" Button released ");
 //			try {
 //				TransformNR t = getKin().getCurrentTaskSpaceTransform();
 //				if(getKin().checkTaskSpaceTransform(t))
@@ -168,80 +227,80 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
-			if(button == px){
-				x=0;
+			if (button == px) {
+				x = 0;
 			}
-			if(button == nx){
-				x=0;
+			if (button == nx) {
+				x = 0;
 			}
-			if(mobilebase==null){
-				if(button == py){
-					y=0;
+			if (mobilebase == null) {
+				if (button == py) {
+					y = 0;
 				}
-				if(button == ny){
-					y=0;
+				if (button == ny) {
+					y = 0;
 				}
-			}else{
-				if(button == py){
-					rz=0;
+			} else {
+				if (button == py) {
+					rz = 0;
 				}
-				if(button == ny){
-					rz=0;
+				if (button == ny) {
+					rz = 0;
 				}
 			}
-			if(button == pz){
-				slider=0;
+			if (button == pz) {
+				slider = 0;
 			}
-			if(button == nz){
-				slider=0;
+			if (button == nz) {
+				slider = 0;
 			}
-			stop=true;
+			stop = true;
 			return;
-		}else{
-			Log.warning(button.getText()+" Button pressed ");
+		} else {
+			Log.warning(button.getText() + " Button pressed ");
 		}
-		if(button == px){
-			x=1;
+		if (button == px) {
+			x = 1;
 		}
-		if(button == nx){
-			x=-1;
+		if (button == nx) {
+			x = -1;
 		}
-		if(mobilebase==null){
-			if(button == py){
-				y=1;
+		if (mobilebase == null) {
+			if (button == py) {
+				y = 1;
 			}
-			if(button == ny){
-				y=-1;
+			if (button == ny) {
+				y = -1;
 			}
-		}else{
-			if(button == py){
-				rz=1;
+		} else {
+			if (button == py) {
+				rz = 1;
 			}
-			if(button == ny){
-				rz=-1;
+			if (button == ny) {
+				rz = -1;
 			}
 		}
-		if(button == pz){
-			slider=1;
+		if (button == pz) {
+			slider = 1;
 		}
-		if(button == nz){
-			slider=-1;
+		if (button == nz) {
+			slider = -1;
 		}
-		if(button == home){
+		if (button == home) {
 			home();
-			stop=true;
+			stop = true;
 			return;
 		}
-		stop=false;
+		stop = false;
 		controllerLoop();
 	}
-	
-	public void home(){
-		
-			getMobilebase().setGlobalToFiducialTransform(new TransformNR());
-			for(DHParameterKinematics c:getMobilebase().getAllDHChains()){
-					homeLimb(c);
-			}
+
+	public void home() {
+
+		getMobilebase().setGlobalToFiducialTransform(new TransformNR());
+		for (DHParameterKinematics c : getMobilebase().getAllDHChains()) {
+			homeLimb(c);
+		}
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
@@ -258,129 +317,97 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 
 	}
 
-	private void controllerLoop(){
-		//System.out.println("controllerLoop");
-		double seconds=.1;
-		if(getGameController()!=null || stop==false){
-			try{
-				seconds =Double.parseDouble(sec.getText());
-				if(!stop){ 
-					
-					
-					double inc;
-					try{
-						inc = Double.parseDouble(increment.getText())*1000*seconds;//convert to mm
-						
-					}catch(Exception e){
-						inc=defauletSpeed;
-						Platform.runLater(() -> {
-							try{
-							increment.setText(Double.toString(defauletSpeed));
-							}catch(Exception ex){
-								ex.printStackTrace();
-							}
-						});
-					}
-					//double rxl=0;
-					double ryl=inc/20*slider;
-					double rzl=inc/2*rz;
-					TransformNR current = new TransformNR(0,0,0,new RotationNR( 0,rzl, 0));
-					current.translateX(inc*x);
-					current.translateY(inc*y);
-					current.translateZ(inc*slider);
-					
-					try {
-						TransformNR toSet = current.copy();
-						double toSeconds=seconds;
-						jogTHreadHandle.setTarget(toSet, toSeconds);
-				
-							
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-			if(seconds<.01){
-				seconds=.01;
-				sec.setText(".01");
-			}
-			FxTimer.runLater(
-					Duration.ofMillis((int)(seconds*1000.0)) ,new Runnable() {
-						@Override
-						public void run() {
-							controllerLoop();
-							//System.out.println("Controller loop!");
-						}
-					});
-		}
-	}
-	
-	private class jogThread extends Thread{
-		private boolean controlThreadRunning=false;
-		private TransformNR toSet;
-		private double toSeconds=.016;
-		public void run(){
-			setName("Jog Widget Set Drive Arc Command "+mobilebase.getScriptingName());
-			while(mobilebase.isAvailable()){
-				//System.out.println("Jog loop");
-				if(controlThreadRunning){
-					
-						//toSet.setZ(0);
-						try {
-							getMobilebase().DriveArc(toSet, toSeconds);
-						} catch (Exception e) {
-							e.printStackTrace();
-							//BowlerStudioController.highlightException(null, e);
-						}
-					
-					controlThreadRunning=false;
-				}
-				ThreadUtil.wait((int) (toSeconds*1000));
-			}
-			new RuntimeException("Jog thread finished").printStackTrace();
-		}
+	private void controllerLoop() {
+		new Thread(() -> {
+			// System.out.println("controllerLoop");
+			double seconds = .1;
+			if (getGameController() != null || stop == false) {
+				try {
+					seconds = Double.parseDouble(sec.getText());
+					if (!stop) {
 
-		public boolean setTarget(TransformNR toSet,double toSeconds) {
-			this.toSet = toSet.copy();
-			this.toSeconds = toSeconds;
-			controlThreadRunning=true;
-			return true;
-		}
-		
+						double inc;
+						try {
+							inc = Double.parseDouble(increment.getText()) * 1000 * seconds;// convert to mm
+
+						} catch (Exception e) {
+							inc = defauletSpeed;
+							Platform.runLater(() -> {
+								try {
+									increment.setText(Double.toString(defauletSpeed));
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							});
+						}
+						// double rxl=0;
+						double ryl = inc / 20 * slider;
+						double rzl = inc / 2 * rz;
+						TransformNR current = new TransformNR(0, 0, 0, new RotationNR(0, rzl, 0));
+						current.translateX(inc * x);
+						current.translateY(inc * y);
+						current.translateZ(inc * slider);
+
+						try {
+							TransformNR toSet = current.copy();
+							double toSeconds = seconds;
+							JogThread.setTarget(mobilebase, toSet, toSeconds);
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (seconds < .01) {
+					seconds = .01;
+					Platform.runLater(() -> sec.setText(".01"));
+				}
+				FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
+					@Override
+					public void run() {
+
+						controllerLoop();
+
+						// System.out.println("Controller loop!");
+					}
+				});
+			}
+		}).start();
 	}
-	
 
 	@Override
-	public void onEvent(Component comp, net.java.games.input.Event event,
-			float value, String eventString) {
+	public void onEvent(Component comp, net.java.games.input.Event event, float value, String eventString) {
 
-		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
-			x=value;
-		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
-			y=value;
-		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
-			rz=-value;
-		if(comp.getName().toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
-			slider=-value;
-		if(Math.abs(x)<.01)
-			x=0;
-		if(Math.abs(y)<.01)
-			y=0;
-		if(Math.abs(rz)<.01)
-			rz=0;
-		if(Math.abs(slider)<.01)
-			slider=0;
-		if(x==0.0&&y==0.0 &&rz==0.0&&slider==0) {
-			//System.out.println("Stoping on="+comp.getName());
-			stop=true;
-			
-		}else
-			stop=false;
-		
-		
+		if (comp.getName().toLowerCase()
+				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
+			x = value;
+		if (comp.getName().toLowerCase()
+				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
+			y = value;
+		if (comp.getName().toLowerCase()
+				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
+			rz = -value;
+		if (comp.getName().toLowerCase()
+				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
+			slider = -value;
+		if (Math.abs(x) < .01)
+			x = 0;
+		if (Math.abs(y) < .01)
+			y = 0;
+		if (Math.abs(rz) < .01)
+			rz = 0;
+		if (Math.abs(slider) < .01)
+			slider = 0;
+		if (x == 0.0 && y == 0.0 && rz == 0.0 && slider == 0) {
+			// System.out.println("Stoping on="+comp.getName());
+			stop = true;
+
+		} else
+			stop = false;
+
 	}
 
 	public MobileBase getMobilebase() {
@@ -397,7 +424,7 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 
 	public void setGameController(BowlerJInputDevice gameController) {
 		this.gameController = gameController;
-		if(gameController!=null){
+		if (gameController != null) {
 			getGameController().clearListeners();
 			getGameController().addListeners(this);
 			game.setText("Remove Game Controller");
@@ -406,15 +433,12 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 			paramsKey = hwController.getName();
 			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
 			boolean hasmap = false;
-			if(map.containsKey("jogKinx")&&
-					map.containsKey("jogKiny")	&&
-					map.containsKey("jogKinz")	&&	
-					map.containsKey("jogKinslider")
-					){
-				hasmap=true;
+			if (map.containsKey("jogKinx") && map.containsKey("jogKiny") && map.containsKey("jogKinz")
+					&& map.containsKey("jogKinslider")) {
+				hasmap = true;
 			}
 
-			if(!hasmap){
+			if (!hasmap) {
 				runControllerMap();
 			}
 		}
@@ -422,17 +446,16 @@ public class JogMobileBase extends GridPane implements  IJInputEventListener {
 
 	private void runControllerMap() {
 		Stage s = new Stage();
-		new Thread(){
-			public void run(){
+		new Thread() {
+			public void run() {
 				JogTrainerWidget controller = new JogTrainerWidget(gameController);
 				try {
-					controller.start( s);
+					controller.start(s);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}.start();
 	}
-
 
 }
