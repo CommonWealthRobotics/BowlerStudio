@@ -7,7 +7,6 @@ import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.gcodebridge.GcodeDevice;
 import com.neuronrobotics.sdk.common.*;
@@ -33,10 +32,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
-import net.java.games.input.Event;
 import org.reactfx.util.FxTimer;
 
 import java.io.File;
@@ -356,13 +351,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void onConnectGamePad(String name ) {
-		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
+		String[] ca = BowlerJInputDevice.getControllers();
 		
 		List<String> choices = new ArrayList<>();
 		if(ca.length==0)
 			return;
-		for (Controller s: ca){
-			choices.add(s.getName());
+		for (String s: ca){
+			choices.add(s);
 		}
 
 		
@@ -376,18 +371,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			for(Controller s: ca){
-				if(letter.contains(s.getName())){
+			for(String s: BowlerJInputDevice.getControllers()){
+				if(letter.contains(s)){
 					BowlerJInputDevice p =new BowlerJInputDevice(s);
 					p.connect();
-					IJInputEventListener l=new IJInputEventListener() {
-						@Override
-						public void onEvent(Component comp, Event event1,
-								float value, String eventString) {
-									//System.out.println(comp.getName()+" is value= "+value);
-								}
-					};
-					p.addListeners(l);
 					addConnection(p,name);
 					return;
 				}

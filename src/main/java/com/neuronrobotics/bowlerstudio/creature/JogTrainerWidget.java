@@ -7,7 +7,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -20,14 +20,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.java.games.input.Component;
-import net.java.games.input.Event;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
-public class JogTrainerWidget extends Application implements IJInputEventListener {
+public class JogTrainerWidget extends Application implements IGameControlEvent {
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -90,7 +88,7 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
 
     public JogTrainerWidget(BowlerJInputDevice gameController) {
 		this.gameController = gameController;
-		paramsKey = gameController.getController().getName();
+		paramsKey = gameController.getControllerName();
 		gameController.addListeners(this);
 	}
 	// Handler for Button[Button[id=null, styleClass=button]] onAction
@@ -186,9 +184,9 @@ public class JogTrainerWidget extends Application implements IJInputEventListene
 
     }
 	@Override
-	public void onEvent(Component arg0, Event arg1, float value, String arg3) {
+	public void onEvent(String name, float value) {
 		if(Math.abs(value)>0.75 && selected!=null){
-			 Platform.runLater(()->selected.setText(arg0.getName()));
+			 Platform.runLater(()->selected.setText(name));
 		}
 		
 	}

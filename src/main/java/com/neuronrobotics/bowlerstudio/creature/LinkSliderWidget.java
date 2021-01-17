@@ -9,7 +9,7 @@ import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -63,13 +63,10 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import net.java.games.input.Event;
 
 @SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group
-		implements IJInputEventListener, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener {
+		implements IGameControlEvent, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -324,8 +321,7 @@ public class LinkSliderWidget extends Group
 		}
 
 		if (controller != null) {
-			Controller hwController = controller.getController();
-			paramsKey = hwController.getName();
+			paramsKey = controller.getControllerName();
 			System.err.println("Controller key: " + paramsKey);
 			getGameController().clearListeners();
 			getGameController().addListeners(this);
@@ -338,9 +334,9 @@ public class LinkSliderWidget extends Group
 	}
 
 	@Override
-	public void onEvent(Component comp, net.java.games.input.Event event, float value, String eventString) {
+	public void onEvent(String name, float value) {
 
-		if (comp.getName().toLowerCase()
+		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x")))
 			slider = -value;
 

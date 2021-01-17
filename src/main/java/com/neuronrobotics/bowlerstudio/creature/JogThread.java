@@ -88,11 +88,7 @@ public class JogThread {
 			RuntimeException runtimeException = new RuntimeException(message);
 
 			if (isControlThreadRunning()) {
-				System.err.println("\n\nFailed to set");
-				runtimeException.printStackTrace();
-				lastTarget.printStackTrace();
-			} else {
-				System.err.println(message);
+				return false;
 			}
 			lastTarget = runtimeException;
 			this.toSet = toSet.copy();

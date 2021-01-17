@@ -4,7 +4,7 @@ import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
+import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
@@ -20,8 +20,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
 import org.reactfx.util.FxTimer;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -31,7 +29,7 @@ import java.util.HashMap;
 
 import javax.management.RuntimeErrorException;
 
-public class JogMobileBase extends GridPane implements IJInputEventListener {
+public class JogMobileBase extends GridPane implements IGameControlEvent {
 	double defauletSpeed = 0.1;
 	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
@@ -379,18 +377,18 @@ public class JogMobileBase extends GridPane implements IJInputEventListener {
 	}
 
 	@Override
-	public void onEvent(Component comp, net.java.games.input.Event event, float value, String eventString) {
+	public void onEvent(String name, float value) {
 
-		if (comp.getName().toLowerCase()
+		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
 			x = value;
-		if (comp.getName().toLowerCase()
+		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
 			y = value;
-		if (comp.getName().toLowerCase()
+		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
 			rz = -value;
-		if (comp.getName().toLowerCase()
+		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
 			slider = -value;
 		if (Math.abs(x) < .01)
@@ -429,8 +427,8 @@ public class JogMobileBase extends GridPane implements IJInputEventListener {
 			getGameController().addListeners(this);
 			game.setText("Remove Game Controller");
 			controllerLoop();
-			Controller hwController = gameController.getController();
-			paramsKey = hwController.getName();
+			String hwController = gameController.getControllerName();
+			paramsKey = hwController;
 			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
 			boolean hasmap = false;
 			if (map.containsKey("jogKinx") && map.containsKey("jogKiny") && map.containsKey("jogKinz")
