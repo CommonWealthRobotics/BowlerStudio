@@ -166,7 +166,7 @@ public class JogWidget extends GridPane
 				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
 						"jogController"));
 				if (getGameController() == null) {
-					ConnectionManager.onConnectGamePad("jogController");
+					ConnectionManager.onConnectGamePad();
 					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
 							"jogController"));
 				}

@@ -953,7 +953,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onConnectGamePad(ActionEvent event) {
-		Platform.runLater(() -> ConnectionManager.onConnectGamePad("gamepad"));
+		Platform.runLater(() -> ConnectionManager.onConnectGamePad());
 
 	}
 

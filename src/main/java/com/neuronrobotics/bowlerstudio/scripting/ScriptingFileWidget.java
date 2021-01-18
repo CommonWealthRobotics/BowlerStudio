@@ -284,32 +284,6 @@ public class ScriptingFileWidget extends BorderPane implements
 
 				} 
 				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Variable missing error");
-						String message = "This script needs a variable defined before you use it: ";
-					
-						String stackTrace = d.getMessage();
-						if(stackTrace==null)
-							stackTrace="";
-						if(stackTrace.contains("dyio"))
-							message+="dyio";
-						else if(stackTrace.contains("camera"))
-							message+="camera";
-						else if(stackTrace.contains("gamepad"))
-							message+="gamepad";
-						else
-							message+=stackTrace;
-						alert.setHeaderText(message);
-						alert.showAndWait();
-						if(stackTrace.contains("dyio"))
-							ConnectionManager.addConnection();
-//						else if(stackTrace.contains("camera"))
-//							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
-						else if(stackTrace.contains("gamepad"))
-							ConnectionManager.onConnectGamePad("gamepad");
-						reset();
-					});
 					BowlerStudioController.highlightException(currentFile, d);
 				}
 				catch (Throwable ex) {

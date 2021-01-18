@@ -230,6 +230,8 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
+
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		if (!StudioBuildInfo.isOS64bit()) {
 

@@ -350,7 +350,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	}
 
 
-	public static void onConnectGamePad(String name ) {
+	public static void onConnectGamePad() {
 		String[] ca = BowlerJInputDevice.getControllers();
 		
 		List<String> choices = new ArrayList<>();
@@ -375,7 +375,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				if(letter.contains(s)){
 					BowlerJInputDevice p =new BowlerJInputDevice(s);
 					p.connect();
-					addConnection(p,name);
+					addConnection(p,p.getName());
 					return;
 				}
 			}
