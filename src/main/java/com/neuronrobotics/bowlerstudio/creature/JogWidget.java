@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -14,7 +13,6 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -23,12 +21,9 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import org.reactfx.util.FxTimer;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.management.RuntimeErrorException;
 
 public class JogWidget extends GridPane
 		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IGameControlEvent {
