@@ -140,73 +140,7 @@ public class PluginManager {
 		TreeView<String> treeView =new  TreeView<>(rpc);
 		treeView.setCellFactory(CheckBoxTreeCell.forTreeView());
 		
-		if(dev.getConnection()!=null){
-			rpc.setExpanded(true);
-			ArrayList<String> nameSpaceList = dev.getNamespaces();
-			for(String namespace:nameSpaceList){
-				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<> (namespace); 
-				ns.setExpanded(false);
-				rpc.getChildren().add(ns);
-				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
-				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<> ("GET"); 
-				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<> ("POST"); 
-				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<> ("ASYNC"); 
-				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<> ("CRITICAL");
-				get.setExpanded(false);
-				ns.getChildren().add(get);
-				post.setExpanded(false);
-				ns.getChildren().add(post);
-				async.setExpanded(false);
-				ns.getChildren().add(async);
-				crit.setExpanded(false);
-				ns.getChildren().add(crit);
-				for(RpcEncapsulation rpcEnc:rpcList){
-					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<> (rpcEnc.getRpc()); 
-					rc.setExpanded(false);
-					switch(rpcEnc.getDownstreamMethod()){
-					case ASYNCHRONOUS:
-						async.getChildren().add(rc);
-						break;
-					case CRITICAL:
-						crit.getChildren().add(rc);
-						break;
-					case GET:
-						get.getChildren().add(rc);
-						break;
-					case POST:
-						post.getChildren().add(rc);
-						break;
-					default:
-						break;
-					
-					}
-					RpcCommandPanel panel =new RpcCommandPanel(rpcEnc, dev,rc);
 
-//					Platform.runLater(()->{
-//						SwingNode sn = new SwingNode();
-//						Stage dialog = new Stage();
-//						dialog.setHeight(panel.getHeight());
-//						dialog.setWidth(panel.getWidth());
-//						dialog.initStyle(StageStyle.UTILITY);
-//					    sn.setContent(panel);
-//						Scene scene = new Scene(new Group(sn));
-//						dialog.setScene(scene);
-//						dialog.setOnCloseRequest(event -> {
-//							rc.setSelected(false);
-//						});
-//						rc.selectedProperty().addListener(b ->{
-//							 if(rc.isSelected()){
-//								 dialog.show();
-//							 }else{
-//								 dialog.hide();
-//							 }
-//				        });
-//					});
-					
-				}
-			}
-		}
-		
 		return treeView;
 		
 	}
@@ -218,7 +152,8 @@ public class PluginManager {
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				Button launcher = new Button(c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				launcher.setTooltip(new javafx.scene.control.Tooltip("Launch plugin to "+c.getPlugin().getSimpleName()));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	
 							BootloaderPanel.class ==c.getPlugin()||
