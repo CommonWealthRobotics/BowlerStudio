@@ -438,10 +438,10 @@ public class LinkSliderWidget extends Group
 		linkGaugeController3d.getGauge().getTransforms().clear();
 		linkGaugeController3d.setLink(conf, getAbstractLink());
 		if (linkIndex == 0)
-			linkGaugeController3d.getGauge().getTransforms().add(device.getRootListener());
+			linkGaugeController3d.getGauge().getTransforms().add((Affine) device.getRootListener());
 		else
 			linkGaugeController3d.getGauge().getTransforms()
-					.add(device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+					.add((Affine)device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		
 		linkGaugeController3d.getGauge().getTransforms().add(offsetGauge);
 		linkGaugeController3d.getGauge().getTransforms().add(offsetGaugeTranslate);

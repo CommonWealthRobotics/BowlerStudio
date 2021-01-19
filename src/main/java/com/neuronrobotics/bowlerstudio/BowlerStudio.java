@@ -21,7 +21,6 @@ import com.neuronrobotics.imageprovider.NativeResource;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.*;

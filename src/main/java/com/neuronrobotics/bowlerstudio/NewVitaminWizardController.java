@@ -20,8 +20,8 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

@@ -665,7 +665,7 @@ public class MobleBaseMenueFactory {
 			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
 			else
-				BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+				BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
 		link.getChildren().add(hwConf);
 
@@ -683,7 +683,7 @@ public class MobleBaseMenueFactory {
 				if (linkIndex == 0)
 					BowlerStudio.select(base, dh);
 				else
-					BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+					BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 			} catch (Exception ex) {
 				System.err.println("Limb not loaded yet");
 			}
@@ -799,7 +799,7 @@ public class MobleBaseMenueFactory {
 			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
 			else
-				BowlerStudio.select(dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+				BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
 
 		link.getChildren().addAll(design);

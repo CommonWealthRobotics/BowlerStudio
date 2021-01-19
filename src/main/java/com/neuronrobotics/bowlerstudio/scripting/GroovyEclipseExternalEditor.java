@@ -2,8 +2,9 @@ package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.io.File;
 
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.video.OSUtil;
+
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

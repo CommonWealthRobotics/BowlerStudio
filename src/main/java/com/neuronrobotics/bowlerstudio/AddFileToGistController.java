@@ -3,8 +3,8 @@ package com.neuronrobotics.bowlerstudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

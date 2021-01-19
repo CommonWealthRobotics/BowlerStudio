@@ -7,9 +7,9 @@ import java.net.URL;
 
 import org.eclipse.jgit.lib.Repository;
 
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.video.OSUtil;
 
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 
 public class ArduinoExternalEditor implements IExternalEditor {
