@@ -9,6 +9,7 @@ import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
@@ -63,6 +64,8 @@ public class PluginManager {
 		addPlugin(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
 		//Firmata
 		addPlugin(new DeviceSupportPluginMap(FirmataBowler.class, FirmataTab.class));
+		//game controller
+		addPlugin(new DeviceSupportPluginMap(BowlerJInputDevice.class, CalibrateGameControl.class));
 	}
 	
 	public PluginManager(BowlerAbstractDevice dev){
