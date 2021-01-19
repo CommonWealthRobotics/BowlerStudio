@@ -456,7 +456,11 @@ public class ScriptingFileWidget extends BorderPane implements
 										if(content.length()>2)// ensures tha the file contents never get wiped out on the user
 											setCode(content);
 										if(autoRun.isSelected()) {
-											start();
+											new Thread(()->{
+												stop();
+												start();
+											}).start();
+											
 										}
 									} catch (UnsupportedEncodingException e1) {
 										// TODO Auto-generated catch block
