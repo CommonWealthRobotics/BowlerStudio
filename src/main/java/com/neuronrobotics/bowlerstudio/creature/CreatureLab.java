@@ -183,8 +183,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				TreeItem<String> treeItem = (TreeItem<String>) newValue;
 				new Thread() {
 					public void run() {
-						if (walkWidget.getGameController() != null)
-							setGameController(walkWidget.getGameController());
+
 						if (callbackMapForTreeitems.get(treeItem) != null) {
 							callbackMapForTreeitems.get(treeItem).run();
 						}
@@ -203,7 +202,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							Platform.runLater(() -> {
 								tab.getControlsBox().getChildren().clear();
 							});
-							walkWidget.setGameController(getController());
 						}
 					}
 				}.start();

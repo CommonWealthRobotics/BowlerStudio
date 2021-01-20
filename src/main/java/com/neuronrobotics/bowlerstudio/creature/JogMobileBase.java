@@ -1,8 +1,12 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.gamepad.JogTrainerWidget;
@@ -12,21 +16,36 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.util.FxTimer;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
@@ -40,17 +59,18 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 	Button pz = new Button("", AssetFactory.loadIcon("Plus-Z.png"));
 	Button nz = new Button("", AssetFactory.loadIcon("Minus-Z.png"));
 	Button home = new Button("", AssetFactory.loadIcon("Home.png"));
-	Button game = new Button("Add Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
+	Button game = new Button("Run Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
 	Button conf = new Button("Configure...", AssetFactory.loadIcon("Configure-Game-Controller.png"));
 	TextField increment = new TextField(Double.toString(defauletSpeed));
 	TextField sec = new TextField("0.01");
-	private BowlerJInputDevice gameController = null;
 	double x, y, rz, slider = 0;
 	private boolean stop = true;
 	private String paramsKey;
 	private GridPane buttons;
 	private static ArrayList<JogMobileBase> allWidgets = new ArrayList<JogMobileBase>();
-
+	private boolean running = false;
+	private Thread scriptRunner=null;
+	private File currentFile = null;
 	public JogMobileBase(MobileBase kinimatics) {
 		allWidgets.add(this);
 		if (!kinimatics.isAvailable())
@@ -157,25 +177,27 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 				T.printStackTrace();
 			}
 		});
+		game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		game.setOnAction(event -> {
-			if (getGameController() == null) {
-				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
-						"jogController"));
-				if (getGameController() == null) {
-					ConnectionManager.onConnectGamePad();
-					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
-							"jogController"));
-				}
-
-			} else {
-				RemoveGameController();
-			}
+			new Thread(){
+	    		public void run(){
+	    			pushThisMobileBaseAsKatapult();
+	    			startStopAction();
+	    		}
+	    	}.start();
+			
 		});
 		conf.setOnAction(event -> {
-			if (getGameController() != null) {
-				runControllerMap();
-			}
+			new Thread(){
+	    		public void run(){
+	    			pushThisMobileBaseAsKatapult();
+	    			ConfigurationDatabase.save();
+	    		}
+	    	}.start();
 		});
+		
+		game.setTooltip(new Tooltip("Connect game controllers and use them to control your robot"));
+		conf.setTooltip(new Tooltip("Save this robot to be used in Katapult plauncher"));
 
 		buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
@@ -196,6 +218,9 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 		buttons.add(nx, 1, 2);
 		buttons.add(increment, 0, 3);
 		buttons.add(new Label("m/s"), 1, 3);
+		buttons.add(game, 0, 4);
+		buttons.add(conf, 1, 4);
+		
 
 		buttons.add(sec, 2, 3);
 		buttons.add(new Label("sec"), 3, 3);
@@ -203,15 +228,116 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 		add(buttons, 0, 0);
 
 		controllerLoop();
+		try {
+			
+			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "launch.groovy");
+		} catch (GitAPIException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mobilebase.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice source) {
+				stop();
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice source) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+
+	private void startStopAction(){
+		game.setDisable(true);
+		if (running)
+			stop();
+		else
+			start();
+		game.setDisable(false);
+	}
+	private void pushThisMobileBaseAsKatapult() {
+		ConfigurationDatabase.setObject("katapult", "robotName", mobilebase.getScriptingName());
+		ConfigurationDatabase.setObject("katapult", "robotGit", mobilebase.getGitSelfSource()[0]);
+		ConfigurationDatabase.setObject("katapult", "robotGitFile", mobilebase.getGitSelfSource()[1]);
+		ConfigurationDatabase.setObject("katapult", "linkDeviceName", mobilebase.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName());
+		ArrayList<String> asList = new ArrayList<String>();
+		asList.add("Dragon");
+		asList.add("X-Box");
+		asList.add("Game");
+		asList.add("Play");
+		String[] fromLookup = BowlerJInputDevice.getControllers();
+		for(int i=0;i<fromLookup.length;i++)
+			asList.add(fromLookup[i]);
+		ConfigurationDatabase.setObject("katapult", "gameControllerNames", asList);
+	}
+	private void reset() {
+		running = false;
+		Platform.runLater(() -> {
+			game.setText("Run Game Controller");
+			//game.setGraphic(AssetFactory.loadIcon("Run.png"));
+			game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+			
+		});
 
 	}
 
-	private BowlerJInputDevice RemoveGameController() {
-		BowlerJInputDevice stale = getGameController();
-		getGameController().removeListeners(this);
-		game.setText("Add Game Controller");
-		setGameController(null);
-		return stale;
+	public void stop() {
+		// TODO Auto-generated method stub
+
+		reset();
+		if (scriptRunner != null)
+			while (scriptRunner.isAlive()) {
+
+				Log.debug("Interrupting");
+				ThreadUtil.wait(10);
+				try {
+					scriptRunner.interrupt();
+					scriptRunner.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
+		scriptRunner=null;
+	}
+	
+	private void start() {
+
+
+		running = true;
+		Platform.runLater(()->{
+			game.setText("Stop Game Controller");
+			//game.setGraphic(AssetFactory.loadIcon("Stop.png"));
+			game.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+		});
+		scriptRunner = new Thread() {
+
+			public void run() {
+				try {
+					ScriptingEngine.inlineFileScriptRun(currentFile, null);
+					reset();
+
+				} 
+				catch (Throwable ex) {
+
+					reset();
+				}
+
+			}
+		};
+
+		try {
+
+			scriptRunner.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void handle(final Button button) {
@@ -320,7 +446,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 		new Thread(() -> {
 			// System.out.println("controllerLoop");
 			double seconds = .1;
-			if (getGameController() != null || stop == false) {
+			if ( stop == false) {
 				try {
 					seconds = Double.parseDouble(sec.getText());
 					if (!stop) {
@@ -417,44 +543,6 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 		this.mobilebase = mobilebase;
 	}
 
-	public BowlerJInputDevice getGameController() {
-		return gameController;
-	}
 
-	public void setGameController(BowlerJInputDevice gameController) {
-		this.gameController = gameController;
-		if (gameController != null) {
-			getGameController().clearListeners();
-			getGameController().addListeners(this);
-			game.setText("Remove Game Controller");
-			controllerLoop();
-			String hwController = gameController.getControllerName();
-			paramsKey = hwController;
-			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
-			boolean hasmap = false;
-			if (map.containsKey("jogKinx") && map.containsKey("jogKiny") && map.containsKey("jogKinz")
-					&& map.containsKey("jogKinslider")) {
-				hasmap = true;
-			}
-
-			if (!hasmap) {
-				runControllerMap();
-			}
-		}
-	}
-
-	private void runControllerMap() {
-		Stage s = new Stage();
-		new Thread() {
-			public void run() {
-				JogTrainerWidget controller = new JogTrainerWidget(gameController);
-				try {
-					controller.start(s);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-	}
 
 }
