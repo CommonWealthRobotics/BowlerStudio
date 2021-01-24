@@ -351,10 +351,10 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void onConnectGamePad() {
-		String[] ca = BowlerJInputDevice.getControllers();
+		ArrayList<String> ca = BowlerJInputDevice.getControllers();
 		
 		List<String> choices = new ArrayList<>();
-		if(ca.length==0)
+		if(ca.size()==0)
 			return;
 		for (String s: ca){
 			choices.add(s);

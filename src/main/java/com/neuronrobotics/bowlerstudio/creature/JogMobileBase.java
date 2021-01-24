@@ -44,8 +44,11 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.management.RuntimeErrorException;
 
@@ -263,15 +266,17 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 		ConfigurationDatabase.setObject("katapult", "robotGit", mobilebase.getGitSelfSource()[0]);
 		ConfigurationDatabase.setObject("katapult", "robotGitFile", mobilebase.getGitSelfSource()[1]);
 		ConfigurationDatabase.setObject("katapult", "linkDeviceName", mobilebase.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName());
-		ArrayList<String> asList = new ArrayList<String>();
-		asList.add("Dragon");
-		asList.add("X-Box");
-		asList.add("Game");
-		asList.add("Play");
-		String[] fromLookup = BowlerJInputDevice.getControllers();
-		for(int i=0;i<fromLookup.length;i++)
-			asList.add(fromLookup[i]);
-		ConfigurationDatabase.setObject("katapult", "gameControllerNames", asList);
+	    @SuppressWarnings("unchecked")
+		List<String> asList = (List<String>) ConfigurationDatabase.getObject("katapult", "gameControllerNames", 
+				Arrays.asList("Dragon","X-Box","Game","Play"));
+		
+		ArrayList<String> fromLookup = BowlerJInputDevice.getControllers();
+		fromLookup.addAll(asList);
+		Set<String> uniques = new HashSet<String>(asList);
+		
+		ConfigurationDatabase.setObject("katapult", "gameControllerNames", 
+				Arrays.asList(uniques.toArray())
+				);
 	}
 	private void reset() {
 		running = false;
