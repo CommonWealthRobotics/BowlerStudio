@@ -178,10 +178,10 @@ dependencies {
 	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
 	compile 'org.clojure:clojure:1.8.0'
 	// jetty server
-	compile "org.eclipse.jetty:jetty-server:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-servlet:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-servlets:9.0.2.v20130417"
-	compile "org.eclipse.jetty:jetty-webapp:9.0.2.v20130417"
+	compile "org.eclipse.jetty:jetty-server:9.4.36.v20210114"
+	compile "org.eclipse.jetty:jetty-servlet:9.4.36.v20210114"
+	compile "org.eclipse.jetty:jetty-servlets:9.4.36.v20210114"
+	compile "org.eclipse.jetty:jetty-webapp:9.4.36.v20210114"
 	compile "javax.servlet:javax.servlet-api:3.1.0"
 	
 	
