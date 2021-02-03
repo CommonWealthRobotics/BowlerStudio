@@ -29,7 +29,7 @@ public class SVGExternalEditor implements IExternalEditor {
 		try {
 			File dir = ScriptingEngine.locateGit(file).getRepository().getWorkTree();
 			if(OSUtil.isLinux())
-				run(dir,"inkscape",filename);
+				run(dir,System.err,"inkscape",filename);
 			if(OSUtil.isWindows()) {
 				String exe="inkscape.exe";
 				String [] options = {"C:\\Program Files\\Inkscape\\bin\\inkscape.exe",
@@ -41,7 +41,7 @@ public class SVGExternalEditor implements IExternalEditor {
 					}
 				}
 				
-				run(dir,"\""+exe+"\"",filename);	
+				run(dir,System.err,"\""+exe+"\"",filename);	
 			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block

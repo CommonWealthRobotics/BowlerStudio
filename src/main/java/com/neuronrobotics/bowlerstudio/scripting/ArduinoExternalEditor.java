@@ -24,9 +24,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			repository = ScriptingEngine.locateGit(file).getRepository();
 			File dir = repository.getWorkTree();
 			if (OSUtil.isLinux())
-				run(dir, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
+				run(dir,System.err, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
 			if (OSUtil.isWindows())
-				run(dir, "C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath());
+				run(dir,System.err, "C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

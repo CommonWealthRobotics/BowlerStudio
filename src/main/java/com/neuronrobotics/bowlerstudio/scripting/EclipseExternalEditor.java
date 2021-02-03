@@ -141,9 +141,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
 					if (OSUtil.isLinux())
-						run( ScriptingEngine.getWorkspace(), "bash", eclipseEXE, "-data", ws);
+						run( ScriptingEngine.getWorkspace(),System.out, "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isWindows())
-						run(ScriptingEngine.getWorkspace() , eclipseEXE, "-data", ws);
+						run(ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -172,9 +172,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				}
 				if (OSUtil.isLinux())
-					run(dir, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
+					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isWindows())
-					run(dir, eclipseEXE, dir.getAbsolutePath() + delim());
+					run(dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
