@@ -183,6 +183,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 	
 	private boolean isEclipseOpen(String ws) {
+		if(!new File(ws).exists())
+			return false;
 		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
 		System.out.println("Checking WS "+lockFile);
 		try {
