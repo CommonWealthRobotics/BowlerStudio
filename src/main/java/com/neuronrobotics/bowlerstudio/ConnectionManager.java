@@ -425,29 +425,47 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		
 		mp.setName(newDevice.getScriptingName());
-
-		newDevice.addConnectionEventListener(
-				new IDeviceConnectionEventListener() {
-					@Override
-					public void onDisconnect(BowlerAbstractDevice source) {
-						// clean up after yourself...
-						//disconectAndRemoveDevice(mp);
-						
-						for(int i=0;i<plugins.size();i++){
-							PluginManager p=plugins.get(i).getManager();
-							if(p.getDevice()==source){
-								DeviceManager.remove(p.getDevice());
-								return;
-							}
-						}
-						
-					}
-
-					// ignore
-					@Override
-					public void onConnect(BowlerAbstractDevice source) {
-					}
-				});
+//		DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+//			
+//			@Override
+//			public void onNewDeviceAdded(BowlerAbstractDevice bad) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void onDeviceRemoved(BowlerAbstractDevice bad) {
+//				for (int i = 0; i < plugins.size(); i++) {
+//					PluginManager p = plugins.get(i).getManager();
+//					if (p.getDevice() == bad) {
+//						DeviceManager.remove(p.getDevice());
+//						return;
+//					}
+//				}
+//			}
+//		});
+//		newDevice.addConnectionEventListener(
+//				new IDeviceConnectionEventListener() {
+//					@Override
+//					public void onDisconnect(BowlerAbstractDevice source) {
+//						// clean up after yourself...
+//						//disconectAndRemoveDevice(mp);
+//						
+//						for(int i=0;i<plugins.size();i++){
+//							PluginManager p=plugins.get(i).getManager();
+//							if(p.getDevice()==source){
+//								DeviceManager.remove(p.getDevice());
+//								return;
+//							}
+//						}
+//						
+//					}
+//
+//					// ignore
+//					@Override
+//					public void onConnect(BowlerAbstractDevice source) {
+//					}
+//				});
 		if(	getBowlerStudioController()!=null)
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
