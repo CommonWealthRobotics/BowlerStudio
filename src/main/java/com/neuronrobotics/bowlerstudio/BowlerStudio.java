@@ -475,6 +475,8 @@ public class BowlerStudio extends Application {
 			launch();
 
 		} else {
+			System.out.println("Arguments detected, starting Kernel mode.");
+			SplashManager.closeSplash();
 			BowlerKernel.main(args);
 		}
 
