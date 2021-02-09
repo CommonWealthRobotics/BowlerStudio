@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -59,8 +60,8 @@ public class JogThread {
 						try {
 							((MobileBase) source).DriveArc(toSet, toSeconds);
 						} catch (Exception e) {
-							e.printStackTrace();
-							// BowlerStudioController.highlightException(null, e);
+						//e.printStackTrace();
+							 BowlerStudioController.highlightException(null, e);
 						}
 					} else if (DHParameterKinematics.class.isInstance(source)) {
 						DHParameterKinematics kin = (DHParameterKinematics) source;

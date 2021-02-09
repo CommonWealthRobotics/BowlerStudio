@@ -238,7 +238,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		progress.setStyle("-fx-background-color: #FFFFFF;");
 		progress.setOpacity(.7);
-		// progress.setMinHeight(150);
+		progress.setMinHeight(100);
 		progress.setPrefSize(325, 150);
 		tab.setOverlayTop(progress);
 		tab.setOverlayTopRight(walkWidget);
