@@ -91,7 +91,7 @@ public class MobleBaseMenueFactory {
 				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
 
 				callbackMapForTreeitems.put(publish, () -> {
-
+					
 					CommitWidget.commit(source, device.getXml());
 
 				});
