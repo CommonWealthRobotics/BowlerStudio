@@ -162,6 +162,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			public void run() {
 				try {
 					MobileBase mb;
+					ScriptingEngine.pull(id);
 					if (file.toLowerCase().endsWith(".xml")) {
 						mb = MobileBaseLoader.fromGit(id, file);
 					} else {
@@ -1170,7 +1171,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						HashMap<String, Object> script = entry.getValue();
 						MenuItem item = new MenuItem(entry.getKey());
 						item.setOnAction(event -> {
-							loadMobilebaseFromGit((String) script.get("scriptGit"), (String) script.get("scriptFile"));
+							String id = (String) script.get("scriptGit");
+							String file = (String) script.get("scriptFile");
+							
+							loadMobilebaseFromGit(id, file);
 						});
 						Platform.runLater(() -> {
 							CreaturesMenu.getItems().add(item);
