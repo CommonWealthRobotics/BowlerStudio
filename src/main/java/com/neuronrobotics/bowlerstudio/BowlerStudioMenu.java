@@ -358,17 +358,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public static String gitURLtoMessage(String url) {
-		while (true) {
+		for(int i=0;i<5;i++) {
 			try {
 				if (selfRef.messages.get(url) != null)
 					break;
 				throw new RuntimeException();
 			} catch (Exception e) {
-				// System.err.println("Waiting for API to load message data..."+url);
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(500);
 				} catch (InterruptedException e1) {
-					exp.uncaughtException(Thread.currentThread(), e);
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		}
