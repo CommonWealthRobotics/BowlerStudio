@@ -1,3 +1,79 @@
+bowlerstudio (1.24.0) bionic; urgency=medium
+
+  * adding svg loading
+  * adding a buton to launch advanced editors
+  * removed prints
+  * add info for items
+  * bugfix
+  * adding API for fail over install
+  * approprate construstor order
+  * adding tooltips for the buttons
+  * Adding the launcher class for Eclipse/groovy
+  * fix junk import
+  * modularized
+  * deal with gists better
+  * adding auto-run from external editor
+  * 0.16.0
+  * jcsg
+  * update addFile wizard to create repos instead of gists
+  * changing fork from gist fork to git repo forking
+  * Adding windows inkscape file
+  * adding windows
+  * allow eclipse on windows
+  * Tested working on windows!
+  * check for ignore contents existing
+  * adding windows support
+  * #225 Check for null string before checking the stack
+  * 1.17.1
+  * bugfix
+  * ficing the delimiters for windows in the subclass
+  * Use more than one option for inkscape
+  * 1.17.4
+  * eclipse loading stuff again
+  * jcsg
+  * jcsg
+  * SVG loading
+  * bugfix in the color loading
+  * Disable the advanced editor button if the editor is open
+  * adding a search for inkscape exe
+  * adding arduino to the advanced editors
+  * launch using the finle name
+  * find the workspace
+  * dealing wiht the escaped slashes on windows
+  * 1.18.1
+  * dramatic jog widget performance boost
+  * change controller wrapper api
+  * new game controller framework
+  * controller with multiple sources
+  * 1.20.0
+  * new jog configuration
+  * Adding the game contoller mapping wizard
+  * Calibrate game controllers as a plugin tab
+  * add tooltips for plugin buttons
+  * Moving javaFX depenancies to the kernel
+  * kernel
+  * close the running script and restart in a thread on file change
+  * 1.21.0
+  * addin a mobile base jogging
+  * 1.22.0
+  * #227 #228 #229
+  * revbump jetty to 9.4.36.v20210114
+  * close #206
+  * add clearer printing while installing and opening eclipse
+  * check to see if the workspace exists before checking the lock file
+  * eclipse opening
+  * adding print statements to entering kernel mode
+  * disconnect listeners
+  * kernels
+  * fixing bounding issue
+  * 1.23.2
+  * 1.23.3 Fixing the loading of default creatures by pulling first
+  * Adding a pull step to the XML commit
+  * prevent infinet loops
+  * app.version=1.24.0
+
+ -- Kevin Harrington <mad.hephaestus@gmail.com>  Sun, 21 Feb 2021 10:38:43 -0500
+
 bowlerstudio (1.14.0) bionic; urgency=medium
 
   * fix l;aunching bug
