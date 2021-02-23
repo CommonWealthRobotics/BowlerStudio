@@ -59,7 +59,7 @@ public class BowlerStudioMenuWorkspace {
 	@SuppressWarnings("unchecked")
 	public static void add(String url, String menueMessage) {
 		if (menueMessage == null || menueMessage.length() < 2)
-			throw new RuntimeException();
+			throw new RuntimeException("Menu Message can not be "+menueMessage);
 		ArrayList<String> data;
 		synchronized (workspaceData) {
 			if (workspaceData.get(url) == null) {

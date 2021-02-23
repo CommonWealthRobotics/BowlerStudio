@@ -1372,12 +1372,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
 		if (focusing)
 			return;
+		if(manipulator2==null) {
+			new RuntimeException("Can not focus on null affine").printStackTrace();
+			return;
+		}
 		focusing = true;
 		Platform.runLater(() -> {
 			Affine centering = TransformFactory.nrToAffine(poseToMove);
 			// this section keeps the camera orented the same way to avoid whipping
 			// around
-
+			
 			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(manipulator2);
 			rotationOnlyCOmponentOfManipulator.setX(0);
 			rotationOnlyCOmponentOfManipulator.setY(0);
