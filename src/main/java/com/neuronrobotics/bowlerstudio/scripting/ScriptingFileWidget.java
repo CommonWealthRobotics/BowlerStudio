@@ -79,7 +79,8 @@ public class ScriptingFileWidget extends BorderPane implements
 		this(ScriptingWidgetType.FILE,currentFile);
 		
 		loadCodeFromFile(currentFile);
-		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
+		boolean isOwnedByLoggedInUser=ScriptingEngine.checkOwner(currentFile);
+	
 		publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
