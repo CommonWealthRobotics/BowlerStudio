@@ -374,7 +374,7 @@ public class BowlerStudio extends Application {
 				throw new RuntimeException("Style sheet does not exist");
 			}
 			// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
-			renderSplashFrame(50, "Tutorials...");
+			renderSplashFrame(50, "DL'ing Tutorials...");
 			// load tutorials repo
 
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
@@ -458,7 +458,7 @@ public class BowlerStudio extends Application {
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			// Log.enableInfoPrint();
-			renderSplashFrame(92, "Preload done");
+			renderSplashFrame(91, "DL'ing Devices...");
 			// ThreadUtil.wait(100);
 
 			try {
@@ -472,6 +472,7 @@ public class BowlerStudio extends Application {
 				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
+			renderSplashFrame(92, "Launching UI");
 			launch();
 
 		} else {
