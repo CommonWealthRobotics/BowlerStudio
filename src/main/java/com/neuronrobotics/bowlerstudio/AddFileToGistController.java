@@ -26,7 +26,11 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.github.GHRepository;
@@ -59,7 +63,15 @@ public class AddFileToGistController extends Application {
 	private AnchorPane addFile;
 
 	private MenuRefreshEvent refreshevent;
+	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 
+	public static String toSlug(String input) {
+		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
+		String slug = NONLATIN.matcher(normalized).replaceAll("");
+		return slug.toLowerCase(Locale.ENGLISH);
+	}
 	// private GHGist gistID;
 
 	public AddFileToGistController(String gitRepo, MenuRefreshEvent event) {
@@ -208,13 +220,11 @@ public class AddFileToGistController extends Application {
 	@FXML
 	void createProject(ActionEvent event) {
 		try {
-			GHRepository repository = ScriptingEngine.makeNewRepo(repoName.getText(), description.getText());
+			GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), description.getText());
 			gitRepo= repository.getHttpTransportUrl();
 			newProject.setDisable(true);
 			addFile.setDisable(false);
-		} catch (org.kohsuke.github.HttpException e) {
-			
-		}catch (IOException e) {
+		}catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
