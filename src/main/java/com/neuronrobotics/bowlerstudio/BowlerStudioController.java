@@ -129,7 +129,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				public void run() {
 					String gitRepo = t.getScripting().getGitRepo();
 					String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
-					if(gitRepo.length()>5 && (message != null && message.length() > 2))
+					if(gitRepo.length()>5 && (message != null ))
 						BowlerStudioMenuWorkspace.add(gitRepo,message);
 				}
 			}.start();

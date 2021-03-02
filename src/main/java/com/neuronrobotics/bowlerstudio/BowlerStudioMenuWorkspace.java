@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -58,8 +59,11 @@ public class BowlerStudioMenuWorkspace {
 
 	@SuppressWarnings("unchecked")
 	public static void add(String url, String menueMessage) {
-		if (menueMessage == null || menueMessage.length() < 2)
+		if (menueMessage == null )
 			throw new RuntimeException("Menu Message can not be "+menueMessage);
+		if (menueMessage.length()<2) {
+			menueMessage= new Date().toString();
+		}
 		ArrayList<String> data;
 		synchronized (workspaceData) {
 			if (workspaceData.get(url) == null) {
