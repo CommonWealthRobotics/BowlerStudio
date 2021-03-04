@@ -406,8 +406,11 @@ public class BowlerStudioModularFrame {
 
 
 	public void setSelectedTab(Tab tab) {
-		if (webTabs.get(tab) != null)
-			Platform.runLater(() -> webTabs.get(tab).requestFocus());
+		DockNode dockNode = webTabs.get(tab);
+		if (dockNode != null)
+			Platform.runLater(() -> {
+				dockNode.requestFocus();
+			});
 	}
 
 
