@@ -111,7 +111,7 @@ BowlerStudio is an open source project and is always looking for help with both 
 
 ### Java Contributions
 
-If you are a Java developmer, skip ahead to [The Build Instructions](#command-line). The application is a light plugin framework for UI, 3D and Device interaction. You can look at this repository for issues. 
+If you are a Java developer, skip ahead to [The Build Instructions](#command-line). The application is a light plugin framework for UI, 3D and Device interaction. You can look at this repository for issues. 
 
 ### Adding Tutorials
 
