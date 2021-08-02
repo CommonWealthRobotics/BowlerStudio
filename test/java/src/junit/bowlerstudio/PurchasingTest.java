@@ -50,19 +50,19 @@ public class PurchasingTest {
 			
 			for(String vit:Vitamins.listVitaminSizes(vitaminsType)){
 				String vitaminSize=vit;
-				for(String variant:Purchasing.listVitaminVariants(vitaminsType, vitaminSize)){
-					try{
-						//System.out.println("\tConfig = "+vitaminSize);
-						PurchasingData purchasing = Purchasing.get(vitaminsType, vitaminSize, variant);
-						if(purchasing!=null)
-							System.out.println("Purchasing: "+purchasing+" = "+" "+variant);
-						else
-							System.out.println("FAILED: "+vitaminsType+" "+ vitaminSize+" "+variant);
-			
-					}catch (Exception e){
-						e.printStackTrace();
-					}
-				}
+//				for(String variant:Purchasing.listVitaminVariants(vitaminsType, vitaminSize)){
+//					try{
+//						//System.out.println("\tConfig = "+vitaminSize);
+//						PurchasingData purchasing = Purchasing.get(vitaminsType, vitaminSize, variant);
+//						if(purchasing!=null)
+//							System.out.println("Purchasing: "+purchasing+" = "+" "+variant);
+//						else
+//							System.out.println("FAILED: "+vitaminsType+" "+ vitaminSize+" "+variant);
+//			
+//					}catch (Exception e){
+//						e.printStackTrace();
+//					}
+//				}
 
 			}
 			
