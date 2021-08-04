@@ -3,18 +3,13 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CreatureLab;
-import com.neuronrobotics.bowlerstudio.creature.DhLab;
 import com.neuronrobotics.bowlerstudio.tabs.*;
-import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.nrconsole.plugin.BowlerCam.BowlerCamController;
-import com.neuronrobotics.nrconsole.plugin.DeviceConfig.PrinterConiguration;
 import com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler.AnamationSequencer;
-import com.neuronrobotics.nrconsole.plugin.PID.PIDControl;
 import com.neuronrobotics.nrconsole.plugin.bootloader.BootloaderPanel;
 import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.pidsim.PidLab;
-import com.neuronrobotics.replicator.driver.NRPrinter;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
+import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
@@ -23,20 +18,14 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
-import com.neuronrobotics.sdk.namespace.bcs.pid.IPidControlNamespace;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import java.util.ArrayList;
 
 //import com.neuronrobotics.nrconsole.plugin.DyIO.DyIOConsole;
@@ -53,11 +42,9 @@ public class PluginManager {
 	// tabs list for objects of that type
 	static{
 		//DyIO
-		addPlugin(new DeviceSupportPluginMap(DyIO.class, DyIOControl.class));
 		addPlugin(new DeviceSupportPluginMap(DyIO.class, AnamationSequencer.class));
 		
 		//Ipid
-		addPlugin(new DeviceSupportPluginMap(IPidControlNamespace.class, PIDControl.class));
 		// Image s
 //		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, CameraTab.class));
 //		addPlugin(new DeviceSupportPluginMap(AbstractImageProvider.class, SalientTab.class));
@@ -71,13 +58,14 @@ public class PluginManager {
 		//addPlugin(new DeviceSupportPluginMap(AbstractKinematicsNR.class, DhLab.class));
 		addPlugin(new DeviceSupportPluginMap(MobileBase.class, CreatureLab.class));
 		//NRPrinter
-		addPlugin(new DeviceSupportPluginMap(NRPrinter.class, PrinterConiguration.class));
 		//Bowler Cam
 		addPlugin(new DeviceSupportPluginMap(BowlerCamDevice.class, BowlerCamController.class));
 		//LinearPhysicsEngine
 		addPlugin(new DeviceSupportPluginMap(LinearPhysicsEngine.class, PidLab.class));
 		//Firmata
 		addPlugin(new DeviceSupportPluginMap(FirmataBowler.class, FirmataTab.class));
+		//game controller
+		addPlugin(new DeviceSupportPluginMap(BowlerJInputDevice.class, CalibrateGameControl.class));
 	}
 	
 	public PluginManager(BowlerAbstractDevice dev){
@@ -152,73 +140,7 @@ public class PluginManager {
 		TreeView<String> treeView =new  TreeView<>(rpc);
 		treeView.setCellFactory(CheckBoxTreeCell.forTreeView());
 		
-		if(dev.getConnection()!=null){
-			rpc.setExpanded(true);
-			ArrayList<String> nameSpaceList = dev.getNamespaces();
-			for(String namespace:nameSpaceList){
-				CheckBoxTreeItem<String> ns = new CheckBoxTreeItem<> (namespace); 
-				ns.setExpanded(false);
-				rpc.getChildren().add(ns);
-				ArrayList<RpcEncapsulation> rpcList = dev.getRpcList(namespace);
-				CheckBoxTreeItem<String> get = new CheckBoxTreeItem<> ("GET"); 
-				CheckBoxTreeItem<String> post = new CheckBoxTreeItem<> ("POST"); 
-				CheckBoxTreeItem<String> async = new CheckBoxTreeItem<> ("ASYNC"); 
-				CheckBoxTreeItem<String> crit = new CheckBoxTreeItem<> ("CRITICAL");
-				get.setExpanded(false);
-				ns.getChildren().add(get);
-				post.setExpanded(false);
-				ns.getChildren().add(post);
-				async.setExpanded(false);
-				ns.getChildren().add(async);
-				crit.setExpanded(false);
-				ns.getChildren().add(crit);
-				for(RpcEncapsulation rpcEnc:rpcList){
-					CheckBoxTreeItem<String> rc = new CheckBoxTreeItem<> (rpcEnc.getRpc()); 
-					rc.setExpanded(false);
-					switch(rpcEnc.getDownstreamMethod()){
-					case ASYNCHRONOUS:
-						async.getChildren().add(rc);
-						break;
-					case CRITICAL:
-						crit.getChildren().add(rc);
-						break;
-					case GET:
-						get.getChildren().add(rc);
-						break;
-					case POST:
-						post.getChildren().add(rc);
-						break;
-					default:
-						break;
-					
-					}
-					RpcCommandPanel panel =new RpcCommandPanel(rpcEnc, dev,rc);
 
-//					Platform.runLater(()->{
-//						SwingNode sn = new SwingNode();
-//						Stage dialog = new Stage();
-//						dialog.setHeight(panel.getHeight());
-//						dialog.setWidth(panel.getWidth());
-//						dialog.initStyle(StageStyle.UTILITY);
-//					    sn.setContent(panel);
-//						Scene scene = new Scene(new Group(sn));
-//						dialog.setScene(scene);
-//						dialog.setOnCloseRequest(event -> {
-//							rc.setSelected(false);
-//						});
-//						rc.selectedProperty().addListener(b ->{
-//							 if(rc.isSelected()){
-//								 dialog.show();
-//							 }else{
-//								 dialog.hide();
-//							 }
-//				        });
-//					});
-					
-				}
-			}
-		}
-		
 		return treeView;
 		
 	}
@@ -230,9 +152,10 @@ public class PluginManager {
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button("Launch "+c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				Button launcher = new Button(c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				launcher.setTooltip(new javafx.scene.control.Tooltip("Launch plugin to "+c.getPlugin().getSimpleName()));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
-					if( 	DyIOControl.class ==c.getPlugin() ||
+					if( 	
 							BootloaderPanel.class ==c.getPlugin()||
 							CreatureLab.class ==c.getPlugin()
 							){

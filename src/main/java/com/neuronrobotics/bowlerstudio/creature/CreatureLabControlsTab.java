@@ -61,7 +61,7 @@ public class CreatureLabControlsTab {
      	AnchorPane.setBottomAnchor(progress, 0.0);
 	}
 
-	public void setOverlayTopRight(JogWidget walkWidget) {
+	public void setOverlayTopRight(JogMobileBase walkWidget) {
 		// TODO Auto-generated method stub
 		walkingBox.getChildren().clear();
 		walkingBox.getChildren().add(walkWidget);

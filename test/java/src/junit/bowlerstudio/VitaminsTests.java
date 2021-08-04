@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.neuronrobotics.bowlerstudio.NewVitaminWizardController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
 /**
  * @author hephaestus

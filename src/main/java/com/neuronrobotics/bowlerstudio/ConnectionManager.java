@@ -1,15 +1,12 @@
 package com.neuronrobotics.bowlerstudio;
 
-import com.neuronrobotics.addons.driving.HokuyoURGDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.threed.VirtualCameraDevice;
 import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.imageprovider.StaticFileProvider;
 import com.neuronrobotics.imageprovider.URLImageProvider;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
-import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
 import com.neuronrobotics.sdk.addons.kinematics.gcodebridge.GcodeDevice;
 import com.neuronrobotics.sdk.common.*;
@@ -35,10 +32,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
-import net.java.games.input.Event;
 import org.reactfx.util.FxTimer;
 
 import java.io.File;
@@ -121,7 +114,6 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void addConnection(BowlerAbstractDevice newDevice, String name) {
-		if(!VirtualCameraDevice.class.isInstance(newDevice))
 			DeviceManager.addConnection(newDevice, name);
 		
 	}
@@ -352,23 +344,20 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			HokuyoURGDevice p = new HokuyoURGDevice(new NRSerialPort(letter, 115200));
-			p.connect();
-			String name = "lidar";
-			addConnection(p,name);
+
 		});
 		
 	}
 
 
-	public static void onConnectGamePad(String name ) {
-		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
+	public static void onConnectGamePad() {
+		ArrayList<String> ca = BowlerJInputDevice.getControllers();
 		
 		List<String> choices = new ArrayList<>();
-		if(ca.length==0)
+		if(ca.size()==0)
 			return;
-		for (Controller s: ca){
-			choices.add(s.getName());
+		for (String s: ca){
+			choices.add(s);
 		}
 
 		
@@ -382,19 +371,11 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
-			for(Controller s: ca){
-				if(letter.contains(s.getName())){
+			for(String s: BowlerJInputDevice.getControllers()){
+				if(letter.contains(s)){
 					BowlerJInputDevice p =new BowlerJInputDevice(s);
 					p.connect();
-					IJInputEventListener l=new IJInputEventListener() {
-						@Override
-						public void onEvent(Component comp, Event event1,
-								float value, String eventString) {
-									//System.out.println(comp.getName()+" is value= "+value);
-								}
-					};
-					p.addListeners(l);
-					addConnection(p,name);
+					addConnection(p,p.getName());
 					return;
 				}
 			}
@@ -405,8 +386,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	@Override
 	public void onNewDeviceAdded(BowlerAbstractDevice newDevice) {
-		if(VirtualCameraDevice.class.isInstance(newDevice))
-			return;
+
 		PluginManager mp;
 		Log.debug("Adding a "+newDevice.getClass().getName()+" with name "+newDevice.getScriptingName() );
 		mp = new PluginManager(newDevice);
@@ -445,29 +425,47 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		
 		
 		mp.setName(newDevice.getScriptingName());
-
-		newDevice.addConnectionEventListener(
-				new IDeviceConnectionEventListener() {
-					@Override
-					public void onDisconnect(BowlerAbstractDevice source) {
-						// clean up after yourself...
-						//disconectAndRemoveDevice(mp);
-						
-						for(int i=0;i<plugins.size();i++){
-							PluginManager p=plugins.get(i).getManager();
-							if(p.getDevice()==source){
-								DeviceManager.remove(p.getDevice());
-								return;
-							}
-						}
-						
-					}
-
-					// ignore
-					@Override
-					public void onConnect(BowlerAbstractDevice source) {
-					}
-				});
+//		DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+//			
+//			@Override
+//			public void onNewDeviceAdded(BowlerAbstractDevice bad) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void onDeviceRemoved(BowlerAbstractDevice bad) {
+//				for (int i = 0; i < plugins.size(); i++) {
+//					PluginManager p = plugins.get(i).getManager();
+//					if (p.getDevice() == bad) {
+//						DeviceManager.remove(p.getDevice());
+//						return;
+//					}
+//				}
+//			}
+//		});
+//		newDevice.addConnectionEventListener(
+//				new IDeviceConnectionEventListener() {
+//					@Override
+//					public void onDisconnect(BowlerAbstractDevice source) {
+//						// clean up after yourself...
+//						//disconectAndRemoveDevice(mp);
+//						
+//						for(int i=0;i<plugins.size();i++){
+//							PluginManager p=plugins.get(i).getManager();
+//							if(p.getDevice()==source){
+//								DeviceManager.remove(p.getDevice());
+//								return;
+//							}
+//						}
+//						
+//					}
+//
+//					// ignore
+//					@Override
+//					public void onConnect(BowlerAbstractDevice source) {
+//					}
+//				});
 		if(	getBowlerStudioController()!=null)
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
@@ -480,8 +478,14 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 	private static void disconectAndRemoveDevice(PluginManager mp){
 		System.out.println("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
-		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp))
-			mp.getDevice().disconnect();	
+		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp)) {
+			try {
+				mp.getDevice().disconnect();
+			}catch(Throwable t) {
+				BowlerStudio.printStackTrace(t);
+			}
+			
+		}
 		DeviceManager.remove(mp.getDevice());
 	}
 

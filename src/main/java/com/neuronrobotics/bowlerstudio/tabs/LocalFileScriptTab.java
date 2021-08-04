@@ -172,6 +172,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		case "SVG":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
 			break;
+		case "Bash":
+			type = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
+			break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);

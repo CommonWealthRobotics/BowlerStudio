@@ -3,11 +3,13 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.bowlerstudio.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
@@ -32,7 +34,6 @@ import org.eclipse.jgit.api.errors.TransportException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import javafx.scene.control.ToggleButton;
 
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
@@ -95,9 +96,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				try {
 					root = loader.load();
 					finishLoading(device);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			});
 
@@ -112,11 +113,26 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		TreeView<String> tree = null;
 		TreeItem<String> rootItem = null;
-
+		TreeItem<String> mainBase = null;
+		int count =1;
+		for(DHParameterKinematics kin:device.getAllDHChains()) {
+			for(int i=0;i<kin.getNumberOfLinks();i++) {
+				DHLink dhLink = kin.getDhLink(i);
+				if(dhLink.getSlaveMobileBase()!=null) {
+					count++;
+				}
+			}
+		}
 		try {
-			rootItem = new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
+			rootItem = new TreeItem<String>("Mobile Bases", AssetFactory.loadIcon("creature.png"));
+			mainBase= new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
 		} catch (Exception e) {
 			rootItem = new TreeItem<String>(device.getScriptingName());
+		}
+		if(count==1) {
+			rootItem=mainBase;
+		}else {
+			rootItem.getChildren().add(mainBase);
 		}
 		tree = new TreeView<>(rootItem);
 		AnchorPane treebox1 = tab.getTreeBox();
@@ -127,18 +143,38 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		AnchorPane.setRightAnchor(tree, 0.0);
 		AnchorPane.setBottomAnchor(tree, 0.0);
 
-		rootItem.setExpanded(true);
+		
 		HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
 		HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
+		File source;
+		boolean creatureIsOwnedByUser=false;
 		try {
-			MobleBaseMenueFactory.load(device, tree, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, this);
-		} catch (Exception e) {
+			source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+			creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
+		} catch (GitAPIException | IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+			
+		}
+		
+		rootItem.setExpanded(true);
+		MobileBaseCadManager.get(device,BowlerStudioController.getMobileBaseUI());
+		MobleBaseMenueFactory.load(device, tree, mainBase, callbackMapForTreeitems, widgetMapForTreeitems, this,true,creatureIsOwnedByUser);
+		for(DHParameterKinematics kin:device.getAllDHChains()) {
+			for(int i=0;i<kin.getNumberOfLinks();i++) {
+				DHLink dhLink = kin.getDhLink(i);
+				String linkName =kin.getLinkConfiguration(i).getName();
+				if(dhLink.getSlaveMobileBase()!=null) {
+					TreeItem<String> mobile = new TreeItem<>(kin.getScriptingName()+" ->\n "+linkName +" link "+i+" ->\n  "+ dhLink.getSlaveMobileBase().getScriptingName(),
+							AssetFactory.loadIcon("creature.png"));
+					MobleBaseMenueFactory.load(dhLink.getSlaveMobileBase(), tree, mobile, callbackMapForTreeitems, widgetMapForTreeitems, this,false,creatureIsOwnedByUser);
+					rootItem.getChildren().add(mobile);
+				}
+			}
 		}
 		tree.setPrefWidth(325);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		JogWidget walkWidget = new JogWidget(device);
+		JogMobileBase walkWidget = new JogMobileBase(device);
 		tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
 			@Override
@@ -147,8 +183,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				TreeItem<String> treeItem = (TreeItem<String>) newValue;
 				new Thread() {
 					public void run() {
-						if (walkWidget.getGameController() != null)
-							setGameController(walkWidget.getGameController());
+
 						if (callbackMapForTreeitems.get(treeItem) != null) {
 							callbackMapForTreeitems.get(treeItem).run();
 						}
@@ -167,8 +202,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							Platform.runLater(() -> {
 								tab.getControlsBox().getChildren().clear();
 							});
-							BowlerStudio.select(device);
-							walkWidget.setGameController(getController());
 						}
 					}
 				}.start();
@@ -205,7 +238,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		progress.setStyle("-fx-background-color: #FFFFFF;");
 		progress.setOpacity(.7);
-		// progress.setMinHeight(150);
+		progress.setMinHeight(100);
 		progress.setPrefSize(325, 150);
 		tab.setOverlayTop(progress);
 		tab.setOverlayTopRight(walkWidget);

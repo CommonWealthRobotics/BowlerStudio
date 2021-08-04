@@ -19,6 +19,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
@@ -60,7 +64,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private HBox controlPane;
 	private String currentGit;
-	private String currentGist;
+	//private String currentGist;
 	private boolean isOwnedByLoggedInUser;
 	private ImageView image = new ImageView();
 
@@ -102,30 +106,11 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		edit.setOnAction(e -> {
 			new Thread() {
 				public void run() {
-					if (isOwnedByLoggedInUser)
-						BowlerStudio.createFileTab(currentFile);
-					else {
-						// todo fork git repo
-						System.out.println("Making Fork...");
-						GHGist newGist;
-						try {
-							newGist = ScriptingEngine.fork(currentGist);
-							Map<String, GHGistFile> fileMap = newGist.getFiles();
-							if (fileMap.size() == 1) {
-								String filename = (String) fileMap.keySet().toArray()[0];
-								String url = newGist.getGitPullUrl();
-								File file = ScriptingEngine.fileFromGit(url, filename);
-								BowlerStudio.createFileTab(file);
-							} else {
-								BowlerStudio.openUrlInNewTab(newGist.getHtmlUrl());
-							}
-						} catch (Exception e1) {
-							BowlerStudioController.highlightException(currentFile, e1);
-						}
-
-					}
+					doFork();
 
 				}
+
+
 			}.start();
 
 		});
@@ -146,7 +131,24 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
 		reset();
 	}
-
+	private void doFork() {
+		if (isOwnedByLoggedInUser)
+			BowlerStudio.createFileTab(currentFile);
+		else {
+			// todo fork git repo
+			System.out.println("Making Fork...");
+			String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
+			try {
+				String newGit = ScriptingEngine.fork(currentGit, reponame, "Making fork from web gist");
+				File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
+				BowlerStudio.createFileTab(file);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void reset() {
 		running = false;
 		Platform.runLater(() -> {
@@ -244,7 +246,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
 		ArrayList<String> fileList;
 		if (!gists.isEmpty()) {
-			currentGist = gists.get(0);
+			String currentGist = gists.get(0);
 			currentGit = "https://gist.github.com/" + currentGist + ".git";
 		} else if (addr.contains("https://github.com/")) {
 
@@ -269,12 +271,30 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			loadGitLocal(currentGit, fileList.get(0));
 
 		Platform.runLater(() -> {
-
+			ArrayList<String> fileListToDisplay = new ArrayList<>();
 			for (String s : fileList) {
-				fileListBox.getItems().add(s);
+				if(!s.startsWith(".")) {
+					fileListBox.getItems().add(s);
+					fileListToDisplay.add(s);
+				}
 			}
-			if (!fileList.isEmpty()) {
-				fileListBox.setValue(fileList.get(0));
+			if (!fileListToDisplay.isEmpty()) {
+				fileListBox.setValue(fileListToDisplay.get(0));
+				try {
+					currentFile=ScriptingEngine.fileFromGit(currentGit, fileListToDisplay.get(0));
+				} catch (InvalidRemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (TransportException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (GitAPIException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				fileListBox.valueProperty().addListener(this);
 				Platform.runLater(() -> runfx.setDisable(false));
 				Platform.runLater(() -> edit.setDisable(false));
@@ -316,37 +336,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 					scriptResult = obj;
 					reset();
-
-				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Device missing error");
-						String message = "This script needs a device connected: ";
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
-						d.printStackTrace(pw);
-
-						String stackTrace = sw.toString();
-
-						if (stackTrace.contains("dyio"))
-							message += "dyio";
-						else if (stackTrace.contains("camera"))
-							message += "camera";
-						else if (stackTrace.contains("gamepad"))
-							message += "gamepad";
-						else
-							message += stackTrace;
-						alert.setHeaderText(message);
-						alert.setContentText("You need to connect it before running again");
-						alert.showAndWait();
-						if (stackTrace.contains("dyio"))
-							ConnectionManager.addConnection();
-//						else if (stackTrace.contains("camera"))
-//							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
-						else if (stackTrace.contains("gamepad"))
-							ConnectionManager.onConnectGamePad("gamepad");
-						reset();
-					});
 
 				} catch (Throwable ex) {
 					System.err.println("Script exception of type= " + ex.getClass().getName());
@@ -416,4 +405,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		loadGitLocal(currentGit, (String) newValue);
 	}
 
+	public static void main(String [] args) {
+		new ScriptingWebWidget(ScriptingWidgetType.WEB).doFork();
+	}
 }

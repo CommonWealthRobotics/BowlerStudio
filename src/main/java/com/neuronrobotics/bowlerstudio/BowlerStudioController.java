@@ -8,26 +8,26 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerstudio.threed.Line3D;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.common.NonBowlerDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.CSGtoJavafx;
+import eu.mihosoft.vrl.v3d.MeshContainer;
 import eu.mihosoft.vrl.v3d.Polygon;
 import eu.mihosoft.vrl.v3d.Vertex;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.CullFace;
+import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
-
-import org.kohsuke.github.GHRepository;
-import org.reactfx.util.FxTimer;
 
 import java.awt.Color;
 //import java.awt.*;
@@ -35,17 +35,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.time.Duration;
-//import org.bytedeco.javacpp.DoublePointer;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioController implements IScriptEventListener {
@@ -74,7 +69,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	private static IMobileBaseUI mbui = new IMobileBaseUI() {
 
 		@Override
-		public void highlightException(File fileEngineRunByName, Exception ex) {
+		public void highlightException(File fileEngineRunByName, Throwable ex) {
 			BowlerStudioController.highlightException(fileEngineRunByName, ex);
 		}
 
@@ -104,6 +99,11 @@ public class BowlerStudioController implements IScriptEventListener {
 			CreatureLab3dController.getEngine().setSelectedCsg(new ArrayList<>(selectedCsg));
 
 		}
+
+		@Override
+		public void setSelected(Affine rootListener) {
+			CreatureLab3dController.getEngine().setSelected(rootListener);
+		}
 	};
 
 	public void setFontSize(int size) {
@@ -131,7 +131,10 @@ public class BowlerStudioController implements IScriptEventListener {
 			
 			new Thread() {
 				public void run() {
-					BowlerStudioMenuWorkspace.add(t.getScripting().getGitRepo());
+					String gitRepo = t.getScripting().getGitRepo();
+					String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
+					if(gitRepo.length()>5 && (message != null ))
+						BowlerStudioMenuWorkspace.add(gitRepo,message);
 				}
 			}.start();
 
@@ -139,8 +142,12 @@ public class BowlerStudioController implements IScriptEventListener {
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());
 			files.add(t.getScripting().getGitFile());
-			if(key.length()>3 && files.get(0).length()>0 && files.get(1).length()>0)// catch degenerates
-				ConfigurationDatabase.setObject("studio-open-git", key, files);
+			try {
+				if(key.length()>3 && files.get(0).length()>0 && files.get(1).length()>0)// catch degenerates
+					ConfigurationDatabase.setObject("studio-open-git", key, files);
+			}catch(java.lang.NullPointerException ex) {
+				//file can not be opened
+			}
 
 			fileTab.setContent(t);
 			fileTab.setGraphic(
@@ -217,7 +224,11 @@ public class BowlerStudioController implements IScriptEventListener {
 					}
 					BowlerStudioModularFrame.getBowlerStudioModularFrame()
 							.setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
-					widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
+					try {
+						widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
+					}catch(java.lang.NullPointerException e) {
+						return;
+					}
 					// System.out.println("Highlighting "+fileEngineRunByName+" at line
 					// "+lineNumber+" to color "+color);
 					StackTraceElement[] stackTrace = ex.getStackTrace();
@@ -384,7 +395,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		});
 	}
 
-	public void addObject(Object o, File source) {
+	public static void addObject(Object o, File source) {
 
 		if (List.class.isInstance(o)) {
 			List<Object> c = (List<Object>) o;
@@ -405,12 +416,12 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		} else if (Tab.class.isInstance(o)) {
 
-			addTab((Tab) o, true);
+			getBowlerStudio().addTab((Tab) o, true);
 			return;
 
 		} else if (Node.class.isInstance(o)) {
 
-			addNode((Node) o);
+			getBowlerStudio().addNode((Node) o);
 			return;
 
 		} else if (Polygon.class.isInstance(o)) {
@@ -418,18 +429,22 @@ public class BowlerStudioController implements IScriptEventListener {
 			List<Vertex> vertices = p.vertices;
 			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
-			double stroke = 0.5;
-			for (int i = 1; i < vertices.size(); i++) {
-				Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
-				line.setStrokeWidth(stroke);
-				line.setStroke(color);
-				addNode(line);
-			}
-			// Connecting line
-			Line3D line = new Line3D(vertices.get(0), vertices.get(vertices.size() - 1));
-			line.setStrokeWidth(stroke);
-			line.setStroke(color);
-			addNode(line);
+//			double stroke = 0.5;
+//			for (int i = 1; i < vertices.size(); i++) {
+//				Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
+//				line.setStrokeWidth(stroke);
+//				line.setStroke(color);
+//				getBowlerStudio().addNode(line);
+//			}
+//			// Connecting line
+//			Line3D line = new Line3D(vertices.get(0), vertices.get(vertices.size() - 1));
+//			line.setStrokeWidth(stroke);
+//			line.setStroke(color);
+			MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
+			javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
+			current.setMaterial(new PhongMaterial(color));
+			current.setCullFace(CullFace.NONE);
+			getBowlerStudio().addNode(current);
 			return;
 		} else if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
@@ -562,5 +577,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
+
+
 
 }

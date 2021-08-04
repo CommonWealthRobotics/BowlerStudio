@@ -25,9 +25,10 @@ public class GistHelper
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException
         //Setup gist
+    	String defaultContents = ScriptingEngine.getLangaugeByExtention(filename).getDefaultContents();
         GitHub gitHub = PasswordManager.getGithub();
         GHGistBuilder builder = gitHub.createGist();
-        builder.file(filename, "//Your code here");
+        builder.file(filename, defaultContents);
         builder.description(description);
         builder.public_(isPublic);
 

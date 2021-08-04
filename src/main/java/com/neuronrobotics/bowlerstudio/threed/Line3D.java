@@ -22,8 +22,8 @@ public class Line3D  extends Cylinder {
 				end[0],end[1],end[2]	);
 	}
 	public Line3D(Vector3d start, Vector3d end){
-		this(start.x,start.y,start.z,
-				end.x,end.y,end.z	);
+		this(start.getX(),start.getY(),start.getZ(),
+				end.getX(),end.getY(),end.getZ()	);
 	}
 	
 	public Line3D(

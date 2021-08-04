@@ -5,11 +5,11 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
+import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.nrconsole.util.CommitWidget;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.IFileChangeListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -20,8 +20,10 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -54,7 +56,9 @@ public class ScriptingFileWidget extends BorderPane implements
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
-	private Button publish = new Button("Publish");
+	private Button publish = new Button("Save");
+	private CheckBox autoRun = new CheckBox();
+	
 
 	private String addr;
 	boolean loadGist = false;
@@ -64,27 +68,23 @@ public class ScriptingFileWidget extends BorderPane implements
 	final TextField fileListBox = new TextField();
 	final TextField fileNameBox = new TextField();
 	private File currentFile = null;
-
+	ExternalEditorController externalEditorController;
 	private HBox controlPane;
 	private String currentGist;
 	private boolean updateneeded = false;
 	private IScriptingLanguage langaugeType;
-	private ImageView image=new ImageView();
+//	private ImageView image=new ImageView();
 
 	public ScriptingFileWidget(File currentFile) throws IOException {
-		this(ScriptingWidgetType.FILE);
-		this.currentFile = currentFile;
+		this(ScriptingWidgetType.FILE,currentFile);
+		
 		loadCodeFromFile(currentFile);
-		boolean isOwnedByLoggedInUser= ScriptingEngine.checkOwner(currentFile);
+		boolean isOwnedByLoggedInUser=ScriptingEngine.checkOwner(currentFile);
+	
 		publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
-		try {
-			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 	
 	private void startStopAction(){
@@ -96,9 +96,9 @@ public class ScriptingFileWidget extends BorderPane implements
 		runfx.setDisable(false);
 	}
 
-	private ScriptingFileWidget(ScriptingWidgetType type) {
+	private ScriptingFileWidget(ScriptingWidgetType type,File currentFile) {
 		this.type = type;
-
+		this.currentFile = currentFile;
 		runfx.setOnAction(e -> {
 	    	new Thread(){
 	    		public void run(){
@@ -110,7 +110,7 @@ public class ScriptingFileWidget extends BorderPane implements
 	    		}
 	    	}.start();
 		});
-		
+		runfx.setTooltip(new Tooltip("Run this code and display the result"));
 		publish.setOnAction(e -> {
 			new Thread(()->{
 				save();
@@ -118,33 +118,8 @@ public class ScriptingFileWidget extends BorderPane implements
 			}).start();
 
 		});
-		
-		
-//		runsaveAs.setOnAction(e -> {
-//	    	new Thread(){
-//	    		public void run(){
-//	    			updateFile();
-//	    			save();
-//	    		}
-//	    	}.start();
-//
-//		});
-
-		// String ctrlSave = "CTRL Save";
-//		fileLabel.setOnMouseEntered(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getAbsolutePath());
-//			});
-//		});
-//
-//		fileLabel.setOnMouseExited(e -> {
-//			Platform.runLater(() -> {
-//				ThreadUtil.wait(10);
-//				fileLabel.setText(currentFile.getName());
-//			});
-//		});
-
+		publish.setTooltip(new Tooltip("Save this code to Git"));
+		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
 
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -177,9 +152,11 @@ public class ScriptingFileWidget extends BorderPane implements
 		        fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a little bit
 		    });
 		});
-
+		externalEditorController = new ExternalEditorController(currentFile,autoRun);
+		
 		controlPane.getChildren().add(runfx);
-		controlPane.getChildren().add(image);
+		controlPane.getChildren().add(externalEditorController.getControl());
+		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
@@ -308,31 +285,6 @@ public class ScriptingFileWidget extends BorderPane implements
 
 				} 
 				catch (groovy.lang.MissingPropertyException |org.python.core.PyException d){
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Variable missing error");
-						String message = "This script needs a variable defined before you use it: ";
-					
-						String stackTrace = d.getMessage();
-						
-						if(stackTrace.contains("dyio"))
-							message+="dyio";
-						else if(stackTrace.contains("camera"))
-							message+="camera";
-						else if(stackTrace.contains("gamepad"))
-							message+="gamepad";
-						else
-							message+=stackTrace;
-						alert.setHeaderText(message);
-						alert.showAndWait();
-						if(stackTrace.contains("dyio"))
-							ConnectionManager.addConnection();
-//						else if(stackTrace.contains("camera"))
-//							ConnectionManager.addConnection(new OpenCVImageProvider(0),"camera0");
-						else if(stackTrace.contains("gamepad"))
-							ConnectionManager.onConnectGamePad("gamepad");
-						reset();
-					});
 					BowlerStudioController.highlightException(currentFile, d);
 				}
 				catch (Throwable ex) {
@@ -384,12 +336,12 @@ public class ScriptingFileWidget extends BorderPane implements
 	private void setUpFile(File f) {
 		currentFile = f;
 		String langType = ScriptingEngine.getShellType(currentFile.getName());
-		try {
-			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+//		try {
+//			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+//		} catch (Exception e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
 		//ScriptingEngine.setLastFile(f);
 		Git git;
@@ -504,6 +456,13 @@ public class ScriptingFileWidget extends BorderPane implements
 												.get(fileThatChanged.getAbsolutePath())));
 										if(content.length()>2)// ensures tha the file contents never get wiped out on the user
 											setCode(content);
+										if(autoRun.isSelected()) {
+											new Thread(()->{
+												stop();
+												start();
+											}).start();
+											
+										}
 									} catch (UnsupportedEncodingException e1) {
 										// TODO Auto-generated catch block
 										e1.printStackTrace();

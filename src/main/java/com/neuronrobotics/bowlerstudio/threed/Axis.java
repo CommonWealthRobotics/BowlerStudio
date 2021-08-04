@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import java.util.Arrays;
+
 import javafx.application.Platform;
 
 /*
@@ -45,6 +47,7 @@ import javafx.application.Platform;
  */
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -58,19 +61,21 @@ import javafx.scene.transform.Affine;
  * The Class Axis.
  */
 public class Axis extends Group {
-	
+
 	private Line3D xAxis;
 	private Line3D yAxis;
 	private Line3D zAxis;
 	private Label xText;
 	private Label yText;
 	private Label zText;
+
 	/**
 	 * Instantiates a new axis.
 	 */
 	public Axis() {
 		this(50);
 	}
+
 	// //////////////////////////////////////////
 	//
 	// create axis visual object
@@ -82,52 +87,58 @@ public class Axis extends Group {
 	//
 	public Axis(int i) {
 
-	
-		
-		
 		Affine xp = new Affine();
-		xp.setTx(i/2);
+		xp.setTx(i / 2);
 		xText = new Label("+X");
 		xText.getTransforms().add(xp);
-		
+
 		Affine yp = new Affine();
-		yp.setTy(i/2);
+		yp.setTy(i / 2);
 		yText = new Label("+Y");
 		yText.getTransforms().add(yp);
-		
-		//zp.setTz(i/2);
+
+		// zp.setTz(i/2);
 		Affine zTextAffine = new Affine();
-		zTextAffine.setTz(i/2);
-		zTextAffine.setTx(i/2);
+		zTextAffine.setTz(i / 2);
+		zTextAffine.setTx(i / 2);
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
-		//zText.smoothProperty().set(false);
-		double strokWidth=0.1;
+		// zText.smoothProperty().set(false);
+		double strokWidth = 0.1;
 		double inset = 0;
-		xAxis = new Line3D(0,inset,0,i,inset,0);
-		yAxis = new Line3D(inset,0,0,inset,i,0);
-		zAxis = new Line3D(inset,0,0,inset,0,i);
-		
+		xAxis = new Line3D(0, inset, 0, i, inset, 0);
+		yAxis = new Line3D(inset, 0, 0, inset, i, 0);
+		zAxis = new Line3D(inset, 0, 0, inset, 0, i);
+
 		xAxis.setStrokeWidth(strokWidth);
 		xAxis.setStroke(Color.RED);
-		
+
 		yAxis.setStrokeWidth(strokWidth);
 		yAxis.setStroke(Color.GREEN);
-		
+
 		zAxis.setStrokeWidth(strokWidth);
 		zAxis.setStroke(Color.BLUE);
-		
+
 		show();
 	}
-	
-	public void show(){
-		Platform.runLater(()->getChildren().addAll(xAxis,yAxis,zAxis,xText,yText,zText));
+
+	public void show() {
+		Platform.runLater(() -> showAll());
 	}
-	public void hide(){
-		Platform.runLater(()->getChildren().removeAll(xAxis,yAxis,zAxis,xText,yText,zText));
+
+	private void showAll() {
+		for (Node n : Arrays.asList(xAxis, yAxis, zAxis, xText, yText, zText)) {
+			try {
+				getChildren().add(n);
+			} catch (Exception e) {
+			}
+		}
 	}
-	
+
+	public void hide() {
+		Platform.runLater(() -> getChildren().removeAll(xAxis, yAxis, zAxis, xText, yText, zText));
+	}
 
 } // end of class Axis

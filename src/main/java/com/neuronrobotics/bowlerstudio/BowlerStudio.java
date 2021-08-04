@@ -9,17 +9,18 @@ import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
+import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
+import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
+import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.imageprovider.NativeResource;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
-import com.neuronrobotics.replicator.driver.Slic3r;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.*;
@@ -38,6 +39,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
+import javafx.scene.transform.Affine;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -191,7 +193,11 @@ public class BowlerStudio extends Application {
 		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
 		 */
 	}
-
+	public static void select(Affine globalPositionListener) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			CreatureLab3dController.getEngine().setSelected(globalPositionListener);
+		}
+	}
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
@@ -223,6 +229,8 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
+
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		if (!StudioBuildInfo.isOS64bit()) {
 
@@ -259,29 +267,27 @@ public class BowlerStudio extends Application {
 
 		});
 		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
-		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
-			@Override
-			public void onShape(CSG newShape) {
-				BowlerStudioController.addCsg(newShape);
-			}
-		});
+//		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
+//			@Override
+//			public void onShape(CSG newShape) {
+//				BowlerStudioController.addCsg(newShape);
+//			}
+//		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length == 0) {
 			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
-			if (PasswordManager.hasNetwork()) {
-				ScriptingEngine.setLoginManager(new GitHubLoginManager());
-				try {
-					ScriptingEngine.login();
-					renderSplashFrame(10, "Login OK!");
-
-				} catch (Exception e) {
-					// e.printStackTrace();
-					ScriptingEngine.setupAnyonmous();
-					renderSplashFrame(10, "No Login Found");
-				}
-			}
-
+			// switching to Web Flow auth
+			List<String> listOfScopes = Arrays.asList("repo", "gist", 
+					"user","admin:org","delete_repo");
+			PasswordManager.setListOfScopes(listOfScopes);
+			GitHubWebFlow.setMyAPI(()->{
+				String line = System.getProperty("API-ID");
+				if(line!=null)
+					return line;
+				return "1edf79fae494c232d4d2";
+			});
+			GitHubWebFlow.setName(new NameGetter());
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
 				if (ScriptingEngine.isLoginSuccess()) {
@@ -340,7 +346,7 @@ public class BowlerStudio extends Application {
 								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
 							} catch (Exception ex1) {
 								ScriptingEngine.deleteRepo(myAssets);
-								ScriptingEngine.cloneRepo(myAssets, StudioBuildInfo.getVersion());
+								ScriptingEngine.cloneRepo(myAssets,null);
 							}
 						}
 						lastVersion = ScriptingEngine.getBranch(myAssets);
@@ -368,7 +374,7 @@ public class BowlerStudio extends Application {
 				throw new RuntimeException("Style sheet does not exist");
 			}
 			// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
-			renderSplashFrame(50, "Tutorials...");
+			renderSplashFrame(50, "DL'ing Tutorials...");
 			// load tutorials repo
 
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
@@ -407,7 +413,7 @@ public class BowlerStudio extends Application {
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
-				Slic3r.setExecutableLocation("/usr/bin/slic3r");
+				//Slic3r.setExecutableLocation("/usr/bin/slic3r");
 
 			} else if (NativeResource.isWindows()) {
 				arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
@@ -452,7 +458,7 @@ public class BowlerStudio extends Application {
 			// add a new link provider to the link factory
 			FirmataLink.addLinkFactory();
 			// Log.enableInfoPrint();
-			renderSplashFrame(92, "Preload done");
+			renderSplashFrame(91, "DL'ing Devices...");
 			// ThreadUtil.wait(100);
 
 			try {
@@ -466,9 +472,12 @@ public class BowlerStudio extends Application {
 				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
+			renderSplashFrame(92, "Launching UI");
 			launch();
 
 		} else {
+			System.out.println("Arguments detected, starting Kernel mode.");
+			SplashManager.closeSplash();
 			BowlerKernel.main(args);
 		}
 
@@ -732,6 +741,7 @@ public class BowlerStudio extends Application {
 		new Thread() {
 
 			public void run() {
+				FileChangeWatcher.clearAll();
 				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 				renderSplashFrame(100, "Saving state..");
@@ -785,4 +795,6 @@ public class BowlerStudio extends Application {
 	public static void exit() {
 		closeBowlerStudio();
 	}
+
+
 }

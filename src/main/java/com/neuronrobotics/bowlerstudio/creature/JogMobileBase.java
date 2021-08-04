@@ -1,8 +1,12 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.gamepad.JogTrainerWidget;
@@ -12,24 +16,45 @@ import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.util.FxTimer;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class JogWidget extends GridPane
-		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IGameControlEvent {
-	double defauletSpeed = 0.2;
-	private DHParameterKinematics kinematics;
+import javax.management.RuntimeErrorException;
+
+public class JogMobileBase extends GridPane implements IGameControlEvent {
+	double defauletSpeed = 0.1;
+	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
 	Button py = new Button("", AssetFactory.loadIcon("Plus-Y.png"));
@@ -37,27 +62,25 @@ public class JogWidget extends GridPane
 	Button pz = new Button("", AssetFactory.loadIcon("Plus-Z.png"));
 	Button nz = new Button("", AssetFactory.loadIcon("Minus-Z.png"));
 	Button home = new Button("", AssetFactory.loadIcon("Home.png"));
-	Button game = new Button("Add Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
+	Button game = new Button("Run Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
 	Button conf = new Button("Configure...", AssetFactory.loadIcon("Configure-Game-Controller.png"));
 	TextField increment = new TextField(Double.toString(defauletSpeed));
 	TextField sec = new TextField("0.01");
-	private TransformWidget transformCurrent;
-	private TransformWidget transformTarget;
-	private BowlerJInputDevice gameController = null;
 	double x, y, rz, slider = 0;
 	private boolean stop = true;
 	private String paramsKey;
 	private GridPane buttons;
-	private static ArrayList<JogWidget> allWidgets = new ArrayList<JogWidget>();
-	private MobileBase source;
-
-	public JogWidget(DHParameterKinematics k, MobileBase source) {
-		this.source = source;
+	private static ArrayList<JogMobileBase> allWidgets = new ArrayList<JogMobileBase>();
+	private boolean running = false;
+	private Thread scriptRunner=null;
+	private File currentFile = null;
+	public JogMobileBase(MobileBase kinimatics) {
 		allWidgets.add(this);
-		this.setKin(k);
-
-		getKin().addPoseUpdateListener(this);
-
+		if (!kinimatics.isAvailable())
+			kinimatics.connect();
+		mobilebase = kinimatics;
+		py = new Button("", AssetFactory.loadIcon("Rotation-Z.png"));
+		ny = new Button("", AssetFactory.loadIcon("Rotation-Neg-Z.png"));
 		px.setOnMousePressed(event -> {
 			try {
 				handle((Button) event.getSource());
@@ -157,25 +180,27 @@ public class JogWidget extends GridPane
 				T.printStackTrace();
 			}
 		});
+		game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		game.setOnAction(event -> {
-			if (getGameController() == null) {
-				setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
-						"jogController"));
-				if (getGameController() == null) {
-					ConnectionManager.onConnectGamePad();
-					setGameController((BowlerJInputDevice) DeviceManager.getSpecificDevice(BowlerJInputDevice.class,
-							"jogController"));
-				}
-
-			} else {
-				RemoveGameController();
-			}
+			new Thread(){
+	    		public void run(){
+	    			pushThisMobileBaseAsKatapult();
+	    			startStopAction();
+	    		}
+	    	}.start();
+			
 		});
 		conf.setOnAction(event -> {
-			if (getGameController() != null) {
-				runControllerMap();
-			}
+			new Thread(){
+	    		public void run(){
+	    			pushThisMobileBaseAsKatapult();
+	    			ConfigurationDatabase.save();
+	    		}
+	    	}.start();
 		});
+		
+		game.setTooltip(new Tooltip("Connect game controllers and use them to control your robot"));
+		conf.setTooltip(new Tooltip("Save this robot to be used in Katapult plauncher"));
 
 		buttons = new GridPane();
 		buttons.getColumnConstraints().add(new ColumnConstraints(80)); // column 1 is 75 wide
@@ -196,32 +221,128 @@ public class JogWidget extends GridPane
 		buttons.add(nx, 1, 2);
 		buttons.add(increment, 0, 3);
 		buttons.add(new Label("m/s"), 1, 3);
+		buttons.add(game, 0, 4);
+		buttons.add(conf, 1, 4);
+		
 
 		buttons.add(sec, 2, 3);
 		buttons.add(new Label("sec"), 3, 3);
-		buttons.add(pz, 3, 0);
-		buttons.add(nz, 3, 1);
 
 		add(buttons, 0, 0);
-		transformCurrent = new TransformWidget("Current Pose", getKin().getCurrentTaskSpaceTransform(), this);
-		transformCurrent.setDisable(true);
-		transformTarget = new TransformWidget("Current Target", getKin().getCurrentPoseTarget(), this);
-
-		Accordion advancedPanel = new Accordion();
-		advancedPanel.getPanes().add(new TitledPane("Current Pose", transformCurrent));
-		advancedPanel.getPanes().add(new TitledPane("Current Target", transformTarget));
-		add(advancedPanel, 0, 1);
 
 		controllerLoop();
+		try {
+			
+			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "launch.groovy");
+		} catch (GitAPIException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mobilebase.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice source) {
+				stop();
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice source) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+
+	private void startStopAction(){
+		game.setDisable(true);
+		if (running)
+			stop();
+		else
+			start();
+		game.setDisable(false);
+	}
+	private void pushThisMobileBaseAsKatapult() {
+		ConfigurationDatabase.setObject("katapult", "robotName", mobilebase.getScriptingName());
+		ConfigurationDatabase.setObject("katapult", "robotGit", mobilebase.getGitSelfSource()[0]);
+		ConfigurationDatabase.setObject("katapult", "robotGitFile", mobilebase.getGitSelfSource()[1]);
+		ConfigurationDatabase.setObject("katapult", "linkDeviceName", mobilebase.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName());
+	    @SuppressWarnings("unchecked")
+		List<String> asList = (List<String>) ConfigurationDatabase.getObject("katapult", "gameControllerNames", 
+				Arrays.asList("Dragon","X-Box","Game","Play"));
+		
+		ArrayList<String> fromLookup = BowlerJInputDevice.getControllers();
+		fromLookup.addAll(asList);
+		Set<String> uniques = new HashSet<String>(asList);
+		
+		ConfigurationDatabase.setObject("katapult", "gameControllerNames", 
+				Arrays.asList(uniques.toArray())
+				);
+	}
+	private void reset() {
+		running = false;
+		Platform.runLater(() -> {
+			game.setText("Run Game Controller");
+			//game.setGraphic(AssetFactory.loadIcon("Run.png"));
+			game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+			
+		});
 
 	}
 
-	private BowlerJInputDevice RemoveGameController() {
-		BowlerJInputDevice stale = getGameController();
-		getGameController().removeListeners(this);
-		game.setText("Add Game Controller");
-		setGameController(null);
-		return stale;
+	public void stop() {
+		// TODO Auto-generated method stub
+
+		reset();
+		if (scriptRunner != null)
+			while (scriptRunner.isAlive()) {
+
+				Log.debug("Interrupting");
+				ThreadUtil.wait(10);
+				try {
+					scriptRunner.interrupt();
+					scriptRunner.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
+		scriptRunner=null;
+	}
+	
+	private void start() {
+
+
+		running = true;
+		Platform.runLater(()->{
+			game.setText("Stop Game Controller");
+			//game.setGraphic(AssetFactory.loadIcon("Stop.png"));
+			game.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+		});
+		scriptRunner = new Thread() {
+
+			public void run() {
+				try {
+					ScriptingEngine.inlineFileScriptRun(currentFile, null);
+					reset();
+
+				} 
+				catch (Throwable ex) {
+
+					reset();
+				}
+
+			}
+		};
+
+		try {
+
+			scriptRunner.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void handle(final Button button) {
@@ -242,14 +363,21 @@ public class JogWidget extends GridPane
 			if (button == nx) {
 				x = 0;
 			}
-
-			if (button == py) {
-				y = 0;
+			if (mobilebase == null) {
+				if (button == py) {
+					y = 0;
+				}
+				if (button == ny) {
+					y = 0;
+				}
+			} else {
+				if (button == py) {
+					rz = 0;
+				}
+				if (button == ny) {
+					rz = 0;
+				}
 			}
-			if (button == ny) {
-				y = 0;
-			}
-
 			if (button == pz) {
 				slider = 0;
 			}
@@ -267,13 +395,21 @@ public class JogWidget extends GridPane
 		if (button == nx) {
 			x = -1;
 		}
-		if (button == py) {
-			y = 1;
+		if (mobilebase == null) {
+			if (button == py) {
+				y = 1;
+			}
+			if (button == ny) {
+				y = -1;
+			}
+		} else {
+			if (button == py) {
+				rz = 1;
+			}
+			if (button == ny) {
+				rz = -1;
+			}
 		}
-		if (button == ny) {
-			y = -1;
-		}
-
 		if (button == pz) {
 			slider = 1;
 		}
@@ -290,96 +426,32 @@ public class JogWidget extends GridPane
 	}
 
 	public void home() {
-		new Thread(() -> {
-			homeLimb(getKin());
-		}).start();
+
+		getMobilebase().setGlobalToFiducialTransform(new TransformNR());
+		for (DHParameterKinematics c : getMobilebase().getAllDHChains()) {
+			homeLimb(c);
+		}
 	}
 
 	private void homeLimb(AbstractKinematicsNR c) {
-
-		TransformNR t = c.calcHome();
+		double[] joints = c.getCurrentJointSpaceVector();
+		for (int i = 0; i < c.getNumberOfLinks(); i++) {
+			joints[i] = 0;
+		}
 		try {
-			c.setDesiredTaskSpaceTransform(t, 0);
+			c.setDesiredJointSpaceVector(joints, 0);
 		} catch (Exception e) {
-			double[] joints = c.getCurrentJointSpaceVector();
-			for (int i = 0; i < c.getNumberOfLinks(); i++) {
-				joints[i] = 0;
-			}
-			try {
-				c.setDesiredJointSpaceVector(joints, 0);
-			} catch (Exception ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		// TODO Auto-generated method stub
-		if (pose != null && transformCurrent != null)
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					transformCurrent.updatePose(getKin().getCurrentTaskSpaceTransform());
-				}
-			});
-	}
-
-	@Override
-	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		if (pose != null && transformTarget != null)
-			transformTarget.updatePose(getKin().getCurrentPoseTarget());
-	}
-
-	@Override
-	public void onTransformChaging(TransformNR newTrans) {
-		// TODO Auto-generated method stub
-		JogThread.setTarget(getKin(), newTrans, 0);
-	}
-
-	@Override
-	public void onTransformFinished(TransformNR newTrans) {
-		JogThread.setTarget(getKin(), newTrans, 0);
-//		new Thread(() -> {
-//			try {
-//				getKin().setDesiredTaskSpaceTransform(newTrans, Double.parseDouble(sec.getText()));
-//
-//			} catch (NumberFormatException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (Throwable e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}).start();
-
-	}
-
-	public DHParameterKinematics getKin() {
-		if (source.getParallelGroup(kinematics) != null) {
-			return source.getParallelGroup(kinematics);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		return kinematics;
-	}
-
-	public void setKin(DHParameterKinematics kin) {
-		if (!kin.isAvailable())
-			kin.connect();
-		this.kinematics = kin;
-
-//		try {
-//			kin.setDesiredTaskSpaceTransform(kin.calcHome(), 0);
-//		} catch (Exception e) {
-//		}
 	}
 
 	private void controllerLoop() {
 		new Thread(() -> {
 			// System.out.println("controllerLoop");
 			double seconds = .1;
-			if (getGameController() != null || stop == false) {
+			if ( stop == false) {
 				try {
 					seconds = Double.parseDouble(sec.getText());
 					if (!stop) {
@@ -407,20 +479,9 @@ public class JogWidget extends GridPane
 						current.translateZ(inc * slider);
 
 						try {
-
-							current = getKin().getCurrentPoseTarget().copy();
-							current.translateX(inc * x);
-							current.translateY(inc * y);
-							current.translateZ(inc * slider);
-							// current.setRotation(new RotationNR());
+							TransformNR toSet = current.copy();
 							double toSeconds = seconds;
-							if (!JogThread.setTarget(getKin(), current, toSeconds)) {
-								current.translateX(-inc * x);
-								current.translateY(-inc * y);
-								current.translateZ(-inc * slider);
-							}
-							// Log.enableDebugPrint();
-							// System.out.println("Loop Jogging to: "+toSet);
+							JogThread.setTarget(mobilebase, toSet, toSeconds);
 
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -432,7 +493,7 @@ public class JogWidget extends GridPane
 				}
 				if (seconds < .01) {
 					seconds = .01;
-					sec.setText(".01");
+					Platform.runLater(() -> sec.setText(".01"));
 				}
 				FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
 					@Override
@@ -440,6 +501,7 @@ public class JogWidget extends GridPane
 
 						controllerLoop();
 
+						// System.out.println("Controller loop!");
 					}
 				});
 			}
@@ -472,58 +534,20 @@ public class JogWidget extends GridPane
 		if (x == 0.0 && y == 0.0 && rz == 0.0 && slider == 0) {
 			// System.out.println("Stoping on="+comp.getName());
 			stop = true;
-			try {
-				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(), 0);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 		} else
 			stop = false;
 
 	}
 
-	public BowlerJInputDevice getGameController() {
-		return gameController;
+	public MobileBase getMobilebase() {
+		return mobilebase;
 	}
 
-	public void setGameController(BowlerJInputDevice gameController) {
-		this.gameController = gameController;
-		if (gameController != null) {
-			getGameController().clearListeners();
-			getGameController().addListeners(this);
-			game.setText("Remove Game Controller");
-			controllerLoop();
-			paramsKey = gameController.getControllerName();
-			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
-			boolean hasmap = false;
-			if (map.containsKey("jogKinx") && map.containsKey("jogKiny") && map.containsKey("jogKinz")
-					&& map.containsKey("jogKinslider")) {
-				hasmap = true;
-			}
-
-			if (!hasmap) {
-				runControllerMap();
-			}
-		}
+	public void setMobilebase(MobileBase mobilebase) {
+		this.mobilebase = mobilebase;
 	}
 
-	private void runControllerMap() {
-		Stage s = new Stage();
-		new Thread() {
-			public void run() {
-				JogTrainerWidget controller = new JogTrainerWidget(gameController);
-				try {
-					controller.start(s);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-	}
 
-	public void setCurrent(TransformNR currentPoseTarget) {
-		JogThread.setTarget(getKin(), currentPoseTarget, 0);
-	}
 
 }

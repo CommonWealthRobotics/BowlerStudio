@@ -29,7 +29,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField ty;
 //	private TextField tz;
 	private TransformNR initialState;
-	
+	private RotationNR storeRotation;
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
 		this.initialState = is;
@@ -44,44 +44,87 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		ty = new EngineeringUnitsSliderWidget(this,  initialState.getY(), 100,"mm");
 		tz = new EngineeringUnitsSliderWidget(this,  initialState.getZ(), 100,"mm");
 		
-		RotationNR rot = initialState.getRotation();
+		storeRotation = initialState.getRotation();
 		double  t=0;
 		try{
-			t=Math.toDegrees(rot.getRotationTilt());
+			t=Math.toDegrees(storeRotation.getRotationTilt());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		double  e=0;
 		try{
-			e=Math.toDegrees(rot.getRotationElevation());
+			e=Math.toDegrees(storeRotation.getRotationElevation());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		double  a=0;
 		try{
-			a=Math.toDegrees(rot.getRotationAzimuth());
+			a=Math.toDegrees(storeRotation.getRotationAzimuth());
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100,"degrees");
-		elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100,"degrees");
-		azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100,"degrees");
+		tilt = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setTiltDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setTiltDegrees(newAngleDegrees);				
+				onChange.onTransformFinished(getCurrent());
+
+			}
+		}, -179.99, 179.99, t, 100,"degrees");
+		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setElevationDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setElevationDegrees(newAngleDegrees);
+				onChange.onTransformFinished(getCurrent());
+			}
+		}, -89.99, 89.99, e, 100,"degrees");
+		azimeth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+			
+			@Override
+			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setAzimuthDegrees(newAngleDegrees);
+				onChange.onTransformChaging(getCurrent());
+			}
+			
+			@Override
+			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+				initialState.setAzimuthDegrees(newAngleDegrees);
+				onChange.onTransformFinished(getCurrent());
+			}
+		}, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimeth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(60)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(200)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(60)); // units
 	    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
 	    setHgap(20);// gab between elements
 	    
+	    tx.showSlider(false);
+	    ty.showSlider(false);
+	    tz.showSlider(false);
+//	    tilt.showSlider(false);
+//	    azimeth.showSlider(false);
+//	    elevation.showSlider(false);
 	    
 	    add(	new Text(title), 
 	    		1,  0);
-//	    add(	new Text("(r)W"), 
-//	    		3,  0);
-//	    add(	rw, 
-//	    		4,  0);
+
 	    // These all seem out of order here, but it is because the 
 	    // screen is rotating the orenation of this interface from BowlerStudio3dEngine.getOffsetforvisualization()
 	    //X line
@@ -91,9 +134,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  1);
 	
 		 add(	new Text("Tilt"), 
-	    		3,  1);
+	    		0,  4);
 		 add(	tilt, 
-	    		4,  1);
+	    		1,  4);
 	    //Y line
 	    add(	new Text("Y"), 
 	    		0,  2);
@@ -101,9 +144,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  2);
 	
 		 add(	new Text("Elevation"), 
-	    		3,  2);
+	    		0,  5);
 		 add(	elevation, 
-				4,  2);
+				1,  5);
 	    //Z line
 	    add(	new Text("Z"), 
 	    		0,  3);
@@ -111,9 +154,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				1,  3);
 	
 		 add(	new Text("Azimuth"), 
-	    		3,  3);
+	    		0,  6);
 		 add(	azimeth, 
-	    		4,  3);
+	    		1,  6);
 	}
 	
 	private 	TransformNR getCurrent(){
@@ -121,11 +164,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				tx.getValue(),
 				ty.getValue(),
 				tz.getValue(),
-				new RotationNR( 
-						tilt.getValue(),
-						azimeth.getValue(),
-						elevation.getValue()
-						));
+				initialState.getRotation());
 
 		
 		return tmp;
@@ -152,9 +191,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		TransformNR pose = p;
 		
 		
-		tx.setValue(pose.getX());
-		ty.setValue(pose.getY());
-		tz.setValue(pose.getZ());
+		Platform.runLater(() -> tx.setValue(pose.getX()));
+		Platform.runLater(() -> ty.setValue(pose.getY()));
+		Platform.runLater(() -> tz.setValue(pose.getZ()));
 		
 		RotationNR rot = pose.getRotation();
 		double  t=0;
@@ -175,9 +214,14 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		tilt.setValue(t);
-		elevation .setValue(e);
-		azimeth .setValue(a);
+		double tiltVar=t;
+		double eVar=e;
+		double aVar=a;
+		Platform.runLater(() -> tilt.setValue(tiltVar));
+		Platform.runLater(() -> elevation .setValue(eVar));
+		Platform.runLater(() -> azimeth .setValue(aVar));
+		// Set the rotation after setting the UI so the read will load the rotation in its pure form
+		initialState = p;
 	}
 
 }

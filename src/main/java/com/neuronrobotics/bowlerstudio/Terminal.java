@@ -180,33 +180,11 @@ public class Terminal {
 					reset();
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
 					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Device missing error");
-						String message = "This script needs a device connected: ";
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						d.printStackTrace(pw);
 						BowlerStudioController.highlightException(null, d);
 
-						String stackTrace = sw.toString();
-
-						if (stackTrace.contains("dyio"))
-							message += "dyio";
-						else if (stackTrace.contains("camera"))
-							message += "camera";
-						else if (stackTrace.contains("gamepad"))
-							message += "gamepad";
-						else
-							message += stackTrace;
-						alert.setHeaderText(message);
-						alert.setContentText("You need to connect it before running again");
-						alert.showAndWait();
-						if (stackTrace.contains("dyio"))
-							ConnectionManager.addConnection();
-//						else if (stackTrace.contains("camera"))
-//							ConnectionManager.addConnection(new OpenCVImageProvider(0), "camera0");
-						else if (stackTrace.contains("gamepad"))
-							ConnectionManager.onConnectGamePad("gamepad");
 						reset();
 					});
 

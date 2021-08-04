@@ -5,9 +5,12 @@ package com.neuronrobotics.bowlerstudio;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHRepository;
@@ -17,8 +20,8 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
-import com.neuronrobotics.sdk.addons.kinematics.JavaFXInitializer;
 
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -125,29 +128,27 @@ public class NewVitaminWizardController  extends Application {
 					GitHub github = PasswordManager.getGithub();
 					
 					String newName =typeOfVitaminString+"CadGenerator";
-					GHCreateRepositoryBuilder builder = github.createRepository(newName );
-					builder.description(newName + " Generates CAD vitamins " );
-					GHRepository gist=null;
-					try {
-						gist = builder.create();
-					}catch(org.kohsuke.github.HttpException ex) {
-						if(ex.getMessage().contains("name already exists on this account")) {
-							gist = github.getRepository(PasswordManager.getLoginID()+"/"+newName);
-						}
-					}
+					GHRepository gist = ScriptingEngine.makeNewRepo(newName,newName + " Generates CAD vitamins ");
+					
 					String gitURL = gist.getHtmlUrl().toExternalForm()+".git";
 					String filename = typeOfVitaminString+".groovy";
 					Vitamins.setScript(typeOfVitaminString, gitURL, filename);
 					
 					String measurments ="";
-					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
+					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
 					}
-					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet()) {
-						String string = key+"Value";
-						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
-					}
+					measurments+="\n\tfor(String key:measurments.keySet().stream().sorted().collect(Collectors.toList())){";
+					measurments+="\n\t\tprintln \""+ typeOfVitaminString+" value \"+key+\" \"+measurments.get(key);\n}";
+//					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
+//						String string = key+"Value";
+//						measurments+="\n	println \"Measurment "+string+" =  \"+"+string;
+//					}
 					String loader = "import eu.mihosoft.vrl.v3d.parametrics.*;\n" + 
+							"import java.util.stream.Collectors;\n" + 
+							"import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;\n" + 
+							"import eu.mihosoft.vrl.v3d.CSG;\n" + 
+							"import eu.mihosoft.vrl.v3d.Cube;\n" + 
 							"CSG generate(){\n" + 
 							"	String type= \""+typeOfVitaminString+"\"\n" + 
 							"	if(args==null)\n" + 
@@ -270,7 +271,8 @@ public class NewVitaminWizardController  extends Application {
 			}
 			new Thread(() -> {
 				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitaminString, sizeComboBox.getSelectionModel().getSelectedItem());
-				for(String key:configsOld.keySet()) {
+
+				for(String key:configsOld.keySet().stream().sorted().collect(Collectors.toList())) {
 					setupKeyValueToTable(key, configsOld.get(key),sizeOfVitaminString);
 				}
 			}).start();
@@ -314,7 +316,7 @@ public class NewVitaminWizardController  extends Application {
 		for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
 			HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitaminString, size);
 			// For every required key
-			for(String key:required.keySet()) {
+			for(String key:required.keySet().stream().sorted().collect(Collectors.toList())) {
 				// check to see if the current size has this key already
 				if(!configs.containsKey(key)) {
 					// enter a default value, but ensure that the key exists for downstream code
@@ -498,6 +500,7 @@ public class NewVitaminWizardController  extends Application {
         newTypeRadio.setToggleGroup(groupForType);
         newTypeNameField.setEditable(false);
         ArrayList<String> types = Vitamins.listVitaminTypes();
+        
 		for(String s:types) {
 			typeComboBox.getItems().add(s);
 		}

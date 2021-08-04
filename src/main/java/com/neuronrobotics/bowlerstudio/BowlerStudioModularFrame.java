@@ -62,7 +62,7 @@ public class BowlerStudioModularFrame {
 
 	private CreatureLab3dController creatureLab3dController;
 
-	private DockNode creatureLab3dDockNode;
+	private DockNode creatureLab3dDockNode=null;
 
 	// private InvalidationListener creatureManagerRemover;
 
@@ -161,11 +161,19 @@ public class BowlerStudioModularFrame {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		BorderPane menue = (BorderPane) menueBar.getRoot();
 		BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
-				VBox cmd = (VBox) commandLine.getRoot();
-		creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
+		VBox cmd = (VBox) commandLine.getRoot();
+		do {
+			try {
+				creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
+			}catch(Exception  e) {
+				e.printStackTrace();
+				ThreadUtil.wait(100);
+			}
+		} while (creatureLab3dDockNode==null);
 		creatureLab3dDockNode.setPrefSize(400, 400);
 		
 
@@ -398,8 +406,11 @@ public class BowlerStudioModularFrame {
 
 
 	public void setSelectedTab(Tab tab) {
-		if (webTabs.get(tab) != null)
-			Platform.runLater(() -> webTabs.get(tab).requestFocus());
+		DockNode dockNode = webTabs.get(tab);
+		if (dockNode != null)
+			Platform.runLater(() -> {
+				dockNode.requestFocus();
+			});
 	}
 
 
