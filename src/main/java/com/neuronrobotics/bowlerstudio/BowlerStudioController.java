@@ -69,7 +69,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	private static IMobileBaseUI mbui = new IMobileBaseUI() {
 
 		@Override
-		public void highlightException(File fileEngineRunByName, Exception ex) {
+		public void highlightException(File fileEngineRunByName, Throwable ex) {
 			BowlerStudioController.highlightException(fileEngineRunByName, ex);
 		}
 
