@@ -329,9 +329,14 @@ public class BowlerStudio extends Application {
 					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 
 					if (lastVersion != null && StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
+						try {
+							ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
+							System.err.println("Studio version is the same");
+						}catch(Exception e) {
+							ScriptingEngine.deleteRepo(myAssets);
+							ScriptingEngine.pull(myAssets);
+						}
 						
-						ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
-						System.err.println("Studio version is the same");
 					} else {
 						if (lastVersion != null)
 							ScriptingEngine.cloneRepo(myAssets, lastVersion);
@@ -343,12 +348,14 @@ public class BowlerStudio extends Application {
 								throw new NullPointerException();
 						} catch (NullPointerException ex) {
 							// not the owner
-							try {
-								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
-							} catch (Exception ex1) {
-								ScriptingEngine.deleteRepo(myAssets);
-								ScriptingEngine.cloneRepo(myAssets,null);
-							}
+							System.err.println("You are not the owner of the assets!");
+							ScriptingEngine.pull(myAssets);
+//							try {
+//								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+//							} catch (Exception ex1) {
+//								ScriptingEngine.deleteRepo(myAssets);
+//								ScriptingEngine.cloneRepo(myAssets,null);
+//							}
 						}
 						lastVersion = ScriptingEngine.getBranch(myAssets);
 						ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", lastVersion);
@@ -384,7 +391,7 @@ public class BowlerStudio extends Application {
 			renderSplashFrame(53, "Loading Images");
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-					StudioBuildInfo.getVersion());
+					ScriptingEngine.getBranch(myAssets));
 			renderSplashFrame(54, "Load Assets");
 			// Download and Load all of the assets
 
