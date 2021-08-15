@@ -525,4 +525,10 @@ public class ScriptingFileWidget extends BorderPane implements
 		
 	}
 
+	@Override
+	public void onFileDelete(File fileThatIsDeleted) {
+		close();
+		
+	}
+
 }

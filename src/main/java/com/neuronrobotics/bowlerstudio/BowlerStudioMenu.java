@@ -30,6 +30,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -439,7 +440,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						public void run() {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-							} catch (Exception e) {
+							} catch(CheckoutConflictException ex) {
+								ScriptingEngine.deleteRepo(url);
+								try {
+									ScriptingEngine.checkout(url, ScriptingEngine.getBranch(url));
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}catch (Exception e) {
 								exp.uncaughtException(Thread.currentThread(), e);
 							}
 							myEvent.run();
