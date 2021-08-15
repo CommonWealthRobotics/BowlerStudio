@@ -440,16 +440,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						public void run() {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-							} catch(CheckoutConflictException ex) {
+							} catch (Exception e) {
 								ScriptingEngine.deleteRepo(url);
 								try {
 									ScriptingEngine.checkout(url, ScriptingEngine.getBranch(url));
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (IOException ex) {
+									exp.uncaughtException(Thread.currentThread(), ex);
 								}
-							}catch (Exception e) {
-								exp.uncaughtException(Thread.currentThread(), e);
+								
 							}
 							myEvent.run();
 							// selfRef.onRefresh(null);

@@ -174,8 +174,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(autoRun);
-
 		controlPane.getChildren().add(publish);
+		controlPane.getChildren().add(openFile);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
 		fileNameBox.setMaxWidth(Double.MAX_VALUE);
@@ -183,7 +183,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(fileListBox);
 		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
-		controlPane.getChildren().add(openFile);
+		
 
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);

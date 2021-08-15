@@ -329,6 +329,7 @@ public class BowlerStudio extends Application {
 					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 
 					if (lastVersion != null && StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
+						
 						ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
 						System.err.println("Studio version is the same");
 					} else {
