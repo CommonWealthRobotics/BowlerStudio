@@ -154,9 +154,21 @@ public class ScriptingFileWidget extends BorderPane implements
 		});
 		externalEditorController = new ExternalEditorController(currentFile,autoRun);
 		
+		Button openFile =new Button("Open...");
+		openFile.setOnAction(event->{
+			Desktop desktop = Desktop.getDesktop();
+			try {
+				desktop.open(currentFile.getParentFile());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
 		controlPane.getChildren().add(runfx);
 		controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(autoRun);
+		controlPane.getChildren().add(openFile);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(new Label("file:"));
 		controlPane.getChildren().add(fileNameBox);
