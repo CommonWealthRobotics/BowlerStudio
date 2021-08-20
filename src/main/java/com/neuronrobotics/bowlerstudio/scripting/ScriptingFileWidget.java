@@ -378,7 +378,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					fileListBox.setText(remote);
 				});
 
-				git.close();
+				ScriptingEngine.closeGit(git);
 			});
 		} catch (Exception e1) {
 			Platform.runLater(() -> {

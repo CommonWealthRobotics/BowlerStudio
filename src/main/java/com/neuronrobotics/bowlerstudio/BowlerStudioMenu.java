@@ -524,10 +524,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						orgCommits.setOnShowing(null);
 						gistFlag = false;
 					});
+					Repository repo=null;
+					Git git=null;
 					try {
 						ScriptingEngine.checkout(url, branchName);
-						Repository repo = ScriptingEngine.getRepository(url);
-						Git git = new Git(repo);
+						repo = ScriptingEngine.getRepository(url);
+						git = new Git(repo);
 
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
@@ -535,7 +537,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						ObjectId resolve = repo.resolve(branchName);
 						if (resolve != null) {
 							Iterable<RevCommit> commits = git.log().add(resolve).call();
-
+							
 							List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 							Platform.runLater(() -> {
 								try {
@@ -604,7 +606,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								});
 							}
 						}
-						git.close();
+						
 						Platform.runLater(() -> {
 							orgCommits.hide();
 							Platform.runLater(() -> {
@@ -622,7 +624,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
-
+					if(git!=null)git.close();
+					if(repo!=null)repo.close();
 				}).start();
 			}
 		};
