@@ -528,9 +528,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					Git git=null;
 					try {
 						ScriptingEngine.checkout(url, branchName);
-						repo = ScriptingEngine.getRepository(url);
-						git = new Git(repo);
-
+						
+						git = ScriptingEngine.openGit( url);
+						repo=git.getRepository();
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
 
@@ -624,8 +624,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
-					if(git!=null)git.close();
-					if(repo!=null)repo.close();
+					ScriptingEngine.closeGit(git);
 				}).start();
 			}
 		};
