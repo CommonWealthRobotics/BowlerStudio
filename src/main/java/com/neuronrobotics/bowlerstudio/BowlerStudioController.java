@@ -129,7 +129,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		openFiles.put(file.getAbsolutePath(), fileTab);
 
 		try {
-			Log.warning("Loading local file from: " + file.getAbsolutePath());
+			System.err.println("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
 			
 			new Thread() {
@@ -137,9 +137,10 @@ public class BowlerStudioController implements IScriptEventListener {
 					String gitRepo = t.getScripting().getGitRepo();
 					if(gitRepo!=null) {
 						String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
-						if(gitRepo.length()>5 && (message != null ))
-							BowlerStudioMenuWorkspace.add(gitRepo,message);
-						}
+						if(gitRepo.length()<5 || (message == null ))
+							message="Project "+gitRepo;
+						BowlerStudioMenuWorkspace.add(gitRepo,message);
+					}
 				}
 			}.start();
 

@@ -46,6 +46,7 @@ public class BowlerStudioMenuWorkspace {
 							ScriptingEngine.pull(o);
 						} catch (Throwable ex) {
 							workspaceData.remove(o);
+							ScriptingEngine.deleteRepo(o);
 							i--;
 						}
 					}
