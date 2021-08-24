@@ -225,9 +225,7 @@ public class BowlerStudio extends Application {
 	}
 	
 	public static TransformNR getCamerFrame() {
-		TransformNR offset = TransformFactory.affineToNr(CreatureLab3dController.getEngine().getFlyingCamera().getOffset());
-		TransformNR fiducialToGlobalTransform = CreatureLab3dController.getEngine().getFlyingCamera().getFiducialToGlobalTransform();
-		return offset.times(fiducialToGlobalTransform);
+		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
 	}
 	
 	public static double getCamerDepth() {
