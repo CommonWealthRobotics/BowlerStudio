@@ -89,7 +89,12 @@ public class VirtualCameraMobileBase {
 		setGlobalToFiducialTransform(global);
 		
 	}
-
+	public TransformNR getCamerFrame() {
+		TransformNR offset = TransformFactory.affineToNr(getOffset());
+		TransformNR fiducialToGlobalTransform = getFiducialToGlobalTransform();
+		return offset.times(fiducialToGlobalTransform);
+	}
+	
 	public PerspectiveCamera getCamera() {
 		return camera;
 	}
