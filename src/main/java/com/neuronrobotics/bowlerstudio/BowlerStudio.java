@@ -8,6 +8,7 @@ import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
@@ -23,6 +24,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.*;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -221,7 +223,17 @@ public class BowlerStudio extends Application {
 				System.err.println("File not found");
 			}
 	}
-
+	
+	public static TransformNR getCamerFrame() {
+		TransformNR offset = TransformFactory.affineToNr(CreatureLab3dController.getEngine().getFlyingCamera().getOffset());
+		TransformNR fiducialToGlobalTransform = CreatureLab3dController.getEngine().getFlyingCamera().getFiducialToGlobalTransform();
+		return offset.times(fiducialToGlobalTransform);
+	}
+	
+	public static double getCamerDepth() {
+		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
+	}
+	
 	/**
 	 * @param args the command line arguments
 	 * @throws Exception
