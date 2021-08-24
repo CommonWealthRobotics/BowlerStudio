@@ -506,8 +506,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		csgSourceFile.put(currentCsg, source);
 		Optional<Object> m = currentCsg.getStorage().getValue("manipulator");
 		HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> eventForManipulation=null;
-		if(HashMap.class.isInstance(m.get())) {
-			eventForManipulation = (HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>>) m.get();
+		try {
+			if(HashMap.class.isInstance(m.get())) {
+				eventForManipulation = (HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>>) m.get();
+			}
+		}catch(java.util.NoSuchElementException ex) {
+			eventForManipulation=null;
 		}
 		
 		MeshView current = getCsgMap().get(currentCsg);
