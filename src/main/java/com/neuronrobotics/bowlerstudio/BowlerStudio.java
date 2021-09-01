@@ -356,7 +356,7 @@ public class BowlerStudio extends Application {
 								ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
 							} else
 								throw new NullPointerException();
-						} catch (NullPointerException ex) {
+						} catch (Exception ex) {
 							// not the owner
 							System.err.println("You are not the owner of the assets!");
 							ScriptingEngine.pull(myAssets);
