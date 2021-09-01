@@ -13,7 +13,7 @@ public class NameGetter  implements Supplier<String>{
 		if(line!=null)
 			return line;
 		JFrame jframe = new JFrame();
-		String answer = JOptionPane.showInputDialog(jframe, "Enter API secret");
+		String answer = JOptionPane.showInputDialog(jframe, "Kevin Fucked up and left this in the release build\nEnter API secret");
 		jframe.dispose();
 		return answer;
 
