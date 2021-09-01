@@ -382,7 +382,7 @@ public class BowlerStudio extends Application {
 				} else {
 					renderSplashFrame(20, "DL'ing Image Assets");
 					ScriptingEngine.cloneRepo(myAssets, null);
-					ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+					//ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
 				}
 			}
 			layoutFile = AssetFactory.loadFile("layout/default.css");
