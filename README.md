@@ -172,6 +172,8 @@ sudo apt install  curl
    
     cd BowlerStudio
     
+    git checkout development
+    
     git submodule update --init --recursive
     
     git submodule update  --recursive
