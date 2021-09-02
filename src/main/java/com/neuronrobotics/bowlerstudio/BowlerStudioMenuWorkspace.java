@@ -41,8 +41,14 @@ public class BowlerStudioMenuWorkspace {
 
 						ScriptingEngine.pull(o);
 					} catch (Throwable e) {
-						workspaceData.remove(o);
-						i--;
+						ScriptingEngine.deleteRepo(o);
+						try {
+							ScriptingEngine.pull(o);
+						} catch (Throwable ex) {
+							workspaceData.remove(o);
+							ScriptingEngine.deleteRepo(o);
+							i--;
+						}
 					}
 				} catch (Exception e) {
 				}

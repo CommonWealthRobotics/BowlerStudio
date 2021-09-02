@@ -11,6 +11,8 @@ import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
@@ -66,8 +68,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				return;
 			}
 			try {
-				Repository repository = ScriptingEngine.locateGit(file).getRepository();
+				Git locateGit = ScriptingEngine.locateGit(file);
+				Repository repository = locateGit.getRepository();
 				File dir = repository.getWorkTree();
+				ScriptingEngine.closeGit(locateGit);
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
 				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse";

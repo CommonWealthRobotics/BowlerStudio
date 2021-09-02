@@ -504,7 +504,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			return currentCsg.getMesh();
 		getCsgMap().put(currentCsg, currentCsg.getMesh());
 		csgSourceFile.put(currentCsg, source);
-
+		Optional<Object> m = currentCsg.getStorage().getValue("manipulator");
+		HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> eventForManipulation=null;
+		try {
+			if(HashMap.class.isInstance(m.get())) {
+				eventForManipulation = (HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>>) m.get();
+			}
+		}catch(java.util.NoSuchElementException ex) {
+			eventForManipulation=null;
+		}
+		
 		MeshView current = getCsgMap().get(currentCsg);
 		
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
@@ -708,7 +717,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		closeTheMenueHandler cmh = new closeTheMenueHandler();
 		Platform.runLater(()->current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh));
-
+		if(eventForManipulation!=null) {
+			HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> manip=eventForManipulation;
+			for(javafx.event.EventType<MouseEvent> e:manip.keySet())
+				Platform.runLater(()->current.addEventHandler(e, manip.get(e)));
+		}
 		// cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, cmh);
 		if(current==null)
 			return new MeshView();

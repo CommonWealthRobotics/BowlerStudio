@@ -94,8 +94,9 @@ public class CommitWidget {
 							String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
 							ScriptingEngine.pull(remote);
 							String relativePath = ScriptingEngine.findLocalPath(currentFile,git);
+							ScriptingEngine.closeGit(git);
 						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message);
-						    git.close();
+						    
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();

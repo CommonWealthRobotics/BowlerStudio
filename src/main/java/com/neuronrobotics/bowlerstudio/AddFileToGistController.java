@@ -167,7 +167,10 @@ public class AddFileToGistController extends Application {
 			try {
 
 				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents();
-				ScriptingEngine.pushCodeToGit(gitRepo, ScriptingEngine.getFullBranch(gitRepo), text, defaultContents,
+				String fullBranch = ScriptingEngine.getFullBranch(gitRepo);
+				if(fullBranch==null)
+					fullBranch=ScriptingEngine.newBranch(gitRepo, "main");
+				ScriptingEngine.pushCodeToGit(gitRepo, fullBranch, text, defaultContents,
 						message);
 				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
 
@@ -220,7 +223,11 @@ public class AddFileToGistController extends Application {
 	@FXML
 	void createProject(ActionEvent event) {
 		try {
-			GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), description.getText());
+			String text = description.getText();
+			if(text==null || text.length()<5) {
+				text="Project "+repoName.getText();
+			}
+			GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), text);
 			gitRepo= repository.getHttpTransportUrl();
 			newProject.setDisable(true);
 			addFile.setDisable(false);
@@ -228,5 +235,6 @@ public class AddFileToGistController extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 }

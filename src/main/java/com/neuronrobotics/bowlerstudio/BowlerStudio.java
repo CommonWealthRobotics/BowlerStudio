@@ -8,6 +8,7 @@ import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
 import com.neuronrobotics.bowlerstudio.scripting.IGitHubLoginManager;
@@ -23,6 +24,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.*;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -221,7 +223,15 @@ public class BowlerStudio extends Application {
 				System.err.println("File not found");
 			}
 	}
-
+	
+	public static TransformNR getCamerFrame() {
+		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
+	}
+	
+	public static double getCamerDepth() {
+		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
+	}
+	
 	/**
 	 * @param args the command line arguments
 	 * @throws Exception
@@ -329,8 +339,14 @@ public class BowlerStudio extends Application {
 					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 
 					if (lastVersion != null && StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
-						ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
-						System.err.println("Studio version is the same");
+						try {
+							ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
+							System.err.println("Studio version is the same");
+						}catch(Exception e) {
+							ScriptingEngine.deleteRepo(myAssets);
+							ScriptingEngine.pull(myAssets);
+						}
+						
 					} else {
 						if (lastVersion != null)
 							ScriptingEngine.cloneRepo(myAssets, lastVersion);
@@ -340,14 +356,16 @@ public class BowlerStudio extends Application {
 								ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
 							} else
 								throw new NullPointerException();
-						} catch (NullPointerException ex) {
+						} catch (Exception ex) {
 							// not the owner
-							try {
-								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
-							} catch (Exception ex1) {
-								ScriptingEngine.deleteRepo(myAssets);
-								ScriptingEngine.cloneRepo(myAssets,null);
-							}
+							System.err.println("You are not the owner of the assets!");
+							ScriptingEngine.pull(myAssets);
+//							try {
+//								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+//							} catch (Exception ex1) {
+//								ScriptingEngine.deleteRepo(myAssets);
+//								ScriptingEngine.cloneRepo(myAssets,null);
+//							}
 						}
 						lastVersion = ScriptingEngine.getBranch(myAssets);
 						ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", lastVersion);
@@ -364,7 +382,7 @@ public class BowlerStudio extends Application {
 				} else {
 					renderSplashFrame(20, "DL'ing Image Assets");
 					ScriptingEngine.cloneRepo(myAssets, null);
-					ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+					//ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
 				}
 			}
 			layoutFile = AssetFactory.loadFile("layout/default.css");
@@ -383,7 +401,7 @@ public class BowlerStudio extends Application {
 			renderSplashFrame(53, "Loading Images");
 			AssetFactory.setGitSource(
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-					StudioBuildInfo.getVersion());
+					ScriptingEngine.getBranch(myAssets));
 			renderSplashFrame(54, "Load Assets");
 			// Download and Load all of the assets
 

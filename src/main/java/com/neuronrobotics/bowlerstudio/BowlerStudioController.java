@@ -9,6 +9,8 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.threed.Line3D;
+import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
+import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DMDevice;
@@ -35,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -126,15 +129,18 @@ public class BowlerStudioController implements IScriptEventListener {
 		openFiles.put(file.getAbsolutePath(), fileTab);
 
 		try {
-			Log.warning("Loading local file from: " + file.getAbsolutePath());
+			System.err.println("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
 			
 			new Thread() {
 				public void run() {
 					String gitRepo = t.getScripting().getGitRepo();
-					String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
-					if(gitRepo.length()>5 && (message != null ))
+					if(gitRepo!=null) {
+						String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
+						if(gitRepo.length()<5 || (message == null ))
+							message="Project "+gitRepo;
 						BowlerStudioMenuWorkspace.add(gitRepo,message);
+					}
 				}
 			}.start();
 
@@ -161,6 +167,17 @@ public class BowlerStudioController implements IScriptEventListener {
 				ConfigurationDatabase.removeObject("studio-open-git", key);
 				t.getScripting().close();
 				System.out.println("Closing " + file.getAbsolutePath());
+			});
+			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
+			watcher.addIFileChangeListener(new IFileChangeListener() {
+				
+				@Override
+				public void onFileDelete(File fileThatIsDeleted) {
+					BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(fileTab);
+				}
+				
+				@Override
+				public void onFileChange(File fileThatChanged, WatchEvent event) {}
 			});
 
 			t.setFontSize(size);

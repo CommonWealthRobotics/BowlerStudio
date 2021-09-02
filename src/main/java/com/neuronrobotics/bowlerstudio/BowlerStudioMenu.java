@@ -30,6 +30,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -440,7 +441,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
 							} catch (Exception e) {
-								exp.uncaughtException(Thread.currentThread(), e);
+								ScriptingEngine.deleteRepo(url);
+								try {
+									ScriptingEngine.checkout(url, ScriptingEngine.getBranch(url));
+								} catch (IOException ex) {
+									exp.uncaughtException(Thread.currentThread(), ex);
+								}
+								
 							}
 							myEvent.run();
 							// selfRef.onRefresh(null);
@@ -517,18 +524,20 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						orgCommits.setOnShowing(null);
 						gistFlag = false;
 					});
+					Repository repo=null;
+					Git git=null;
 					try {
 						ScriptingEngine.checkout(url, branchName);
-						Repository repo = ScriptingEngine.getRepository(url);
-						Git git = new Git(repo);
-
+						
+						git = ScriptingEngine.openGit( url);
+						repo=git.getRepository();
 						// System.out.println("Commits of branch: " + branchName);
 						// System.out.println("-------------------------------------");
 
 						ObjectId resolve = repo.resolve(branchName);
 						if (resolve != null) {
 							Iterable<RevCommit> commits = git.log().add(resolve).call();
-
+							
 							List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 							Platform.runLater(() -> {
 								try {
@@ -597,7 +606,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								});
 							}
 						}
-						git.close();
+						
 						Platform.runLater(() -> {
 							orgCommits.hide();
 							Platform.runLater(() -> {
@@ -615,7 +624,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
-
+					ScriptingEngine.closeGit(git);
 				}).start();
 			}
 		};
