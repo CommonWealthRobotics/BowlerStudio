@@ -373,7 +373,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 			}
 		}
-		return selfRef.messages.get(url);
+		String string = selfRef.messages.get(url);
+		if(string==null)
+			string=url;
+		return string;
 	}
 
 	public static void setUpRepoMenue(Menu repoMenue, String url, boolean useAddToWorkspaceItem, boolean threaded) {
