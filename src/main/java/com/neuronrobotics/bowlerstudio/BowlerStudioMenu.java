@@ -1436,7 +1436,50 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 		}
 	}
+	@FXML
+	void onLoadGit(ActionEvent event) {
+		try {
+			
+			// create a text input dialog
+	        Platform.runLater(()->{
+		        TextInputDialog td = new TextInputDialog();
+		        td.setHeaderText("Enter Git URL");
+		        td.setResizable(true);
+		        td.showAndWait();
+		        
+                // set the text of the label
+                String s = td.getEditor().getText();
+                if(s==null|| s.length()<4) {
+                	System.out.println("Cancle detected");
+                	return;
+                }
+                if(s.endsWith(".git")) {
+                	System.out.println("Loading file from git "+s);
+                	new Thread(()->{
+                		try {
+							ArrayList<String> f = ScriptingEngine.filesInGit(s);
+							if(f.size()>0) {
+								System.out.println("Valid URL Detected");
+								BowlerStudioMenuWorkspace.add(s);
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                    	
 
+                	}).start();
+                }else {
+                	System.out.println("Invalid entry "+s);
+                	onLoadGit(event);
+                }
+                
+	        });
+		} catch (Exception e) {
+			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+
+		}
+	}
 	@FXML
 	void onBowlerStudioHelp(ActionEvent event) {
 		new Thread(() -> {
