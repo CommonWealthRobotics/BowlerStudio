@@ -71,16 +71,20 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private boolean updateneeded = false;
 	private IScriptingLanguage langaugeType;
 //	private ImageView image=new ImageView();
-
+	private boolean isOwnedByLoggedInUser=false;
+	private String remote;
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE, currentFile);
 
 		loadCodeFromFile(currentFile);
-		boolean isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
+		isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 
-		publish.setDisable(!isOwnedByLoggedInUser);
+		//publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-		publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+		if(isOwnedByLoggedInUser)
+			publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+		else
+			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
 
 	}
 
@@ -110,8 +114,27 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		runfx.setTooltip(new Tooltip("Run this code and display the result"));
 		publish.setOnAction(e -> {
 			new Thread(() -> {
-				save();
-				CommitWidget.commit(currentFile, getCode());
+				if(isOwnedByLoggedInUser) {
+					save();
+					CommitWidget.commit(currentFile, getCode());
+				}else {
+					String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
+					String content = getCode();
+					String newGit;
+					try {
+						newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: "+remote);
+						ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
+						File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
+						ScriptingEngine.deleteRepo(remote);
+						Thread.sleep(500);
+						BowlerStudio.createFileTab(file);
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+				}
 			}).start();
 
 		});
@@ -361,7 +384,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		Git git;
 		try {
 			git = ScriptingEngine.locateGit(currentFile);
-			String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+			remote = git.getRepository().getConfig().getString("remote", "origin", "url");
 			Platform.runLater(() -> {
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
