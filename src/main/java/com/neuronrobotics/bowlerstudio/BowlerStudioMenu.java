@@ -175,7 +175,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						System.out.println("\r\n\r\nNO MOBILE BASE found at " + id + "\t" + file);
 
 				} catch (Exception e) {
-					BowlerStudio.printStackTrace(e);
+					ScriptingEngine.deleteRepo(id);
+					loadMobilebaseFromGit( id,  file);
 				}
 			}
 		}.start();
