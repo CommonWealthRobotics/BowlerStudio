@@ -388,6 +388,19 @@ public class BowlerStudioModularFrame {
 			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
 			Platform.runLater(() -> {
+				if(newTab.getContent()==null||newTab.getGraphic()==null) {
+					new Thread(()->{
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("Tab "+newTab.getText()+" failed to load, retrying ");
+						addTab( newTab,  b);
+					}).start();
+					return;
+				}
 				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 				dn.closedProperty().addListener(event -> {
 					closeTab(newTab);
