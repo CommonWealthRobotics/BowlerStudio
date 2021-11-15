@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -27,7 +28,9 @@ public class SVGExternalEditor implements IExternalEditor {
 			filename="\""+filename+"\"";
 		}
 		try {
-			File dir = ScriptingEngine.locateGit(file).getRepository().getWorkTree();
+			Git locateGit = ScriptingEngine.locateGit(file);
+			File dir = locateGit.getRepository().getWorkTree();
+			ScriptingEngine.closeGit(locateGit);
 			if(OSUtil.isLinux())
 				run(dir,System.err,"inkscape",filename);
 			if(OSUtil.isWindows()) {
