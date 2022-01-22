@@ -388,7 +388,10 @@ public class BowlerStudioModularFrame {
 			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
 			Platform.runLater(() -> {
-				if(newTab.getContent()==null||newTab.getGraphic()==null) {
+				if(newTab.getGraphic()==null) {
+					newTab.setGraphic(AssetFactory.loadIcon("Hardware-Config.png"));
+				}
+				if(newTab.getContent()==null) {
 					new Thread(()->{
 						try {
 							Thread.sleep(100);
@@ -396,7 +399,7 @@ public class BowlerStudioModularFrame {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						System.out.println("Tab "+newTab.getText()+" failed to load, retrying ");
+						System.out.println("Tab "+newTab.getText()+" failed to load, retrying "+newTab.getContent()+" "+newTab.getGraphic());
 						addTab( newTab,  b);
 					}).start();
 					return;
