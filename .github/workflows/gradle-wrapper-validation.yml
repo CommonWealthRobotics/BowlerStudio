@@ -41,6 +41,9 @@ jobs:
         java-version: 1.8
         jdkFile: ./zulu8.33.0.1-ca-fx-jdk8.0.192-linux_x64.tar.gz
         
+    - name: Set Release Number
+      run: echo $'app.name=BowlerStudio\n' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties ; echo "app.version=${{ github.ref }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
+           
     - name: Build with Gradle 
       run: ./gradlew shadowJar
       
@@ -52,7 +55,6 @@ jobs:
             prerelease: false
             release_name: ${{ steps.version.outputs.version }}
             tag_name: ${{ github.ref }}
-            body_path: debian/changelog
       env:
             GITHUB_TOKEN: ${{ github.token }}
             
