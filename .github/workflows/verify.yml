@@ -44,4 +44,5 @@ jobs:
     - name: Build with Gradle 
       run: ./gradlew shadowJar
       
-   
+    - name: Run BowlerStudio 
+      run: java -jar ./build/libs/BowlerStudio.jar   
