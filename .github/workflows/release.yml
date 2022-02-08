@@ -46,13 +46,7 @@ jobs:
           
     - name: Set Release Number
       run: echo $'app.name=BowlerStudio\n' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties ; echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
-    - uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-          commit_message: "Update the Version Number on Tag"
-          commit_user_name: Kevin Harrington
-          commit_user_email: mad.hephaestus@gmail.com
-          commit_author: Kevin Harrington <mad.hephaestus@gmail.com>  
-          
+                
     - name: Build with Gradle 
       run: ./gradlew shadowJar
       
