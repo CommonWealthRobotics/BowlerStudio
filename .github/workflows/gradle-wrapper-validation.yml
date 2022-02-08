@@ -1,6 +1,8 @@
 name: "Validate Gradle Wrapper"
-on: [push]
-
+on:
+  push:
+    tags:
+      - '!refs/tags/*'
 jobs:
   validation:
     name: "Validation"
