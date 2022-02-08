@@ -284,7 +284,12 @@ public class BowlerStudio extends Application {
 //			}
 //		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
-		if (args.length == 0) {
+		if (args.length != 0) {
+			System.out.println("Arguments detected, starting Kernel mode.");
+			SplashManager.closeSplash();
+			BowlerKernel.main(args);
+		}else
+		{
 			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
@@ -493,10 +498,6 @@ public class BowlerStudio extends Application {
 			renderSplashFrame(92, "Launching UI");
 			launch();
 
-		} else {
-			System.out.println("Arguments detected, starting Kernel mode.");
-			SplashManager.closeSplash();
-			BowlerKernel.main(args);
 		}
 
 	}

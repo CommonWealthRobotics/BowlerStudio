@@ -289,7 +289,6 @@ dependencies {
 	compile group: 'org.axsl.org.w3c.dom.svg', name: 'svg-dom-java', version: '1.1'
 	
 
-	compile fileTree (dir: 'libs/', includes: ['*.jar'])
 	//compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
 	compile project(':libraries:bowler-script-kernel:java-bowler')
 	compile project(':libraries:bowler-script-kernel')
