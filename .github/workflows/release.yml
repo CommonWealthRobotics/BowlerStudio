@@ -40,10 +40,19 @@ jobs:
       with:
         java-version: 1.8
         jdkFile: ./zulu8.33.0.1-ca-fx-jdk8.0.192-linux_x64.tar.gz
-        
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
+          
     - name: Set Release Number
-      run: echo $'app.name=BowlerStudio\n' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties ; echo "app.version=${{ github.ref }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
-           
+      run: echo $'app.name=BowlerStudio\n' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties ; echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+          commit_message: "Update the Version Number on Tag"
+          commit_user_name: Kevin Harrington
+          commit_user_email: mad.hephaestus@gmail.com
+          commit_author: Kevin Harrington <mad.hephaestus@gmail.com>  
+          
     - name: Build with Gradle 
       run: ./gradlew shadowJar
       
