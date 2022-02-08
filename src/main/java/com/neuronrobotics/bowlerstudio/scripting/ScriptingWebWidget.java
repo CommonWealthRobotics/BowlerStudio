@@ -135,7 +135,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		if (isOwnedByLoggedInUser)
 			BowlerStudio.createFileTab(currentFile);
 		else {
-			// todo fork git repo
 			System.out.println("Making Fork...");
 			String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
 			try {
