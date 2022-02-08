@@ -346,9 +346,8 @@ shadowJar {
 	zip64 true
    mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
    baseName = 'BowlerStudio'
-   classifier = "fat"
-   version = props."app.version"
-    mergeServiceFiles()
+   classifier = ""
+   mergeServiceFiles()
 }
 
 //task run(type: JavaExec) {

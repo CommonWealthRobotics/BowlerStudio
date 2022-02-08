@@ -2,7 +2,7 @@ name: "Validate Gradle Wrapper"
 on: 
    push:
        tags:       
-         - 1.*
+         - '*'
 
 jobs:
   build:
@@ -43,3 +43,25 @@ jobs:
         
     - name: Build with Gradle 
       run: ./gradlew shadowJar
+      
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+            draft: false
+            prerelease: false
+            release_name: ${{ steps.version.outputs.version }}
+            tag_name: ${{ github.ref }}
+            body_path: debian/changelog
+      env:
+            GITHUB_TOKEN: ${{ github.token }}
+            
+    - name: upload BowlerStudio artifact
+      uses: actions/upload-release-asset@v1
+      env:
+            GITHUB_TOKEN: ${{ github.token }}
+      with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: ./build/libs/BowlerStudio.jar
+            asset_name: BowlerStudio.jar
+            asset_content_type: application/jar
