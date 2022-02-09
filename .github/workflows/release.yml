@@ -25,6 +25,7 @@ jobs:
          git config --global pull.rebase false
          git config --global core.mergeoptions --no-edit
          git fetch --depth=1
+         git config --unset-all http.https://github.com/.extraheader
          
     - name: Checkout Development
       run: |
