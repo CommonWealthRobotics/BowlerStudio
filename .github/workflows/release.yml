@@ -13,7 +13,11 @@ jobs:
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
       with:
-         submodules: recursive        
+         submodules: recursive 
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
+            
     - name: Configure GIt
       run: |
          git config --global user.email "mad.hephaestus@gmail.com"
@@ -32,7 +36,7 @@ jobs:
          git checkout development
     - name: Set Release Number Kernel
       run: |
-         git tag {{ steps.get_version.outputs.VERSION  }}
+         git tag ${{ steps.get_version.outputs.VERSION  }}
          git push --tags
          echo $'app.name=BowlerScriptKernel' > src/main/resources/com/neuronrobotics/bowlerkernel/build.properties 
          echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerkernel/build.properties
@@ -63,9 +67,7 @@ jobs:
       with:
         java-version: 1.8
         jdkFile: ./zulu8.33.0.1-ca-fx-jdk8.0.192-linux_x64.tar.gz
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
+
                 
     - name: Build with Gradle 
       run: ./gradlew shadowJar
