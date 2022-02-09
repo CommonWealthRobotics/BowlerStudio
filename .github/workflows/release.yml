@@ -45,7 +45,27 @@ jobs:
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
           
     - name: Set Release Number
-      run: echo $'app.name=BowlerStudio\n' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties ; echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
+      run: |
+         git fetch
+         git config --global user.email "mad.hephaestus@gmail.com"
+         git config --global user.name "Kevin Harrington"
+         git config --global pull.rebase false
+         git config --global core.mergeoptions --no-edit
+         git checkout development
+         cd libraries/bowler-script-kernel/
+         git checkout development
+         echo $'app.name=BowlerScriptKernel' > src/main/resources/com/neuronrobotics/bowlerkernel/build.properties 
+         echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerkernel/build.properties
+         git commit src/main/resources/com/neuronrobotics/bowlerkernel/build.properties -m"Updating version number in CI to ${{ steps.get_version.outputs.VERSION  }}"
+         git push
+         git tag {{ steps.get_version.outputs.VERSION  }}
+         git push --tags
+         cd ../../
+         git commit libraries/bowler-script-kernel -m "Updating kernel version number"
+         echo $'app.name=BowlerStudio' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
+         echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
+         git commit src/main/resources/com/neuronrobotics/bowlerstudio/build.properties -m"Updating version number in CI to ${{ steps.get_version.outputs.VERSION  }}"
+         git push
                 
     - name: Build with Gradle 
       run: ./gradlew shadowJar
