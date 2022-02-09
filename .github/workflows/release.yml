@@ -25,23 +25,10 @@ jobs:
          git config --global pull.rebase false
          git config --global core.mergeoptions --no-edit
          git fetch --depth=1
-         git config --unset-all http.https://github.com/.extraheader
          
     - name: Checkout Development
       run: |
          git checkout development
-    - name: Tag all Submodules
-      run: git submodule foreach git tag  ${{ steps.get_version.outputs.VERSION  }}
-
-    - name: Set Release Number Kernel
-      run: |
-         cd libraries/bowler-script-kernel/
-         git fetch --depth=1
-         git checkout development
-         git push --tags
-         echo $'app.name=BowlerScriptKernel' > src/main/resources/com/neuronrobotics/bowlerkernel/build.properties 
-         echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerkernel/build.properties
-         cd ../../
          
     - name: Set Release Number Studio
       run: |
