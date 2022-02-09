@@ -44,13 +44,15 @@ jobs:
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
           
-    - name: Set Release Number
+    - name: Configure GIt
       run: |
          git fetch
          git config --global user.email "mad.hephaestus@gmail.com"
          git config --global user.name "Kevin Harrington"
          git config --global pull.rebase false
          git config --global core.mergeoptions --no-edit
+    - name: Set Release Number
+      run: |
          git checkout development
          cd libraries/bowler-script-kernel/
          git checkout development
