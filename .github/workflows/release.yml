@@ -29,14 +29,14 @@ jobs:
     - name: Checkout Development
       run: |
          git checkout development
-    - name: Checkout Kernel Development
+    - name: Tag all Submodules
+      run: git submodule foreach git tag  ${{ steps.get_version.outputs.VERSION  }}
+
+    - name: Set Release Number Kernel
       run: |
-         git submodule foreach git tag  ${{ steps.get_version.outputs.VERSION  }}
          cd libraries/bowler-script-kernel/
          git fetch --depth=1
          git checkout development
-    - name: Set Release Number Kernel
-      run: |
          git push --tags
          echo $'app.name=BowlerScriptKernel' > src/main/resources/com/neuronrobotics/bowlerkernel/build.properties 
          echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerkernel/build.properties
