@@ -22,16 +22,23 @@ jobs:
          git config --global core.mergeoptions --no-edit
          git fetch --depth=1
          
-    - name: Set Release Number
+    - name: Checkout Development
       run: |
          git checkout development
+    - name: Checkout Kernel Development
+      run: |
          cd libraries/bowler-script-kernel/
+         git fetch --depth=1
          git checkout development
+    - name: Set Release Number Kernel
+      run: |
          git tag {{ steps.get_version.outputs.VERSION  }}
          git push --tags
          echo $'app.name=BowlerScriptKernel' > src/main/resources/com/neuronrobotics/bowlerkernel/build.properties 
          echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerkernel/build.properties
          cd ../../
+    - name: Set Release Number Studio
+      run: |
          echo $'app.name=BowlerStudio' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
          echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
          git commit src/main/resources/com/neuronrobotics/bowlerstudio/build.properties -m"Updating version number in CI to ${{ steps.get_version.outputs.VERSION  }}"
