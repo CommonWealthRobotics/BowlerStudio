@@ -8,20 +8,7 @@ BowlerStudio
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2904/badge)](https://bestpractices.coreinfrastructure.org/projects/2904)
 
-# [Download Latest](https://github.com/CommonWealthRobotics/BowlerStudio/releases)
-
-## Ubuntu 18.04
-	sudo add-apt-repository ppa:mad-hephaestus/commonwealthrobotics -y
-	sudo apt-get update
-	sudo apt-get install bowlerstudio
-	bowlerstudio
-## Debian 
-	sudo apt-get install software-properties-common python-software-properties					
-	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu xenial main" -y
-	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 71EA898B 
-	sudo add-apt-repository "deb http://ppa.launchpad.net/mad-hephaestus/commonwealthrobotics/ubuntu bionic main" -y
-	sudo apt-get update
-	sudo apt-get install bowlerstudio
+# [Download Latest](https://commonwealthrobotics.com/#downloads)
 
 							
 
