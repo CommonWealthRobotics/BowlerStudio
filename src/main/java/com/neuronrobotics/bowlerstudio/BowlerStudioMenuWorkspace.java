@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
@@ -38,7 +39,7 @@ public class BowlerStudioMenuWorkspace {
 				try {
 					String o = (String) workspaceData.keySet().toArray()[i];
 					try {
-
+						
 						ScriptingEngine.pull(o);
 					} catch (Throwable e) {
 						ScriptingEngine.deleteRepo(o);
