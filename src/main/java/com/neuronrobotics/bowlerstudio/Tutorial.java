@@ -21,14 +21,16 @@ public class Tutorial {
 	private static Boolean startedLoadingTutorials = false;
 	public static String getHomeUrl() throws Exception{
 		File i=null;
+		ConfigurationDatabase.setObject("BowlerStudioConfigs", "tutorialBranch",
+				"deploy");
 		do{
 			i= ScriptingEngine.fileFromGit(
 					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialSource",
 							"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git"),
 					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBranch",
-							"master"), // the default branch is source, so this needs to
+							"deploy"), // the default branch is source, so this needs to
 					// be specified
-					"index.html");
+					"docs/index.html");
 		}while(!i.exists());
 		HOME_Local_URL_ROOT=(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBaseUrl",
 				"/BowlerStudio/Welcome-To-BowlerStudio/");
