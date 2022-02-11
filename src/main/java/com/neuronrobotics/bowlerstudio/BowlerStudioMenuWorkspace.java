@@ -35,13 +35,16 @@ public class BowlerStudioMenuWorkspace {
 		rank.clear();
 		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		new Thread(()-> {
+			// Wait on pulls to ensure this always runs asynchronously
+			ThreadUtil.wait((int)(200*Math.random()));
 			for (int i=0;i<workspaceData.keySet().size();i++) {
 				try {
 					String o = (String) workspaceData.keySet().toArray()[i];
 					try {
-						
-						ScriptingEngine.pull(o);
+						if(!ScriptingEngine.isUrlAlreadyOpen(o))
+							ScriptingEngine.pull(o);
 					} catch (Throwable e) {
+						e.printStackTrace();
 						ScriptingEngine.deleteRepo(o);
 						try {
 							ScriptingEngine.pull(o);
