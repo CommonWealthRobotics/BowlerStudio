@@ -302,9 +302,12 @@ public class BowlerStudio extends Application {
 					return line;
 				return "1edf79fae494c232d4d2";
 			});
-			GitHubWebFlow.setName(new NameGetter());
+			NameGetter mykey = new NameGetter();
+			System.out.println("API "+mykey.get());
+			GitHubWebFlow.setName(mykey);
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
+				System.out.println("Attempt to log in with disk credentials");
 				ScriptingEngine.waitForLogin();
 				if (ScriptingEngine.isLoginSuccess()) {
 
