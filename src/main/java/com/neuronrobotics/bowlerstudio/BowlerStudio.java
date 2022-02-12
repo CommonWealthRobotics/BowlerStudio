@@ -305,7 +305,7 @@ public class BowlerStudio extends Application {
 			GitHubWebFlow.setName(new NameGetter());
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
-				PasswordManager.waitForLogin();
+				ScriptingEngine.waitForLogin();
 				if (ScriptingEngine.isLoginSuccess()) {
 
 					if (BowlerStudio.hasNetwork()) {					
