@@ -285,7 +285,7 @@ public class BowlerStudio extends Application {
 //		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		if (args.length != 0) {
-			System.out.println("Arguments detected, starting Kernel mode.");
+			System.err.println("Arguments detected, starting Kernel mode.");
 			SplashManager.closeSplash();
 			BowlerKernel.main(args);
 		}else
@@ -303,11 +303,11 @@ public class BowlerStudio extends Application {
 				return "1edf79fae494c232d4d2";
 			});
 			NameGetter mykey = new NameGetter();
-			System.out.println("API "+mykey.get());
+			System.err.println("API "+mykey.get());
 			GitHubWebFlow.setName(mykey);
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
-				System.out.println("Attempt to log in with disk credentials");
+				System.err.println("Attempt to log in with disk credentials");
 				ScriptingEngine.waitForLogin();
 				if (ScriptingEngine.isLoginSuccess()) {
 
@@ -320,7 +320,7 @@ public class BowlerStudio extends Application {
 						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 								StudioBuildInfo.getVersion());
 					} catch (Throwable t) {
-						System.out.println("Resetting the configs repo...");
+						System.err.println("Resetting the configs repo...");
 						// clear the configs repo
 						ScriptingEngine.deleteRepo(ConfigurationDatabase.getGitSource());
 						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
@@ -432,9 +432,9 @@ public class BowlerStudio extends Application {
 			renderSplashFrame(81, "CSG database");
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 
-			// System.out.println("Loading assets ");
+			// System.err.println("Loading assets ");
 
-			// System.out.println("Loading Main.fxml");
+			// System.err.println("Loading Main.fxml");
 			renderSplashFrame(81, "Find arduino");
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
@@ -461,7 +461,7 @@ public class BowlerStudio extends Application {
 					}
 
 				}
-				System.out.println("Arduino exec found at: " + arduino);
+				System.err.println("Arduino exec found at: " + arduino);
 				ArduinoLoader.setARDUINOExec(arduino);
 			} catch (Exception e) {
 				reporter.uncaughtException(Thread.currentThread(), e);
