@@ -22,11 +22,18 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
+import com.neuronrobotics.bowlerstudio.scripting.GitLogProgressMonitor;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
-public class PsudoSplash {
+public class PsudoSplash implements GitLogProgressMonitor{
 	JFrame interfaceFrame;
 	private String message = "";
-
+	private String log = "";
+	@Override
+	public void onUpdate(String update) {
+		log=update;
+		updateSplash();
+	}
 	class CustomPanel extends JPanel {
 		/**
 		 * 
@@ -88,11 +95,18 @@ public class PsudoSplash {
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
 			splashGraphics.drawString(getMessage(), 65, 280);
+			
+			splashGraphics.setComposite(AlphaComposite.Clear);
+			// splashGraphics.fillRect(65, 270, 200, 40);
+			splashGraphics.setPaintMode();
+			splashGraphics.setColor(Color.WHITE);
+			splashGraphics.drawString(log, 15, 120);
 
 		}
 	}
 
 	public PsudoSplash() {
+		ScriptingEngine.addLogListener(this);
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -115,7 +129,7 @@ public class PsudoSplash {
 				interfaceFrame.setVisible(true);
 				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
 				try {
-					interfaceFrame.setIconImage( ImageIO.read(getClass().getResource("splash.png")));
+					interfaceFrame.setIconImage(ImageIO.read(getClass().getResource("splash.png")));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -136,6 +150,7 @@ public class PsudoSplash {
 			e.printStackTrace();
 		}
 	}
+
 //	public void setIcon(Image img) {
 //		BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(img, null);
 //		if (interfaceFrame != null)
@@ -166,11 +181,14 @@ public class PsudoSplash {
 	public void setMessage(String message) {
 		if (message.length() > 23) {
 			this.message = message.subSequence(0, 23).toString();
-			//new RuntimeException().printStackTrace();
+			// new RuntimeException().printStackTrace();
 		} else
 			this.message = message;
 		if (interfaceFrame != null) {
 			interfaceFrame.setVisible(true);
 		}
+		log="";
 	}
+
+
 }
