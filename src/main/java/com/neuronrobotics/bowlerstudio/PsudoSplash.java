@@ -30,7 +30,8 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	private String message = "";
 	private String log = "";
 	@Override
-	public void onUpdate(String update) {
+	public void onUpdate(String update, Exception e) {
+		e.printStackTrace(System.err);
 		log=update;
 		updateSplash();
 	}
@@ -106,7 +107,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	}
 
 	public PsudoSplash() {
-		ScriptingEngine.addLogListener(this);
+		
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -165,6 +166,8 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	void closeSplashLocal() {
 		if (interfaceFrame != null)
 			interfaceFrame.setVisible(false);
+		//ScriptingEngine.removeLogListener(this);
+		
 	}
 
 	void updateSplash() {
@@ -187,6 +190,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		if (interfaceFrame != null) {
 			interfaceFrame.setVisible(true);
 		}
+		ScriptingEngine.addLogListener(this);
 		log="";
 	}
 

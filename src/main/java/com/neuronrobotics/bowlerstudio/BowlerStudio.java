@@ -239,6 +239,7 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -303,7 +304,6 @@ public class BowlerStudio extends Application {
 				return "1edf79fae494c232d4d2";
 			});
 			NameGetter mykey = new NameGetter();
-			System.err.println("API "+mykey.get());
 			GitHubWebFlow.setName(mykey);
 			String myAssets = AssetFactory.getGitSource();
 			if (PasswordManager.hasNetwork()) {
