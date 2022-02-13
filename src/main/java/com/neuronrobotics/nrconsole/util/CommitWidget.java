@@ -88,18 +88,21 @@ public class CommitWidget {
 
 					    String message = commitBody.getKey()+"\n\n"+commitBody.getValue();
 					    
-					    Git git;
+					    Git git=null;
 						try {
 							git = ScriptingEngine.locateGit(currentFile);
 							String remote= git.getRepository().getConfig().getString("remote", "origin", "url");
-							ScriptingEngine.pull(remote);
 							String relativePath = ScriptingEngine.findLocalPath(currentFile,git);
 							ScriptingEngine.closeGit(git);
+							ScriptingEngine.pull(remote);
 						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message);
 						    
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							if(git!=null)
+								ScriptingEngine.closeGit(git);
+
 						}
 			    	}
 			    }.start();
