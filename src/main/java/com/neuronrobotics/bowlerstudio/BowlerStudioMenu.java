@@ -162,23 +162,32 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		new Thread() {
 			public void run() {
 				try {
-					MobileBase mb;
-					ScriptingEngine.pull(id);
-					if (file.toLowerCase().endsWith(".xml")) {
-						mb = MobileBaseLoader.fromGit(id, file);
-					} else {
-						mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
-					}
-					if (mb != null)
-						ConnectionManager.addConnection(mb, mb.getScriptingName());
-					else
-						System.out.println("\r\n\r\nNO MOBILE BASE found at " + id + "\t" + file);
+					extracted(id, file);
 
 				} catch (Exception e) {
 					e.printStackTrace();
 					ScriptingEngine.deleteRepo(id);
-					loadMobilebaseFromGit( id,  file);
+					try {
+						extracted(id, file);
+					} catch (Exception e1) {
+						exp.except(e1);
+					}
 				}
+			}
+
+			private void extracted(String id, String file)
+					throws IOException, CheckoutConflictException, NoHeadException, Exception {
+				MobileBase mb;
+				ScriptingEngine.pull(id);
+				if (file.toLowerCase().endsWith(".xml")) {
+					mb = MobileBaseLoader.fromGit(id, file);
+				} else {
+					mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
+				}
+				if (mb != null)
+					ConnectionManager.addConnection(mb, mb.getScriptingName());
+				else
+					System.out.println("\r\n\r\nNO MOBILE BASE found at " + id + "\t" + file);
 			}
 		}.start();
 
