@@ -458,7 +458,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								ScriptingEngine.deleteRepo(url);
 								try {
 									ScriptingEngine.checkout(url, ScriptingEngine.getBranch(url));
-								} catch (IOException ex) {
+								} catch (Exception ex) {
 									exp.uncaughtException(Thread.currentThread(), ex);
 								}
 								
@@ -525,7 +525,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				String branchName;
 				try {
 					branchName = ScriptingEngine.getFullBranch(url);
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					exp.uncaughtException(Thread.currentThread(), e1);
 					return;
 				}
@@ -557,7 +557,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								try {
 									orgCommits.getItems()
 											.add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
-								} catch (IOException e) {
+								} catch (Exception e) {
 									exp.uncaughtException(Thread.currentThread(), e);
 								}
 								orgCommits.getItems().add(new SeparatorMenuItem());
@@ -587,7 +587,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 											String branch;
 											try {
 												branch = ScriptingEngine.getBranch(url);
-											} catch (IOException e1) {
+											} catch (Exception e1) {
 												branch = "newBranch";
 											}
 
@@ -682,7 +682,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				final MenuItem onBranch;
 				try {
 					onBranch = new MenuItem("On Branch " + ScriptingEngine.getBranch(url));
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					exp.uncaughtException(Thread.currentThread(), e1);
 					return;
 				}
@@ -699,7 +699,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					String newBranchName = "";
 					try {
 						newBranchName = ScriptingEngine.getBranch(url);
-					} catch (IOException e1) {
+					} catch (Exception e1) {
+						exp.uncaughtException(Thread.currentThread(), e1);
+						return;
 					}
 					String newBranchName1 = newBranchName;
 
@@ -730,7 +732,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						try {
 							onBranch.setText("On Branch " + ScriptingEngine.getBranch(url));
 							orgBranches.getItems().add(onBranch);
-						} catch (IOException e) {
+						} catch (Exception e) {
 							exp.uncaughtException(Thread.currentThread(), e);
 
 						}
@@ -775,14 +777,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						switchToThisNewBranch(url, onBranch, select, myName);
 						menureset.run();
 
-					} catch (IOException e) {
+					} catch (Exception e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
 
 				}
 
 				private void switchToThisNewBranch(String url, final MenuItem onBranch, Ref select, String myName)
-						throws IOException {
+						throws Exception {
 					String was = ScriptingEngine.getBranch(url);
 					ScriptingEngine.checkout(url, select);
 					String s = ScriptingEngine.getBranch(url);
