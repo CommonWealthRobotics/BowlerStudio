@@ -51,10 +51,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			String eclipseEXE = "eclipse";
 			if (OSUtil.isLinux()) {
 				try {
-					ScriptingEngine.pull("https://github.com/WPIRoboticsEngineering/ESP32ArduinoEclipseInstaller.git");
+					ScriptingEngine.pull("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git");
 					eclipseEXE = ScriptingEngine
-							.fileFromGit("https://github.com/WPIRoboticsEngineering/ESP32ArduinoEclipseInstaller.git",
-									"linux-eclipse-esp32.sh")
+							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",
+									"eclipse")
 							.getAbsolutePath();
 
 				} catch (GitAPIException | IOException e) {
@@ -86,8 +86,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}
 				if (!ignore.exists() || !project.exists() || !checkForExistingProjectFiles(dir)) {
 					String content = "";
-					String toIgnore = "/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
-
+					String toIgnore = "/.settings\n" +"/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
+					
 					if (ignore.exists())
 						try {
 							content = new String(Files.readAllBytes(Paths.get(ignore.getAbsolutePath())));
@@ -216,7 +216,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://github.com/WPIRoboticsEngineering/RobotInterfaceBoard/blob/master/InstallEclipse.md");
+		return new URL("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller/blob/master/README.md");
 	}
 
 }

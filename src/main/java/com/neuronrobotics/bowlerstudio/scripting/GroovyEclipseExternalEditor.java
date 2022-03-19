@@ -39,6 +39,27 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 				+ "		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>\n"
 				+ "		<nature>org.eclipse.jdt.core.javanature</nature>\n" + "	</natures>\n"
 				+ "</projectDescription>";
+		String java8Prefs="eclipse.preferences.version=1\n"
+				+ "org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled\n"
+				+ "org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate\n"
+				+ "org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.8\n"
+				+ "org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve\n"
+				+ "org.eclipse.jdt.core.compiler.compliance=1.8\n"
+				+ "org.eclipse.jdt.core.compiler.debug.lineNumber=generate\n"
+				+ "org.eclipse.jdt.core.compiler.debug.localVariable=generate\n"
+				+ "org.eclipse.jdt.core.compiler.debug.sourceFile=generate\n"
+				+ "org.eclipse.jdt.core.compiler.problem.assertIdentifier=error\n"
+				+ "org.eclipse.jdt.core.compiler.problem.enablePreviewFeatures=disabled\n"
+				+ "org.eclipse.jdt.core.compiler.problem.enumIdentifier=error\n"
+				+ "org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures=warning\n"
+				+ "org.eclipse.jdt.core.compiler.release=disabled\n"
+				+ "org.eclipse.jdt.core.compiler.source=1.8\n"
+				+ "\n";
+		File file = new File(dir.getAbsolutePath() + delim()+".settings");
+		if(!file.exists())
+			file.mkdirs();
+		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.core.prefs"), java8Prefs.getBytes());
+		
 		Files.write(Paths.get(project.getAbsolutePath()), ProjectContent.getBytes());
 		String latestVersionString = "1.12.0";
 		InputStream is = new URL(
@@ -69,6 +90,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 				+ "	<classpathentry kind=\"lib\" path=\"" + jar + "\"/>\n"
 				+ "	<classpathentry kind=\"output\" path=\"\"/>\n" + "</classpath>";
 		Files.write(Paths.get(classpath.getAbsolutePath()), classpathContent.getBytes());
+		
 	}
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
