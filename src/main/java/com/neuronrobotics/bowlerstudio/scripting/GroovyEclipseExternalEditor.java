@@ -55,7 +55,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 				+ "org.eclipse.jdt.core.compiler.release=disabled\n"
 				+ "org.eclipse.jdt.core.compiler.source=1.8\n"
 				+ "\n";
-		File file = new File(dir.getAbsolutePath() + delim()+".settings");
+		File file = new File(dir.getAbsolutePath() + delim()+"\n.settings\n");
 		if(!file.exists())
 			file.mkdirs();
 		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.core.prefs"), java8Prefs.getBytes());
