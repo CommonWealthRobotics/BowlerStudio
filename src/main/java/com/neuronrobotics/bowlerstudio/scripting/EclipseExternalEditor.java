@@ -86,7 +86,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}
 				if (!ignore.exists() || !project.exists() || !checkForExistingProjectFiles(dir)) {
 					String content = "";
-					String toIgnore = "/.settings\n" +"/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
+					String toIgnore = "\n/.settings\n" +"/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
 					
 					if (ignore.exists())
 						try {
