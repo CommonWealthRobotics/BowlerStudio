@@ -295,7 +295,7 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
 			List<String> listOfScopes = Arrays.asList("repo", "gist", 
-					"user","admin:org","delete_repo");
+					"user","admin:org","delete_repo","workflow");
 			PasswordManager.setListOfScopes(listOfScopes);
 			GitHubWebFlow.setMyAPI(()->{
 				String line = System.getProperty("API-ID");
