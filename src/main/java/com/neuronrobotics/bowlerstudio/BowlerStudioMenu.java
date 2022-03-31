@@ -470,6 +470,23 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					}.start();
 				});
 
+				MenuItem makeRelease = new MenuItem("Make Release...");
+				makeRelease.setOnAction(event -> {
+					System.out.println("Releasing " + url);
+					Platform.runLater(() -> {
+						Stage s = new Stage();
+
+						MakeReleaseController controller = new MakeReleaseController(url);
+						try {
+							controller.start(s);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						myEvent.run();
+						// selfRef.onRefresh(null);
+					});
+				});
+				
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				addFile.setOnAction(event -> {
 					System.out.println("Adding file to : " + url);
@@ -495,7 +512,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				Platform.runLater(() -> {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
-					orgRepo.getItems().addAll(updateRepo, addFile, orgFiles, orgCommits, orgBranches);
+					orgRepo.getItems().addAll(updateRepo, addFile,makeRelease, orgFiles, orgCommits, orgBranches);
 					// Platform.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);
 					// });
