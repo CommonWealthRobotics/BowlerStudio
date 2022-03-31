@@ -77,6 +77,9 @@ public class MakeReleaseController extends Application {
 	    		if(!workflows.exists()) {	    			 
 	    			 Platform.runLater(()->{
 	    				 ChoiceDialog d = new ChoiceDialog(st[0], st);
+	    				 d.setTitle("Choose File From this Repo to release");
+	    				 d.setHeaderText("Select file to compile in CI");
+	    				 d.setContentText("File:");
 	 	    			// show the dialog
 	 	                 d.showAndWait();
 	 	                 String selectedItem = (String) d.getSelectedItem();
