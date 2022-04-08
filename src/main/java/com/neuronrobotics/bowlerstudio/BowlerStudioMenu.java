@@ -210,6 +210,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private void setToLoggedIn(final String name) {
+		new Exception().printStackTrace();
 		if (name == null)
 			return;
 		if (this.name != null && name.contentEquals(this.name))
@@ -222,6 +223,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			new Thread() {
 				public void run() {
 					ConfigurationDatabase.loginEvent(name);
+					HashMap<String, Object> data = ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
 					try {
 						ScriptingEngine.setAutoupdate(false);
@@ -1252,14 +1254,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					}
 				});
 
-				FxTimer.runLater(Duration.ofMillis(100), () -> {
-					if (PasswordManager.getUsername() != null) {
-						setToLoggedIn(PasswordManager.getUsername());
-					} else {
-						setToLoggedOut();
-					}
-
-				});
+//				FxTimer.runLater(Duration.ofMillis(100), () -> {
+//					if (PasswordManager.getUsername() != null) {
+//						setToLoggedIn(PasswordManager.getUsername());
+//					} else {
+//						setToLoggedOut();
+//					}
+//
+//				});
 				IGithubLoginListener listener = new IGithubLoginListener() {
 					private boolean loggingIn = false;
 

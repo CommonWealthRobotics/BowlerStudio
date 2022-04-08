@@ -17,7 +17,6 @@ import javafx.scene.control.Menu;
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
 	private static Menu workspaceMenu;
-	private static HashMap<String, Object> workspaceData = null;
 	private static final int maxMenueSize = 35;
 	private static boolean sorting = false;
 	private static HashMap<String,Integer> rank = new HashMap<String, Integer>();
@@ -33,13 +32,12 @@ public class BowlerStudioMenuWorkspace {
 			return;
 		running = true;
 		rank.clear();
-		workspaceData = ConfigurationDatabase.getParamMap("workspace");
 		new Thread(()-> {
 			// Wait on pulls to ensure this always runs asynchronously
 			ThreadUtil.wait((int)(200*Math.random()));
-			for (int i=0;i<workspaceData.keySet().size();i++) {
+			for (int i=0;i<getWorkspaceData().keySet().size();i++) {
 				try {
-					String o = (String) workspaceData.keySet().toArray()[i];
+					String o = (String) getWorkspaceData().keySet().toArray()[i];
 					try {
 						if(!ScriptingEngine.isUrlAlreadyOpen(o))
 							ScriptingEngine.pull(o);
@@ -49,7 +47,7 @@ public class BowlerStudioMenuWorkspace {
 						try {
 							ScriptingEngine.pull(o);
 						} catch (Throwable ex) {
-							workspaceData.remove(o);
+							getWorkspaceData().remove(o);
 							ScriptingEngine.deleteRepo(o);
 							i--;
 						}
@@ -75,13 +73,13 @@ public class BowlerStudioMenuWorkspace {
 			menueMessage= new Date().toString();
 		}
 		ArrayList<String> data;
-		if(workspaceData!=null)
-		synchronized (workspaceData) {
-			if (workspaceData.get(url) == null) {
+		if(getWorkspaceData()!=null)
+		synchronized (getWorkspaceData()) {
+			if (getWorkspaceData().get(url) == null) {
 				data = new ArrayList<String>();
 				data.add(menueMessage);
 				data.add(new Long(System.currentTimeMillis()).toString());
-				workspaceData.put(url, data);
+				getWorkspaceData().put(url, data);
 				System.out.println("Workspace add: "+url);
 			}
 		}
@@ -101,8 +99,8 @@ public class BowlerStudioMenuWorkspace {
 		boolean rankChanged=false;
 		try {
 			ArrayList<String> myOptions = new ArrayList<String>();
-			synchronized (workspaceData) {
-				for (String o : workspaceData.keySet()) {
+			synchronized (getWorkspaceData()) {
+				for (String o : getWorkspaceData().keySet()) {
 					//System.out.println("Opt: "+o);
 					myOptions.add(o);
 				}
@@ -111,10 +109,10 @@ public class BowlerStudioMenuWorkspace {
 			while (myOptions.size() > 0) {
 				int bestIndex = 0;
 				String besturl = (String) myOptions.get(bestIndex);
-				long newestTime = Long.parseLong(((ArrayList<String>) workspaceData.get(besturl)).get(1));
+				long newestTime = Long.parseLong(((ArrayList<String>) getWorkspaceData().get(besturl)).get(1));
 				for (int i = 0; i < myOptions.size(); i++) {
 					String nowurl = (String) myOptions.get(i);
-					long myTime = Long.parseLong(((ArrayList<String>) workspaceData.get(nowurl)).get(1));
+					long myTime = Long.parseLong(((ArrayList<String>) getWorkspaceData().get(nowurl)).get(1));
 					if (myTime >= newestTime) {
 						newestTime = myTime;
 						besturl = nowurl;
@@ -132,15 +130,15 @@ public class BowlerStudioMenuWorkspace {
 						// repo is broken or missing
 						e.printStackTrace();
 						System.out.println("Removing from workspace: " + removedURL);
-						synchronized (workspaceData) {
-							workspaceData.remove(removedURL);
+						synchronized (getWorkspaceData()) {
+							getWorkspaceData().remove(removedURL);
 						}
 					}
 
 				} else {
 					System.out.println("Removing from workspace: " + removedURL);
-					synchronized (workspaceData) {
-						workspaceData.remove(removedURL);
+					synchronized (getWorkspaceData()) {
+						getWorkspaceData().remove(removedURL);
 					}
 				}
 			}
@@ -166,7 +164,7 @@ public class BowlerStudioMenuWorkspace {
 					new Thread(() -> {
 						for (String url : menu) {
 							System.out.println("Workspace : "+url);
-								ArrayList<String> arrayList = (ArrayList<String>) workspaceData.get(url);
+								ArrayList<String> arrayList = (ArrayList<String>) getWorkspaceData().get(url);
 								if(arrayList!=null)
 									BowlerStudioMenu.setUpRepoMenue(workspaceMenu, 
 											url, 
@@ -192,5 +190,10 @@ public class BowlerStudioMenuWorkspace {
 			}).start();
 		}
 	}
+
+	public static HashMap<String, Object> getWorkspaceData() {
+		return ConfigurationDatabase.getParamMap("workspace");
+	}
+
 
 }
