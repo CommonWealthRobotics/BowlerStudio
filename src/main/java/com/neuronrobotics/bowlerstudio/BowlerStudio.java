@@ -335,7 +335,7 @@ public class BowlerStudio extends Application {
 					System.err.println("Asset Repo " + myAssets);
 
 					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
-
+					ScriptingEngine.cloneRepo(myAssets, null);
 					try {
 						ScriptingEngine.pull(myAssets, "main");
 						System.err.println("Studio version is the same");
