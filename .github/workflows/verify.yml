@@ -19,11 +19,11 @@ jobs:
       
     - name: start xvfb
       run:
-        Xvfb :99 &
+        Xvfb :0 &
 
     - name: initialize the X11 DISPLAY variable
       run:
-        export DISPLAY=:99
+        export DISPLAY=:0
 
     - name: After checkout, list directory contnts
       run: pwd; ls -la        
