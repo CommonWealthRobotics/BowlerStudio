@@ -43,3 +43,6 @@ jobs:
      
     - name: Build with Gradle 
       run: ./gradlew shadowJar
+      
+    - name: Test with Gradle 
+      run: xvfb-run -s '-screen 0 1024x768x24' ./gradlew test

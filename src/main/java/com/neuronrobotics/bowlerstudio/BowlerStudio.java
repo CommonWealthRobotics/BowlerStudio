@@ -340,6 +340,7 @@ public class BowlerStudio extends Application {
 						ScriptingEngine.pull(myAssets, "main");
 						System.err.println("Studio version is the same");
 					}catch(Exception e) {
+						e.printStackTrace();
 						ScriptingEngine.deleteRepo(myAssets);
 						ScriptingEngine.pull(myAssets, "main");
 					}
@@ -356,8 +357,7 @@ public class BowlerStudio extends Application {
 					}
 				} else {
 					renderSplashFrame(20, "DL'ing Image Assets");
-					ScriptingEngine.cloneRepo(myAssets, null);
-					//ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
+					ScriptingEngine.pull(myAssets, "main");
 				}
 			}
 			layoutFile = AssetFactory.loadFile("layout/default.css");
