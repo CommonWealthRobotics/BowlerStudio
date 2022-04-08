@@ -210,7 +210,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private void setToLoggedIn(final String name) {
-		new Exception().printStackTrace();
 		if (name == null)
 			return;
 		if (this.name != null && name.contentEquals(this.name))

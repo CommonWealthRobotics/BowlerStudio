@@ -83,7 +83,7 @@ public class BowlerStudio extends Application {
 	private static File layoutFile;
 	private static boolean deleteFlag = false;
 	private static IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
-	private static String lastVersion;
+	//private static String lastVersion;
 
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
@@ -329,59 +329,26 @@ public class BowlerStudio extends Application {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 							StudioBuildInfo.getVersion());
 					renderSplashFrame(16, "Done Load Configs");
-					// String lastVersion = (String)
-					// ConfigurationDatabase.getObject("BowlerStudioConfigs",
-					// "skinBranch",
-					// StudioBuildInfo.getVersion());
 					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
 							"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
 					renderSplashFrame(20, "DL'ing Image Assets");
-					File gitRepoFile = ScriptingEngine.uriToFile(myAssets);
-					if (!gitRepoFile.exists()) {
-						lastVersion = null;
-					} else
-						lastVersion = ScriptingEngine.getBranch(myAssets);
 					System.err.println("Asset Repo " + myAssets);
-					System.err.println("Asset current ver " + lastVersion);
 
 					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 
-					if (lastVersion != null && StudioBuildInfo.getVersion().contentEquals(lastVersion)) {
-						try {
-							ScriptingEngine.pull(myAssets, StudioBuildInfo.getVersion());
-							System.err.println("Studio version is the same");
-						}catch(Exception e) {
-							ScriptingEngine.deleteRepo(myAssets);
-							ScriptingEngine.pull(myAssets);
+					try {
+						ScriptingEngine.pull(myAssets, "main");
+						System.err.println("Studio version is the same");
+					}catch(Exception e) {
+						ScriptingEngine.deleteRepo(myAssets);
+						ScriptingEngine.pull(myAssets, "main");
+					}
+					
+					if(ScriptingEngine.checkOwner(myAssets)) {
+						if(ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
+							System.out.println("Tagging Assets at "+StudioBuildInfo.getVersion());
+							ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 						}
-						
-					} else {
-						if (lastVersion != null)
-							ScriptingEngine.cloneRepo(myAssets, lastVersion);
-						System.err.println("\n\nnew version\n\n");
-						try {
-							if (ScriptingEngine.checkOwner(myAssets)) {
-								ScriptingEngine.newBranch(myAssets, StudioBuildInfo.getVersion());
-							} else
-								throw new NullPointerException();
-						} catch (Exception ex) {
-							// not the owner
-							System.err.println("You are not the owner of the assets!");
-							ScriptingEngine.pull(myAssets);
-//							try {
-//								ScriptingEngine.checkout(myAssets, StudioBuildInfo.getVersion());
-//							} catch (Exception ex1) {
-//								ScriptingEngine.deleteRepo(myAssets);
-//								ScriptingEngine.cloneRepo(myAssets,null);
-//							}
-						}
-						lastVersion = ScriptingEngine.getBranch(myAssets);
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", lastVersion);
-						// force the mainline in when a version update happens
-						// this prevents developers from ending up with unsuable
-						// version of BowlerStudio
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinRepo", myAssets);
-						ConfigurationDatabase.save();
 					}
 
 					if (BowlerStudio.hasNetwork()) {
