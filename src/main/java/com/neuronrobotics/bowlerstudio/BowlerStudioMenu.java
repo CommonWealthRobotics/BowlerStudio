@@ -1003,6 +1003,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onLogin(ActionEvent event) {
+		new Exception().printStackTrace();
 		new Thread() {
 			public void run() {
 				PasswordManager.checkInternet();
@@ -1321,17 +1322,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					listener.onLogin(null);
 				}
 				ScriptingEngine.addIGithubLoginListener(listener);
-				if (PasswordManager.hasNetwork() && !PasswordManager.loggedIn()) {
-					new Thread(() -> {
-						try {
-							onLogin(null);
-						} catch (Exception e) {
-							exp.uncaughtException(Thread.currentThread(), e);
-						}
-					}).start();
-				} else {
-					setToLoggedIn(PasswordManager.getUsername());
-				}
+
 			}
 		});
 		if (ScriptingEngine.hasNetwork())
