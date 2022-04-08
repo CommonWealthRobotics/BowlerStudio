@@ -94,11 +94,16 @@ public class MakeReleaseController extends Application {
 		 	                 		+ "         - '*'\n"
 		 	                 		+ "\n"
 		 	                 		+ "jobs:\n"
-		 	                 		+ "  call-workflow-passing-data:\n"
+		 	                 		+ "  call-release:\n"
 		 	                 		+ "    uses: CommonWealthRobotics/Bowler-Script-Release-CI/.github/workflows/reusable-release.yml@main\n"
 		 	                 		+ "    with:\n"
 		 	                 		+ "      filename: \""+filename+"-archive\"\n"
-		 	                 		+ "      filelocation: \"./"+selectedItem+"\"   ";
+		 	                 		+ "      filelocation: \"./"+selectedItem+"\"   \n"
+		 	                 		+ "  use-url-job:\n"
+ 	                 				+ "    runs-on: ubuntu-latest\n"
+ 	                 				+ "    needs: call-release\n"
+ 	                 				+ "    steps:\n"
+ 	                 				+ "      - run: echo \"URL is:\"${{ needs.call-release.outputs.outputURL }} ";
 	 	                	try {
 								ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
 								makeRelease(event);
