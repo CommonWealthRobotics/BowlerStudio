@@ -342,7 +342,7 @@ public class BowlerStudio extends Application {
 					}catch(Exception e) {
 						e.printStackTrace();
 						ScriptingEngine.deleteRepo(myAssets);
-						ScriptingEngine.pull(myAssets, "main");
+						ScriptingEngine.cloneRepo(myAssets, null);
 					}
 					
 					if(ScriptingEngine.checkOwner(myAssets)) {
