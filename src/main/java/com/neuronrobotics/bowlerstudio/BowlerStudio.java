@@ -345,7 +345,7 @@ public class BowlerStudio extends Application {
 					}
 					
 					if(ScriptingEngine.checkOwner(myAssets)) {
-						if(ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
+						if(!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
 							System.out.println("Tagging Assets at "+StudioBuildInfo.getVersion());
 							ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 						}
