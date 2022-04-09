@@ -1327,7 +1327,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		});
 		if (ScriptingEngine.hasNetwork())
 			t.start();
-		else if (PasswordManager.getUsername() != null) {
+		if (PasswordManager.getUsername() != null) {
 			setToLoggedIn(PasswordManager.getUsername());
 		} else {
 			setToLoggedOut();
