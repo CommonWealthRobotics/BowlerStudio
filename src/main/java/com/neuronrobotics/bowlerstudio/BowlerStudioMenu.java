@@ -160,30 +160,28 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	public void loadMobilebaseFromGit(String id, String file) {
 		new Thread() {
+			Exception ex = new Exception("Error Loading "+id+":"+file);
+			//String stacktraceFromCatch = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
 			public void run() {
+				File f=null;
 				try {
-					extracted(id, file);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-					ScriptingEngine.deleteRepo(id);
-					try {
-						extracted(id, file);
-					} catch (Exception e1) {
-						exp.except(e1);
-					}
+					f=ScriptingEngine.fileFromGit(id,  file);
+					runScriptFromGit(id, file);
+				} catch (Throwable e) {
+					System.out.println("Error Loading "+id+":"+file);
+					BowlerStudio.printStackTrace(e,f );	
+					BowlerStudio.printStackTrace(ex,f );
+					//exp.except(ex,stacktraceFromCatch);
 				}
 			}
 
-			private void extracted(String id, String file)
-					throws IOException, CheckoutConflictException, NoHeadException, Exception {
+			private void runScriptFromGit(String id, String file)
+					throws Exception {
 				MobileBase mb;
 				ScriptingEngine.pull(id);
-				if (file.toLowerCase().endsWith(".xml")) {
-					mb = MobileBaseLoader.fromGit(id, file);
-				} else {
-					mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
-				}
+
+				mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
+				
 				if (mb != null)
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 				else
