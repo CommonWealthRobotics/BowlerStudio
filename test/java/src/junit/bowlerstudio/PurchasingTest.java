@@ -32,19 +32,7 @@ public class PurchasingTest {
 
 	@Test
 	public void test() {
-		try {
-			ScriptingEngine.login();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		if(!ScriptingEngine.isLoginSuccess())
-			try{
-				ScriptingEngine.setupAnyonmous();
-				
-			}catch (Exception ex){
-				System.out.println("User not logged in, test can not run");
-			}
+
 		for(String vitaminsType: Vitamins.listVitaminTypes()){
 			System.out.println("Type = "+vitaminsType);
 			
