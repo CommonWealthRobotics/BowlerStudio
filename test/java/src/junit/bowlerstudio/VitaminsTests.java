@@ -52,19 +52,7 @@ public class VitaminsTests {
 
 	@Test
 	public void test() throws Exception {
-		try {
-			ScriptingEngine.login();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		if (!ScriptingEngine.isLoginSuccess())
-			try {
-				ScriptingEngine.setupAnyonmous();
 
-			} catch (Exception ex) {
-				System.out.println("User not logged in, test can not run");
-			}
 		for (String vitaminsType : Vitamins.listVitaminTypes()) {
 			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
 			System.out.println("Type = " + vitaminsType);

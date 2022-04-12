@@ -31,14 +31,14 @@ public class AppTestLinkWidgets extends Application {
     	
     			
     	
-    	VBox box = new VBox();
-    	box.getChildren().addAll(lsw);
-        Group root = new Group(box);
-        Scene scene = new Scene(root, 800, 900);
-
-        stage.setTitle("My JavaFX Application");
-        stage.setScene(scene);
-        stage.show();
+//    	VBox box = new VBox();
+//    	box.getChildren().addAll(lsw);
+//        Group root = new Group(box);
+//        Scene scene = new Scene(root, 800, 900);
+//
+//        stage.setTitle("My JavaFX Application");
+//        stage.setScene(scene);
+//        stage.show();
         
 	}
 	public static void main(String [] args) {
