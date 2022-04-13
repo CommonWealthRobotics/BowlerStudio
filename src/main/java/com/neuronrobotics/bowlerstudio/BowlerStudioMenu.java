@@ -120,7 +120,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	private BowlerStudioModularFrame bowlerStudioModularFrame;
 
-	private String name;
+	private String username;
 	private static BowlerStudioMenu selfRef = null;
 	private File openFile;
 	private Map<String, GHRepository> myPublic;
@@ -207,22 +207,23 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public void setToLoggedIn() {
-		setToLoggedIn(name);
+		setToLoggedIn(username);
 	}
 
 	private void setToLoggedIn(final String n) {
+		//new Exception().printStackTrace();
 		if (n == null)
 			return;
-		if (this.name != null && n.contentEquals(this.name))
+		if (this.username != null && n.contentEquals(this.username))
 			return;
-		this.name = n;
-		// new Exception().printStackTrace();
+		this.username = n;
+		
 		Platform.runLater(() -> {
 			logoutGithub.disableProperty().set(false);
-			logoutGithub.setText("Log out " + name);
+			logoutGithub.setText("Log out " + username);
 			new Thread() {
 				public void run() {
-					ConfigurationDatabase.loginEvent(name);
+					ConfigurationDatabase.loginEvent(username);
 					ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
 					try {
@@ -238,19 +239,57 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						ThreadUtil.wait(200);
 					}
 					GitHub github = gh;
-
+					openFilesInUI();
 					loadOrganizations(github);
 					loadMyRepos(github);
 					loadWatchingRepos(github);
 					LoadGistMenu(github);
+					
 				}
+
+
 
 			}.start();
 
 		});
 
 	}
+	private void openFilesInUI() {
+		HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+		Object[] set = openGits.keySet().toArray();
+		for (int i = 0; i < set.length; i++) {
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			if (String.class.isInstance(set[i])) {
+				String s = (String) set[i];
+				try {
+					@SuppressWarnings("unchecked")
+					ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+					File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
+					if (!f.exists() || createFileTab(f) == null) {
+						openGits.remove(s);
+						System.err.println("Removing missing " + s);
+					}
 
+				} catch (Throwable e) {
+					openGits.remove(s);
+					System.out.println("Error loading file " + s);
+				}
+			}
+		}
+		HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
+		for (String s : openWeb.keySet()) {
+			String repoFile = (String) openWeb.get(s);
+			try {
+				bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
+			} catch (Exception e) {
+				exp.uncaughtException(Thread.currentThread(), e);
+			}
+		}
+	}
 	private void loadWatchingRepos(GitHub github) {
 		new Thread(() -> {
 			Platform.runLater(() -> watchingRepos.getItems().clear());
@@ -1077,7 +1116,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 			try {
 				controller.start(s);
-				setToLoggedIn(name);
+				setToLoggedIn(username);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1206,8 +1245,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	void onRefresh(ActionEvent event) {
-		String current = this.name;// =null;
-		this.name = null;
+		String current = this.username;// =null;
+		this.username = null;
 		if (PasswordManager.loggedIn())
 			setToLoggedIn(current);
 
@@ -1381,97 +1420,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		loadFirmata.setOnAction(event -> {
 			Platform.runLater(() -> ConnectionManager.onFirmata());
 		});
-		Thread t = new Thread(new Runnable() {
-
+		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
 			@Override
-			public void run() {
-				ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
-
-					@Override
-					public void onLogout(String oldUsername) {
-						setToLoggedOut();
-					}
-
-					@Override
-					public void onLogin(String newUsername) {
-						setToLoggedIn(newUsername);
-
-					}
-				});
-
-//		FxTimer.runLater(Duration.ofMillis(100), () -> {
-//			if (PasswordManager.getUsername() != null) {
-//				setToLoggedIn(PasswordManager.getUsername());
-//			} else {
-//				setToLoggedOut();
-//			}
-//
-//		});
-				IGithubLoginListener listener = new IGithubLoginListener() {
-					private boolean loggingIn = false;
-
-					@Override
-					public void onLogout(String arg0) {
-
-					}
-
-					@Override
-					public void onLogin(String arg0) {
-						if (loggingIn)
-							return;
-						loggingIn = true;
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-								Object[] set = openGits.keySet().toArray();
-								for (int i = 0; i < set.length; i++) {
-									try {
-										Thread.sleep(300);
-									} catch (InterruptedException e1) {
-										e1.printStackTrace();
-									}
-									if (String.class.isInstance(set[i])) {
-										String s = (String) set[i];
-										try {
-											@SuppressWarnings("unchecked")
-											ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
-											File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-											if (!f.exists() || createFileTab(f) == null) {
-												openGits.remove(s);
-												System.err.println("Removing missing " + s);
-											}
-
-										} catch (Throwable e) {
-											openGits.remove(s);
-											System.out.println("Error loading file " + s);
-										}
-									}
-								}
-								HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
-								for (String s : openWeb.keySet()) {
-									String repoFile = (String) openWeb.get(s);
-									try {
-										bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
-									} catch (Exception e) {
-										exp.uncaughtException(Thread.currentThread(), e);
-									}
-								}
-								loggingIn = false;
-							}
-						}).start();
-					}
-				};
-				if (ScriptingEngine.isLoginSuccess()) {
-					listener.onLogin(null);
-				}
-				ScriptingEngine.addIGithubLoginListener(listener);
-
+			public void onLogout(String arg0) {
+				setToLoggedOut();
+			}
+			@Override
+			public void onLogin(String arg0) {
+				setToLoggedIn(arg0);
 			}
 		});
-		if (ScriptingEngine.hasNetwork())
-			t.start();
+
 		if (PasswordManager.getUsername() != null) {
 			setToLoggedIn(PasswordManager.getUsername());
 		} else {
