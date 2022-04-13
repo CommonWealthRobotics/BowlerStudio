@@ -1039,7 +1039,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onLogin(ActionEvent event) {
-		new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 		new Thread() {
 			public void run() {
 				PasswordManager.checkInternet();
