@@ -206,13 +206,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	private long timeForAutospin = 5000;
 
-	private CheckBox spin;
+	//private CheckBox spin;
 
-	private CheckBox autoHighilight;
+	//private CheckBox autoHighilight;
 
 	private Button export;;
 	private boolean rebuildingUIOnerror = false;
 	private static int sumVert = 0;
+	private CheckMenuItem autoHighilight;
+	private CheckMenuItem spin;
 	static {
 		Platform.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -276,18 +278,37 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		String[] parts = trace.split(":");
 		return Integer.parseInt(parts[1]);
 	}
+	public void setControls(CheckMenuItem showRuler, CheckMenuItem idlespin, CheckMenuItem autohighlight) {
+
+		this.spin = idlespin;
+		this.autoHighilight = autohighlight;
+		idlespin.setOnAction((event) -> {
+			resetMouseTime();
+		});
+
+		showRuler.setOnAction((event) -> {
+			boolean selected = showRuler.isSelected();
+			// System.out.println("CheckBox Action (selected: " + selected +
+			// ")");
+			if (selected)
+				showAxis();
+			else
+				hideAxis();
+		});
+	}
 
 	public Group getControlsBox() {
 		HBox controls = new HBox(10);
-		home = new Button("Home Camera");
+		home = new Button();
+		home.setTooltip(new javafx.scene.control.Tooltip("Home the camera"));
 		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			getVirtualcam().setZoomDepth(VirtualCameraMobileBase.getDefaultZoomDepth());
 			getFlyingCamera().updatePositions();
 		});
-
-		export = new Button("Export All...");
+		
+		export = new Button();
 		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
@@ -308,26 +329,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			clearUserNode();
 			removeObjects();
 		});
-		spin = new CheckBox("Idle Spin");
-		spin.setSelected(false);
-		spin.setOnAction((event) -> {
-			resetMouseTime();
-		});
-		CheckBox ruler = new CheckBox("Show Ruler");
-		ruler.setSelected(true);
-		ruler.setOnAction((event) -> {
-			boolean selected = ruler.isSelected();
-			// System.out.println("CheckBox Action (selected: " + selected +
-			// ")");
-			if (selected)
-				showAxis();
-			else
-				hideAxis();
-		});
-		autoHighilight = new CheckBox("Auto Highlight");
-		autoHighilight.setSelected(true);
-		Platform.runLater(() -> controls.getChildren().addAll(home, export, clear, ruler, autoHighilight, spin));
-		return new Group(controls);
+
+		javafx.scene.layout.VBox allCOntrols = new javafx.scene.layout.VBox();
+		HBox controlsChecks = new HBox(10);
+
+		Platform.runLater(() -> controls.getChildren().addAll(home, export, clear));
+		//Platform.runLater(() -> controlsChecks.getChildren().addAll( ruler, autoHighilight, spin));
+		
+		Platform.runLater(() -> allCOntrols.getChildren().addAll(controlsChecks,controls));
+		
+		return new Group(allCOntrols);
 	}
 
 	private void exportAll() {
@@ -1548,5 +1559,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
 	}
+
 
 }

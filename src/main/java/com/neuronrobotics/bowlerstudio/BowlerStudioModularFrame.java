@@ -150,9 +150,11 @@ public class BowlerStudioModularFrame {
 		commandLine.setClassLoader(Terminal.class.getClassLoader());
 		FXMLLoader menueBar;
 		menueBar = AssetFactory.loadLayout("layout/BowlerStudioMenuBar.fxml");
-		menueController = new BowlerStudioMenu(this);
+		menueController = new BowlerStudioMenu(this,creatureLab3dController);
 		menueBar.setController(menueController);
 		menueBar.setClassLoader(BowlerStudioMenu.class.getClassLoader());
+		
+		
 
 		try {
 			menueBar.load();

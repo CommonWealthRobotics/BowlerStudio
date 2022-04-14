@@ -59,7 +59,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+import javafx.scene.layout.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.*;
 public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
@@ -133,8 +136,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 	private HashMap<String, Menu> vitaminTypeMenus = new HashMap<String, Menu>();
 
-	public BowlerStudioMenu(BowlerStudioModularFrame tl) {
+	private CreatureLab3dController creatureLab3dController;
+
+	public BowlerStudioMenu(BowlerStudioModularFrame tl, CreatureLab3dController creatureLab3dController) {
 		bowlerStudioModularFrame = tl;
+		this.creatureLab3dController = creatureLab3dController;
+
+
+		
 	}
 
 	@FXML
@@ -1458,6 +1467,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 		}
 		WindowMenu.getItems().add(fontSelect);
+		CheckMenuItem  autohighlight = new CheckMenuItem("Auto Highlight 3d Items");
+		autohighlight.setSelected(true);
+		CheckMenuItem  idlespin = new CheckMenuItem("Idle Spin ");
+		idlespin.setSelected(false);
+		CheckMenuItem  showRuler = new CheckMenuItem("Show Ruler ");
+		showRuler.setSelected(true);
+		
+		creatureLab3dController.getEngine().setControls(showRuler,idlespin,autohighlight);
+		WindowMenu.getItems().addAll(showRuler,idlespin,autohighlight);
 
 		new Thread() {
 			public void run() {
