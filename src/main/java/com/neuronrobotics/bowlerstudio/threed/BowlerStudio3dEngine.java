@@ -215,6 +215,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private static int sumVert = 0;
 	private CheckMenuItem autoHighilight;
 	private CheckMenuItem spin;
+	private HBox controlsChecks;
 	static {
 		Platform.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -299,7 +300,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public Group getControlsBox() {
 		HBox controls = new HBox(10);
-		home = new Button();
+		home = new Button("Home");
 		home.setTooltip(new javafx.scene.control.Tooltip("Home the camera"));
 		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event -> {
@@ -308,7 +309,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().updatePositions();
 		});
 		
-		export = new Button();
+		export = new Button("Export");
 		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
@@ -331,10 +332,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 
 		javafx.scene.layout.VBox allCOntrols = new javafx.scene.layout.VBox();
-		HBox controlsChecks = new HBox(10);
+		controlsChecks = new HBox(10);
 
 		Platform.runLater(() -> controls.getChildren().addAll(home, export, clear));
-		//Platform.runLater(() -> controlsChecks.getChildren().addAll( ruler, autoHighilight, spin));
+
 		
 		Platform.runLater(() -> allCOntrols.getChildren().addAll(controlsChecks,controls));
 		
@@ -514,6 +515,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		if (getCsgMap().get(currentCsg) != null)
 			return currentCsg.getMesh();
 		getCsgMap().put(currentCsg, currentCsg.getMesh());
+		Platform.runLater(() -> controlsChecks.getChildren().clear());
+		
+		Platform.runLater(() -> controlsChecks.getChildren().addAll(AssemblySlider.getSlider(getCsgMap().keySet())));
 		csgSourceFile.put(currentCsg, source);
 		Optional<Object> m = currentCsg.getStorage().getValue("manipulator");
 		HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> eventForManipulation=null;

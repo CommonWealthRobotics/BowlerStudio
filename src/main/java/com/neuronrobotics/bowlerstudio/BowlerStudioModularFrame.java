@@ -176,7 +176,7 @@ public class BowlerStudioModularFrame {
 				ThreadUtil.wait(100);
 			}
 		} while (creatureLab3dDockNode==null);
-		creatureLab3dDockNode.setPrefSize(400, 400);
+		creatureLab3dDockNode.setPrefSize(500, 500);
 		
 
 
