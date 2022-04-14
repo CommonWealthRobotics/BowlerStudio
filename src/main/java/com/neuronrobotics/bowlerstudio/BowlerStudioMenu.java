@@ -199,11 +199,16 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public void setToLoggedOut() {
+		this.username="";
 		Platform.runLater(() -> {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
+			this.username=null;
 		});
+		while(this.username!=null)
+			ThreadUtil.wait(4);
+		
 	}
 
 	public void setToLoggedIn() {
@@ -213,8 +218,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	private void setToLoggedIn(final String n) {
 		//new Exception().printStackTrace();
 		if (n == null)
-			return;
-		if (this.username != null && n.contentEquals(this.username))
 			return;
 		this.username = n;
 		
@@ -226,11 +229,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					ConfigurationDatabase.loginEvent(username);
 					ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
-					try {
-						ScriptingEngine.setAutoupdate(false);
-					} catch (IOException e2) {
-						e2.printStackTrace();
-					}
 					if (!PasswordManager.hasNetwork())
 						return;
 					GitHub gh = PasswordManager.getGithub();
