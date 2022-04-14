@@ -619,7 +619,7 @@ public class BowlerStudio extends Application {
 				}
 				renderSplashFrame(96, "UI Launch...");
 
-				Scene scene = new Scene(mainControllerPanel.getRoot(), 1024, 768, true);
+				Scene scene = new Scene(mainControllerPanel.getRoot(), 1174, 768, true);
 
 				String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
 
