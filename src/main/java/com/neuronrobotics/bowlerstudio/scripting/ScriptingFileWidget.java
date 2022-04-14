@@ -461,9 +461,16 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	public void save() {
 		// TODO Auto-generated method stub
 		try {
+			String content = new String(
+				Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
+			String ineditor=getCode();
+			if(content.contentEquals(ineditor)) {
+				System.out.println("Skip Writing file contents, file is same");
+				return;
+			}				
 			System.out.println("Writing file contents");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile));
-			writer.write(getCode());
+			writer.write(ineditor);
 			writer.close();
 		} catch (Exception ex) {
 			// ex.printStackTrace();
