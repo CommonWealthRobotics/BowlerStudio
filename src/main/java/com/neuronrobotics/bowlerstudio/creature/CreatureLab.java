@@ -45,7 +45,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private ProgressIndicator pi;
 
 	private MobileBaseCadManager baseManager;
-	private CheckBox autoRegen = new CheckBox("Auto-Regnerate CAD");
+	private CheckBox autoRegen = new CheckBox("Auto-Regen CAD");
 	Parent root;
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();;
