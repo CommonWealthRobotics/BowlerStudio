@@ -340,6 +340,7 @@ public class BowlerStudio extends Application {
 					}
 				} else {
 					renderSplashFrame(20, "DL'ing Image Assets");
+					ScriptingEngine.cloneRepo(myAssets, null);
 					ScriptingEngine.pull(myAssets, "main");
 				}
 			}
