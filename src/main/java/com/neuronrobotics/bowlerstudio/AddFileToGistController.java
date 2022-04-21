@@ -222,19 +222,25 @@ public class AddFileToGistController extends Application {
 
 	@FXML
 	void createProject(ActionEvent event) {
-		try {
-			String text = description.getText();
-			if(text==null || text.length()<5) {
-				text="Project "+repoName.getText();
-			}
-			GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), text);
-			gitRepo= repository.getHttpTransportUrl();
+		Platform.runLater(() -> {
 			newProject.setDisable(true);
-			addFile.setDisable(false);
-		}catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		});
+		new Thread(() -> {
+			try {
+				String text = description.getText();
+				if (text == null || text.length() < 5) {
+					text = "Project " + repoName.getText();
+				}
+				GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), text);
+				gitRepo = repository.getHttpTransportUrl();
+				Platform.runLater(() -> {
+					addFile.setDisable(false);
+				});
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}).start();
+
 	}
 }
