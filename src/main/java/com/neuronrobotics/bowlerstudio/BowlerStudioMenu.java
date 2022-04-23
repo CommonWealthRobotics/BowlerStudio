@@ -1072,11 +1072,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onLogout(ActionEvent event) {
-		try {
-			ScriptingEngine.logout();
-		} catch (IOException e) {
-			exp.uncaughtException(Thread.currentThread(), e);
-		}
+		new Thread(()->{
+			try {
+				ScriptingEngine.logout();
+			} catch (IOException e) {
+				exp.uncaughtException(Thread.currentThread(), e);
+			}
+		}).start();
 	}
 
 	@FXML
