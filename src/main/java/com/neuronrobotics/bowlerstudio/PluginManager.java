@@ -180,8 +180,9 @@ public class PluginManager {
 					e.printStackTrace();
 					
 				}
+				Button l=launcher;
 				launcher.setOnAction(b ->{
-					launchTab( c,launcher);
+					launchTab( c,l);
 		        });
 					
 				pluginLauncher.getChildren().add(launcher);
