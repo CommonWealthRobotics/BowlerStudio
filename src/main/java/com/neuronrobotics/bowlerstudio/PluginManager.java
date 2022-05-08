@@ -152,7 +152,12 @@ public class PluginManager {
 		
 		for( DeviceSupportPluginMap c:deviceSupport){
 			if(c.getDevice().isInstance(dev)){
-				Button launcher = new Button(c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				Button launcher;
+				try {
+					launcher= new Button(c.getPlugin().getSimpleName(), AssetFactory.loadIcon("Plugin-Icon.png"));
+				}catch(RuntimeException e) {
+					launcher= new Button(c.getPlugin().getSimpleName());
+				}
 				launcher.setTooltip(new javafx.scene.control.Tooltip("Launch plugin to "+c.getPlugin().getSimpleName()));
 				try {// These tabs are the select few to autoload when a device of theis type is connected
 					if( 	
