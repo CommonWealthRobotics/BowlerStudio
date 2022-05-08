@@ -91,6 +91,8 @@ public class JogThread {
 			if (isControlThreadRunning()) {
 				return false;
 			}
+			//lastTarget.printStackTrace();
+			//runtimeException.printStackTrace();
 			lastTarget = runtimeException;
 			this.toSet = toSet.copy();
 			if (DHParameterKinematics.class.isInstance(source))

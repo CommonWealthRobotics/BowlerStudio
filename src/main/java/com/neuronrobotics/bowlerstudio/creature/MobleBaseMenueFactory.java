@@ -832,7 +832,11 @@ public class MobleBaseMenueFactory {
 			if (controller != null) {
 				widget.setGameController(controller);
 			}
-			widget.setCurrent(dh.getCurrentPoseTarget());
+			ParallelGroup parallel = base.getParallelGroup(dh);
+			if(parallel==null)
+				widget.setCurrent(dh.getCurrentPoseTarget());
+			else
+				widget.setCurrent(parallel.getCurrentPoseTarget());
 			BowlerStudio.select(base, dh);
 
 		});
