@@ -209,7 +209,7 @@ public class MobleBaseMenueFactory {
 									alert.show();
 								});
 							} catch (Exception e) {
-								BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
 
 						}
@@ -252,7 +252,7 @@ public class MobleBaseMenueFactory {
 									alert.show();
 								});
 							} catch (Exception e) {
-								BowlerStudioController.highlightException(baseManager.getCadScript(), e);
+								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
 
 						}

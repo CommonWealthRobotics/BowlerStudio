@@ -269,7 +269,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	@Override
 	public void onTabReOpening() {
-		baseManager.setCadScript(baseManager.getCadScript());
+		baseManager.run();
 		try {
 			if (autoRegen.isSelected())
 				generateCad();
