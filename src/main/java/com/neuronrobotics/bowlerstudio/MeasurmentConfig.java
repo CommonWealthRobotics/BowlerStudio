@@ -6,6 +6,8 @@ public class MeasurmentConfig {
 	private String key;
 	private HashMap<String, Object> configs;
 	public MeasurmentConfig(String key,HashMap<String, Object> configs){
+		if(configs==null)
+			throw new RuntimeException("Null configs not allowed!");
 		this.configs = configs;
 		this.setKey(key);
 		System.out.println("Adding Measurment "+key+" "+getMeasurment());
