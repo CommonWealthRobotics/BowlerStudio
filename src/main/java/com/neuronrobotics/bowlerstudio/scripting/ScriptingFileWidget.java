@@ -312,7 +312,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //				}
 				try {
 					Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
-					for (IScriptEventListener l : listeners) {
+					for (int i = 0; i < listeners.size(); i++) {
+						IScriptEventListener l = listeners.get(i);
 						l.onScriptFinished(obj, scriptResult, currentFile);
 					}
 
