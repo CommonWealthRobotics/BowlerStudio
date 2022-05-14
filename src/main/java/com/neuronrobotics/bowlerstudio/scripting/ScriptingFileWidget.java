@@ -382,29 +382,33 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //		}
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
 		// ScriptingEngine.setLastFile(f);
-		Git git;
+		Git git=null;
 		try {
 			git = ScriptingEngine.locateGit(currentFile);
 			remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+			String findLocalPath = ScriptingEngine.findLocalPath(f, git);
+			ScriptingEngine.closeGit(git);
 			Platform.runLater(() -> {
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
 				// fileListBox.res
-				fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+				
+				fileNameBox.setText(findLocalPath);
 				// These values are display only, so if hte user tries to change them, they
 				// reset
 				// the use of text field for static dats is so the user cna copy the vlaues and
 				// use them in their scritpts
 				fileNameBox.textProperty().addListener((observable, oldValue, newValue) -> {
-					fileNameBox.setText(ScriptingEngine.findLocalPath(f, git));
+					fileNameBox.setText(findLocalPath);
 				});
 				fileListBox.textProperty().addListener((observable, oldValue, newValue) -> {
 					fileListBox.setText(remote);
 				});
 
-				ScriptingEngine.closeGit(git);
+				
 			});
 		} catch (Exception e1) {
+			ScriptingEngine.closeGit(git);
 			Platform.runLater(() -> {
 				fileListBox.setText("none");
 				fileListBox.setMinWidth(40);
