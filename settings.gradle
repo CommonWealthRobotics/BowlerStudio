@@ -1,6 +1,7 @@
 include ':libraries:bowler-script-kernel'
 include ':libraries:bowler-script-kernel:java-bowler'
 include ':libraries:bowler-script-kernel:JCSG'
+include ':libraries:bowler-script-kernel:mujoco-java'
 include ':libraries:dockfx'
 rootProject.name = 'BowlerStudio'
 
