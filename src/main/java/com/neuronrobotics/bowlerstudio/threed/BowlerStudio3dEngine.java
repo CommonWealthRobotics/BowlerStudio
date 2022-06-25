@@ -545,7 +545,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		
 		if (params != null) {
 			Menu parameters = new Menu("Parameters...");
-
+			parameters.setMnemonicParsing(false);
 			for (String key : params) {
 				Parameter param = CSGDatabase.get(key);
 				currentCsg.setParameterIfNull(key);
@@ -590,7 +590,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						Parameter lp = (Parameter) param;
 						if (lp != null) {
 							Menu paramTypes = new Menu(lp.getName() + " " + lp.getStrValue());
-
+							paramTypes.setMnemonicParsing(false);
 							for (String opt : lp.getOptions()) {
 								String myVal = opt;
 								MenuItem customMenuItem = new MenuItem(myVal);
