@@ -1208,6 +1208,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	public Menu getTypeMenu(String type) {
 		if (vitaminTypeMenus.get(type) == null) {
 			Menu typeMenu = new Menu(type);
+			typeMenu.setMnemonicParsing(false);
 			vitaminTypeMenus.put(type, typeMenu);
 			Platform.runLater(() -> {
 				vitaminsMenu.getItems().add(typeMenu);
@@ -1234,6 +1235,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	public void addSizesToMenu(String size, String type) {
 		MenuItem sizeMenu = new MenuItem(size);
+		sizeMenu.setMnemonicParsing(false);
 		Platform.runLater(() -> {
 			getTypeMenu(type).getItems().add(sizeMenu);
 		});
