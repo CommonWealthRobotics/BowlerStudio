@@ -594,6 +594,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							for (String opt : lp.getOptions()) {
 								String myVal = opt;
 								MenuItem customMenuItem = new MenuItem(myVal);
+								customMenuItem.setMnemonicParsing(false);
 								customMenuItem.setOnAction(event -> {
 									resetMouseTime();
 									System.out.println("Updating " + lp.getName() + " to " + myVal);
