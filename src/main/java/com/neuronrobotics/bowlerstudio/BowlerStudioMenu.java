@@ -1221,6 +1221,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	private void setUpSizes(Menu typeMenu, String type) {
 
 		MenuItem editScript = new MenuItem("Edit " + type + " Cad Generator...");
+		editScript.setMnemonicParsing(false);
 		editScript.setOnAction(event -> {
 			new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
 		});
