@@ -834,7 +834,7 @@ public class MobleBaseMenueFactory {
 			}
 			ParallelGroup parallel = base.getParallelGroup(dh);
 			if(parallel==null)
-				widget.setCurrent(dh.getCurrentPoseTarget());
+				widget.setCurrent(dh.getCurrentTaskSpaceTransform());
 			else
 				widget.setCurrent(parallel.getCurrentPoseTarget());
 			BowlerStudio.select(base, dh);

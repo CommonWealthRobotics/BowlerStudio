@@ -87,7 +87,7 @@ public class JogThread {
 
 			String message = source.getScriptingName() + " secs " + toSeconds + " Jog Target set to " + toSet;
 			RuntimeException runtimeException = new RuntimeException(message);
-
+			
 			if (isControlThreadRunning()) {
 				return false;
 			}
