@@ -510,7 +510,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 //		for(Polygon poly:currentCsg.getPolygons())
 //			sumVert+=(poly.vertices.size());
 //		System.err.println("Total Verts = "+sumVert);
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
+		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
+		if(bowlerStudioModularFrame!=null)
+			bowlerStudioModularFrame.showCreatureLab();
 		// System.out.println(" Adding a CSG from file: "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
 			return currentCsg.getMesh();
