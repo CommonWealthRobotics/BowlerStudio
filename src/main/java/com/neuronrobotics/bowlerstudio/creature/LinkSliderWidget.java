@@ -95,9 +95,9 @@ public class LinkSliderWidget extends Group
 	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
 	private static Affine offsetGauge = null;
 	private static Affine offsetGaugeTranslate = null;
-	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget theWidget) {
-		this.theWidget = theWidget;
-		setTrimController(theWidget);
+	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget lcw) {
+		this.theWidget = lcw;
+		setTrimController(lcw);
 		this.linkIndex = linkIndex;
 		this.device = d;
 		this.conf = d.getLinkConfiguration(linkIndex);
@@ -130,10 +130,10 @@ public class LinkSliderWidget extends Group
 																		// 300
 																		// wide
 		jogminus.setOnAction(event -> {
-			getTrimController().trimMinus();
+			if(theWidget!=null)getTrimController().trimMinus();
 		});
 		jogplus.setOnAction(event -> {
-			getTrimController().trimPlus();
+			if(theWidget!=null)getTrimController().trimPlus();
 		});
 
 		LinkGaugeController linkGaugeController = new LinkGaugeController();
@@ -148,9 +148,9 @@ public class LinkSliderWidget extends Group
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
 				if (conf.getScale() > 0)
-					theWidget.setUpperBound(linkUnits);
+					if(theWidget!=null)theWidget.setUpperBound(linkUnits);
 				else
-					theWidget.setLowerBound(linkUnits);
+					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
 				Platform.runLater(() -> engineeringUpper
 						.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits())));
@@ -164,9 +164,9 @@ public class LinkSliderWidget extends Group
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
 				if (conf.getScale() < 0)
-					theWidget.setUpperBound(linkUnits);
+					if(theWidget!=null)theWidget.setUpperBound(linkUnits);
 				else
-					theWidget.setLowerBound(linkUnits);
+					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
 				Platform.runLater(() -> engineeringLower
 						.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits())));
@@ -216,7 +216,8 @@ public class LinkSliderWidget extends Group
 		calibration.add(gauge, 0, 1);
 
 		VBox allParts = new VBox();
-		allParts.getChildren().addAll(panel, calibration, theWidget);
+		allParts.getChildren().addAll(panel, calibration);
+		if(theWidget!=null)allParts.getChildren().addAll( theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
