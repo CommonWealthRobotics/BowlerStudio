@@ -208,16 +208,16 @@ public class LinkSliderWidget extends Group
 		calibration.getColumnConstraints().add(new ColumnConstraints(180));
 		calibration.getColumnConstraints().add(new ColumnConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(120));
-		calibration.getRowConstraints().add(new RowConstraints(150));
+		if(theWidget!=null)calibration.getRowConstraints().add(new RowConstraints(150));
 
-		calibration.add(trimBox, 1, 1);
+		if(theWidget!=null)calibration.add(trimBox, 1, 1);
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
-		calibration.add(gauge, 0, 1);
+		if(theWidget!=null)calibration.add(gauge, 0, 1);
 
 		VBox allParts = new VBox();
-		allParts.getChildren().addAll(panel, calibration);
-		if(theWidget!=null)allParts.getChildren().addAll( theWidget);
+		allParts.getChildren().addAll(panel);
+		if(theWidget!=null)allParts.getChildren().addAll(calibration, theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
