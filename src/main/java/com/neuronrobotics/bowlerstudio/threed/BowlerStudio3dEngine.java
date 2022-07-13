@@ -986,7 +986,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void addUserNode(Node n) {
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
+		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
+		if(bowlerStudioModularFrame!=null)
+			bowlerStudioModularFrame.showCreatureLab();
 
 		Platform.runLater(() -> userGroup.getChildren().add(n));
 	}
