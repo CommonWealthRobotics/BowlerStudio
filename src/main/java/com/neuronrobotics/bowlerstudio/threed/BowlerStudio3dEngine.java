@@ -261,6 +261,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			setScene(s);
 			rebuildingUIOnerror = false;
+			getControlsBox();
 		});
 	}
 
