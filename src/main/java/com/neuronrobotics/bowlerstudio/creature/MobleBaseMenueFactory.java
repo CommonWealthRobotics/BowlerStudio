@@ -651,7 +651,7 @@ public class MobleBaseMenueFactory {
 
 		LinkConfigurationWidget confWidget = new LinkConfigurationWidget(conf, dh.getFactory(),
 				MobileBaseCadManager.get(base));
-		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh, confWidget);
+		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh, confWidget,true);
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 

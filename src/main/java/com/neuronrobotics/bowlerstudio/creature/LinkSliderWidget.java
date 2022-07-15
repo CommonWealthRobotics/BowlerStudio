@@ -95,7 +95,8 @@ public class LinkSliderWidget extends Group
 	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
 	private static Affine offsetGauge = null;
 	private static Affine offsetGaugeTranslate = null;
-	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget lcw) {
+	
+	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, LinkConfigurationWidget lcw,boolean addLimits) {
 		this.theWidget = lcw;
 		setTrimController(lcw);
 		this.linkIndex = linkIndex;
@@ -208,16 +209,17 @@ public class LinkSliderWidget extends Group
 		calibration.getColumnConstraints().add(new ColumnConstraints(180));
 		calibration.getColumnConstraints().add(new ColumnConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(120));
-		if(theWidget!=null)calibration.getRowConstraints().add(new RowConstraints(150));
+		if(addLimits)calibration.getRowConstraints().add(new RowConstraints(150));
 
-		if(theWidget!=null)calibration.add(trimBox, 1, 1);
+		if(addLimits)calibration.add(trimBox, 1, 1);
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
 		if(theWidget!=null)calibration.add(gauge, 0, 1);
 
 		VBox allParts = new VBox();
 		allParts.getChildren().addAll(panel);
-		if(theWidget!=null)allParts.getChildren().addAll(calibration, theWidget);
+		if(addLimits)allParts.getChildren().addAll(calibration);
+		if(theWidget!=null)allParts.getChildren().addAll(theWidget);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
