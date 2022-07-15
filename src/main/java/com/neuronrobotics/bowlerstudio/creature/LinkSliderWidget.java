@@ -214,7 +214,7 @@ public class LinkSliderWidget extends Group
 		if(addLimits)calibration.add(trimBox, 1, 1);
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
-		if(theWidget!=null)calibration.add(gauge, 0, 1);
+		if(addLimits)calibration.add(gauge, 0, 1);
 
 		VBox allParts = new VBox();
 		allParts.getChildren().addAll(panel);
