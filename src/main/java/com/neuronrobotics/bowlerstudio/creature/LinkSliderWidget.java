@@ -86,6 +86,7 @@ public class LinkSliderWidget extends Group
 
 	private LinkConfigurationWidget theWidget;
 	private TextField engineeringUpper = new TextField("0");
+	private TextField engineeringVelUpper = new TextField("0");
 	private TextField engineeringLower = new TextField("0");
 	private Label engineeringTotalLimited = new Label("0");
 	private Label engineeringTotalPossible = new Label("0");
@@ -175,6 +176,16 @@ public class LinkSliderWidget extends Group
 						.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits())));
 			}
 		});
+		
+		engineeringVelUpper.setOnAction(event -> {
+			try {
+				double num = Double.parseDouble(engineeringVelUpper.getText());
+				getAbstractLink().setMaxVelocityEngineeringUnits(num);
+			} catch (Exception e) {
+				Platform.runLater(() -> engineeringVelUpper
+						.setText(String.format("%.2f", getAbstractLink().getMaxVelocityEngineeringUnits())));
+			}
+		});
 
 		HBox upperLimBox1 = new HBox();
 		HBox lowerLimBox1 = new HBox();
@@ -211,12 +222,21 @@ public class LinkSliderWidget extends Group
 		calibration.getColumnConstraints().add(new ColumnConstraints(180));
 		calibration.getColumnConstraints().add(new ColumnConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(120));
+		calibration.getRowConstraints().add(new RowConstraints(60));
 		if(displayLinkCOnfiguration)calibration.getRowConstraints().add(new RowConstraints(150));
+		
+		HBox velocityLim = new HBox();
+		VBox velocitylimits = new VBox();
+		velocityLim.getChildren().add(new Label("Velocity Limit"));
+		velocitylimits.getChildren().addAll( engineeringVelUpper,new Label("deg/sec"));
+		velocityLim.getChildren().add(velocitylimits);
 
-		if(displayLinkCOnfiguration)calibration.add(trimBox, 1, 1);
+		
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
-		if(displayLinkCOnfiguration)calibration.add(gauge, 0, 1);
+		calibration.add(velocityLim, 0, 1);
+		if(displayLinkCOnfiguration)calibration.add(trimBox, 1, 2);
+		if(displayLinkCOnfiguration)calibration.add(gauge, 0, 2);
 
 		VBox allParts = new VBox();
 		allParts.getChildren().addAll(panel);
@@ -241,6 +261,7 @@ public class LinkSliderWidget extends Group
 			engineeringLower.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits()));
 			engineeringUpperPossible.setText(String.format("%.2f", getAbstractLink().getDeviceMaxEngineeringUnits()));
 			engineeringLowerPossible.setText(String.format("%.2f", getAbstractLink().getDeviceMinEngineeringUnits()));
+			engineeringVelUpper.setText(String.format("%.1f", getAbstractLink().getMaxVelocityEngineeringUnits()));
 
 		});
 		getSetpoint().setLowerBound(getAbstractLink().getMinEngineeringUnits());
