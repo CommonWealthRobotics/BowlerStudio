@@ -645,6 +645,12 @@ public class MobleBaseMenueFactory {
 		}catch(java.lang.IndexOutOfBoundsException ex) {
 			return;
 		}
+
+		String linkName =dh.getLinkConfiguration(linkIndex).getName();
+		
+		
+
+		
 		// LinkConfigurationWidget confWidget =setHardwareConfig(base, conf,
 		// dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		// lsw.setTrimController(confWidget);
@@ -691,17 +697,76 @@ public class MobleBaseMenueFactory {
 			// activate controller
 		});
 
-		TreeItem<String> slaves = new TreeItem<>("Slaves to " + conf.getName(),
+		TreeItem<String> slaves = new TreeItem<>("Followers of " + conf.getName(),
 				AssetFactory.loadIcon("Slave-Links.png"));
 		LinkFactory slaveFactory = dh.getFactory().getLink(conf).getSlaveFactory();
 		for (LinkConfiguration co : conf.getSlaveLinks()) {
 
 			setHardwareConfig(base, co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
-
-		TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),
+		
+		
+		TreeItem<String> removeMobileBase = new TreeItem<>("Remove " + conf.getName(),
+				AssetFactory.loadIcon("creature.png"));
+		TreeItem<String> addMobileBase = new TreeItem<>("Add MobileBase to " + conf.getName(),
+				AssetFactory.loadIcon("creature.png"));
+		TreeItem<String> addSlaves = new TreeItem<>("Add following Link to " + conf.getName(),
 				AssetFactory.loadIcon("Add-Slave-Links.png"));
 
+		callbackMapForTreeitems.put(removeMobileBase, () -> {
+			Platform.runLater(() -> {
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Confirm removing MobileBase");
+				alert.setHeaderText("This will remove " + dhLink.getSlaveMobileBase().getScriptingName());
+				alert.setContentText("Are sure you wish to remove this MobileBase?");
+
+				Optional<ButtonType> result = alert.showAndWait();
+				view.getSelectionModel().select(rootItem);
+				if (result.get() == ButtonType.OK) {
+					view.getSelectionModel().select(rootItem);
+					new Thread() {
+						public void run() {
+							dhLink.setMobileBaseXml(null);
+						}
+					}.start();
+					slaves.getChildren().clear();
+					slaves.getChildren().add( addSlaves);
+					slaves.getChildren().add( addMobileBase);
+				}
+			});
+		});
+		
+
+
+		callbackMapForTreeitems.put(addMobileBase, () -> {
+			Platform.runLater(() -> {
+				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
+				dialog.setTitle("Add a new Follower mobilebase of");
+				dialog.setHeaderText("Set the scripting name for this Follower link");
+				dialog.setContentText("Please the name of the new Follower link:");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()) {
+					view.getSelectionModel().select(rootItem);
+					new Thread() {
+						public void run() {
+							MobileBase embedableXml = new MobileBase();
+							String scriptingName = result.get();
+							embedableXml.setScriptingName(scriptingName);
+							dhLink.setMobileBaseXml(embedableXml);
+							removeMobileBase.setValue("Remove "+scriptingName);
+							slaves.getChildren().add(0,setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+									isOwner, dhLink));
+						}
+					}.start();
+					slaves.getChildren().remove( addMobileBase);
+					slaves.getChildren().add( removeMobileBase);
+				}
+			});
+		});
+		
+		
 		callbackMapForTreeitems.put(addSlaves, () -> {
 			// if(widgetMapForTreeitems.get(advanced)==null){
 			// //create the widget for the leg when looking at it for the first
@@ -710,10 +775,10 @@ public class MobleBaseMenueFactory {
 			// creatureLab));
 			// }
 			Platform.runLater(() -> {
-				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_SLAVE_" + conf.getSlaveLinks().size());
-				dialog.setTitle("Add a new Slave link of");
-				dialog.setHeaderText("Set the scripting name for this Slave link");
-				dialog.setContentText("Please the name of the new Slave link:");
+				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
+				dialog.setTitle("Add a new Follower link of");
+				dialog.setHeaderText("Set the scripting name for this Follower link");
+				dialog.setContentText("Please the name of the new Follower link:");
 
 				// Traditional way to get the response value.
 				Optional<String> result = dialog.showAndWait();
@@ -741,8 +806,16 @@ public class MobleBaseMenueFactory {
 				}
 			});
 		});
-
-		slaves.getChildren().add(0, addSlaves);
+		
+		if(dhLink.getSlaveMobileBase()!=null) {
+			removeMobileBase.setValue("Remove "+dhLink.getSlaveMobileBase().getScriptingName());
+			slaves.getChildren().add(0,setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+					isOwner, dhLink));
+			slaves.getChildren().add( removeMobileBase);
+		}else {
+			slaves.getChildren().add( addMobileBase);
+		}
+		slaves.getChildren().add( addSlaves);
 		TreeItem<String> remove = new TreeItem<>("Remove " + conf.getName(), AssetFactory.loadIcon("Remove-Link.png"));
 		callbackMapForTreeitems.put(remove, () -> {
 			Platform.runLater(() -> {
@@ -800,12 +873,26 @@ public class MobleBaseMenueFactory {
 			else
 				BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
+		
+
+		
 
 		link.getChildren().addAll(design);
 
 		link.getChildren().addAll(slaves, remove);
+		
 		rootItem.getChildren().add(0, link);
 
+	}
+
+	private static TreeItem<String> setUpNewMobileBaseEditor(TreeView<String> view,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
+			DHLink dhLink) {
+		TreeItem<String> mobile = new TreeItem<>( dhLink.getSlaveMobileBase().getScriptingName(),
+				AssetFactory.loadIcon("creature.png"));
+		MobleBaseMenueFactory.load(dhLink.getSlaveMobileBase(), view, mobile, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,false,isOwner);
+		return mobile;
 	}
 
 	@SuppressWarnings("unchecked")

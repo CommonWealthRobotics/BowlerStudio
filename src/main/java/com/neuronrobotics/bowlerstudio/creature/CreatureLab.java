@@ -160,18 +160,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rootItem.setExpanded(true);
 		MobileBaseCadManager.get(device,BowlerStudioController.getMobileBaseUI());
 		MobleBaseMenueFactory.load(device, tree, mainBase, callbackMapForTreeitems, widgetMapForTreeitems, this,true,creatureIsOwnedByUser);
-		for(DHParameterKinematics kin:device.getAllDHChains()) {
-			for(int i=0;i<kin.getNumberOfLinks();i++) {
-				DHLink dhLink = kin.getDhLink(i);
-				String linkName =kin.getLinkConfiguration(i).getName();
-				if(dhLink.getSlaveMobileBase()!=null) {
-					TreeItem<String> mobile = new TreeItem<>(kin.getScriptingName()+" ->\n "+linkName +" link "+i+" ->\n  "+ dhLink.getSlaveMobileBase().getScriptingName(),
-							AssetFactory.loadIcon("creature.png"));
-					MobleBaseMenueFactory.load(dhLink.getSlaveMobileBase(), tree, mobile, callbackMapForTreeitems, widgetMapForTreeitems, this,false,creatureIsOwnedByUser);
-					rootItem.getChildren().add(mobile);
-				}
-			}
-		}
 		tree.setPrefWidth(325);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		JogMobileBase walkWidget = new JogMobileBase(device);
