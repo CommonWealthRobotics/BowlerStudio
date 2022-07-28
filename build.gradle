@@ -337,6 +337,24 @@ jar {
 		}
 }
 
+task ('showAll') {
+	doLast {
+	   allprojects.each {
+		   println(it.name+':')
+		   println('-compile:')
+			configurations.compile.each {
+				c ->
+				 println('   '+c.name)
+			}
+		   println '-testCompile:'
+		   configurations.testCompile.each {
+			   r->
+			   println('   '+ r.name)
+		   }
+		}
+	}
+	}
+
 shadowJar {
 	zip64 true
    mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
