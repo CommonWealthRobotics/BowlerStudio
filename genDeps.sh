@@ -14,17 +14,34 @@ do
     LOCENSELOC=$(echo ${stringarray[3]})
     if [ -z "$LOCENSELOC" ]
     then
-	FILE=$(unzip -l $LOCATION | grep LICENSE|grep ".txt"|grep -v "documentation")
-	stringarray=($FILE)
-	LOCENSELOC=$(echo ${stringarray[3]})
-	
+		FILE=$(unzip -l $LOCATION | grep LICENSE|grep ".txt"|grep -v "documentation")
+		stringarray=($FILE)
+		LOCENSELOC=$(echo ${stringarray[3]})
+		
     fi
-    
+    if [ -z "$LOCENSELOC" ]
+    then
+		FILE=$(unzip -l $LOCATION | grep license|grep ".txt"|grep -v "documentation")
+		stringarray=($FILE)
+		LOCENSELOC=$(echo ${stringarray[3]})
+    fi
+    if [ -z "$LOCENSELOC" ]
+    then
+		FILE=$(unzip -l $LOCATION | grep LICENSE.md)
+		stringarray=($FILE)
+		LOCENSELOC=$(echo ${stringarray[3]})
+    fi
+    if [ -z "$LOCENSELOC" ]
+    then
+		FILE=$(unzip -l $LOCATION | grep license.html)
+		stringarray=($FILE)
+		LOCENSELOC=$(echo ${stringarray[3]})
+    fi
     if [ -z "$LOCENSELOC" ]
     then
     	echo "$VARIABLE No license file"
-	TYPE="No License $LOCATION"
-	echo "$VARIABLE , $TYPE">> DEPENDENCIES_unknown.md
+	TYPE="No License "
+	echo "$VARIABLE">> DEPENDENCIES_unknown.md
     else
         echo "Licance file to be used: $VARIABLE $LOCENSELOC"	   
     	#echo "Searching $VARIABLE for $LOCENSELOC"

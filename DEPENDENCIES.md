@@ -1,3 +1,4 @@
+
 batik-all.jar , Apache
 batik-awt-util-1.7.jar , Apache
 batik-svggen-1.7.jar , Apache
@@ -14,16 +15,20 @@ commons-lang3-3.11.jar , Apache
 commons-logging-1.2.jar , Apache
 commons-math3-3.6.1.jar , Apache
 commons-net-3.3.jar , Apache
+controlsfx-8.0.6.jar , Unknown
 groovy-2.3.7.jar , Apache
 groovy-all-2.4.5.jar , Apache
 hamcrest-core-1.1.jar , BSD
 httpclient-4.5.1.jar , Apache
 httpcore-4.4.3.jar , Apache
 httpcore-nio-4.1.jar , Apache
+icu4j-54.1.1.jar , BSD
 ivy-2.2.0.jar , Apache
 jackson-annotations-2.10.1.jar , Apache
 jackson-core-2.10.1.jar , Apache
 jackson-databind-2.10.1.jar , Apache
+jakarta.activation-api-1.2.1.jar , Unknown
+jakarta.xml.bind-api-2.3.2.jar , Unknown
 javax.annotation-api-1.2.jar , CDDL
 javax.servlet-api-3.1.0.jar , CDDL
 jetty-continuation-9.4.36.v20210114.jar , Apache
@@ -46,6 +51,7 @@ mockito-all-1.9.5.jar , MIT License
 opennlp-maxent-3.0.3.jar , Apache
 opennlp-tools-1.5.3.jar , Apache
 pdf-transcoder.jar , Apache
+svg-dom-java-1.1.jar , W3C
 xml-apis-1.3.04.jar , Apache
 xml-apis-ext.jar , Apache
 xml-apis.jar , W3C

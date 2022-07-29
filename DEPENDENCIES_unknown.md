@@ -1,122 +1,118 @@
-annotation-indexer-1.4.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.jenkins-ci/annotation-indexer/1.4/5334460451b47f4f0d542aaf395839071db6b63/annotation-indexer-1.4.jar
-asm5-5.0.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.kohsuke/asm5/5.0.1/71ab0620a41ed37f626b96d80c2a7c58165550df/asm5-5.0.1.jar
-asm-all-3.1.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/asm-all-3.1.jar
-asm-debug-all-4.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-debug-all/4.2/ba9ac3cc02b12ea6e69f0638141f78185ce13372/asm-debug-all-4.2.jar
-bcpg-jdk15on-1.64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcpg-jdk15on/1.64/56956a8c63ccadf62e7c678571cf86f30bd84441/bcpg-jdk15on-1.64.jar
-bcpkix-jdk15on-1.64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcpkix-jdk15on/1.64/3dac163e20110817d850d17e0444852a6d7d0bd7/bcpkix-jdk15on-1.64.jar
-bcprov-jdk15on-1.64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcprov-jdk15on/1.64/1467dac1b787b5ad2a18201c0c281df69882259e/bcprov-jdk15on-1.64.jar
-bluecove-2.1.1.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/java-bowler/libs/bluecove-2.1.1.jar
-bluecove-gpl-2.1.1.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/java-bowler/libs/bluecove-gpl-2.1.1.jar
-bridge-method-annotation-1.14.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.infradna.tool/bridge-method-annotation/1.14/e65d67120c0c28425ca606c57aef19786717a28/bridge-method-annotation-1.14.jar
-bridge-method-injector-1.14.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.infradna.tool/bridge-method-injector/1.14/a948d51c6605706b225f8f6eecfa4780dee1e9b5/bridge-method-injector-1.14.jar
-CHDK-PTP-Java-0.5.3-SNAPSHOT.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.neuronrobotics/CHDK-PTP-Java/0.5.3-SNAPSHOT/9264b76c5b779d8a71d5d0f40970fa85dae3350c/CHDK-PTP-Java-0.5.3-SNAPSHOT.jar
-clojure-1.8.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.clojure/clojure/1.8.0/313066c972b6b00f390674bf0e9f732c07f205a4/clojure-1.8.0.jar
-controlsfx-8.0.6.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.controlsfx/controlsfx/8.0.6/99ce7332cb7645c8caaeb116efe4b35437368e48/controlsfx-8.0.6.jar
-de.huxhorn.sulky.3rdparty.jlayer-1.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.huxhorn.sulky/de.huxhorn.sulky.3rdparty.jlayer/1.0/2020d545657508bd82beab00359dcc50996b875e/de.huxhorn.sulky.3rdparty.jlayer-1.0.jar
-dockfx.jar , No License /home/kharrington/git/BowlerStudio/libraries/dockfx/build/libs/dockfx.jar
-easybind-1.0.4-SNAPSHOT.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.fxmisc.easybind/easybind/1.0.4-SNAPSHOT/4d63c256038afd09462603102e425739a815bde7/easybind-1.0.4-SNAPSHOT.jar
-emotionml-checker-java-1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/emotionml-checker-java/1.1/6f5fa37119440589a80385671aa62a942aa6fb2e/emotionml-checker-java-1.1.jar
-ezmorph-1.0.6.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.sf.ezmorph/ezmorph/1.0.6/1e55d2a0253ea37745d33062852fd2c90027432/ezmorph-1.0.6.jar
-fast-md5-2.7.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.twmacinta/fast-md5/2.7.1/3ff31f12a50c172a7c6a9da61813ebd46101e977/fast-md5-2.7.1.jar
-firmata4j-2.3.4.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.github.kurbatov/firmata4j/2.3.4.1/9d81c7aed31df3905c340edcea0a0ece8ccc80bf/firmata4j-2.3.4.1.jar
-flowless-0.4.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.fxmisc.flowless/flowless/0.4/5b5c0ec117f54aa5b61a5cd75614dcd350bc3980/flowless-0.4.jar
-github-api-1.101.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.kohsuke/github-api/1.101/2936936d123778469ab8a7461874eaf397d24213/github-api-1.101.jar
-GithubPasswordManager-0.6.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.neuronrobotics/GithubPasswordManager/0.6.1/2e9a58dbbc648d36c75e6463fbe5084988f7a0da/GithubPasswordManager-0.6.1.jar
-gson-2.5.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.5/686c608d1805b6d4d425ec4459e88164ffc85870/gson-2.5.jar
-guava-14.0.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/14.0.1/69e12f4c6aeac392555f1ea86fab82b5e5e31ad4/guava-14.0.1.jar
-hsqldb-2.0.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.hsqldb/hsqldb/2.0.0/c9d525ce1a464185e6b01c7de872127a06092673/hsqldb-2.0.0.jar
-icu4j-54.1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/54.1.1/ce374ac81e0937384ca9d43fa93f56c915029c44/icu4j-54.1.1.jar
-ihmc-native-library-loader-1.3.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/us.ihmc/ihmc-native-library-loader/1.3.1/c26188ae4a576c1d9e9d4d265f87e1e2e3ce5a5b/ihmc-native-library-loader-1.3.1.jar
-jakarta.activation-api-1.2.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/jakarta.activation/jakarta.activation-api/1.2.1/562a587face36ec7eff2db7f2fc95425c6602bc1/jakarta.activation-api-1.2.1.jar
-jakarta.xml.bind-api-2.3.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/8d49996a4338670764d7ca4b85a1c4ccf7fe665d/jakarta.xml.bind-api-2.3.2.jar
-jama-1.0.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/gov.nist.math/jama/1.0.3/8bcf5a314b76cadd68daa37eafe0a46d8909ab47/jama-1.0.3.jar
-Jampack-1.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/gov.nist.math/Jampack/1.0/407441d94066e1d2529d51040762e23c41fd4879/Jampack-1.0.jar
-JavaCad-0.27.0.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/build/libs/JavaCad-0.27.0.jar
-javacpp-1.5.7.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.bytedeco/javacpp/1.5.7/4d6862d0056ff51bb546ef483e4023fe44fc7b06/javacpp-1.5.7.jar
-JavaEWAH-1.1.6.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.googlecode.javaewah/JavaEWAH/1.1.6/94ad16d728b374d65bd897625f3fbb3da223a2b6/JavaEWAH-1.1.6.jar
-jbullet-2.72.2.4.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/jbullet-2.72.2.4.jar
-jbullet-2.72.2.4-sources.jar , No License /home/kharrington/.m2/repository/org/bubblecloud/jbullet/jbullet/2.72.2.4/jbullet-2.72.2.4-sources.jar.lastUpdated
-jcommon-1.0.15.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/jfree/jcommon/1.0.15/6495e4f3777a24fd34c1544a8606243a600365c3/jcommon-1.0.15.jar
-jfreechart-1.0.12.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/jfree/jfreechart/1.0.12/47e8a2e9e052d292e416a6fd5292a77b54c48fac/jfreechart-1.0.12.jar
-jinput-2.0.6-ihmc2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/us.ihmc/jinput/2.0.6-ihmc2/89c1ab94e83a9ce760b9f1f6e32023e8dd4bbbc1/jinput-2.0.6-ihmc2.jar
-jinput-platform-2.0.6-natives-linux.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.java.jinput/jinput-platform/2.0.6/a45560edd26e99a19a22a0819bd429c2b6755ff2/jinput-platform-2.0.6-natives-linux.jar
-jinput-platform-2.0.6-natives-osx.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.java.jinput/jinput-platform/2.0.6/f0993be0591f04591dff8661ee3deaf922fd9e73/jinput-platform-2.0.6-natives-osx.jar
-jinput-platform-2.0.6-natives-windows.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.java.jinput/jinput-platform/2.0.6/e92a72131a8172ff08320a280616df155fddcef9/jinput-platform-2.0.6-natives-windows.jar
-jl1.0.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/jl1.0.jar
-jmf-2.1.1e.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/javax.media/jmf/2.1.1e/fe9287a362578bfb8b7b9dba42af0ec80a297abb/jmf-2.1.1e.jar
-jsapi.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/jsapi.jar
-jsch-0.1.55.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.55/bbd40e5aa7aa3cfad5db34965456cee738a42a50/jsch-0.1.55.jar
-js.jar , No License /home/kharrington/.local/share/Trash/files/eclipse-bs/eclipse/configuration/org.eclipse.osgi/963/0/.cp/lib/js.jar
-json-20180813.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.json/json/20180813/8566b2b0391d9d4479ea225645c6ed47ef17fe41/json-20180813.jar
-json-lib-2.4-jenkins-2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.kohsuke.stapler/json-lib/2.4-jenkins-2/7f4f9016d8c8b316ecbe68afe7c26df06d301366/json-lib-2.4-jenkins-2.jar
-json-simple-1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.googlecode.json-simple/json-simple/1.1/5e303a03d04e6788dddfa3655272580ae0fc13bb/json-simple-1.1.jar
-jsoup-1.8.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.8.3/65fd012581ded67bc20945d85c32b4598c3a9cf1/jsoup-1.8.3.jar
-jsr305-2.0.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar
-jssc-2.8.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.scream3r/jssc/2.8.0/7e8d93052a8743a7937a6d46854057ac1ce876c1/jssc-2.8.0.jar
-junit-4.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/junit/junit/4.0/53867ff28a9bd2b05ed2ea6e278f8f6439576e84/junit-4.0.jar
-jutils-1.0.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.java.jutils/jutils/1.0.0/e12fe1fda814bd348c1579329c86943d2cd3c6a6/jutils-1.0.0.jar
-jwnl-1.3.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.sf.jwordnet/jwnl/1.3.3/7108e5b6a8875fe0488d942238575407c7ab8649/jwnl-1.3.3.jar
-jxl-2.4.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/jexcelapi/jxl/2.4.2/bab1c4fadd8b434fc0752728d1726c9d28b1d426/jxl-2.4.2.jar
-jzlib-1.1.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.jcraft/jzlib/1.1.3/c01428efa717624f7aabf4df319939dda9646b2d/jzlib-1.1.3.jar
-kabeja-0.4.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/libs/kabeja-0.4.jar
-kabeja-svg-0.4.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/libs/kabeja-svg-0.4.jar
-kabeja-xslt.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/libs/kabeja-xslt.jar
-libusb4java-1.2.0-linux-arm.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/aa5b1be4bdb52dc9c86c08f09d7aad0a43b425c7/libusb4java-1.2.0-linux-arm.jar
-libusb4java-1.2.0-linux-x86_64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/949ddf102f3311110643f4c6ca507b977cd675f5/libusb4java-1.2.0-linux-x86_64.jar
-libusb4java-1.2.0-linux-x86.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/dfd709cb29ecd4dfee551b3dea27f4acb3c13253/libusb4java-1.2.0-linux-x86.jar
-libusb4java-1.2.0-osx-x86_64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/ca639c580e2d635dd945fe44efce6854ce113274/libusb4java-1.2.0-osx-x86_64.jar
-libusb4java-1.2.0-osx-x86.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/98179e848d2b83f9f909d80979230ed8397d3f5b/libusb4java-1.2.0-osx-x86.jar
-libusb4java-1.2.0-windows-x86_64.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/2cb4cc4df02e0b5fbf2867491c8eee2ee7f19f87/libusb4java-1.2.0-windows-x86_64.jar
-libusb4java-1.2.0-windows-x86.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/libusb4java/1.2.0/ece89016955c79221555d5e452cf5aa7c5e2d209/libusb4java-1.2.0-windows-x86.jar
-localizer-1.7.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.jvnet.localizer/localizer/1.7/b0ff504c9131938ff91c5348d5ab49fa82ca194b/localizer-1.7.jar
-marytts-common-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/marytts-common/5.2/91c78341663e21401cfbf993087a2cb84217e9a0/marytts-common-5.2.jar
-marytts-lang-en-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/marytts-lang-en/5.2/637018181e468a1d3b49c19fa427946d9d21c4a9/marytts-lang-en-5.2.jar
-marytts-runtime-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/marytts-runtime/5.2/c75f16642056cb3342588420dba9eac940f161ef/marytts-runtime-5.2.jar
-marytts-signalproc-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/marytts-signalproc/5.2/2da94209eb72bcfa779af2aef43e4f9c9205040/marytts-signalproc-5.2.jar
-maven-plugin-api-2.0.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-plugin-api/2.0.1/fa8134698dbb25d95db444b772504020cfcee10c/maven-plugin-api-2.0.1.jar
-mbrola.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/mbrola.jar
-Medusa-7.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/eu.hansolo/Medusa/7.1/2eb6b1c3b4191fb8a3e52372cd401d30aaa05ec1/Medusa-7.1.jar
-miethxml-toolkit.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/libs/miethxml-toolkit.jar
-miethxml-ui.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/JCSG/libs/miethxml-ui.jar
-miglayout-core-4.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.miglayout/miglayout-core/4.2/70f2bfa2a077ee1632cc8229deffa1d942825c78/miglayout-core-4.2.jar
-miglayout-swing-4.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.miglayout/miglayout-swing/4.2/ca85067488e79a2078ba4eb8e2617653e9172388/miglayout-swing-4.2.jar
-motej.0.9.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/java-bowler/libs/motej.0.9.jar
-mujoco-java-2.2.0-pre.5.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.neuronrobotics/mujoco-java/2.2.0-pre.5/2ccbc133502d3c79d3878d9da3ce7128ebcb485a/mujoco-java-2.2.0-pre.5.jar
-nrjavaserial-5.1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.neuronrobotics/nrjavaserial/5.1.1/131a0cd636309daf4118f8cac0766cf17ffbff46/nrjavaserial-5.1.1.jar
-nrsdk-3.33.0-jar-with-dependencies.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/java-bowler/build/libs/nrsdk-3.33.0-jar-with-dependencies.jar
-nrV4J-3.8.1.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/nrV4J-3.8.1.jar
-okhttp-2.0.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.0.0/4c8d1536dba3812cc1592090dc20c47a4ed3c35e/okhttp-2.0.0.jar
-okhttp-urlconnection-2.0.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp-urlconnection/2.0.0/afe8399d352713b66e597e9670c741d1e60ae923/okhttp-urlconnection-2.0.0.jar
-okio-1.0.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.0.0/2534c458682c73f5b9871131ab3098d3f987ca3/okio-1.0.0.jar
-org.eclipse.jgit-5.6.0.201912101111-r.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/5.6.0.201912101111-r/32e467bef7f4535efbb9ef7d91eca1ffdfac24b0/org.eclipse.jgit-5.6.0.201912101111-r.jar
-protobuf-java-3.8.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.8.0/4dc171096128fb80545d9daad6ad676c7ee68875/protobuf-java-3.8.0.jar
-reactfx-2.0-M5.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.reactfx/reactfx/2.0-M5/aa02bc40ebbb87a76d4b188516294612c8972b80/reactfx-2.0-M5.jar
-richtextfx-0.6.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.fxmisc.richtext/richtextfx/0.6/a87d7ecd463de6e15dc29743664577de5a021bfa/richtextfx-0.6.jar
-rosjava-0.1.6.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/rosjava-0.1.6.jar
-rsyntaxtextarea-2.6.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.fifesoft/rsyntaxtextarea/2.6.0/2c2bc40f8c552abc3033c382da9a77b5bb426d3d/rsyntaxtextarea-2.6.0.jar
-slf4j-api-1.7.7.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.7/2b8019b6249bb05d81d3a3094e468753e2b21311/slf4j-api-1.7.7.jar
-slf4j-simple-1.6.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.6.1/58e59bfb3e247097b8122243b3bfe0049c8cfae8/slf4j-simple-1.6.1.jar
-smack-3.2.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.igniterealtime.smack/smack/3.2.1/31d71e906ab5e36347bf05b9f828312648e66a9f/smack-3.2.1.jar
-smackx-3.2.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.igniterealtime.smack/smackx/3.2.1/f566f524d0d3121f9f6e81523dac0faa9b637d88/smackx-3.2.1.jar
-smil-boston-dom-java-2000-02-25.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.axsl.org.w3c.dom.smil/smil-boston-dom-java/2000-02-25/48337952ce1f62f60a8560c41f78ffb418ab6dee/smil-boston-dom-java-2000-02-25.jar
-stack-alloc.jar , No License /home/kharrington/git/BowlerStudio/libraries/bowler-script-kernel/libs/stack-alloc.jar
-stapler-1.237.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.kohsuke.stapler/stapler/1.237/c27d62fbf2d7f410cc84353918fc5f122828bc32/stapler-1.237.jar
-svg-dom-java-1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.axsl.org.w3c.dom.svg/svg-dom-java/1.1/497ee644c1122f1b8b0e71bf5956c14bcc49cf89/svg-dom-java-1.1.jar
-swing-layout-1.0.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.swinglabs/swing-layout/1.0.3/7c0f5ee4ae72624d53bf5d42c6e0136e39d43dda/swing-layout-1.0.3.jar
-tiger-types-1.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.jvnet/tiger-types/1.3/c79388cdf653350d445976298a85937cbd23ae2e/tiger-types-1.3.jar
-tink-1.3.0-rc1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.google.crypto.tink/tink/1.3.0-rc1/aaa7f9b34d8f47bfa8b5c13b82213b25b2edf96/tink-1.3.0-rc1.jar
-trove4j-2.0.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/net.sf.trove4j/trove4j/2.0.2/42b1e10b3a8abb1c19b86fdf265ca5be8c166d11/trove4j-2.0.2.jar
-undofx-2.1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.fxmisc.undo/undofx/2.1.1/69e1b938bd6d12c48ab07478cc09386a1fba3d2d/undofx-2.1.1.jar
-usb4java-1.2.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/usb4java/1.2.0/d83b8dd04afc03ee740ac61817fadb21affe9e9c/usb4java-1.2.0.jar
-usb4java-javax-1.2.0.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.usb4java/usb4java-javax/1.2.0/c862d0f32a08d50afb8fb7c83a30c1deb6e7a444/usb4java-javax-1.2.0.jar
-usb-api-1.0.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/javax.usb/usb-api/1.0.2/f0ae0d322a99811cf79d508d37f3dc2d82753070/usb-api-1.0.2.jar
-vecmath-1.3.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/java3d/vecmath/1.3.1/a0ae4f51da409fa0c20fa0ca59e6bbc9413ae71d/vecmath-1.3.1.jar
-voice-cmu-slt-hsmm-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/voice-cmu-slt-hsmm/5.2/cae0223460ab045dc2187b855b50754c483220b0/voice-cmu-slt-hsmm-5.2.jar
-voice-dfki-poppy-hsmm-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/voice-dfki-poppy-hsmm/5.2/5fd22f335592e3162411e935dcaf511455abcd2a/voice-dfki-poppy-hsmm-5.2.jar
-voice-dfki-prudence-hsmm-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/voice-dfki-prudence-hsmm/5.2/b8d39bba3655cf7788b7089e6d44a49f2b610cdd/voice-dfki-prudence-hsmm-5.2.jar
-voice-dfki-spike-hsmm-5.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/de.dfki.mary/voice-dfki-spike-hsmm/5.2/90974fb054e2835b8029b1fb5984624d8fc124f8/voice-dfki-spike-hsmm-5.2.jar
-vvecmath-0.3.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/eu.mihosoft.vvecmath/vvecmath/0.3.2/9f2fa82e48efcebe6571146b7b8272ed21bcc82/vvecmath-0.3.2.jar
-WalnutiQ-2.3.3.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/com.neuronrobotics/WalnutiQ/2.3.3/fde1b7b7e70893eee97fcdc59939ff631f08193f/WalnutiQ-2.3.3.jar
-wellbehavedfx-0.1.1.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.fxmisc.wellbehaved/wellbehavedfx/0.1.1/bb43719bbc27439d7ab6164b7a75dfcb7e651d7e/wellbehavedfx-0.1.1.jar
-wordnet-random-name-1.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.kohsuke/wordnet-random-name/1.2/506384c2f45b6fce3b4df6ea0859179af462f357/wordnet-random-name-1.2.jar
-ws-commons-util-1.0.2.jar , No License /home/kharrington/.gradle/caches/modules-2/files-2.1/org.apache.ws.commons.util/ws-commons-util/1.0.2/3f478e6def772c19d1053f61198fa1f6a6119238/ws-commons-util-1.0.2.jar
+
+annotation-indexer-1.4.jar
+asm5-5.0.1.jar
+asm-all-3.1.jar
+asm-debug-all-4.2.jar
+bcpg-jdk15on-1.64.jar
+bcpkix-jdk15on-1.64.jar
+bcprov-jdk15on-1.64.jar
+bluecove-2.1.1.jar
+bluecove-gpl-2.1.1.jar
+bridge-method-annotation-1.14.jar
+bridge-method-injector-1.14.jar
+CHDK-PTP-Java-0.5.3-SNAPSHOT.jar
+clojure-1.8.0.jar
+de.huxhorn.sulky.3rdparty.jlayer-1.0.jar
+dockfx.jar
+easybind-1.0.4-SNAPSHOT.jar
+emotionml-checker-java-1.1.jar
+ezmorph-1.0.6.jar
+fast-md5-2.7.1.jar
+firmata4j-2.3.4.1.jar
+flowless-0.4.jar
+github-api-1.101.jar
+GithubPasswordManager-0.6.1.jar
+gson-2.5.jar
+guava-14.0.1.jar
+hsqldb-2.0.0.jar
+ihmc-native-library-loader-1.3.1.jar
+jama-1.0.3.jar
+Jampack-1.0.jar
+JavaCad-0.27.0.jar
+javacpp-1.5.7.jar
+JavaEWAH-1.1.6.jar
+jbullet-2.72.2.4.jar
+jbullet-2.72.2.4-sources.jar
+jcommon-1.0.15.jar
+jfreechart-1.0.12.jar
+jinput-2.0.6-ihmc2.jar
+jinput-platform-2.0.6-natives-linux.jar
+jinput-platform-2.0.6-natives-osx.jar
+jinput-platform-2.0.6-natives-windows.jar
+jl1.0.jar
+jmf-2.1.1e.jar
+jsapi.jar
+jsch-0.1.55.jar
+js.jar
+json-20180813.jar
+json-lib-2.4-jenkins-2.jar
+json-simple-1.1.jar
+jsoup-1.8.3.jar
+jsr305-2.0.1.jar
+jssc-2.8.0.jar
+junit-4.0.jar
+jutils-1.0.0.jar
+jwnl-1.3.3.jar
+jxl-2.4.2.jar
+jzlib-1.1.3.jar
+kabeja-0.4.jar
+kabeja-svg-0.4.jar
+kabeja-xslt.jar
+libusb4java-1.2.0-linux-arm.jar
+libusb4java-1.2.0-linux-x86_64.jar
+libusb4java-1.2.0-linux-x86.jar
+libusb4java-1.2.0-osx-x86_64.jar
+libusb4java-1.2.0-osx-x86.jar
+libusb4java-1.2.0-windows-x86_64.jar
+libusb4java-1.2.0-windows-x86.jar
+localizer-1.7.jar
+marytts-common-5.2.jar
+marytts-lang-en-5.2.jar
+marytts-runtime-5.2.jar
+marytts-signalproc-5.2.jar
+maven-plugin-api-2.0.1.jar
+mbrola.jar
+Medusa-7.1.jar
+miethxml-toolkit.jar
+miethxml-ui.jar
+miglayout-core-4.2.jar
+miglayout-swing-4.2.jar
+motej.0.9.jar
+mujoco-java-2.2.0-pre.5.jar
+nrjavaserial-5.1.1.jar
+nrsdk-3.33.0-jar-with-dependencies.jar
+nrV4J-3.8.1.jar
+okhttp-2.0.0.jar
+okhttp-urlconnection-2.0.0.jar
+okio-1.0.0.jar
+org.eclipse.jgit-5.6.0.201912101111-r.jar
+protobuf-java-3.8.0.jar
+reactfx-2.0-M5.jar
+richtextfx-0.6.jar
+rosjava-0.1.6.jar
+rsyntaxtextarea-2.6.0.jar
+slf4j-api-1.7.7.jar
+slf4j-simple-1.6.1.jar
+smack-3.2.1.jar
+smackx-3.2.1.jar
+smil-boston-dom-java-2000-02-25.jar
+stack-alloc.jar
+stapler-1.237.jar
+swing-layout-1.0.3.jar
+tiger-types-1.3.jar
+tink-1.3.0-rc1.jar
+trove4j-2.0.2.jar
+undofx-2.1.1.jar
+usb4java-1.2.0.jar
+usb4java-javax-1.2.0.jar
+usb-api-1.0.2.jar
+vecmath-1.3.1.jar
+voice-cmu-slt-hsmm-5.2.jar
+voice-dfki-poppy-hsmm-5.2.jar
+voice-dfki-prudence-hsmm-5.2.jar
+voice-dfki-spike-hsmm-5.2.jar
+vvecmath-0.3.2.jar
+WalnutiQ-2.3.3.jar
+wellbehavedfx-0.1.1.jar
+wordnet-random-name-1.2.jar
+ws-commons-util-1.0.2.jar
