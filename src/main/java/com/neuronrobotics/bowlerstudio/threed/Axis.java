@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.util.Arrays;
 
+import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Cube;
 import javafx.application.Platform;
 
 /*
@@ -50,10 +52,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Affine;
 
 // TODO: Auto-generated Javadoc
@@ -62,9 +60,9 @@ import javafx.scene.transform.Affine;
  */
 public class Axis extends Group {
 
-	private Line3D xAxis;
-	private Line3D yAxis;
-	private Line3D zAxis;
+	private CSG xAxis;
+	private CSG yAxis;
+	private CSG zAxis;
 	private Label xText;
 	private Label yText;
 	private Label zText;
@@ -106,20 +104,16 @@ public class Axis extends Group {
 		zText = new Label("+Z");
 		zText.getTransforms().add(zTextAffine);
 		// zText.smoothProperty().set(false);
-		double strokWidth = 0.1;
-		double inset = 0;
-		xAxis = new Line3D(0, inset, 0, i, inset, 0);
-		yAxis = new Line3D(inset, 0, 0, inset, i, 0);
-		zAxis = new Line3D(inset, 0, 0, inset, 0, i);
+		double strokWidth = 0.5;
+		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin();
+		yAxis = new Cube( strokWidth,i, strokWidth).toCSG().toYMin();
+		zAxis = new Cube( strokWidth, strokWidth,i).toCSG().toZMin();
 
-		xAxis.setStrokeWidth(strokWidth);
-		xAxis.setStroke(Color.RED);
+		xAxis.setColor(Color.RED);
 
-		yAxis.setStrokeWidth(strokWidth);
-		yAxis.setStroke(Color.GREEN);
+		yAxis.setColor(Color.GREEN);
 
-		zAxis.setStrokeWidth(strokWidth);
-		zAxis.setStroke(Color.BLUE);
+		zAxis.setColor(Color.BLUE);
 
 		show();
 	}
@@ -129,7 +123,7 @@ public class Axis extends Group {
 	}
 
 	private void showAll() {
-		for (Node n : Arrays.asList(xAxis, yAxis, zAxis, xText, yText, zText)) {
+		for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText, yText, zText)) {
 			try {
 				getChildren().add(n);
 			} catch (Exception e) {
@@ -138,7 +132,7 @@ public class Axis extends Group {
 	}
 
 	public void hide() {
-		Platform.runLater(() -> getChildren().removeAll(xAxis, yAxis, zAxis, xText, yText, zText));
+		Platform.runLater(() -> getChildren().clear());
 	}
 
 } // end of class Axis
