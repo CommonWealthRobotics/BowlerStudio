@@ -542,6 +542,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		infomenu.getItems().add(new MenuItem("Total X= "+currentCsg.getTotalX()));
 		infomenu.getItems().add(new MenuItem("Total Y= "+currentCsg.getTotalY()));
 		infomenu.getItems().add(new MenuItem("Total Z= "+currentCsg.getTotalZ()));
+		
+		infomenu.getItems().add(new MenuItem("Maximums: "));
+		infomenu.getItems().add(new MenuItem("Max X= "+currentCsg.getMaxX()));
+		infomenu.getItems().add(new MenuItem("Max Y= "+currentCsg.getMaxY()));
+		infomenu.getItems().add(new MenuItem("Max Z= "+currentCsg.getMaxZ()));
+		
+		infomenu.getItems().add(new MenuItem("Minums: "+currentCsg.getName()));
+		infomenu.getItems().add(new MenuItem("Min X= "+currentCsg.getMinX()));
+		infomenu.getItems().add(new MenuItem("Min Y= "+currentCsg.getMinY()));
+		infomenu.getItems().add(new MenuItem("Min Z= "+currentCsg.getMinZ()));
+		
 		cm.getItems().add(infomenu);
 
 		Set<String> params = currentCsg.getParameters();
