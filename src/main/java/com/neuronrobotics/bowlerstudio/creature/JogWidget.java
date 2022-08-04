@@ -316,12 +316,12 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		// TODO Auto-generated method stub
+		TransformNR currentTaskSpaceTransform = getKin().getCurrentTaskSpaceTransform();
 		if (pose != null && transformCurrent != null)
 			Platform.runLater(new Runnable() {
 				@Override
-				public void run() {
-					transformCurrent.updatePose(getKin().getCurrentTaskSpaceTransform());
+				public void run() {	
+					transformCurrent.updatePose(currentTaskSpaceTransform);
 				}
 			});
 	}
