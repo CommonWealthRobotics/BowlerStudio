@@ -17,7 +17,7 @@ import javafx.scene.control.Menu;
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
 	private static Menu workspaceMenu;
-	private static final int maxMenueSize = 35;
+	private static final int maxMenueSize = 20;
 	private static boolean sorting = false;
 	private static HashMap<String,Integer> rank = new HashMap<String, Integer>();
 	private static boolean running = false;
