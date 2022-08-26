@@ -704,7 +704,7 @@ public class MobleBaseMenueFactory {
 
 			setHardwareConfig(base, co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
-		
+
 		
 		TreeItem<String> removeMobileBase = new TreeItem<>("Remove " + conf.getName(),
 				AssetFactory.loadIcon("creature.png"));
@@ -712,6 +712,8 @@ public class MobleBaseMenueFactory {
 				AssetFactory.loadIcon("creature.png"));
 		TreeItem<String> addSlaves = new TreeItem<>("Add following Link to " + conf.getName(),
 				AssetFactory.loadIcon("Add-Slave-Links.png"));
+		
+
 
 		callbackMapForTreeitems.put(removeMobileBase, () -> {
 			Platform.runLater(() -> {
@@ -849,7 +851,22 @@ public class MobleBaseMenueFactory {
 
 		TreeItem<String> design = new TreeItem<>("Design Parameters " + conf.getName(),
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
-
+		conf.addChangeListener(new ILinkConfigurationChangeListener() {
+			
+			@Override
+			public void event(LinkConfiguration newConf) {
+				hwConf.setValue("Hardware Config " + newConf.getName());
+				link.setValue(newConf.getName());
+				slaves.setValue("Followers of " + newConf.getName());
+				removeMobileBase.setValue("Remove " + newConf.getName());
+				addMobileBase.setValue("Add MobileBase to " + newConf.getName());
+				addSlaves.setValue("Add following Link to " + newConf.getName());
+				design.setValue("Design Parameters " + newConf.getName());
+				remove.setValue("Remove " + newConf.getName());
+				
+				
+			}
+		});
 		callbackMapForTreeitems.put(design, () -> {
 			if (widgetMapForTreeitems.get(design) == null) {
 				// create the widget for the leg when looking at it for the
