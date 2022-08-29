@@ -1357,7 +1357,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void setSelectedCsg(CSG scg) {
-		if (scg == this.selectedCsg || focusing)
+		if (scg == this.selectedCsg || focusing || scg ==null)
 			return;
 		this.selectedCsg = scg;
 
@@ -1375,19 +1375,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		// System.err.println("Selecting one");
 
-		FxTimer.runLater(java.time.Duration.ofMillis(1),
-
-				new Runnable() {
-					@Override
-					public void run() {
+//		FxTimer.runLater(java.time.Duration.ofMillis(1),
+//
+//				new Runnable() {
+//					@Override
+//					public void run() {
 						Platform.runLater(() -> {
 							try {
 								getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 							} catch (Exception e) {
 							}
 						});
-					}
-				});
+//					}
+				//});
 		// System.out.println("Selecting "+selectedCsg);
 		double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
 		double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;

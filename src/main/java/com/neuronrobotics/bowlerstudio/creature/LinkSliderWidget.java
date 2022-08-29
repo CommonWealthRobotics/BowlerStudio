@@ -242,6 +242,41 @@ public class LinkSliderWidget extends Group
 		allParts.getChildren().addAll(panel);
 		if(addLimits)allParts.getChildren().addAll(calibration);
 		if(displayLinkCOnfiguration)allParts.getChildren().addAll(theWidget);
+		TransformWidget poseOfLink = new TransformWidget("Link Tip Pose", new TransformNR(), new IOnTransformChange() {
+			
+			@Override
+			public void onTransformFinished(TransformNR newTrans) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onTransformChaging(TransformNR newTrans) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		d.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
+			
+			@Override
+			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
+				TransformNR linkTip = d.getLinkTip(linkIndex);
+				poseOfLink.updatePose(linkTip);
+			}
+			
+			@Override
+			public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
+				
+			}
+			
+			@Override
+			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		poseOfLink.setDisable(true);
+		if(displayLinkCOnfiguration)allParts.getChildren().addAll(poseOfLink);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);

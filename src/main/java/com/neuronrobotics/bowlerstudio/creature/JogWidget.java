@@ -8,7 +8,9 @@ import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.gamepad.JogTrainerWidget;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
+import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -56,7 +58,25 @@ public class JogWidget extends GridPane
 		allWidgets.add(this);
 		this.setKin(k);
 
-		getKin().addPoseUpdateListener(this);
+		k.addPoseUpdateListener(this);
+		k.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
+			
+			@Override
+			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
+				
+			}
+			
+			@Override
+			public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
+				updatePose(joints);
+			}
+			
+			@Override
+			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		px.setOnMousePressed(event -> {
 			try {
@@ -316,8 +336,12 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void onTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		TransformNR currentTaskSpaceTransform = getKin().getCurrentTaskSpaceTransform();
-		if (pose != null && transformCurrent != null)
+		updatePose(getKin().getCurrentJointSpaceVector());
+	}
+
+	private void updatePose(double[] joints) {
+		TransformNR currentTaskSpaceTransform = getKin().forwardOffset(getKin().forwardKinematics(joints));
+		if (joints != null && transformCurrent != null)
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {	
