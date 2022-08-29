@@ -68,7 +68,12 @@ public class JogThread {
 						try {
 							// Log.enableDebugPrint();
 							// System.out.println("Jogging to: "+toSet);
-							kin.setDesiredTaskSpaceTransform(toSet, toSeconds);
+							double bestTime = kin.getBestTime(toSet);
+							if(bestTime>toSeconds) {
+								kin.setDesiredTaskSpaceTransform(toSet, 0);
+								System.out.println("Speed capped "+bestTime+" slower than "+toSeconds);
+							}else
+								kin.setDesiredTaskSpaceTransform(toSet, toSeconds);
 						} catch (Exception e) {
 							e.printStackTrace();
 							// BowlerStudioController.highlightException(null, e);

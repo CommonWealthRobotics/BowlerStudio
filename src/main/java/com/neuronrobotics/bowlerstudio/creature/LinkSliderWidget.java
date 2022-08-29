@@ -263,10 +263,13 @@ public class LinkSliderWidget extends Group
 				TransformNR linkTip;
 				try {
 					linkTip = d.getLinkTip(linkIndex);
+					if(linkTip==null)
+						throw new RuntimeException();
 				}catch(Exception e) {
 					linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
 				}
-				poseOfLink.updatePose(linkTip);
+				if(poseOfLink!=null && linkTip!=null)
+					poseOfLink.updatePose(linkTip);
 			}
 			
 			@Override
