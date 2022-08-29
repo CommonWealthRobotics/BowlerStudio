@@ -101,8 +101,14 @@ public class JogThread {
 			lastTarget = runtimeException;
 			this.toSet = toSet.copy();
 			if (DHParameterKinematics.class.isInstance(source))
-				if (!((DHParameterKinematics) source).checkTaskSpaceTransform(toSet))
+				if (!((DHParameterKinematics) source).checkTaskSpaceTransform(toSet)) {
+					System.out.println("\n\nERROR Target unreachable "+toSet);
+					int level = Log.getMinimumPrintLevel();
+					Log.enableErrorPrint();
+					((DHParameterKinematics) source).checkTaskSpaceTransform(toSet);
+					Log.setMinimumPrintLevel(level);
 					return false;
+				}
 			this.toSeconds = toSeconds;
 			setControlThreadRunning(true);
 			return true;

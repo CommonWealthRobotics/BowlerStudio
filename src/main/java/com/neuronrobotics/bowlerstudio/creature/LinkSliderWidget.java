@@ -260,16 +260,24 @@ public class LinkSliderWidget extends Group
 			
 			@Override
 			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-				TransformNR linkTip;
-				try {
-					linkTip = d.getLinkTip(linkIndex);
-					if(linkTip==null)
-						throw new RuntimeException();
-				}catch(Exception e) {
-					linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
+				if (linkIndex>=joints.length) {
+					d.removeJointSpaceUpdateListener(this);
+					return;
 				}
-				if(poseOfLink!=null && linkTip!=null)
-					poseOfLink.updatePose(linkTip);
+				try {
+					TransformNR linkTip;
+					try {
+						linkTip = d.getLinkTip(linkIndex);
+						if(linkTip==null)
+							throw new RuntimeException();
+					}catch(Exception e) {
+						linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
+					}
+					if(poseOfLink!=null && linkTip!=null)
+						poseOfLink.updatePose(linkTip);
+				}catch(Throwable t) {
+					t.printStackTrace();
+				}
 			}
 			
 			@Override
