@@ -260,7 +260,12 @@ public class LinkSliderWidget extends Group
 			
 			@Override
 			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-				TransformNR linkTip = d.getLinkTip(linkIndex);
+				TransformNR linkTip;
+				try {
+					linkTip = d.getLinkTip(linkIndex);
+				}catch(Exception e) {
+					linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
+				}
 				poseOfLink.updatePose(linkTip);
 			}
 			
