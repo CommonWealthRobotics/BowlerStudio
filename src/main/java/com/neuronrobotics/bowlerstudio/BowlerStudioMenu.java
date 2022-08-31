@@ -993,7 +993,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	@FXML
 	public void onConnectVirtual(ActionEvent e) {
 
-		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000), "virtual");
+		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000,"virtual"), "virtual");
 	}
 
 	@FXML
