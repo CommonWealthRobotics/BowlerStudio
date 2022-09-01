@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
+import com.neuronrobotics.sdk.common.TickToc;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 public class JogThread {
@@ -45,20 +46,24 @@ public class JogThread {
 	private static class jogThread extends Thread {
 
 		private TransformNR toSet;
-		private double toSeconds = .016;
+		private double toSeconds = .01;
 		RuntimeException lastTarget = null;
-		private long time = System.currentTimeMillis();
+		//private long time = System.currentTimeMillis();
 
 		public void run() {
-
+			setName(source.getScriptingName() + " Jog Widget thread");
+			long threadStart = System.currentTimeMillis();
+			long index = 0;
 			while (source.isAvailable()) {
 				// System.out.println("Jog loop");
+				
+				double bestTime=toSeconds;
 				if (isControlThreadRunning()) {
-					setName(source.getScriptingName() + " Jog Widget thread");
+					TickToc.setEnabled(true);
 					// toSet.setZ(0);
 					if (MobileBase.class.isInstance(source)) {
 						try {
-							((MobileBase) source).DriveArc(toSet, toSeconds);
+							((MobileBase) source).DriveArc(toSet, bestTime);
 						} catch (Exception e) {
 						//e.printStackTrace();
 							 BowlerStudioController.highlightException(null, e);
@@ -67,22 +72,34 @@ public class JogThread {
 						DHParameterKinematics kin = (DHParameterKinematics) source;
 						try {
 							// Log.enableDebugPrint();
-							// System.out.println("Jogging to: "+toSet);
-							double bestTime = kin.getBestTime(toSet);
-							if(bestTime>toSeconds) {
-								kin.setDesiredTaskSpaceTransform(toSet, 0);
-								System.out.println("Speed capped "+bestTime+" slower than "+toSeconds);
-							}else
-								kin.setDesiredTaskSpaceTransform(toSet, toSeconds);
+							TickToc.tic("Jogging ");
+							bestTime = kin.getBestTime(toSet);
+							if(bestTime<toSeconds)
+								bestTime=toSeconds;
+							else {
+								System.err.println("Jog paused for links to catch up "+bestTime+" vs "+toSeconds);
+							}
+							TickToc.tic("computed best time ");
+							kin.setDesiredTaskSpaceTransform(toSet, bestTime);
 						} catch (Exception e) {
 							e.printStackTrace();
 							// BowlerStudioController.highlightException(null, e);
 						}
 					}
+					
 					setControlThreadRunning(false);
+				}else
+					TickToc.setEnabled(false);
+				
+				double ms = toSeconds*1000.0;
+				long gate =( (long)(index*ms))+threadStart;
+				TickToc.tic("Jog Thread set Done "+System.currentTimeMillis()+" waiting for "+gate);
+				while(System.currentTimeMillis()<gate) {
+					//System.out.println(" "+(System.currentTimeMillis()-gate)+" waiting for "+gate+" "+ms+" index "+index+" thread start "+threadStart);
+					ThreadUtil.wait(1);
 				}
-				ThreadUtil.wait((int) (toSeconds * 1000));
-
+				TickToc.toc();
+				index++;
 			}
 			//new RuntimeException("Jog thread finished").printStackTrace();
 			thread = null;
@@ -109,7 +126,7 @@ public class JogThread {
 					Log.setMinimumPrintLevel(level);
 					return false;
 				}
-			this.toSeconds = toSeconds;
+			//this.toSeconds = toSeconds;
 			setControlThreadRunning(true);
 			return true;
 		}
