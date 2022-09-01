@@ -217,8 +217,8 @@ public class JogWidget extends GridPane
 		buttons.add(increment, 0, 3);
 		buttons.add(new Label("m/s"), 1, 3);
 
-		buttons.add(sec, 2, 3);
-		buttons.add(new Label("sec"), 3, 3);
+		//buttons.add(sec, 2, 3);
+		//buttons.add(new Label("sec"), 3, 3);
 		buttons.add(pz, 3, 0);
 		buttons.add(nz, 3, 1);
 
@@ -458,14 +458,13 @@ public class JogWidget extends GridPane
 					seconds = .01;
 					sec.setText(".01");
 				}
-				FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
-					@Override
-					public void run() {
-
-						controllerLoop();
-
-					}
-				});
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				controllerLoop();
 			}
 		}).start();
 	}

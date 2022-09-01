@@ -59,8 +59,7 @@ public class JogThread {
 				
 				double bestTime=toSeconds;
 				if (isControlThreadRunning()) {
-					TickToc.setEnabled(true);
-					// toSet.setZ(0);
+					//TickToc.setEnabled(true);
 					if (MobileBase.class.isInstance(source)) {
 						try {
 							((MobileBase) source).DriveArc(toSet, bestTime);
@@ -128,6 +127,7 @@ public class JogThread {
 				}
 			//this.toSeconds = toSeconds;
 			setControlThreadRunning(true);
+			
 			return true;
 		}
 
