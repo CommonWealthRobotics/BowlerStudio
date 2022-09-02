@@ -119,6 +119,8 @@ public class JogThread {
 					if(gate>0)
 						ThreadUtil.wait((int)gate);
 					TickToc.toc();
+				}else {
+					ThreadUtil.wait(1);
 				}
 			}
 			thread = null;
