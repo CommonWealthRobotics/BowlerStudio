@@ -12,7 +12,6 @@ import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhLinkType;
 import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
@@ -23,46 +22,21 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.javafx.geom.transform.Affine3D;
-import com.sun.javafx.geom.transform.BaseTransform;
-
-import eu.hansolo.medusa.Gauge;
-import eu.hansolo.medusa.Gauge.KnobType;
-import eu.hansolo.medusa.Gauge.NeedleShape;
-import eu.hansolo.medusa.Gauge.SkinType;
-import eu.hansolo.medusa.GaugeBuilder;
-import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
-import eu.hansolo.medusa.Section;
-import eu.hansolo.medusa.TickLabelLocation;
-import eu.hansolo.medusa.TickLabelOrientation;
-import eu.hansolo.medusa.TickMarkType;
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
-import javafx.stage.Stage;
 
 @SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group
@@ -96,7 +70,7 @@ public class LinkSliderWidget extends Group
 	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
 	private static Affine offsetGauge = null;
 	private static Affine offsetGaugeTranslate = null;
-	
+	private boolean isNowVis=false;
 	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, MobileBase base,boolean addLimits, boolean displayLinkCOnfiguration) {
 
 		this.linkIndex = linkIndex;
@@ -256,10 +230,16 @@ public class LinkSliderWidget extends Group
 				
 			}
 		});
+		parentProperty().addListener((observable, oldValue, newValue) ->        {
+		    System.out.println("Changed visibility of linkslider " + newValue);
+		    isNowVis=newValue!=null;
+		});
 		d.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
 			
 			@Override
 			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
+				if(!isNowVis)
+					return;
 				if (linkIndex>=joints.length) {
 					d.removeJointSpaceUpdateListener(this);
 					return;

@@ -23,7 +23,7 @@ public class JogThread {
 	private static boolean controlThreadRunning = false;
 	private static AbstractKinematicsNR source;
 	private static IJogProvider provider = null;
-	private static final double toSeconds = .01;
+	private static final double toSeconds = .032;
 //	public static boolean setTarget(AbstractKinematicsNR source, TransformNR toSet, double toSeconds) {
 //		JogThread.source = source;
 //		if (thread == null) {
@@ -71,8 +71,9 @@ public class JogThread {
 		public void run() {
 			setName(source.getScriptingName() + " Jog Widget thread");
 			long threadStart = System.currentTimeMillis();
-			long index = 0;
+			//long index = 0;
 			while (source.isAvailable()) {
+				threadStart = System.currentTimeMillis();
 				TransformNR tr = provider.getJogIncrement();
 				if (setTarget(tr)) {
 					double bestTime = getToseconds();
@@ -97,8 +98,9 @@ public class JogThread {
 									System.err.println(
 											"Jog paused for links to catch up " + bestTime + " vs " + getToseconds());
 								}
-								TickToc.tic("computed best time ");
+								TickToc.tic("computed best time "+bestTime);
 								kin.setDesiredTaskSpaceTransform(toSet, bestTime);
+								//System.out.println("Joging to "+toSet);
 							} catch (Exception e) {
 								e.printStackTrace();
 								// BowlerStudioController.highlightException(null, e);
@@ -109,16 +111,12 @@ public class JogThread {
 					} else
 						TickToc.setEnabled(false);
 
-					double ms = getToseconds() * 1000.0;
-					long gate = ((long) (index * ms)) + threadStart;
+					double ms = bestTime * 1000.0;
+					long gate = ((long)  ms) + threadStart-System.currentTimeMillis();
 					TickToc.tic("Jog Thread set Done " + System.currentTimeMillis() + " waiting for " + gate);
-					while (System.currentTimeMillis() < gate) {
-						// System.out.println(" "+(System.currentTimeMillis()-gate)+" waiting for
-						// "+gate+" "+ms+" index "+index+" thread start "+threadStart);
-						ThreadUtil.wait(1);
-					}
+					if(gate>0)
+						ThreadUtil.wait((int)gate);
 					TickToc.toc();
-					index++;
 				}
 			}
 			thread = null;

@@ -32,7 +32,7 @@ import java.util.HashMap;
 
 public class JogWidget extends GridPane
 		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IGameControlEvent,EventHandler<MouseEvent>,IJogProvider {
-	double defauletSpeed = 02;
+	double defauletSpeed = 0.2;
 	private DHParameterKinematics kinematics;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
@@ -387,9 +387,14 @@ public class JogWidget extends GridPane
 			TransformNR current = getKin().getCurrentPoseTarget().copy();
 
 			try {
-				current.translateX(JogThread.getToseconds() * x);
-				current.translateY(JogThread.getToseconds() * y);
-				current.translateZ(JogThread.getToseconds() * slider);
+				double mmPerSecond = Double.parseDouble(increment.getText())*1000;
+				double translationx = JogThread.getToseconds() * x * mmPerSecond;
+				double translationy = JogThread.getToseconds() * y * mmPerSecond;
+				double translationz = JogThread.getToseconds() * slider * mmPerSecond;
+
+				current.translateX(translationx);
+				current.translateY(translationy);
+				current.translateZ(translationz);
 				// current.setRotation(new RotationNR());
 				if (((DHParameterKinematics) getKin()).checkTaskSpaceTransform(current)) {
 					return current;
