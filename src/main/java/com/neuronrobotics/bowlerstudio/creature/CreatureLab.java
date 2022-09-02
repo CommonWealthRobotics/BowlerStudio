@@ -175,12 +175,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 						if (callbackMapForTreeitems.get(treeItem) != null) {
 							callbackMapForTreeitems.get(treeItem).run();
 						}
+						AnchorPane box=hasWalking(device)?tab.getControlsBox():tab.getWalkingBox();
 						if (widgetMapForTreeitems.get(treeItem) != null) {
 
 							Platform.runLater(() -> {
-								tab.getControlsBox().getChildren().clear();
+								box.getChildren().clear();
 								Group g = widgetMapForTreeitems.get(treeItem);
-								tab.getControlsBox().getChildren().add(g);
+								box.getChildren().add(g);
 								AnchorPane.setTopAnchor(g, 0.0);
 								AnchorPane.setLeftAnchor(g, 0.0);
 								AnchorPane.setRightAnchor(g, 0.0);
@@ -188,10 +189,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							});
 						} else {
 							Platform.runLater(() -> {
-								tab.getControlsBox().getChildren().clear();
+								box.getChildren().clear();
 							});
 						}
 					}
+
+
 				}.start();
 
 			}
@@ -229,8 +232,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		progress.setMinHeight(100);
 		progress.setPrefSize(325, 150);
 		tab.setOverlayTop(progress);
-		tab.setOverlayTopRight(walkWidget);
-
+		if(	hasWalking(device)) {
+			tab.setOverlayTopRight(walkWidget);
+		}
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
 		generateCad();
@@ -238,7 +242,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		setContent(root);
 
 	}
-
+	private boolean hasWalking(MobileBase device) {
+		return device.getLegs().size()>0||
+				device.getSteerable().size()>0||
+				device.getDrivable().size()>0;
+	}
 	private void setCadMode(boolean mode) {
 		new Thread(() -> {
 			baseManager.setConfigurationViewerMode(mode);

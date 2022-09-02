@@ -52,7 +52,7 @@ import java.util.Set;
 
 import javax.management.RuntimeErrorException;
 
-public class JogMobileBase extends GridPane implements IGameControlEvent {
+public class JogMobileBase extends GridPane implements IGameControlEvent,IJogProvider {
 	double defauletSpeed = 0.1;
 	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
@@ -230,7 +230,6 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 
 		add(buttons, 0, 0);
 
-		controllerLoop();
 		try {
 			
 			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "launch.groovy");
@@ -346,7 +345,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 	}
 
 	private void handle(final Button button) {
-
+		JogThread.setProvider(this, mobilebase);
 		if (!button.isPressed()) {
 			// button released
 			// Log.info(button.getText()+" Button released ");
@@ -422,7 +421,6 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 			return;
 		}
 		stop = false;
-		controllerLoop();
 	}
 
 	public void home() {
@@ -447,70 +445,10 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 
 	}
 
-	private void controllerLoop() {
-		new Thread(() -> {
-			// System.out.println("controllerLoop");
-			double seconds = .1;
-			if ( stop == false) {
-				try {
-					seconds = Double.parseDouble(sec.getText());
-					if (!stop) {
-
-						double inc;
-						try {
-							inc = Double.parseDouble(increment.getText()) * 1000 * seconds;// convert to mm
-
-						} catch (Exception e) {
-							inc = defauletSpeed;
-							Platform.runLater(() -> {
-								try {
-									increment.setText(Double.toString(defauletSpeed));
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-							});
-						}
-						// double rxl=0;
-						double ryl = inc / 20 * slider;
-						double rzl = inc / 2 * rz;
-						TransformNR current = new TransformNR(0, 0, 0, new RotationNR(0, rzl, 0));
-						current.translateX(inc * x);
-						current.translateY(inc * y);
-						current.translateZ(inc * slider);
-
-						try {
-							TransformNR toSet = current.copy();
-							double toSeconds = seconds;
-							JogThread.setTarget(mobilebase, toSet, toSeconds);
-
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				if (seconds < .01) {
-					seconds = .01;
-					Platform.runLater(() -> sec.setText(".01"));
-				}
-				FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
-					@Override
-					public void run() {
-
-						controllerLoop();
-
-						// System.out.println("Controller loop!");
-					}
-				});
-			}
-		}).start();
-	}
 
 	@Override
 	public void onEvent(String name, float value) {
-
+		JogThread.setProvider(this, mobilebase);
 		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
 			x = value;
@@ -546,6 +484,37 @@ public class JogMobileBase extends GridPane implements IGameControlEvent {
 
 	public void setMobilebase(MobileBase mobilebase) {
 		this.mobilebase = mobilebase;
+	}
+
+	@Override
+	public TransformNR getJogIncrement() {
+		if (!stop) {
+
+			double inc;
+			try {
+				inc = Double.parseDouble(increment.getText()) * 10;// convert to mm
+
+			} catch (Exception e) {
+				inc = defauletSpeed;
+				Platform.runLater(() -> {
+					try {
+						increment.setText(Double.toString(defauletSpeed));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				});
+			}
+			// double rxl=0;
+			double ryl = inc / 20 * slider;
+			double rzl = inc / 2 * rz;
+			TransformNR current = new TransformNR(0, 0, 0, new RotationNR(0, rzl, 0));
+			current.translateX(inc * x);
+			current.translateY(inc * y);
+			current.translateZ(inc * slider);
+			TransformNR toSet = current.copy();
+			return toSet;
+		}
+		return null;
 	}
 
 
