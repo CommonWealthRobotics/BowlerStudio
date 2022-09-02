@@ -97,7 +97,7 @@ public class JogThread {
 								if (bestTime < getToseconds())
 									bestTime = getToseconds();
 								else {
-									System.err.println(
+									System.out.println(
 											"Jog paused for links to catch up " + bestTime + " vs " + getToseconds());
 								}
 								TickToc.tic("computed best time "+bestTime);
