@@ -656,7 +656,7 @@ public class MobleBaseMenueFactory {
 		// lsw.setTrimController(confWidget);
 
 		
-		LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
+		
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 
@@ -664,8 +664,12 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				Platform.runLater(() -> widgetMapForTreeitems.put(hwConf, lsw));
-				lsw.enable();
+				Platform.runLater(() -> {
+					LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
+					widgetMapForTreeitems.put(hwConf, lsw);
+					lsw.enable();
+				});
+				
 			}
 			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
@@ -678,11 +682,12 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(link) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
+				LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
 				widgetMapForTreeitems.put(link, lsw);
 			}
 			BowlerJInputDevice controller = creatureLab.getController();
 			if (controller != null) {
-				lsw.setGameController(controller);
+				((LinkSliderWidget)widgetMapForTreeitems.get(link)).setGameController(controller);
 			}
 			try {
 				if (linkIndex == 0)
@@ -692,7 +697,7 @@ public class MobleBaseMenueFactory {
 			} catch (Exception ex) {
 				System.err.println("Limb not loaded yet");
 			}
-			lsw.enable();
+			((LinkSliderWidget)widgetMapForTreeitems.get(link)).enable();
 			// select( base, dh);
 			// activate controller
 		});

@@ -146,8 +146,8 @@ public class JogWidget extends GridPane
 		advancedPanel.getPanes().add(new TitledPane("Current Pose", transformCurrent));
 		advancedPanel.getPanes().add(new TitledPane("Current Target", transformTarget));
 		add(advancedPanel, 0, 1);
-
-		
+		tmpSet=getKin().getCurrentTaskSpaceTransform();
+		handleButton(home);
 
 	}
 
@@ -180,7 +180,7 @@ public class JogWidget extends GridPane
 	}
 
 	private void handleButton(final Button button) {
-
+		JogThread.setProvider(this, getKin());
 		if (!button.isPressed()) {
 
 			if (button == px) {
@@ -206,7 +206,7 @@ public class JogWidget extends GridPane
 			stop = true;
 			return;
 		} else {
-			//Log.warning(button.getText() + " Button pressed ");
+			Log.warning(button.getText() + " Button pressed ");
 		}
 		if (button == px) {
 			x = 1;
@@ -368,7 +368,7 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void handle(MouseEvent event) {
-		JogThread.setProvider(this, getKin());
+		
 		try {
 			handleButton((Button) event.getSource());
 		} catch (Throwable T) {

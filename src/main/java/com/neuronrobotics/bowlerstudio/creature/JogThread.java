@@ -13,7 +13,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.TickToc;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
+import javafx.application.Platform;
 public class JogThread {
 	private static jogThread thread = null;
 	private static Thread timer = null;
@@ -51,6 +51,8 @@ public class JogThread {
 	public static void setProvider(IJogProvider provider, AbstractKinematicsNR s) {
 		JogThread.provider = provider;
 		source = s;
+    	//new Exception(s.getClass().getName()+"\n"+provider.getClass().getName()).printStackTrace();
+
 		if (thread == null) {
 			Log.enableSystemPrint(true);
 			thread = new jogThread();
@@ -78,7 +80,7 @@ public class JogThread {
 				if (setTarget(tr)) {
 					double bestTime = getToseconds();
 					if (isControlThreadRunning()) {
-						// TickToc.setEnabled(true);
+						//TickToc.setEnabled(true);
 						if (MobileBase.class.isInstance(source)) {
 							try {
 								((MobileBase) source).DriveArc(toSet, bestTime);

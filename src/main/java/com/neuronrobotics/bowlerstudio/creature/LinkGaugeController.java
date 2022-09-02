@@ -26,7 +26,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 	private Section boundsPossible;
 	private LinkConfiguration conf;
 	private AbstractLink link;
-
+	private boolean isNowVis=false;
 	public Gauge getGauge() {
 		if (gauge == null) {
 			double spread = 60;
@@ -59,6 +59,13 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 				gauge.setInteractive(false);
 				gauge.setTitle("");
 				turnOffPickOnBoundsFor(gauge);
+			});
+			gauge.parentProperty().addListener((observable, oldValue, newValue) ->        {
+			    isNowVis=newValue!=null;
+			    if(isNowVis) {
+			    	event(conf);
+			    	gauge.setValue(link.getCurrentEngineeringUnits());
+			    }
 			});
 			
 		}
@@ -97,6 +104,8 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void event(LinkConfiguration newConf) {
+		if(!isNowVis)
+			return;
 		Platform.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
 			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
@@ -108,6 +117,8 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
+		if(!isNowVis)
+			return;
 		Platform.runLater(() -> gauge.setValue(engineeringUnitsValue));
 	}
 

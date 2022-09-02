@@ -40,7 +40,7 @@ import javafx.scene.transform.Affine;
 
 @SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group
-		implements IGameControlEvent, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener {
+		implements IGameControlEvent, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener, IJointSpaceUpdateListenerNR {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -71,6 +71,7 @@ public class LinkSliderWidget extends Group
 	private static Affine offsetGauge = null;
 	private static Affine offsetGaugeTranslate = null;
 	private boolean isNowVis=false;
+	private TransformWidget poseOfLink;
 	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, MobileBase base,boolean addLimits, boolean displayLinkCOnfiguration) {
 
 		this.linkIndex = linkIndex;
@@ -216,7 +217,7 @@ public class LinkSliderWidget extends Group
 		allParts.getChildren().addAll(panel);
 		if(addLimits)allParts.getChildren().addAll(calibration);
 		if(displayLinkCOnfiguration)allParts.getChildren().addAll(theWidget);
-		TransformWidget poseOfLink = new TransformWidget("Link Tip Pose", new TransformNR(), new IOnTransformChange() {
+		poseOfLink = new TransformWidget("Link Tip Pose", new TransformNR(), new IOnTransformChange() {
 			
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
@@ -230,47 +231,23 @@ public class LinkSliderWidget extends Group
 				
 			}
 		});
-		parentProperty().addListener((observable, oldValue, newValue) ->        {
-		    System.out.println("Changed visibility of linkslider " + newValue);
-		    isNowVis=newValue!=null;
-		});
-		d.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
-			
-			@Override
-			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-				if(!isNowVis)
-					return;
-				if (linkIndex>=joints.length) {
-					d.removeJointSpaceUpdateListener(this);
-					return;
-				}
+		parentProperty().addListener((observable, oldValue, newValue) -> {
+			System.out.println("Changed visibility of linkslider " + newValue);
+			isNowVis = newValue != null;
+			if (isNowVis) {
+				event(conf);
+				double[] currentJointSpaceVector = device.getCurrentJointSpaceVector();
+
+				updateLinkPose(linkIndex, dhdevice, poseOfLink, currentJointSpaceVector);
 				try {
-					TransformNR linkTip;
-					try {
-						linkTip = d.getLinkTip(linkIndex);
-						if(linkTip==null)
-							throw new RuntimeException();
-					}catch(Exception e) {
-						linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
-					}
-					if(poseOfLink!=null && linkTip!=null)
-						poseOfLink.updatePose(linkTip);
-				}catch(Throwable t) {
-					t.printStackTrace();
+					getSetpoint().setValue(currentJointSpaceVector[linkIndex]);
+				} catch (Exception ex) {
+					return;
 				}
-			}
-			
-			@Override
-			public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
-				
-			}
-			
-			@Override
-			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-				// TODO Auto-generated method stub
-				
+
 			}
 		});
+		d.addJointSpaceListener(this);
 		poseOfLink.setDisable(true);
 		if(displayLinkCOnfiguration)allParts.getChildren().addAll(poseOfLink);
 		getChildren().add(allParts);
@@ -278,9 +255,50 @@ public class LinkSliderWidget extends Group
 		// device.addJointSpaceListener(this);
 		event(conf);
 	}
-
+	
+		
+	@Override
+	public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
+		if(!isNowVis)
+			return;
+		updateLinkPose(linkIndex, dhdevice, poseOfLink, joints);
+	}
+	
+	@Override
+	public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
+		
+	}
+	
+	@Override
+	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void updateLinkPose(int linkIndex, DHParameterKinematics d, TransformWidget poseOfLink,
+			double[] joints) {
+		if (linkIndex>=joints.length) {
+			d.removeJointSpaceUpdateListener(this);
+			return;
+		}
+		try {
+			TransformNR linkTip;
+			try {
+				linkTip = d.getLinkTip(linkIndex);
+				if(linkTip==null)
+					throw new RuntimeException();
+			}catch(Exception e) {
+				linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
+			}
+			if(poseOfLink!=null && linkTip!=null)
+				poseOfLink.updatePose(linkTip);
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
+	}
 	@Override
 	public void event(LinkConfiguration newConf) {
+		conf = newConf;
 		double rANGE = getAbstractLink().getMaxEngineeringUnits() - getAbstractLink().getMinEngineeringUnits();
 		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()
 				- getAbstractLink().getDeviceMinEngineeringUnits();
@@ -439,6 +457,8 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+		if(!isNowVis)
+			return;
 		if(getSetpoint().isEditing())
 			return;
 		// TODO Auto-generated method stub
