@@ -1152,23 +1152,19 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}
 			}
 		});
-		scene.addEventHandler(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
+		scene.addEventHandler(ScrollEvent.ANY, t -> {
+			if (ScrollEvent.SCROLL == t.getEventType()) {
 
-			@Override
-			public void handle(ScrollEvent t) {
-				if (ScrollEvent.SCROLL == t.getEventType()) {
+				double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
+				//
+				// double z = camera.getTranslateY();
+				// double newZ = z + zoomFactor;
+				// camera.setTranslateY(newZ);
+				// System.out.println("Z = "+zoomFactor);
 
-					double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
-					//
-					// double z = camera.getTranslateY();
-					// double newZ = z + zoomFactor;
-					// camera.setTranslateY(newZ);
-					// System.out.println("Z = "+zoomFactor);
-
-					getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
-				}
-				t.consume();
+				getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 			}
+			t.consume();
 		});
 
 	}

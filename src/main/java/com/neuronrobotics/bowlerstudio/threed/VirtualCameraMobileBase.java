@@ -116,11 +116,12 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void setZoomDepth(double zoomDepth) {
-		if (zoomDepth > -2)
-			zoomDepth = -2;
-		if (zoomDepth < -5000)
-			zoomDepth = -5000;
+		if (zoomDepth > 2)
+			zoomDepth = 2;
+		if (zoomDepth < -9000)
+			zoomDepth = -9000;
 		this.zoomDepth = zoomDepth;
+		camera.setFarClip(zoomDepth*2);
 		zoomAffine.setTz(getZoomDepth());
 	}
 
