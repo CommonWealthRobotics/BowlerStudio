@@ -71,7 +71,7 @@ public class JogThread {
 		// private long time = System.currentTimeMillis();
 
 		public void run() {
-			setName(source.getScriptingName() + " Jog Widget thread");
+			setName(" Jog Widget thread");
 			long threadStart = System.currentTimeMillis();
 			//long index = 0;
 			while (source.isAvailable()) {

@@ -176,7 +176,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	private void updateValue() {
-		Platform.runLater(() -> {
+		MobileBaseCadManager.runLater(() -> {
 			setpointValue.setText(getFormatted(setpoint.getValue()));
 			onSliderMoving(this, setpoint.getValue());
 		});
@@ -200,7 +200,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		}
 		instantValueStore = val;
 		double toSet = val;
-		Platform.runLater(() -> {
+		
+		MobileBaseCadManager.runLater(() -> {
 			setValueLocal(toSet);
 		});
 

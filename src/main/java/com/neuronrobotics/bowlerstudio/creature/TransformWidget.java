@@ -201,9 +201,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		TransformNR pose = p;
 		
 		
-		Platform.runLater(() -> tx.setValue(pose.getX()));
-		Platform.runLater(() -> ty.setValue(pose.getY()));
-		Platform.runLater(() -> tz.setValue(pose.getZ()));
+		MobileBaseCadManager.runLater(() -> tx.setValue(pose.getX()));
+		MobileBaseCadManager.runLater(() -> ty.setValue(pose.getY()));
+		MobileBaseCadManager.runLater(() -> tz.setValue(pose.getZ()));
 		
 		RotationNR rot = pose.getRotation();
 		double  t=0;
@@ -227,9 +227,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		double tiltVar=t;
 		double eVar=e;
 		double aVar=a;
-		Platform.runLater(() -> tilt.setValue(tiltVar));
-		Platform.runLater(() -> elevation .setValue(eVar));
-		Platform.runLater(() -> azimeth .setValue(aVar));
+		MobileBaseCadManager.runLater(() -> tilt.setValue(tiltVar));
+		MobileBaseCadManager.runLater(() -> elevation .setValue(eVar));
+		MobileBaseCadManager.runLater(() -> azimeth .setValue(aVar));
 		// Set the rotation after setting the UI so the read will load the rotation in its pure form
 		initialState = p;
 	}

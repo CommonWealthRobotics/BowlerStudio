@@ -268,7 +268,7 @@ public class JogWidget extends GridPane
 	private void updatePose(double[] joints) {
 		TransformNR currentTaskSpaceTransform = getKin().forwardOffset(getKin().forwardKinematics(joints));
 		if (joints != null && transformCurrent != null)
-			Platform.runLater(new Runnable() {
+			MobileBaseCadManager.runLater(new Runnable() {
 				@Override
 				public void run() {	
 					transformCurrent.updatePose(currentTaskSpaceTransform);
