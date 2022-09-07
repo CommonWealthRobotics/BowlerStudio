@@ -2,7 +2,7 @@ name: "Test Build"
 on:  
    push:
        branches:
-         - main
+         - development
 jobs:
   build:
 
@@ -40,8 +40,5 @@ jobs:
         java-version: 1.8
         jdkFile: ./zulu8.44.0.13-ca-fx-jdk8.0.242-linux_x64.tar.gz
 
-    - name: Stylecheck spotlessJavaCheck
-      run: ./gradlew spotlessJavaCheck
-
-    - name: Compile
+    - name: Build with Gradle 
       run: ./gradlew shadowJar
