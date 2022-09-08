@@ -78,7 +78,8 @@ public class BowlerStudioController implements IScriptEventListener {
 		@Override
 		public void setAllCSG(Collection<CSG> toAdd, File source) {
 			try {
-				BowlerStudioController.setCsg(new ArrayList<>(toAdd));
+				if (toAdd != null)
+					BowlerStudioController.setCsg(new ArrayList<>(toAdd));
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
@@ -130,15 +131,15 @@ public class BowlerStudioController implements IScriptEventListener {
 		try {
 			System.err.println("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
-			
+
 			new Thread() {
 				public void run() {
 					String gitRepo = t.getScripting().getGitRepo();
-					if(gitRepo!=null) {
+					if (gitRepo != null) {
 						String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
-						if(gitRepo.length()<5 || (message == null ))
-							message="Project "+gitRepo;
-						BowlerStudioMenuWorkspace.add(gitRepo,message);
+						if (gitRepo.length() < 5 || (message == null))
+							message = "Project " + gitRepo;
+						BowlerStudioMenuWorkspace.add(gitRepo, message);
 					}
 				}
 			}.start();
@@ -148,10 +149,10 @@ public class BowlerStudioController implements IScriptEventListener {
 			files.add(t.getScripting().getGitRepo());
 			files.add(t.getScripting().getGitFile());
 			try {
-				if(key.length()>3 && files.get(0).length()>0 && files.get(1).length()>0)// catch degenerates
+				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0)// catch degenerates
 					ConfigurationDatabase.setObject("studio-open-git", key, files);
-			}catch(java.lang.NullPointerException ex) {
-				//file can not be opened
+			} catch (java.lang.NullPointerException ex) {
+				// file can not be opened
 			}
 
 			fileTab.setContent(t);
@@ -169,14 +170,15 @@ public class BowlerStudioController implements IScriptEventListener {
 			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
-				
+
 				@Override
 				public void onFileDelete(File fileThatIsDeleted) {
 					BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(fileTab);
 				}
-				
+
 				@Override
-				public void onFileChange(File fileThatChanged, WatchEvent event) {}
+				public void onFileChange(File fileThatChanged, WatchEvent event) {
+				}
 			});
 
 			t.setFontSize(size);
@@ -213,7 +215,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void highlightException(File fileEngineRunByName, Throwable ex) {
-		if(bowlerStudioControllerStaticReference!=null)
+		if (bowlerStudioControllerStaticReference != null)
 			bowlerStudioControllerStaticReference.highlightExceptionLocal(fileEngineRunByName, ex);
 	}
 
@@ -223,16 +225,16 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	private void highlightExceptionLocal(File fileEngineRunByName, Throwable ex) {
 		// THis needs to gate on checking if this thread is running already
-		if(runningExceptionHighlight) {
+		if (runningExceptionHighlight) {
 			ex.printStackTrace();
-			
+
 			new RuntimeException("Only one exception Highlight can be called at once!").printStackTrace();
 			return;
 		}
-		
+
 		new Thread() {
 			public void run() {
-				runningExceptionHighlight=true;
+				runningExceptionHighlight = true;
 				setName("Highlighter thread");
 				if (fileEngineRunByName != null) {
 					if (openFiles.get(fileEngineRunByName.getAbsolutePath()) == null) {
@@ -242,7 +244,7 @@ public class BowlerStudioController implements IScriptEventListener {
 							.setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
 					try {
 						widgets.get(fileEngineRunByName.getAbsolutePath()).clearHighlits();
-					}catch(java.lang.NullPointerException e) {
+					} catch (java.lang.NullPointerException e) {
 						return;
 					}
 					// System.out.println("Highlighting "+fileEngineRunByName+" at line
@@ -305,18 +307,18 @@ public class BowlerStudioController implements IScriptEventListener {
 				} catch (Exception ex1) {
 
 				}
-				
+
 				try {
-					String sw = org.apache.commons.lang.exception.ExceptionUtils
-							.getStackTrace(ex);
+					String sw = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
 					System.out.println(sw.toString());
-					// space out the exception highlights, ensure any sub threads spawned here have time to finish
+					// space out the exception highlights, ensure any sub threads spawned here have
+					// time to finish
 					Thread.sleep(100);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				runningExceptionHighlight=false;
+				runningExceptionHighlight = false;
 			}
 		}.start();
 
@@ -331,15 +333,15 @@ public class BowlerStudioController implements IScriptEventListener {
 		});
 
 	}
-	
+
 	public static boolean removeObject(Object p) {
-		if (CSG.class.isInstance(p) ) {
+		if (CSG.class.isInstance(p)) {
 			Platform.runLater(() -> {
 				CreatureLab3dController.getEngine().removeObject((CSG) p);
 			});
 			return true;
 		}
-		if ( Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
+		if (Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
 			Platform.runLater(() -> {
 				CreatureLab3dController.getEngine().clearUserNode();
 			});
@@ -348,7 +350,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		// ThreadUtil.wait(20);
 		return false;
 	}
-
 
 //	private boolean removeObject(Object p) {
 //		if (CSG.class.isInstance(p) || Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
@@ -367,8 +368,8 @@ public class BowlerStudioController implements IScriptEventListener {
 			CreatureLab3dController.getEngine().removeObjects();
 			if (toadd != null)
 				for (CSG c : toadd) {
-					if(c!=null)
-					Platform.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source));
+					if (c != null)
+						Platform.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source));
 				}
 		});
 	}
@@ -398,7 +399,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		});
 	}
-	
+
 	public static void setSelectedCsg(CSG obj) {
 		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
@@ -573,7 +574,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		setCsg(thread.getAllCad(), cadScript);
 	}
 
-
 	public boolean isDoneLoadingTutorials() {
 		return doneLoadingTutorials;
 	}
@@ -593,7 +593,5 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
-
-
 
 }
