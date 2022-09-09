@@ -395,9 +395,3 @@ shadowJar {
    mergeServiceFiles()
 }
 
-//task run(type: JavaExec) {
-//	classpath = sourceSets.main.runtimeClasspath
-//	main = mainClass;
-//	//    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
-//	jvmArgs = ['-Dprism.forceGPU=true']
-//}
