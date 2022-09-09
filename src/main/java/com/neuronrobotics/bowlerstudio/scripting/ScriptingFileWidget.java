@@ -113,29 +113,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		});
 		runfx.setTooltip(new Tooltip("Run this code and display the result"));
 		publish.setOnAction(e -> {
-			new Thread(() -> {
-				if(isOwnedByLoggedInUser) {
-					save();
-					CommitWidget.commit(currentFile, getCode());
-				}else {
-					String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
-					String content = getCode();
-					String newGit;
-					try {
-						newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: "+remote);
-						ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
-						File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
-						ScriptingEngine.deleteRepo(remote);
-						Thread.sleep(500);
-						BowlerStudio.createFileTab(file);
-						
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-				}
-			}).start();
+			saveTheFile(currentFile);
 
 		});
 		publish.setTooltip(new Tooltip("Save this code to Git"));
@@ -213,6 +191,32 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
 		reset();
+	}
+
+	public void saveTheFile(File currentFile) {
+		new Thread(() -> {
+			if(isOwnedByLoggedInUser) {
+				save();
+				CommitWidget.commit(currentFile, getCode());
+			}else {
+				String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
+				String content = getCode();
+				String newGit;
+				try {
+					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: "+remote);
+					ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
+					File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
+					ScriptingEngine.deleteRepo(remote);
+					Thread.sleep(500);
+					BowlerStudio.createFileTab(file);
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		}).start();
 	}
 
 	private void reset() {
