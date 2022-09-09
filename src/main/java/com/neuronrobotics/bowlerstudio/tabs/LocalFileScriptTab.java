@@ -297,7 +297,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			/**
 			 * 
 			 */
-			private static final long serialVersionUID = -4698223073831405851L;
+			private static final long serialVersionUID = -3361326129563407389L;
 
 			public void actionPerformed(ActionEvent e) {
 
