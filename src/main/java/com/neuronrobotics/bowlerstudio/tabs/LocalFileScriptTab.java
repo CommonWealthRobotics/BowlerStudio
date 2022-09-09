@@ -290,6 +290,23 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			});
 		});
 		// textArea
+		// Set event listener to listen for CTRL+S and save file
+		KeyStroke keystroke_s = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK);
+		textArea.getInputMap().put(keystroke_s, "s");
+		textArea.getActionMap().put("s", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4698223073831405851L;
+
+			public void actionPerformed(ActionEvent e) {
+
+				System.out.println("Save "+ file +" now.");
+				getScripting().saveTheFile(file);
+
+			}
+		});
+		// Set event listener to listen for CTRL+F and find text
 		KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
 		textArea.getInputMap().put(keystroke, "f");
 		textArea.getActionMap().put("f", new AbstractAction() {
