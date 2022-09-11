@@ -27,7 +27,7 @@ public class CommitWidget {
 			Log.error("COmmit failed with no code to commit");
 			return;
 		}
-		Platform.runLater(() ->{
+		BowlerStudio.runLater(() ->{
 			// Create the custom dialog.
 			Dialog<Pair<String, String>> dialog = new Dialog<>();
 			dialog.setTitle("Commit message Dialog");
@@ -68,7 +68,7 @@ public class CommitWidget {
 			dialog.getDialogPane().setContent(grid);
 	
 			// Request focus on the username field by default.
-			Platform.runLater(() -> username.requestFocus());
+			BowlerStudio.runLater(() -> username.requestFocus());
 	
 			// Convert the result to a username-password-pair when the login button is clicked.
 			dialog.setResultConverter(dialogButton -> {

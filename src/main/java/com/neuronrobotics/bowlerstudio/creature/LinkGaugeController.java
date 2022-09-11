@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.ILinkConfigurationChangeListener;
 import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
@@ -55,7 +56,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 					.sectionsVisible(true)
 					.sections(boundsPossible, bounds)
 					.build();
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				gauge.setInteractive(false);
 				gauge.setTitle("");
 				turnOffPickOnBoundsFor(gauge);
@@ -106,7 +107,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 	public void event(LinkConfiguration newConf) {
 		if(!isNowVis)
 			return;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
 			bounds.setStop(getAbstractLink().getMaxEngineeringUnits());
 			boundsPossible.setStart(getAbstractLink().getDeviceMinEngineeringUnits());
@@ -119,7 +120,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 	public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
 		if(!isNowVis)
 			return;
-		Platform.runLater(() -> gauge.setValue(engineeringUnitsValue));
+		BowlerStudio.runLater(() -> gauge.setValue(engineeringUnitsValue));
 	}
 
 	@Override

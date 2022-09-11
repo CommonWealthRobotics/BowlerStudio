@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -37,7 +38,7 @@ public class VirtualCameraMobileBase {
 
 		manipulationFrame = new Group();
 		camera.getTransforms().add(zoomAffine);
-		Platform.runLater(
+		BowlerStudio.runLater(
 				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
 		cameraFrame.getTransforms().add(getOffset());
 		manipulationFrame.getChildren().addAll(camera, hand);
@@ -45,7 +46,7 @@ public class VirtualCameraMobileBase {
 		cameraFrame.getChildren().add(manipulationFrame);
 		// new RuntimeException().printStackTrace();
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
-		Platform.runLater(() -> updatePositions());
+		BowlerStudio.runLater(() -> updatePositions());
 	}
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {

@@ -198,7 +198,7 @@ public class FindTextWidget extends Application {
 		assert replaceBox != null : "fx:id=\"replaceBox\" was not injected: check your FXML file 'findWidget.fxml'.";
 
 		if (textArea.getSelectedText() != null) {
-			Platform.runLater(() -> findBox.setText(textArea.getSelectedText()));
+			BowlerStudio.runLater(() -> findBox.setText(textArea.getSelectedText()));
 		}
 	}
 
@@ -213,7 +213,7 @@ public class FindTextWidget extends Application {
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Find/Replace");
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);

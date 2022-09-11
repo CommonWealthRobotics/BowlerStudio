@@ -127,9 +127,9 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane = new HBox(20);
 		double lengthScalar = fileNameBox.getFont().getSize() * 1.5;
 		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a Platform.runLater because of Textfield has no padding at first
+			// Do this in a BowlerStudio.runLater because of Textfield has no padding at first
 			// time and so on
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Text text = new Text(currText);
 				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
 				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
@@ -142,9 +142,9 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			});
 		});
 		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a Platform.runLater because of Textfield has no padding at first
+			// Do this in a BowlerStudio.runLater because of Textfield has no padding at first
 			// time and so on
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Text text = new Text(currText);
 				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
 				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
@@ -221,7 +221,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 	private void reset() {
 		running = false;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			runfx.setText("Run");
 			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -300,7 +300,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			e1.printStackTrace();
 		}
 		running = true;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			runfx.setText("Stop");
 			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -392,7 +392,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			remote = git.getRepository().getConfig().getString("remote", "origin", "url");
 			String findLocalPath = ScriptingEngine.findLocalPath(f, git);
 			ScriptingEngine.closeGit(git);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
 				// fileListBox.res
@@ -413,7 +413,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			});
 		} catch (Exception e1) {
 			ScriptingEngine.closeGit(git);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				fileListBox.setText("none");
 				fileListBox.setMinWidth(40);
 				fileNameBox.setText(f.getAbsolutePath());
@@ -501,7 +501,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					if (fileThatChanged.getAbsolutePath().contains(currentFile.getAbsolutePath())) {
 
 						System.out.println("Code in " + fileThatChanged.getAbsolutePath() + " changed");
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							try {
 								String content = new String(
 										Files.readAllBytes(Paths.get(fileThatChanged.getAbsolutePath())));

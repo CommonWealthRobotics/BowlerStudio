@@ -81,7 +81,7 @@ public class Terminal {
 		});
 		executionBox.setPrefWidth(80 * 4);
 		executionBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-			// Platform.runLater(() -> {
+			// BowlerStudio.runLater(() -> {
 			if ((event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN)) {
 				System.err.println("Key pressed " + event.getCode() + " history index = " + historyIndex
 						+ " history size= " + history.size());
@@ -105,11 +105,11 @@ public class Terminal {
 						historyIndex = 0;
 					// History index established
 					if (historyIndex > 0)
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							executionBox.setText(history.get(history.size() - historyIndex));
 						});
 					else
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							executionBox.setText("");
 						});
 				}
@@ -179,7 +179,7 @@ public class Terminal {
 							langauges.getSelectionModel().getSelectedItem());
 					reset();
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						d.printStackTrace(pw);
@@ -190,7 +190,7 @@ public class Terminal {
 
 				} catch (Exception ex) {
 					System.err.println("Script exception of type= " + ex.getClass().getName());
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						reset();
 					});
 
@@ -207,7 +207,7 @@ public class Terminal {
 	private void startStopAction() {
 		String text = executionBox.getText();
 		text += "\r\n";
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			executionBox.setText("");
 		});
 		System.out.println(text);

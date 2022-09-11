@@ -179,7 +179,7 @@ public class RedirectableStream extends PrintStream {
         } else {
             FutureTask<Boolean> task = new FutureTask<>(r, true);
 
-            Platform.runLater(task);
+            BowlerStudio.runLater(task);
 
             try {
                 task.get(); // like join()

@@ -37,7 +37,7 @@ public class ChangeAssetRepoController extends Application {
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Change Asset Repository");
 
 			Scene scene = new Scene(root);
@@ -67,7 +67,7 @@ public class ChangeAssetRepoController extends Application {
 
 	@FXML
 	public void onCancel(ActionEvent event) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Stage stage = (Stage) cancelButton.getScene().getWindow();
 			stage.close();
 		});

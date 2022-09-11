@@ -209,7 +209,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	public void setToLoggedOut() {
 		this.username="";
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
@@ -230,7 +230,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			return;
 		this.username = n;
 		
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + username);
 			new Thread() {
@@ -299,7 +299,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 	private void loadWatchingRepos(GitHub github) {
 		new Thread(() -> {
-			Platform.runLater(() -> watchingRepos.getItems().clear());
+			BowlerStudio.runLater(() -> watchingRepos.getItems().clear());
 			ThreadUtil.wait(20);
 			GHMyself self;
 			try {
@@ -310,7 +310,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				for (GHRepository g : watching) {
 					if (ownerMenue.get(g.getOwnerName()) == null) {
 						ownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							try {
 								watchingRepos.getItems().add(ownerMenue.get(g.getOwnerName()));
 							} catch (Exception e) {
@@ -329,7 +329,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	private void loadMyRepos(GitHub github) {
 		new Thread(() -> {
-			Platform.runLater(() -> myRepos.getItems().clear());
+			BowlerStudio.runLater(() -> myRepos.getItems().clear());
 			ThreadUtil.wait(20);
 			// Repos I own
 			try {
@@ -340,7 +340,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					GHRepository g = entry.getValue();
 					if (myownerMenue.get(g.getOwnerName()) == null) {
 						myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
 						});
 					}
@@ -356,7 +356,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	private void loadOrganizations(GitHub github) {
 		new Thread(() -> {
-			Platform.runLater(() -> myOrganizations.getItems().clear());
+			BowlerStudio.runLater(() -> myOrganizations.getItems().clear());
 			ThreadUtil.wait(20);
 
 			Map<String, GHOrganization> orgs;
@@ -370,7 +370,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					for (Map.Entry<String, GHRepository> entry1 : repos.entrySet()) {
 						resetRepoMenue(OrgItem, entry1.getValue());
 					}
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						myOrganizations.getItems().add(OrgItem);
 					});
 				}
@@ -390,7 +390,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			try {
 				myself = github.getMyself();
 				System.out.println("Loading all my Gists");
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					myGists.getItems().clear();
 				});
 				List<GHGist> gists = myself.listGists().asList();
@@ -477,10 +477,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //							System.err.println("\n\nCommit event Detected " + url + " on branch "
 //									+ ScriptingEngine.getBranch(url));
 							// new RuntimeException().printStackTrace();
-							Platform.runLater(() -> resetMenueForLoadingFiles("Files:", orgFiles, loadFilesEvent));
-							Platform.runLater(
+							BowlerStudio.runLater(() -> resetMenueForLoadingFiles("Files:", orgFiles, loadFilesEvent));
+							BowlerStudio.runLater(
 									() -> resetMenueForLoadingFiles("Commits:", orgCommits, loadCommitsEvent));
-							Platform.runLater(
+							BowlerStudio.runLater(
 									() -> resetMenueForLoadingFiles("Branches:", orgBranches, loadBranchesEvent));
 
 						} catch (Throwable e) {
@@ -517,7 +517,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				MenuItem makeRelease = new MenuItem("Make Release...");
 				makeRelease.setOnAction(event -> {
 					System.out.println("Releasing " + url);
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						Stage s = new Stage();
 
 						MakeReleaseController controller = new MakeReleaseController(url);
@@ -534,7 +534,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				MenuItem addFile = new MenuItem("Add file to Git Repo...");
 				addFile.setOnAction(event -> {
 					System.out.println("Adding file to : " + url);
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						Stage s = new Stage();
 
 						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
@@ -553,11 +553,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					// On showing the menu, set up the rest of the handlers
 					new Thread(myEvent).start();
 				});
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
 					orgRepo.getItems().addAll(updateRepo, addFile, makeRelease, orgFiles, orgCommits, orgBranches);
-					// Platform.runLater(() -> {
+					// BowlerStudio.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);
 					// });
 				});
@@ -592,7 +592,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 				System.out.println("Load Commits event " + url + " on branch " + branchName);
 				new Thread(() -> {
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						// removing this listener
 						// after menue is activated
 						// for the first time
@@ -614,7 +614,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 							Iterable<RevCommit> commits = git.log().add(resolve).call();
 
 							List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								try {
 									orgCommits.getItems()
 											.add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
@@ -676,15 +676,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 									}.start();
 
 								});
-								Platform.runLater(() -> {
+								BowlerStudio.runLater(() -> {
 									orgCommits.getItems().add(tmp);
 								});
 							}
 						}
 
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							orgCommits.hide();
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								orgCommits.show();
 							});
 						});
@@ -714,7 +714,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private static void promptForNewBranch(String exampleName, String reasonForCreating, Consumer<String> resultEvent) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TextInputDialog dialog = new TextInputDialog(exampleName);
 			dialog.setTitle("Create New Branch");
 			dialog.setHeaderText(reasonForCreating);
@@ -749,7 +749,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 				;
 				new Thread(() -> {
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						// removing this listener
 						// after menue is activated
 						// for the first time
@@ -788,7 +788,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								});
 
 					});
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 
 						try {
 							onBranch.setText("On Branch " + ScriptingEngine.getBranch(url));
@@ -811,9 +811,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
 					System.err.println("Refreshing menu Branches");
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						orgBranches.hide();
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							orgBranches.show();
 						});
 					});
@@ -856,7 +856,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			}.start();
 
 		});
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			orgBranches.getItems().add(tmp);
 		});
 	}
@@ -887,16 +887,16 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private static void resetMenueForLoadingFiles(String string, Menu orgFiles, EventHandler<Event> loadFiles) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			try {
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					orgFiles.getItems().clear();
 					// orgFiles.hide();
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						orgFiles.getItems().add(new MenuItem(string));
 						orgFiles.getItems().add(new SeparatorMenuItem());
 						orgFiles.setOnShowing(loadFiles);
-						// Platform.runLater(() ->orgFiles.show());
+						// BowlerStudio.runLater(() ->orgFiles.show());
 					});
 				});
 			} catch (Throwable t) {
@@ -936,7 +936,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //							return;// menue populated by
 //									// another thread
 //						}
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							// removing this listener
 							// after menue is activated
 							// for the first time
@@ -964,15 +964,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								}.start();
 
 							});
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								orgFiles.getItems().add(tmp);
 							});
 
 						}
 						System.out.println("Refreshing menu");
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							orgFiles.hide();
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								orgFiles.show();
 
 							});
@@ -1003,7 +1003,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onConnectCHDKCamera(ActionEvent event) {
-//		Platform.runLater(() -> {
+//		BowlerStudio.runLater(() -> {
 //			try {
 //				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
 //			} catch (Exception e) {
@@ -1015,32 +1015,32 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	@FXML
 	public void onConnectCVCamera(ActionEvent event) {
 
-		// Platform.runLater(() -> ConnectionManager.onConnectCVCamera());
+		// BowlerStudio.runLater(() -> ConnectionManager.onConnectCVCamera());
 
 	}
 
 	@FXML
 	public void onConnectFileSourceCamera(ActionEvent event) {
-		Platform.runLater(() -> ConnectionManager.onConnectFileSourceCamera());
+		BowlerStudio.runLater(() -> ConnectionManager.onConnectFileSourceCamera());
 
 	}
 
 	@FXML
 	public void onConnectURLSourceCamera(ActionEvent event) {
 
-		Platform.runLater(() -> ConnectionManager.onConnectURLSourceCamera());
+		BowlerStudio.runLater(() -> ConnectionManager.onConnectURLSourceCamera());
 
 	}
 
 	@FXML
 	public void onConnectHokuyoURG(ActionEvent event) {
-		Platform.runLater(() -> ConnectionManager.onConnectHokuyoURG());
+		BowlerStudio.runLater(() -> ConnectionManager.onConnectHokuyoURG());
 
 	}
 
 	@FXML
 	public void onConnectGamePad(ActionEvent event) {
-		Platform.runLater(() -> ConnectionManager.onConnectGamePad());
+		BowlerStudio.runLater(() -> ConnectionManager.onConnectGamePad());
 
 	}
 
@@ -1104,7 +1104,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				if (openFile == null) {
 					return;
 				}
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					try {
 						MobileBase mb = new MobileBase(new FileInputStream(openFile));
 						ConnectionManager.addConnection(mb, mb.getScriptingName());
@@ -1144,7 +1144,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void clearScriptCache(ActionEvent event) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Are you sure you have published all your work?");
 			alert.setHeaderText("This will wipe out the local cache");
@@ -1210,7 +1210,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			Menu typeMenu = new Menu(type);
 			typeMenu.setMnemonicParsing(false);
 			vitaminTypeMenus.put(type, typeMenu);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				vitaminsMenu.getItems().add(typeMenu);
 			});
 			setUpSizes(typeMenu, type);
@@ -1226,7 +1226,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(type))).start();
 		});
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			typeMenu.getItems().add(new MenuItem("Sizes:"));
 			typeMenu.getItems().add(new SeparatorMenuItem());
 			typeMenu.getItems().add(editScript);
@@ -1237,7 +1237,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	public void addSizesToMenu(String size, String type) {
 		MenuItem sizeMenu = new MenuItem(size);
 		sizeMenu.setMnemonicParsing(false);
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			getTypeMenu(type).getItems().add(sizeMenu);
 		});
 		sizeMenu.setOnAction(new EventHandler<ActionEvent>() {
@@ -1279,7 +1279,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		try {
 
 			// create a text input dialog
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				TextInputDialog td = new TextInputDialog();
 				td.setHeaderText("Enter Git URL");
 				td.setResizable(true);
@@ -1399,7 +1399,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					newCreatureWiz.setOnAction(event -> {
 						NewCreatureWizard.run();
 					});
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						CreaturesMenu.getItems().add(new SeparatorMenuItem());
 						CreaturesMenu.getItems().add(newCreatureWiz);
 						CreaturesMenu.getItems().add(new SeparatorMenuItem());
@@ -1407,7 +1407,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
 							.inlineFileScriptRun(f, null);
-					for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet()) {
+					for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet().stream().collect(Collectors.toList())) {
 						HashMap<String, Object> script = entry.getValue();
 						MenuItem item = new MenuItem(entry.getKey());
 						item.setOnAction(event -> {
@@ -1416,7 +1416,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 							loadMobilebaseFromGit(id, file);
 						});
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							CreaturesMenu.getItems().add(item);
 						});
 					}
@@ -1427,10 +1427,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		}.start();
 
 		addMarlinGCODEDevice.setOnAction(event -> {
-			Platform.runLater(() -> ConnectionManager.onMarlinGCODE());
+			BowlerStudio.runLater(() -> ConnectionManager.onMarlinGCODE());
 		});
 		loadFirmata.setOnAction(event -> {
-			Platform.runLater(() -> ConnectionManager.onFirmata());
+			BowlerStudio.runLater(() -> ConnectionManager.onFirmata());
 		});
 		ScriptingEngine.addIGithubLoginListener(new IGithubLoginListener() {
 			@Override
@@ -1490,14 +1490,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						throw new RuntimeException("Vitamins menu was not inserted");
 					if (vitaminsMenu.getItems() == null)
 						throw new RuntimeException("Vitamins menu items are null");
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						vitaminsMenu.getItems().add(new SeparatorMenuItem());
 					});
 					List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
 					for (String s : types) {
 						addVitaminType(s);
 						Vitamins.getVitaminFile(s, () -> {
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								getTypeMenu(s).getItems().clear();
 							});
 							setUpSizes(getTypeMenu(s), s);

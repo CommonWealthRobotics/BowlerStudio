@@ -37,7 +37,7 @@ public class FileSelectionFactory {
 			throw new NullPointerException();
 	
 		final fileHolder file=new fileHolder();
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			FileChooser fileChooser = new FileChooser();
 			
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());
@@ -66,7 +66,7 @@ public class FileSelectionFactory {
 			throw new NullPointerException();
 	
 		final fileHolder file=new fileHolder();
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			DirectoryChooser fileChooser = new DirectoryChooser();
 			
 			fileChooser.setInitialDirectory(start.isDirectory()?start:start.getParentFile());

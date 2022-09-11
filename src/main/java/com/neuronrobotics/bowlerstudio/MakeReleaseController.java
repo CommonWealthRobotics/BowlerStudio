@@ -75,7 +75,7 @@ public class MakeReleaseController extends Application {
 			try {
 				st = ScriptingEngine.filesInGit(gitRepo).toArray();
 	    		if(!workflows.exists()) {	    			 
-	    			 Platform.runLater(()->{
+	    			 BowlerStudio.runLater(()->{
 	    				 ChoiceDialog d = new ChoiceDialog(st[0], st);
 	    				 d.setTitle("Choose File From this Repo to release");
 	    				 d.setHeaderText("Select file to compile in CI");
@@ -124,7 +124,7 @@ public class MakeReleaseController extends Application {
 			}
     	}).start();
     	
-    	 Platform.runLater(()->{primaryStage.close();});
+    	 BowlerStudio.runLater(()->{primaryStage.close();});
     }
     
     private String delim() {
@@ -221,7 +221,7 @@ public class MakeReleaseController extends Application {
 			bugfix.setPromptText(bugStart);
 		}
 		
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Release for " + gitRepo);
 
 			Scene scene = new Scene(root);

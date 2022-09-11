@@ -89,7 +89,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		FXMLLoader loader;
 		try {
 			loader = AssetFactory.loadLayout("layout/CreatureLabControlsTab.fxml", true);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				loader.setController(tab);
 				// This is needed when loading on MAC
 				loader.setClassLoader(getClass().getClassLoader());
@@ -178,7 +178,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 						AnchorPane box=hasWalking(device)?tab.getControlsBox():tab.getWalkingBox();
 						if (widgetMapForTreeitems.get(treeItem) != null) {
 
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								box.getChildren().clear();
 								Group g = widgetMapForTreeitems.get(treeItem);
 								box.getChildren().add(g);
@@ -188,7 +188,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 								AnchorPane.setBottomAnchor(g, 0.0);
 							});
 						} else {
-							Platform.runLater(() -> {
+							BowlerStudio.runLater(() -> {
 								box.getChildren().clear();
 							});
 						}

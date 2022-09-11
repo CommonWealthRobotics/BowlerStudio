@@ -15,7 +15,7 @@ public class PromptForGit {
 	}
 
 	public static void prompt(String purpose, String defaultID, IGistPromptCompletionListener listener){
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TextInputDialog dialog = new TextInputDialog(defaultID);
 			dialog.setTitle(purpose);
 			dialog.setHeaderText("Enter the URL (Clone vie HTTPS)");

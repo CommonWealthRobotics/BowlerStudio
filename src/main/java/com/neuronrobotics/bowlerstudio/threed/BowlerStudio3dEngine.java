@@ -217,7 +217,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private CheckMenuItem spin;
 	private HBox controlsChecks;
 	static {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 		});
@@ -257,7 +257,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// handleKeyboard(s);
 		handleMouse(getSubScene());
 		
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			setScene(s);
 			rebuildingUIOnerror = false;
@@ -315,7 +315,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
 				exportAll();
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					export.setDisable(true);
 				});
 			} else {
@@ -335,10 +335,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		javafx.scene.layout.VBox allCOntrols = new javafx.scene.layout.VBox();
 		controlsChecks = new HBox(10);
 
-		Platform.runLater(() -> controls.getChildren().addAll(home, export, clear));
+		BowlerStudio.runLater(() -> controls.getChildren().addAll(home, export, clear));
 
 		
-		Platform.runLater(() -> allCOntrols.getChildren().addAll(controlsChecks,controls));
+		BowlerStudio.runLater(() -> allCOntrols.getChildren().addAll(controlsChecks,controls));
 		
 		return new Group(allCOntrols);
 	}
@@ -364,7 +364,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					BowlerStudio.printStackTrace(e);
 				}
 
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					export.setDisable(false);
 				});
 			}
@@ -410,7 +410,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		fwd.disableProperty().set(true);
 		back.disableProperty().set(true);
 
-		Platform.runLater(() -> controls.getChildren().addAll(new Label("Cad Debugger"), back, fwd));
+		BowlerStudio.runLater(() -> controls.getChildren().addAll(new Label("Cad Debugger"), back, fwd));
 		return new Group(controls);
 	}
 
@@ -483,10 +483,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					}
 				}
 
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					for (CSG add : toRemove)
 						removeObject(add);
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						for (CSG ret : toAdd)
 							addObject(ret, source);
 					});
@@ -518,9 +518,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		if (getCsgMap().get(currentCsg) != null)
 			return currentCsg.getMesh();
 		getCsgMap().put(currentCsg, currentCsg.getMesh());
-		Platform.runLater(() -> controlsChecks.getChildren().clear());
+		BowlerStudio.runLater(() -> controlsChecks.getChildren().clear());
 		
-		Platform.runLater(() -> controlsChecks.getChildren().addAll(AssemblySlider.getSlider(getCsgMap().keySet())));
+		BowlerStudio.runLater(() -> controlsChecks.getChildren().addAll(AssemblySlider.getSlider(getCsgMap().keySet())));
 		csgSourceFile.put(currentCsg, source);
 		Optional<Object> m = currentCsg.getStorage().getValue("manipulator");
 		HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> eventForManipulation=null;
@@ -746,17 +746,17 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 		closeTheMenueHandler cmh = new closeTheMenueHandler();
-		Platform.runLater(()->current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh));
+		BowlerStudio.runLater(()->current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh));
 		if(eventForManipulation!=null) {
 			HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> manip=eventForManipulation;
 			for(javafx.event.EventType<MouseEvent> e:manip.keySet())
-				Platform.runLater(()->current.addEventHandler(e, manip.get(e)));
+				BowlerStudio.runLater(()->current.addEventHandler(e, manip.get(e)));
 		}
 		// cm.getScene().addEventHandler(MouseEvent.MOUSE_EXITED, cmh);
 		if(current==null)
 			return new MeshView();
 		if(!lookGroup.getChildren().contains(current)) {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				try {
 					lookGroup.getChildren().add(current);
 				} catch (Throwable e) {
@@ -764,9 +764,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				}
 			});
 			Axis axis = new Axis();
-			Platform.runLater(()->axis.getTransforms().add(currentCsg.getManipulator()));
+			BowlerStudio.runLater(()->axis.getTransforms().add(currentCsg.getManipulator()));
 			axisMap.put(current, axis);
-			Platform.runLater(()->lookGroup.getChildren().add(axis));
+			BowlerStudio.runLater(()->lookGroup.getChildren().add(axis));
 		}
 		
 		// Log.warning("Adding new axis");
@@ -857,7 +857,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private void buildScene() {
 		world.ry.setAngle(-90);// point z upwards
 		world.ry.setAngle(180);// arm out towards user
-		Platform.runLater(() -> getRoot().getChildren().add(world));
+		BowlerStudio.runLater(() -> getRoot().getChildren().add(world));
 	}
 
 	/**
@@ -891,7 +891,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		
 		// TODO reorent the start camera
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 		});
 
@@ -964,7 +964,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						ImageView rulerImage = new ImageView(ruler);
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
@@ -1001,26 +1001,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		if(bowlerStudioModularFrame!=null)
 			bowlerStudioModularFrame.showCreatureLab();
 
-		Platform.runLater(() -> userGroup.getChildren().add(n));
+		BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
 	}
 
 	public void removeUserNode(Node n) {
-		Platform.runLater(() -> userGroup.getChildren().remove(n));
+		BowlerStudio.runLater(() -> userGroup.getChildren().remove(n));
 	}
 
 	public void clearUserNode() {
-		Platform.runLater(() -> userGroup.getChildren().clear());
+		BowlerStudio.runLater(() -> userGroup.getChildren().clear());
 	}
 
 	public void showAxis() {
-		Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
+		BowlerStudio.runLater(() -> axisGroup.getChildren().add(gridGroup));
 		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).show();
 		}
 	}
 
 	public void hideAxis() {
-		Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
+		BowlerStudio.runLater(() -> axisGroup.getChildren().remove(gridGroup));
 		for (MeshView a : axisMap.keySet()) {
 			axisMap.get(a).hide();
 		}
@@ -1203,7 +1203,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 			debuggerIndex = debuggerList.size() - 1;
 		}).start();
-		// Platform.runLater(()->{
+		// BowlerStudio.runLater(()->{
 		// fwd.disableProperty().set(false);
 		// back.disableProperty().set(true);
 		// });
@@ -1305,7 +1305,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void cancelSelection() {
 		for (CSG key : getCsgMap().keySet()) {
 
-			Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+			BowlerStudio.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
 		}
 
 		this.selectedCsg = null;
@@ -1314,7 +1314,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		TransformNR targetNR = new TransformNR();
 		Affine interpolator = new Affine();
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TransformFactory.nrToAffine(startSelectNr, interpolator);
 
 			removeAllFocusTransforms();
@@ -1340,7 +1340,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				int i = in;
 				MeshView mesh = getCsgMap().get(selectedCsg.get(i));
 				if (mesh != null)
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						try {
 							mesh.setMaterial(new PhongMaterial(Color.GOLD));
 						} catch (Exception ex) {
@@ -1359,7 +1359,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		for (CSG key : getCsgMap().keySet()) {
 
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				try {
 					getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()));
 				} catch (Throwable ex) {
@@ -1376,7 +1376,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 //				new Runnable() {
 //					@Override
 //					public void run() {
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							try {
 								getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 							} catch (Exception e) {
@@ -1418,7 +1418,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			return;
 		}
 		focusing = true;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Affine centering = TransformFactory.nrToAffine(poseToMove);
 			// this section keeps the camera orented the same way to avoid whipping
 			// around
@@ -1447,13 +1447,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			try {
 				if (Math.abs(manipulator2.getTx()) > 0.1 || Math.abs(manipulator2.getTy()) > 0.1
 						|| Math.abs(manipulator2.getTz()) > 0.1) {
-					// Platform.runLater(() -> {
+					// BowlerStudio.runLater(() -> {
 					focusGroup.getTransforms().add(manipulator2);
 					focusGroup.getTransforms().add(correction);
 					// });
 
 				} else
-					// Platform.runLater(() -> {
+					// BowlerStudio.runLater(() -> {
 					focusGroup.getTransforms().add(centering);
 				// });
 			} catch (Exception ex) {
@@ -1483,7 +1483,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		double yIncrement = ((start.getY() - target.getY()) * sinunsoidalScale);
 		double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			interpolator.setTx(xIncrement);
 			interpolator.setTy(yIncrement);
 			interpolator.setTz(zIncrement);
@@ -1499,7 +1499,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			});
 		} else {
 			// System.err.println("Camera intrpolation done");
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				focusGroup.getTransforms().remove(interpolator);
 			});
 			perviousTarget = target.copy();

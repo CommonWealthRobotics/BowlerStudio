@@ -110,7 +110,7 @@ public class BowlerStudio extends Application {
 				String text = getLogViewRefStatic().getText();
 				if (text.length() > LengthOfOutputLog) {
 
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						try {
 							getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
 
@@ -120,7 +120,7 @@ public class BowlerStudio extends Application {
 
 					});
 				} else {
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						getLogViewRefStatic().appendText(valueOf);
 
 					});
@@ -135,6 +135,19 @@ public class BowlerStudio extends Application {
 			// if(b=='[')
 			// new RuntimeException().printStackTrace();
 		}
+	}
+	
+	public static void runLater(Runnable r) {
+		Exception ex = new Exception("UI Thread Exception here!");
+		Platform.runLater(()->{
+			try {
+				r.run();
+			}catch(Throwable t) {
+				t.printStackTrace();
+				ex.printStackTrace();
+			}
+			
+		});
 	}
 
 	public static OutputStream getOut() {
@@ -228,7 +241,7 @@ public class BowlerStudio extends Application {
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		if (!StudioBuildInfo.isOS64bit()) {
 
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("32 Bit Java Detected");
 				alert.setHeaderText("Insuffient Ram Capibilities in 32 bit mode");
@@ -525,7 +538,7 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings("restriction")
 	public static void clearConsole() {
 
-		Platform.runLater(() -> {
+		PlatBowlerStudio.runLater-> {
 			if (getLogViewRefStatic() != null)
 				getLogViewRefStatic().setText("");
 		});
@@ -627,7 +640,7 @@ public class BowlerStudio extends Application {
 				scene.getStylesheets().clear();
 				scene.getStylesheets().add(nwfile);
 				System.err.println("Loading CSS from " + nwfile);
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 
 					primaryStage.setScene(scene);
 					System.err.println("Showing main applicaiton");
@@ -652,7 +665,7 @@ public class BowlerStudio extends Application {
 					closeBowlerStudio();
 
 				});
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
 
 					try {
@@ -708,7 +721,7 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage2.hide();
 		});
 		new Thread() {

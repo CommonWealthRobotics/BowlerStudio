@@ -93,7 +93,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		
 		loaded=false;
 		setOnCloseRequest(this);
-		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> Platform.runLater(() -> {
+		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	//System.err.println("Just finished! "+webEngine.getLocation());
 		    	
@@ -133,7 +133,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
 				
 						//System.out.println("Location Changed: "+newValue);
-						Platform.runLater(() -> {
+						BowlerStudio.runLater(() -> {
 							urlField.setText(newValue);
 						});
 			}
@@ -211,7 +211,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	public void loadUrl(String url){
 		
 		if(processNewTab(Current_URL)){
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				webEngine.load(url);
 			});
 		}
@@ -275,10 +275,10 @@ public class WebTab extends Tab implements EventHandler<Event>{
 				finishedLoadingScriptingWidget=false;
 				try{
 					setScripting(new ScriptingWebWidget( null ,Current_URL, webEngine));
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						vBox.getChildren().add(getScripting());
 						if(!isTutorialTab){
-							Platform.runLater(()->{
+							BowlerStudio.runLater(()->{
 								try{
 									
 									myTab.setText(getScripting().getFileName());
@@ -325,7 +325,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 //      Out("currentIndex = "+currentIndex);
 //      Out(entryList.toString().replace("],","]\n"));
 
-      Platform.runLater(() ->{
+      BowlerStudio.runLater(() ->{
     	  try{
     		  history.go(-1);
     	  }catch(Exception e){
@@ -343,7 +343,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 //      Out("currentIndex = "+currentIndex);
 //      Out(entryList.toString().replace("],","]\n"));
     
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			try {
 				history.go(1);
 			} catch (IndexOutOfBoundsException ex) {

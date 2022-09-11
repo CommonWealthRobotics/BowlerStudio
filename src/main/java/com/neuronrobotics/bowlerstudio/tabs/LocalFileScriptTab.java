@@ -410,7 +410,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void findTextWidget() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
 			new Thread() {
 				public void run() {

@@ -131,7 +131,7 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 			// update
 			double[] joint = dh.getCurrentJointSpaceVector();
 			dh.getChain().getChain(joint);
-			Platform.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
+			BowlerStudio.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
 		}
 	}
 

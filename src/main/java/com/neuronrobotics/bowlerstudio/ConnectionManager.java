@@ -262,7 +262,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	 public static void onConnectFileSourceCamera() {
-		 Platform.runLater(()->{});
+		 BowlerStudio.runLater(()->{});
 		 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Image File");
@@ -420,8 +420,8 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				newDevice.getAddress());
 		PluginManagerWidget e = new PluginManagerWidget(mp,icon);
 		plugins.add(e);
-		Platform.runLater(() -> accordion.getPanes().add(e));
-		Platform.runLater(() -> disconnectAll.setDisable(false));
+		BowlerStudio.runLater(() -> accordion.getPanes().add(e));
+		BowlerStudio.runLater(() -> disconnectAll.setDisable(false));
 		
 		
 		mp.setName(newDevice.getScriptingName());
@@ -499,9 +499,9 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				Log.warning("Found Device " + bad.getScriptingName());
 				//new RuntimeException().printStackTrace();
 				PluginManagerWidget torem = plugins.remove(i);
-				Platform.runLater(() ->accordion.getPanes().remove(torem));
+				BowlerStudio.runLater(() ->accordion.getPanes().remove(torem));
 				if (plugins.isEmpty()){
-					Platform.runLater(() ->disconnectAll.setDisable(true));
+					BowlerStudio.runLater(() ->disconnectAll.setDisable(true));
 				}
 				return;
 			}

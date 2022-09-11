@@ -183,7 +183,7 @@ public class NewVitaminWizardController  extends Application {
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
 			}
 			try {
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					this.primaryStage.close();
 					primaryStage=null;
 				});
@@ -203,7 +203,7 @@ public class NewVitaminWizardController  extends Application {
     	if(!editExisting.isSelected()) {
 	    	sizeOfVitaminString = newSizeField.getText();
 	    	if(sizeOfVitaminString.length()<2) {
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					Alert alert = new Alert(AlertType.WARNING);
 					alert.setTitle("No name specified!");
 					alert.setHeaderText("Names must be at least 2 charrectors long");
@@ -214,13 +214,13 @@ public class NewVitaminWizardController  extends Application {
 			}
 			String slug = BowlerStudioMenu.slugify(sizeOfVitaminString);
 			if(!sizeOfVitaminString.contentEquals(slug)) {
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					Alert alert = new Alert(AlertType.WARNING);
 					alert.setTitle("Name Format Wrong");
 					alert.setHeaderText("Name must be without spaces or special chars");
 					alert.setContentText("Changed to "+slug+" confirm to continue...");
 					alert.showAndWait();
-					Platform.runLater(() -> newSizeField.setText(slug));
+					BowlerStudio.runLater(() -> newSizeField.setText(slug));
 				});
 				return;
 			}
@@ -229,15 +229,15 @@ public class NewVitaminWizardController  extends Application {
     		sizeOfVitaminString=sizeComboBox.getSelectionModel().getSelectedItem();
     	}
     		
-		Platform.runLater(() ->nameColumn.setCellValueFactory(new PropertyValueFactory<MeasurmentConfig, String>("key")));
-		Platform.runLater(() ->measurmentColumn.setCellValueFactory(new PropertyValueFactory<MeasurmentConfig, String>("measurment")));
-		Platform.runLater(() ->
+		BowlerStudio.runLater(() ->nameColumn.setCellValueFactory(new PropertyValueFactory<MeasurmentConfig, String>("key")));
+		BowlerStudio.runLater(() ->measurmentColumn.setCellValueFactory(new PropertyValueFactory<MeasurmentConfig, String>("measurment")));
+		BowlerStudio.runLater(() ->
 			measurmentColumn
 			.setCellFactory(
 	                TextFieldTableCell.forTableColumn())
 				);
 		
-		Platform.runLater(() ->measurmentsTable.getSelectionModel().cellSelectionEnabledProperty().set(true));
+		BowlerStudio.runLater(() ->measurmentsTable.getSelectionModel().cellSelectionEnabledProperty().set(true));
 		measurmentsTable.setEditable(true);
 		nameColumn.setEditable(false);
 		measurmentColumn.setEditable(true);
@@ -259,7 +259,7 @@ public class NewVitaminWizardController  extends Application {
 						exists=true;
 				}
 				if(exists) {
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Size already Exists");
 						alert.setHeaderText("Name must be unique");
@@ -329,7 +329,7 @@ public class NewVitaminWizardController  extends Application {
 	private void setupKeyValueToTable(String key, Object value, String size) {
 		Vitamins.getConfiguration(typeOfVitaminString, size).put(key, value);
 		if (size.contentEquals(sizeOfVitaminString))
-			Platform.runLater(() -> measurmentsTable.getItems()
+			BowlerStudio.runLater(() -> measurmentsTable.getItems()
 					.add(new MeasurmentConfig(key, Vitamins.getConfiguration(typeOfVitaminString, sizeOfVitaminString))));
 	}
 
@@ -339,7 +339,7 @@ public class NewVitaminWizardController  extends Application {
     	if(newTypeRadio.isSelected()) {
     		typeOfVitaminString=newTypeNameField.getText();
     		if(typeOfVitaminString.length()<2) {
-    			Platform.runLater(() -> {
+    			BowlerStudio.runLater(() -> {
     				Alert alert = new Alert(AlertType.WARNING);
     				alert.setTitle("No name specified!");
     				alert.setHeaderText("Names must be at least 2 charrectors long");
@@ -350,13 +350,13 @@ public class NewVitaminWizardController  extends Application {
     		}
     		String slug = BowlerStudioMenu.slugify(typeOfVitaminString);
     		if(!typeOfVitaminString.contentEquals(slug)) {
-    			Platform.runLater(() -> {
+    			BowlerStudio.runLater(() -> {
     				Alert alert = new Alert(AlertType.WARNING);
     				alert.setTitle("Name Format Wrong");
     				alert.setHeaderText("Name must be without spaces or special chars");
     				alert.setContentText("Changed to "+slug+" confirm to continue...");
     				alert.showAndWait();
-    				Platform.runLater(() -> newTypeNameField.setText(slug));
+    				BowlerStudio.runLater(() -> newTypeNameField.setText(slug));
     			});
     			
     			return;
@@ -514,7 +514,7 @@ public class NewVitaminWizardController  extends Application {
     
     public static void launchWizard(INewVitaminCallback callback) throws Exception {
     	NewVitaminWizardController.callback=callback;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
 			primaryStage = s;
 			new Thread(() -> {
@@ -567,7 +567,7 @@ public class NewVitaminWizardController  extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Edit Vitamins Wizard");
 
 			Scene scene = new Scene(root);

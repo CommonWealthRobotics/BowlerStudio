@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import org.jfree.util.Log;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -125,16 +126,16 @@ public class ParallelWidget extends Group {
 				home();
 			}
 		});
-		Platform.runLater(() -> getChildren().add(boxTop));
-		Platform.runLater(() -> boxTop.getChildren().add(useParallel));
-		Platform.runLater(() -> boxTop.getChildren().add(box));
-		Platform.runLater(() -> box.getChildren().add(row("Parallel Group Name", groupName)));
-		Platform.runLater(() -> box.getChildren().add(useRelative));
-		Platform.runLater(() -> box.getChildren().add(relativeToControls));
+		BowlerStudio.runLater(() -> getChildren().add(boxTop));
+		BowlerStudio.runLater(() -> boxTop.getChildren().add(useParallel));
+		BowlerStudio.runLater(() -> boxTop.getChildren().add(box));
+		BowlerStudio.runLater(() -> box.getChildren().add(row("Parallel Group Name", groupName)));
+		BowlerStudio.runLater(() -> box.getChildren().add(useRelative));
+		BowlerStudio.runLater(() -> box.getChildren().add(relativeToControls));
 
-		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative", relativeName)));
-		Platform.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative index", relIndex)));
-		Platform.runLater(() -> relativeToControls.getChildren().add(e));
+		BowlerStudio.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative", relativeName)));
+		BowlerStudio.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative index", relIndex)));
+		BowlerStudio.runLater(() -> relativeToControls.getChildren().add(e));
 	}
 	private void home() {
 		try {
@@ -143,10 +144,10 @@ public class ParallelWidget extends Group {
 	}
 	private void setupAddReferenceSection() {
 		base.getParallelGroup(groupName.getText()).setupReferencedLimbStartup(dh, null, "", 0);
-		Platform.runLater(() -> relativeName.getItems().clear());
+		BowlerStudio.runLater(() -> relativeName.getItems().clear());
 		for (DHParameterKinematics l : base.getAllDHChains()) {
 			if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
-				Platform.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
+				BowlerStudio.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
 			}
 		}
 		
@@ -161,12 +162,12 @@ public class ParallelWidget extends Group {
 		this.creatureLab = creatureLab;
 		System.out.println("Configuring arm " + dh.getScriptingName());
 		robotToFiducialTransform = new TransformNR();
-		Platform.runLater(() -> groupName.setText(""));
-		Platform.runLater(() -> relativeName.getItems().clear());
-		Platform.runLater(() -> relIndex.getItems().clear());
+		BowlerStudio.runLater(() -> groupName.setText(""));
+		BowlerStudio.runLater(() -> relativeName.getItems().clear());
+		BowlerStudio.runLater(() -> relIndex.getItems().clear());
 		
-		Platform.runLater(() -> relIndex.setDisable(true));
-		Platform.runLater(() -> e.setDisable(true));
+		BowlerStudio.runLater(() -> relIndex.setDisable(true));
+		BowlerStudio.runLater(() -> e.setDisable(true));
 
 		if (getGroup() == null) {
 			useParallel.setSelected(false);
@@ -174,32 +175,32 @@ public class ParallelWidget extends Group {
 		} else {
 			useParallel.setSelected(true);
 			box.setDisable(false);
-			Platform.runLater(() -> groupName.setText(getGroup().getNameOfParallelGroup()));
+			BowlerStudio.runLater(() -> groupName.setText(getGroup().getNameOfParallelGroup()));
 			for (DHParameterKinematics l : base.getAllDHChains()) {
 				if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
 					System.out.println("Adding Option "+l.getScriptingName());
-					Platform.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
+					BowlerStudio.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
 				}
 			}
 
 			if (getGroup().getTipOffset(dh) != null) {
-				Platform.runLater(() ->useRelative.setSelected(true));
-				Platform.runLater(() ->relativeToControls.setDisable(false));
-				Platform.runLater(() -> relIndex.setDisable(false));
-				Platform.runLater(() -> e.setDisable(false));
+				BowlerStudio.runLater(() ->useRelative.setSelected(true));
+				BowlerStudio.runLater(() ->relativeToControls.setDisable(false));
+				BowlerStudio.runLater(() -> relIndex.setDisable(false));
+				BowlerStudio.runLater(() -> e.setDisable(false));
 				robotToFiducialTransform = getGroup().getTipOffset(dh);
-				Platform.runLater(() -> e.updatePose(robotToFiducialTransform));
+				BowlerStudio.runLater(() -> e.updatePose(robotToFiducialTransform));
 				String refLimbName = getGroup().getTipOffsetRelativeName(dh);
 				setNewReferencedLimb(base, refLimbName);
-				Platform.runLater(() -> relativeName.setValue(refLimbName));
-				Platform.runLater(() -> relIndex.setValue(getGroup().getTipOffsetRelativeIndex(dh)));
+				BowlerStudio.runLater(() -> relativeName.setValue(refLimbName));
+				BowlerStudio.runLater(() -> relIndex.setValue(getGroup().getTipOffsetRelativeIndex(dh)));
 			}else {
-				Platform.runLater(() ->useRelative.setSelected(false));
-				Platform.runLater(() ->relativeToControls.setDisable(true));
+				BowlerStudio.runLater(() ->useRelative.setSelected(false));
+				BowlerStudio.runLater(() ->relativeToControls.setDisable(true));
 			}
 		}
 		e.updatePose(robotToFiducialTransform);
-		Platform.runLater(() -> resetting = false);
+		BowlerStudio.runLater(() -> resetting = false);
 		home();
 	}
 
@@ -212,9 +213,9 @@ public class ParallelWidget extends Group {
 				referencedLimb = lm;
 			}
 		}
-		Platform.runLater(() -> relIndex.getItems().clear());
+		BowlerStudio.runLater(() -> relIndex.getItems().clear());
 		DHParameterKinematics rl = referencedLimb;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			for (int i = 0; i < rl.getNumberOfLinks(); i++) {
 				relIndex.getItems().add(i);
 			}

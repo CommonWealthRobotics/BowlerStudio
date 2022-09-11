@@ -132,7 +132,7 @@ public class AddFileToGistController extends Application {
 
 		});
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Add File to Git Repo " + gitRepo);
 
 			Scene scene = new Scene(root);
@@ -146,7 +146,7 @@ public class AddFileToGistController extends Application {
 	@FXML
 	public void onAddFile(ActionEvent event) {
 		new Thread(() -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Stage stage = (Stage) addFileButton.getScene().getWindow();
 				stage.close();
 			});
@@ -187,7 +187,7 @@ public class AddFileToGistController extends Application {
 
 	@FXML
 	public void onCancel(ActionEvent event) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Stage stage = (Stage) cancelButton.getScene().getWindow();
 			stage.close();
 		});
@@ -196,7 +196,7 @@ public class AddFileToGistController extends Application {
 	public static void main(String[] args) {
 		JavaFXInitializer.go();
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
 			new Thread(() -> {
 				String url = "https://github.com/madhephaestus/TestRepo.git";
@@ -222,7 +222,7 @@ public class AddFileToGistController extends Application {
 
 	@FXML
 	void createProject(ActionEvent event) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			newProject.setDisable(true);
 		});
 		new Thread(() -> {
@@ -233,7 +233,7 @@ public class AddFileToGistController extends Application {
 				}
 				GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), text);
 				gitRepo = repository.getHttpTransportUrl();
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					addFile.setDisable(false);
 				});
 			} catch (Throwable e) {

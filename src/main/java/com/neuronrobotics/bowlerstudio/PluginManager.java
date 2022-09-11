@@ -219,11 +219,11 @@ public class PluginManager {
 						public void handle(Event arg0) {
 							System.out.println("PM is Closing "+t.getText());
 							t.onTabClosing();
-							Platform.runLater(()->launcher.setDisable(false));
+							BowlerStudio.runLater(()->launcher.setDisable(false));
 							
 						}
 					});
-					Platform.runLater(()->{
+					BowlerStudio.runLater(()->{
 						launcher.setDisable(true);
 					});	
 					System.out.println("Launching "+c.getPlugin().getSimpleName());

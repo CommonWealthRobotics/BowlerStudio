@@ -183,12 +183,12 @@ public class BowlerConnectionMenu extends Application {
 	}
 
 	private void runsearchSerial() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			portOptions.getItems().clear();
 			new Thread(() -> {
 
 				for (String s : SerialConnection.getAvailableSerialPorts()) {
-					Platform.runLater(() -> portOptions.getItems().add(s));
+					BowlerStudio.runLater(() -> portOptions.getItems().add(s));
 				}
 			}).start();
 		});
@@ -196,9 +196,9 @@ public class BowlerConnectionMenu extends Application {
 	}
 
 	private void runsearchNetwork() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			ipSelector.getItems().clear();
-			Platform.runLater(() -> ipSelector.getItems().add("127.0.0.1"));
+			BowlerStudio.runLater(() -> ipSelector.getItems().add("127.0.0.1"));
 			new Thread(() -> {
 				// System.out.println("Searching for UDP devices, please
 				// wait...");
@@ -207,13 +207,13 @@ public class BowlerConnectionMenu extends Application {
 					prt = new Integer(udpPort.getText());
 				} catch (NumberFormatException e) {
 					prt = defaultPortNum;
-					Platform.runLater(() -> udpPort.setText(new Integer(defaultPortNum).toString()));
+					BowlerStudio.runLater(() -> udpPort.setText(new Integer(defaultPortNum).toString()));
 				}
 				clnt = new UDPBowlerConnection(prt);
 				ArrayList<InetAddress> addrs = clnt.getAllAddresses();
 
 				for (InetAddress i : addrs) {
-					Platform.runLater(() -> ipSelector.getItems().add(i.getHostAddress()));
+					BowlerStudio.runLater(() -> ipSelector.getItems().add(i.getHostAddress()));
 				}
 
 			}).start();
@@ -231,7 +231,7 @@ public class BowlerConnectionMenu extends Application {
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Bowler Device Connection");
 
 			Scene scene = new Scene(root);

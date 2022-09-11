@@ -112,7 +112,7 @@ public class MobleBaseMenueFactory {
 		if (root)
 			rootItem.getChildren().addAll(makeCopy);
 		callbackMapForTreeitems.put(makeCopy, () -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				String oldname = device.getScriptingName();
 				TextInputDialog dialog = new TextInputDialog(oldname + "_copy");
 				dialog.setTitle("Making a copy of " + oldname);
@@ -182,7 +182,7 @@ public class MobleBaseMenueFactory {
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Select Output Directory For .STL files");
 
@@ -198,7 +198,7 @@ public class MobleBaseMenueFactory {
 							ArrayList<File> files;
 							try {
 								files = baseManager.generateStls((MobileBase) device, baseDirForFiles, true);
-								Platform.runLater(() -> {
+								BowlerStudio.runLater(() -> {
 									Alert alert = new Alert(AlertType.INFORMATION);
 									alert.setTitle("Stl Export Success!");
 									alert.setHeaderText("Stl Export Success");
@@ -225,7 +225,7 @@ public class MobleBaseMenueFactory {
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Select Output Directory For .STL files");
 
@@ -241,7 +241,7 @@ public class MobleBaseMenueFactory {
 							ArrayList<File> files;
 							try {
 								files = baseManager.generateStls((MobileBase) device, baseDirForFiles, false);
-								Platform.runLater(() -> {
+								BowlerStudio.runLater(() -> {
 									Alert alert = new Alert(AlertType.INFORMATION);
 									alert.setTitle("Stl Export Success!");
 									alert.setHeaderText("Stl Export Success");
@@ -546,7 +546,7 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) {
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TextInputDialog dialog = new TextInputDialog(newDevice.getScriptingName());
 			dialog.setTitle("Add a new limb of");
 			dialog.setHeaderText("Set the scripting name for this limb");
@@ -664,7 +664,7 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
 					widgetMapForTreeitems.put(hwConf, lsw);
 					lsw.enable();
@@ -721,7 +721,7 @@ public class MobleBaseMenueFactory {
 
 
 		callbackMapForTreeitems.put(removeMobileBase, () -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Confirm removing MobileBase");
 				alert.setHeaderText("This will remove " + dhLink.getSlaveMobileBase().getScriptingName());
@@ -746,7 +746,7 @@ public class MobleBaseMenueFactory {
 
 
 		callbackMapForTreeitems.put(addMobileBase, () -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
 				dialog.setTitle("Add a new Follower mobilebase of");
 				dialog.setHeaderText("Set the scripting name for this Follower link");
@@ -781,7 +781,7 @@ public class MobleBaseMenueFactory {
 			// widgetMapForTreeitems.put(advanced, new DhChainWidget(dh,
 			// creatureLab));
 			// }
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
 				dialog.setTitle("Add a new Follower link of");
 				dialog.setHeaderText("Set the scripting name for this Follower link");
@@ -825,7 +825,7 @@ public class MobleBaseMenueFactory {
 		slaves.getChildren().add( addSlaves);
 		TreeItem<String> remove = new TreeItem<>("Remove " + conf.getName(), AssetFactory.loadIcon("Remove-Link.png"));
 		callbackMapForTreeitems.put(remove, () -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Confirm removing link");
 				alert.setHeaderText("This will remove " + conf.getName());
@@ -953,7 +953,7 @@ public class MobleBaseMenueFactory {
 				AssetFactory.loadIcon("Remove-Limb.png"));
 
 		callbackMapForTreeitems.put(remove, () -> {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Confirm removing limb");
 				alert.setHeaderText("This will remove " + dh.getScriptingName());
@@ -1001,7 +1001,7 @@ public class MobleBaseMenueFactory {
 				// widgetMapForTreeitems.put(advanced, new DhChainWidget(dh,
 				// creatureLab));
 				// }
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					TextInputDialog dialog = new TextInputDialog("Link_" + dh.getLinkConfigurations().size());
 					dialog.setTitle("Add a new link of");
 					dialog.setHeaderText("Set the scripting name for this link");

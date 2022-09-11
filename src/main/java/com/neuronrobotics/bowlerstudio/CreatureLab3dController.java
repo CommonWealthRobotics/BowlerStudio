@@ -63,7 +63,7 @@ public class CreatureLab3dController {
     }
     
 	public void setOverlayLeft(Node content) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 
 			overlayScrollPanel.setFitToHeight(true);
 			overlayScrollPanel.setContent(content);
@@ -73,7 +73,7 @@ public class CreatureLab3dController {
 				// Node content = overlayScrollPanel.getContent();
 				//
 				// System.out.println("Resizing " + arg2);
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					overlayScrollPanel.setFitToHeight(true);
 					/// content.seth
 					overlayScrollPanel.setContent(content);
@@ -85,14 +85,14 @@ public class CreatureLab3dController {
 	}
 
 	public void clearOverlayLeft() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			overlayScrollPanel.setContent(null);
 			overlayScrollPanel.setVisible(false);
 		});
 	}
 
 	public void setOverlayTop(Group content) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			CadControlsAnchor.getChildren().clear();
 			CadControlsAnchor.getChildren().add(content);
 
@@ -105,14 +105,14 @@ public class CreatureLab3dController {
 	}
 
 	public void clearOverlayTop() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			CadControlsAnchor.getChildren().clear();
 			CadControlsAnchor.setVisible(false);
 		});
 	}
 
 	public void setOverlayTopRight(Group content) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			DriveControlsAnchor.getChildren().clear();
 			DriveControlsAnchor.getChildren().add(content);
 			AnchorPane.setTopAnchor(content, 0.0);
@@ -124,14 +124,14 @@ public class CreatureLab3dController {
 	}
 
 	public void clearOverlayTopRight() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			DriveControlsAnchor.getChildren().clear();
 			DriveControlsAnchor.setVisible(false);
 		});
 	}
 
 	public void setOverlayBottomRight(Group content) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TempControlsAnchor.getChildren().clear();
 			TempControlsAnchor.getChildren().add(content);
 			AnchorPane.setTopAnchor(content, 0.0);
@@ -143,7 +143,7 @@ public class CreatureLab3dController {
 	}
 
 	public void clearOverlayBottomRight() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			TempControlsAnchor.getChildren().clear();
 			TempControlsAnchor.setVisible(false);
 		});
@@ -165,12 +165,12 @@ public class CreatureLab3dController {
     }
 
 	private void setupUi() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			getEngine() .getSubScene().setFocusTraversable(false);
 			getEngine() .getSubScene().widthProperty().bind(viewContainer.widthProperty());
 			getEngine() .getSubScene().heightProperty().bind(viewContainer.heightProperty());
 		});
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			jfx3dControls.getChildren().add(getEngine().getControlsBox());
 			viewContainer.getChildren().add(getEngine() .getSubScene());
 			AnchorPane.setTopAnchor(getEngine() .getSubScene(), 0.0);

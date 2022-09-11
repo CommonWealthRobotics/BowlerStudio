@@ -150,7 +150,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	
 	private void reset() {
 		running = false;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			runfx.setText("Run");
 			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -208,7 +208,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				currentFile = ScriptingEngine.fileFromGit(id, file);
 			}
 			isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				if (isOwnedByLoggedInUser) {
 					edit.setText("Edit...");
 					edit.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
@@ -239,9 +239,9 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		engine = e;
 		loadGist = true;
 		fileListBox.valueProperty().removeListener(this);
-		Platform.runLater(() -> runfx.setDisable(true));
-		Platform.runLater(() -> edit.setDisable(true));
-		Platform.runLater(() -> fileListBox.getItems().clear());
+		BowlerStudio.runLater(() -> runfx.setDisable(true));
+		BowlerStudio.runLater(() -> edit.setDisable(true));
+		BowlerStudio.runLater(() -> fileListBox.getItems().clear());
 		List<String> gists = ScriptingEngine.getCurrentGist(addr, engine);
 		ArrayList<String> fileList;
 		if (!gists.isEmpty()) {
@@ -269,7 +269,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		if (!fileList.isEmpty())
 			loadGitLocal(currentGit, fileList.get(0));
 
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			ArrayList<String> fileListToDisplay = new ArrayList<>();
 			for (String s : fileList) {
 				if(!s.startsWith(".")) {
@@ -295,8 +295,8 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					e1.printStackTrace();
 				}
 				fileListBox.valueProperty().addListener(this);
-				Platform.runLater(() -> runfx.setDisable(false));
-				Platform.runLater(() -> edit.setDisable(false));
+				BowlerStudio.runLater(() -> runfx.setDisable(false));
+				BowlerStudio.runLater(() -> edit.setDisable(false));
 			}
 		});
 		// }).start();
@@ -312,7 +312,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			e1.printStackTrace();
 		}
 		running = true;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			runfx.setText("Stop");
 			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -338,7 +338,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 				} catch (Throwable ex) {
 					System.err.println("Script exception of type= " + ex.getClass().getName());
-					Platform.runLater(() -> {
+					BowlerStudio.runLater(() -> {
 						try {
 							if (ex.getMessage().contains("sleep interrupted")) {
 								append("\n" + currentFile + " Interupted\n");

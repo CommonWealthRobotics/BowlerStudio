@@ -47,7 +47,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 			
 			@Override
 			public void onDisconnect(BowlerAbstractDevice arg0) {
-				Platform.runLater(()->{
+				BowlerStudio.runLater(()->{
 					stop();
 				});
 			}

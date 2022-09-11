@@ -104,7 +104,7 @@ public class BowlerStudioModularFrame {
 		 webtab = null;
 		try {
 
-			Platform.runLater(()->{
+			BowlerStudio.runLater(()->{
 				try {
 					webtab = new WebTab("Tutorial", homeURL, true);
 					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
@@ -194,7 +194,7 @@ public class BowlerStudioModularFrame {
 		isOpen.put("showDevices", false);
 
 		// focus on the tutorial to start
-		Platform.runLater(() -> getTutorialDockNode().requestFocus());
+		BowlerStudio.runLater(() -> getTutorialDockNode().requestFocus());
 		connectionManagerDockNode.onMouseClickedProperty().addListener((a, b, c) -> {
 			System.err.println("Cloick");
 		});
@@ -206,7 +206,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	private void addTutorial() {
-		Platform.runLater(() -> getTutorialDockNode().dock(dockPane, DockPos.LEFT));
+		BowlerStudio.runLater(() -> getTutorialDockNode().dock(dockPane, DockPos.LEFT));
 
 	}
 
@@ -218,7 +218,7 @@ public class BowlerStudioModularFrame {
 		if (isOpen.get("showTerminal") == null) {
 			isOpen.put("showTerminal", false);
 		}
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			if (!isOpen.get(key)) {
 				isOpen.put(key, true);
 				if (isOpen.get("showTerminal"))
@@ -236,7 +236,7 @@ public class BowlerStudioModularFrame {
 				});
 
 			}
-			Platform.runLater(() -> connectionManagerDockNode.requestFocus());
+			BowlerStudio.runLater(() -> connectionManagerDockNode.requestFocus());
 		});
 
 	}
@@ -253,7 +253,7 @@ public class BowlerStudioModularFrame {
 		}
 		if (!isOpen.get(key)) {
 			isOpen.put(key, true);
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 
 				if (isOpen.get("showDevices"))
 					terminalDockNode.dock(dockPane, DockPos.LEFT, connectionManagerDockNode);
@@ -273,7 +273,7 @@ public class BowlerStudioModularFrame {
 					}
 				});
 
-				Platform.runLater(() -> terminalDockNode.requestFocus());
+				BowlerStudio.runLater(() -> terminalDockNode.requestFocus());
 
 			});
 
@@ -291,7 +291,7 @@ public class BowlerStudioModularFrame {
 			new Thread(() -> {
 				ThreadUtil.wait(100);
 
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					try {
 						creatureLab3dDockNode.dock(dockPane, DockPos.RIGHT);
 						isOpen.put(key, true);
@@ -312,7 +312,7 @@ public class BowlerStudioModularFrame {
 
 				});
 
-				Platform.runLater(() -> creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
+				BowlerStudio.runLater(() -> creatureLab3dDockNode.closedProperty().addListener(new InvalidationListener() {
 					@Override
 					public void invalidated(Observable event) {
 						creatureLab3dDockNode.closedProperty().removeListener(this);
@@ -323,7 +323,7 @@ public class BowlerStudioModularFrame {
 			}).start();
 		}
 		// else
-		// Platform.runLater(() -> creatureLab3dDockNode.requestFocus());
+		// BowlerStudio.runLater(() -> creatureLab3dDockNode.requestFocus());
 
 	}
 
@@ -351,7 +351,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void openUrlInNewTab(URL url) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			try {
 				if (PasswordManager.getUsername()  != null) {
 					WebTab newTab = new WebTab("Web", url.toExternalForm(), false);
@@ -371,11 +371,11 @@ public class BowlerStudioModularFrame {
 			DockNode dn=webTabs.get(newTab);
 			webTabs.remove(newTab);
 			if(dn!=null)
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					try {
 						dn.undock();
 					}catch(java.lang.NullPointerException ex) {}
-					Platform.runLater(() -> dn.close());
+					BowlerStudio.runLater(() -> dn.close());
 					if(newTab!=null)
 						if (newTab.getOnCloseRequest() != null) {
 							newTab.getOnCloseRequest().handle(null);
@@ -387,9 +387,9 @@ public class BowlerStudioModularFrame {
 	public void addTab(Tab newTab, boolean b) {
 		System.err.println("Loading a new tab: " + newTab.getText());
 		if (webTabs.get(newTab) != null) {
-			Platform.runLater(() -> webTabs.get(newTab).requestFocus());
+			BowlerStudio.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				if(newTab.getGraphic()==null) {
 					newTab.setGraphic(AssetFactory.loadIcon("Hardware-Config.png"));
 				}
@@ -426,7 +426,7 @@ public class BowlerStudioModularFrame {
 	public void setSelectedTab(Tab tab) {
 		DockNode dockNode = webTabs.get(tab);
 		if (dockNode != null)
-			Platform.runLater(() -> {
+			BowlerStudio.runLater(() -> {
 				dockNode.requestFocus();
 			});
 	}

@@ -48,7 +48,7 @@ public class PluginManagerWidget extends TitledPane {
 			setText(manager.getName());
 			disconnectTHis.setText("Disconnect "+manager.getName());
 		});
-		Platform.runLater(()->deviceName.setText(manager.getName()));
+		BowlerStudio.runLater(()->deviceName.setText(manager.getName()));
 		content.setHgrow(accordion, Priority.ALWAYS);
 		content.getChildren().addAll(graphic,disconnectTHis,deviceName,accordion);
 		setContent(content);

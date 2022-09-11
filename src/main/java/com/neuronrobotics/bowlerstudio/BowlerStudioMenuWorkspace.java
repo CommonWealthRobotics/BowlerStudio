@@ -157,7 +157,7 @@ public class BowlerStudioMenuWorkspace {
 				rank.put(url,i);
 			}
 			if(rankChanged) {
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					if (workspaceMenu.getItems() != null)
 						workspaceMenu.getItems().clear();
 					

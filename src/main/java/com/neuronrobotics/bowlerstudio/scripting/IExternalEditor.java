@@ -94,7 +94,7 @@ public interface IExternalEditor {
 					
 			} catch (Throwable e) {
 				
-				Platform.runLater(()->{
+				BowlerStudio.runLater(()->{
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle(nameOfEditor()+" is missing");
 					alert.setHeaderText("failed to run "+cmd);

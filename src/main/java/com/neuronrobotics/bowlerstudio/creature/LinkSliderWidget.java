@@ -4,6 +4,7 @@ import java.time.Duration;
 
 import org.reactfx.util.FxTimer;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -131,7 +132,7 @@ public class LinkSliderWidget extends Group
 				else
 					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
-				Platform.runLater(() -> engineeringUpper
+				BowlerStudio.runLater(() -> engineeringUpper
 						.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits())));
 			}
 		});
@@ -147,7 +148,7 @@ public class LinkSliderWidget extends Group
 				else
 					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
-				Platform.runLater(() -> engineeringLower
+				BowlerStudio.runLater(() -> engineeringLower
 						.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits())));
 			}
 		});
@@ -157,7 +158,7 @@ public class LinkSliderWidget extends Group
 				double num = Double.parseDouble(engineeringVelUpper.getText());
 				getAbstractLink().setMaxVelocityEngineeringUnits(num);
 			} catch (Exception e) {
-				Platform.runLater(() -> engineeringVelUpper
+				BowlerStudio.runLater(() -> engineeringVelUpper
 						.setText(String.format("%.2f", getAbstractLink().getMaxVelocityEngineeringUnits())));
 			}
 		});
@@ -302,7 +303,7 @@ public class LinkSliderWidget extends Group
 		double rANGE = getAbstractLink().getMaxEngineeringUnits() - getAbstractLink().getMinEngineeringUnits();
 		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()
 				- getAbstractLink().getDeviceMinEngineeringUnits();
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			engineeringTotalPossible.setText("Possible Range "
 					+ String.format("%.2f", theoreticalRange));
 			engineeringTotalLimited.setText("Link Range " + String.format("%.2f", rANGE));
@@ -503,14 +504,14 @@ public class LinkSliderWidget extends Group
 		TransformNR offsetter2 = new TransformNR()
 				.translateX(-d )
 				.translateY(-d );
-		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGaugeTranslate));
+		BowlerStudio.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGaugeTranslate));
 
 		TransformNR offsetter = new TransformNR();
 
 		double theta = Math.toDegrees(device.getDhParametersChain().getLinks().get(linkIndex).getTheta());
 		offsetter.setRotation(new RotationNR(0, 90 + theta, 0));
 
-		Platform.runLater(() -> TransformFactory.nrToAffine(offsetter, offsetGauge));
+		BowlerStudio.runLater(() -> TransformFactory.nrToAffine(offsetter, offsetGauge));
 
 		linkGaugeController3d.getGauge().getTransforms().clear();
 		linkGaugeController3d.setLink(conf, getAbstractLink());

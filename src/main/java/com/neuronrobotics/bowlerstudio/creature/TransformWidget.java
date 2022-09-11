@@ -30,18 +30,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //	private TextField tz;
 	private TransformNR initialState;
 	private RotationNR storeRotation;
-	private boolean isNowVis=false;
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
 		this.initialState = is;
 		this.onChange = onChange;
-		parentProperty().addListener((observable, oldValue, newValue) ->        {
-		    System.out.println("Changed visibility of TransformWidget " + newValue);
-		    isNowVis=newValue!=null;
-		    if(isNowVis) {
-		    	updatePose(initialState);
-		    }
-		    	
-		});
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
 //		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
@@ -196,8 +187,6 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	}
 
 	public void updatePose(TransformNR p) {
-		if(!isNowVis)
-			return;
 		TransformNR pose = p;
 		
 		

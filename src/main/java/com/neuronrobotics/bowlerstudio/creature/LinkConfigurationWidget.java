@@ -163,7 +163,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				String shafttype = (String) vitaminData.get("shaftType");
 				String shaftsize = (String) vitaminData.get("shaftSize");
 
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					setShaftType( shaftSize, shafttype);
 					FxTimer.runLater(Duration.ofMillis(20), () -> {
 						setShaftSize( shaftsize);
@@ -173,8 +173,8 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 								System.out.println("Settting shaft size: " + shaftsize + " of " + shafttype);
 
-								Platform.runLater(() -> shaftType.getSelectionModel().select(shafttype));
-								Platform.runLater(() -> shaftSize.getSelectionModel().select(shaftsize));
+								BowlerStudio.runLater(() -> shaftType.getSelectionModel().select(shafttype));
+								BowlerStudio.runLater(() -> shaftSize.getSelectionModel().select(shaftsize));
 							}
 						});
 					});

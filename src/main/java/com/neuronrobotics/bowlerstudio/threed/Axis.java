@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.util.Arrays;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import javafx.application.Platform;
@@ -119,7 +121,7 @@ public class Axis extends Group {
 	}
 
 	public void show() {
-		Platform.runLater(() -> showAll());
+		BowlerStudio.runLater(() -> showAll());
 	}
 
 	private void showAll() {
@@ -132,7 +134,7 @@ public class Axis extends Group {
 	}
 
 	public void hide() {
-		Platform.runLater(() -> getChildren().clear());
+		BowlerStudio.runLater(() -> getChildren().clear());
 	}
 
 } // end of class Axis

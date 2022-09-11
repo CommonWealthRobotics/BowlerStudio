@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -135,7 +137,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	private void localSetValue(double val) {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			editing = false;
 			setValue(val);
 
@@ -201,7 +203,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		instantValueStore = val;
 		double toSet = val;
 		
-		MobileBaseCadManager.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			setValueLocal(toSet);
 		});
 

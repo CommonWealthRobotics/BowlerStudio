@@ -279,7 +279,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 	}
 	private void reset() {
 		running = false;
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			game.setText("Run Game Controller");
 			//game.setGraphic(AssetFactory.loadIcon("Run.png"));
 			game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -313,7 +313,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 
 
 		running = true;
-		Platform.runLater(()->{
+		BowlerStudio.runLater(()->{
 			game.setText("Stop Game Controller");
 			//game.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			game.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -496,7 +496,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 
 			} catch (Exception e) {
 				inc = defauletSpeed;
-				Platform.runLater(() -> {
+				BowlerStudio.runLater(() -> {
 					try {
 						increment.setText(Double.toString(defauletSpeed));
 					} catch (Exception ex) {
