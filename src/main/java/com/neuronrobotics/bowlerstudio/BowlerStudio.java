@@ -369,7 +369,7 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 
 			renderSplashFrame(80, "Example Robots");
-			ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
+			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 																													// repo,
 																													// change
 																													// this
