@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.utils;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerDatagram;

@@ -538,7 +538,7 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings("restriction")
 	public static void clearConsole() {
 
-		PlatBowlerStudio.runLater-> {
+		runLater(()-> {
 			if (getLogViewRefStatic() != null)
 				getLogViewRefStatic().setText("");
 		});

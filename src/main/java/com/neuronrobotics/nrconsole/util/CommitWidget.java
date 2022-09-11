@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.eclipse.jgit.api.Git;
 import org.jfree.util.Log;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 

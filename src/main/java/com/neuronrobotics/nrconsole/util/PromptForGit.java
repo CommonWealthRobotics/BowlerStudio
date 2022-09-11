@@ -3,6 +3,7 @@ package com.neuronrobotics.nrconsole.util;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.creature.IGistPromptCompletionListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 

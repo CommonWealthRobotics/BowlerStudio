@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.utils;
  * Sample Skeleton for 'findWidget.fxml' Controller Class
  */
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import javafx.application.Application;
 import javafx.application.Platform;
