@@ -1,16 +1,10 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import Jama.Matrix;
-
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
-
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -31,7 +25,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	private TransformNR initialState;
 	private RotationNR storeRotation;
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange){
-		this.initialState = is;
+		initialState=is.copy();
 		this.onChange = onChange;
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
@@ -117,9 +111,6 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    tx.showSlider(false);
 	    ty.showSlider(false);
 	    tz.showSlider(false);
-//	    tilt.showSlider(false);
-//	    azimeth.showSlider(false);
-//	    elevation.showSlider(false);
 	    
 	    add(	new Text(title), 
 	    		1,  0);
@@ -156,6 +147,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	    		0,  6);
 		 add(	azimeth, 
 	    		1,  6);
+		 updatePose(is);
 	}
 	
 	private 	TransformNR getCurrent(){
@@ -187,14 +179,14 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	}
 
 	public void updatePose(TransformNR p) {
-		TransformNR pose = p;
+		initialState = p.copy();
 		
 		
-		MobileBaseCadManager.runLater(() -> tx.setValue(pose.getX()));
-		MobileBaseCadManager.runLater(() -> ty.setValue(pose.getY()));
-		MobileBaseCadManager.runLater(() -> tz.setValue(pose.getZ()));
+		BowlerStudio.runLater(() -> tx.setValue(initialState.getX()));
+		BowlerStudio.runLater(() -> ty.setValue(initialState.getY()));
+		BowlerStudio.runLater(() -> tz.setValue(initialState.getZ()));
 		
-		RotationNR rot = pose.getRotation();
+		RotationNR rot = initialState.getRotation();
 		double  t=0;
 		try{
 			t=Math.toDegrees(rot.getRotationTilt());
@@ -216,11 +208,11 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		double tiltVar=t;
 		double eVar=e;
 		double aVar=a;
-		MobileBaseCadManager.runLater(() -> tilt.setValue(tiltVar));
-		MobileBaseCadManager.runLater(() -> elevation .setValue(eVar));
-		MobileBaseCadManager.runLater(() -> azimeth .setValue(aVar));
+		tilt.setValue(tiltVar);
+		elevation .setValue(eVar);
+		azimeth .setValue(aVar);
 		// Set the rotation after setting the UI so the read will load the rotation in its pure form
-		initialState = p;
+
 	}
 
 }

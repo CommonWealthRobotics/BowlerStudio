@@ -153,17 +153,25 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
-		tmpSet=newTrans;
+		setNewTarget(newTrans);
+	}
+
+	private void setNewTarget(TransformNR newTrans) {
+		JogThread.setProvider(this, getKin());
+		if(getKin().checkTaskSpaceTransform(newTrans))
+			tmpSet=newTrans;
 	}
 
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
-		tmpSet=newTrans;
-
+		if(getKin().checkTaskSpaceTransform(newTrans))
+			setNewTarget(newTrans);
+		else
+			transformTarget.updatePose(getKin().getCurrentPoseTarget());
 	}
 
 	public void setCurrent(TransformNR currentPoseTarget) {
-		tmpSet=currentPoseTarget;
+		setNewTarget(currentPoseTarget);
 	}
 	
 	public DHParameterKinematics getKin() {
