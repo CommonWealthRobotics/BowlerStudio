@@ -182,9 +182,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		initialState = p.copy();
 		
 		
-		BowlerStudio.runLater(() -> tx.setValue(initialState.getX()));
-		BowlerStudio.runLater(() -> ty.setValue(initialState.getY()));
-		BowlerStudio.runLater(() -> tz.setValue(initialState.getZ()));
+		tx.setValue(initialState.getX());
+		ty.setValue(initialState.getY());
+		tz.setValue(initialState.getZ());
 		
 		RotationNR rot = initialState.getRotation();
 		double  t=0;

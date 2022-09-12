@@ -227,7 +227,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public String getFormatted(double value) {
 		if (intCast)
 			return String.valueOf((int) value);
-		return String.format("%8.2f", (double) value);
+		return String.format("%8.3f", (double) value);
 	}
 
 	public IOnEngineeringUnitsChange getListener() {
