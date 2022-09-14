@@ -389,22 +389,12 @@ public class BowlerStudioModularFrame {
 		if (webTabs.get(newTab) != null) {
 			BowlerStudio.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {
-			BowlerStudio.runLater(() -> {
+			//BowlerStudio.runLater(() -> {
 				if(newTab.getGraphic()==null) {
 					newTab.setGraphic(AssetFactory.loadIcon("Hardware-Config.png"));
 				}
 				if(newTab.getContent()==null) {
-					new Thread(()->{
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						System.out.println("Tab "+newTab.getText()+" failed to load, retrying "+newTab.getContent()+" "+newTab.getGraphic());
-						addTab( newTab,  b);
-					}).start();
-					return;
+					throw new RuntimeException("Tabs must have content before loading");
 				}
 				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 				dn.closedProperty().addListener(event -> {
@@ -414,7 +404,7 @@ public class BowlerStudioModularFrame {
 				webTabs.put(newTab, dn);
 				dn.dock(dockPane, DockPos.CENTER, getTutorialDockNode());
 				
-			});
+			//});
 		}
 	}
 

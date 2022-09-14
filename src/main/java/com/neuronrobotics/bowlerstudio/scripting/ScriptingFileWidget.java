@@ -89,12 +89,15 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	private void startStopAction() {
-		runfx.setDisable(true);
-		if (running)
-			stop();
-		else
-			start();
-		runfx.setDisable(false);
+		BowlerStudio.runLater(() -> {runfx.setDisable(true);});
+		// perform start stop outside the UI thread
+		new Thread(()->{
+			if (running)
+				stop();
+			else
+				start();
+			BowlerStudio.runLater(() -> {runfx.setDisable(false);});
+		}).start();
 	}
 
 	private ScriptingFileWidget(ScriptingWidgetType type, File currentFile) {

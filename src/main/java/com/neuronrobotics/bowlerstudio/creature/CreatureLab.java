@@ -16,6 +16,7 @@ import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -95,13 +96,16 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				loader.setClassLoader(getClass().getClassLoader());
 				try {
 					root = loader.load();
-					finishLoading(device);
+					setContent(root);
+					new Thread(()->{
+						finishLoading(device);
+					}).start();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
 			});
-
+			ThreadUtil.wait(16);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -151,9 +155,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		try {
 			source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
 			creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
-		} catch (GitAPIException | IOException e) {
-			// TODO Auto-generated catch block
-			new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+		} catch (Exception e) {
+			e.printStackTrace();
 			
 		}
 		
@@ -239,7 +242,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		setCadMode(true);// start the UI in config mode
 		generateCad();
 
-		setContent(root);
+		
 
 	}
 	private boolean hasWalking(MobileBase device) {

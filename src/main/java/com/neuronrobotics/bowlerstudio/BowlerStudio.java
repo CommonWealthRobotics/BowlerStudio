@@ -138,7 +138,9 @@ public class BowlerStudio extends Application {
 	}
 	
 	public static void runLater(Runnable r) {
-		Exception ex = new Exception("UI Thread Exception here!");
+		runLater(r,new Exception("UI Thread Exception here!"));
+	}
+	public static void runLater(Runnable r,Throwable ex) {
 		Platform.runLater(()->{
 			try {
 				r.run();
@@ -149,7 +151,6 @@ public class BowlerStudio extends Application {
 			
 		});
 	}
-
 	public static OutputStream getOut() {
 		if (out == null)
 			out = new Console();

@@ -18,6 +18,8 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
+import com.neuronrobotics.sdk.util.ThreadUtil;
+
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -211,7 +213,11 @@ public class PluginManager {
 					AbstractBowlerStudioTab t = generateTab(c);
 
 					// allow the threads to finish before adding
-					//ThreadUtil.wait(50);
+					ThreadUtil.wait(50);
+					if(t.getContent()==null) {
+						System.out.println("ERROR tab failed to load!");
+						return;
+					}
 					getBowlerStudioController().addTab(t, true);
 					
 					t.setOnCloseRequest(new EventHandler<Event>() {

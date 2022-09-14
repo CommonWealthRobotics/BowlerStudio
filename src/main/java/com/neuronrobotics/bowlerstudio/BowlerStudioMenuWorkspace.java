@@ -43,13 +43,13 @@ public class BowlerStudioMenuWorkspace {
 							ScriptingEngine.pull(o);
 					} catch (Throwable e) {
 						e.printStackTrace();
-						ScriptingEngine.deleteRepo(o);
+						//ScriptingEngine.deleteRepo(o);
 						try {
 							ScriptingEngine.pull(o);
 						} catch (Throwable ex) {
-							getWorkspaceData().remove(o);
-							ScriptingEngine.deleteRepo(o);
-							i--;
+							//getWorkspaceData().remove(o);
+							//ScriptingEngine.deleteRepo(o);
+							//i--;
 						}
 					}
 				} catch (Exception e) {

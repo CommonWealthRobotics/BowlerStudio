@@ -326,11 +326,11 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	public void addTab(Tab tab, boolean closable) {
 
-		// new RuntimeException().printStackTrace();
+		Exception ex = new RuntimeException();
 
 		BowlerStudio.runLater(() -> {
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().addTab(tab, closable);
-		});
+		},ex);
 
 	}
 

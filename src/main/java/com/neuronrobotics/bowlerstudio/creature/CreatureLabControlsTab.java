@@ -1,4 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
@@ -53,12 +55,14 @@ public class CreatureLabControlsTab {
 
 	public void setOverlayTop(VBox progress) {
 		// TODO Auto-generated method stub
-		progressBar.getChildren().clear();
-		progressBar.getChildren().add(progress);
-		AnchorPane.setTopAnchor(progress, 0.0);
-		AnchorPane.setLeftAnchor(progress, 0.0);
-     	AnchorPane.setRightAnchor(progress, 0.0);
-     	AnchorPane.setBottomAnchor(progress, 0.0);
+		BowlerStudio.runLater(()->{
+			progressBar.getChildren().clear();
+			progressBar.getChildren().add(progress);
+			AnchorPane.setTopAnchor(progress, 0.0);
+			AnchorPane.setLeftAnchor(progress, 0.0);
+	     	AnchorPane.setRightAnchor(progress, 0.0);
+	     	AnchorPane.setBottomAnchor(progress, 0.0);
+		});
 	}
 
 	public void setOverlayTopRight(JogMobileBase walkWidget) {
