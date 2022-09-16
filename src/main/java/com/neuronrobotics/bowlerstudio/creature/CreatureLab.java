@@ -84,7 +84,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			e1.printStackTrace();
 		}
 		MobileBase device = (MobileBase) pm;
-		
+
 		// Button save = new Button("Save Configuration");
 
 		FXMLLoader loader;
@@ -97,12 +97,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				try {
 					root = loader.load();
 					setContent(root);
-					new Thread(()->{
+					new Thread(() -> {
 						finishLoading(device);
 					}).start();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 			});
 			ThreadUtil.wait(16);
@@ -115,91 +115,97 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private void finishLoading(MobileBase device) {
 
-		TreeView<String> tree = null;
 		TreeItem<String> rootItem = null;
 		TreeItem<String> mainBase = null;
-		int count =1;
-		for(DHParameterKinematics kin:device.getAllDHChains()) {
-			for(int i=0;i<kin.getNumberOfLinks();i++) {
+		int count = 1;
+		for (DHParameterKinematics kin : device.getAllDHChains()) {
+			for (int i = 0; i < kin.getNumberOfLinks(); i++) {
 				DHLink dhLink = kin.getDhLink(i);
-				if(dhLink.getSlaveMobileBase()!=null) {
+				if (dhLink.getSlaveMobileBase() != null) {
 					count++;
 				}
 			}
 		}
 		try {
 			rootItem = new TreeItem<String>("Mobile Bases", AssetFactory.loadIcon("creature.png"));
-			mainBase= new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
+			mainBase = new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
 		} catch (Exception e) {
 			rootItem = new TreeItem<String>(device.getScriptingName());
 		}
-		if(count==1) {
-			rootItem=mainBase;
-		}else {
+		if (count == 1) {
+			rootItem = mainBase;
+		} else {
 			rootItem.getChildren().add(mainBase);
 		}
-		tree = new TreeView<>(rootItem);
+		TreeItem<String> rootItemFinal = rootItem;
+		TreeItem<String> mainBaseFinal = mainBase;
 		AnchorPane treebox1 = tab.getTreeBox();
-		treebox1.getChildren().clear();
-		treebox1.getChildren().add(tree);
-		AnchorPane.setTopAnchor(tree, 0.0);
-		AnchorPane.setLeftAnchor(tree, 0.0);
-		AnchorPane.setRightAnchor(tree, 0.0);
-		AnchorPane.setBottomAnchor(tree, 0.0);
+		// @JansenSmith - placed contents in llambda runnable - 20220915
+		BowlerStudio.runLater(() -> {
+			TreeView<String> tree = new TreeView<>(rootItemFinal);
+			treebox1.getChildren().clear();
+			treebox1.getChildren().add(tree);
+			AnchorPane.setTopAnchor(tree, 0.0);
+			AnchorPane.setLeftAnchor(tree, 0.0);
+			AnchorPane.setRightAnchor(tree, 0.0);
+			AnchorPane.setBottomAnchor(tree, 0.0);
 
-		
-		HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
-		HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
-		File source;
-		boolean creatureIsOwnedByUser=false;
-		try {
-			source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
-			creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
-		} catch (Exception e) {
-			e.printStackTrace();
-			
-		}
-		
-		rootItem.setExpanded(true);
-		MobileBaseCadManager.get(device,BowlerStudioController.getMobileBaseUI());
-		MobleBaseMenueFactory.load(device, tree, mainBase, callbackMapForTreeitems, widgetMapForTreeitems, this,true,creatureIsOwnedByUser);
-		tree.setPrefWidth(325);
-		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		JogMobileBase walkWidget = new JogMobileBase(device);
-		tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
+			File source;
+			boolean creatureIsOwnedByUser = false;
+			try {
+				source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+				creatureIsOwnedByUser = ScriptingEngine.checkOwner(source);
+			} catch (Exception e) {
+				e.printStackTrace();
 
-			@Override
-			public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-				@SuppressWarnings("unchecked")
-				TreeItem<String> treeItem = (TreeItem<String>) newValue;
-				new Thread() {
-					public void run() {
+			}
 
-						if (callbackMapForTreeitems.get(treeItem) != null) {
-							callbackMapForTreeitems.get(treeItem).run();
+			rootItemFinal.setExpanded(true);
+			MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
+			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems, this,
+					true, creatureIsOwnedByUser);
+			tree.setPrefWidth(325);
+			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+			JogMobileBase walkWidget = new JogMobileBase(device);
+			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+
+				@Override
+				public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+					@SuppressWarnings("unchecked")
+					TreeItem<String> treeItem = (TreeItem<String>) newValue;
+					new Thread() {
+						public void run() {
+
+							if (callbackMapForTreeitems.get(treeItem) != null) {
+								callbackMapForTreeitems.get(treeItem).run();
+							}
+							AnchorPane box = hasWalking(device) ? tab.getControlsBox() : tab.getWalkingBox();
+							if (widgetMapForTreeitems.get(treeItem) != null) {
+
+								BowlerStudio.runLater(() -> {
+									box.getChildren().clear();
+									Group g = widgetMapForTreeitems.get(treeItem);
+									box.getChildren().add(g);
+									AnchorPane.setTopAnchor(g, 0.0);
+									AnchorPane.setLeftAnchor(g, 0.0);
+									AnchorPane.setRightAnchor(g, 0.0);
+									AnchorPane.setBottomAnchor(g, 0.0);
+								});
+							} else {
+								BowlerStudio.runLater(() -> {
+									box.getChildren().clear();
+								});
+							}
 						}
-						AnchorPane box=hasWalking(device)?tab.getControlsBox():tab.getWalkingBox();
-						if (widgetMapForTreeitems.get(treeItem) != null) {
 
-							BowlerStudio.runLater(() -> {
-								box.getChildren().clear();
-								Group g = widgetMapForTreeitems.get(treeItem);
-								box.getChildren().add(g);
-								AnchorPane.setTopAnchor(g, 0.0);
-								AnchorPane.setLeftAnchor(g, 0.0);
-								AnchorPane.setRightAnchor(g, 0.0);
-								AnchorPane.setBottomAnchor(g, 0.0);
-							});
-						} else {
-							BowlerStudio.runLater(() -> {
-								box.getChildren().clear();
-							});
-						}
-					}
+					}.start();
 
-
-				}.start();
-
+				}
+			});
+			if (hasWalking(device)) {
+				tab.setOverlayTopRight(walkWidget);
 			}
 		});
 		VBox progress = new VBox(10);
@@ -219,7 +225,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb2.setOnAction(event -> {
 			setCadMode(true);
 		});
-		
+
 		HBox radioOptions = new HBox(10);
 		radioOptions.getChildren().addAll(new Label("Cad"), rb1, rb2, new Label("Config"));
 
@@ -235,21 +241,17 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		progress.setMinHeight(100);
 		progress.setPrefSize(325, 150);
 		tab.setOverlayTop(progress);
-		if(	hasWalking(device)) {
-			tab.setOverlayTopRight(walkWidget);
-		}
+
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
 		generateCad();
 
-		
+	}
 
-	}
 	private boolean hasWalking(MobileBase device) {
-		return device.getLegs().size()>0||
-				device.getSteerable().size()>0||
-				device.getDrivable().size()>0;
+		return device.getLegs().size() > 0 || device.getSteerable().size() > 0 || device.getDrivable().size() > 0;
 	}
+
 	private void setCadMode(boolean mode) {
 		new Thread(() -> {
 			baseManager.setConfigurationViewerMode(mode);
@@ -258,7 +260,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				generateCad();
 			}
 		}).start();
-		
+
 	}
 
 	public void generateCad() {
