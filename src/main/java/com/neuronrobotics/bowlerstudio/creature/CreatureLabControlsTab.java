@@ -67,12 +67,15 @@ public class CreatureLabControlsTab {
 
 	public void setOverlayTopRight(JogMobileBase walkWidget) {
 		// TODO Auto-generated method stub
-		walkingBox.getChildren().clear();
-		walkingBox.getChildren().add(walkWidget);
-		AnchorPane.setTopAnchor(walkWidget, 0.0);
-		AnchorPane.setLeftAnchor(walkWidget, 0.0);
-     	AnchorPane.setRightAnchor(walkWidget, 0.0);
-     	AnchorPane.setBottomAnchor(walkWidget, 0.0);
+		// @JansenSmith - placed contents in llambda runnable - 20220915
+		BowlerStudio.runLater(()->{
+			walkingBox.getChildren().clear();
+			walkingBox.getChildren().add(walkWidget);
+			AnchorPane.setTopAnchor(walkWidget, 0.0);
+			AnchorPane.setLeftAnchor(walkWidget, 0.0);
+	     	AnchorPane.setRightAnchor(walkWidget, 0.0);
+	     	AnchorPane.setBottomAnchor(walkWidget, 0.0);
+		});
 	}
 
     
