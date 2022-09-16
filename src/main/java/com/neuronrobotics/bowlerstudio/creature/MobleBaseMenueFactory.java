@@ -409,8 +409,38 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
+			TreeItem<String> PlaceLimb = new TreeItem<>("Move Relative MobileBse Location",
+					AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
-			rootItem.getChildren().addAll(bodymass, imuCenter);
+			callbackMapForTreeitems.put(PlaceLimb, () -> {
+				if (widgetMapForTreeitems.get(PlaceLimb) == null) {
+					// create the widget for the leg when looking at it for the
+					// first time
+					try {
+						widgetMapForTreeitems.put(PlaceLimb,
+								new Group(new TransformWidget("Move place where limb is attached to body",
+										device.getRobotToFiducialTransform(), new IOnTransformChange() {
+
+											@Override
+											public void onTransformFinished(TransformNR newTrans) {
+												Log.debug("Limb to base" + newTrans.toString());
+												device.setRobotToFiducialTransform(newTrans);
+											}
+
+											@Override
+											public void onTransformChaging(TransformNR newTrans) {
+												Log.debug("Limb to base" + newTrans.toString());
+												device.setRobotToFiducialTransform(newTrans);
+											}
+										})));
+					} catch (Exception ex) {
+						BowlerStudio.printStackTrace(ex);
+					}
+				}
+
+			});
+			
+			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
 			if (root)
 				rootItem.getChildren().addAll(physics, regnerate, printable, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
