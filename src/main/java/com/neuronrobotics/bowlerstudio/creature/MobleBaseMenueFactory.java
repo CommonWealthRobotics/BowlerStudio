@@ -409,7 +409,7 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
-			TreeItem<String> PlaceLimb = new TreeItem<>("Move Relative MobileBse Location",
+			TreeItem<String> PlaceLimb = new TreeItem<>("Move MobileBase ",
 					AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
 			callbackMapForTreeitems.put(PlaceLimb, () -> {
@@ -418,18 +418,17 @@ public class MobleBaseMenueFactory {
 					// first time
 					try {
 						widgetMapForTreeitems.put(PlaceLimb,
-								new Group(new TransformWidget("Move place where limb is attached to body",
+								new Group(new TransformWidget("Move Relative MobileBase Location",
 										device.getRobotToFiducialTransform(), new IOnTransformChange() {
 
 											@Override
 											public void onTransformFinished(TransformNR newTrans) {
-												Log.debug("Limb to base" + newTrans.toString());
+												System.err.println("Limb to base" + newTrans.toString());
 												device.setRobotToFiducialTransform(newTrans);
 											}
 
 											@Override
 											public void onTransformChaging(TransformNR newTrans) {
-												Log.debug("Limb to base" + newTrans.toString());
 												device.setRobotToFiducialTransform(newTrans);
 											}
 										})));
