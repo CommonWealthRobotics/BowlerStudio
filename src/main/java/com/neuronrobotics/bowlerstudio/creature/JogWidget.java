@@ -59,6 +59,7 @@ public class JogWidget extends GridPane
 		allWidgets.add(this);
 		this.setKin(k);
 
+		getKin().addPoseUpdateListener(this);
 		k.addPoseUpdateListener(this);
 		k.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
 			
@@ -213,9 +214,7 @@ public class JogWidget extends GridPane
 			}
 			stop = true;
 			return;
-		} else {
-			Log.warning(button.getText() + " Button pressed ");
-		}
+		} 
 		if (button == px) {
 			x = 1;
 		}
@@ -286,8 +285,8 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		if (pose != null && transformTarget != null)
-			transformTarget.updatePose(getKin().getCurrentPoseTarget());
+		if ( transformTarget != null && pose!=null)
+			transformTarget.updatePose(pose);
 	}
 
 
