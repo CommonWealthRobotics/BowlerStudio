@@ -139,7 +139,7 @@ public class ParallelWidget extends Group {
 	}
 	private void home() {
 		try {
-			getGroup().setDesiredTaskSpaceTransform(getGroup().calcHome(),0);
+			getGroup().setDesiredTaskSpaceTransform(getGroup().getCurrentPoseTarget(),0);
 		} catch (Exception e) {}
 	}
 	private void setupAddReferenceSection() {
