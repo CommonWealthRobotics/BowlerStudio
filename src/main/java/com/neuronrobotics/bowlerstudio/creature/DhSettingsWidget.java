@@ -26,8 +26,8 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 	private DHParameterKinematics dh;
 	private IOnEngineeringUnitsChange externalListener;
 	private DhSettingsWidget self =this;
-	public DhSettingsWidget(DHLink dhLink,DHParameterKinematics device2,IOnEngineeringUnitsChange externalListener ){
-		this.dhLink = dhLink;
+	public DhSettingsWidget(DHLink dhl,DHParameterKinematics device2,IOnEngineeringUnitsChange externalListener ){
+		this.dhLink = dhl;
 		this.dh = device2;
 	
 		this.externalListener = externalListener;
@@ -114,26 +114,6 @@ public class DhSettingsWidget extends javafx.scene.Group implements IOnEngineeri
 
 		if(externalListener!=null)
 			externalListener.onSliderMoving(source, newAngleDegrees);
-//		//this calls the render update function attachec as the on jointspace update	
-//		double[] joint=device2.getCurrentJointSpaceVector();
-//		device2.getChain().getChain(joint);
-//		Platform.runLater(()->device2.onJointSpaceUpdate(device2, joint));
-		if(dh.checkTaskSpaceTransform(dh.getCurrentPoseTarget())) {
-			try {
-				dh.setDesiredTaskSpaceTransform(dh.getCurrentPoseTarget(), 0);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-				
-			}
-		}else {
-			dh.getCurrentTaskSpaceTransform();
-			// this calls the render update function attachec as the on jointspace
-			// update
-			double[] joint = dh.getCurrentJointSpaceVector();
-			dh.getChain().getChain(joint);
-			BowlerStudio.runLater(() -> dh.onJointSpaceUpdate(dh, joint));
-		}
 	}
 
 	@Override
