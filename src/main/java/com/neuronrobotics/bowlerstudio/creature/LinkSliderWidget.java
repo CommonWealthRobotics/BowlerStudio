@@ -316,19 +316,7 @@ public class LinkSliderWidget extends Group
 		});
 		getSetpoint().setLowerBound(getAbstractLink().getMinEngineeringUnits());
 		getSetpoint().setUpperBound(getAbstractLink().getMaxEngineeringUnits());
-		if(device.checkTaskSpaceTransform(device.getCurrentPoseTarget()))
-			try {
-				device.setDesiredTaskSpaceTransform(device.getCurrentPoseTarget(), 0);
-			} catch (Exception e) {
-				try {
-					device.setDesiredTaskSpaceTransform(device.calcHome(), 0);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
-					
-				}
 
-			}
 	}
 
 	public void setUpperBound(double newBound) {

@@ -689,34 +689,19 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 
+		link.getChildren().add(hwConf);
+
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				BowlerStudio.runLater(() -> {
-					LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
-					widgetMapForTreeitems.put(hwConf, lsw);
-					lsw.enable();
-				});
-				
-			}
-			if (linkIndex == 0)
-				BowlerStudio.select(base, dh);
-			else
-				BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
-		});
-		link.getChildren().add(hwConf);
-
-		callbackMapForTreeitems.put(link, () -> {
-			if (widgetMapForTreeitems.get(link) == null) {
-				// create the widget for the leg when looking at it for the
-				// first time
 				LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
-				widgetMapForTreeitems.put(link, lsw);
+				widgetMapForTreeitems.put(hwConf, lsw);
+				lsw.enable();
 			}
 			BowlerJInputDevice controller = creatureLab.getController();
 			if (controller != null) {
-				((LinkSliderWidget)widgetMapForTreeitems.get(link)).setGameController(controller);
+				((LinkSliderWidget)widgetMapForTreeitems.get(hwConf)).setGameController(controller);
 			}
 			try {
 				if (linkIndex == 0)
@@ -726,7 +711,7 @@ public class MobleBaseMenueFactory {
 			} catch (Exception ex) {
 				System.err.println("Limb not loaded yet");
 			}
-			((LinkSliderWidget)widgetMapForTreeitems.get(link)).enable();
+			((LinkSliderWidget)widgetMapForTreeitems.get(hwConf)).enable();
 			// select( base, dh);
 			// activate controller
 		});
