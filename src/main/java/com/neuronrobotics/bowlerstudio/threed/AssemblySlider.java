@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,7 +21,8 @@ import javafx.scene.transform.Affine;
 public class AssemblySlider {
 	public static Slider getSlider(Set<CSG> listOfObjects) {
 		int s=0;
-		for(CSG c:listOfObjects) {
+		for (Iterator<CSG> iterator = listOfObjects.iterator(); iterator.hasNext();) {
+			CSG c = iterator.next();
 			PropertyStorage incomingGetStorage = c.getStorage();
 			if(incomingGetStorage.getValue("MaxAssemblyStep")!=Optional.empty()) {
 				Integer max = (Integer) incomingGetStorage.getValue("MaxAssemblyStep").get();
@@ -41,7 +43,8 @@ public class AssemblySlider {
 				int step = (int)(newValue.doubleValue()+1);
 				double fraction =-1*(newValue.doubleValue()-step);
 				
-				for(CSG c:listOfObjects) {
+				for (Iterator<CSG> iterator = listOfObjects.iterator(); iterator.hasNext();) {
+					CSG c = iterator.next();
 					PropertyStorage incomingGetStorage = c.getStorage();
 					String key = "AssemblySteps";
 					if(incomingGetStorage.getValue(key)!=Optional.empty()) {
@@ -63,7 +66,6 @@ public class AssemblySlider {
 						}
 						
 					}
-					
 				}
 			}
 		 });
