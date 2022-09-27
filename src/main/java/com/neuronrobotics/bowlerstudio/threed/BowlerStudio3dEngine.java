@@ -88,6 +88,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.*;
+import javafx.scene.SceneAntialiasing;
 
 //import javafx.util.Duration;
 
@@ -229,7 +230,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public BowlerStudio3dEngine() {
 
 		System.err.println("Setting Scene ");
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
+		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
 		rebuild();
 
 		// Set up the Ui THread explosion handler
@@ -874,12 +875,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		hand = new Group(cylinder.getMesh());
 
 		camera.setNearClip(.1);
-		camera.setFarClip(100000.0);
+		camera.setFarClip(100.0);
 		getSubScene().setCamera(camera);
 
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
-
+		camera.setDepthTest(DepthTest.ENABLE);
 		setVirtualcam(new VirtualCameraMobileBase(camera, hand));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
