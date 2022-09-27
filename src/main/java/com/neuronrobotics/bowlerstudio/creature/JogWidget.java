@@ -14,7 +14,9 @@ import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -57,9 +59,24 @@ public class JogWidget extends GridPane
 	public JogWidget(DHParameterKinematics k, MobileBase source) {
 		this.source = source;
 		allWidgets.add(this);
+		JogWidget w=this;
+		source.addConnectionEventListener(new IDeviceConnectionEventListener() {
+			
+			@Override
+			public void onDisconnect(BowlerAbstractDevice source) {
+				allWidgets.remove(w);
+			}
+			
+			@Override
+			public void onConnect(BowlerAbstractDevice source) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		this.setKin(k);
-
+		// paralell group listener
 		getKin().addPoseUpdateListener(this);
+		// just a limb listener. if is not paralell group will not add internally
 		k.addPoseUpdateListener(this);
 		k.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
 			
