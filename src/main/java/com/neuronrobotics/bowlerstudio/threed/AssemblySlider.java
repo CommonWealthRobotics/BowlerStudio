@@ -21,8 +21,8 @@ import javafx.scene.transform.Affine;
 public class AssemblySlider {
 	public static Slider getSlider(Set<CSG> listOfObjects) {
 		int s=0;
-		for (Iterator<CSG> iterator = listOfObjects.iterator(); iterator.hasNext();) {
-			CSG c = iterator.next();
+		
+		for (CSG c : listOfObjects.toArray(new CSG[0])) {
 			PropertyStorage incomingGetStorage = c.getStorage();
 			if(incomingGetStorage.getValue("MaxAssemblyStep")!=Optional.empty()) {
 				Integer max = (Integer) incomingGetStorage.getValue("MaxAssemblyStep").get();

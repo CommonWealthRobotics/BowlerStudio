@@ -44,9 +44,7 @@ public class VirtualCameraMobileBase {
 		manipulationFrame.getChildren().addAll(camera, hand);
 		manipulationFrame.getTransforms().add(camerUserPerspective);
 		cameraFrame.getChildren().add(manipulationFrame);
-		// new RuntimeException().printStackTrace();
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
-		BowlerStudio.runLater(() -> updatePositions());
 	}
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
