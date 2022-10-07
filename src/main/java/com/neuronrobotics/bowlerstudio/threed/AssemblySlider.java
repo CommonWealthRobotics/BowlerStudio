@@ -22,7 +22,9 @@ public class AssemblySlider {
 	public static Slider getSlider(Set<CSG> listOfObjects) {
 		int s=0;
 		
-		for (CSG c : listOfObjects.toArray(new CSG[0])) {
+		CSG[] array = listOfObjects.toArray(new CSG[0]);
+		for (int i = 0; i < array.length; i++) {
+			CSG c = array[i];
 			PropertyStorage incomingGetStorage = c.getStorage();
 			if(incomingGetStorage.getValue("MaxAssemblyStep")!=Optional.empty()) {
 				Integer max = (Integer) incomingGetStorage.getValue("MaxAssemblyStep").get();

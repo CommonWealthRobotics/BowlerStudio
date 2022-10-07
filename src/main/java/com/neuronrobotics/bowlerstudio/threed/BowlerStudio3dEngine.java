@@ -520,8 +520,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			return currentCsg.getMesh();
 		getCsgMap().put(currentCsg, currentCsg.getMesh());
 		BowlerStudio.runLater(() -> controlsChecks.getChildren().clear());
-		
-		BowlerStudio.runLater(() -> controlsChecks.getChildren().addAll(AssemblySlider.getSlider(getCsgMap().keySet())));
+		Slider slider = AssemblySlider.getSlider(getCsgMap().keySet());
+		BowlerStudio.runLater(() -> {
+			controlsChecks.getChildren().addAll(slider);
+		});
 		csgSourceFile.put(currentCsg, source);
 		Optional<Object> m = currentCsg.getStorage().getValue("manipulator");
 		HashMap<javafx.event.EventType<MouseEvent>,EventHandler<MouseEvent>> eventForManipulation=null;
