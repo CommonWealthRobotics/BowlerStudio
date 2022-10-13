@@ -383,17 +383,8 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 
 			renderSplashFrame(80, "Example Robots");
-			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
-																													// repo,
-																													// change
-																													// this
-																													// if
-																													// you
-																													// fork
-																													// this
-																													// demo
-					"exampleRobots.json"// File from within the Git repo
-			);
+			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",null);
+			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git");
 			renderSplashFrame(81, "CSG database");
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 
@@ -453,8 +444,8 @@ public class BowlerStudio extends Application {
 			// ThreadUtil.wait(100);
 
 			try {
-				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git");
-				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/DeviceProviders.git");
+				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",null);
+				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/DeviceProviders.git",null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
