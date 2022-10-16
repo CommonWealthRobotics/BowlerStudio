@@ -193,7 +193,7 @@ public class NewVitaminWizardController  extends Application {
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 				
 			}
-			
+			Vitamins.clear();
 		}).start();
 
     }
@@ -246,6 +246,7 @@ public class NewVitaminWizardController  extends Application {
 			((MeasurmentConfig) ev.getTableView().getItems().get(ev.getTablePosition().getRow()))
 					.setMeasurment(value);
 			measurmentsTable.refresh();
+			Vitamins.clear();
 	    });
 		
 		
