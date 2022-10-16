@@ -874,14 +874,17 @@ public class MobleBaseMenueFactory {
 			
 			@Override
 			public void event(LinkConfiguration newConf) {
-				hwConf.setValue("Hardware Config " + newConf.getName());
-				link.setValue(newConf.getName());
-				slaves.setValue("Followers of " + newConf.getName());
-				removeMobileBase.setValue("Remove " + newConf.getName());
-				addMobileBase.setValue("Add MobileBase to " + newConf.getName());
-				addSlaves.setValue("Add following Link to " + newConf.getName());
-				design.setValue("Design Parameters " + newConf.getName());
-				remove.setValue("Remove " + newConf.getName());
+				BowlerStudio.runLater(()->{
+
+					hwConf.setValue("Hardware Config " + newConf.getName());
+					link.setValue(newConf.getName());
+					slaves.setValue("Followers of " + newConf.getName());
+					removeMobileBase.setValue("Remove " + newConf.getName());
+					addMobileBase.setValue("Add MobileBase to " + newConf.getName());
+					addSlaves.setValue("Add following Link to " + newConf.getName());
+					design.setValue("Design Parameters " + newConf.getName());
+					remove.setValue("Remove " + newConf.getName());
+				});
 				
 				
 			}
