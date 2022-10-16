@@ -332,6 +332,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			comboBox.getItems().add(type);
 		}
 		comboBox.getItems().add("virtual");
+		comboBox.getItems().add("pid-prismatic");
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
