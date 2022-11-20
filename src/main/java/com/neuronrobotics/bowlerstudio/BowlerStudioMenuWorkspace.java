@@ -33,8 +33,6 @@ public class BowlerStudioMenuWorkspace {
 		running = true;
 		rank.clear();
 		new Thread(()-> {
-			// Wait on pulls to ensure this always runs asynchronously
-			ThreadUtil.wait((int)(200*Math.random()));
 			for (int i=0;i<getWorkspaceData().keySet().size();i++) {
 				try {
 					String o = (String) getWorkspaceData().keySet().toArray()[i];

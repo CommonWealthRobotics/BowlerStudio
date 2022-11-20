@@ -212,7 +212,6 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					ScriptingEngine.deleteRepo(remote);
 					Thread.sleep(500);
 					BowlerStudio.createFileTab(file);
-					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
