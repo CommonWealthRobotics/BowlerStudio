@@ -56,6 +56,7 @@ import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1407,9 +1408,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
 							.inlineFileScriptRun(f, null);
-					for (Map.Entry<String, HashMap<String, Object>> entry : map.entrySet().stream().collect(Collectors.toList())) {
-						HashMap<String, Object> script = entry.getValue();
-						MenuItem item = new MenuItem(entry.getKey());
+					
+					List<String> entrySet = asSortedList(map.keySet());
+					
+					for (String entry : entrySet) {
+						HashMap<String, Object> script = map.get(entry);
+						MenuItem item = new MenuItem(entry);
 						item.setOnAction(event -> {
 							String id = (String) script.get("scriptGit");
 							String file = (String) script.get("scriptFile");
@@ -1511,5 +1515,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		}.start();
 
 	}
-
+	public static
+	<T extends Comparable<? super T>> List<T> asSortedList(Set<T> c) {
+	  List<T> list = new ArrayList<T>(c);
+	  java.util.Collections.sort(list);
+	  return list;
+	}
 }
