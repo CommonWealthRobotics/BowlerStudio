@@ -1,7 +1,5 @@
 package javafx.embed.swing;
 
-import com.sun.javafx.stage.WindowHelper;
-
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 

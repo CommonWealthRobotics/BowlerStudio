@@ -33,6 +33,7 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 import javafx.application.Platform;
 import javafx.embed.swing.MySwingNode;
+import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
 
@@ -63,7 +64,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	IScriptEventListener l = null;
 
-	private MySwingNode swingNode;
+	private SwingNode swingNode;
 	private RTextScrollPane spscrollPane;
 
 	private Highlighter highlighter;
@@ -265,8 +266,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		spscrollPane = new RTextScrollPane(textArea);
 
-		swingNode = new MySwingNode(this);
-
+		//swingNode = new MySwingNode(this);
+		swingNode=new javafx.embed.swing.SwingNode();
 		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
 
 		getScripting().setFocusTraversable(false);
