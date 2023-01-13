@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.video.OSUtil;
@@ -21,8 +22,10 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		this.advanced = advanced;
 		Repository repository;
 		try {
-			repository = ScriptingEngine.locateGit(file).getRepository();
+			Git locateGit = ScriptingEngine.locateGit(file);
+			repository = locateGit.getRepository();
 			File dir = repository.getWorkTree();
+			ScriptingEngine.closeGit(locateGit);
 			if (OSUtil.isLinux())
 				run(dir,System.err, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
 			if (OSUtil.isWindows())
