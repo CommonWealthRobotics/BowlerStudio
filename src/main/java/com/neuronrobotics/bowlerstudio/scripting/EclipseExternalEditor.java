@@ -51,6 +51,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			String eclipseEXE = "eclipse";
 			if (OSUtil.isLinux()) {
 				try {
+					ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",null);
 					ScriptingEngine.pull("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git");
 					eclipseEXE = ScriptingEngine
 							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",

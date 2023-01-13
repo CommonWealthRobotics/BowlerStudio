@@ -50,7 +50,7 @@ public class ExternalEditorController {
 			advanced.setOnAction(event -> {
 				advanced.setDisable(true);
 				myEditor.launch(currentFile,advanced);
-				autoRun.setSelected(true);
+				//autoRun.setSelected(true);
 			});
 		}
 
