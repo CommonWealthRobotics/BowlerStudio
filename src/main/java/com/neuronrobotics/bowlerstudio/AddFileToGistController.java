@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
@@ -14,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
@@ -63,6 +65,7 @@ public class AddFileToGistController extends Application {
 	private AnchorPane addFile;
 
 	private MenuRefreshEvent refreshevent;
+	private boolean isArduino;
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 
@@ -70,12 +73,12 @@ public class AddFileToGistController extends Application {
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
 		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
 		String slug = NONLATIN.matcher(normalized).replaceAll("");
-		return slug.toLowerCase(Locale.ENGLISH);
+		return slug;
 	}
 	// private GHGist gistID;
 
 	public AddFileToGistController(String gitRepo, MenuRefreshEvent event) {
-		this.gitRepo = gitRepo;
+		this.setGitRepo(gitRepo);
 		// this.gistID = id;
 		this.refreshevent = event;
 
@@ -84,6 +87,7 @@ public class AddFileToGistController extends Application {
 	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		isArduino=false;
 		FXMLLoader loader = AssetFactory.loadLayout("layout/addFileToGist.fxml", true);
 		Parent root;
 		loader.setController(this);
@@ -91,7 +95,7 @@ public class AddFileToGistController extends Application {
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
 		extention.getItems().clear();
-		if (gitRepo != null) {
+		if (getGitRepo() != null) {
 			newProject.getChildren().clear();
 		} else {
 			addFile.setDisable(true);
@@ -118,13 +122,18 @@ public class AddFileToGistController extends Application {
 		extention.setOnAction(event -> {
 			try {
 
-				langaugeIcon.setImage(AssetFactory.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
+				langaugeIcon.setImage(AssetFactory
+						.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
 				String key = extention.getSelectionModel().getSelectedItem();
 				IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
 				if (l != null) {
 					extentionStr = "." + l.getFileExtenetion().get(0);
 				} else
 					extentionStr = ".groovy";
+				if(ArduinoLoader.class.isInstance(l)) {
+					isArduino=true;
+				}
+				setGitRepo(gitRepo);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -133,7 +142,7 @@ public class AddFileToGistController extends Application {
 		});
 
 		BowlerStudio.runLater(() -> {
-			primaryStage.setTitle("Add File to Git Repo " + gitRepo);
+			primaryStage.setTitle("Add File to Git Repo " + getGitRepo());
 
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
@@ -150,29 +159,29 @@ public class AddFileToGistController extends Application {
 				Stage stage = (Stage) addFileButton.getScene().getWindow();
 				stage.close();
 			});
-			String text = filenameField.getText();
-			if (!text.endsWith(extentionStr)) {
-				text = text + extentionStr;
+			String filename = filenameField.getText();
+			
+			if (!filename.endsWith(extentionStr)) {
+				filename = filename + extentionStr;
 			}
 
 			String message = description.getText();
 			if (message == null || message.length() == 0) {
-				message = text;
+				message = filename;
 			}
 
-			if (gitRepo == null) {
-				gitRepo = GistHelper.createNewGist(text, message, true);
+			if (getGitRepo() == null) {
+				setGitRepo(GistHelper.createNewGist(filename, message, true));
 			}
-			System.out.println("Adding new file" + text + " to " + gitRepo);
+			System.out.println("Adding new file" + filename + " to " + getGitRepo());
 			try {
 
 				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents();
-				String fullBranch = ScriptingEngine.getFullBranch(gitRepo);
-				if(fullBranch==null)
-					fullBranch=ScriptingEngine.newBranch(gitRepo, "main");
-				ScriptingEngine.pushCodeToGit(gitRepo, fullBranch, text, defaultContents,
-						message);
-				File nf = ScriptingEngine.fileFromGit(gitRepo, text);
+				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
+				if (fullBranch == null)
+					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
+				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, defaultContents, message);
+				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 
 				BowlerStudio.createFileTab(nf);
 
@@ -200,7 +209,7 @@ public class AddFileToGistController extends Application {
 			Stage s = new Stage();
 			new Thread(() -> {
 				String url = "https://github.com/madhephaestus/TestRepo.git";
-				url=null;
+				url = null;
 				AddFileToGistController controller = new AddFileToGistController(url, new MenuRefreshEvent() {
 					@Override
 					public void setToLoggedIn() {
@@ -231,16 +240,42 @@ public class AddFileToGistController extends Application {
 				if (text == null || text.length() < 5) {
 					text = "Project " + repoName.getText();
 				}
+				String txt = repoName.getText();
+				String slugVer = toSlug(txt);
+				if (!txt.contentEquals(slugVer)) {
+					BowlerStudio.runLater(() -> {
+						repoName.setText(slugVer);
+						Alert alert = new Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+						alert.setContentText("Repository Name must be without whitespace "+slugVer);
+						alert.showAndWait();
+					});
+					return;
+				}
 				GHRepository repository = ScriptingEngine.makeNewRepo(toSlug(repoName.getText()), text);
-				gitRepo = repository.getHttpTransportUrl();
+				setGitRepo(repository.getHttpTransportUrl());
 				BowlerStudio.runLater(() -> {
 					addFile.setDisable(false);
 				});
+				
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
 
+	}
+
+	public String getGitRepo() {
+		return gitRepo;
+	}
+
+	public void setGitRepo(String gitRepo) {
+		this.gitRepo = gitRepo;
+		String dirName = ScriptingEngine.getRepositoryCloneDirectory(gitRepo).getName();
+		BowlerStudio.runLater(()->{
+			filenameField.setDisable(isArduino);
+			filenameField.setText(dirName);
+		});
+		
 	}
 }
