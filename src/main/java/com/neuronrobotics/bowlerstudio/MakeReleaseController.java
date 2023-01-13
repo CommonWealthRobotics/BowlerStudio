@@ -216,9 +216,9 @@ public class MakeReleaseController extends Application {
 			String majorStart = top[0];
 			String minorStart = top[1];
 			String bugStart = "" + (Integer.parseInt(top[2]) + 1);
-			major.setPromptText(majorStart);
-			minor.setPromptText(minorStart);
-			bugfix.setPromptText(bugStart);
+			major.setText(majorStart);
+			minor.setText(minorStart);
+			bugfix.setText(bugStart);
 		}
 		
 		BowlerStudio.runLater(() -> {
@@ -228,8 +228,10 @@ public class MakeReleaseController extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.initModality(Modality.WINDOW_MODAL);
 			primaryStage.setResizable(true);
+			check();
 			primaryStage.show();
 		});
+		
 	}
 
 }
