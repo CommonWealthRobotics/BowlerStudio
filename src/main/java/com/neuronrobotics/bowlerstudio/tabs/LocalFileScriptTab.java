@@ -266,8 +266,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		spscrollPane = new RTextScrollPane(textArea);
 
-		//swingNode = new MySwingNode(this);
-		swingNode=new javafx.embed.swing.SwingNode();
+		swingNode = new MySwingNode(this);
+		//swingNode=new javafx.embed.swing.SwingNode();
 		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
 
 		getScripting().setFocusTraversable(false);
