@@ -126,13 +126,16 @@ public class AddFileToGistController extends Application {
 						.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
 				String key = extention.getSelectionModel().getSelectedItem();
 				IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
+				
 				if (l != null) {
-					extentionStr = "." + l.getFileExtenetion().get(0);
+					extentionStr = l.getFileExtenetion().get(0);
 				} else
 					extentionStr = ".groovy";
-				
+				if(!extentionStr.startsWith(".")) {
+					extentionStr="."+extentionStr;
+				}
 				isArduino = ArduinoLoader.class.isInstance(l);
-				
+
 				setGitRepo(gitRepo);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -175,11 +178,12 @@ public class AddFileToGistController extends Application {
 			}
 			System.out.println("Adding new file" + filename + " to " + getGitRepo());
 			try {
-
+				ScriptingEngine.pull(getGitRepo());
 				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents();
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
+				
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, defaultContents, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 
@@ -209,7 +213,7 @@ public class AddFileToGistController extends Application {
 			Stage s = new Stage();
 			new Thread(() -> {
 				String url = "https://github.com/madhephaestus/TestRepo.git";
-				//url = null;
+				// url = null;
 				AddFileToGistController controller = new AddFileToGistController(url, new MenuRefreshEvent() {
 					@Override
 					public void setToLoggedIn() {
@@ -276,11 +280,12 @@ public class AddFileToGistController extends Application {
 		this.gitRepo = gitRepo;
 		if (gitRepo != null) {
 			String dirName = ScriptingEngine.getRepositoryCloneDirectory(gitRepo).getName();
-			BowlerStudio.runLater(() -> {
-				
-				filenameField.setDisable(isArduino);
-				filenameField.setText(dirName);
-			});
+			if (filenameField != null)
+				BowlerStudio.runLater(() -> {
+
+					filenameField.setDisable(isArduino);
+					filenameField.setText(dirName);
+				});
 		}
 	}
 }
