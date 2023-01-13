@@ -73,7 +73,7 @@ public class AddFileToGistController extends Application {
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
 		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
 		String slug = NONLATIN.matcher(normalized).replaceAll("");
-		return slug;
+		return slug.replaceAll("[^a-zA-Z0-9]", "");
 	}
 	// private GHGist gistID;
 
@@ -87,7 +87,7 @@ public class AddFileToGistController extends Application {
 	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		isArduino=false;
+		isArduino = false;
 		FXMLLoader loader = AssetFactory.loadLayout("layout/addFileToGist.fxml", true);
 		Parent root;
 		loader.setController(this);
@@ -130,9 +130,9 @@ public class AddFileToGistController extends Application {
 					extentionStr = "." + l.getFileExtenetion().get(0);
 				} else
 					extentionStr = ".groovy";
-				if(ArduinoLoader.class.isInstance(l)) {
-					isArduino=true;
-				}
+				
+				isArduino = ArduinoLoader.class.isInstance(l);
+				
 				setGitRepo(gitRepo);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -160,7 +160,7 @@ public class AddFileToGistController extends Application {
 				stage.close();
 			});
 			String filename = filenameField.getText();
-			
+
 			if (!filename.endsWith(extentionStr)) {
 				filename = filename + extentionStr;
 			}
@@ -209,7 +209,7 @@ public class AddFileToGistController extends Application {
 			Stage s = new Stage();
 			new Thread(() -> {
 				String url = "https://github.com/madhephaestus/TestRepo.git";
-				url = null;
+				//url = null;
 				AddFileToGistController controller = new AddFileToGistController(url, new MenuRefreshEvent() {
 					@Override
 					public void setToLoggedIn() {
@@ -246,8 +246,11 @@ public class AddFileToGistController extends Application {
 					BowlerStudio.runLater(() -> {
 						repoName.setText(slugVer);
 						Alert alert = new Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-						alert.setContentText("Repository Name must be without whitespace "+slugVer);
+						alert.setContentText("Repository Name must Valid: " + slugVer);
 						alert.showAndWait();
+						BowlerStudio.runLater(() -> {
+							newProject.setDisable(false);
+						});
 					});
 					return;
 				}
@@ -256,7 +259,7 @@ public class AddFileToGistController extends Application {
 				BowlerStudio.runLater(() -> {
 					addFile.setDisable(false);
 				});
-				
+
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -271,11 +274,13 @@ public class AddFileToGistController extends Application {
 
 	public void setGitRepo(String gitRepo) {
 		this.gitRepo = gitRepo;
-		String dirName = ScriptingEngine.getRepositoryCloneDirectory(gitRepo).getName();
-		BowlerStudio.runLater(()->{
-			filenameField.setDisable(isArduino);
-			filenameField.setText(dirName);
-		});
-		
+		if (gitRepo != null) {
+			String dirName = ScriptingEngine.getRepositoryCloneDirectory(gitRepo).getName();
+			BowlerStudio.runLater(() -> {
+				
+				filenameField.setDisable(isArduino);
+				filenameField.setText(dirName);
+			});
+		}
 	}
 }

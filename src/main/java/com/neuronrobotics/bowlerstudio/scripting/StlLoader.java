@@ -31,6 +31,14 @@ public class StlLoader implements IScriptingLanguage {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	/**
+	 * Get the contents of an empty file
+	 * 
+	 * @return
+	 */
+	public String getDefaultContents() {
+		return null;
+	}
 	@Override
 	public ArrayList<String> getFileExtenetion() {
 		// TODO Auto-generated method stub
