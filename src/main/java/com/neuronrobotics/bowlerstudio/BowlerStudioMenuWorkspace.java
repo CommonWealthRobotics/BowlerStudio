@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -44,7 +46,10 @@ public class BowlerStudioMenuWorkspace {
 						//ScriptingEngine.deleteRepo(o);
 						try {
 							ScriptingEngine.pull(o);
-						} catch (Throwable ex) {
+						} catch (InvalidRemoteException ex) {
+							getWorkspaceData().remove(o);
+							ScriptingEngine.deleteRepo(o);
+						}catch (Throwable ex) {
 							//getWorkspaceData().remove(o);
 							//ScriptingEngine.deleteRepo(o);
 							//i--;
