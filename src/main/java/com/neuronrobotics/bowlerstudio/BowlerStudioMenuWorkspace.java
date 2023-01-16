@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
@@ -42,14 +43,14 @@ public class BowlerStudioMenuWorkspace {
 						if(!ScriptingEngine.isUrlAlreadyOpen(o))
 							ScriptingEngine.pull(o);
 					} catch (Throwable e) {
-						e.printStackTrace();
-						//ScriptingEngine.deleteRepo(o);
 						try {
 							ScriptingEngine.pull(o);
 						} catch (InvalidRemoteException ex) {
+							System.err.println("Deleting repo from workspace "+ex.getMessage());
 							getWorkspaceData().remove(o);
 							ScriptingEngine.deleteRepo(o);
 						}catch (Throwable ex) {
+							e.printStackTrace();
 							//getWorkspaceData().remove(o);
 							//ScriptingEngine.deleteRepo(o);
 							//i--;
