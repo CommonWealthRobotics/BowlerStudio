@@ -23,15 +23,18 @@ public class Tutorial {
 		File i=null;
 		ConfigurationDatabase.setObject("BowlerStudioConfigs", "tutorialBranch",
 				"deploy");
+		String remoteURI = (String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialSource",
+				"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
 		do{
+
 			i= ScriptingEngine.fileFromGit(
-					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialSource",
-							"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git"),
+					remoteURI,
 					(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBranch",
 							"deploy"), // the default branch is source, so this needs to
 					// be specified
 					"docs/index.html");
 		}while(!i.exists());
+		ScriptingEngine.pull(remoteURI);
 		HOME_Local_URL_ROOT=(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBaseUrl",
 				"/BowlerStudio/Welcome-To-BowlerStudio/");
 		File indexOfTutorial=i;
