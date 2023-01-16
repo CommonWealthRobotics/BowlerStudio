@@ -7,9 +7,6 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 
-import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.Cylinder;
-import eu.mihosoft.vrl.v3d.Extrude;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -40,13 +37,14 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import eu.mihosoft.vrl.v3d.*;
 
-class BezierEditor{
+public class BezierEditor{
 	Type TT_mapStringString = new TypeToken<HashMap<String, HashMap<String,List<Double>>>>() {}.getType();
 	Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 	File	cachejson;
 	TransformNR end = new TransformNR();
 	TransformNR cp1 = new TransformNR();
 	TransformNR cp2 = new TransformNR();
+	TransformNR strt = new TransformNR();
 	ArrayList<CSG> parts = new ArrayList<CSG>();
 	CSG displayPart=new Cylinder(5,0,20,10).toCSG()
 	.toZMax()
@@ -55,6 +53,7 @@ class BezierEditor{
 	CartesianManipulator endManip;
 	CartesianManipulator cp1Manip;
 	CartesianManipulator cp2Manip;
+	CartesianManipulator start;
 	HashMap<String, HashMap<String,List<Double>>> database;
 	boolean updating = false;
 	private String url;
@@ -78,6 +77,7 @@ class BezierEditor{
 				List<Double> cp1in = (List<Double>)database.get("bezier").get("control one");
 				List<Double> cp2in = (List<Double>)database.get("bezier").get("control two");
 				List<Double> ep = (List<Double>)database.get("bezier").get("end point");
+				List<Double> st = (List<Double>)database.get("bezier").get("start point");
 				end.setX(ep.get(0));
 				end.setY(ep.get(1));
 				end.setZ(ep.get(2));
@@ -87,6 +87,10 @@ class BezierEditor{
 				cp2.setX(cp2in.get(0));
 				cp2.setY(cp2in.get(1));
 				cp2.setZ(cp2in.get(2));
+
+				strt.setX(st.get(0));
+				strt.setY(st.get(1));
+				strt.setZ(st.get(2));
 				loaded=true;
 			}
 		}catch(Throwable t) {
@@ -103,6 +107,7 @@ class BezierEditor{
 			cp2.setX(0);
 			cp2.setY(50);
 			cp2.setZ(-50);
+
 			database= new HashMap<>();
 		}
 
@@ -110,6 +115,7 @@ class BezierEditor{
 		endManip=new CartesianManipulator(end,()->{save();},()->{update();});
 		cp1Manip=new CartesianManipulator(cp1,()->{save();},()->{update();});
 		cp2Manip=new CartesianManipulator(cp2,()->{save();},()->{update();});
+		start=new CartesianManipulator(strt,()->{save();},()->{update();});
 
 		for(int i=0;i<numPoints;i++){
 			CSG part=displayPart.clone();
@@ -125,6 +131,7 @@ class BezierEditor{
 		back.addAll(endManip.get());
 		back.addAll(cp1Manip.get());
 		back.addAll(cp2Manip.get());
+		back.addAll(start.get());
 		back.addAll(parts);
 		return back;
 	}
@@ -145,35 +152,56 @@ class BezierEditor{
 		updating=false;
 	}
 	public ArrayList<Transform> transforms (){
-		return Extrude.bezierToTransforms(
-				new Vector3d(cp1Manip.manipulationMatrix.getTx(),cp1Manip.manipulationMatrix.getTy(),cp1Manip.manipulationMatrix.getTz()), // Control point one
-				new Vector3d(cp2Manip.manipulationMatrix.getTx(),cp2Manip.manipulationMatrix.getTy(),cp2Manip.manipulationMatrix.getTz()), // Control point two
-				new Vector3d(endManip.manipulationMatrix.getTx(),endManip.manipulationMatrix.getTy(),endManip.manipulationMatrix.getTz()), // Endpoint
-				parts.size()// Iterations
-				);
+		ArrayList<Transform> tf=Extrude.bezierToTransforms(
+		new Vector3d(	cp1Manip.manipulationMatrix.getTx()-start.manipulationMatrix.getTx(),
+						cp1Manip.manipulationMatrix.getTy()-start.manipulationMatrix.getTy(),
+						cp1Manip.manipulationMatrix.getTz()-start.manipulationMatrix.getTz()), // Control point one
+		new Vector3d(	cp2Manip.manipulationMatrix.getTx()-start.manipulationMatrix.getTx(),
+						cp2Manip.manipulationMatrix.getTy()-start.manipulationMatrix.getTy(),
+						cp2Manip.manipulationMatrix.getTz()-start.manipulationMatrix.getTz()), // Control point two
+		new Vector3d(	endManip.manipulationMatrix.getTx()-start.manipulationMatrix.getTx(),
+						endManip.manipulationMatrix.getTy()-start.manipulationMatrix.getTy(),
+						endManip.manipulationMatrix.getTz()-start.manipulationMatrix.getTz()), // Endpoint
+		parts.size()// Iterations
+		);
+		
+		for(int i=0;i<tf.size();i++) {
+			tf.set(i, tf
+					.get(i)
+					.movex(start.manipulationMatrix.getTx())
+					.movey(start.manipulationMatrix.getTy())
+					.movez(start.manipulationMatrix.getTz())
+					);
+		}
+		return tf;
 	}
 	public void save() {
 		database.clear();
 		HashMap<String,List<Double>> bezData=new HashMap<>();
 
 		bezData.put("control one",Arrays.asList(
-			cp1Manip.manipulationMatrix.getTx(),
-			cp1Manip.manipulationMatrix.getTy(),
-			cp1Manip.manipulationMatrix.getTz()
-		));
+				cp1Manip.manipulationMatrix.getTx(),
+				cp1Manip.manipulationMatrix.getTy(),
+				cp1Manip.manipulationMatrix.getTz()
+				));
 		bezData.put("control two",Arrays.asList(
-			cp2Manip.manipulationMatrix.getTx(),
-			cp2Manip.manipulationMatrix.getTy(),
-			cp2Manip.manipulationMatrix.getTz()
-		));
+				cp2Manip.manipulationMatrix.getTx(),
+				cp2Manip.manipulationMatrix.getTy(),
+				cp2Manip.manipulationMatrix.getTz()
+				));
 		bezData.put("end point",Arrays.asList(
-			endManip.manipulationMatrix.getTx(),
-			endManip.manipulationMatrix.getTy(),
-			endManip.manipulationMatrix.getTz()
-		));
+				endManip.manipulationMatrix.getTx(),
+				endManip.manipulationMatrix.getTy(),
+				endManip.manipulationMatrix.getTz()
+				));
+		bezData.put("start point",Arrays.asList(
+				start.manipulationMatrix.getTx(),
+				start.manipulationMatrix.getTy(),
+				start.manipulationMatrix.getTz()
+				));
 		bezData.put("number of points",Arrays.asList((double)parts.size()));
 		database.put("bezier",bezData);
-	
+
 		new Thread(()->{
 			System.out.println("Saving to file "+cachejson.getAbsolutePath());
 			String writeOut = gson.toJson(database, TT_mapStringString);
