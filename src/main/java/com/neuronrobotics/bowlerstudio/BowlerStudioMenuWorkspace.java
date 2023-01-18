@@ -36,9 +36,11 @@ public class BowlerStudioMenuWorkspace {
 		running = true;
 		rank.clear();
 		new Thread(()-> {
+			if(ScriptingEngine.hasNetwork())
 			for (int i=0;i<getWorkspaceData().keySet().size();i++) {
 				try {
 					String o = (String) getWorkspaceData().keySet().toArray()[i];
+					System.out.println("Pulling workspace "+o);
 					try {
 						if(!ScriptingEngine.isUrlAlreadyOpen(o))
 							ScriptingEngine.pull(o);
@@ -51,12 +53,13 @@ public class BowlerStudioMenuWorkspace {
 							ScriptingEngine.deleteRepo(o);
 						}catch (Throwable ex) {
 							e.printStackTrace();
-							//getWorkspaceData().remove(o);
+							getWorkspaceData().remove(o);
 							//ScriptingEngine.deleteRepo(o);
 							//i--;
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			running = false;
