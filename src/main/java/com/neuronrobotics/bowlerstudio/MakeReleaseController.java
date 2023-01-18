@@ -1,8 +1,11 @@
 package com.neuronrobotics.bowlerstudio;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
+
+import org.kohsuke.github.GHRepository;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.application.Application;
@@ -105,8 +109,7 @@ public class MakeReleaseController extends Application {
  	                 				+ "    steps:\n"
  	                 				+ "      - run: echo \"URL is:\"${{ needs.call-release.outputs.outputURL }} ";
 	 	                	try {
-								ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
-								makeRelease(event);
+								createWorkflow(event, fileContents);
 								return;
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
@@ -126,6 +129,17 @@ public class MakeReleaseController extends Application {
     	
     	 BowlerStudio.runLater(()->{primaryStage.close();});
     }
+
+	private void createWorkflow(ActionEvent event, String fileContents) throws Exception, IOException {
+		
+		ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
+		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(gitRepo);
+		String Project=repoDir.getParentFile().getName();
+		String Repo=repoDir.getName();
+		GHRepository repo = PasswordManager.getGithub().getRepository(Project+"/"+Repo);
+		//GHWorkflow workflow = repo.getWorkflow("bowler.yml");
+		makeRelease(event);
+	}
     
     private String delim() {
     	return System.getProperty("file.separator");
