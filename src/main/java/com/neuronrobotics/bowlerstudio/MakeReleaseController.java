@@ -19,6 +19,7 @@ import javafx.scene.control.TextField;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -83,7 +84,10 @@ public class MakeReleaseController extends Application {
 			try {
 				GHWorkflow workflow = getWorkflow(gitRepo);
 				hasWorkflow = true;
-			} catch (IOException e1) {
+			}catch(org.kohsuke.github.GHFileNotFoundException ghe) {
+				// no workflow yet
+			}
+			catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -91,36 +95,7 @@ public class MakeReleaseController extends Application {
 			try {
 				st = ScriptingEngine.filesInGit(gitRepo).toArray();
 				if (!hasWorkflow) {
-					BowlerStudio.runLater(() -> {
-						ChoiceDialog d = new ChoiceDialog(st[0], st);
-						d.setTitle("Choose File From this Repo to release");
-						d.setHeaderText("Select file to compile in CI");
-						d.setContentText("File:");
-						// show the dialog
-						d.showAndWait();
-						String selectedItem = (String) d.getSelectedItem();
-
-						new Thread(() -> {
-							String filename = selectedItem.split("\\.")[0];
-							System.out.println(selectedItem + " selected");
-							String fileContents = "name: \"Release\"\n" + "on: \n" + "   push:\n"
-									+ "       tags:       \n" + "         - '*'\n" + "\n" + "jobs:\n"
-									+ "  call-release:\n"
-									+ "    uses: CommonWealthRobotics/Bowler-Script-Release-CI/.github/workflows/reusable-release.yml@main\n"
-									+ "    with:\n" + "      filename: \"" + filename + "-archive\"\n"
-									+ "      filelocation: \"./" + selectedItem + "\"   \n" + "  use-url-job:\n"
-									+ "    runs-on: ubuntu-latest\n" + "    needs: call-release\n" + "    steps:\n"
-									+ "      - run: echo \"URL is:\"${{ needs.call-release.outputs.outputURL }} ";
-							try {
-								createWorkflow(event, fileContents);
-								ScriptingEngine.tagRepo(gitRepo, newTag);
-								return;
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}).start();
-					});
+					CreatenewWorkflow(event, newTag, st);
 				} else {
 					ScriptingEngine.tagRepo(gitRepo, newTag);
 				}
@@ -133,6 +108,42 @@ public class MakeReleaseController extends Application {
 
 		BowlerStudio.runLater(() -> {
 			primaryStage.close();
+		});
+	}
+
+	private void CreatenewWorkflow(ActionEvent event, String newTag, Object[] st) {
+		BowlerStudio.runLater(() -> {
+			ChoiceDialog d = new ChoiceDialog(st[0], st);
+			d.setTitle("Choose File From this Repo to release");
+			d.setHeaderText("Select file to compile in CI");
+			d.setContentText("File:");
+			// show the dialog
+			d.showAndWait();
+			String selectedItem = (String) d.getSelectedItem();
+
+			new Thread(() -> {
+				String filename = selectedItem.split("\\.")[0];
+				System.out.println(selectedItem + " selected");
+				String fileContents;
+				try {
+					fileContents = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/Bowler-Script-Release-CI.git", "TEMPLATE.job")[0];
+					fileContents=fileContents.replaceAll("FILENAME_REPLACE", selectedItem);
+					fileContents=fileContents.replaceAll("JOBNAME_REPLACE", filename);
+					try {
+						createWorkflow(event, fileContents);
+						ThreadUtil.wait(1000);
+						ScriptingEngine.tagRepo(gitRepo, newTag);
+						return;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}).start();
 		});
 	}
 
