@@ -265,7 +265,7 @@ dependencies {
 	
 	compile 'org.deeplearning4j:deeplearning4j-ui:0.4-rc3.8'
 	
-	//compile 'com.google.guava:guava:19.0'
+	compile 'com.google.guava:guava:19.0'
 	compile 'org.nd4j:canova-nd4j-image:0.0.0.14'
 	compile 'org.nd4j:canova-nd4j-codec:0.0.0.14'
 	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.5.1'
@@ -326,17 +326,8 @@ dependencies {
 	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
+	compile 'com.google.guava:guava:19+'
 
-
-	//	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'
-	// https://mvnrepository.com/artifact/de.dfki.mary/voice-dfki-poppy-hsmm
-	compile group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
-	// https://mvnrepository.com/artifact/de.dfki.mary/voice-dfki-poppy-hsmm
-	compile group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2'
-		// https://mvnrepository.com/artifact/de.dfki.mary/voice-dfki-poppy-hsmm
-	compile group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
-	// https://mvnrepository.com/artifact/de.dfki.mary/marytts-lang-en
-	compile group: 'de.dfki.mary', name: 'marytts-lang-en', version: '5.2'
 	//https://github.com/HanSolo/Medusa
 	compile group: 'eu.hansolo', name: 'Medusa', version: '7.1'
 	
