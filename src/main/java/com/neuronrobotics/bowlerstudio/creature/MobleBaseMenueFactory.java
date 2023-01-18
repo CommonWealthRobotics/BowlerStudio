@@ -462,7 +462,12 @@ public class MobleBaseMenueFactory {
 				GitHub github = PasswordManager.getGithub();
 
 				GHCreateRepositoryBuilder builder = github.createRepository(newName);
-				builder.description(newName + " copy of " + oldname);
+				try {
+					builder.description(newName + " copy of " + oldname);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				GHRepository gist = null;
 				try {
 					try {

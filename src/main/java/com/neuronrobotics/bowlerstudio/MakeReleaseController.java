@@ -1,4 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -6,6 +7,7 @@ import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHWorkflow;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,172 +39,180 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.collections.*;
 import javafx.stage.Stage;
+
 @SuppressWarnings("restriction")
 public class MakeReleaseController extends Application {
 
 	private String gitRepo;
 
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+	@FXML // fx:id="bugfix"
+	private TextField bugfix; // Value injected by FXMLLoader
 
-    @FXML // fx:id="bugfix"
-    private TextField bugfix; // Value injected by FXMLLoader
+	@FXML // fx:id="listOfTags"
+	private ListView<String> listOfTags; // Value injected by FXMLLoader
 
-    @FXML // fx:id="listOfTags"
-    private ListView<String> listOfTags; // Value injected by FXMLLoader
+	@FXML // fx:id="major"
+	private TextField major; // Value injected by FXMLLoader
 
-    @FXML // fx:id="major"
-    private TextField major; // Value injected by FXMLLoader
+	@FXML // fx:id="minor"
+	private TextField minor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="minor"
-    private TextField minor; // Value injected by FXMLLoader
+	@FXML // fx:id="releaseButton"
+	private Button releaseButton; // Value injected by FXMLLoader
 
-    @FXML // fx:id="releaseButton"
-    private Button releaseButton; // Value injected by FXMLLoader
+	@FXML // fx:id="tagName"
+	private Label tagName; // Value injected by FXMLLoader
+	private List<String> tags;
+	Stage primaryStage;
 
-    @FXML // fx:id="tagName"
-    private Label tagName; // Value injected by FXMLLoader
-    private List<String> tags;
-    Stage primaryStage;
-    @FXML
-    void makeRelease(ActionEvent event) {
-    	String newTag =  getNewTag();
-    	new Thread(()->{
-    		
-    		File dir = ScriptingEngine.getRepositoryCloneDirectory(gitRepo);
-    		File workflows = new File(dir.getAbsolutePath()+delim()+".github"+delim()+"workflows");
-    		Object st[];
+	@FXML
+	void makeRelease(ActionEvent event) {
+		String newTag = getNewTag();
+		new Thread(() -> {
+
+			File dir = ScriptingEngine.getRepositoryCloneDirectory(gitRepo);
+			File workflows = new File(dir.getAbsolutePath() + delim() + ".github" + delim() + "workflows");
+			boolean hasWorkflow = false;
+
+			try {
+				GHWorkflow workflow = getWorkflow(gitRepo);
+				hasWorkflow = true;
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Object st[];
 			try {
 				st = ScriptingEngine.filesInGit(gitRepo).toArray();
-	    		if(!workflows.exists()) {	    			 
-	    			 BowlerStudio.runLater(()->{
-	    				 ChoiceDialog d = new ChoiceDialog(st[0], st);
-	    				 d.setTitle("Choose File From this Repo to release");
-	    				 d.setHeaderText("Select file to compile in CI");
-	    				 d.setContentText("File:");
-	 	    			// show the dialog
-	 	                 d.showAndWait();
-	 	                 String selectedItem = (String) d.getSelectedItem();
+				if (!hasWorkflow) {
+					BowlerStudio.runLater(() -> {
+						ChoiceDialog d = new ChoiceDialog(st[0], st);
+						d.setTitle("Choose File From this Repo to release");
+						d.setHeaderText("Select file to compile in CI");
+						d.setContentText("File:");
+						// show the dialog
+						d.showAndWait();
+						String selectedItem = (String) d.getSelectedItem();
 
-	 	                new Thread(()->{
-		 	                 String filename=selectedItem.split("\\.")[0];
-							 System.out.println(selectedItem + " selected");  
-		 	                 String fileContents = "name: \"Release\"\n"
-		 	                 		+ "on: \n"
-		 	                 		+ "   push:\n"
-		 	                 		+ "       tags:       \n"
-		 	                 		+ "         - '*'\n"
-		 	                 		+ "\n"
-		 	                 		+ "jobs:\n"
-		 	                 		+ "  call-release:\n"
-		 	                 		+ "    uses: CommonWealthRobotics/Bowler-Script-Release-CI/.github/workflows/reusable-release.yml@main\n"
-		 	                 		+ "    with:\n"
-		 	                 		+ "      filename: \""+filename+"-archive\"\n"
-		 	                 		+ "      filelocation: \"./"+selectedItem+"\"   \n"
-		 	                 		+ "  use-url-job:\n"
- 	                 				+ "    runs-on: ubuntu-latest\n"
- 	                 				+ "    needs: call-release\n"
- 	                 				+ "    steps:\n"
- 	                 				+ "      - run: echo \"URL is:\"${{ needs.call-release.outputs.outputURL }} ";
-	 	                	try {
+						new Thread(() -> {
+							String filename = selectedItem.split("\\.")[0];
+							System.out.println(selectedItem + " selected");
+							String fileContents = "name: \"Release\"\n" + "on: \n" + "   push:\n"
+									+ "       tags:       \n" + "         - '*'\n" + "\n" + "jobs:\n"
+									+ "  call-release:\n"
+									+ "    uses: CommonWealthRobotics/Bowler-Script-Release-CI/.github/workflows/reusable-release.yml@main\n"
+									+ "    with:\n" + "      filename: \"" + filename + "-archive\"\n"
+									+ "      filelocation: \"./" + selectedItem + "\"   \n" + "  use-url-job:\n"
+									+ "    runs-on: ubuntu-latest\n" + "    needs: call-release\n" + "    steps:\n"
+									+ "      - run: echo \"URL is:\"${{ needs.call-release.outputs.outputURL }} ";
+							try {
 								createWorkflow(event, fileContents);
+								ScriptingEngine.tagRepo(gitRepo, newTag);
 								return;
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
-							}	
-	 	                }).start();
-	    			 });
-	    		}else {
-	    			 ScriptingEngine.tagRepo(gitRepo, newTag);
-	    		}
-	    		
+							}
+						}).start();
+					});
+				} else {
+					ScriptingEngine.tagRepo(gitRepo, newTag);
+				}
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    	}).start();
-    	
-    	 BowlerStudio.runLater(()->{primaryStage.close();});
-    }
+		}).start();
+
+		BowlerStudio.runLater(() -> {
+			primaryStage.close();
+		});
+	}
 
 	private void createWorkflow(ActionEvent event, String fileContents) throws Exception, IOException {
-		
+
 		ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
-		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(gitRepo);
-		String Project=repoDir.getParentFile().getName();
-		String Repo=repoDir.getName();
-		GHRepository repo = PasswordManager.getGithub().getRepository(Project+"/"+Repo);
-		//GHWorkflow workflow = repo.getWorkflow("bowler.yml");
+		GHWorkflow wf = getWorkflow(gitRepo);
 		makeRelease(event);
 	}
-    
-    private String delim() {
-    	return System.getProperty("file.separator");
-    }
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
-        assert bugfix != null : "fx:id=\"bugfix\" was not injected: check your FXML file 'release.fxml'.";
-        assert listOfTags != null : "fx:id=\"listOfTags\" was not injected: check your FXML file 'release.fxml'.";
-        assert major != null : "fx:id=\"major\" was not injected: check your FXML file 'release.fxml'.";
-        assert minor != null : "fx:id=\"minor\" was not injected: check your FXML file 'release.fxml'.";
-        assert releaseButton != null : "fx:id=\"releaseButton\" was not injected: check your FXML file 'release.fxml'.";
-        assert tagName != null : "fx:id=\"tagName\" was not injected: check your FXML file 'release.fxml'.";
-        UnaryOperator<Change> filter = change -> {
-            String text = change.getText();
-            if (text.matches("[0-9]*")) {
-                return change;
-            }
-            return null;
-        };
-        major.setTextFormatter(new TextFormatter<String>(filter));
-        minor.setTextFormatter(new TextFormatter<String>(filter));
-        bugfix.setTextFormatter(new TextFormatter<String>(filter));
-        major.textProperty().addListener((obs,old,niu)->{
-            check();
-        });
-        minor.textProperty().addListener((obs,old,niu)->{
-        	check();
-        });
-        bugfix.textProperty().addListener((obs,old,niu)->{
-        	check();
-        });
-        releaseButton.setDisable(true);
-        
-    }
+	private GHWorkflow getWorkflow(String repoURL) throws IOException {
+		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(repoURL);
+		String Project = repoDir.getParentFile().getName();
+		String Repo = repoDir.getName();
+		GHRepository repo = PasswordManager.getGithub().getRepository(Project + "/" + Repo);
+		GHWorkflow workflow = repo.getWorkflow("bowler.yml");
+		if (!workflow.getState().equals("active")) {
+			workflow.enable();
+		}
+		return workflow;
+	}
 
+	private String delim() {
+		return System.getProperty("file.separator");
+	}
+
+	@FXML // This method is called by the FXMLLoader when initialization is complete
+	void initialize() {
+		assert bugfix != null : "fx:id=\"bugfix\" was not injected: check your FXML file 'release.fxml'.";
+		assert listOfTags != null : "fx:id=\"listOfTags\" was not injected: check your FXML file 'release.fxml'.";
+		assert major != null : "fx:id=\"major\" was not injected: check your FXML file 'release.fxml'.";
+		assert minor != null : "fx:id=\"minor\" was not injected: check your FXML file 'release.fxml'.";
+		assert releaseButton != null : "fx:id=\"releaseButton\" was not injected: check your FXML file 'release.fxml'.";
+		assert tagName != null : "fx:id=\"tagName\" was not injected: check your FXML file 'release.fxml'.";
+		UnaryOperator<Change> filter = change -> {
+			String text = change.getText();
+			if (text.matches("[0-9]*")) {
+				return change;
+			}
+			return null;
+		};
+		major.setTextFormatter(new TextFormatter<String>(filter));
+		minor.setTextFormatter(new TextFormatter<String>(filter));
+		bugfix.setTextFormatter(new TextFormatter<String>(filter));
+		major.textProperty().addListener((obs, old, niu) -> {
+			check();
+		});
+		minor.textProperty().addListener((obs, old, niu) -> {
+			check();
+		});
+		bugfix.textProperty().addListener((obs, old, niu) -> {
+			check();
+		});
+		releaseButton.setDisable(true);
+
+	}
 
 	private void check() {
-		if(	major.getText().length()==0 ||
-			minor.getText().length()==0 ||
-			bugfix.getText().length()==0
-				) {
+		if (major.getText().length() == 0 || minor.getText().length() == 0 || bugfix.getText().length() == 0) {
 			return;
 		}
 		String newTag = getNewTag();
-		for(String s: tags) {
-			if(s.contains(newTag)) {
+		for (String s : tags) {
+			if (s.contains(newTag)) {
 				tagName.setText("error: tag exists");
-				for(String Item : listOfTags.getItems()) {
-					if(Item.contentEquals(s)) {
+				for (String Item : listOfTags.getItems()) {
+					if (Item.contentEquals(s)) {
 						listOfTags.getSelectionModel().select(s);
 					}
 				}
 				return;
 			}
 		}
-		
-		tagName.setText(newTag);		
+
+		tagName.setText(newTag);
 		releaseButton.setDisable(false);
 	}
 
 	private String getNewTag() {
-		return major.getText()+"."+minor.getText()+"."+bugfix.getText();
+		return major.getText() + "." + minor.getText() + "." + bugfix.getText();
 	}
 
 	public MakeReleaseController(String gitRepo) {
@@ -213,15 +223,15 @@ public class MakeReleaseController extends Application {
 	@SuppressWarnings("restriction")
 	@Override
 	public void start(Stage st) throws Exception {
-		primaryStage=st;
+		primaryStage = st;
 		FXMLLoader loader = AssetFactory.loadLayout("layout/release.fxml", true);
 		Parent root;
 		loader.setController(this);
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		tags=ScriptingEngine.getAllTags(gitRepo);
-		for(String s:tags) {
+		tags = ScriptingEngine.getAllTags(gitRepo);
+		for (String s : tags) {
 			listOfTags.getItems().add(s);
 		}
 		if (tags.size() > 0) {
@@ -234,7 +244,7 @@ public class MakeReleaseController extends Application {
 			minor.setText(minorStart);
 			bugfix.setText(bugStart);
 		}
-		
+
 		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Release for " + gitRepo);
 
@@ -245,7 +255,7 @@ public class MakeReleaseController extends Application {
 			check();
 			primaryStage.show();
 		});
-		
+
 	}
 
 }

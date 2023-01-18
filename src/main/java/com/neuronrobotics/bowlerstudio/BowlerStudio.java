@@ -12,6 +12,7 @@ import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
+import com.neuronrobotics.bowlerstudio.scripting.IURLOpen;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -28,6 +29,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.*;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -49,6 +51,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -307,7 +311,18 @@ public class BowlerStudio extends Application {
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
 			List<String> listOfScopes = Arrays.asList("repo", "gist", 
-					"user","admin:org","delete_repo","workflow");
+					"user","admin:org","admin:org_hook","workflow");
+			if(OSUtil.isOSX())
+			GitHubWebFlow.setOpen(new IURLOpen() {
+				public void open(URI toOpe) {
+					try {
+						BowlerStudio.openExternalWebpage(toOpe.toURL());
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 			PasswordManager.setListOfScopes(listOfScopes);
 			GitHubWebFlow.setMyAPI(()->{
 				String line = System.getProperty("API-ID");
