@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHWorkflow;
+//import org.kohsuke.github.GHWorkflow;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -81,16 +81,9 @@ public class MakeReleaseController extends Application {
 			File workflows = new File(dir.getAbsolutePath() + delim() + ".github" + delim() + "workflows");
 			boolean hasWorkflow = false;
 
-			try {
-				GHWorkflow workflow = getWorkflow(gitRepo);
+			if(workflows.exists())
 				hasWorkflow = true;
-			}catch(org.kohsuke.github.GHFileNotFoundException ghe) {
-				// no workflow yet
-			}
-			catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+
 			Object st[];
 			try {
 				st = ScriptingEngine.filesInGit(gitRepo).toArray();
@@ -150,21 +143,21 @@ public class MakeReleaseController extends Application {
 	private void createWorkflow(ActionEvent event, String fileContents) throws Exception, IOException {
 
 		ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
-		GHWorkflow wf = getWorkflow(gitRepo);
+		//GHWorkflow wf = getWorkflow(gitRepo);
 		makeRelease(event);
 	}
 
-	private GHWorkflow getWorkflow(String repoURL) throws IOException {
-		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(repoURL);
-		String Project = repoDir.getParentFile().getName();
-		String Repo = repoDir.getName();
-		GHRepository repo = PasswordManager.getGithub().getRepository(Project + "/" + Repo);
-		GHWorkflow workflow = repo.getWorkflow("bowler.yml");
-		if (!workflow.getState().equals("active")) {
-			workflow.enable();
-		}
-		return workflow;
-	}
+//	private GHWorkflow getWorkflow(String repoURL) throws IOException {
+//		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(repoURL);
+//		String Project = repoDir.getParentFile().getName();
+//		String Repo = repoDir.getName();
+//		GHRepository repo = PasswordManager.getGithub().getRepository(Project + "/" + Repo);
+//		GHWorkflow workflow = repo.getWorkflow("bowler.yml");
+//		if (!workflow.getState().equals("active")) {
+//			workflow.enable();
+//		}
+//		return workflow;
+//	}
 
 	private String delim() {
 		return System.getProperty("file.separator");

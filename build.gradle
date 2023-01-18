@@ -186,7 +186,7 @@ dependencies {
 		//compile group: 'com.neuronrobotics', name:'GithubPasswordManager', version:'0.6.1'
 		
 	compile 'com.miglayout:miglayout-swing:4.2'
-	compile 'commons-io:commons-io:2.8.0'
+	compile 'commons-io:commons-io:2.6'
 	compile group:'org.python',name:'jython',version:'2.5.3'
 	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
 	compile 'org.clojure:clojure:1.8.0'
@@ -327,6 +327,9 @@ dependencies {
 	
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 	compile 'com.google.guava:guava:19+'
+	implementation 'org.kohsuke.stapler:stapler:1.263'
+	implementation group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
+	
 
 	//https://github.com/HanSolo/Medusa
 	compile group: 'eu.hansolo', name: 'Medusa', version: '7.1'
