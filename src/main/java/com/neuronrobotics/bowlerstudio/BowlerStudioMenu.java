@@ -214,6 +214,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
+			ConfigurationDatabase.loginEvent(null);
 			this.username=null;
 		});
 		while(this.username!=null)
