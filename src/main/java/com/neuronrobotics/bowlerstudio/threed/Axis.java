@@ -127,6 +127,8 @@ public class Axis extends Group {
 	private void showAll() {
 		for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText, yText, zText)) {
 			try {
+				n.setPickOnBounds(false);
+				n.setMouseTransparent(true);
 				getChildren().add(n);
 			} catch (Exception e) {
 			}
