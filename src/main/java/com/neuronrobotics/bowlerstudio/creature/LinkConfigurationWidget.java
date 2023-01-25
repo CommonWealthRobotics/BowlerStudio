@@ -319,6 +319,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
 				factory.refreshHardwareLayer(conf);
 				activLink = factory.getLink(conf);
+				activLink.flush(0);
 				System.out.println("Link channel to " + conf.getTypeString());
 				if (manager != null)
 					manager.generateCad();

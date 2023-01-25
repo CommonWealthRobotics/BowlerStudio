@@ -1053,12 +1053,20 @@ public class MobleBaseMenueFactory {
 									DHLink dhLink = new DHLink(dhl);
 									dhLink.setListener(new Affine());
 									dh.addNewLink(newLink, dhLink);
+									try {
+										dh.setDesiredJointSpaceVector(dh.getCurrentJointSpaceTarget(), 0);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
-								MobileBaseCadManager.get(base).invalidateModelCache();
+								
+								
 								try {
 									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
 											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 											creatureIsOwnedByUser);
+									MobileBaseCadManager.get(base).generateCad();
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
