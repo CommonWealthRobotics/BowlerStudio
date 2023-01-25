@@ -213,7 +213,7 @@ public class PluginManager {
 					AbstractBowlerStudioTab t = generateTab(c);
 
 					// allow the threads to finish before adding
-					ThreadUtil.wait(50);
+					ThreadUtil.wait(150);
 					if(t.getContent()==null) {
 						System.out.println("ERROR tab failed to load!");
 						return;
