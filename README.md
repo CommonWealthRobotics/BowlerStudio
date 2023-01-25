@@ -167,9 +167,9 @@ sudo apt install  curl
 ```
 Now you can use the Eclipse Marketplace to install the Gradle Plugin
     
-#### Windows (CMD)
+#### Windows
 
-    gradlew jar
+WIP
     
 # History
 
