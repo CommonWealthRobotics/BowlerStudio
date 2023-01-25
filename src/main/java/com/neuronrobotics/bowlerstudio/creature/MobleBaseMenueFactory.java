@@ -23,6 +23,7 @@ import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import org.apache.commons.io.IOUtils;
@@ -1024,7 +1025,8 @@ public class MobleBaseMenueFactory {
 				// creatureLab));
 				// }
 				BowlerStudio.runLater(() -> {
-					TextInputDialog dialog = new TextInputDialog("Link_" + dh.getLinkConfigurations().size());
+					int size = dh.getLinkConfigurations().size();
+					TextInputDialog dialog = new TextInputDialog("Link_" + size);
 					dialog.setTitle("Add a new link of");
 					dialog.setHeaderText("Set the scripting name for this link");
 					dialog.setContentText("Please the name of the new link:");
@@ -1036,27 +1038,23 @@ public class MobleBaseMenueFactory {
 						new Thread() {
 							public void run() {
 								System.out.println("Your new link: " + result.get());
-								LinkConfiguration newLink = new LinkConfiguration();
+								LinkConfiguration newLink = new LinkConfiguration( dh.getLinkConfigurations().get(size-1));
+								newLink.setLinkIndex(newLink.getLinkIndex()+1);
 								ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory()
 										.getLinkConfigurations();
 
 								int numOfLinks = linkConfigurations.size();
 
-								String typeOfLink;
-								try {
-									typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeString();
-								} catch (Exception ex) {
-									typeOfLink = LinkType.VIRTUAL.getName();
-								}
-								if (typeOfLink == null)
-									typeOfLink = LinkType.VIRTUAL.getName();
 								//newLink.setType(typeOfLink);
-								newLink.setTypeString(typeOfLink.toString());
 								getNextChannel(base, newLink);
 								newLink.setName(result.get());
-								if (dh != null)
-									dh.addNewLink(newLink, new DHLink(0, 0, 100, 0));
-
+								DHLink dhl = dh.getDhLink(numOfLinks-1);
+								if (dh != null) {
+									DHLink dhLink = new DHLink(dhl);
+									dhLink.setListener(new Affine());
+									dh.addNewLink(newLink, dhLink);
+								}
+								MobileBaseCadManager.get(base).invalidateModelCache();
 								try {
 									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
 											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
