@@ -6,6 +6,7 @@ public class NewCreatureWizard {
 		new Thread(()->{
 			Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 			
+			
 		}).start();
 	}
 	

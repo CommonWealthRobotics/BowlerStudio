@@ -167,7 +167,7 @@ public class AddFileToGistController extends Application {
 			if (!filename.endsWith(extentionStr)) {
 				filename = filename + extentionStr;
 			}
-
+			String fileSlug = filename.replace(extentionStr, "");
 			String message = description.getText();
 			if (message == null || message.length() == 0) {
 				message = filename;
@@ -179,7 +179,7 @@ public class AddFileToGistController extends Application {
 			System.out.println("Adding new file" + filename + " to " + getGitRepo());
 			try {
 				ScriptingEngine.pull(getGitRepo());
-				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents();
+				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), fileSlug );
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
