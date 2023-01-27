@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -12,6 +13,8 @@ import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -97,8 +100,23 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					if (!content.contains(toIgnore)) {
 						content += toIgnore;
-						ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content,
+						if(ScriptingEngine.checkOwner(remoteURL)) {
+							ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content,
 								"Ignore the project files");
+						}else {
+							content+="\n.gitignore\n";
+							File gistDir = ScriptingEngine.cloneRepo(remoteURL, branch);
+							File desired = new File(gistDir.getAbsoluteFile() + "/" + ".gitignore");
+							OutputStream out = null;
+							try {
+								out = FileUtils.openOutputStream(desired, false);
+								IOUtils.write(content, out);
+								out.close(); // don't swallow close Exception if copy completes
+								// normally
+							} finally {
+								IOUtils.closeQuietly(out);
+							}
+						}
 					}
 					setUpEclipseProjectFiles(dir, project, name);
 
