@@ -34,8 +34,6 @@ jobs:
       run: |
          echo $'app.name=BowlerStudio' > src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
          echo "app.version=${{ steps.get_version.outputs.VERSION  }}" >> src/main/resources/com/neuronrobotics/bowlerstudio/build.properties 
-         git commit --allow-empty src/main/resources/com/neuronrobotics/bowlerstudio/build.properties -m"Updating version number in CI to ${{ steps.get_version.outputs.VERSION  }}"
-         git push 
          
     - name: Set OAuth Key
       env: # Or as an environment variable
