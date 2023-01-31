@@ -277,8 +277,7 @@ public class BowlerStudio extends Application {
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
-			// Remove the default printing
-
+			System.err.println(type+"ing "+currentIndex+" of "+finalIndex);
 		});
 		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
 //		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
