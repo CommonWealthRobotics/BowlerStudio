@@ -105,7 +105,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void event(LinkConfiguration newConf) {
-		if(!isNowVis)
+		if(!isNowVis||getAbstractLink()==null)
 			return;
 		BowlerStudio.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
