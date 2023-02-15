@@ -191,8 +191,7 @@ public class AddFileToGistController extends Application {
 
 				refreshevent.setToLoggedIn();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				new IssueReportingExceptionHandler().except(e);
 			}
 
 		}).start();
