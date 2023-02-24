@@ -102,7 +102,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					}).start();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 			});
 			ThreadUtil.wait(16);
