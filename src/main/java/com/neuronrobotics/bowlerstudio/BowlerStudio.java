@@ -480,6 +480,7 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"loadAll.groovy", null);
 			} catch (Exception e) {
+				e.printStackTrace();
 				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
