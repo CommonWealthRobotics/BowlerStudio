@@ -475,6 +475,7 @@ public class BowlerStudio extends Application {
 			try {
 				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",null);
 				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/DeviceProviders.git",null);
+				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git");
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
