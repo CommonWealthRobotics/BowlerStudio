@@ -25,7 +25,7 @@ public class AssemblySlider {
 		CSG[] array = listOfObjects.toArray(new CSG[0]);
 		for (int i = 0; i < array.length; i++) {
 			CSG c = array[i];
-			PropertyStorage incomingGetStorage = c.getStorage();
+			PropertyStorage incomingGetStorage = c.getAssemblyStorage();
 			if(incomingGetStorage.getValue("MaxAssemblyStep")!=Optional.empty()) {
 				Integer max = (Integer) incomingGetStorage.getValue("MaxAssemblyStep").get();
 				if(max>s) {
@@ -47,7 +47,7 @@ public class AssemblySlider {
 				
 				for (Iterator<CSG> iterator = listOfObjects.iterator(); iterator.hasNext();) {
 					CSG c = iterator.next();
-					PropertyStorage incomingGetStorage = c.getStorage();
+					PropertyStorage incomingGetStorage = c.getAssemblyStorage();
 					String key = "AssemblySteps";
 					if(incomingGetStorage.getValue(key)!=Optional.empty()) {
 						HashMap<Integer,Transform> map=(HashMap<Integer, Transform>) incomingGetStorage.getValue(key).get();
