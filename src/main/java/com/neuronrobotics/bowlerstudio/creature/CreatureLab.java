@@ -102,7 +102,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					}).start();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 			});
 			ThreadUtil.wait(16);
@@ -110,7 +110,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		while(getContent()==null)
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	private void finishLoading(MobileBase device) {
