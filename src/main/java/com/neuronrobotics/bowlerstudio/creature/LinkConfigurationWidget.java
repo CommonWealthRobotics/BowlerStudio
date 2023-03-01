@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.util.HashMap;
-import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
@@ -165,9 +164,9 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 				BowlerStudio.runLater(() -> {
 					setShaftType( shaftSize, shafttype);
-					FxTimer.runLater(Duration.ofMillis(20), () -> {
+					BowlerStudio.runLater(Duration.ofMillis(20), () -> {
 						setShaftSize( shaftsize);
-						FxTimer.runLater(Duration.ofMillis(200), new Runnable() {
+						BowlerStudio.runLater(Duration.ofMillis(200), new Runnable() {
 							@Override
 							public void run() {
 

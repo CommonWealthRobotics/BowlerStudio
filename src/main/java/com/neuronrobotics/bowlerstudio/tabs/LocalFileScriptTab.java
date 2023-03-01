@@ -17,7 +17,6 @@ import java.util.HashMap;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.reactfx.util.FxTimer;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -360,7 +359,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			textArea.repaint();
 			
 			textArea.requestFocusInWindow();
-			FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
 				swingNode.setContent(spscrollPane);
 				swingNode.requestFocus();
 			});
@@ -487,7 +486,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void setFontLoop() {
-		FxTimer.runLater(Duration.ofMillis(200), new Runnable() {
+		BowlerStudio.runLater(Duration.ofMillis(200), new Runnable() {
 			@Override
 			public void run() {
 				Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);

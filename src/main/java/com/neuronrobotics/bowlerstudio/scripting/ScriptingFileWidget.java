@@ -30,7 +30,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.eclipse.jgit.api.Git;
-import org.reactfx.util.FxTimer;
 
 import java.awt.*;
 import java.io.*;
@@ -495,7 +494,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		updateneeded = true;
 		try {
 			getWatcher().removeIFileChangeListener(this);
-			FxTimer.runLater(Duration.ofMillis(500), new Runnable() {
+			BowlerStudio.runLater(Duration.ofMillis(500), new Runnable() {
 				@Override
 				public void run() {
 					updateneeded = false;

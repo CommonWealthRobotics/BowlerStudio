@@ -44,7 +44,6 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import org.dockfx.DockPane;
-import org.reactfx.util.FxTimer;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -718,7 +717,7 @@ public class BowlerStudio extends Application {
 				// Log.enableWarningPrint();
 				// Log.enableDebugPrint();
 				// Log.enableErrorPrint();
-				FxTimer.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
+				BowlerStudio.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
 					String javaVersion = System.getProperty("java.version");
 					String javafxVersion = System.getProperty("javafx.version");
 					System.out.println("Java Version : " + javaVersion);
@@ -741,7 +740,17 @@ public class BowlerStudio extends Application {
 		}).start();
 
 	}
-
+	public static void runLater(java.time.Duration delay, Runnable action) {
+		new Thread(()->{
+			try {
+				Thread.sleep(delay.getSeconds()*1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			runLater(action);
+		}).start();
+	}
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
 		BowlerStudio.runLater(() -> {

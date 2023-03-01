@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import java.time.Duration;
 
-import org.reactfx.util.FxTimer;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -335,7 +334,7 @@ public class LinkSliderWidget extends Group
 				jogTHreadHandle.setToSet(slider + getSetpoint().getValue(), seconds);
 			}
 
-			FxTimer.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
+			BowlerStudio.runLater(Duration.ofMillis((int) (seconds * 1000.0)), new Runnable() {
 				@Override
 				public void run() {
 					controllerLoop();
