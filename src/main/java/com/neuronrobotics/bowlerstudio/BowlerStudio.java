@@ -142,6 +142,7 @@ public class BowlerStudio extends Application {
 		}
 	}
 	public static void runLater(java.time.Duration delay, Runnable action) {
+		Throwable t=new Exception("Delayed UI Thread Exception here!");
 		new Thread(()->{
 			try {
 				Thread.sleep(delay.getSeconds()*1000);
@@ -149,7 +150,7 @@ public class BowlerStudio extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			runLater(action);
+			runLater(action,t);
 		}).start();
 	}
 	public static void runLater(Runnable r) {
