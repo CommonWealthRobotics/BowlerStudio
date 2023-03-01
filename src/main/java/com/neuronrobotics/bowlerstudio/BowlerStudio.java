@@ -141,7 +141,17 @@ public class BowlerStudio extends Application {
 			// new RuntimeException().printStackTrace();
 		}
 	}
-	
+	public static void runLater(java.time.Duration delay, Runnable action) {
+		new Thread(()->{
+			try {
+				Thread.sleep(delay.getSeconds()*1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			runLater(action);
+		}).start();
+	}
 	public static void runLater(Runnable r) {
 		runLater(r,new Exception("UI Thread Exception here!"));
 	}
@@ -740,17 +750,7 @@ public class BowlerStudio extends Application {
 		}).start();
 
 	}
-	public static void runLater(java.time.Duration delay, Runnable action) {
-		new Thread(()->{
-			try {
-				Thread.sleep(delay.getSeconds()*1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			runLater(action);
-		}).start();
-	}
+
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
 		BowlerStudio.runLater(() -> {
