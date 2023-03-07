@@ -36,7 +36,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.reactfx.util.FxTimer;
 
 import java.io.File;
 import java.io.IOException;

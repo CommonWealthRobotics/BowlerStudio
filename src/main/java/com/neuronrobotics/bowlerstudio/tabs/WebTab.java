@@ -25,7 +25,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
-import org.reactfx.util.FxTimer;
 
 import java.awt.*;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
 		//Once all components are loaded, load URL
-		FxTimer.runLater(
+		BowlerStudio.runLater(
 				Duration.ofMillis(200) ,new Runnable() {
 					@Override
 					public void run() { goAction.handle(null);}

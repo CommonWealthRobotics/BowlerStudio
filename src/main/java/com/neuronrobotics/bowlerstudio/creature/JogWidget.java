@@ -26,7 +26,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
-import org.reactfx.util.FxTimer;
 
 import java.time.Duration;
 import java.util.ArrayList;

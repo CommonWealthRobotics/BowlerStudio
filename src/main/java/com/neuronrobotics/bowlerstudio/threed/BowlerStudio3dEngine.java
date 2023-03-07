@@ -79,8 +79,6 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
-import org.reactfx.util.FxTimer;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.File;
@@ -736,7 +734,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					cm.show(current, event.getScreenX() - 10, event.getScreenY() - 10);
 				else if (event.isPrimaryButtonDown()) {
 					if (System.currentTimeMillis() - lastClickedTime < 500) {
-						FxTimer.runLater(java.time.Duration.ofMillis(200), new Runnable() {
+						BowlerStudio.runLater(java.time.Duration.ofMillis(200), new Runnable() {
 							@Override
 							public void run() {
 								setSelectedCsg(currentCsg);
@@ -1056,7 +1054,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} catch (Exception | Error e) {
 			// e.printStackTrace();
 		}
-		FxTimer.runLater(Duration.ofMillis(30), new Runnable() {
+		BowlerStudio.runLater(Duration.ofMillis(30), new Runnable() {
 			@Override
 			public void run() {
 				autoSpin();
@@ -1079,7 +1077,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			public void handle(MouseEvent event) {
 				resetMouseTime();
 				long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
-				FxTimer.runLater(Duration.ofMillis(100), new Runnable() {
+				BowlerStudio.runLater(Duration.ofMillis(100), new Runnable() {
 					@Override
 					public void run() {
 						long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
@@ -1500,7 +1498,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		// System.err.println("Interpolation step " + depth + " x " + xIncrement
 		// + " y " + yIncrement + " z " + zIncrement);
 		if (depth < targetDepth) {
-			FxTimer.runLater(Duration.ofMillis(16), new Runnable() {
+			BowlerStudio.runLater(Duration.ofMillis(16), new Runnable() {
 				@Override
 				public void run() {
 					focusInterpolate(start, target, depth + 1, targetDepth, interpolator);

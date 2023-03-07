@@ -41,7 +41,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.kohsuke.github.*;
-import org.reactfx.util.FxTimer;
 
 import java.awt.Desktop;
 import java.io.File;

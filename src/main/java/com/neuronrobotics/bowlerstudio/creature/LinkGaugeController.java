@@ -62,11 +62,15 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 				turnOffPickOnBoundsFor(gauge);
 			});
 			gauge.parentProperty().addListener((observable, oldValue, newValue) ->        {
-			    isNowVis=newValue!=null;
-			    if(isNowVis) {
-			    	event(conf);
-			    	gauge.setValue(link.getCurrentEngineeringUnits());
-			    }
+				BowlerStudio.runLater(()->{
+				    isNowVis=newValue!=null;
+				    if(isNowVis) {
+				    	event(conf);
+				    	if(gauge!=null && link!=null)
+				    		gauge.setValue(link.getCurrentEngineeringUnits());
+				    }
+				});
+
 			});
 			
 		}

@@ -167,7 +167,6 @@ dependencies {
 
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
-	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
 		
 	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
 //make grapes work

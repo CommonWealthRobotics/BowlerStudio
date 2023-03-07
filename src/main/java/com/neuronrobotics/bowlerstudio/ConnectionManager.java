@@ -32,7 +32,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.reactfx.util.FxTimer;
 
 import java.io.File;
 import java.net.MalformedURLException;
