@@ -289,15 +289,7 @@ public class NewVitaminWizardController  extends Application {
 		if(Vitamins.isActuator(typeOfVitaminString) ||
 				(newTypeRadio.isSelected() && isMotor.isSelected())
 				) {
-			new Thread(() -> {
-				HashMap<String, Object> required = new HashMap<String, Object>();
-				required.put("MaxTorqueNewtonmeters", 0.001);
-				required.put("MaxFreeSpeedRadPerSec", 1);
-				required.put("massKg", 0.001);
-				required.put("shaftType", "dShaft");
-				required.put("shaftSize", "5mm");
-				setRequiredFields(required);
-			}).start();
+			setUpVitaminDefaults();
 		}
 		new Thread(() -> {
 			HashMap<String, Object> required = new HashMap<String, Object>();
@@ -313,6 +305,18 @@ public class NewVitaminWizardController  extends Application {
         measurmentPane.setDisable(false);
         typePane.setDisable(true);
     }
+
+	private void setUpVitaminDefaults() {
+		new Thread(() -> {
+			HashMap<String, Object> required = new HashMap<String, Object>();
+			required.put("MaxTorqueNewtonmeters", 0.001);
+			required.put("MaxFreeSpeedRadPerSec", 1);
+			required.put("massKg", 0.001);
+			required.put("shaftType", "dShaft");
+			required.put("shaftSize", "5mm");
+			setRequiredFields(required);
+		}).start();
+	}
 
 	private void setRequiredFields(HashMap<String, Object> required) {
 		// For each vitamin size in a given type
@@ -395,6 +399,8 @@ public class NewVitaminWizardController  extends Application {
         		
     		}
     	}
+    	isShaft.setSelected(Vitamins.isShaft(typeOfVitaminString));
+    	isMotor.setSelected(Vitamins.isActuator(typeOfVitaminString));
         measurmentPane.setDisable(true);
         typePane.setDisable(true);
         
@@ -474,8 +480,10 @@ public class NewVitaminWizardController  extends Application {
 
     @FXML
     void onIsMotor(ActionEvent event) {
-    	if(isMotor.isSelected())
+    	if(isMotor.isSelected()) {
     		isShaft.setSelected(false);
+			setUpVitaminDefaults();
+    	}
     }
 
     @FXML
