@@ -170,7 +170,10 @@ public class NewVitaminWizardController  extends Application {
 							loader, "new CAD loader script");
 					new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(typeOfVitaminString))).start();
 				}
-				
+				if(isShaft.isSelected())
+					Vitamins.setIsShaft(typeOfVitaminString);
+				if(isMotor.isSelected())
+					Vitamins.setIsActuator(typeOfVitaminString);
 				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 				
 				if(newTypeRadio.isSelected()) {
@@ -448,16 +451,16 @@ public class NewVitaminWizardController  extends Application {
     void onSelectExistingTypeMode(ActionEvent event) {
     	newTypeNameField.setEditable(false);
     	typeComboBox.setDisable(false);
-    	isShaft.setDisable(true);
-		isMotor.setDisable(true);
+    	//isShaft.setDisable(true);
+		//isMotor.setDisable(true);
     }
 
     @FXML
     void onSelectNewTypeMode(ActionEvent event) {
     	newTypeNameField.setEditable(true);
     	typeComboBox.setDisable(true);
-    	isShaft.setDisable(false);
-		isMotor.setDisable(false);
+    	//isShaft.setDisable(false);
+		//isMotor.setDisable(false);
     }
     @FXML
     void onEditExisting(ActionEvent event) {
@@ -509,8 +512,8 @@ public class NewVitaminWizardController  extends Application {
 			typeComboBox.getSelectionModel().select(types.get(0));
 		else
 			typeComboBox.getSelectionModel().select(typeOfVitaminString);
-		isShaft.setDisable(true);
-		isMotor.setDisable(true);
+		isShaft.setDisable(false);
+		isMotor.setDisable(false);
     }
     
     public static void launchWizard(INewVitaminCallback callback) throws Exception {
