@@ -1,8 +1,6 @@
 name: "Test Build"
-on:  
-   push:
-       branches:
-         - development
+on: [pull_request]
+
 jobs:
   build:
 
