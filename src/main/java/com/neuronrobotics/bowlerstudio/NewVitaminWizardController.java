@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -135,7 +136,7 @@ public class NewVitaminWizardController  extends Application {
 					Vitamins.setScript(typeOfVitaminString, gitURL, filename);
 					
 					String measurments ="";
-					for(String key:Vitamins.getConfiguration( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
+					for(String key:Vitamins.getConfigurationRW( typeOfVitaminString,sizeOfVitaminString).keySet().stream().sorted().collect(Collectors.toList())) {
 						measurments+="\n	def "+key+"Value = measurments."+key;
 					}
 					measurments+="\n\tfor(String key:measurments.keySet().stream().sorted().collect(Collectors.toList())){";
@@ -170,7 +171,10 @@ public class NewVitaminWizardController  extends Application {
 							loader, "new CAD loader script");
 					new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(typeOfVitaminString))).start();
 				}
-				
+				if(isShaft.isSelected())
+					Vitamins.setIsShaft(typeOfVitaminString);
+				if(isMotor.isSelected())
+					Vitamins.setIsActuator(typeOfVitaminString);
 				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 				
 				if(newTypeRadio.isSelected()) {
@@ -246,7 +250,6 @@ public class NewVitaminWizardController  extends Application {
 			((MeasurmentConfig) ev.getTableView().getItems().get(ev.getTablePosition().getRow()))
 					.setMeasurment(value);
 			measurmentsTable.refresh();
-			Vitamins.clear();
 	    });
 		
 		
@@ -271,7 +274,7 @@ public class NewVitaminWizardController  extends Application {
 				}
 			}
 			new Thread(() -> {
-				HashMap<String, Object> configsOld = Vitamins.getConfiguration(typeOfVitaminString, sizeComboBox.getSelectionModel().getSelectedItem());
+				Map<String, Object> configsOld = Vitamins.getConfigurationRW(typeOfVitaminString, sizeComboBox.getSelectionModel().getSelectedItem());
 
 				for(String key:configsOld.keySet().stream().sorted().collect(Collectors.toList())) {
 					setupKeyValueToTable(key, configsOld.get(key),sizeOfVitaminString);
@@ -280,23 +283,15 @@ public class NewVitaminWizardController  extends Application {
 
 		}
 		if(newTypeRadio.isSelected()) {
-			Vitamins.getConfiguration(typeOfVitaminString, sizeOfVitaminString);
+			Vitamins.getConfigurationRW(typeOfVitaminString, sizeOfVitaminString);
 		}
 		
 		if(Vitamins.isActuator(typeOfVitaminString) ||
 				(newTypeRadio.isSelected() && isMotor.isSelected())
 				) {
-			new Thread(() -> {
-				HashMap<String, Object> required = new HashMap<String, Object>();
-				required.put("MaxTorqueNewtonmeters", 0.001);
-				required.put("MaxFreeSpeedRadPerSec", 1);
-				required.put("massKg", 0.001);
-				required.put("shaftType", "dShaft");
-				required.put("shaftSize", "5mm");
-				setRequiredFields(required);
-			}).start();
+			setUpVitaminDefaults();
 		}
-		new Thread(() -> {
+		//new Thread(() -> {
 			HashMap<String, Object> required = new HashMap<String, Object>();
 			required.put("massKg", 0.001);
 			required.put("source", "https://commonwealthrobotics.com");
@@ -305,17 +300,29 @@ public class NewVitaminWizardController  extends Application {
 			required.put("massCentroidY", 0.0);
 			required.put("massCentroidZ", 0.0);
 			setRequiredFields(required);
-		}).start();
+		//}).start();
     	sizePane.setDisable(true);
         measurmentPane.setDisable(false);
         typePane.setDisable(true);
     }
 
+	private void setUpVitaminDefaults() {
+		//new Thread(() -> {
+			HashMap<String, Object> required = new HashMap<String, Object>();
+			required.put("MaxTorqueNewtonmeters", 0.001);
+			required.put("MaxFreeSpeedRadPerSec", 1);
+			required.put("massKg", 0.001);
+			required.put("shaftType", "dShaft");
+			required.put("shaftSize", "5mm");
+			setRequiredFields(required);
+		//}).start();
+	}
+
 	private void setRequiredFields(HashMap<String, Object> required) {
 		// For each vitamin size in a given type
 		
 		for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
-			HashMap<String, Object> configs = Vitamins.getConfiguration(typeOfVitaminString, size);
+			Map<String, Object> configs = Vitamins.getConfigurationRW(typeOfVitaminString, size);
 			// For every required key
 			for(String key:required.keySet().stream().sorted().collect(Collectors.toList())) {
 				// check to see if the current size has this key already
@@ -328,10 +335,10 @@ public class NewVitaminWizardController  extends Application {
 	}
 
 	private void setupKeyValueToTable(String key, Object value, String size) {
-		Vitamins.getConfiguration(typeOfVitaminString, size).put(key, value);
+		Vitamins.putMeasurment(typeOfVitaminString, size,key, value);
 		if (size.contentEquals(sizeOfVitaminString))
 			BowlerStudio.runLater(() -> measurmentsTable.getItems()
-					.add(new MeasurmentConfig(key, Vitamins.getConfiguration(typeOfVitaminString, sizeOfVitaminString))));
+					.add(new MeasurmentConfig(key, typeOfVitaminString, sizeOfVitaminString)));
 	}
 
     @FXML
@@ -392,6 +399,8 @@ public class NewVitaminWizardController  extends Application {
         		
     		}
     	}
+    	isShaft.setSelected(Vitamins.isShaft(typeOfVitaminString));
+    	isMotor.setSelected(Vitamins.isActuator(typeOfVitaminString));
         measurmentPane.setDisable(true);
         typePane.setDisable(true);
         
@@ -434,7 +443,8 @@ public class NewVitaminWizardController  extends Application {
 			result2.ifPresent(name2 -> { 
 				setupKeyValueToTable(name,name2,sizeOfVitaminString);
 				for(String size:Vitamins.listVitaminSizes(typeOfVitaminString)) {
-					Vitamins.getConfiguration(typeOfVitaminString, size).put(name,name2);
+					Vitamins.putMeasurment(typeOfVitaminString, size,name,name2);
+					
 				}
 			});
 			newMeasurmentButton.setDisable(false);
@@ -448,16 +458,16 @@ public class NewVitaminWizardController  extends Application {
     void onSelectExistingTypeMode(ActionEvent event) {
     	newTypeNameField.setEditable(false);
     	typeComboBox.setDisable(false);
-    	isShaft.setDisable(true);
-		isMotor.setDisable(true);
+    	//isShaft.setDisable(true);
+		//isMotor.setDisable(true);
     }
 
     @FXML
     void onSelectNewTypeMode(ActionEvent event) {
     	newTypeNameField.setEditable(true);
     	typeComboBox.setDisable(true);
-    	isShaft.setDisable(false);
-		isMotor.setDisable(false);
+    	//isShaft.setDisable(false);
+		//isMotor.setDisable(false);
     }
     @FXML
     void onEditExisting(ActionEvent event) {
@@ -471,8 +481,10 @@ public class NewVitaminWizardController  extends Application {
 
     @FXML
     void onIsMotor(ActionEvent event) {
-    	if(isMotor.isSelected())
+    	if(isMotor.isSelected()) {
     		isShaft.setSelected(false);
+			setUpVitaminDefaults();
+    	}
     }
 
     @FXML
@@ -509,8 +521,8 @@ public class NewVitaminWizardController  extends Application {
 			typeComboBox.getSelectionModel().select(types.get(0));
 		else
 			typeComboBox.getSelectionModel().select(typeOfVitaminString);
-		isShaft.setDisable(true);
-		isMotor.setDisable(true);
+		isShaft.setDisable(false);
+		isMotor.setDisable(false);
     }
     
     public static void launchWizard(INewVitaminCallback callback) throws Exception {

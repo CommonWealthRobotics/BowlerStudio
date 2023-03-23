@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
@@ -130,7 +131,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		shaftSize.getSelectionModel().select(conf.getShaftSize());
 
 		for (String vitaminsType : Vitamins.listVitaminTypes()) {
-			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
+			Map<String, Object> meta = Vitamins.getMeta(vitaminsType);
 			if (meta != null && meta.containsKey("shaft"))
 				shaftType.getItems().add(vitaminsType);
 		}
@@ -156,11 +157,13 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				conf.setElectroMechanicalSize(motorsize);
 				//newHardware.setText("New " + conf.getElectroMechanicalType());
 				//editHardware.setText("Edit " + conf.getElectroMechanicalSize());
-				HashMap<String, Object> vitaminData = Vitamins.getConfiguration(conf.getElectroMechanicalType(),
-						conf.getElectroMechanicalSize());
-				System.out.println("New size " + vitaminData);
-				String shafttype = (String) vitaminData.get("shaftType");
-				String shaftsize = (String) vitaminData.get("shaftSize");
+//				Map<String, Object> vitaminData = Vitamins.getConfiguration(conf.getElectroMechanicalType(),
+//						conf.getElectroMechanicalSize());
+//				System.out.println("New size " + vitaminData);
+				String shafttype = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
+						conf.getElectroMechanicalSize(),"shaftType");
+				String shaftsize = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
+						conf.getElectroMechanicalSize(),"shaftSize");
 
 				BowlerStudio.runLater(() -> {
 					setShaftType( shaftSize, shafttype);
@@ -188,7 +191,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		emHardwareSize.getSelectionModel().select(conf.getElectroMechanicalSize());
 
 		for (String vitaminsType : Vitamins.listVitaminTypes()) {
-			HashMap<String, Object> meta = Vitamins.getMeta(vitaminsType);
+			Map<String, Object> meta = Vitamins.getMeta(vitaminsType);
 			if (meta != null && meta.containsKey("actuator"))
 				emHardwareType.getItems().add(vitaminsType);
 		}
