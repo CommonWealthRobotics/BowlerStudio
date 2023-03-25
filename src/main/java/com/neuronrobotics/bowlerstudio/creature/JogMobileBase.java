@@ -288,17 +288,16 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
-
 		reset();
-		if (scriptRunner != null)
-			while (scriptRunner.isAlive()) {
+		Thread tmp = scriptRunner;
+		if (tmp != null)
+			while (tmp.isAlive()) {
 
 				Log.debug("Interrupting");
 				ThreadUtil.wait(10);
 				try {
-					scriptRunner.interrupt();
-					scriptRunner.join();
+					tmp.interrupt();
+					tmp.join();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
