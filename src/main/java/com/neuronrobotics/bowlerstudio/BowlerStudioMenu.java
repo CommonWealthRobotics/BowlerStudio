@@ -22,6 +22,8 @@ import com.neuronrobotics.pidsim.LinearPhysicsEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -111,7 +113,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	private MenuItem showCreatureLab; // Value injected by FXMLLoader
 	@FXML // fx:id="showTerminal"
 	private MenuItem showTerminal;
-	@FXML // fx:id="watchingRepos"
+	@FXML // fx:id="showTerminal"
 	private Menu WindowMenu;
 	@FXML // fx:id="watchingRepos"
 	private Menu watchingRepos; // Value injected by FXMLLoader
@@ -1482,9 +1484,30 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		idlespin.setSelected(false);
 		CheckMenuItem  showRuler = new CheckMenuItem("Show Ruler ");
 		showRuler.setSelected(true);
+		CheckMenuItem  showCSGProgress = new CheckMenuItem("Show CSG Progress");
+		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
+			String x = intermediateShape.getName()+" "+type.trim()+"ing "+(currentIndex+1)+" of "+finalIndex;
+			if(showRuler.isSelected())
+				System.out.println(x);
+			else
+				System.err.println(x);
+		});
+		showCSGProgress.setOnAction(event->{
+			ConfigurationDatabase.setObject("MenueSettings", "printCSG", showCSGProgress.isSelected());
+		});
+		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
+//		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
+//			@Override
+//			public void onShape(CSG newShape) {
+//				BowlerStudioController.addCsg(newShape);
+//			}
+//		});
 		
-		creatureLab3dController.getEngine().setControls(showRuler,idlespin,autohighlight);
-		WindowMenu.getItems().addAll(showRuler,idlespin,autohighlight);
+		showCSGProgress.setSelected(Boolean.parseBoolean( ConfigurationDatabase.getObject("MenueSettings", "printCSG", true).toString()));
+		
+		
+		CreatureLab3dController.getEngine().setControls(showRuler,idlespin,autohighlight);
+		WindowMenu.getItems().addAll(showRuler,idlespin,autohighlight,showCSGProgress);
 
 		new Thread() {
 			public void run() {
@@ -1513,6 +1536,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 			}
 		}.start();
+		
 
 	}
 	public static
