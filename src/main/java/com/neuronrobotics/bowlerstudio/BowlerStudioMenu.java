@@ -1487,7 +1487,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		CheckMenuItem  showCSGProgress = new CheckMenuItem("Show CSG Progress");
 		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
 			String x = intermediateShape.getName()+" "+type.trim()+"ing "+(currentIndex+1)+" of "+finalIndex;
-			if(showRuler.isSelected())
+			if(showCSGProgress.isSelected())
 				System.out.println(x);
 			else
 				System.err.println(x);
