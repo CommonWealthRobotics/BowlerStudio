@@ -755,7 +755,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				for (javafx.event.EventType<MouseEvent> e : manip.keySet())
 					BowlerStudio.runLater(() -> current.addEventHandler(e, manip.get(e)));
 			}
-		}else {
+		} else {
 			current.setDrawMode(DrawMode.LINE);
 			current.setPickOnBounds(false);
 			current.setMouseTransparent(true);
@@ -1129,18 +1129,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				if (me.isControlDown()) {
 					modifier = 0.1;
 				}
-				if (me.isShiftDown()) {
-					modifier = 10.0;
-				}
-				if (me.isPrimaryButtonDown()) {
-					// cameraXform.ry.setAngle(cameraXform.ry.getAngle()
-					// - mouseDeltaX * modifierFactor * modifier * 2.0); // +
-					// cameraXform.rx.setAngle(cameraXform.rx.getAngle()
-					// + mouseDeltaY * modifierFactor * modifier * 2.0); // -
-					// RotationNR roz = RotationNR.getRotationZ(-mouseDeltaX *
-					// modifierFactor * modifier * 2.0);
-					// RotationNR roy = RotationNR.getRotationY(mouseDeltaY *
-					// modifierFactor * modifier * 2.);
+				boolean shiftDown = me.isShiftDown();
+				boolean primaryButtonDown = me.isPrimaryButtonDown();
+				if (primaryButtonDown && !shiftDown) {
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * 2.0,
 									mouseDeltaX * modifierFactor * modifier * 2.0, 0
@@ -1152,11 +1143,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					}
 				} else if (me.isMiddleButtonDown()) {
 
-				} else if (me.isSecondaryButtonDown()) {
-					double depth = -100 / getVirtualcam().getZoomDepth();
-					moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
-							mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()));
 				}
+				boolean secondaryButtonDown = me.isSecondaryButtonDown();
+				if (secondaryButtonDown || (primaryButtonDown && (shiftDown))) {
+					double depth = -100 / getVirtualcam().getZoomDepth();
+
+					TransformNR newPose = new TransformNR(mouseDeltaX * modifierFactor * modifier * 1.0 / depth,
+							mouseDeltaY * modifierFactor * modifier * 1.0 / depth, 0, new RotationNR());
+					moveCamera(newPose);
+				}
+
 			}
 		});
 		scene.addEventHandler(ScrollEvent.ANY, t -> {
