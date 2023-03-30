@@ -62,23 +62,26 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		
 		Files.write(Paths.get(project.getAbsolutePath()), ProjectContent.getBytes());
 		String latestVersionString = "1.12.0";
-		InputStream is = new URL(
-				"https://api.github.com/repos/CommonWealthRobotics/BowlerStudio/releases/latest")
-						.openStream();
-		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-			String jsonText = readAll(rd);
-			// Create the type, this tells GSON what datatypes to instantiate when parsing
-			// and saving the json
-			Type TT_mapStringString = new TypeToken<HashMap<String, Object>>() {
-			}.getType();
-			// chreat the gson object, this is the parsing factory
-			Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-			HashMap<String, Object> database = gson.fromJson(jsonText, TT_mapStringString);
-			latestVersionString = (String) database.get("tag_name");
-		} finally {
-			is.close();
-		}
+//		InputStream is = new URL(
+//				"https://api.github.com/repos/CommonWealthRobotics/BowlerStudio/releases/latest")
+//						.openStream();
+//		try {
+//			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+//			String jsonText = readAll(rd);
+//			// Create the type, this tells GSON what datatypes to instantiate when parsing
+//			// and saving the json
+//			Type TT_mapStringString = new TypeToken<HashMap<String, Object>>() {
+//			}.getType();
+//			// chreat the gson object, this is the parsing factory
+//			Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+//			HashMap<String, Object> database = gson.fromJson(jsonText, TT_mapStringString);
+//			latestVersionString = (String) database.get("tag_name");
+//		} finally {
+//			is.close();
+//		}
+		File currentVerFile =  new File(System.getProperty("user.home")+delim()+"bin"+delim()+"BowlerStudioInstall"+delim()+"currentversion.txt'");
+		latestVersionString=new String(Files.readAllBytes(currentVerFile.toPath())).trim();
+		
 		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
 				+delim()+ "BowlerStudio.jar";
 		String classpathContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"

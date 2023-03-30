@@ -804,7 +804,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						orgBranches.getItems().add(newBranchItem);
 						orgBranches.getItems().add(new SeparatorMenuItem());
 					});
-
+					if(PasswordManager.hasNetwork())
 					try {
 						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
 						for (Ref r : branches) {
