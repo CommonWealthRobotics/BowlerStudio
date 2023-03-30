@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import com.neuronrobotics.video.OSUtil;
 
@@ -79,8 +80,17 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 //		} finally {
 //			is.close();
 //		}
-		File currentVerFile =  new File(System.getProperty("user.home")+delim()+"bin"+delim()+"BowlerStudioInstall"+delim()+"currentversion.txt'");
-		latestVersionString=new String(Files.readAllBytes(currentVerFile.toPath())).trim();
+		File currentVerFile =  new File(System.getProperty("user.home")+delim()+"bin"+delim()+"BowlerStudioInstall"+delim()+"currentversion.txt");
+	    String s = "";
+	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
+	    String line;
+	    try {
+	      while (null != (line = br.readLine())) {
+	        s += line ;
+	      }
+	    } catch (IOException e) {
+	    }
+		latestVersionString=s.trim();
 		
 		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
 				+delim()+ "BowlerStudio.jar";
