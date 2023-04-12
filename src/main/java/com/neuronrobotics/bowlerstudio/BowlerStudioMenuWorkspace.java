@@ -98,7 +98,7 @@ public class BowlerStudioMenuWorkspace {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void sort() {
+	public static void sort() {
 		if (sorting)
 			return;
 		sorting = true;

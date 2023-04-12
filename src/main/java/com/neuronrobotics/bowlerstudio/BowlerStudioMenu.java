@@ -563,6 +563,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						new Thread(() -> {
 							ScriptingEngine.deleteRepo(url);
 							BowlerStudioMenuWorkspace.remove(url);
+							BowlerStudio.runLater(()->{
+								BowlerStudioMenuWorkspace.sort();
+							});
 						}).start();
 					} else {
 						System.out.println("Nothing was deleted");
