@@ -550,6 +550,25 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						// selfRef.onRefresh(null);
 					});
 				});
+				
+				MenuItem delete = new MenuItem("Delete Local Copy...");
+				delete.setOnAction(event->{
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("Are you sure you have published all your work?");
+					alert.setHeaderText("This will wipe out the local cache for "+url);
+					alert.setContentText("All files that are not published will be deleted");
+
+					Optional<ButtonType> result = alert.showAndWait();
+					if (result.get() == ButtonType.OK) {
+						new Thread(() -> {
+							ScriptingEngine.deleteRepo(url);
+							BowlerStudioMenuWorkspace.remove(url);
+						}).start();
+					} else {
+						System.out.println("Nothing was deleted");
+					}
+				});
+				
 
 				ScriptingEngine.addOnCommitEventListeners(url, myEvent);
 				orgRepo.setOnShowing(event -> {
@@ -559,7 +578,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				BowlerStudio.runLater(() -> {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
-					orgRepo.getItems().addAll(updateRepo, addFile, makeRelease, orgFiles, orgCommits, orgBranches);
+					orgRepo.getItems().addAll(updateRepo, addFile, makeRelease, orgFiles, orgCommits, orgBranches,delete);
 					// BowlerStudio.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);
 					// });
