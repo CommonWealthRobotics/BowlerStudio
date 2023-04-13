@@ -286,16 +286,7 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
-			System.out.println(intermediateShape.getName()+" "+type.trim()+"ing "+(currentIndex+1)+" of "+finalIndex);
-		});
-		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
-//		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
-//			@Override
-//			public void onShape(CSG newShape) {
-//				BowlerStudioController.addCsg(newShape);
-//			}
-//		});
+
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		manipulation.setUi(new IInteractiveUIElementProvider() {
 			public void runLater(Runnable r) {

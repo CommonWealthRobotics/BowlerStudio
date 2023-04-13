@@ -15,6 +15,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.bootloader.NRBootLoader;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.RpcEncapsulation;
 import com.neuronrobotics.sdk.dyio.DyIO;
@@ -190,7 +191,15 @@ public class PluginManager {
 				pluginLauncher.getChildren().add(launcher);
 			}
 		}
-		TitledPane info = new TitledPane("Device Info", new Text(dev.getClass().getSimpleName()));
+		String simpleName = dev.getClass().getSimpleName();
+		if(DMDevice.class.isInstance((dev))){
+			simpleName = ((DMDevice)dev).getWrapped().getClass().getSimpleName();
+		}
+		
+		Text text = new Text("\n"+simpleName+"\n");
+		
+		TitledPane info = new TitledPane("Device Info", text);
+		
 		TitledPane protocol = new TitledPane("Bowler Protocol",  getBowlerBrowser());
 		TitledPane pluginsPane = new TitledPane("Plugins",  pluginLauncher);
 		info.setGraphic(AssetFactory.loadIcon("Info.png"));

@@ -98,7 +98,7 @@ public class BowlerStudioMenuWorkspace {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void sort() {
+	public static void sort() {
 		if (sorting)
 			return;
 		sorting = true;
@@ -137,16 +137,12 @@ public class BowlerStudioMenuWorkspace {
 						// repo is broken or missing
 						e.printStackTrace();
 						System.out.println("Removing from workspace: " + removedURL);
-						synchronized (getWorkspaceData()) {
-							getWorkspaceData().remove(removedURL);
-						}
+						remove(removedURL);
 					}
 
 				} else {
 					System.out.println("Removing from workspace: " + removedURL);
-					synchronized (getWorkspaceData()) {
-						getWorkspaceData().remove(removedURL);
-					}
+					remove(removedURL);
 				}
 			}
 			
@@ -200,6 +196,12 @@ public class BowlerStudioMenuWorkspace {
 
 	public static HashMap<String, Object> getWorkspaceData() {
 		return ConfigurationDatabase.getParamMap("workspace");
+	}
+
+	public static void remove(String url) {
+		synchronized (getWorkspaceData()) {
+			getWorkspaceData().remove(url);
+		}
 	}
 
 
