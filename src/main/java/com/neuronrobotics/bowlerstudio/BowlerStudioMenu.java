@@ -155,9 +155,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		});
 	}
 
-	public ScriptingFileWidget createFileTab(File file) {
-		return bowlerStudioModularFrame.createFileTab(file);
-	}
 
 	public void loadMobilebaseFromGist(String id, String file) {
 		loadMobilebaseFromGit("https://gist.github.com/" + id + ".git", file);
@@ -248,8 +245,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						gh = PasswordManager.getGithub();
 						ThreadUtil.wait(200);
 					}
+					new Thread(()->{
+						openFilesInUI();
+					}).start();
 					GitHub github = gh;
-					openFilesInUI();
 					loadOrganizations(github);
 					loadMyRepos(github);
 					loadWatchingRepos(github);
@@ -279,7 +278,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					@SuppressWarnings("unchecked")
 					ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
 					File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-					if (!f.exists() || createFileTab(f) == null) {
+					if (!f.exists() || BowlerStudio.createFileTab(f) == null) {
 						openGits.remove(s);
 						System.err.println("Removing missing " + s);
 					}
@@ -405,7 +404,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						desc = gist.getFiles().keySet().toArray()[0].toString();
 					}
 					String descriptionString = desc;
-					selfRef.messages.put(url, "GIST: " + descriptionString);
+					getSelfRef().messages.put(url, "GIST: " + descriptionString);
 					// Menu tmpGist = new Menu(desc);
 					// setUpRepoMenue(ownerMenue.get(g.getOwnerName()), g);
 					setUpRepoMenue(myGists, url, true, true);
@@ -420,7 +419,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	public static String gitURLtoMessage(String url) {
 		for (int i = 0; i < 5; i++) {
 			try {
-				if (selfRef.messages.get(url) != null)
+				if (getSelfRef().messages.get(url) != null)
 					break;
 				throw new RuntimeException();
 			} catch (Exception e) {
@@ -431,7 +430,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 			}
 		}
-		String string = selfRef.messages.get(url);
+		String string = getSelfRef().messages.get(url);
 		if (string == null)
 			string = url;
 		return string;
@@ -443,7 +442,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	private static void resetRepoMenue(Menu repoMenue, GHRepository repo) {
 		String url = repo.getGitTransportUrl().replace("git://", "https://");
-		selfRef.messages.put(url, repo.getFullName());
+		getSelfRef().messages.put(url, repo.getFullName());
 		setUpRepoMenue(repoMenue, url, true, true);
 	}
 
@@ -540,7 +539,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					BowlerStudio.runLater(() -> {
 						Stage s = new Stage();
 
-						AddFileToGistController controller = new AddFileToGistController(url, selfRef);
+						AddFileToGistController controller = new AddFileToGistController(url, getSelfRef());
 						try {
 							controller.start(s);
 						} catch (Exception e) {
@@ -1146,7 +1145,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	public void onCreatenewGist(ActionEvent event) {
 		Stage s = new Stage();
 		new Thread(() -> {
-			AddFileToGistController controller = new AddFileToGistController(null, selfRef);
+			AddFileToGistController controller = new AddFileToGistController(null, getSelfRef());
 
 			try {
 				controller.start(s);
@@ -1391,7 +1390,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				: "fx:id=\"addNewVitamin\" was not injected: check your FXML file 'BowlerStudioMenuBar.fxml'.";
 		GitHubRoot.setGraphic(AssetFactory.loadIcon("githubLogo"));
 
-		selfRef = this;
+		setSelfRef(this);
 		BowlerStudioMenuWorkspace.init(workspacemenuHandle);
 
 		showDevicesPanel.setOnAction(event -> {
@@ -1556,6 +1555,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				} catch (Exception e) {
 					exp.uncaughtException(Thread.currentThread(), e);
 				}
+				if(!PasswordManager.hasNetwork()) {
+					new Thread(()->{
+						openFilesInUI();
+					}).start();
+				}
 			}
 		}.start();
 		
@@ -1566,5 +1570,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	  List<T> list = new ArrayList<T>(c);
 	  java.util.Collections.sort(list);
 	  return list;
+	}
+
+	public static BowlerStudioMenu getSelfRef() {
+		return selfRef;
+	}
+
+	public static void setSelfRef(BowlerStudioMenu selfRef) {
+		BowlerStudioMenu.selfRef = selfRef;
 	}
 }
