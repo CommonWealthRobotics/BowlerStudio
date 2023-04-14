@@ -176,8 +176,6 @@ dependencies {
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
 		
-	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.6.0.201912101111-r'
 	
 	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
 	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
