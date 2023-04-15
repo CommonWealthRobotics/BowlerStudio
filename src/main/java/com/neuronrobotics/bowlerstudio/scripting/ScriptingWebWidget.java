@@ -107,7 +107,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			new Thread() {
 				public void run() {
 					doFork();
-
 				}
 
 
@@ -142,7 +141,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
 				BowlerStudio.createFileTab(file);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
