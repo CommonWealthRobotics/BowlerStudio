@@ -25,6 +25,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -343,7 +344,16 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					if (myownerMenue.get(g.getOwnerName()) == null) {
 						myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 						BowlerStudio.runLater(() -> {
-							myRepos.getItems().add(myownerMenue.get(g.getOwnerName()));
+							String ownerName = g.getOwnerName();
+							if(ownerName==null)
+								throw new RuntimeException("ownerName can not be null");
+							Menu e = myownerMenue.get(ownerName);
+							if(e==null)
+								throw new RuntimeException("Menu can not be null");
+							ObservableList<MenuItem> items = myRepos.getItems();
+							if(items==null)
+								throw new RuntimeException("Menue items can not be null");
+							items.add(e);
 						});
 					}
 
