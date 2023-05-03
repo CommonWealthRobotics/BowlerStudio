@@ -209,8 +209,8 @@ public class BowlerStudioController implements IScriptEventListener {
 		// "+lineNumber+" to color "+color);
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber, color);
-		} catch (BadLocationException e) {
-			// e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 
