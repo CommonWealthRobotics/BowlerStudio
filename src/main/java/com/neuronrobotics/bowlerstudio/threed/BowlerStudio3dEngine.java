@@ -730,7 +730,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 			@Override
 			public void handle(MouseEvent event) {
-				if (event.isSecondaryButtonDown() || event.isShiftDown())
+				if (event.isSecondaryButtonDown() )
 					cm.show(current, event.getScreenX() - 10, event.getScreenY() - 10);
 				else if (event.isPrimaryButtonDown()) {
 					if (System.currentTimeMillis() - lastClickedTime < 500) {
