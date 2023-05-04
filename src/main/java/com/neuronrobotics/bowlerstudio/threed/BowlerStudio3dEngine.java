@@ -748,7 +748,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			}
 		}
 		closeTheMenueHandler cmh = new closeTheMenueHandler();
-		if (!currentCsg.getStorage().getValue("skeleton").isPresent()) {
+		if (!currentCsg.isWireFrame()) {
 			BowlerStudio.runLater(() -> current.addEventHandler(MouseEvent.MOUSE_PRESSED, cmh));
 			if (eventForManipulation != null) {
 				HashMap<javafx.event.EventType<MouseEvent>, EventHandler<MouseEvent>> manip = eventForManipulation;
