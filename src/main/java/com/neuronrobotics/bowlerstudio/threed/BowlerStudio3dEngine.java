@@ -215,6 +215,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private CheckMenuItem autoHighilight;
 	private CheckMenuItem spin;
 	private HBox controlsChecks;
+	private Thread autospingThread=null;
 	static {
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -233,7 +234,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		// Set up the Ui THread explosion handler
 
-		autoSpin();
+		
+		
 	}
 
 	private void rebuild() {
@@ -286,6 +288,28 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		this.autoHighilight = autohighlight;
 		idlespin.setOnAction((event) -> {
 			resetMouseTime();
+			if(spin.isSelected()) {
+				autospingThread= new Thread(()->{
+					while(spin.isSelected()) {
+						BowlerStudio.runLater(new Runnable() {
+							@Override
+							public void run() {
+								autoSpin();
+							}
+						});
+						try {
+							Thread.sleep(30);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+				});
+				autospingThread.setName("UI Autospin Thread");
+				autospingThread.start();
+			}else
+				autospingThread.interrupt();
 		});
 
 		showRuler.setOnAction((event) -> {
@@ -1054,12 +1078,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} catch (Exception | Error e) {
 			// e.printStackTrace();
 		}
-		BowlerStudio.runLater(Duration.ofMillis(30), new Runnable() {
-			@Override
-			public void run() {
-				autoSpin();
-			}
-		});
+
 	}
 
 	/**
