@@ -144,7 +144,7 @@ public class BowlerStudio extends Application {
 
 	public static void runLater(java.time.Duration delay, Runnable action) {
 		Throwable t = new Exception("Delayed UI Thread Exception here!");
-		t.printStackTrace();
+		//t.printStackTrace();
 		new Thread() {
 			public void run() {
 				setName("UI Delay Thread ");
