@@ -304,12 +304,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							e.printStackTrace();
 						}
 					}
-					
+					System.err.println("Autospin Thread clean exit");
 				});
 				autospingThread.setName("UI Autospin Thread");
 				autospingThread.start();
-			}else
-				autospingThread.interrupt();
+			}
 		});
 
 		showRuler.setOnAction((event) -> {
