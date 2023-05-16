@@ -71,7 +71,7 @@ public class BowlerStudio extends Application {
 	private static File layoutFile;
 	private static boolean deleteFlag = false;
 	private static IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
-	//private static String lastVersion;
+	// private static String lastVersion;
 
 	private static class Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
@@ -141,32 +141,40 @@ public class BowlerStudio extends Application {
 			// new RuntimeException().printStackTrace();
 		}
 	}
+
 	public static void runLater(java.time.Duration delay, Runnable action) {
-		Throwable t=new Exception("Delayed UI Thread Exception here!");
-		new Thread(()->{
-			try {
-				Thread.sleep(delay.getSeconds()*1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		Throwable t = new Exception("Delayed UI Thread Exception here!");
+		//t.printStackTrace();
+		new Thread() {
+			public void run() {
+				setName("UI Delay Thread ");
+				try {
+					Thread.sleep(delay.getSeconds() * 1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				runLater(action, t);
 			}
-			runLater(action,t);
-		}).start();
+		}.start();
 	}
+
 	public static void runLater(Runnable r) {
-		runLater(r,new Exception("UI Thread Exception here!"));
+		runLater(r, new Exception("UI Thread Exception here!"));
 	}
-	public static void runLater(Runnable r,Throwable ex) {
-		Platform.runLater(()->{
+
+	public static void runLater(Runnable r, Throwable ex) {
+		Platform.runLater(() -> {
 			try {
 				r.run();
-			}catch(Throwable t) {
+			} catch (Throwable t) {
 				t.printStackTrace();
 				ex.printStackTrace();
 			}
-			
+
 		});
 	}
+
 	public static OutputStream getOut() {
 		if (out == null)
 			out = new Console();
@@ -208,11 +216,13 @@ public class BowlerStudio extends Application {
 		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
 		 */
 	}
+
 	public static void select(Affine globalPositionListener) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			CreatureLab3dController.getEngine().setSelected(globalPositionListener);
 		}
 	}
+
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
@@ -236,15 +246,15 @@ public class BowlerStudio extends Application {
 				System.err.println("File not found");
 			}
 	}
-	
+
 	public static TransformNR getCamerFrame() {
 		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
 	}
-	
+
 	public static double getCamerDepth() {
 		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
 	}
-	
+
 	/**
 	 * @param args the command line arguments
 	 * @throws Exception
@@ -305,28 +315,27 @@ public class BowlerStudio extends Application {
 			System.err.println("Arguments detected, starting Kernel mode.");
 			SplashManager.closeSplash();
 			BowlerKernel.main(args);
-		}else
-		{
+		} else {
 			renderSplashFrame(5, "Loging In...");
 			// ScriptingEngine.logout();
 			// switching to Web Flow auth
-			List<String> listOfScopes = Arrays.asList("repo", "gist", 
-					"user","admin:org","admin:org_hook","workflow");
-			if(OSUtil.isOSX())
-			GitHubWebFlow.setOpen(new IURLOpen() {
-				public void open(URI toOpe) {
-					try {
-						BowlerStudio.openExternalWebpage(toOpe.toURL());
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			List<String> listOfScopes = Arrays.asList("repo", "gist", "user", "admin:org", "admin:org_hook",
+					"workflow");
+			if (OSUtil.isOSX())
+				GitHubWebFlow.setOpen(new IURLOpen() {
+					public void open(URI toOpe) {
+						try {
+							BowlerStudio.openExternalWebpage(toOpe.toURL());
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
-			});
+				});
 			PasswordManager.setListOfScopes(listOfScopes);
-			GitHubWebFlow.setMyAPI(()->{
+			GitHubWebFlow.setMyAPI(() -> {
 				String line = System.getProperty("API-ID");
-				if(line!=null)
+				if (line != null)
 					return line;
 				return "1edf79fae494c232d4d2";
 			});
@@ -338,7 +347,7 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.waitForLogin();
 				if (ScriptingEngine.isLoginSuccess()) {
 
-					if (BowlerStudio.hasNetwork()) {					
+					if (BowlerStudio.hasNetwork()) {
 						ScriptingEngine.setAutoupdate(true);
 
 					}
@@ -366,15 +375,15 @@ public class BowlerStudio extends Application {
 					try {
 						ScriptingEngine.pull(myAssets, "main");
 						System.err.println("Studio version is the same");
-					}catch(Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 						ScriptingEngine.deleteRepo(myAssets);
 						ScriptingEngine.cloneRepo(myAssets, null);
 					}
-					
-					if(ScriptingEngine.checkOwner(myAssets)) {
-						if(!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
-							System.out.println("Tagging Assets at "+StudioBuildInfo.getVersion());
+
+					if (ScriptingEngine.checkOwner(myAssets)) {
+						if (!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
+							System.out.println("Tagging Assets at " + StudioBuildInfo.getVersion());
 							ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 						}
 					}
@@ -413,7 +422,7 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
 
 			renderSplashFrame(80, "Example Robots");
-			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",null);
+			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", null);
 			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git");
 			renderSplashFrame(81, "CSG database");
 			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
@@ -425,7 +434,7 @@ public class BowlerStudio extends Application {
 			String arduino = "arduino";
 			if (NativeResource.isLinux()) {
 
-				//Slic3r.setExecutableLocation("/usr/bin/slic3r");
+				// Slic3r.setExecutableLocation("/usr/bin/slic3r");
 
 			} else if (NativeResource.isWindows()) {
 				arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
@@ -474,8 +483,8 @@ public class BowlerStudio extends Application {
 			// ThreadUtil.wait(100);
 
 			try {
-				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",null);
-				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/DeviceProviders.git",null);
+				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git", null);
+				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/DeviceProviders.git", null);
 				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git");
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
@@ -562,7 +571,7 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings("restriction")
 	public static void clearConsole() {
 
-		runLater(()-> {
+		runLater(() -> {
 			if (getLogViewRefStatic() != null)
 				getLogViewRefStatic().setText("");
 		});
@@ -756,7 +765,7 @@ public class BowlerStudio extends Application {
 
 				renderSplashFrame(100, "Saving state..");
 				ConnectionManager.disconnectAll();
-				if(PasswordManager.hasNetwork()) {
+				if (PasswordManager.hasNetwork()) {
 					if (ScriptingEngine.isLoginSuccess() && !PasswordManager.isAnonMode())
 						ConfigurationDatabase.save();
 				}
@@ -805,6 +814,5 @@ public class BowlerStudio extends Application {
 	public static void exit() {
 		closeBowlerStudio();
 	}
-
 
 }
