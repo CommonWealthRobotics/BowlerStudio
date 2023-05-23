@@ -347,6 +347,11 @@ public class BowlerStudioController implements IScriptEventListener {
 			});
 			return true;
 		}
+		if (Tab.class.isInstance(p)) {
+			Tab newTab = (Tab)p;
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(newTab);
+			return true;
+		}
 		// ThreadUtil.wait(20);
 		return false;
 	}
