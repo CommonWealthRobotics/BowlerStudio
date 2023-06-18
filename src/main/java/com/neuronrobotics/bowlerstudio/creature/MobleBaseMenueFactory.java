@@ -221,25 +221,11 @@ public class MobleBaseMenueFactory {
 			});
 			TreeItem<String> arrangeBed = new TreeItem<String>("Arrange Print Bed",
 					AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-
 			callbackMapForTreeitems.put(arrangeBed, () -> {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-				if (!defaultStlDir.exists()) {
-					defaultStlDir.mkdirs();
-				}
 				BowlerStudio.runLater(() -> {
-					DirectoryChooser chooser = new DirectoryChooser();
-					chooser.setTitle("Select Output Directory For .STL files");
-
-					chooser.setInitialDirectory(defaultStlDir);
-					File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
 					new Thread() {
-
 						public void run() {
 							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
-							if (baseDirForFiles == null) {
-								return;
-							}
 							try {
 								
 								PrintBedManager manager=new PrintBedManager(device.getGitSelfSource()[0],baseManager.getAllCad());
@@ -247,11 +233,9 @@ public class MobleBaseMenueFactory {
 							} catch (Exception e) {
 								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
-
 						}
 					}.start();
 				});
-
 			});
 			TreeItem<String> printable = new TreeItem<String>("Printable Cad",
 					AssetFactory.loadIcon("Printable-Cad.png"));
