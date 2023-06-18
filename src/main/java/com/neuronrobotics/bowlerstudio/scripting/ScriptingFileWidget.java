@@ -3,7 +3,9 @@ package com.neuronrobotics.bowlerstudio.scripting;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -12,6 +14,7 @@ import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -38,6 +41,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings("unused")
@@ -53,7 +57,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
+	private Button arrange = new Button("Arrange");
+
 	private Button publish = new Button("Save");
+
 	private CheckBox autoRun = new CheckBox();
 
 	private String addr;
@@ -70,50 +77,53 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private boolean updateneeded = false;
 	private IScriptingLanguage langaugeType;
 //	private ImageView image=new ImageView();
-	private boolean isOwnedByLoggedInUser=false;
+	private boolean isOwnedByLoggedInUser = false;
 	private String remote;
+	private boolean isArrange = false;
+
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE, currentFile);
 
 		loadCodeFromFile(currentFile);
-		isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
-
-		//publish.setDisable(!isOwnedByLoggedInUser);
+		// publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-		if(isOwnedByLoggedInUser)
+		if (isOwnedByLoggedInUser)
 			publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
 		else
 			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
-
+		arrange.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
 	}
 
 	private void startStopAction() {
-		BowlerStudio.runLater(() -> {runfx.setDisable(true);});
+		BowlerStudio.runLater(() -> {
+			runfx.setDisable(true);
+		});
 		// perform start stop outside the UI thread
-		new Thread(()->{
+		new Thread(() -> {
 			if (running)
 				stop();
 			else
 				start();
-			BowlerStudio.runLater(() -> {runfx.setDisable(false);});
+			BowlerStudio.runLater(() -> {
+				runfx.setDisable(false);
+			});
 		}).start();
 	}
 
 	private ScriptingFileWidget(ScriptingWidgetType type, File currentFile) {
+		isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 		this.type = type;
 		this.currentFile = currentFile;
 		runfx.setOnAction(e -> {
-			new Thread() {
-				public void run() {
-
-					if (langaugeType.getIsTextFile())
-						save();
-					// do not attempt to save no binary files
-					startStopAction();
-				}
-			}.start();
+			isArrange = false;
+			run();
+		});
+		arrange.setOnAction(e -> {
+			isArrange = true;
+			run();
 		});
 		runfx.setTooltip(new Tooltip("Run this code and display the result"));
+		arrange.setTooltip(new Tooltip("Arrange a print bed of these parts"));
 		publish.setOnAction(e -> {
 			saveTheFile(currentFile);
 
@@ -129,7 +139,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane = new HBox(20);
 		double lengthScalar = fileNameBox.getFont().getSize() * 1.5;
 		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at first
+			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+			// first
 			// time and so on
 			BowlerStudio.runLater(() -> {
 				Text text = new Text(currText);
@@ -144,7 +155,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			});
 		});
 		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at first
+			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+			// first
 			// time and so on
 			BowlerStudio.runLater(() -> {
 				Text text = new Text(currText);
@@ -175,6 +187,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		});
 		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		controlPane.getChildren().add(runfx);
+		if (isOwnedByLoggedInUser)
+			controlPane.getChildren().add(arrange);
 		controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
@@ -186,7 +200,6 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(fileListBox);
 		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
-		
 
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -195,17 +208,29 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		reset();
 	}
 
+	private void run() {
+		new Thread() {
+			public void run() {
+
+				if (langaugeType.getIsTextFile())
+					save();
+				// do not attempt to save no binary files
+				startStopAction();
+			}
+		}.start();
+	}
+
 	public void saveTheFile(File currentFile) {
 		new Thread(() -> {
-			if(isOwnedByLoggedInUser) {
+			if (isOwnedByLoggedInUser) {
 				save();
 				CommitWidget.commit(currentFile, getCode());
-			}else {
-				String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
+			} else {
+				String reponame = currentFile.getName().split("\\.")[0] + "_" + PasswordManager.getLoginID();
 				String content = getCode();
 				String newGit;
 				try {
-					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: "+remote);
+					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: " + remote);
 					ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
 					File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
 					ScriptingEngine.deleteRepo(remote);
@@ -215,7 +240,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 			}
 		}).start();
 	}
@@ -307,6 +332,21 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 		});
 		scriptRunner = new Thread() {
+			void addObject(Object o, ArrayList<CSG> cache) {
+				if (List.class.isInstance(o)) {
+					List<Object> c = (List<Object>) o;
+					for (int i = 0; i < c.size(); i++) {
+						// Log.warning("Loading array Lists with removals " + c.get(i));
+						addObject(c.get(i), cache);
+					}
+					return;
+				}
+				if (CSG.class.isInstance(o)) {
+					CSG csg = (CSG) o;
+					cache.add(csg);
+					return;
+				}
+			}
 
 			public void run() {
 //				String name;
@@ -317,6 +357,17 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //				}
 				try {
 					Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
+					ArrayList<CSG> cache = new ArrayList<>();
+					addObject(obj,cache);
+					String git;
+						git = ScriptingEngine.locateGitUrl(currentFile);
+						if (cache.size() > 0) {
+							if (git != null && isArrange) {
+								PrintBedManager manager = new PrintBedManager(git, cache);
+								obj=manager.get();
+							}
+						}
+						
 					for (int i = 0; i < listeners.size(); i++) {
 						IScriptEventListener l = listeners.get(i);
 						l.onScriptFinished(obj, scriptResult, currentFile);
@@ -387,7 +438,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //		}
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
 		// ScriptingEngine.setLastFile(f);
-		Git git=null;
+		Git git = null;
 		try {
 			git = ScriptingEngine.locateGit(currentFile);
 			remote = git.getRepository().getConfig().getString("remote", "origin", "url");
@@ -397,7 +448,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
 				// fileListBox.res
-				
+
 				fileNameBox.setText(findLocalPath);
 				// These values are display only, so if hte user tries to change them, they
 				// reset
@@ -410,7 +461,6 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					fileListBox.setText(remote);
 				});
 
-				
 			});
 		} catch (Exception e1) {
 			ScriptingEngine.closeGit(git);
@@ -471,13 +521,12 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	public void save() {
 		// TODO Auto-generated method stub
 		try {
-			String content = new String(
-				Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
-			String ineditor=getCode();
-			if(content.contentEquals(ineditor)) {
+			String content = new String(Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
+			String ineditor = getCode();
+			if (content.contentEquals(ineditor)) {
 				System.out.println("Skip Writing file contents, file is same");
 				return;
-			}				
+			}
 			System.out.println("Writing file contents");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile));
 			writer.write(ineditor);
