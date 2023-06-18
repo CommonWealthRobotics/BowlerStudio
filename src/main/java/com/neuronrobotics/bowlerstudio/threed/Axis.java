@@ -6,8 +6,9 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.TextExtrude;
 import javafx.application.Platform;
-
+import javafx.scene.text.Font;
 /*
  *      Axis.java 1.0 98/11/25
  *
@@ -65,9 +66,9 @@ public class Axis extends Group {
 	private CSG xAxis;
 	private CSG yAxis;
 	private CSG zAxis;
-	private Label xText;
-	private Label yText;
-	private Label zText;
+	private CSG xText;
+	private CSG yText;
+	private CSG zText;
 
 	/**
 	 * Instantiates a new axis.
@@ -86,16 +87,21 @@ public class Axis extends Group {
 	 */
 	//
 	public Axis(int i) {
+		double strokWidth = 0.5;
 
 		Affine xp = new Affine();
 		xp.setTx(i / 2);
-		xText = new Label("+X");
-		xText.getTransforms().add(xp);
+		Font font = new Font("Arial",  5);
+
+		
+
+		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"X",font)).movex(i).moveToCenterY();
+		//xText.getTransforms().add(xp);
 
 		Affine yp = new Affine();
 		yp.setTy(i / 2);
-		yText = new Label("+Y");
-		yText.getTransforms().add(yp);
+		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Y",font)).toYMin().rotz(90).movey(i).moveToCenterX();
+		//yText.getTransforms().add(yp);
 
 		// zp.setTz(i/2);
 		Affine zTextAffine = new Affine();
@@ -103,14 +109,17 @@ public class Axis extends Group {
 		zTextAffine.setTx(i / 2);
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zText = new Label("+Z");
-		zText.getTransforms().add(zTextAffine);
+		zText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Z",font)).rotx(90).rotz(90).movez(i).moveToCenterY();
+		//zText.getTransforms().add(zTextAffine);
 		// zText.smoothProperty().set(false);
-		double strokWidth = 0.5;
 		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin();
 		yAxis = new Cube( strokWidth,i, strokWidth).toCSG().toYMin();
 		zAxis = new Cube( strokWidth, strokWidth,i).toCSG().toZMin();
+		xText.setColor(Color.RED);
 
+		yText.setColor(Color.GREEN);
+
+		zText.setColor(Color.BLUE);
 		xAxis.setColor(Color.RED);
 
 		yAxis.setColor(Color.GREEN);
@@ -125,7 +134,7 @@ public class Axis extends Group {
 	}
 
 	private void showAll() {
-		for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText, yText, zText)) {
+		for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText.getMesh(), yText.getMesh(), zText.getMesh())) {
 			try {
 				n.setPickOnBounds(false);
 				n.setMouseTransparent(true);

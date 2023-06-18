@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -46,6 +47,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public class MobleBaseMenueFactory {
+
+	private static File baseDirForFiles=null;
 
 	private MobleBaseMenueFactory() {
 	}
@@ -218,20 +221,41 @@ public class MobleBaseMenueFactory {
 				});
 
 			});
+			TreeItem<String> arrangeBed = new TreeItem<String>("Arrange Print Bed",
+					AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+			callbackMapForTreeitems.put(arrangeBed, () -> {
+				BowlerStudio.runLater(() -> {
+					new Thread() {
+						public void run() {
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
+							try {
+								
+								PrintBedManager manager=new PrintBedManager(device.getGitSelfSource()[0],baseManager.getAllCad());
+								BowlerStudioController.setCsg(manager.get());
+							} catch (Exception e) {
+								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
+							}
+						}
+					}.start();
+				});
+			});
 			TreeItem<String> printable = new TreeItem<String>("Printable Cad",
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
 			callbackMapForTreeitems.put(printable, () -> {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				File defaultStlDir =baseDirForFiles;
+				if(defaultStlDir==null)
+					defaultStlDir=new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
+				File dir = defaultStlDir;
 				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Select Output Directory For .STL files");
 
-					chooser.setInitialDirectory(defaultStlDir);
-					File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+					chooser.setInitialDirectory(dir);
+					baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
 					new Thread() {
 
 						public void run() {
@@ -261,7 +285,6 @@ public class MobleBaseMenueFactory {
 				});
 
 			});
-
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
@@ -442,7 +465,7 @@ public class MobleBaseMenueFactory {
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
 			if (root)
-				rootItem.getChildren().addAll(physics, regnerate, printable, kinematics);
+				rootItem.getChildren().addAll(physics, regnerate, printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)

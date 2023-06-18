@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -29,6 +30,8 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import javax.swing.text.BadLocationException;
+
+import org.eclipse.jgit.api.Git;
 
 import java.awt.Color;
 //import java.awt.*;
@@ -330,7 +333,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		BowlerStudio.runLater(() -> {
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().addTab(tab, closable);
-		},ex);
+		}, ex);
 
 	}
 
@@ -348,7 +351,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			return true;
 		}
 		if (Tab.class.isInstance(p)) {
-			Tab newTab = (Tab)p;
+			Tab newTab = (Tab) p;
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(newTab);
 			return true;
 		}
@@ -418,22 +421,31 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void addObject(Object o, File source) {
+		addObject(o, source, null);
+	}
+
+	public static void addObject(Object o, File source, ArrayList<CSG> cache) {
 
 		if (List.class.isInstance(o)) {
 			List<Object> c = (List<Object>) o;
 			for (int i = 0; i < c.size(); i++) {
 				// Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i), source);
+				addObject(c.get(i), source,cache);
 			}
 			return;
 		}
 
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
-			BowlerStudio.runLater(() -> {
-				// new RuntimeException().printStackTrace();
-				CreatureLab3dController.getEngine().addObject(csg, source);
-			});
+			if (cache == null) {
+				BowlerStudio.runLater(() -> {
+					// new RuntimeException().printStackTrace();
+					CreatureLab3dController.getEngine().addObject(csg, source);
+				});
+			}else {
+				cache.add(csg);
+			}
+
 			return;
 
 		} else if (Tab.class.isInstance(o)) {
@@ -499,15 +511,36 @@ public class BowlerStudioController implements IScriptEventListener {
 		clearObjects(Previous);
 		clearObjects(result);
 		ThreadUtil.wait(40);
+		ArrayList<CSG> cache =  new ArrayList<>();
 		if (List.class.isInstance(result)) {
 			List<Object> c = (List<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
 				// Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i), source);
+				addObject(c.get(i), source,cache);
 			}
 		} else {
-			addObject(result, source);
+			addObject(result, source,cache);
 		}
+		if(cache.size()>0)
+			addObject(cache, source,null);
+//		String git;
+//		try {
+//			git = ScriptingEngine.locateGitUrl(source);
+//			if(cache.size()>0) {
+//				if(git!=null) {
+//					PrintBedManager manager=new PrintBedManager(git,cache);
+//					addObject(manager.get(), source);
+//				}else {
+//					addObject(cache, source,null);
+//				}
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			addObject(cache, source,null);
+//		}
+		
+	
 	}
 
 	private void clearObjects(Object o) {
