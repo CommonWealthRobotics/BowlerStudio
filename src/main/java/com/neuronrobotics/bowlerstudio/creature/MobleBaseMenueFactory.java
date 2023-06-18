@@ -48,6 +48,8 @@ import java.util.Optional;
 
 public class MobleBaseMenueFactory {
 
+	private static File baseDirForFiles=null;
+
 	private MobleBaseMenueFactory() {
 	}
 
@@ -241,16 +243,19 @@ public class MobleBaseMenueFactory {
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
 			callbackMapForTreeitems.put(printable, () -> {
-				File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+				File defaultStlDir =baseDirForFiles;
+				if(defaultStlDir==null)
+					defaultStlDir=new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 				if (!defaultStlDir.exists()) {
 					defaultStlDir.mkdirs();
 				}
+				File dir = defaultStlDir;
 				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Select Output Directory For .STL files");
 
-					chooser.setInitialDirectory(defaultStlDir);
-					File baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+					chooser.setInitialDirectory(dir);
+					baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
 					new Thread() {
 
 						public void run() {
