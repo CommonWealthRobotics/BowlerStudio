@@ -92,6 +92,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		else
 			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
 		arrange.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+		arrange.setDisable(true);
 	}
 
 	private void startStopAction() {
@@ -362,9 +363,18 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					String git;
 						git = ScriptingEngine.locateGitUrl(currentFile);
 						if (cache.size() > 0) {
-							if (git != null && isArrange) {
-								PrintBedManager manager = new PrintBedManager(git, cache);
-								obj=manager.get();
+							boolean enableArraange = false;
+							for(CSG c:cache) {
+								if(c.getName().length()>0) {
+									enableArraange = true;
+								}
+							}
+							if(enableArraange) {
+								Platform.runLater(()->{arrange.setDisable(false);});
+								if (git != null && isArrange) {
+									PrintBedManager manager = new PrintBedManager(git, cache);
+									obj=manager.get();
+								}
 							}
 						}
 						
