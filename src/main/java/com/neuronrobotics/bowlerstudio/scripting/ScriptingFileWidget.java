@@ -5,6 +5,8 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
+import com.neuronrobotics.bowlerstudio.creature.MobleBaseMenueFactory;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
@@ -66,6 +68,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private String addr;
 	boolean loadGist = false;
 
+	private PrintBedManager manager=null;
 	private ScriptingWidgetType type;
 
 	final TextField fileListBox = new TextField();
@@ -81,6 +84,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private String remote;
 	private boolean isArrange = false;
 
+	private Button printbed;;
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE, currentFile);
 
@@ -186,10 +190,31 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			}).start();
 
 		});
+		 printbed = new Button("Export");
+		 printbed.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+		 BowlerStudio.runLater(() -> {
+				printbed.setDisable(true);
+			});
+		 printbed.setOnAction(event -> {
+			if (manager!=null) {
+				exportAll(true);
+				BowlerStudio.runLater(() -> {
+					printbed.setDisable(true);
+				});
+			} else {
+				System.out.println("Nothing to export!");
+			}
+		});
+		final Tooltip tooltip = new Tooltip();
+		tooltip.setText("\nMake a print bed and export all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
+		printbed.setTooltip(tooltip);
+		
 		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		controlPane.getChildren().add(runfx);
-		if (isOwnedByLoggedInUser)
+		if (isOwnedByLoggedInUser) {
 			controlPane.getChildren().add(arrange);
+			controlPane.getChildren().add(printbed);
+		}
 		controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
@@ -208,7 +233,37 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
 		reset();
 	}
+	private void exportAll(boolean makePrintBed) {
+		new Thread() {
+			public void run() {
+				setName("Exporting the CAD objects");
+				ArrayList<CSG> csgs =manager.makePrintBeds();
+				if(makePrintBed) {
+					
+				}
+				System.out.println("Exporting " + csgs.size() + " parts");
+				File baseDirForFiles = FileSelectionFactory.GetDirectory(MobleBaseMenueFactory.getBaseDirForFiles());
+				try {
+					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI())
+							.generateManufacturingParts(csgs, baseDirForFiles);
+					for (File f : files) {
+						System.out.println("Exported " + f.getAbsolutePath());
 
+					}
+					System.out.println("Success! " + files.size() + " parts exported");
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					BowlerStudio.printStackTrace(e);
+				}
+
+				BowlerStudio.runLater(() -> {
+					printbed.setDisable(false);
+				});
+			}
+		}.start();
+	}
+	
 	private void run() {
 		new Thread() {
 			public void run() {
@@ -333,6 +388,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 		});
 		scriptRunner = new Thread() {
+
 			void addObject(Object o, ArrayList<CSG> cache) {
 				if (List.class.isInstance(o)) {
 					List<Object> c = (List<Object>) o;
@@ -372,8 +428,11 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 							if(enableArraange) {
 								Platform.runLater(()->{arrange.setDisable(false);});
 								if (git != null && isArrange) {
-									PrintBedManager manager = new PrintBedManager(git, cache);
+									manager = new PrintBedManager(git, cache);
 									obj=manager.get();
+									BowlerStudio.runLater(() -> {
+										printbed.setDisable(false);
+									});
 								}
 							}
 						}
