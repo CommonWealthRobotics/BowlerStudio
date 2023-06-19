@@ -172,6 +172,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private Group ground;
 	private Group group;
 	private boolean captureMouse = false;
+	private Button export;;
 
 	private VirtualCameraMobileBase flyingCamera;
 	private Group hand;
@@ -209,7 +210,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	// private CheckBox autoHighilight;
 
-	private Button export;;
+
 	private boolean rebuildingUIOnerror = false;
 	private static int sumVert = 0;
 	private CheckMenuItem autoHighilight;
@@ -332,12 +333,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			getVirtualcam().setZoomDepth(VirtualCameraMobileBase.getDefaultZoomDepth());
 			getFlyingCamera().updatePositions();
 		});
-
 		export = new Button("Export");
 		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
-				exportAll();
+				exportAll(false);
 				BowlerStudio.runLater(() -> {
 					export.setDisable(true);
 				});
@@ -365,11 +365,14 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		return new Group(allCOntrols);
 	}
 
-	private void exportAll() {
+	private void exportAll(boolean makePrintBed) {
 		new Thread() {
 			public void run() {
 				setName("Exporting the CAD objects");
 				ArrayList<CSG> csgs = new ArrayList<CSG>(getCsgMap().keySet());
+				if(makePrintBed) {
+					
+				}
 				System.out.println("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {

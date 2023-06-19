@@ -243,29 +243,25 @@ public class MobleBaseMenueFactory {
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
 			callbackMapForTreeitems.put(printable, () -> {
-				File defaultStlDir =baseDirForFiles;
-				if(defaultStlDir==null)
-					defaultStlDir=new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-				if (!defaultStlDir.exists()) {
-					defaultStlDir.mkdirs();
-				}
+				File defaultStlDir =getBaseDirForFiles();
+				
 				File dir = defaultStlDir;
 				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
 					chooser.setTitle("Select Output Directory For .STL files");
 
 					chooser.setInitialDirectory(dir);
-					baseDirForFiles = chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage());
+					setBaseDirForFiles(chooser.showDialog(BowlerStudioModularFrame.getPrimaryStage()));
 					new Thread() {
 
 						public void run() {
 							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
-							if (baseDirForFiles == null) {
+							if (getBaseDirForFiles() == null) {
 								return;
 							}
 							ArrayList<File> files;
 							try {
-								files = baseManager.generateStls((MobileBase) device, baseDirForFiles, false);
+								files = baseManager.generateStls((MobileBase) device, getBaseDirForFiles(), false);
 								BowlerStudio.runLater(() -> {
 									Alert alert = new Alert(AlertType.INFORMATION);
 									alert.setTitle("Stl Export Success!");
@@ -1246,6 +1242,25 @@ public class MobleBaseMenueFactory {
 		File code = ScriptingEngine.fileFromGit(gitsId, file);
 		ScriptingFileWidget wid = BowlerStudio.createFileTab(code);
 
+	}
+
+	/**
+	 * @return the baseDirForFiles
+	 */
+	public static File getBaseDirForFiles() {
+		if(baseDirForFiles==null)
+			baseDirForFiles=new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		if (!baseDirForFiles.exists()) {
+			baseDirForFiles.mkdirs();
+		}
+		return baseDirForFiles;
+	}
+
+	/**
+	 * @param baseDirForFiles the baseDirForFiles to set
+	 */
+	public static void setBaseDirForFiles(File baseDirForFiles) {
+		MobleBaseMenueFactory.baseDirForFiles = baseDirForFiles;
 	}
 
 }
