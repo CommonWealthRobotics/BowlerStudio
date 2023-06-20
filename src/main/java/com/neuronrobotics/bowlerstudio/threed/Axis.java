@@ -100,7 +100,7 @@ public class Axis extends Group {
 
 		Affine yp = new Affine();
 		yp.setTy(i / 2);
-		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Y",font)).toYMin().rotz(90).movey(i).moveToCenterX();
+		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Y",font)).rotz(90).toYMin().movey(i).moveToCenterX();
 		//yText.getTransforms().add(yp);
 
 		// zp.setTz(i/2);
