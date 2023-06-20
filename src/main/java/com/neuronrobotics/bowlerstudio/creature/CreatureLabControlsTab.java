@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class CreatureLabControlsTab {
@@ -53,7 +54,7 @@ public class CreatureLabControlsTab {
 	}
 
 
-	public void setOverlayTop(VBox progress) {
+	public void setOverlayTop(HBox progress) {
 		// TODO Auto-generated method stub
 		BowlerStudio.runLater(()->{
 			progressBar.getChildren().clear();

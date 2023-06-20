@@ -48,7 +48,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private ProgressIndicator pi;
 
 	private MobileBaseCadManager baseManager;
-	private CheckBox autoRegen = new CheckBox("Auto-Regen CAD");
+	private CheckBox autoRegen = new CheckBox("Auto-Generate CAD");
+	private Button regen=new Button("Generate Cad Now");
 	Parent root;
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();
@@ -77,6 +78,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		autoRegen.setDisable(true);
 		autoRegen.setOnAction(event -> {
+			regenFromUiEvent();
+		});
+		regen.setDisable(true);
+		regen.setOnAction(event -> {
+			autoRegen.setSelected(true);
 			regenFromUiEvent();
 		});
 		// TODO Auto-generated method stub
@@ -135,6 +141,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				autoRegen.setDisable(true);
 				if (radioOptions != null)
 					radioOptions.setDisable(true);
+				regen.setDisable(true);
 			}
 			baseManager.setAutoRegen(autoRegen.isSelected());
 			if (autoRegen.isSelected()) {
@@ -263,14 +270,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
 		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
 		HBox progressIndicatorPanel = new HBox(10);
-		progressIndicatorPanel.getChildren().addAll(new Label("Cad Progress:"), pi);
-		progress.getChildren().addAll(progressIndicatorPanel, autoRegen, radioOptions);
 
-		progress.setStyle("-fx-background-color: #FFFFFF;");
-		progress.setOpacity(.7);
-		progress.setMinHeight(100);
-		progress.setPrefSize(325, 150);
-		tab.setOverlayTop(progress);
+		progress.getChildren().addAll( regen,autoRegen, radioOptions);
+		progressIndicatorPanel.getChildren().addAll( progress,pi);
+
+		progressIndicatorPanel.setStyle("-fx-background-color: #FFFFFF;");
+		progressIndicatorPanel.setOpacity(.7);
+		progressIndicatorPanel.setMinHeight(100);
+		progressIndicatorPanel.setPrefSize(325, 150);
+		tab.setOverlayTop(progressIndicatorPanel);
 
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
@@ -286,6 +294,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 						autoRegen.setDisable(false);
 						if (radioOptions != null)
 							radioOptions.setDisable(false);
+						regen.setDisable(false);
+
 					});
 				}
 			}
