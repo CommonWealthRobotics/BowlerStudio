@@ -53,7 +53,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();
 
-	private long timeSinceLastUpdate=0;
+	private long timeSinceLastUpdate = 0;
 
 	private HBox radioOptions;;
 
@@ -115,7 +115,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		while(getContent()==null)
+		while (getContent() == null)
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -125,18 +125,22 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	private void regenFromUiEvent() {
-		if(System.currentTimeMillis()-timeSinceLastUpdate<500) {
-			return;
-		}
-		timeSinceLastUpdate = System.currentTimeMillis();
-		if(autoRegen.isSelected()) {
-			autoRegen.setDisable(true);
-			if(radioOptions!=null)radioOptions.setDisable(true);
-		}
-		baseManager.setAutoRegen(autoRegen.isSelected());
-		if (autoRegen.isSelected()) {
-			generateCad();
-		}
+		BowlerStudio.runLater(() -> {
+
+			if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
+				return;
+			}
+			timeSinceLastUpdate = System.currentTimeMillis();
+			if (autoRegen.isSelected()) {
+				autoRegen.setDisable(true);
+				if (radioOptions != null)
+					radioOptions.setDisable(true);
+			}
+			baseManager.setAutoRegen(autoRegen.isSelected());
+			if (autoRegen.isSelected()) {
+				generateCad();
+			}
+		});
 	}
 
 	private void finishLoading(MobileBase device) {
@@ -190,8 +194,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 			rootItemFinal.setExpanded(true);
 			MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
-			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems, this,
-					true, creatureIsOwnedByUser);
+			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems,
+					this, true, creatureIsOwnedByUser);
 			tree.setPrefWidth(325);
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			JogMobileBase walkWidget = new JogMobileBase(device);
@@ -276,10 +280,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				System.out.println("Progress listener "+newValue);
-				if(newValue.doubleValue()>0.99) {
-					autoRegen.setDisable(false);
-					if(radioOptions!=null)radioOptions.setDisable(false);
+				System.out.println("Progress listener " + newValue);
+				if (newValue.doubleValue() > 0.99) {
+					BowlerStudio.runLater(() -> {
+						autoRegen.setDisable(false);
+						if (radioOptions != null)
+							radioOptions.setDisable(false);
+					});
 				}
 			}
 		});
