@@ -76,11 +76,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		this.pm = pm;
 		autoRegen.setSelected(true);
 
-		autoRegen.setDisable(true);
+		disable();
 		autoRegen.setOnAction(event -> {
 			regenFromUiEvent();
 		});
-		regen.setDisable(true);
 		regen.setOnAction(event -> {
 			autoRegen.setSelected(true);
 			regenFromUiEvent();
@@ -138,16 +137,20 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 			timeSinceLastUpdate = System.currentTimeMillis();
 			if (autoRegen.isSelected()) {
-				autoRegen.setDisable(true);
-				if (radioOptions != null)
-					radioOptions.setDisable(true);
-				regen.setDisable(true);
+				disable();
 			}
 			baseManager.setAutoRegen(autoRegen.isSelected());
 			if (autoRegen.isSelected()) {
 				generateCad();
 			}
 		});
+	}
+
+	private void disable() {
+		autoRegen.setDisable(true);
+		if (radioOptions != null)
+			radioOptions.setDisable(true);
+		regen.setDisable(true);
 	}
 
 	private void finishLoading(MobileBase device) {
@@ -291,17 +294,24 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				System.out.println("Progress listener " + newValue);
 				if (newValue.doubleValue() > 0.99) {
 					BowlerStudio.runLater(() -> {
-						autoRegen.setDisable(false);
-						if (radioOptions != null)
-							radioOptions.setDisable(false);
-						regen.setDisable(false);
-
+						enable();
+					});
+				}else {
+					BowlerStudio.runLater(() -> {
+						disable();
 					});
 				}
 			}
+
+
 		});
 	}
-
+	private void enable() {
+		autoRegen.setDisable(false);
+		if (radioOptions != null)
+			radioOptions.setDisable(false);
+		regen.setDisable(false);
+	}
 	private boolean hasWalking(MobileBase device) {
 		return device.getLegs().size() > 0 || device.getSteerable().size() > 0 || device.getDrivable().size() > 0;
 	}
