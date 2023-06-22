@@ -147,16 +147,31 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 
 repositories {
+	mavenCentral()
 	maven {
-		url "https://repo1.maven.org/maven2/"
+		url 'https://mlt.jfrog.io/artifactory/mlt-mvn-releases-local/'
 	}
-	maven { url 'https://oss.sonatype.org/service/local/repositories/releases/content/' }
+	maven { url 'https://repo.maven.apache.org/maven2/' }
+	
+	maven { url 'https://repo1.maven.org/maven2/'}
 
+
+	//jcenter()
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
+	//maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
 	//com.neuronrobotics hosting point
 	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
-	mavenCentral()
+
+	    maven {
+	        url "https://repo.myrobotlab.org/artifactory/myrobotlab/"
+	        content {
+	            includeGroup("de.dfki.mary")
+	        }
+	    }
+	maven { url 'https://maven-central.storage-download.googleapis.com/repos/central/data/'}
+	maven {url 'https://repo.jenkins-ci.org/public/'}
 	jcenter()
-	maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/'}
 	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
