@@ -171,13 +171,13 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
-			TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
-					AssetFactory.loadIcon("Generate-Cad.png"));
-
-			callbackMapForTreeitems.put(regnerate, () -> {
-				creatureLab.generateCad();
-
-			});
+//			TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
+//					AssetFactory.loadIcon("Generate-Cad.png"));
+//
+//			callbackMapForTreeitems.put(regnerate, () -> {
+//				creatureLab.generateCad();
+//
+//			});
 			TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
@@ -461,7 +461,7 @@ public class MobleBaseMenueFactory {
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
 			if (root)
-				rootItem.getChildren().addAll(physics, regnerate, printable,arrangeBed, kinematics);
+				rootItem.getChildren().addAll(physics,  printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)
