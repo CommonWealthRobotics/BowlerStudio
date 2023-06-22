@@ -131,7 +131,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private void regenFromUiEvent() {
 		BowlerStudio.runLater(() -> {
-
 			if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
 				return;
 			}
@@ -256,14 +255,14 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb1.setToggleGroup(group);
 		rb1.setSelected(true);
 		rb1.setOnAction(event -> {
-			setCadMode(false);
+			BowlerStudio.runLater(() ->setCadMode(false));
 		});
 
 		RadioButton rb2 = new RadioButton();
 		rb2.setToggleGroup(group);
 		rb2.fire();
 		rb2.setOnAction(event -> {
-			setCadMode(true);
+			BowlerStudio.runLater(() ->setCadMode(true));
 		});
 
 		radioOptions = new HBox(10);
