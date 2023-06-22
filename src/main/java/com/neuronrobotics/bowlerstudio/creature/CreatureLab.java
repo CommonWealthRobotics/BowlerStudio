@@ -84,6 +84,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			autoRegen.setSelected(true);
 			regenFromUiEvent();
 		});
+		regen.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		// TODO Auto-generated method stub
 		setText(pm.getScriptingName());
 

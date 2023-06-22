@@ -289,7 +289,7 @@ public class BowlerStudioModularFrame {
 		if (!isOpen.get(key)) {
 			isOpen.put(key, true);
 			new Thread(() -> {
-				ThreadUtil.wait(100);
+				//ThreadUtil.wait(100);
 
 				BowlerStudio.runLater(() -> {
 					try {
@@ -398,7 +398,7 @@ public class BowlerStudioModularFrame {
 				}
 				DockNode dn = new DockNode(newTab.getContent(), newTab.getText(), newTab.getGraphic());
 				dn.closedProperty().addListener(event -> {
-					closeTab(newTab);
+					BowlerStudio.runLater(() ->closeTab(newTab));
 				});
 	
 				webTabs.put(newTab, dn);
