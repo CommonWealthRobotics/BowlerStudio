@@ -40,7 +40,7 @@ public class BowlerStudioMenuWorkspace {
 			for (int i=0;i<getWorkspaceData().keySet().size();i++) {
 				try {
 					String o = (String) getWorkspaceData().keySet().toArray()[i];
-					System.out.println("Pulling workspace "+o);
+					System.err.println("Pulling workspace "+o);
 					try {
 						if(!ScriptingEngine.isUrlAlreadyOpen(o))
 							ScriptingEngine.pull(o);
