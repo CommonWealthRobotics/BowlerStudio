@@ -73,8 +73,8 @@ public class Axis extends Group {
 	/**
 	 * Instantiates a new axis.
 	 */
-	public Axis() {
-		this(50);
+	public Axis(boolean isVis) {
+		this(50,isVis);
 	}
 
 	// //////////////////////////////////////////
@@ -86,7 +86,7 @@ public class Axis extends Group {
 	 * @param i the i
 	 */
 	//
-	public Axis(int i) {
+	public Axis(int i,boolean isVis) {
 		double strokWidth = 0.5;
 
 		Affine xp = new Affine();
@@ -125,8 +125,10 @@ public class Axis extends Group {
 		yAxis.setColor(Color.GREEN);
 
 		zAxis.setColor(Color.BLUE);
-
-		show();
+		if(isVis)
+			show();
+		else
+			hide();
 	}
 
 	public void show() {
