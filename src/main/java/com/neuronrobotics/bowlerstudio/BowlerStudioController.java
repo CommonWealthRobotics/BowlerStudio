@@ -12,14 +12,18 @@ import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.CSGtoJavafx;
+import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.MeshContainer;
 import eu.mihosoft.vrl.v3d.Polygon;
+import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -411,7 +415,15 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void setSelectedCsg(CSG obj) {
 		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
-
+	public static void setSelectedCsg(Vector3d v) {
+		Affine manipulator2 = new Affine();
+		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
+		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
+	}
+	public static void setSelectedCsg(TransformNR poseToMove) {
+		Affine manipulator2 = new Affine();
+		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
+	}
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
 			if (toadd != null)
@@ -463,22 +475,30 @@ public class BowlerStudioController implements IScriptEventListener {
 			List<Vertex> vertices = p.vertices;
 			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
-//			double stroke = 0.5;
-//			for (int i = 1; i < vertices.size(); i++) {
-//				Line3D line = new Line3D(vertices.get(i - 1), vertices.get(i));
-//				line.setStrokeWidth(stroke);
-//				line.setStroke(color);
-//				getBowlerStudio().addNode(line);
-//			}
-//			// Connecting line
-//			Line3D line = new Line3D(vertices.get(0), vertices.get(vertices.size() - 1));
-//			line.setStrokeWidth(stroke);
-//			line.setStroke(color);
+			double stroke = 0.1;
+			for (int i = 0; i < vertices.size(); i++) {
+				CSG csg= new Cube(stroke).toCSG()
+						.move(vertices.get(i))
+						.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+								Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
+				CreatureLab3dController.getEngine().addObject(csg, source);
+			}
+			
 			MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
 			javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
 			current.setMaterial(new PhongMaterial(color));
 			current.setCullFace(CullFace.NONE);
 			getBowlerStudio().addNode(current);
+			
+			BowlerStudioController.setSelectedCsg(p.vertices.get(0).pos);
+			return;
+		}else if (Vector3d.class.isInstance(o)) {
+			Vector3d v=(Vector3d)o;
+			BowlerStudioController.setSelectedCsg(v);
+			return;
+		}else if (TransformNR.class.isInstance(o)) {
+			TransformNR v=(TransformNR)o;
+			BowlerStudioController.setSelectedCsg(v);
 			return;
 		} else if (BowlerAbstractDevice.class.isInstance(o)) {
 			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
@@ -597,7 +617,11 @@ public class BowlerStudioController implements IScriptEventListener {
 			CreatureLab3dController.getEngine().removeObjects();
 		});
 	}
-
+	public static void clearUserNodes() {
+		BowlerStudio.runLater(() -> {
+			CreatureLab3dController.getEngine().clearUserNode();
+		});
+	}
 	public static void setCsg(CSG legAssembly, File cadScript) {
 		BowlerStudio.runLater(() -> {
 			CreatureLab3dController.getEngine().removeObjects();
@@ -631,5 +655,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
+
+
 
 }
