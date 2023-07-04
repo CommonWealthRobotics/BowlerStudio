@@ -475,13 +475,14 @@ public class BowlerStudioController implements IScriptEventListener {
 			List<Vertex> vertices = p.vertices;
 			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
-			double stroke = 0.1;
+			double stroke = 0.5;
 			for (int i = 0; i < vertices.size(); i++) {
 				CSG csg= new Cube(stroke).toCSG()
 						.move(vertices.get(i))
 						.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 								Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
-				CreatureLab3dController.getEngine().addObject(csg, source);
+				csg.setIsWireFrame(true);
+				getBowlerStudio().addNode(csg.getMesh());
 			}
 			
 			MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
