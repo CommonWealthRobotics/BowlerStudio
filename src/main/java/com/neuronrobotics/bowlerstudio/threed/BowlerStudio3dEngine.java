@@ -217,6 +217,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private CheckMenuItem spin;
 	private HBox controlsChecks;
 	private Thread autospingThread=null;
+	private CheckMenuItem showRuler;
 	static {
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -284,7 +285,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	}
 
 	public void setControls(CheckMenuItem showRuler, CheckMenuItem idlespin, CheckMenuItem autohighlight) {
-
+		this.showRuler = showRuler;
 		this.spin = idlespin;
 		this.autoHighilight = autohighlight;
 		idlespin.setOnAction((event) -> {
@@ -797,7 +798,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 					// duplicate
 				}
 			});
-			Axis axis = new Axis();
+			Axis axis = new Axis(showRuler.isSelected());
 			BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
 			axisMap.put(current, axis);
 			BowlerStudio.runLater(() -> lookGroup.getChildren().add(axis));
@@ -1016,7 +1017,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ground.getTransforms().add(groundPlacment);
 						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
-						gridGroup.getChildren().addAll(new Axis(), ground);
+						gridGroup.getChildren().addAll(new Axis(showRuler.isSelected()), ground);
 						showAxis();
 						axisGroup.getChildren().addAll(focusGroup, userGroup);
 						world.getChildren().addAll(lookGroup, axisGroup);
@@ -1434,7 +1435,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		resetMouseTime();
 	}
 
-	private void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
+	public void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
 		if (focusing)
 			return;
 		if (manipulator2 == null) {

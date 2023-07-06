@@ -286,7 +286,9 @@ public class BowlerStudioModularFrame {
 
 	public void showCreatureLab(int depth) {
 		String key = "showCreatureLab";
-		if (!isOpen.get(key)) {
+		Boolean boolean1 = isOpen.get(key);
+		if(boolean1!=null)
+		if (!boolean1) {
 			isOpen.put(key, true);
 			new Thread(() -> {
 				//ThreadUtil.wait(100);

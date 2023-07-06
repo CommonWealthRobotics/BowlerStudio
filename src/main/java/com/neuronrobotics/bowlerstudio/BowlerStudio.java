@@ -32,6 +32,8 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Debug3dProvider;
+import eu.mihosoft.vrl.v3d.IDebug3dProvider;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -296,7 +298,19 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-
+		Debug3dProvider.setProvider(new IDebug3dProvider() {
+			
+			@Override
+			public void clearScreen() {
+				BowlerStudioController.clearCSG();
+				BowlerStudioController.clearUserNodes();
+			}
+			
+			@Override
+			public void addObject(Object o) {
+				BowlerStudioController.addObject(o, null);
+			}
+		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		manipulation.setUi(new IInteractiveUIElementProvider() {
 			public void runLater(Runnable r) {
