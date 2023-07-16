@@ -1,5 +1,6 @@
 package javafx.embed.swing;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
@@ -53,7 +54,10 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.prefWidthProperty().doubleValue();
+			double doubleValue = myEnclosingNode.prefWidthProperty().doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 
 	}
@@ -65,7 +69,10 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.prefHeightProperty().doubleValue();
+			double doubleValue = myEnclosingNode.prefHeightProperty().doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 
 	}
@@ -82,7 +89,10 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.maxWidthProperty().doubleValue();
+			double doubleValue = myEnclosingNode.maxWidthProperty().doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 
 	}
@@ -101,7 +111,10 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.maxHeightProperty().doubleValue();
+			double doubleValue = myEnclosingNode.maxHeightProperty().doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 	}
 
@@ -118,7 +131,11 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.minWidthProperty().doubleValue();
+			DoubleProperty minWidthProperty = myEnclosingNode.minWidthProperty();
+			double doubleValue = minWidthProperty.doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 
 	}
@@ -137,7 +154,10 @@ public class MySwingNode extends SwingNode {
 		} catch (Exception e) {
 			// System.out.println("Error in "+file);
 			// e.printStackTrace();
-			return myEnclosingNode.minHeightProperty().doubleValue();
+			double doubleValue = myEnclosingNode.minHeightProperty().doubleValue();
+			if(doubleValue<0)
+				doubleValue=640;
+			return doubleValue;
 		}
 	}
 }
