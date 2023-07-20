@@ -86,7 +86,6 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.*;
-import javafx.scene.SceneAntialiasing;
 
 //import javafx.util.Duration;
 
@@ -1008,7 +1007,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						zrulerImage.getTransforms().addAll(zRuler, downset);
 						rulerImage.getTransforms().addAll(xp, downset);
 						yrulerImage.getTransforms().addAll(yRuler, downset);
-						gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
+						ObservableList<Node> children = gridGroup.getChildren();
+						children.addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
 						Affine groundPlacment = new Affine();
 						groundPlacment.setTz(-1);
@@ -1017,7 +1017,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ground.getTransforms().add(groundPlacment);
 						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
-						gridGroup.getChildren().addAll(new Axis(showRuler.isSelected()), ground);
+						boolean selected = showRuler.isSelected();
+						children.addAll(new Axis(selected), ground);
 						showAxis();
 						axisGroup.getChildren().addAll(focusGroup, userGroup);
 						world.getChildren().addAll(lookGroup, axisGroup);
@@ -1034,8 +1035,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
-
-		BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
+		if (Platform.isFxApplicationThread())
+			userGroup.getChildren().add(n);
+		else
+			BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
 	}
 
 	public void removeUserNode(Node n) {
