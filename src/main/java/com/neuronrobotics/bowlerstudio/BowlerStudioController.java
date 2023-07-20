@@ -21,10 +21,12 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.CSGtoJavafx;
 import eu.mihosoft.vrl.v3d.Cube;
+import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.MeshContainer;
 import eu.mihosoft.vrl.v3d.Polygon;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
+import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
@@ -471,27 +473,29 @@ public class BowlerStudioController implements IScriptEventListener {
 			return;
 
 		} else if (Polygon.class.isInstance(o)) {
-			Polygon p = (Polygon) o;
-			List<Vertex> vertices = p.vertices;
+			Polygon poly = (Polygon) o;
+			List<Vertex> vertices = poly.vertices;
 			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
 			double stroke = 0.5;
-			for (int i = 0; i < vertices.size(); i++) {
-				CSG csg= new Cube(stroke).toCSG()
-						.move(vertices.get(i))
-						.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-								Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
-				csg.setIsWireFrame(true);
-				getBowlerStudio().addNode(csg.getMesh());
-			}
-			
-			MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
-			javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
-			current.setMaterial(new PhongMaterial(color));
-			current.setCullFace(CullFace.NONE);
-			getBowlerStudio().addNode(current);
-			
-			BowlerStudioController.setSelectedCsg(p.vertices.get(0).pos);
+			BowlerStudio.runLater(()->{
+				for (int i = 0; i < vertices.size(); i++) {
+					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
+							.move(vertices.get(i))
+							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
+					csg.setIsWireFrame(true);
+					getBowlerStudio().addNode(csg.getMesh());
+				}
+				for(Polygon p:PolygonUtil.concaveToConvex(poly)) {
+					MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
+					javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
+					current.setMaterial(new PhongMaterial(color));
+					current.setCullFace(CullFace.NONE);
+					getBowlerStudio().addNode(current);
+				}
+			});
+			BowlerStudioController.setSelectedCsg(poly.vertices.get(0).pos);
 			return;
 		}else if (Vector3d.class.isInstance(o)) {
 			Vector3d v=(Vector3d)o;
