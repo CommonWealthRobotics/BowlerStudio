@@ -146,7 +146,7 @@ public class BowlerStudio extends Application {
 
 	public static void runLater(java.time.Duration delay, Runnable action) {
 		Throwable t = new Exception("Delayed UI Thread Exception here!");
-		//t.printStackTrace();
+		// t.printStackTrace();
 		new Thread() {
 			public void run() {
 				setName("UI Delay Thread ");
@@ -162,19 +162,33 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void runLater(Runnable r) {
-		runLater(r, new Exception("UI Thread Exception here!"));
-	}
-
-	public static void runLater(Runnable r, Throwable ex) {
-		Platform.runLater(() -> {
+		if (Platform.isFxApplicationThread())
 			try {
 				r.run();
 			} catch (Throwable t) {
 				t.printStackTrace();
-				ex.printStackTrace();
 			}
+		else
+			runLater(r, new Exception("UI Thread Exception here!"));
+	}
 
-		});
+	public static void runLater(Runnable r, Throwable ex) {
+		if (Platform.isFxApplicationThread())
+			try {
+				r.run();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		else
+			Platform.runLater(() -> {
+				try {
+					r.run();
+				} catch (Throwable t) {
+					t.printStackTrace();
+					ex.printStackTrace();
+				}
+
+			});
 	}
 
 	public static OutputStream getOut() {
@@ -299,13 +313,13 @@ public class BowlerStudio extends Application {
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
 		Debug3dProvider.setProvider(new IDebug3dProvider() {
-			
+
 			@Override
 			public void clearScreen() {
 				BowlerStudioController.clearCSG();
 				BowlerStudioController.clearUserNodes();
 			}
-			
+
 			@Override
 			public void addObject(Object o) {
 				BowlerStudioController.addObject(o, null);
