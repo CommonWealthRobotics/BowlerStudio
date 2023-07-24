@@ -46,6 +46,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
+	private static final int SizeOfLargestTextFile= 2000;
 	private static final UncaughtExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER =new UncaughtExceptionHandler() {
 		IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
 		@Override
@@ -392,7 +393,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 																					// empty
 																					// writes
 			SwingUtilities.invokeLater(() -> {
-				if(current.length()>2000) {
+				if(current.length()>SizeOfLargestTextFile) {
 					textArea.setText("File too big for this text editor");
 				}else
 					textArea.setText(current);
