@@ -336,10 +336,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //			resizeEvent();
 //		});
 		SwingUtilities.invokeLater(() -> {
-			if (getScripting() != null && getScripting().getCode() != null) {
-				onScriptChanged(null, getScripting().getCode(), file);
+			try {
+				if (getScripting() != null && getScripting().getCode() != null) {
+					onScriptChanged(null, getScripting().getCode(), file);
+				}
+			}catch(Throwable t) {
+				t.printStackTrace();
 			}
-
 		});
 
 	}
@@ -389,7 +392,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 																					// empty
 																					// writes
 			SwingUtilities.invokeLater(() -> {
-				textArea.setText(current);
+				if(current.length()>2000) {
+					textArea.setText("File too big for this text editor");
+				}else
+					textArea.setText(current);
 				if (previous == null)
 					SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
 			});
