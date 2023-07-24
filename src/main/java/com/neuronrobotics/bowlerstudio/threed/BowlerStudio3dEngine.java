@@ -231,7 +231,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		System.err.println("Setting Scene ");
 		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
-		rebuild();
 
 		// Set up the Ui THread explosion handler
 
@@ -285,6 +284,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public void setControls(CheckMenuItem showRuler, CheckMenuItem idlespin, CheckMenuItem autohighlight) {
 		this.showRuler = showRuler;
+		rebuild();
 		this.spin = idlespin;
 		this.autoHighilight = autohighlight;
 		idlespin.setOnAction((event) -> {
@@ -321,6 +321,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			else
 				hideAxis();
 		});
+		
 	}
 
 	public Group getControlsBox() {
