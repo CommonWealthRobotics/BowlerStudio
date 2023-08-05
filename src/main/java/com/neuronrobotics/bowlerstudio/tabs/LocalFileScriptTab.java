@@ -46,11 +46,13 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
-	private static final UncaughtExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER =new UncaughtExceptionHandler() {
+	private static final int MaxTextSize = 75000;
+	private static final UncaughtExceptionHandler ISSUE_REPORTING_EXCEPTION_HANDLER = new UncaughtExceptionHandler() {
 		IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
+
 		@Override
 		public void uncaughtException(Thread t, Throwable e) {
-			if(reporter.getTitle(e).contains("java.awt.datatransfer.DataFlavor at line 503")) {
+			if (reporter.getTitle(e).contains("java.awt.datatransfer.DataFlavor at line 503")) {
 				System.err.println("Known bug in the Swing system, nothing we can do but ignore it");
 				e.printStackTrace();
 				return;
@@ -76,16 +78,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private final File file;
 
 	private Font myFont;
+	private String content = "";
 
 	private static HashMap<String, String> langaugeMapping = new HashMap<>();
-	
+
 	private static LocalFileScriptTab selectedTab = null;
 	static {
-		SwingUtilities.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
+		SwingUtilities
+				.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
 	}
-
-	 
 
 	public class MyRSyntaxTextArea extends RSyntaxTextArea implements ComponentListener {
 
@@ -167,7 +169,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
 			break;
 		case "Kotlin":
-			type  = SyntaxConstants.SYNTAX_STYLE_JAVA;
+			type = SyntaxConstants.SYNTAX_STYLE_JAVA;
 			break;
 		case "SVG":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
@@ -193,11 +195,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
-				System.err.println("changedUpdate " + file);
 				new Thread() {
 					public void run() {
+						if (textArea.isEnabled())
+							setContent(textArea.getText());
 						getScripting().removeIScriptEventListener(l);
-						getScripting().setCode(textArea.getText());
+						getScripting().setCode(content);
 						getScripting().addIScriptEventListener(l);
 					}
 				}.start();
@@ -266,16 +269,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		spscrollPane = new RTextScrollPane(textArea);
 
 		swingNode = new MySwingNode(this);
-		//swingNode=new javafx.embed.swing.SwingNode();
+		// swingNode=new javafx.embed.swing.SwingNode();
 		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
 
 		getScripting().setFocusTraversable(false);
 
 		getChildren().setAll(swingNode, getScripting());
 		swingNode.setOnMouseEntered(mouseEvent -> {
-			//System.err.println("On mouse entered " + file.getName());
-			//resizeEvent();
-			SwingUtilities.invokeLater(() ->{
+			// System.err.println("On mouse entered " + file.getName());
+			// resizeEvent();
+			SwingUtilities.invokeLater(() -> {
 				resizeEvent();
 				setSelectedTab(this);
 //				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
@@ -301,7 +304,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			public void actionPerformed(ActionEvent e) {
 
-				System.out.println("Save "+ file +" now.");
+				System.out.println("Save " + file + " now.");
 				getScripting().saveTheFile(file);
 
 			}
@@ -340,7 +343,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				if (getScripting() != null && getScripting().getCode() != null) {
 					onScriptChanged(null, getScripting().getCode(), file);
 				}
-			}catch(Throwable t) {
+			} catch (Throwable t) {
 				t.printStackTrace();
 			}
 		});
@@ -348,26 +351,26 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void resizeEvent() {
-		if (!((lastRefresh + 60) < System.currentTimeMillis())||
-				spscrollPane.getVerticalScrollBar().getValueIsAdjusting()||
-				spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
+		if (!((lastRefresh + 60) < System.currentTimeMillis())
+				|| spscrollPane.getVerticalScrollBar().getValueIsAdjusting()
+				|| spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
-		SwingUtilities.invokeLater(() ->{
+		SwingUtilities.invokeLater(() -> {
 			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
 			spscrollPane.invalidate();
 			spscrollPane.repaint();
 			textArea.invalidate();
 			textArea.repaint();
-			
+
 			textArea.requestFocusInWindow();
 			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
 				swingNode.setContent(spscrollPane);
 				swingNode.requestFocus();
 			});
 		});
-		
+
 	}
 
 	@Override
@@ -388,18 +391,26 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
 
-		if (current.length() > 3 && !textArea.getText().contentEquals(current)) {// no
-																					// empty
-																					// writes
-			SwingUtilities.invokeLater(() -> {
-				if(current.length()>2000) {
-					textArea.setText("File too big for this text editor");
-				}else
-					textArea.setText(current);
-				if (previous == null)
-					SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
-			});
+		// empty
+		SwingUtilities.invokeLater(() -> {
+			setContent(current);
+			if (previous == null)
+				SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
+		});
 
+	}
+
+	private void setContent(String current) {
+		if (current.length() > 3 && !content.contentEquals(current)) {
+			content = current; // writes
+			if (current.length() > MaxTextSize) {
+				textArea.setText(
+						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
+				textArea.setEnabled(false);
+			} else {
+				if(!textArea.getText().contentEquals(content))
+					textArea.setText(current);
+			}
 		}
 	}
 
@@ -476,10 +487,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	public void clearHighlits() {
 		SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-        		highlighter.removeAllHighlights();
-            }
-          });
+			public void run() {
+				highlighter.removeAllHighlights();
+			}
+		});
 	}
 
 	public int getFontSize() {
@@ -498,9 +509,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
 				SwingUtilities.invokeLater(() -> {
 					try {
-							textArea.setFont(myFont);
+						textArea.setFont(myFont);
 					} catch (Throwable ex) {
-						//ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), ex);
+						// ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(),
+						// ex);
 						setFontLoop();
 					}
 				});
@@ -513,24 +525,24 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public static void setSelectedTab(LocalFileScriptTab selectedTab) {
-		//System.err.println("Currently selected "+selectedTab.file.getAbsolutePath());
+		// System.err.println("Currently selected "+selectedTab.file.getAbsolutePath());
 		LocalFileScriptTab.selectedTab = selectedTab;
 	}
 
 	public void insertString(String string) {
 		int caretpos = textArea.getCaretPosition();
-		String text = textArea.getText();
-		String substring = text.substring(0,caretpos);
+		String text = content;
+		String substring = text.substring(0, caretpos);
 		String substring2;
 		try {
-		 substring2 = text.substring(caretpos,text.length());
-		}catch(java.lang.StringIndexOutOfBoundsException ex) {
-			substring2="";
+			substring2 = text.substring(caretpos, text.length());
+		} catch (java.lang.StringIndexOutOfBoundsException ex) {
+			substring2 = "";
 		}
-		String combined = substring+string+substring2;
-		onScriptChanged(text, combined,  file);
+		String combined = substring + string + substring2;
+		onScriptChanged(text, combined, file);
 		SwingUtilities.invokeLater(() -> {
-			 textArea.setCaretPosition(caretpos+string.length());
+			textArea.setCaretPosition(caretpos + string.length());
 		});
 	}
 }
