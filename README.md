@@ -132,7 +132,7 @@ by calling the `assemble` task.
   - Make sure to enable the option to clone submodules. 
 - Set the default JVM in Eclipse to the following file path: `C:\Program Files (x86)\Commonwealth Robotics BowlerStudio\BowlerStudioApp\jre`. (Window > Preferences > Java > Installed JREs)
 - In the Eclipse gradle configuration, set the `javahome` path to the following file path: `C:\Program Files (x86)\Commonwealth Robotics BowlerStudio\BowlerStudioApp\jre`. (Window > Preferences > Gradle > Jave home)
-- Import the cloned project into Eclipse using gradle.
+- Import the cloned project into Eclipse using gradle. (File > Import... > Gradle > Existing Gradle Project)
 
 
 
