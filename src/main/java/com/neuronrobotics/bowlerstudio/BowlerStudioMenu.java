@@ -881,7 +881,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				private void switchToThisNewBranch(String url, final MenuItem onBranch, Ref select, String myName)
 						throws Exception {
 					String was = ScriptingEngine.getBranch(url);
+					try {
 					ScriptingEngine.checkout(url, select);
+					}catch(org.eclipse.jgit.api.errors.CheckoutConflictException ex) {
+						BowlerStudio.runLater(()->{
+							Alert alert = new Alert(AlertType.ERROR);// line 1
+							alert.setTitle("CheckoutConflictException");// line 2
+							alert.setHeaderText("This repo is in an a dirty state");// line 3
+							alert.setContentText("Please commit your changes before switching.\nAlternatly you can revert your changes.\nRepository must not have uncommitted changes before changing branches.");// line 4
+							alert.showAndWait(); // line 5
+						});
+						return;
+					}
 					String s = ScriptingEngine.getBranch(url);
 					if (myName.contentEquals(s))
 						System.out.println("Changing from " + was + " to " + myName + " is now " + s + "... Success!");
