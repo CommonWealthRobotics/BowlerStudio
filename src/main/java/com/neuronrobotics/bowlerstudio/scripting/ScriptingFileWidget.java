@@ -84,7 +84,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private String remote;
 	private boolean isArrange = false;
 
-	private Button printbed;;
+	private Button printbed;
+	private FileChangeWatcher watch;;
 	public ScriptingFileWidget(File currentFile) throws IOException {
 		this(ScriptingWidgetType.FILE, currentFile);
 
@@ -497,7 +498,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	private void setUpFile(File f) {
+		System.err.println("Setup ScriptingFileWidget "+f.getAbsolutePath());
 		currentFile = f;
+		try {
+			watch = FileChangeWatcher.watch(currentFile);
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		String langType = ScriptingEngine.getShellType(currentFile.getName());
 //		try {
 //			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
@@ -554,8 +562,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		if (!langaugeType.getIsTextFile())
 			return;
 		try {
-			getWatcher().addIFileChangeListener(this);
-		} catch (IOException e) {
+			watch.addIFileChangeListener(this);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -611,54 +619,48 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			return;
 		updateneeded = true;
 		try {
-			getWatcher().removeIFileChangeListener(this);
-			BowlerStudio.runLater(Duration.ofMillis(500), new Runnable() {
-				@Override
-				public void run() {
-					updateneeded = false;
+			watch.removeIFileChangeListener(this);
+//			BowlerStudio.runLater( new Runnable() {
+//				@Override
+//				public void run() {
+					//updateneeded = false;
 					// TODO Auto-generated method stub
-					if (fileThatChanged.getAbsolutePath().contains(currentFile.getAbsolutePath())) {
+					String absolutePath = fileThatChanged.getAbsolutePath();
+					String absolutePath2 = currentFile.getAbsolutePath();
+					//System.out.println(absolutePath+" "+absolutePath2);
+					if (absolutePath.contains(absolutePath2)) {
 
-						System.out.println("Code in " + fileThatChanged.getAbsolutePath() + " changed");
+						//System.out.println("Code in " + absolutePath + " changed");
+						String content = new String(
+								Files.readAllBytes(Paths.get(absolutePath)));
 						BowlerStudio.runLater(() -> {
-							try {
-								String content = new String(
-										Files.readAllBytes(Paths.get(fileThatChanged.getAbsolutePath())));
-								if (content.length() > 2)// ensures tha the file contents never get wiped out on the
-															// user
-									setCode(content);
-								if (autoRun.isSelected()) {
-									new Thread(() -> {
-										stop();
-										start();
-									}).start();
+							if (content.length() > 2)// ensures tha the file contents never get wiped out on the
+														// user
+								setCode(content);
+							if (autoRun.isSelected()) {
+								new Thread(() -> {
+									stop();
+									start();
+								}).start();
 
-								}
-							} catch (UnsupportedEncodingException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
 							}
-							try {
-								getWatcher().addIFileChangeListener(ScriptingFileWidget.this);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							watch.addIFileChangeListener(this);
+							//watch.addIFileChangeListener(ScriptingFileWidget.this);
+					
 						});
 
 					} else {
 						// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+"
 						// changed");
+						watch.addIFileChangeListener(this);
 					}
-				}
-			});
-		} catch (IOException e) {
+//				}
+//			});
+		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		updateneeded = false;
 
 	}
 
@@ -682,17 +684,12 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			return "Web";
 	}
 
-	public FileChangeWatcher getWatcher() throws IOException {
-		return FileChangeWatcher.watch(currentFile);
-	}
 
 	public void close() {
-		try {
-			getWatcher().removeIFileChangeListener(this);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+			watch.removeIFileChangeListener(this);
+			watch.close();
+			watch=null;
 
 	}
 

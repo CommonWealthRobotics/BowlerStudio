@@ -11,7 +11,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -83,6 +85,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static HashMap<String, String> langaugeMapping = new HashMap<>();
 
 	private static LocalFileScriptTab selectedTab = null;
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 	static {
 		SwingUtilities
 				.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
@@ -390,7 +393,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		// System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
-
+		//System.out.println(file.getAbsolutePath()+" changed ");
 		// empty
 		SwingUtilities.invokeLater(() -> {
 			setContent(current);
@@ -403,6 +406,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
 			content = current; // writes
+			
+			System.out.println("External change of "+file.getName()+" on "+dateFormat.format(new Date()));
 			if (current.length() > MaxTextSize) {
 				textArea.setText(
 						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
