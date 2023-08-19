@@ -390,7 +390,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		// System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
-
+		System.out.println(file.getAbsolutePath()+" changed ");
 		// empty
 		SwingUtilities.invokeLater(() -> {
 			setContent(current);
