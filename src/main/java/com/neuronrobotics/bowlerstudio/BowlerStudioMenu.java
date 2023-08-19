@@ -1533,9 +1533,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //				BowlerStudioController.addCsg(newShape);
 //			}
 //		});
-		
+		Runnable r= ()->{
 		showCSGProgress.setSelected(Boolean.parseBoolean( ConfigurationDatabase.getObject("MenueSettings", "printCSG", true).toString()));
-		
+		};
+		new Thread(r).start();
 		
 		CreatureLab3dController.getEngine().setControls(showRuler,idlespin,autohighlight);
 		WindowMenu.getItems().addAll(showRuler,idlespin,autohighlight,showCSGProgress);
