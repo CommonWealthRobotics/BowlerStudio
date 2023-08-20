@@ -398,7 +398,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		SwingUtilities.invokeLater(() -> {
 			setContent(current);
 			if (previous == null)
-				SwingUtilities.invokeLater(() -> textArea.setCaretPosition(0));
+				SwingUtilities.invokeLater(() -> {
+					try {
+						textArea.setCaretPosition(0);
+					} catch (Throwable t) {
+						t.printStackTrace();
+					}
+				});
 		});
 
 	}
@@ -547,7 +553,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		String combined = substring + string + substring2;
 		onScriptChanged(text, combined, file);
 		SwingUtilities.invokeLater(() -> {
-			textArea.setCaretPosition(caretpos + string.length());
+			try {
+				textArea.setCaretPosition(caretpos + string.length());
+			}catch(Throwable ex) {
+				ex.printStackTrace();
+			}
 		});
 	}
 }
