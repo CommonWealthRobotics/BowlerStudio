@@ -843,4 +843,17 @@ public class BowlerStudio extends Application {
 		closeBowlerStudio();
 	}
 
+	public static void invokeLater(Runnable object) {
+		RuntimeException ex = new RuntimeException("SwingUtilities called from here");
+		SwingUtilities.invokeLater(() -> {
+			try {
+				object.run();
+			}catch(Throwable t) {
+				t.printStackTrace();
+				System.err.println("Swing method that failed called from: ");
+				ex.printStackTrace();
+			}
+		});
+	}
+
 }

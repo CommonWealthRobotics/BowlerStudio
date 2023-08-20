@@ -87,8 +87,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static LocalFileScriptTab selectedTab = null;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 	static {
-		SwingUtilities
-				.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
+		BowlerStudio.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
 	}
 
@@ -273,7 +272,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		swingNode = new MySwingNode(this);
 		// swingNode=new javafx.embed.swing.SwingNode();
-		SwingUtilities.invokeLater(() -> swingNode.setContent(spscrollPane));
+		BowlerStudio.invokeLater(() -> swingNode.setContent(spscrollPane));
 
 		getScripting().setFocusTraversable(false);
 
@@ -281,7 +280,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		swingNode.setOnMouseEntered(mouseEvent -> {
 			// System.err.println("On mouse entered " + file.getName());
 			// resizeEvent();
-			SwingUtilities.invokeLater(() -> {
+			BowlerStudio.invokeLater(() -> {
 				resizeEvent();
 				setSelectedTab(this);
 //				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
@@ -341,7 +340,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //		heightProperty().addListener((w, o, n) -> {
 //			resizeEvent();
 //		});
-		SwingUtilities.invokeLater(() -> {
+		BowlerStudio.invokeLater(() -> {
 			try {
 				if (getScripting() != null && getScripting().getCode() != null) {
 					onScriptChanged(null, getScripting().getCode(), file);
@@ -360,7 +359,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			return;
 		}
 		lastRefresh = System.currentTimeMillis();
-		SwingUtilities.invokeLater(() -> {
+		BowlerStudio.invokeLater(() -> {
 			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
 			spscrollPane.invalidate();
 			spscrollPane.repaint();
@@ -378,7 +377,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptFinished(Object result, Object previous, File source) {
-		// SwingUtilities.invokeLater(new Runnable() {
+		// BowlerStudio.invokeLater(new Runnable() {
 		// @Override
 		// public void run() {
 		// textArea.requestFocusInWindow();
@@ -395,10 +394,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		// codeArea.setCursor(place);
 		//System.out.println(file.getAbsolutePath()+" changed ");
 		// empty
-		SwingUtilities.invokeLater(() -> {
+		BowlerStudio.invokeLater(() -> {
 			setContent(current);
 			if (previous == null)
-				SwingUtilities.invokeLater(() -> {
+				BowlerStudio.invokeLater(() -> {
 					try {
 						textArea.setCaretPosition(0);
 					} catch (Throwable t) {
@@ -427,7 +426,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	@Override
 	public void onScriptError(Throwable except, File source) {
-		SwingUtilities.invokeLater(new Runnable() {
+		BowlerStudio.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				System.out.println("script error");
@@ -479,13 +478,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		try {
 
-			SwingUtilities.invokeLater(() -> {
+			BowlerStudio.invokeLater(() -> {
 				textArea.moveCaretPosition(startIndex);
 			});
 		} catch (Error | Exception ex) {
 			ex.printStackTrace();
 		}
-		SwingUtilities.invokeLater(() -> {
+		BowlerStudio.invokeLater(() -> {
 			try {
 				textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
 			} catch (BadLocationException e) {
@@ -497,7 +496,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void clearHighlits() {
-		SwingUtilities.invokeLater(new Runnable() {
+		BowlerStudio.invokeLater(new Runnable() {
 			public void run() {
 				highlighter.removeAllHighlights();
 			}
@@ -518,7 +517,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			@Override
 			public void run() {
 				Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
-				SwingUtilities.invokeLater(() -> {
+				BowlerStudio.invokeLater(() -> {
 					try {
 						textArea.setFont(myFont);
 					} catch (Throwable ex) {
@@ -552,7 +551,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 		String combined = substring + string + substring2;
 		onScriptChanged(text, combined, file);
-		SwingUtilities.invokeLater(() -> {
+		BowlerStudio.invokeLater(() -> {
 			try {
 				textArea.setCaretPosition(caretpos + string.length());
 			}catch(Throwable ex) {

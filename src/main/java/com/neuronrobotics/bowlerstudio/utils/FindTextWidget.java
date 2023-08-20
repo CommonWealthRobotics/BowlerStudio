@@ -47,7 +47,7 @@ public class FindTextWidget extends Application {
 	private int pos = 0;
 
 	private int find(double direction) {
-		// SwingUtilities.invokeLater(() -> {
+		// BowlerStudio.invokeLater(() -> {
 		try {
 			// System.out.println("Got ctrl f "+
 			// textArea.getSelectedText());
@@ -98,7 +98,7 @@ public class FindTextWidget extends Application {
 					int baseOfFind = pos;
 					// Did we find something...
 					if (found) {
-						SwingUtilities.invokeLater(() -> {
+						BowlerStudio.invokeLater(() -> {
 							// Get the rectangle of the
 							// where
 							// the text would be visible...
@@ -161,7 +161,7 @@ public class FindTextWidget extends Application {
 					}
 				}
 				String newContent = firstHalf + replace + secondtHalf;
-				SwingUtilities.invokeLater(() ->{
+				BowlerStudio.invokeLater(() ->{
 					textArea.setText(newContent);
 					find(direction);
 				});
