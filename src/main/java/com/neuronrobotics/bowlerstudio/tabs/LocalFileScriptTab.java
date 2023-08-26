@@ -199,11 +199,15 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			public void changedUpdate(DocumentEvent arg0) {
 				new Thread() {
 					public void run() {
-						if (textArea.isEnabled())
-							setContent(textArea.getText());
-						getScripting().removeIScriptEventListener(l);
-						getScripting().setCode(content);
-						getScripting().addIScriptEventListener(l);
+						try {
+							if (textArea.isEnabled())
+								setContent(textArea.getText());
+							getScripting().removeIScriptEventListener(l);
+							getScripting().setCode(content);
+							getScripting().addIScriptEventListener(l);
+						} catch (Throwable t) {
+							t.printStackTrace();
+						}
 					}
 				}.start();
 			}
@@ -242,15 +246,15 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					// for getLineOfOffset and we want it to start at 1 for
 					// display.
 					linenum += 1;
-				} catch (Exception ex) {
+					if (lineSelected != linenum) {
+						lineSelected = linenum;
+						// System.err.println("Select "+lineSelected);
+						new Thread(() -> {
+							BowlerStudio.select(file, lineSelected);
+						}).start();
+					}
+				} catch (Throwable ex) {
 					ex.printStackTrace();
-				}
-				if (lineSelected != linenum) {
-					lineSelected = linenum;
-					// System.err.println("Select "+lineSelected);
-					new Thread(() -> {
-						BowlerStudio.select(file, lineSelected);
-					}).start();
 				}
 
 			}
@@ -259,8 +263,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		textArea.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
-					highlighter.removeAllHighlights();
+				try {
+					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
+						highlighter.removeAllHighlights();
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
 				}
 				// System.out.println("Number of click: " + e.getClickCount());
 				// System.out.println("Click position (X, Y): " + e.getX() + ",
@@ -305,9 +313,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			private static final long serialVersionUID = -3361326129563407389L;
 
 			public void actionPerformed(ActionEvent e) {
-
-				System.out.println("Save " + file + " now.");
-				getScripting().saveTheFile(file);
+				try {
+					System.out.println("Save " + file + " now.");
+					getScripting().saveTheFile(file);
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
 
 			}
 		});
@@ -321,9 +332,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			private static final long serialVersionUID = -4698223073831405851L;
 
 			public void actionPerformed(ActionEvent e) {
-
-				findTextWidget();
-
+				try {
+					findTextWidget();
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
 			}
 		});
 
@@ -392,7 +405,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		// System.err.println("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
-		//System.out.println(file.getAbsolutePath()+" changed ");
+		// System.out.println(file.getAbsolutePath()+" changed ");
 		// empty
 		BowlerStudio.invokeLater(() -> {
 			setContent(current);
@@ -411,14 +424,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
 			content = current; // writes
-			
-			System.out.println("External change of "+file.getName()+" on "+dateFormat.format(new Date()));
+
+			System.out.println("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
 			if (current.length() > MaxTextSize) {
 				textArea.setText(
 						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
 				textArea.setEnabled(false);
 			} else {
-				if(!textArea.getText().contentEquals(content))
+				if (!textArea.getText().contentEquals(content))
 					textArea.setText(current);
 			}
 		}
@@ -448,7 +461,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					try {
 						controller.start(s);
 					} catch (Exception e) {
-						ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
+						// ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(),
+						// e);
 					}
 				}
 			}.start();
@@ -469,29 +483,29 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public void setHighlight(int lineNumber, Color color) throws BadLocationException {
-		if (textArea == null) {
-			return;
-		}
-		painter = new DefaultHighlighter.DefaultHighlightPainter(color);
-		int startIndex = textArea.getLineStartOffset(lineNumber - 1);
-		int endIndex = textArea.getLineEndOffset(lineNumber - 1);
-
 		try {
+			if (textArea == null) {
+				return;
+			}
+			painter = new DefaultHighlighter.DefaultHighlightPainter(color);
+			int startIndex = textArea.getLineStartOffset(lineNumber - 1);
+			int endIndex = textArea.getLineEndOffset(lineNumber - 1);
 
 			BowlerStudio.invokeLater(() -> {
 				textArea.moveCaretPosition(startIndex);
 			});
-		} catch (Error | Exception ex) {
-			ex.printStackTrace();
-		}
-		BowlerStudio.invokeLater(() -> {
-			try {
-				textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
-			} catch (BadLocationException e) {
-				ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
 
-			}
-		});
+			BowlerStudio.invokeLater(() -> {
+				try {
+					textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
+				} catch (BadLocationException e) {
+					//ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
+
+				}
+			});
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 
 	}
 
@@ -554,7 +568,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		BowlerStudio.invokeLater(() -> {
 			try {
 				textArea.setCaretPosition(caretpos + string.length());
-			}catch(Throwable ex) {
+			} catch (Throwable ex) {
 				ex.printStackTrace();
 			}
 		});
