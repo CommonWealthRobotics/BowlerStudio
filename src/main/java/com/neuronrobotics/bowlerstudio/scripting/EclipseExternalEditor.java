@@ -42,7 +42,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	protected boolean OSSupportsEclipse() {
-		return OSUtil.isLinux() || OSUtil.isWindows();
+		return OSUtil.isLinux() || OSUtil.isWindows()|| OSUtil.isOSX();
 	}
 
 
@@ -59,6 +59,19 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					eclipseEXE = ScriptingEngine
 							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",
 									"eclipse")
+							.getAbsolutePath();
+
+				} catch (GitAPIException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else if (OSUtil.isOSX()) {
+				try {
+					ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",null);
+					ScriptingEngine.pull("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git");
+					eclipseEXE = ScriptingEngine
+							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",
+									"eclipse-mac")
 							.getAbsolutePath();
 
 				} catch (GitAPIException | IOException e) {
@@ -123,6 +136,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}
 				
 				File currentws = null;
+				if (OSUtil.isOSX())
+					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/configuration/.settings/org.eclipse.ui.ide.prefs");
+				
 				if (OSUtil.isLinux())
 					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
 				if (OSUtil.isWindows())
@@ -194,6 +210,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					}
 				}
+				if (OSUtil.isOSX())
+					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isLinux())
 					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isWindows())
