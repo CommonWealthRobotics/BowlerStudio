@@ -214,7 +214,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				}
 				if (OSUtil.isOSX())
-					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
+					run(dir,System.err, "bash", "open", System.getProperty("user.home")+"/bin/eclipse/Eclipse.app", "-a", dir.getAbsolutePath() + delim());
 				if (OSUtil.isLinux())
 					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
 				if (OSUtil.isWindows())
