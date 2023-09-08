@@ -174,11 +174,14 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				
 
 				}catch(Exception ex) {
-					ex.printStackTrace();
+					//ex.printStackTrace();
+					System.out.println("Workspace missing, opening eclipse");
 				}
 				
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
+					if (OSUtil.isOSX())
+						run( ScriptingEngine.getWorkspace(),System.out, "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isLinux())
 						run( ScriptingEngine.getWorkspace(),System.out, "bash", eclipseEXE, "-data", ws);
 					if (OSUtil.isWindows())
