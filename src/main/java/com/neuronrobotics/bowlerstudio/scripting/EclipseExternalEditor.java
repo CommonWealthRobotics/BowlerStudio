@@ -137,7 +137,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				
 				File currentws = null;
 				if (OSUtil.isOSX())
-					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/configuration/.settings/org.eclipse.ui.ide.prefs");
+					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/Eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
 				
 				if (OSUtil.isLinux())
 					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
