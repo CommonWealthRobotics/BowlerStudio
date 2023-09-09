@@ -425,14 +425,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
+			content = current; // writes
 			long now=System.currentTimeMillis();
-			if(now<(timeSinceLastUpdate+2000)) {
+			if(now<(timeSinceLastUpdate+100)) {
 				System.err.println("Ovewrite Protect!");
 				return; 
 			}
 			
 			timeSinceLastUpdate=now;
-			content = current; // writes
 
 			System.out.println("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
 			if (current.length() > MaxTextSize) {
