@@ -26,23 +26,15 @@ public class ExternalEditorController {
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
 		this.currentFile = f;
-		try {
-			Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");
-			image.setImage(loadAsset);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
 		for(IExternalEditor e:editors) {
 			if(e.isSupportedByExtention(f)) {
 				hasEditor=true;
 				myEditor=e;
 				image.setImage(e.getImage());
+				System.err.println("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
 				break;
 			}else {
-				System.err.println("File "+f.getName()+" is not supported by "+e.getClass());
+				System.err.println(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
 			}
 			
 		}
@@ -57,6 +49,14 @@ public class ExternalEditorController {
 				myEditor.launch(currentFile,advanced);
 				//autoRun.setSelected(true);
 			});
+		}else {
+			try {
+				Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");
+				image.setImage(loadAsset);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}

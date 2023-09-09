@@ -176,7 +176,11 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 																			// little bit
 			});
 		});
-		externalEditorController = new ExternalEditorController(currentFile, autoRun);
+		try {
+			externalEditorController = new ExternalEditorController(currentFile, autoRun);
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
 
 		Button openFile = new Button("Open...");
 		openFile.setOnAction(event -> {
@@ -216,7 +220,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			controlPane.getChildren().add(arrange);
 			controlPane.getChildren().add(printbed);
 		}
-		controlPane.getChildren().add(externalEditorController.getControl());
+		if(externalEditorController!=null)
+			controlPane.getChildren().add(externalEditorController.getControl());
 		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(openFile);
