@@ -86,6 +86,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private static LocalFileScriptTab selectedTab = null;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+	private long timeSinceLastUpdate = 0;
 	static {
 		BowlerStudio.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
@@ -423,6 +424,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
+			long now=System.currentTimeMillis();
+			if(now<(timeSinceLastUpdate+500)) {
+				System.err.println("Ovewrite Protect!");
+				return; 
+			}
+			
+			timeSinceLastUpdate=now;
 			content = current; // writes
 
 			System.out.println("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
