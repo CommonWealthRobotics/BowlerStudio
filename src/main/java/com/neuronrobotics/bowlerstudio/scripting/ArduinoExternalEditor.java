@@ -43,7 +43,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 	
 	public Image getImage() {
 		try {
-			return AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType("Script-Tab-Arduino.png"));
+			return AssetFactory.loadAsset("Script-Tab-Arduino.png");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

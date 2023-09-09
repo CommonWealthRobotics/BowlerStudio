@@ -45,7 +45,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	
 	public Image getImage() {
 		try {
-			return AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType("eclipse.png"));
+			Image loadAsset = AssetFactory.loadAsset("eclipse.png");
+			return loadAsset;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
