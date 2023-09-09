@@ -26,9 +26,6 @@ jobs:
          git config --global core.mergeoptions --no-edit
          git fetch --depth=1
          
-    - name: Checkout Development
-      run: |
-         git checkout development
          
     - name: Set Release Number Studio
       run: |
