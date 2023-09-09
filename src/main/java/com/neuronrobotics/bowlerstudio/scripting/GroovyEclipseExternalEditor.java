@@ -122,7 +122,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 
 	@Override
 	public Class getSupportedLangauge() {
-		if (OSUtil.isLinux() || OSUtil.isWindows()|| OSUtil.isOSX())
+		if (OSSupportsEclipse() )
 			return GroovyHelper.class;
 		return null;
 	}
