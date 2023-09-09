@@ -17,14 +17,16 @@ public class ExternalEditorController {
 	boolean hasEditor = false;
 	private Button advanced = new Button();
 	private ImageView image=new ImageView();
-	private static ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
-	static {
+	private  ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
+
+	private  void loadEditors() {
 		editors.add(new SVGExternalEditor());
 		editors.add(new GroovyEclipseExternalEditor());
 		editors.add(new ArduinoExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
+		loadEditors();
 		this.currentFile = f;
 		for(IExternalEditor e:editors) {
 			if(e.isSupportedByExtention(f)) {

@@ -87,17 +87,9 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private Button printbed;
 	private FileChangeWatcher watch;;
 	public ScriptingFileWidget(File currentFile) throws IOException {
-		this(ScriptingWidgetType.FILE, currentFile);
+		load(ScriptingWidgetType.FILE, currentFile);
 
-		loadCodeFromFile(currentFile);
-		// publish.setDisable(!isOwnedByLoggedInUser);
-		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-		if (isOwnedByLoggedInUser)
-			publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
-		else
-			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
-		arrange.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-		arrange.setDisable(true);
+	
 	}
 
 	private void startStopAction() {
@@ -116,7 +108,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}).start();
 	}
 
-	private ScriptingFileWidget(ScriptingWidgetType type, File currentFile) {
+	private void load(ScriptingWidgetType type, File currentFile) {
 		isOwnedByLoggedInUser = ScriptingEngine.checkOwner(currentFile);
 		this.type = type;
 		this.currentFile = currentFile;
@@ -237,6 +229,21 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		setTop(controlPane);
 
 		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
+		
+		try {
+			loadCodeFromFile(currentFile);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// publish.setDisable(!isOwnedByLoggedInUser);
+		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
+		if (isOwnedByLoggedInUser)
+			publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+		else
+			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
+		arrange.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+		arrange.setDisable(true);
 		reset();
 	}
 	private void exportAll(boolean makePrintBed) {
