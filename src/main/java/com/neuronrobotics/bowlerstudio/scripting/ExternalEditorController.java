@@ -39,7 +39,7 @@ public class ExternalEditorController {
 			if(e.isSupportedByExtention(f)) {
 				hasEditor=true;
 				myEditor=e;
-				
+				image.setImage(e.getImage());
 				break;
 			}else {
 				System.err.println("File "+f.getName()+" is not supported by "+e.getClass());
@@ -47,6 +47,7 @@ public class ExternalEditorController {
 			
 		}
 		if(hasEditor) {
+			
 			advanced.setGraphic(image);
 			advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
 			advanced.setText(myEditor.nameOfEditor());
