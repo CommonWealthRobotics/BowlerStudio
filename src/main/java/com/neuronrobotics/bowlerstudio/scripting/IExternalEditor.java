@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
 public interface IExternalEditor {
 	
@@ -38,6 +39,8 @@ public interface IExternalEditor {
 	URL getInstallURL() throws MalformedURLException;
 	
 	void onProcessExit(int ev);
+	
+	Image getImage();
 	
 	default String delim() {
 		if (OSUtil.isWindows())

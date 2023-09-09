@@ -39,8 +39,12 @@ public class ExternalEditorController {
 			if(e.isSupportedByExtention(f)) {
 				hasEditor=true;
 				myEditor=e;
+				
 				break;
+			}else {
+				System.err.println("File "+f.getName()+" is not supported by "+e.getClass());
 			}
+			
 		}
 		if(hasEditor) {
 			advanced.setGraphic(image);

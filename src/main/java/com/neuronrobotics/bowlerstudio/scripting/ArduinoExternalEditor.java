@@ -8,10 +8,12 @@ import java.net.URL;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
 public class ArduinoExternalEditor implements IExternalEditor {
 
@@ -37,6 +39,16 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		
 		
 
+	}
+	
+	public Image getImage() {
+		try {
+			return AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType("Script-Tab-Arduino.png"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

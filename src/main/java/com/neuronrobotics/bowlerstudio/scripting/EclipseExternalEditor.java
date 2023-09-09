@@ -19,9 +19,11 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.video.OSUtil;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
 public abstract class EclipseExternalEditor implements IExternalEditor {
 
@@ -39,6 +41,16 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			sb.append((char) cp);
 		}
 		return sb.toString();
+	}
+	
+	public Image getImage() {
+		try {
+			return AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType("eclipse.png"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	protected boolean OSSupportsEclipse() {

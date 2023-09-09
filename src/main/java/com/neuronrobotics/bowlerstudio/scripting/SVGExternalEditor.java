@@ -11,9 +11,11 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.video.OSUtil;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
 public class SVGExternalEditor implements IExternalEditor {
 
@@ -65,7 +67,15 @@ public class SVGExternalEditor implements IExternalEditor {
 	public String nameOfEditor() {
 		return "Inkscape";
 	}
-	
+	public Image getImage() {
+		try {
+			return AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType("Script-Tab-SVG.png"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	public static void main(String [] args) throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		File f =ScriptingEngine.fileFromGit("https://github.com/Technocopia/Graphics.git", "Graphics/SimplifiedLogo/simplified logo.svg");
 		
