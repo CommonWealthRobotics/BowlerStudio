@@ -168,6 +168,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 																			// little bit
 			});
 		});
+		System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
 			externalEditorController = new ExternalEditorController(currentFile, autoRun);
 		}catch(Throwable t) {
