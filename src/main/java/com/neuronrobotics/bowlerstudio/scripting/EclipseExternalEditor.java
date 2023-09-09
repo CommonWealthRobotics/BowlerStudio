@@ -48,10 +48,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			Image loadAsset = AssetFactory.loadAsset("eclipse.png");
 			return loadAsset;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	protected boolean OSSupportsEclipse() {
