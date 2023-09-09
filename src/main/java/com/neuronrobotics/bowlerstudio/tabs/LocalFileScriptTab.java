@@ -201,6 +201,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				new Thread() {
 					public void run() {
 						try {
+							timeSinceLastUpdate=System.currentTimeMillis();
 							if (textArea.isEnabled())
 								setContent(textArea.getText());
 							getScripting().removeIScriptEventListener(l);
@@ -425,7 +426,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
 			long now=System.currentTimeMillis();
-			if(now<(timeSinceLastUpdate+500)) {
+			if(now<(timeSinceLastUpdate+2000)) {
 				System.err.println("Ovewrite Protect!");
 				return; 
 			}
