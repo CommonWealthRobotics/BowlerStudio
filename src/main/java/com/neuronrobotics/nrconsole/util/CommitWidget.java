@@ -9,6 +9,7 @@ import org.jfree.util.Log;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.video.OSUtil;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.util.Pair;
 
 public class CommitWidget {
@@ -78,10 +80,15 @@ public class CommitWidget {
 			    }
 			    return null;
 			});
-
-			
+			if (OSUtil.isOSX()) {
+				Modality mode = Modality.NONE;
+				dialog.initModality(mode);
+			}
+			System.err.println("Show commit Dialog");
 			Optional<Pair<String, String>> result = dialog.showAndWait();
-
+			System.err.println("Commit Dialog finished");
+			dialog.close();
+			System.err.println("Result: "+result);
 			result.ifPresent(commitBody -> {
 			    new Thread(){
 			    	public void run(){
