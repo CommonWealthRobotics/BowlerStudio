@@ -309,6 +309,7 @@ public class BowlerStudio extends Application {
 			// we assuming we have no access to the server and run off of the
 			// cached gists.
 			setHasnetwork(false);
+			e.printStackTrace();
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
