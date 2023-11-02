@@ -68,7 +68,7 @@ public class AddFileToGistController extends Application {
 	private boolean isArduino;
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-
+	private String forcedType=null;
 	public static String toSlug(String input) {
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
 		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
@@ -122,21 +122,8 @@ public class AddFileToGistController extends Application {
 		extention.setOnAction(event -> {
 			try {
 
-				langaugeIcon.setImage(AssetFactory
-						.loadAsset("Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png"));
-				String key = extention.getSelectionModel().getSelectedItem();
-				IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
-				
-				if (l != null) {
-					extentionStr = l.getFileExtenetion().get(0);
-				} else
-					extentionStr = ".groovy";
-				if(!extentionStr.startsWith(".")) {
-					extentionStr="."+extentionStr;
-				}
-				isArduino = ArduinoLoader.class.isInstance(l);
-
-				setGitRepo(gitRepo);
+				String selectedItem = extention.getSelectionModel().getSelectedItem();
+				setSelected(selectedItem);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -153,6 +140,29 @@ public class AddFileToGistController extends Application {
 			primaryStage.setResizable(true);
 			primaryStage.show();
 		});
+	}
+
+	private void setSelected(String selectedItem) throws Exception {
+		String file = "Script-Tab-" + selectedItem + ".png";
+		Image loadAsset = AssetFactory.loadAsset(file);
+		try {
+		langaugeIcon.setImage(loadAsset);
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
+		String key = selectedItem;
+		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
+		
+		if (l != null) {
+			extentionStr = l.getFileExtenetion().get(0);
+		} else
+			extentionStr = ".groovy";
+		if(!extentionStr.startsWith(".")) {
+			extentionStr="."+extentionStr;
+		}
+		isArduino = ArduinoLoader.class.isInstance(l);
+
+		setGitRepo(gitRepo);
 	}
 
 	@FXML
@@ -286,5 +296,27 @@ public class AddFileToGistController extends Application {
 					filenameField.setText(dirName);
 				});
 		}
+	}
+
+	public void setFileExtensionType(IScriptingLanguage lang) {
+		String string = lang.getShellType();
+		try {
+			setSelected(string);
+			BowlerStudio.runLater(() -> {
+				extention.setValue(string);
+				extention.setDisable(true);
+			});
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void start(Stage s, IScriptingLanguage iScriptingLanguage) throws Exception {
+		start(s);
+		BowlerStudio.runLater(()->{
+			setFileExtensionType(iScriptingLanguage);
+		});
 	}
 }
