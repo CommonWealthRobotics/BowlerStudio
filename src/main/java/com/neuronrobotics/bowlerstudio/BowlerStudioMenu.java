@@ -15,6 +15,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import com.neuronrobotics.nrconsole.util.CommitWidget;
 //import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
@@ -38,6 +39,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -507,17 +509,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 				updateRepo.setOnAction(event -> {
 					new Thread() {
+						@SuppressWarnings("restriction")
 						public void run() {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-							} catch (Exception e) {
-								ScriptingEngine.deleteRepo(url);
-								try {
-									ScriptingEngine.checkout(url, ScriptingEngine.getBranch(url));
-								} catch (Exception ex) {
-									exp.uncaughtException(Thread.currentThread(), ex);
-								}
-
+							} catch(WrongRepositoryStateException ex) {
+								// ignore unsaved files 
+								BowlerStudio.runLater(() -> {
+									@SuppressWarnings("restriction")
+									Alert alert = new Alert(AlertType.CONFIRMATION);
+									alert.setTitle("You have Un-Saved work, commit first");
+									alert.setHeaderText("You have Un-Saved work, commit first");
+									alert.setContentText("You have Un-Saved work, commit first");
+								});
+							}catch (Exception e) {
+								BowlerStudioMenu.checkandDelete(url);
 							}
 							myEvent.run();
 							// selfRef.onRefresh(null);
@@ -562,23 +568,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				
 				MenuItem delete = new MenuItem("Delete Local Copy...");
 				delete.setOnAction(event->{
-					Alert alert = new Alert(AlertType.CONFIRMATION);
-					alert.setTitle("Are you sure you have published all your work?");
-					alert.setHeaderText("This will wipe out the local cache for "+url);
-					alert.setContentText("All files that are not published will be deleted");
-
-					Optional<ButtonType> result = alert.showAndWait();
-					if (result.get() == ButtonType.OK) {
-						new Thread(() -> {
-							ScriptingEngine.deleteRepo(url);
-							BowlerStudioMenuWorkspace.remove(url);
-							BowlerStudio.runLater(()->{
-								BowlerStudioMenuWorkspace.sort();
-							});
-						}).start();
-					} else {
-						System.out.println("Nothing was deleted");
-					}
+					checkandDelete(url);
 				});
 				
 
@@ -598,13 +588,33 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 			}
 
+
+
 		};
 		if (threaded)
 			t.start();
 		else
 			t.run();
 	}
+	public static void checkandDelete(String url) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Are you sure you have published all your work?");
+		alert.setHeaderText("This will wipe out the local cache for "+url);
+		alert.setContentText("All files that are not published will be deleted");
 
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK) {
+			new Thread(() -> {
+				ScriptingEngine.deleteRepo(url);
+				BowlerStudioMenuWorkspace.remove(url);
+				BowlerStudio.runLater(()->{
+					BowlerStudioMenuWorkspace.sort();
+				});
+			}).start();
+		} else {
+			System.out.println("Nothing was deleted");
+		}
+	}
 	private static MenuResettingEventHandler createLoadCommitsEvent(String url, Menu orgCommits) {
 		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;

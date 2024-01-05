@@ -16,7 +16,9 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
@@ -49,11 +51,9 @@ public class BowlerStudioMenuWorkspace {
 									ScriptingEngine.pull(o);
 							} catch(WrongRepositoryStateException ex) {
 								// ignore, unsaved work
-							}catch (InvalidRemoteException ex) {
-								System.err.println("Deleting repo" + o + " from workspace " + ex.getMessage());
-								getWorkspaceData().remove(o);
-								ScriptingEngine.deleteRepo(o);
-							} catch (Throwable ex) {
+							}catch (Exception e) {
+								BowlerStudioMenu.checkandDelete(o);
+							}catch (Throwable ex) {
 								ex.printStackTrace();
 								getWorkspaceData().remove(o);
 								// ScriptingEngine.deleteRepo(o);
