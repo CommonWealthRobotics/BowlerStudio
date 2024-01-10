@@ -343,7 +343,6 @@ dependencies {
 	compile project(':libraries:bowler-script-kernel:java-bowler')
 	compile project(':libraries:bowler-script-kernel')
 	//compile project(':libraries:bowler-script-kernel:JCSG')
-	implementation group: 'com.neuronrobotics', name: 'JavaCad', version:'0.29.7'
 	
 	compile project(':libraries:dockfx')
 	compile project(':libraries:bowler-script-kernel:GithubPasswordManager:GithubPasswordManager')
