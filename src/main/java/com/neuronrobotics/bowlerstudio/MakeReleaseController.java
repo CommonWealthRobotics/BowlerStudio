@@ -243,7 +243,7 @@ public class MakeReleaseController extends Application {
 			String[] top = topValue.split("\\.");
 			String majorStart = top[0];
 			String minorStart = top[1];
-			String bugStart = "" + (Integer.parseInt(top[2]) + 1);
+			String bugStart = "" + (Integer.parseInt(top[2].split("-")[0]) + 1);
 			major.setText(majorStart);
 			minor.setText(minorStart);
 			bugfix.setText(bugStart);
