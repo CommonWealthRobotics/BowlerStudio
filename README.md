@@ -126,12 +126,14 @@ by calling the `assemble` task.
 #### Windows Setup Instructions
 
 - Download and install Sloeber Eclipse or an alternative Java IDE of your choice. 
-- Install BowlerStudio via the provided installer. This will ensure that the correct JVM is accessible. 
+- Install BowlerStudio via the provided installer. This will ensure that the correct JVM is accessible.
+- Enable Clone a Git repository in Eclipse (Window > Show View > Other... > Git > Git Repositories > Clone a Git repository)
 - Clone this repository via HTTPS and use your [GitHub personal access token](https://github.com/settings/tokens).
   - Make sure to enable the option to clone submodules. 
 - Set the default JVM in Eclipse to the following file path: `C:\Program Files (x86)\Commonwealth Robotics BowlerStudio\BowlerStudioApp\jre`. (Window > Preferences > Java > Installed JREs)
-- In the Eclipse gradle configuration, set the `javahome` path to the following file path: `C:\Program Files (x86)\Commonwealth Robotics BowlerStudio\BowlerStudioApp\jre`. 
-- Import the cloned project into Eclipse using gradle.
+- In the Eclipse gradle configuration, set the `javahome` path to the following file path: `C:\Program Files (x86)\Commonwealth Robotics BowlerStudio\BowlerStudioApp\jre`. (Window > Preferences > Gradle > Jave home)
+- Import the cloned project into Eclipse using gradle. (File > Import... > Gradle > Existing Gradle Project)
+  - The path to add can be found in Eclipse by right-clicking the git repo and selecting Copy Path to Clipboard. Remove the /.git from the directory before importing.
 
 
 
