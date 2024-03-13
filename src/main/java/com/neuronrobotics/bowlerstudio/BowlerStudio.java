@@ -376,10 +376,10 @@ public class BowlerStudio extends Application {
 				ScriptingEngine.waitForLogin();
 				if (ScriptingEngine.isLoginSuccess()) {
 
-					if (BowlerStudio.hasNetwork()) {
-						ScriptingEngine.setAutoupdate(true);
-
-					}
+//					if (BowlerStudio.hasNetwork()) {
+//						ScriptingEngine.setAutoupdate(true);
+//
+//					}
 					renderSplashFrame(15, "Load Configs");
 					try {
 						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",

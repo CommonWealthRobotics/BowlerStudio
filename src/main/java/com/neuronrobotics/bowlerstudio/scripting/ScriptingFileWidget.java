@@ -389,12 +389,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
-		try {
-			ScriptingEngine.setAutoupdate(false);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		running = true;
 		BowlerStudio.runLater(() -> {
 			runfx.setText("Stop");

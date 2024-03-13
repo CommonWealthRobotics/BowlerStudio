@@ -1437,7 +1437,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		new Thread() {
 			public void run() {
 				try {
-					ScriptingEngine.setAutoupdate(true);
 					File f = ScriptingEngine.fileFromGit(
 							"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", // git
 							// repo,
