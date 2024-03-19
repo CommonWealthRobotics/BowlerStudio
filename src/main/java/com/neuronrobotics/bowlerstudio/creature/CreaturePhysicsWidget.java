@@ -4,9 +4,8 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.physics.MobileBasePhysicsManager;
-import com.neuronrobotics.bowlerstudio.physics.PhysicsEngine;
-import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerstudio.physics.MuJoCoPhysicsManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
@@ -23,15 +22,22 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import javax.xml.bind.JAXBException;
+
+import org.mujoco.xml.attributetypes.IntegratorType;
+
+@SuppressWarnings("restriction")
 public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListener {
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
 	Button pauseresume = new Button("Pause", AssetFactory.loadIcon("Pause.png"));
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
-	TextField msLoopTime =new TextField("20") ;
+	TextField msLoopTime =new TextField("1") ;
 	int msLoopTimeInt =0;
 	private boolean run=false;
 	private boolean takestep=false;
@@ -39,7 +45,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 	Thread physicsThread =null;
 	private Set<CSG> oldParts=null;
 	private MobileBase base;
-
+	private  MuJoCoPhysicsManager mujoco;
 	@SuppressWarnings("restriction")
 	public CreaturePhysicsWidget(MobileBase base){
 
@@ -48,9 +54,9 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 			
 			@Override
 			public void onDisconnect(BowlerAbstractDevice arg0) {
-				BowlerStudio.runLater(()->{
+				//BowlerStudio.runLater(()->{
 					stop();
-				});
+				//});
 			}
 			
 			@Override
@@ -99,38 +105,55 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 
 					public void run(){
 						while(MobileBaseCadManager.get( base).getProcesIndictor().get()<1){
-							ThreadUtil.wait(10);
+							ThreadUtil.wait(100);
 						}
-						HashMap<LinkConfiguration, ArrayList<CSG>> simplecad = MobileBaseCadManager.getSimplecad(base) ;
-						ArrayList<CSG> baseCad=MobileBaseCadManager.getBaseCad(base);
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
-						PhysicsEngine.get().clear();
-						MobileBasePhysicsManager m =new MobileBasePhysicsManager(base, baseCad, simplecad);
+						if(mujoco!=null)
+							mujoco.close();
+						ArrayList<MobileBase> bases=new ArrayList<>();
+						bases.add(base);
+						File cache = new File(
+								ScriptingEngine.getRepositoryCloneDirectory(
+										base.getGitSelfSource()[0]).getAbsolutePath()+"/physics/");
+						try {
+							mujoco = new MuJoCoPhysicsManager(base.getScriptingName(),bases,null,null,cache);
+							
+						} catch (IOException | JAXBException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return;
+						}
+						//MobileBasePhysicsManager m =new MobileBasePhysicsManager(base, baseCad, simplecad);
 						//BowlerStudio3dEngine threeD = BowlerStudioController.getBowlerStudio().getJfx3dmanager();
 						oldParts = CreatureLab3dController.getEngine().getCsgMap().keySet();
-						BowlerStudioController.setCsg(PhysicsEngine.get().getCsgFromEngine());
-						int loopTiming = (int) Double.parseDouble(msLoopTime.getText());
-						
+						double loopTiming = (int) Double.parseDouble(msLoopTime.getText());
+						mujoco.setTimestep(loopTiming/1000.0);
+						mujoco.setIntegratorType(IntegratorType.IMPLICIT);
+						mujoco.setCondim(3);
+						try {
+							mujoco.generateNewModel();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							mujoco.close();
+							return;
+						} // generate model before start counting time
+						BowlerStudioController.clearCSG();
+						BowlerStudioController.clearUserNodes();
+						BowlerStudioController.addObject(mujoco.getAllCSG(),null );
 						physicsThread = new Thread(){
 							public void run(){
 								try{
 									while(!Thread.interrupted() && isRun()){
 										while(!Thread.interrupted() && isPause() && isTakestep()==false){
-											ThreadUtil.wait(loopTiming);
+											ThreadUtil.wait(0,100);
 										}
 										setTakestep(false);
-										long start = System.currentTimeMillis();
-										PhysicsEngine.get().stepMs(loopTiming);
-										long took = (System.currentTimeMillis() - start);
-										if (took < loopTiming)
-											ThreadUtil.wait((int) (loopTiming - took)/4);
-										else{
-											if(took>loopTiming*2)
-											System.out.println("ERROR Real time broken by: "+took+"ms");
+										if(!mujoco.stepAndWait()) {
+											System.err.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds());
 										}
 									}
-									PhysicsEngine.get().clear();
-									m.clear();
+									mujoco.close();
 								}catch(Exception e){
 									e.printStackTrace();
 								}
