@@ -52,7 +52,7 @@ import java.util.Set;
 import javax.management.RuntimeErrorException;
 
 public class JogMobileBase extends GridPane implements IGameControlEvent,IJogProvider {
-	double defauletSpeed = 0.1;
+	double defauletSpeed = 0.3;
 	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
