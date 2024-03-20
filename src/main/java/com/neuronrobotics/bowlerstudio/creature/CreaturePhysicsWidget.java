@@ -129,7 +129,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						double loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						mujoco.setTimestep(loopTiming/1000.0);
 						mujoco.setIntegratorType(IntegratorType.IMPLICIT);
-						mujoco.setCondim(3);
+						mujoco.setCondim(4);
 						try {
 							mujoco.generateNewModel();
 						} catch (Exception e) {
@@ -144,8 +144,8 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						physicsThread = new Thread(){
 							public void run(){
 								try{
-									while(!Thread.interrupted() && isRun()){
-										while(!Thread.interrupted() && isPause() && isTakestep()==false){
+									while(isRun()){
+										while(isPause() && isTakestep()==false){
 											ThreadUtil.wait(0,100);
 										}
 										setTakestep(false);
@@ -153,10 +153,10 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 											System.err.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds());
 										}
 									}
-									mujoco.close();
 								}catch(Exception e){
 									e.printStackTrace();
 								}
+								mujoco.close();
 							}
 						};
 						physicsThread.start();
