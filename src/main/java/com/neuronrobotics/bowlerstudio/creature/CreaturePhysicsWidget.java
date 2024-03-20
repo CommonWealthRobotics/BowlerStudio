@@ -149,8 +149,9 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 											ThreadUtil.wait(0,100);
 										}
 										setTakestep(false);
-										if(!mujoco.stepAndWait()) {
-											System.err.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds());
+										long now;
+										if((now=mujoco.stepAndWait())>mujoco.getTimestepMilliSeconds()) {
+											System.err.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
 										}
 									}
 								}catch(Exception e){
