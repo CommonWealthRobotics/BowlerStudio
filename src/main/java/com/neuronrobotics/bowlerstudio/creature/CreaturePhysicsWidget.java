@@ -108,8 +108,8 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 							ThreadUtil.wait(100);
 						}
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
-						if(mujoco!=null)
-							mujoco.close();
+						
+							close();
 						ArrayList<MobileBase> bases=new ArrayList<>();
 						bases.add(base);
 						File cache = new File(
@@ -135,7 +135,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-							mujoco.close();
+							close();
 							return;
 						} // generate model before start counting time
 						BowlerStudioController.clearCSG();
@@ -156,10 +156,16 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 								}catch(Exception e){
 									e.printStackTrace();
 								}
-								mujoco.close();
+								close();
 							}
 						};
 						physicsThread.start();
+					}
+
+					private void close() {
+						if(mujoco!=null)
+							mujoco.close();
+						mujoco=null;
 					}
 				}.start();
 				
