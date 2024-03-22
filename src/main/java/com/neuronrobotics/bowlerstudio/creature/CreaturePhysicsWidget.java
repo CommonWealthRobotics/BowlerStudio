@@ -167,7 +167,9 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						if(mujoco!=null)
 							mujoco.close();
 						mujoco=null;
-						stopPhysics();
+						BowlerStudio.runLater(()->{
+							stopPhysics();
+						});
 					}
 				}.start();
 				
