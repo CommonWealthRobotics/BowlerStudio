@@ -54,9 +54,9 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 			
 			@Override
 			public void onDisconnect(BowlerAbstractDevice arg0) {
-				//BowlerStudio.runLater(()->{
-					stop();
-				//});
+				BowlerStudio.runLater(()->{
+					stopPhysics();
+				});
 			}
 			
 			@Override
@@ -86,7 +86,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 		});
 		runstop.setOnAction(event->{
 			if(isRun()){
-				stop();
+				stopPhysics();
 //				new Thread(){
 //					public void run(){
 //						ThreadUtil.wait(50);
@@ -134,7 +134,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 							mujoco.generateNewModel();
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							e.printStackTrace(System.out);
 							close();
 							return;
 						} // generate model before start counting time
@@ -167,6 +167,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 						if(mujoco!=null)
 							mujoco.close();
 						mujoco=null;
+						stopPhysics();
 					}
 				}.start();
 				
@@ -175,7 +176,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 		});
 		
 	}
-	private void stop() {
+	private void stopPhysics() {
 		runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
 		runstop.setText("Run");
 		if(physicsThread!=null)
