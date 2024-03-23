@@ -108,8 +108,6 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 							ThreadUtil.wait(100);
 						}
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
-						
-							close();
 						ArrayList<MobileBase> bases=new ArrayList<>();
 						bases.add(base);
 						File cache = new File(
