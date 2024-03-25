@@ -88,12 +88,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		// TODO Auto-generated method stub
 		setText(pm.getScriptingName());
 
-		try {
-			ScriptingEngine.setAutoupdate(true);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		MobileBase device = (MobileBase) pm;
 
 		// Button save = new Button("Save Configuration");

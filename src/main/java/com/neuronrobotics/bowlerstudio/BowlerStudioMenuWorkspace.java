@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -15,7 +16,9 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
@@ -46,21 +49,18 @@ public class BowlerStudioMenuWorkspace {
 							try {
 								if (!ScriptingEngine.isUrlAlreadyOpen(o))
 									ScriptingEngine.pull(o);
-							} catch (Throwable e) {
-								try {
-									ScriptingEngine.pull(o);
-								} catch (InvalidRemoteException ex) {
-									System.err.println("Deleting repo from workspace " + ex.getMessage());
-									getWorkspaceData().remove(o);
-									ScriptingEngine.deleteRepo(o);
-								} catch (Throwable ex) {
-									e.printStackTrace();
-									getWorkspaceData().remove(o);
-									// ScriptingEngine.deleteRepo(o);
-									// i--;
-								}
+							} catch(WrongRepositoryStateException ex) {
+								// ignore, unsaved work
+							}catch (Exception e) {
+								BowlerStudioMenu.checkandDelete(o);
+							}catch (Throwable ex) {
+								ex.printStackTrace();
+								getWorkspaceData().remove(o);
+								// ScriptingEngine.deleteRepo(o);
+								// i--;
 							}
-						}else {
+
+						} else {
 							getWorkspaceData().remove(o);
 						}
 					} catch (Exception e) {

@@ -264,23 +264,27 @@ public class JogWidget extends GridPane
 		}).start();
 	}
 
-	private void homeLimb(AbstractKinematicsNR c) {
+	private void homeBase(MobileBase mb) {
+		for (DHParameterKinematics c : mb.getAllDHChains()) {
+			homeLimb(c);
+		}
+	}
 
-		TransformNR t = c.calcHome();
-		try {
-			c.setDesiredTaskSpaceTransform(t, 0);
-		} catch (Exception e) {
-			double[] joints = c.getCurrentJointSpaceVector();
-			for (int i = 0; i < c.getNumberOfLinks(); i++) {
-				joints[i] = 0;
-			}
-			try {
-				c.setDesiredJointSpaceVector(joints, 0);
-			} catch (Exception ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
+	private void homeLimb(DHParameterKinematics c) {
+		double[] joints = c.getCurrentJointSpaceVector();
+		for (int i = 0; i < c.getNumberOfLinks(); i++) {
+			joints[i] = 0;
+			if(c.getFollowerMobileBase(i)!=null) {
+				homeBase(c.getFollowerMobileBase(i));
 			}
 		}
+		try {
+			c.setDesiredJointSpaceVector(joints, 0);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override

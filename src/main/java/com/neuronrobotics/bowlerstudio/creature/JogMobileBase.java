@@ -52,7 +52,7 @@ import java.util.Set;
 import javax.management.RuntimeErrorException;
 
 public class JogMobileBase extends GridPane implements IGameControlEvent,IJogProvider {
-	double defauletSpeed = 0.1;
+	double defauletSpeed = 0.3;
 	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
 	Button nx = new Button("", AssetFactory.loadIcon("Minus-X.png"));
@@ -424,15 +424,23 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 	public void home() {
 
 		getMobilebase().setGlobalToFiducialTransform(new TransformNR());
-		for (DHParameterKinematics c : getMobilebase().getAllDHChains()) {
+		homeBase( getMobilebase());
+
+	}
+	
+	private void homeBase(MobileBase mb) {
+		for (DHParameterKinematics c : mb.getAllDHChains()) {
 			homeLimb(c);
 		}
 	}
 
-	private void homeLimb(AbstractKinematicsNR c) {
+	private void homeLimb(DHParameterKinematics c) {
 		double[] joints = c.getCurrentJointSpaceVector();
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			joints[i] = 0;
+			if(c.getFollowerMobileBase(i)!=null) {
+				homeBase(c.getFollowerMobileBase(i));
+			}
 		}
 		try {
 			c.setDesiredJointSpaceVector(joints, 0);

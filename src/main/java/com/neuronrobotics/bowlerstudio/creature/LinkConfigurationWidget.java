@@ -20,6 +20,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import java.time.Duration;
+import javafx.scene.control.CheckBox;
 
 @SuppressWarnings("restriction")
 public class LinkConfigurationWidget extends GridPane implements ITrimControl {
@@ -225,7 +226,8 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		add(new Text("Scale To Degrees "), 0, 0);
 		add(scale, 1, 0);
 		add(new Text("(unitless)"), 2, 0);
-
+	
+		
 		double min = activLink.getDeviceMinimumValue();
 		lowerBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
@@ -389,6 +391,13 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		add(new Text("Shaft Size"), 0, 15);
 		add(shaftSize, 1, 15);
 //		add(newShaft, 1, 16);
+		CheckBox isPassive =new CheckBox();
+		isPassive.setSelected(conf.isPassive());
+		isPassive.setOnAction(action->{
+			conf.setPassive(isPassive.isSelected());
+		});
+		add(new Text("Link Is Passive"), 0, 16);
+		add(isPassive, 1, 16);
 
 	}
 	
