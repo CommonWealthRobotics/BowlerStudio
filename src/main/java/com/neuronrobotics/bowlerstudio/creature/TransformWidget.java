@@ -60,7 +60,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		this.title = title;
 		self=this;
 		initialState = is.copy();
-		this.setOnChange(onChange);
+		this.onChange=(onChange);
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
 //		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
@@ -391,8 +391,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	/**
 	 * @param onChange the onChange to set
 	 */
-	public void setOnChange(IOnTransformChange onChange) {
+	public void setOnChange(IOnTransformChange onChange, TransformNR initial) {
 		this.onChange = onChange;
+		initialState = initial;
+		updatePose(initial);
 	}
 
 }
