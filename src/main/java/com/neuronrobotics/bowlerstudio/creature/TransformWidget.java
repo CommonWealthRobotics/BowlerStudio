@@ -156,7 +156,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			}.start();
 
 		});
-		game.setTooltip(new Tooltip("Connect game controllers and use them jog the item around"));
+		game.setTooltip(new Tooltip("Connect game controllers and use them jog the item around. Use the joysticks to move. \nPress X to Translate. \nPress Y to rotate. \nPress A to exit"));
 
 		add(new Text(title), 1, 0);
 		add(game, 0, 0);
