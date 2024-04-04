@@ -29,8 +29,8 @@ public class TransformWidgetTest extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		
 		primaryStage.setScene(new Scene(w));
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(600);
+        primaryStage.setWidth(370);
+        primaryStage.setHeight(490);
         primaryStage.setTitle("Test Application");
         primaryStage.show();
 	}
