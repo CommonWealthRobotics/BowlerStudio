@@ -1,13 +1,17 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.NewVitaminWizardController;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent> {
 	
@@ -15,7 +19,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	//EngineeringUnitsSliderWidget rw;
 	private EngineeringUnitsSliderWidget tilt;
 	private EngineeringUnitsSliderWidget elevation;
-	private EngineeringUnitsSliderWidget azimeth;
+	private EngineeringUnitsSliderWidget azimuth;
 	private EngineeringUnitsSliderWidget tx;
 	private EngineeringUnitsSliderWidget ty;
 	private EngineeringUnitsSliderWidget tz;
@@ -85,7 +89,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				onChange.onTransformFinished(getCurrent());
 			}
 		}, -89.99, 89.99, e, 100,"degrees");
-		azimeth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
+		azimuth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 			
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
@@ -101,7 +105,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		}, -179.99, 179.99, a, 100,"degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
-		azimeth.setAllowResize(false);
+		azimuth.setAllowResize(false);
 		getColumnConstraints().add(new ColumnConstraints(60)); // translate text
 	    getColumnConstraints().add(new ColumnConstraints(200)); // translate values
 	    getColumnConstraints().add(new ColumnConstraints(60)); // units
@@ -145,7 +149,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	
 		 add(	new Text("Azimuth"), 
 	    		0,  6);
-		 add(	azimeth, 
+		 add(	azimuth, 
 	    		1,  6);
 		 updatePose(is);
 	}
@@ -210,9 +214,25 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		double aVar=a;
 		tilt.setValue(tiltVar);
 		elevation .setValue(eVar);
-		azimeth .setValue(aVar);
+		azimuth .setValue(aVar);
 		// Set the rotation after setting the UI so the read will load the rotation in its pure form
 
+	}
+	
+	public static void main(String [] args) {
+		JavaFXInitializer.go();
+		BowlerStudio.runLater(() -> {
+			Stage s = new Stage();
+			//new Thread(() -> {
+				TransformWidgetTest controller = new TransformWidgetTest();
+				
+				try {
+					controller.start(s);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			//}).start();
+		});
 	}
 
 }

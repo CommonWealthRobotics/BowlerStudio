@@ -11,9 +11,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.scene.control.Label;
 
+@SuppressWarnings("restriction")
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number> {
 	private TextField spv;
+	private Label increment;
 	private Slider setpoint;
 	private IOnEngineeringUnitsChange listener;
 	private boolean intCast = false;
@@ -22,6 +25,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private Button jogminus = new Button("-");
 	private double instantValueStore = 0;
 	private boolean editing = false;
+	private double jogIncrement = 1.0;
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current,
 			double width, String units, boolean intCast) {
@@ -51,6 +55,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			double width, String units) {
 		this.setListener(listener);
 		setpoint = new Slider();
+		increment = new Label(jogIncrement+"");
 		instantValueStore = current;
 		if (min > max) {
 			double minStart = min;
@@ -117,15 +122,17 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		String unitsString = "(" + units + ")";
 
 		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(40)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
 		getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7)); // column 2 is 100 wide
 
-		add(setpoint, 2, 1);
-		add(jogplus, 1, 0);
+		add(setpoint, 3, 1);
+		add(jogplus, 2, 0);
+		add(increment, 1, 0);
 		add(jogminus, 0, 0);
-		add(spv, 2, 0);
-		add(new Text(unitsString), 3, 0);
+		add(spv, 3, 0);
+		add(new Text(unitsString), 4, 0);
 
 		jogplus.setOnAction(event -> {
 			jogPlusOne();
@@ -146,7 +153,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	public void jogMinusOne() {
-		double value = getValue() - 1;
+		double value = getValue() - getJogIncrement();
 		if (value < setpoint.getMin())
 			return;
 		setValue(value);
@@ -155,7 +162,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	public void jogPlusOne() {
-		double value = getValue() + 1;
+		double value = getValue() + getJogIncrement();
 		if (value > setpoint.getMax())
 			return;
 		setValue(value);
@@ -268,5 +275,22 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	public boolean isEditing() {
 		return editing;
+	}
+
+	/**
+	 * @return the jogIncrement
+	 */
+	public double getJogIncrement() {
+		return jogIncrement;
+	}
+
+	/**
+	 * @param jogIncrement the jogIncrement to set
+	 */
+	public void setJogIncrement(double j) {
+		jogIncrement=Math.abs(j);
+		BowlerStudio.runLater(()->{
+			increment.setText(""+jogIncrement);
+		});
 	}
 }
