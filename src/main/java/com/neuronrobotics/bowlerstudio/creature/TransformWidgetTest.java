@@ -15,12 +15,12 @@ public class TransformWidgetTest extends Application {
 			
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
-				System.out.println("Finished"+newTrans.toSimpleString() );
+				System.out.println("Finished "+newTrans.toSimpleString() );
 			}
 			
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
-				System.out.println("Changing"+newTrans.toSimpleString() );
+				System.out.println("Changing "+newTrans.toSimpleString() );
 			}
 		});
 

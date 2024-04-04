@@ -35,8 +35,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double current, double width,
 			String units) {
-		this(listener, current / 2, current * 2, current, width, units);
-
+		this(listener, Double.MIN_VALUE, Double.MAX_VALUE, current, width, units);
+		
 	}
 
 	private void onSliderMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
@@ -47,6 +47,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	private void onSliderDoneMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		editing = false;
+		instantValueStore=(newAngleDegrees);
 		//System.out.println("Slider done");
 		getListener().onSliderDoneMoving(this, newAngleDegrees);
 	}
