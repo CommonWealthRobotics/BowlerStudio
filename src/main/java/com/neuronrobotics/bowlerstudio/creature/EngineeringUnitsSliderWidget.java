@@ -26,6 +26,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private double instantValueStore = 0;
 	private boolean editing = false;
 	private double jogIncrement = 1.0;
+	private String units;
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current,
 			double width, String units, boolean intCast) {
@@ -54,6 +55,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current,
 			double width, String units) {
+		this.units = units;
 		this.setListener(listener);
 		setpoint = new Slider();
 		increment = new Label(jogIncrement+"");
@@ -289,6 +291,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	 * @param jogIncrement the jogIncrement to set
 	 */
 	public void setJogIncrement(double j) {
+		System.out.println("Increment set to "+j+" "+units);
 		jogIncrement=Math.abs(j);
 		BowlerStudio.runLater(()->{
 			increment.setText(""+jogIncrement);
