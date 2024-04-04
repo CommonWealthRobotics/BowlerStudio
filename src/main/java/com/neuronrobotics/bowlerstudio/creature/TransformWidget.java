@@ -27,11 +27,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
+import javafx.scene.control.Label;
 
 public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent> {
 
@@ -55,6 +55,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public Thread scriptRunner = null;
 	private String title;
 	private TransformWidget self;
+	private Label mode= new Label("");
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange) {
 		this.title = title;
@@ -158,7 +159,8 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		});
 		game.setTooltip(new Tooltip("Connect game controllers and use them jog the item around. Use the joysticks to move. \nPress X to Translate. \nPress Y to rotate. \nPress A to exit"));
 
-		add(new Text(title), 1, 0);
+		add(new Label(title), 1, 0);
+		add(mode, 1, 1);
 		add(game, 0, 0);
 
 		// These all seem out of order here, but it is because the
@@ -166,7 +168,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		// BowlerStudio3dEngine.getOffsetforvisualization()
 		// X line
 
-		int startIndex = 2;
+		int startIndex = 3;
 		TextField lin = new TextField(linearIncrement + "");
 		TextField rot = new TextField(rotationIncrement + "");
 		lin.setOnAction(ac -> {
@@ -178,31 +180,31 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			setIncrements();
 		});
 
-		add(new Text("Linear "), 0, 1);
-		add(new Text("Rotation "), 0, 2);
+		add(new Label("Linear "), 0, startIndex-1);
+		add(new Label("Rotation "), 0, startIndex);
 
-		add(lin, 1, 1);
-		add(rot, 1, 2);
-		add(new Text("(mm)"), 2, 1);
-		add(new Text("(degrees)"), 2, 2);
+		add(lin, 1, startIndex-1);
+		add(rot, 1, startIndex);
+		add(new Label("(mm)"), 2, startIndex-1);
+		add(new Label("(degrees)"), 2, startIndex);
 
-		add(new Text("X"), 0, 1 + startIndex);
+		add(new Label("X"), 0, 1 + startIndex);
 		add(tx, 1, 1 + startIndex);
 
 		// Y line
-		add(new Text("Y"), 0, 2 + startIndex);
+		add(new Label("Y"), 0, 2 + startIndex);
 		add(ty, 1, 2 + startIndex);
 
 		// Z line
-		add(new Text("Z"), 0, 3 + startIndex);
+		add(new Label("Z"), 0, 3 + startIndex);
 		add(tz, 1, 3 + startIndex);
-		add(new Text("Tilt"), 0, 4 + startIndex);
+		add(new Label("Tilt"), 0, 4 + startIndex);
 		add(tilt, 1, 4 + startIndex);
 
-		add(new Text("Elevation"), 0, 5 + startIndex);
+		add(new Label("Elevation"), 0, 5 + startIndex);
 		add(elevation, 1, 5 + startIndex);
 
-		add(new Text("Azimuth"), 0, 6 + startIndex);
+		add(new Label("Azimuth"), 0, 6 + startIndex);
 		add(azimuth, 1, 6 + startIndex);
 		// game
 		
@@ -226,6 +228,11 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				e.printStackTrace();
 			}
 		game.setDisable(false);
+	}
+	public void setMode(String m) {
+		BowlerStudio.runLater(()->{
+			mode.setText(m+" Mode");
+		});
 	}
 
 	public void stop() {
