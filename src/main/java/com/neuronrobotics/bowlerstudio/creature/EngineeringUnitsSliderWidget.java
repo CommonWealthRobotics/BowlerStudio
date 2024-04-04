@@ -27,6 +27,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	private boolean editing = false;
 	private double jogIncrement = 1.0;
 	private String units;
+	private double min;
+	private double max;
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current,
 			double width, String units, boolean intCast) {
@@ -36,7 +38,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double current, double width,
 			String units) {
-		this(listener, Double.MIN_VALUE, Double.MAX_VALUE, current, width, units);
+		this(listener, -Float.MAX_VALUE, Float.MAX_VALUE, current, width, units);
 		
 	}
 
@@ -53,8 +55,10 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		getListener().onSliderDoneMoving(this, newAngleDegrees);
 	}
 
-	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double min, double max, double current,
+	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double minIn, double maxIn, double current,
 			double width, String units) {
+		this.min = minIn;
+		this.max = maxIn;
 		this.units = units;
 		this.setListener(listener);
 		setpoint = new Slider();
@@ -156,17 +160,19 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	public void jogMinusOne() {
-		double value = getValue() - getJogIncrement();
-		if (value < setpoint.getMin())
-			return;
-		setValue(value);
-		onSliderMovingInternal(this, value);
-		onSliderDoneMovingInternal(this, value);
+		jog(-getJogIncrement());
 	}
 
 	public void jogPlusOne() {
-		double value = getValue() + getJogIncrement();
-		if (value > setpoint.getMax())
+		jog(getJogIncrement());
+	}
+	public void jog(double amount) {
+		double value = getValue() + amount;
+		double max2 = setpoint.getMax();
+		if (value > max2)
+			return;
+		double min2 = setpoint.getMin();
+		if (value < min2)
 			return;
 		setValue(value);
 		onSliderMovingInternal(this, value);

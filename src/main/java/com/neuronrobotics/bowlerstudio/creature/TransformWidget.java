@@ -159,6 +159,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		game.setTooltip(new Tooltip("Connect game controllers and use them jog the item around"));
 
 		add(new Text(title), 1, 0);
+		add(game, 0, 0);
 
 		// These all seem out of order here, but it is because the
 		// screen is rotating the orenation of this interface from
@@ -204,7 +205,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		add(new Text("Azimuth"), 0, 6 + startIndex);
 		add(azimuth, 1, 6 + startIndex);
 		// game
-		add(game, 0, 7 + startIndex);
+		
 
 		updatePose(is);
 	}
