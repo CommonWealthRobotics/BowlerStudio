@@ -3,7 +3,6 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
