@@ -56,6 +56,13 @@ public class MobleBaseMenueFactory {
 	public static String[] copyGitFile(String sourceGit, String targetGit, String filename) {
 		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
+	
+	public static void addVitamins(IVitaminHolder vitamins, TreeView<String> view, TreeItem<String> rootItem,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
+			boolean creatureIsOwnedByUser) {
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
