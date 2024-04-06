@@ -149,10 +149,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Run");
-			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToRunButton(runfx);
 		});
 
 	}
@@ -306,10 +303,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 		running = true;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Stop");
-			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToStopButton(runfx);
 		});
 		scriptRunner = new Thread() {
 

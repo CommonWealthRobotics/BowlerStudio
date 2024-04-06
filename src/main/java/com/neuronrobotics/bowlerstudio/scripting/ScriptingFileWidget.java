@@ -59,7 +59,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
-	private Button arrange = new Button("Arrange");
+	private Button arrange = new Button("Bed");
 
 	private Button publish = new Button("Save");
 
@@ -128,6 +128,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		});
 		publish.setTooltip(new Tooltip("Save this code to Git"));
 		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
+		
+		arrange.setMinWidth(80);
+		publish.setMinWidth(80);
+		
 
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -175,7 +179,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			t.printStackTrace();
 		}
 
-		Button openFile = new Button("Open...");
+		Button openFile = new Button("Open");
+		openFile.setMinWidth(80);
 		openFile.setOnAction(event -> {
 			new Thread(() -> {
 				Desktop desktop = Desktop.getDesktop();
@@ -188,7 +193,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			}).start();
 
 		});
-		 printbed = new Button("Export");
+		 printbed = new Button("STL");
+		 printbed.setMinWidth(80);
 		 printbed.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
 		 BowlerStudio.runLater(() -> {
 				printbed.setDisable(true);
@@ -318,10 +324,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Run");
-			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToRunButton(runfx);
 		});
 
 	}
@@ -392,9 +395,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		running = true;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Stop");
-			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			BowlerStudio.setToStopButton(runfx);
+			
 		});
 		scriptRunner = new Thread() {
 

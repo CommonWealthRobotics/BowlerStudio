@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
+import javafx.scene.control.Button;
+
 //import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerkernel.Bezier3d.IInteractiveUIElementProvider;
@@ -46,8 +48,9 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import org.dockfx.DockPane;
-import javax.swing.*;
-import java.awt.*;
+
+import java.awt.Desktop;
+import java.awt.SplashScreen;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,6 +62,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 @SuppressWarnings("restriction")
 public class BowlerStudio extends Application {
@@ -697,11 +703,7 @@ public class BowlerStudio extends Application {
 
 				Scene scene = new Scene(mainControllerPanel.getRoot(), 1174, 768, true);
 
-				String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
-
-				scene.getStylesheets().clear();
-				scene.getStylesheets().add(nwfile);
-				System.err.println("Loading CSS from " + nwfile);
+				setBowlerStudioCSS(scene);
 				BowlerStudio.runLater(() -> {
 
 					primaryStage.setScene(scene);
@@ -781,6 +783,31 @@ public class BowlerStudio extends Application {
 
 	}
 
+	public static void setBowlerStudioCSS(Scene scene) {
+		String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
+
+		scene.getStylesheets().clear();
+		scene.getStylesheets().add(nwfile);
+		System.err.println("Loading CSS from " + nwfile);
+	}
+	
+	public static void setToRunButton(Button b) {
+		b.setText("Run");
+		b.setGraphic(AssetFactory.loadIcon("Run.png"));
+		b.getStyleClass().clear();
+		b.getStyleClass().add("button-run");
+		b.getStyleClass().add("button");
+		b.setMinWidth(80);
+	}
+	public static void setToStopButton(Button b) {
+		b.setText("Stop");
+		b.setGraphic(AssetFactory.loadIcon("Stop.png"));
+		b.getStyleClass().clear();
+		b.getStyleClass().add("button");
+		b.getStyleClass().add("button-stop");
+		b.setMinWidth(80);
+	}
+	
 	@SuppressWarnings("restriction")
 	public static void closeBowlerStudio() {
 		BowlerStudio.runLater(() -> {

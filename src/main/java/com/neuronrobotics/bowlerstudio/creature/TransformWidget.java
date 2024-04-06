@@ -148,7 +148,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tz.showSlider(false);
 		setIncrements();
 
-		game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+		reset();
 		game.setOnAction(event -> {
 			new Thread() {
 				public void run() {
@@ -262,9 +262,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 
 		running = true;
 		BowlerStudio.runLater(() -> {
-			game.setText("Stop Game Controller");
-			// game.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			game.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			BowlerStudio.setToStopButton(game);
 		});
 		scriptRunner = new Thread() {
 
@@ -298,7 +296,11 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		BowlerStudio.runLater(() -> {
 			game.setText("Run Game Controller");
 			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
-			game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+			for(String classes : game.getStyleClass()) {
+				System.out.println("Clearing "+classes);
+			}
+			BowlerStudio.setToRunButton(game);
+			game.setGraphic(AssetFactory.loadIcon("Add-Game-Controller.png"));
 
 		});
 

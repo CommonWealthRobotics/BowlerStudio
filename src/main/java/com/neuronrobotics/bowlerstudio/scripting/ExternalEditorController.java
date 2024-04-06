@@ -45,7 +45,8 @@ public class ExternalEditorController {
 			advanced.setGraphic(image);
 			advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
 			advanced.setText(myEditor.nameOfEditor());
-			
+			advanced.setMinWidth(100);
+			advanced.setTextOverrun(javafx.scene.control.OverrunStyle.CLIP);
 			advanced.setOnAction(event -> {
 				advanced.setDisable(true);
 				myEditor.launch(currentFile,advanced);

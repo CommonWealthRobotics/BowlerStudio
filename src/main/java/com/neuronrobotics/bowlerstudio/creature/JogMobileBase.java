@@ -280,9 +280,8 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		running = false;
 		BowlerStudio.runLater(() -> {
 			game.setText("Run Game Controller");
-			//game.setGraphic(AssetFactory.loadIcon("Run.png"));
-			game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-			
+			BowlerStudio.setToRunButton(game);	
+			game.setGraphic(AssetFactory.loadIcon("Add-Game-Controller.png"));
 		});
 
 	}
@@ -314,7 +313,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		BowlerStudio.runLater(()->{
 			game.setText("Stop Game Controller");
 			//game.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			game.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			BowlerStudio.setToStopButton(game);
 		});
 		scriptRunner = new Thread() {
 
