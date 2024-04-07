@@ -157,8 +157,12 @@ public class VitatminWidget implements IOnTransformChange {
 		tf.updatePose(selectedVitamin.getLocation());
 		transformPanel.setDisable(false);
 		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
-		Affine af = manager.getVitaminAffine(selectedVitamin);
-		BowlerStudioController.setSelectedAffine(af);
+		try {
+			Affine af = manager.getVitaminAffine(selectedVitamin);
+			BowlerStudioController.setSelectedAffine(af);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setVitaminProvider(IVitaminHolder h) {
