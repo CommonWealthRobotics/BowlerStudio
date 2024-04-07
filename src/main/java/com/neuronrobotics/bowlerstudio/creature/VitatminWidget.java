@@ -1,0 +1,172 @@
+/**
+ * Sample Skeleton for 'AddRemoveVitamins.fxml' Controller Class
+ */
+
+package com.neuronrobotics.bowlerstudio.creature;
+
+import java.awt.event.InputMethodEvent;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import com.google.crypto.tink.subtle.EngineWrapper.TMac;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
+import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+
+public class VitatminWidget implements IOnTransformChange {
+
+	private String selectedType = null;
+	private String sizeSelected = null;
+	private TransformWidget tf ;
+
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
+
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
+
+	@FXML // fx:id="add"
+	private Button add; // Value injected by FXMLLoader
+
+	@FXML // fx:id="name"
+	private TextField name; // Value injected by FXMLLoader
+
+	@FXML // fx:id="type"
+	private ComboBox<String> type; // Value injected by FXMLLoader
+
+	@FXML // fx:id="size"
+	private ComboBox<String> size; // Value injected by FXMLLoader
+    @FXML // fx:id="listOfItems"
+    private ListView<GridPane> listOfItems; // Value injected by FXMLLoader
+    @FXML // fx:id="transformPanel"
+    private AnchorPane transformPanel; // Value injected by FXMLLoader
+
+	private IVitaminHolder holder;
+	private HashMap<GridPane, VitaminLocation> locationMap = new  HashMap<>();
+	private VitaminLocation vitaminLocation;
+
+	@FXML
+	void onAdd(ActionEvent event) {
+		VitaminLocation newVit = new VitaminLocation(name.getText(), selectedType, sizeSelected, new TransformNR());
+		holder.addVitamin(newVit);
+		add(newVit);
+		validateInput();
+	}
+
+	private void add(VitaminLocation newVit) {
+		GridPane box = new GridPane();
+		box.getColumnConstraints().add(new ColumnConstraints(30)); // translate text
+		box.getColumnConstraints().add(new ColumnConstraints(120)); // translate values
+		box.getColumnConstraints().add(new ColumnConstraints(120)); // units
+		box.getColumnConstraints().add(new ColumnConstraints(120)); // rotate text
+		box.setHgap(20);// gab between elements
+		box.setVgap(10);// gab between elements
+		locationMap.put(box, newVit);
+		Button remove = new Button();
+		remove.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
+		remove.setOnAction(action->{
+			listOfItems.getItems().remove(box);
+			holder.removeVitamin(newVit);
+			validateInput();
+			locationMap.remove(box);
+		});
+		box.add(remove,0,0);
+		box.add(new Label(newVit.getName()),1,0);
+		box.add(new Label(newVit.getType()),2,0);
+		box.add(new Label(newVit.getSize()),3,0);
+
+		listOfItems.getItems().add(box);
+	}
+
+	void validateInput() {
+		add.setDisable(true);
+		String nameTmp = name.getText();
+		//System.out.println("Validating " + nameTmp);
+
+		if (nameTmp.length() == 0)
+			return;
+		if (selectedType == null)
+			return;
+		if (sizeSelected == null)
+			return;
+		for(VitaminLocation l :holder.getVitamins()) {
+			String name2 = l.getName();
+			if(name2.contentEquals(nameTmp))
+				return;
+			//System.out.println(nameTmp+" is not "+name2); 
+		}
+		add.setDisable(false);
+	}
+
+
+	@FXML // This method is called by the FXMLLoader when initialization is complete
+	void initialize() {
+		assert add != null : "fx:id=\"add\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
+		assert name != null : "fx:id=\"name\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
+		assert type != null : "fx:id=\"type\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
+		assert size != null : "fx:id=\"size\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
+		List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
+		for (String s : types) {
+			type.getItems().add(s);
+		}
+		type.setOnAction(action -> {
+			add.setDisable(true);
+			size.getItems().clear();
+			selectedType = type.getSelectionModel().getSelectedItem();
+			sizeSelected = null;
+			List<String> sizes = Vitamins.listVitaminSizes(selectedType).stream().sorted().collect(Collectors.toList());
+			for (String s : sizes) {
+				size.getItems().add(s);
+			}
+		});
+		size.setOnAction(action -> {
+			add.setDisable(true);
+			sizeSelected = size.getSelectionModel().getSelectedItem();
+			validateInput();
+		});
+		name.textProperty().addListener((observable, oldValue, newValue) -> {
+			validateInput();
+		});
+		listOfItems.getSelectionModel().selectedItemProperty().addListener((ob,old,fresh)->{
+			vitaminLocation = locationMap.get(fresh);
+			if(vitaminLocation!=null) {
+				System.out.println("Selected "+vitaminLocation.getName());
+				tf.updatePose(vitaminLocation.getLocation());
+				transformPanel.setDisable(false);
+			}
+		});
+		tf=new TransformWidget("Vitamin Location", new TransformNR(), this);
+		transformPanel.getChildren().add(tf);
+		transformPanel.setDisable(true);
+	}
+
+	public void setVitaminProvider(IVitaminHolder h) {
+		this.holder = h;
+		for (VitaminLocation l : h.getVitamins()) {
+			add(l);
+		}
+	}
+
+	@Override
+	public void onTransformChaging(TransformNR newTrans) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTransformFinished(TransformNR newTrans) {
+		vitaminLocation.setLocation(newTrans);
+	}
+}
