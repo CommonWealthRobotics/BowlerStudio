@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.google.crypto.tink.subtle.EngineWrapper.TMac;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
@@ -24,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
+import javafx.scene.transform.Affine;
 
 public class VitatminWidget implements IOnTransformChange {
 
@@ -55,7 +57,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 	private IVitaminHolder holder;
 	private HashMap<GridPane, VitaminLocation> locationMap = new  HashMap<>();
-	private VitaminLocation vitaminLocation;
+	private VitaminLocation selectedVitamin;
 
 	@FXML
 	void onAdd(ActionEvent event) {
@@ -140,16 +142,23 @@ public class VitatminWidget implements IOnTransformChange {
 			validateInput();
 		});
 		listOfItems.getSelectionModel().selectedItemProperty().addListener((ob,old,fresh)->{
-			vitaminLocation = locationMap.get(fresh);
-			if(vitaminLocation!=null) {
-				System.out.println("Selected "+vitaminLocation.getName());
-				tf.updatePose(vitaminLocation.getLocation());
-				transformPanel.setDisable(false);
+			selectedVitamin = locationMap.get(fresh);
+			if(selectedVitamin!=null) {
+				fireVitaminSelectedUpdate();
 			}
 		});
 		tf=new TransformWidget("Vitamin Location", new TransformNR(), this);
 		transformPanel.getChildren().add(tf);
 		transformPanel.setDisable(true);
+	}
+
+	private void fireVitaminSelectedUpdate() {
+		System.out.println("Selected "+selectedVitamin.getName());
+		tf.updatePose(selectedVitamin.getLocation());
+		transformPanel.setDisable(false);
+		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
+		Affine af = manager.getVitaminAffine(selectedVitamin);
+		BowlerStudioController.setSelectedAffine(af);
 	}
 
 	public void setVitaminProvider(IVitaminHolder h) {
@@ -167,6 +176,6 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
-		vitaminLocation.setLocation(newTrans);
+		selectedVitamin.setLocation(newTrans);
 	}
 }
