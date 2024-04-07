@@ -426,6 +426,9 @@ public class BowlerStudioController implements IScriptEventListener {
 		Affine manipulator2 = new Affine();
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
 	}
+	public static void setSelectedAffine(Affine af) {
+		CreatureLab3dController.getEngine().focusToAffine(af);
+	}
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
 			if (toadd != null)
@@ -660,6 +663,8 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
+
+	
 
 
 
