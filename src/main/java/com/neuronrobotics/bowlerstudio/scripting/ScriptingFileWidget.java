@@ -45,6 +45,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javafx.scene.control.Tooltip;
 
 @SuppressWarnings("unused")
 public class ScriptingFileWidget extends BorderPane implements IFileChangeListener {
@@ -172,7 +173,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 																			// little bit
 			});
 		});
-		System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
+		
+		//System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
 			externalEditorController = new ExternalEditorController(currentFile, autoRun);
 		}catch(Throwable t) {
@@ -180,6 +182,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}
 
 		Button openFile = new Button("Open");
+		openFile.setGraphic(AssetFactory.loadIcon("Folder.png"));
 		openFile.setMinWidth(80);
 		openFile.setOnAction(event -> {
 			new Thread(() -> {
@@ -538,9 +541,11 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			BowlerStudio.runLater(() -> {
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
+				fileListBox.setTooltip(new Tooltip(remote));
 				// fileListBox.res
 
 				fileNameBox.setText(findLocalPath);
+				fileNameBox.setTooltip(new Tooltip(findLocalPath));
 				// These values are display only, so if hte user tries to change them, they
 				// reset
 				// the use of text field for static dats is so the user cna copy the vlaues and
