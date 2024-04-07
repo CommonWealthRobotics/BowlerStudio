@@ -14,17 +14,16 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 
-public class VitaminWidgetTest  extends Application {
+public class VitaminWidgetTest extends Application {
 	private VitatminWidget tw;
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader =  AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
+		FXMLLoader loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
 		loader.setClassLoader(VitatminWidget.class.getClassLoader());
 		Parent w = loader.load();
 		tw = loader.getController();
 
-		
-		
 		File layoutFile = AssetFactory.loadFile("layout/default.css");
 		String nwfile = layoutFile.toURI().toString().replace("file:/", "file:///");
 		Scene scene = new Scene(w);
@@ -32,19 +31,20 @@ public class VitaminWidgetTest  extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		System.err.println("Loading CSS from " + nwfile);
-		
+
 		primaryStage.setScene(scene);
-        primaryStage.setWidth(600);
-        primaryStage.setHeight(777);
-        primaryStage.setTitle("Test Application");
-        primaryStage.show();
-		
+		primaryStage.setWidth(600);
+		primaryStage.setHeight(777);
+		primaryStage.setTitle("Test Application");
+		primaryStage.show();
+
 	}
+
 	public static void main(String[] args) {
 		JavaFXInitializer.go();
 		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
-			// 
+			//
 			VitaminWidgetTest controller = new VitaminWidgetTest();
 			try {
 				controller.start(s);
@@ -54,26 +54,29 @@ public class VitaminWidgetTest  extends Application {
 			VitatminWidget tw = controller.getTw();
 			new Thread(() -> {
 				try {
-					MobileBase mb = (MobileBase) ScriptingEngine.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
+					MobileBase mb = (MobileBase) ScriptingEngine
+							.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
 					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			 }).start();
+			}).start();
 		});
 	}
+
 	/**
 	 * @return the tw
 	 */
 	public VitatminWidget getTw() {
 		return tw;
 	}
+
 	/**
 	 * @param tw the tw to set
 	 */
 	public void setTw(VitatminWidget tw) {
-		if(tw==null)
+		if (tw == null)
 			throw new RuntimeException();
 		this.tw = tw;
 	}

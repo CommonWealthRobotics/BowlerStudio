@@ -224,10 +224,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(openFile);
-		controlPane.getChildren().add(new Label("file:"));
+		Label e = new Label("file:");
+		e.setMinWidth(30);
+		controlPane.getChildren().add(e);
 		controlPane.getChildren().add(fileNameBox);
 		fileNameBox.setMaxWidth(Double.MAX_VALUE);
-		controlPane.getChildren().add(new Label("git:"));
+		Label e2 = new Label("git:");
+		e2.setMinWidth(30);
+		controlPane.getChildren().add(e2);
 		controlPane.getChildren().add(fileListBox);
 		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
