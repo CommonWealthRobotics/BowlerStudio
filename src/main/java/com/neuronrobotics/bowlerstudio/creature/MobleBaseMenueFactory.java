@@ -20,7 +20,9 @@ import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
@@ -57,11 +59,29 @@ public class MobleBaseMenueFactory {
 		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
 	
-	public static void addVitamins(IVitaminHolder vitamins, TreeView<String> view, TreeItem<String> rootItem,
+	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
-			boolean creatureIsOwnedByUser) {
-		
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) {
+		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
+				AssetFactory.loadIcon("Vitamins.png"));
+
+		callbackMapForTreeitems.put(vitaminsMenu, () -> {
+			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
+				FXMLLoader loader;
+				try {
+					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
+					//loader.setClassLoader(VitatminWidget.class.getClassLoader());
+					Parent w = loader.load();
+					VitatminWidget tw = loader.getController();
+					tw.setVitaminProvider(vitamins);
+					widgetMapForTreeitems.put(vitaminsMenu, new Group(w));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		rootItem.getChildren().add(vitaminsMenu);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -469,6 +489,7 @@ public class MobleBaseMenueFactory {
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
 			if (root)
 				rootItem.getChildren().addAll(physics,  printable,arrangeBed, kinematics);
+			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)
@@ -949,6 +970,8 @@ public class MobleBaseMenueFactory {
 		
 
 		link.getChildren().addAll(design);
+		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems);
+
 
 		link.getChildren().addAll(slaves, remove);
 		

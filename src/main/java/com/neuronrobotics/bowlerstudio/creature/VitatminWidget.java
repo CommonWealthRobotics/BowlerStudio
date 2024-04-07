@@ -93,7 +93,7 @@ public class VitatminWidget implements IOnTransformChange {
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
-		//System.out.println("Validating " + nameTmp);
+		System.out.println("Validating " + nameTmp);
 
 		if (nameTmp.length() == 0)
 			return;
@@ -105,7 +105,7 @@ public class VitatminWidget implements IOnTransformChange {
 			String name2 = l.getName();
 			if(name2.contentEquals(nameTmp))
 				return;
-			//System.out.println(nameTmp+" is not "+name2); 
+			System.out.println(nameTmp+" is not "+name2); 
 		}
 		add.setDisable(false);
 	}
