@@ -400,8 +400,8 @@ public class BowlerStudio extends Application {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 							StudioBuildInfo.getVersion());
 					renderSplashFrame(16, "Done Load Configs");
-					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo",
-							"https://github.com/madhephaestus/BowlerStudioImageAssets.git");
+					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
+							myAssets);
 					renderSplashFrame(20, "DL'ing Image Assets");
 					System.err.println("Asset Repo " + myAssets);
 
