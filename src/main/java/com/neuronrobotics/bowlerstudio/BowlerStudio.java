@@ -435,8 +435,8 @@ public class BowlerStudio extends Application {
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists()) {
 				ScriptingEngine.deleteRepo(myAssets);
-
-				throw new RuntimeException("Style sheet does not exist");
+				ScriptingEngine.cloneRepo(myAssets, null);
+				layoutFile = AssetFactory.loadFile("layout/default.css");
 			}
 			// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 			renderSplashFrame(50, "DL'ing Tutorials...");
@@ -444,12 +444,6 @@ public class BowlerStudio extends Application {
 
 			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
 			// force the current version in to the version number
-			ConfigurationDatabase.setObject("BowlerStudioConfigs", "skinBranch", StudioBuildInfo.getVersion());
-			renderSplashFrame(53, "Loading Images");
-			AssetFactory.setGitSource(
-					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
-					ScriptingEngine.getBranch(myAssets));
-			renderSplashFrame(54, "Load Assets");
 			// Download and Load all of the assets
 
 			renderSplashFrame(60, "Vitamins...");
