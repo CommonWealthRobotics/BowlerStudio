@@ -400,8 +400,8 @@ public class BowlerStudio extends Application {
 					ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
 							StudioBuildInfo.getVersion());
 					renderSplashFrame(16, "Done Load Configs");
-					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
-							myAssets);
+//					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
+//							myAssets);
 					renderSplashFrame(20, "DL'ing Image Assets");
 					System.err.println("Asset Repo " + myAssets);
 
@@ -432,7 +432,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.pull(myAssets, "main");
 				}
 			}
-			layoutFile = AssetFactory.loadFile("layout/default.css");
+			layoutFile = AssetFactory.loadFile("Folder.png");
 			if (layoutFile == null || !layoutFile.exists()) {
 				ScriptingEngine.deleteRepo(myAssets);
 				ScriptingEngine.cloneRepo(myAssets, null);
