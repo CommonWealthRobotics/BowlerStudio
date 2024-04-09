@@ -78,11 +78,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		disable();
 		autoRegen.setOnAction(event -> {
-			regenFromUiEvent();
+			BowlerStudio.runLater(() -> {
+				regenFromUiEvent();
+			});
 		});
 		regen.setOnAction(event -> {
 			autoRegen.setSelected(true);
-			regenFromUiEvent();
+			BowlerStudio.runLater(()->{
+				regenFromUiEvent();
+			});
 		});
 		regen.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		// TODO Auto-generated method stub
@@ -126,11 +130,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	private void regenFromUiEvent() {
+		if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
+			return;
+		}
+		System.out.println("Regenerating robot "+System.currentTimeMillis());
+		timeSinceLastUpdate = System.currentTimeMillis();
 		BowlerStudio.runLater(() -> {
-			if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
-				return;
-			}
-			timeSinceLastUpdate = System.currentTimeMillis();
 			if (autoRegen.isSelected()) {
 				disable();
 			}
