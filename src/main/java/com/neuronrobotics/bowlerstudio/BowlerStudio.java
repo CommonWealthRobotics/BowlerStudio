@@ -432,7 +432,7 @@ public class BowlerStudio extends Application {
 					ScriptingEngine.pull(myAssets, "main");
 				}
 			}
-			layoutFile = AssetFactory.loadFile("Folder.png");
+			layoutFile = AssetFactory.loadFile("layout/default.css");
 			if (layoutFile == null || !layoutFile.exists()) {
 				ScriptingEngine.deleteRepo(myAssets);
 				ScriptingEngine.cloneRepo(myAssets, null);
