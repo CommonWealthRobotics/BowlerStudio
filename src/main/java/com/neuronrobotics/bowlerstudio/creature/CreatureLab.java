@@ -78,6 +78,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		disable();
 		autoRegen.setOnAction(event -> {
+			baseManager.setAutoRegen(autoRegen.isSelected());
 			//BowlerStudio.runLater(() -> {
 				regenFromUiEvent();
 			//});
@@ -138,9 +139,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		BowlerStudio.runLater(() -> {
 			if (autoRegen.isSelected()) {
 				disable();
-			}
-			baseManager.setAutoRegen(autoRegen.isSelected());
-			if (autoRegen.isSelected()) {
 				generateCad();
 			}
 		});
@@ -287,19 +285,19 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		setCadMode(true);// start the UI in config mode
 		generateCad();
 
-		pi.progressProperty().addListener((observable,  oldValue,  newValue)-> {
-				//System.out.println("Progress listener " + newValue);
-				if (newValue.doubleValue() > 0.99) {
-					BowlerStudio.runLater(() -> {
-						enable();
-					});
-				}else {
-					BowlerStudio.runLater(() -> {
-						disable();
-					});
-				}
-			
-		});
+//		pi.progressProperty().addListener((observable,  oldValue,  newValue)-> {
+//				//System.out.println("Progress listener " + newValue);
+//				if (newValue.doubleValue() > 0.99) {
+//					BowlerStudio.runLater(() -> {
+//						enable();
+//					});
+//				}else {
+//					BowlerStudio.runLater(() -> {
+//						disable();
+//					});
+//				}
+//			
+//		});
 	}
 	private void enable() {
 		autoRegen.setDisable(false);
@@ -320,8 +318,14 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void generateCad() {
-		// new Exception().printStackTrace();
-		baseManager.generateCad();
+		BowlerStudio.runLater(()->{
+			disable();
+		});
+		baseManager.generateCadWithEnd(()->{
+			BowlerStudio.runLater(()->{
+				enable();
+			});
+		});
 	}
 
 	@Override
