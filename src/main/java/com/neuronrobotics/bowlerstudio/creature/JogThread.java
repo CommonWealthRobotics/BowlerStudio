@@ -104,7 +104,7 @@ public class JogThread {
 								kin.setDesiredTaskSpaceTransform(toSet, bestTime);
 								//System.out.println("Joging to "+toSet);
 							} catch (Exception e) {
-								e.printStackTrace();
+								System.err.println("Exception in Jog Thread "+e.getMessage());
 								// BowlerStudioController.highlightException(null, e);
 							}
 						}

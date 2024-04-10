@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
+import com.neuronrobotics.sdk.addons.kinematics.VitaminFrame;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
@@ -31,7 +32,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 	private String selectedType = null;
 	private String sizeSelected = null;
-	private TransformWidget tf ;
+	private TransformWidget tf;
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -50,13 +51,15 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@FXML // fx:id="size"
 	private ComboBox<String> size; // Value injected by FXMLLoader
-    @FXML // fx:id="listOfItems"
-    private ListView<GridPane> listOfItems; // Value injected by FXMLLoader
-    @FXML // fx:id="transformPanel"
-    private AnchorPane transformPanel; // Value injected by FXMLLoader
+	@FXML // fx:id="listOfItems"
+	private ListView<GridPane> listOfItems; // Value injected by FXMLLoader
+	@FXML
+	private ComboBox<VitaminFrame> frameType;
+	@FXML // fx:id="transformPanel"
+	private AnchorPane transformPanel; // Value injected by FXMLLoader
 
 	private IVitaminHolder holder;
-	private HashMap<GridPane, VitaminLocation> locationMap = new  HashMap<>();
+	private HashMap<GridPane, VitaminLocation> locationMap = new HashMap<>();
 	private VitaminLocation selectedVitamin;
 
 	@FXML
@@ -78,16 +81,16 @@ public class VitatminWidget implements IOnTransformChange {
 		locationMap.put(box, newVit);
 		Button remove = new Button();
 		remove.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
-		remove.setOnAction(action->{
+		remove.setOnAction(action -> {
 			listOfItems.getItems().remove(box);
 			holder.removeVitamin(newVit);
 			validateInput();
 			locationMap.remove(box);
 		});
-		box.add(remove,0,0);
-		box.add(new Label(newVit.getName()),1,0);
-		box.add(new Label(newVit.getType()),2,0);
-		box.add(new Label(newVit.getSize()),3,0);
+		box.add(remove, 0, 0);
+		box.add(new Label(newVit.getName()), 1, 0);
+		box.add(new Label(newVit.getType()), 2, 0);
+		box.add(new Label(newVit.getSize()), 3, 0);
 
 		listOfItems.getItems().add(box);
 	}
@@ -103,15 +106,14 @@ public class VitatminWidget implements IOnTransformChange {
 			return;
 		if (sizeSelected == null)
 			return;
-		for(VitaminLocation l :holder.getVitamins()) {
+		for (VitaminLocation l : holder.getVitamins()) {
 			String name2 = l.getName();
-			if(name2.contentEquals(nameTmp))
+			if (name2.contentEquals(nameTmp))
 				return;
-			System.out.println(nameTmp+" is not "+name2); 
+			System.out.println(nameTmp + " is not " + name2);
 		}
 		add.setDisable(false);
 	}
-
 
 	@FXML // This method is called by the FXMLLoader when initialization is complete
 	void initialize() {
@@ -141,26 +143,35 @@ public class VitatminWidget implements IOnTransformChange {
 		name.textProperty().addListener((observable, oldValue, newValue) -> {
 			validateInput();
 		});
-		listOfItems.getSelectionModel().selectedItemProperty().addListener((ob,old,fresh)->{
+		listOfItems.getSelectionModel().selectedItemProperty().addListener((ob, old, fresh) -> {
 			selectedVitamin = locationMap.get(fresh);
-			if(selectedVitamin!=null) {
+			if (selectedVitamin != null) {
 				fireVitaminSelectedUpdate();
 			}
 		});
-		tf=new TransformWidget("Vitamin Location", new TransformNR(), this);
+		tf = new TransformWidget("Vitamin Location", new TransformNR(), this);
 		transformPanel.getChildren().add(tf);
 		transformPanel.setDisable(true);
+		frameType.setDisable(true);
+		frameType.setOnAction(event->{
+			selectedVitamin.setFrame(frameType.getValue());
+		});
+		for(VitaminFrame vf:VitaminFrame.values()) {
+			frameType.getItems().add(vf);
+		}
 	}
 
 	private void fireVitaminSelectedUpdate() {
-		System.out.println("Selected "+selectedVitamin.getName());
+		System.out.println("Selected " + selectedVitamin.getName());
 		tf.updatePose(selectedVitamin.getLocation());
 		transformPanel.setDisable(false);
+		frameType.setDisable(false);
+		frameType.getSelectionModel().select(selectedVitamin.getFrame());
 		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
 		try {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			BowlerStudioController.setSelectedAffine(af);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -175,7 +186,7 @@ public class VitatminWidget implements IOnTransformChange {
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

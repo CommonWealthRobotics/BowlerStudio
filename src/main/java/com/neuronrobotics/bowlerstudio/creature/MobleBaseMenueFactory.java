@@ -133,8 +133,9 @@ public class MobleBaseMenueFactory {
 		}
 
 		if (creatureIsOwnedByUser) {
-			if (root)
+			if (root) {
 				rootItem.getChildren().addAll(publish);
+			}
 
 		}
 

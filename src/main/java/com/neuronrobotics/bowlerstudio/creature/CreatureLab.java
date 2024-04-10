@@ -287,11 +287,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		setCadMode(true);// start the UI in config mode
 		generateCad();
 
-		pi.progressProperty().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				System.out.println("Progress listener " + newValue);
+		pi.progressProperty().addListener((observable,  oldValue,  newValue)-> {
+				//System.out.println("Progress listener " + newValue);
 				if (newValue.doubleValue() > 0.99) {
 					BowlerStudio.runLater(() -> {
 						enable();
@@ -301,9 +298,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 						disable();
 					});
 				}
-			}
-
-
+			
 		});
 	}
 	private void enable() {
