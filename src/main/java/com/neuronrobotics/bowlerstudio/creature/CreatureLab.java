@@ -78,15 +78,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		disable();
 		autoRegen.setOnAction(event -> {
-			BowlerStudio.runLater(() -> {
+			//BowlerStudio.runLater(() -> {
 				regenFromUiEvent();
-			});
+			//});
 		});
 		regen.setOnAction(event -> {
-			autoRegen.setSelected(true);
-			BowlerStudio.runLater(()->{
+			//autoRegen.setSelected(true);
+			//BowlerStudio.runLater(()->{
 				regenFromUiEvent();
-			});
+			//});
 		});
 		regen.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		// TODO Auto-generated method stub
