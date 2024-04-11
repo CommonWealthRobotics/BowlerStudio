@@ -183,7 +183,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		Button openFile = new Button("Open");
 		openFile.setGraphic(AssetFactory.loadIcon("Folder.png"));
-		openFile.setMinWidth(80);
+		openFile.setMinWidth(85);
 		openFile.setOnAction(event -> {
 			new Thread(() -> {
 				Desktop desktop = Desktop.getDesktop();
