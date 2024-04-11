@@ -184,6 +184,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		Button openFile = new Button("Open");
 		openFile.setGraphic(AssetFactory.loadIcon("Folder.png"));
 		openFile.setMinWidth(85);
+		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		openFile.setOnAction(event -> {
 			new Thread(() -> {
 				Desktop desktop = Desktop.getDesktop();
@@ -216,7 +217,6 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		tooltip.setText("\nMake a print bed and export all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
 		printbed.setTooltip(tooltip);
 		
-		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		controlPane.getChildren().add(runfx);
 		if (isOwnedByLoggedInUser) {
 			controlPane.getChildren().add(arrange);
