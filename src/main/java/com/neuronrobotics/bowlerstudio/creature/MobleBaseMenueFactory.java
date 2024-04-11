@@ -69,7 +69,7 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
 				FXMLLoader loader;
 				try {
-					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
+					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml",true);
 					//loader.setClassLoader(VitatminWidget.class.getClassLoader());
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
