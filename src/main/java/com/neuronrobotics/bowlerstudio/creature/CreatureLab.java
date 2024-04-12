@@ -84,7 +84,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			//});
 		});
 		regen.setOnAction(event -> {
-			//autoRegen.setSelected(true);
+			autoRegen.setSelected(true);
+			baseManager.setAutoRegen(true);
 			//BowlerStudio.runLater(()->{
 				regenFromUiEvent();
 			//});
@@ -265,7 +266,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		});
 
 		radioOptions = new HBox(10);
-		radioOptions.getChildren().addAll(new Label("Cad"), rb1, rb2, new Label("Config"));
+		radioOptions.getChildren().addAll(new Label("Cad Generation"), rb1, rb2, new Label("Vitamins View"));
 
 		pi = new ProgressIndicator(0);
 		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
@@ -274,7 +275,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			while(device.isAvailable()) {
 				pi.setProgress(baseManager.getProcesIndictor().get());
 				try {
-					Thread.sleep(100);
+					Thread.sleep(30);
 				} catch (InterruptedException e) {
 					return;
 				}
