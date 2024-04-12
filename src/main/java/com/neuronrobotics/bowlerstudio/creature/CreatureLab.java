@@ -269,7 +269,17 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		pi = new ProgressIndicator(0);
 		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
-		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+		//pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+		new Thread(()->{
+			while(device.isAvailable()) {
+				pi.setProgress(baseManager.getProcesIndictor().get());
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}).start();
 		HBox progressIndicatorPanel = new HBox(10);
 
 		progress.getChildren().addAll( regen,autoRegen, radioOptions);
