@@ -877,5 +877,17 @@ public class BowlerStudio extends Application {
 			}
 		});
 	}
-
+	
+	public static void moveCamera(TransformNR tf) {
+		runLater(()->{
+			CreatureLab3dController.getEngine().moveCamera(tf);
+		});
+	}
+	public static void setCamera(TransformNR tf) {
+		TransformNR current = getCamerFrame();
+		TransformNR tfupde=current.inverse().times(tf);
+		runLater(()->{
+			CreatureLab3dController.getEngine().moveCamera(tfupde);
+		});
+	}
 }

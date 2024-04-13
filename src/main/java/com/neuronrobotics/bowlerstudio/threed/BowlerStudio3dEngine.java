@@ -1198,9 +1198,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	}
 
-	private void moveCamera(TransformNR newPose) {
+	public void moveCamera(TransformNR newPose) {
 		getFlyingCamera().DriveArc(newPose);
-
 	}
 
 	private void selectObjectsSourceFile(CSG source) {
