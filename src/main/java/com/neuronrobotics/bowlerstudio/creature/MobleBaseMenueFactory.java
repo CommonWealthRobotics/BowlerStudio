@@ -143,6 +143,7 @@ public class MobleBaseMenueFactory {
 				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
 		if (root)
 			rootItem.getChildren().addAll(makeCopy);
+		rootItem.getChildren().addAll(physics);
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			BowlerStudio.runLater(() -> {
 				String oldname = device.getScriptingName();
@@ -488,9 +489,9 @@ public class MobleBaseMenueFactory {
 			});
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
-			if (root)
-				rootItem.getChildren().addAll(physics,  printable,arrangeBed, kinematics);
 			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems);
+			if (root)
+				rootItem.getChildren().addAll(  printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)
