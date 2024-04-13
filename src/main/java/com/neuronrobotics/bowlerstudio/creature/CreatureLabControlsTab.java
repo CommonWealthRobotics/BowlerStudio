@@ -26,17 +26,17 @@ public class CreatureLabControlsTab {
 		return walkingBox;
 	}
 
-	public void setWalkingBox(AnchorPane walkingBox) {
-		this.walkingBox = walkingBox;
-	}
+//	public void setWalkingBox(AnchorPane walkingBox) {
+//		this.walkingBox = walkingBox;
+//	}
 
 	public AnchorPane getControlsBox() {
-		return controlsBox;
+		return walkingBox;
 	}
 
-	public void setControlsBox(AnchorPane controlsBox) {
-		this.controlsBox = controlsBox;
-	}
+//	public void setControlsBox(AnchorPane controlsBox) {
+//		this.controlsBox = controlsBox;
+//	}
 
 //	public AnchorPane getProgressBar() {
 //		return progressBar;

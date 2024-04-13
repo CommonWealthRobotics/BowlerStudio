@@ -226,6 +226,9 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 							} else {
 								BowlerStudio.runLater(() -> {
 									box.getChildren().clear();
+									if (hasWalking(device)) {
+										tab.setOverlayTopRight(walkWidget);
+									}
 								});
 							}
 						}
