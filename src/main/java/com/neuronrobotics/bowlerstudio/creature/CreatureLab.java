@@ -3,33 +3,27 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
-import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
-import com.neuronrobotics.bowlerstudio.util.FileWatchDeviceWrapper;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.DhInverseSolver;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos; 
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -41,6 +35,7 @@ import java.util.HashMap;
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
 	private BowlerAbstractDevice pm;
+	private boolean enabled=true;
 
 	private IDriveEngine defaultDriveEngine;
 	// private DhInverseSolver defaultDHSolver;
@@ -48,15 +43,16 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private ProgressIndicator pi;
 
 	private MobileBaseCadManager baseManager;
-	private CheckBox autoRegen = new CheckBox("Auto-Generate CAD");
-	private Button regen=new Button("Generate Cad Now");
+	private CheckBox autoRegen = new CheckBox("Auto");
+	private Button regen=new Button("Generate Vitamins Now");
 	Parent root;
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();
 
 	private long timeSinceLastUpdate = 0;
 
-	private HBox radioOptions;;
+	private GridPane radioOptions;
+	private long timeOfLastDisable=0;
 
 	@Override
 	public void onTabClosing() {
@@ -145,12 +141,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		});
 	}
 
-	private void disable() {
-		autoRegen.setDisable(true);
-		if (radioOptions != null)
-			radioOptions.setDisable(true);
-		regen.setDisable(true);
-	}
+
 
 	private void finishLoading(MobileBase device) {
 
@@ -247,7 +238,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				tab.setOverlayTopRight(walkWidget);
 			}
 		});
-		VBox progress = new VBox(10);
+		//VBox progress = new VBox(10);
 
 		final ToggleGroup group = new ToggleGroup();
 
@@ -255,42 +246,72 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb1.setToggleGroup(group);
 		rb1.setSelected(true);
 		rb1.setOnAction(event -> {
+				disable();
+			//autoRegen.setText("Auto-Generate CAD");
+			regen.setText("Generate CAD Now");
+			
 			BowlerStudio.runLater(() ->setCadMode(false));
 		});
+		regen.setMinWidth(120);
 
 		RadioButton rb2 = new RadioButton();
 		rb2.setToggleGroup(group);
 		rb2.fire();
 		rb2.setOnAction(event -> {
+				disable();
+		
+			//autoRegen.setText("Auto-Generate Vitamins");
+			regen.setText("Generate Vitamins Now");
 			BowlerStudio.runLater(() ->setCadMode(true));
 		});
 
-		radioOptions = new HBox(10);
-		radioOptions.getChildren().addAll(new Label("Cad Generation"), rb1, rb2, new Label("Vitamins View"));
+		radioOptions = new GridPane();
+		radioOptions.setPadding(new Insets(10, 10, 10, 10));
+		radioOptions.setVgap(5);
+		radioOptions.setHgap(5);
+
+		// Setting the Grid alignment
+		radioOptions.setAlignment(Pos.CENTER);
+		radioOptions.add(new Label("Select Display Mode:"), 0, 0);
+		radioOptions.add(new Label("Cad Generation"), 0, 1);
+		radioOptions.add(rb1, 1, 1);
+		
+		radioOptions.add(new Label("Vitamins View"), 0, 2);
+		radioOptions.add(rb2, 1, 2);
 
 		pi = new ProgressIndicator(0);
 		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
 		//pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
 		new Thread(()->{
 			while(device.isAvailable()) {
-				pi.setProgress(baseManager.getProcesIndictor().get());
+				double d = baseManager.getProcesIndictor().get();
+				pi.setProgress(d);
 				try {
 					Thread.sleep(30);
 				} catch (InterruptedException e) {
 					return;
 				}
+				if(!enabled)
+					if(d>0.999) {
+						enabled=true;
+							enable();
+						
+					}
 			}
 		}).start();
-		HBox progressIndicatorPanel = new HBox(10);
-
-		progress.getChildren().addAll( regen,autoRegen, radioOptions);
-		progressIndicatorPanel.getChildren().addAll( progress,pi);
-
-		progressIndicatorPanel.setStyle("-fx-background-color: #FFFFFF;");
-		progressIndicatorPanel.setOpacity(.7);
-		progressIndicatorPanel.setMinHeight(100);
-		progressIndicatorPanel.setPrefSize(325, 150);
-		tab.setOverlayTop(progressIndicatorPanel);
+		//HBox progressIndicatorPanel = new HBox(10);
+		radioOptions.add(pi, 1, 0);
+		radioOptions.add(autoRegen, 1, 3);
+		radioOptions.add(regen,0,3);
+		
+		//progress.getChildren().addAll( regen,autoRegen, radioOptions);
+//		progressIndicatorPanel.getChildren().addAll( radioOptions,pi);
+//
+//		progressIndicatorPanel.setStyle("-fx-background-color: #FFFFFF;");
+//		progressIndicatorPanel.setOpacity(.7);
+//		progressIndicatorPanel.setMinHeight(100);
+//		progressIndicatorPanel.setPrefSize(325, 150);
+		tab.setOverlayTop(radioOptions);
 
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
@@ -310,11 +331,26 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 //			
 //		});
 	}
+	private void disable() {
+		
+		enabled=false;
+		if(baseManager!=null)
+			baseManager.getProcesIndictor().set(0);
+		BowlerStudio.runLater(() -> {
+			autoRegen.setDisable(true);
+			if (radioOptions != null)
+				radioOptions.setDisable(true);
+			regen.setDisable(true);
+		});
+	}
 	private void enable() {
-		autoRegen.setDisable(false);
-		if (radioOptions != null)
-			radioOptions.setDisable(false);
-		regen.setDisable(false);
+		enabled=true;
+		BowlerStudio.runLater(() -> {
+			autoRegen.setDisable(false);
+			if (radioOptions != null)
+				radioOptions.setDisable(false);
+			regen.setDisable(false);
+		});
 	}
 	private boolean hasWalking(MobileBase device) {
 		return device.getLegs().size() > 0 || device.getSteerable().size() > 0 || device.getDrivable().size() > 0;
@@ -329,13 +365,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void generateCad() {
-		BowlerStudio.runLater(()->{
-			disable();
-		});
+		disable();
+		
 		baseManager.generateCadWithEnd(()->{
-			BowlerStudio.runLater(()->{
+			
 				enable();
-			});
+			
 		});
 	}
 
