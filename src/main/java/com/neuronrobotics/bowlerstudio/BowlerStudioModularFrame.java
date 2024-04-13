@@ -106,7 +106,7 @@ public class BowlerStudioModularFrame {
 
 			BowlerStudio.runLater(()->{
 				try {
-					webtab = new WebTab("Tutorial", homeURL, true);
+					webtab = new WebTab("Documentation", homeURL, true);
 					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
 					getTutorialDockNode().setPrefSize(1024, 730);
 				} catch (IOException | InterruptedException e) {
