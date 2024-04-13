@@ -82,7 +82,10 @@ public class VitatminWidget implements IOnTransformChange {
 		Button remove = new Button();
 		remove.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
 		remove.setOnAction(action -> {
+			listOfItems.getSelectionModel().clearSelection();
 			listOfItems.getItems().remove(box);
+			transformPanel.setDisable(true);
+			frameType.setDisable(true);
 			holder.removeVitamin(newVit);
 			validateInput();
 			locationMap.remove(box);
@@ -154,7 +157,8 @@ public class VitatminWidget implements IOnTransformChange {
 		transformPanel.setDisable(true);
 		frameType.setDisable(true);
 		frameType.setOnAction(event->{
-			selectedVitamin.setFrame(frameType.getValue());
+			if(frameType.getValue()!=selectedVitamin.getFrame())
+				selectedVitamin.setFrame(frameType.getValue());
 		});
 		for(VitaminFrame vf:VitaminFrame.values()) {
 			frameType.getItems().add(vf);
@@ -163,6 +167,10 @@ public class VitatminWidget implements IOnTransformChange {
 
 	private void fireVitaminSelectedUpdate() {
 		System.out.println("Selected " + selectedVitamin.getName());
+		name.setText(selectedVitamin.getName());
+		type.getSelectionModel().select(selectedVitamin.getType());
+		size.getSelectionModel().select(selectedVitamin.getSize());
+		
 		tf.updatePose(selectedVitamin.getLocation());
 		transformPanel.setDisable(false);
 		frameType.setDisable(false);
@@ -172,7 +180,7 @@ public class VitatminWidget implements IOnTransformChange {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			BowlerStudioController.setSelectedAffine(af);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
