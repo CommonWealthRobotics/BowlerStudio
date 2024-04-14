@@ -1346,10 +1346,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		focusToAffine(new TransformNR(), new Affine());
 		resetMouseTime();
 	}
-
-	public void setSelected(Affine rootListener) {
-		focusToAffine(new TransformNR(), rootListener);
+/**
+ * Select a provided affine that is in a given global pose
+ * @param startingLocation the starting pose
+ * @param rootListener what affine to attach to 
+ */
+	public void setSelected(TransformNR startingLocation,Affine rootListener) {
+		focusToAffine(startingLocation, rootListener);
 	}
+	
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param startingLocation the starting pose
+	 * @param rootListener what affine to attach to 
+	 */
+		public void setSelected(Affine rootListener) {
+			focusToAffine(new TransformNR(), rootListener);
+		}
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
@@ -1478,22 +1491,75 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				// });
 			} catch (Exception ex) {
 
+				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
+			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
 		});
 	}
+	public void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
+		if (focusing)
+			return;
+		if (manipulator2 == null) {
+			new RuntimeException("Can not focus on null affine").printStackTrace();
+			return;
+		}
+		focusing = true;
+		BowlerStudio.runLater(() -> {
+			Affine centering = TransformFactory.nrToAffine(poseToMove);
+			// this section keeps the camera orented the same way to avoid whipping
+			// around
 
+			TransformNR rotationOnlyCOmponentOfManipulator2 = poseToMove.copy();
+			rotationOnlyCOmponentOfManipulator2.setX(0);
+			rotationOnlyCOmponentOfManipulator2.setY(0);
+			rotationOnlyCOmponentOfManipulator2.setZ(0);
+			TransformNR reverseRotation2 = rotationOnlyCOmponentOfManipulator2.inverse();
+			Affine correction2 = TransformFactory.nrToAffine(reverseRotation2);
+			
+			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(manipulator2);
+			rotationOnlyCOmponentOfManipulator.setX(0);
+			rotationOnlyCOmponentOfManipulator.setY(0);
+			rotationOnlyCOmponentOfManipulator.setZ(0);
+			TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
+			Affine correction = TransformFactory.nrToAffine(reverseRotation);
+
+			TransformNR startSelectNr = perviousTarget.copy();
+			TransformNR targetNR;// =
+									// TransformFactory.affineToNr(selectedCsg.getManipulat/or());
+
+			targetNR = poseToMove.copy();
+			targetNR.translateX(manipulator2.getTx());
+			targetNR.translateY(manipulator2.getTy());
+			targetNR.translateZ(manipulator2.getTz());
+			
+			Affine interpolator = new Affine();
+			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
+			interpolator.setTy(startSelectNr.getY() - targetNR.getY());
+			interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
+			removeAllFocusTransforms();
+			focusGroup.getTransforms().add(interpolator);
+			focusGroup.getTransforms().add(centering);
+			try {
+					focusGroup.getTransforms().add(manipulator2);
+					focusGroup.getTransforms().add(correction);
+					focusGroup.getTransforms().add(correction2);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
+		});
+	}
 	private void resetMouseTime() {
 		// System.err.println("Resetting mouse");
 		this.lastMosueMovementTime = System.currentTimeMillis();
 
 	}
 
-	private void focusInterpolate(TransformNR start, TransformNR target, int d, int targetDepth,
+	private void focusInterpolate(TransformNR start, TransformNR target, int targetDepth,
 			Affine interpolator) {
 		
 		new Thread(() -> {
-			int depth=d;
+			int depth=0;
 			while (focusing) {
 				try {
 					Thread.sleep(16);
