@@ -426,6 +426,12 @@ public class BowlerStudioController implements IScriptEventListener {
 		Affine manipulator2 = new Affine();
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
 	}
+	public static void setSelectedAffine(TransformNR poseToMove, Affine manipulator2) {
+		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
+	}
+	public static void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
+		CreatureLab3dController.getEngine().targetAndFollow(poseToMove, manipulator2);
+	}
 	public static void setSelectedAffine(Affine af) {
 		CreatureLab3dController.getEngine().focusToAffine(af);
 	}
