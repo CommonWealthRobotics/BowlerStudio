@@ -890,4 +890,9 @@ public class BowlerStudio extends Application {
 			CreatureLab3dController.getEngine().moveCamera(tfupde);
 		});
 	}
+	public static void zoomCamera(double increment) {
+		runLater(()->{
+			CreatureLab3dController.getEngine().zoomIncrement(increment);
+		});
+	}
 }
