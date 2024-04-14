@@ -244,13 +244,25 @@ public class BowlerStudio extends Application {
 		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
 		 */
 	}
-
-	public static void select(Affine globalPositionListener) {
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param startingLocation the starting pose
+	 * @param rootListener what affine to attach to 
+	 */
+	public static void select(TransformNR startingLocation,Affine rootListener) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			CreatureLab3dController.getEngine().setSelected(globalPositionListener);
+			CreatureLab3dController.getEngine().setSelected(startingLocation,rootListener);
 		}
 	}
-
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param rootListener what affine to attach to 
+	 */
+	public static void select(Affine rootListener) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			CreatureLab3dController.getEngine().setSelected(new TransformNR(),rootListener);
+		}
+	}
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
@@ -275,13 +287,7 @@ public class BowlerStudio extends Application {
 			}
 	}
 
-	public static TransformNR getCamerFrame() {
-		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
-	}
 
-	public static double getCamerDepth() {
-		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
-	}
 
 	/**
 	 * @param args the command line arguments
@@ -927,6 +933,13 @@ public class BowlerStudio extends Application {
 		runLater(()->{
 			CreatureLab3dController.getEngine().moveCamera(tfupde);
 		});
+	}
+	public static TransformNR getCamerFrame() {
+		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
+	}
+
+	public static double getCamerDepth() {
+		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
 	}
 	public static void zoomCamera(double increment) {
 		runLater(()->{
