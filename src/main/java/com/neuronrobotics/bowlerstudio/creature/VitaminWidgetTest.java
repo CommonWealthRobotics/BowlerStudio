@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
@@ -56,7 +57,9 @@ public class VitaminWidgetTest extends Application {
 				try {
 					MobileBase mb = (MobileBase) ScriptingEngine
 							.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
-					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0));
+					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),()->{
+						 return mb.forwardOffset(new TransformNR()); 
+					});
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -19,6 +19,7 @@ import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminFrame;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
+import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.event.ActionEvent;
@@ -61,6 +62,7 @@ public class VitatminWidget implements IOnTransformChange {
 	private IVitaminHolder holder;
 	private HashMap<GridPane, VitaminLocation> locationMap = new HashMap<>();
 	private VitaminLocation selectedVitamin;
+	private ITransformProvider currentTipProvider;
 
 	@FXML
 	void onAdd(ActionEvent event) {
@@ -178,14 +180,17 @@ public class VitatminWidget implements IOnTransformChange {
 		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
 		try {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
-			BowlerStudioController.setSelectedAffine(af);
+			TransformNR poseToMove = currentTipProvider.get().copy();
+			//poseToMove.setRotation(new RotationNR());
+			BowlerStudioController.targetAndFollow(poseToMove,af);
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 	}
 
-	public void setVitaminProvider(IVitaminHolder h) {
+	public void setVitaminProvider(IVitaminHolder h,ITransformProvider currentTipProvider) {
 		this.holder = h;
+		this.currentTipProvider = currentTipProvider;
 		for (VitaminLocation l : h.getVitamins()) {
 			add(l);
 		}

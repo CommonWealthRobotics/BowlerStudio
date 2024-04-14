@@ -61,7 +61,7 @@ public class MobleBaseMenueFactory {
 	
 	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems) {
+			HashMap<TreeItem<String>, Group> widgetMapForTreeitems,ITransformProvider tfp) {
 		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
 				AssetFactory.loadIcon("Vitamins.png"));
 
@@ -73,7 +73,7 @@ public class MobleBaseMenueFactory {
 					//loader.setClassLoader(VitatminWidget.class.getClassLoader());
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
-					tw.setVitaminProvider(vitamins);
+					tw.setVitaminProvider(vitamins,tfp);
 					widgetMapForTreeitems.put(vitaminsMenu, new Group(w));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -489,7 +489,9 @@ public class MobleBaseMenueFactory {
 			});
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
-			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems);
+			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, ()->{
+				 return device.forwardOffset(new TransformNR()); 
+			});
 			if (root)
 				rootItem.getChildren().addAll(  printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
@@ -972,7 +974,9 @@ public class MobleBaseMenueFactory {
 		
 
 		link.getChildren().addAll(design);
-		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems);
+		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,()->{
+			 return dh.getLinkTip(linkIndex); 
+		});
 
 
 		link.getChildren().addAll(slaves, remove);
