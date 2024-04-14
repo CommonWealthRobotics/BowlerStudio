@@ -48,6 +48,12 @@ import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 import org.dockfx.DockPane;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.TransportException;
 
 import java.awt.Desktop;
 import java.awt.SplashScreen;
@@ -512,9 +518,10 @@ public class BowlerStudio extends Application {
 			// ThreadUtil.wait(100);
 
 			try {
-				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git", null);
-				ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/DeviceProviders.git", null);
-				ScriptingEngine.pull("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git");
+				ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
+						"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
+						"https://github.com/CommonWealthRobotics/DeviceProviders.git"
+						);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
@@ -529,6 +536,37 @@ public class BowlerStudio extends Application {
 
 		}
 
+	}
+	
+	private static void ensureUpdated(String ... urls) {
+		for(String s:urls) {
+
+			ScriptingEngine.cloneRepo(s, null);
+			try {
+				ScriptingEngine.pull(s);
+			} catch (RefAlreadyExistsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RefNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidRefNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidRemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransportException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 //	private static void removeAssets(String myAssets)
