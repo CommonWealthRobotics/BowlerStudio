@@ -1505,7 +1505,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 		focusing = true;
 		BowlerStudio.runLater(() -> {
-			Affine centering = TransformFactory.nrToAffine(poseToMove);
+			Affine referenceFrame = TransformFactory.nrToAffine(poseToMove);
 			// this section keeps the camera orented the same way to avoid whipping
 			// around
 
@@ -1527,10 +1527,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			TransformNR targetNR;// =
 									// TransformFactory.affineToNr(selectedCsg.getManipulat/or());
 
-			targetNR = poseToMove.copy();
-			targetNR.translateX(manipulator2.getTx());
-			targetNR.translateY(manipulator2.getTy());
-			targetNR.translateZ(manipulator2.getTz());
+			targetNR = poseToMove.times(TransformFactory.affineToNr(manipulator2));
 			
 			Affine interpolator = new Affine();
 			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
@@ -1538,7 +1535,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
 			removeAllFocusTransforms();
 			focusGroup.getTransforms().add(interpolator);
-			focusGroup.getTransforms().add(centering);
+			focusGroup.getTransforms().add(referenceFrame);
 			try {
 					focusGroup.getTransforms().add(manipulator2);
 					focusGroup.getTransforms().add(correction);
