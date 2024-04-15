@@ -103,7 +103,7 @@ public class VitatminWidget implements IOnTransformChange {
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
-		System.out.println("Validating " + nameTmp);
+		//System.out.println("Validating " + nameTmp);
 
 		if (nameTmp.length() == 0)
 			return;
@@ -167,7 +167,9 @@ public class VitatminWidget implements IOnTransformChange {
 		}
 	}
 
-	private void fireVitaminSelectedUpdate() {
+	public void fireVitaminSelectedUpdate() {
+		if(selectedVitamin==null)
+			return;
 		System.out.println("Selected " + selectedVitamin.getName());
 		name.setText(selectedVitamin.getName());
 		type.getSelectionModel().select(selectedVitamin.getType());
@@ -180,7 +182,7 @@ public class VitatminWidget implements IOnTransformChange {
 		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
 		try {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
-			TransformNR poseToMove = currentTipProvider.get().copy();
+			TransformNR poseToMove = currentTipProvider.get(selectedVitamin).copy();
 			//poseToMove.setRotation(new RotationNR());
 			BowlerStudioController.targetAndFollow(poseToMove,af);
 		} catch (Exception e) {
