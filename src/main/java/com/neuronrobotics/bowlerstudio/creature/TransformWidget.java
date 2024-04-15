@@ -9,7 +9,6 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.NewVitaminWizardController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
@@ -20,20 +19,16 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
-public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent> {
+public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent>, IAmControlled {
 
 	public IOnTransformChange onChange;
 	// EngineeringUnitsSliderWidget rw;
@@ -51,26 +46,26 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public double linearIncrement = 1;
 	public double rotationIncrement = 5;
 	public Button game = new Button("Jog With Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
-	public boolean running = false;
 	public Thread scriptRunner = null;
 	private String title;
 	private TransformWidget self;
 	private Label mode= new Label("");
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange) {
-		this.title = title;
-		self=this;
+		TransformWidget c = this;
+		c.title = title;
+		self=c;
 		initialState = is.copy();
-		this.onChange=(onChange);
+		c.onChange=(onChange);
 //		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
 //		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
 //		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
 //		tx.setOnAction(this);
 //		ty.setOnAction(this);
 //		tz.setOnAction(this);
-		tx = new EngineeringUnitsSliderWidget(this, initialState.getX(), 100, "mm");
-		ty = new EngineeringUnitsSliderWidget(this, initialState.getY(), 100, "mm");
-		tz = new EngineeringUnitsSliderWidget(this, initialState.getZ(), 100, "mm");
+		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), 100, "mm");
+		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), 100, "mm");
+		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), 100, "mm");
 
 		storeRotation = initialState.getRotation();
 		double t = 0;
@@ -147,12 +142,13 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		ty.showSlider(false);
 		tz.showSlider(false);
 		setIncrements();
-
-		reset();
+		GameControlThreadManager.setCurrentController(c);
+		GameControlThreadManager.reset();
 		game.setOnAction(event -> {
 			new Thread() {
-				public void run() {
-					startStopAction();
+				public void run() {	
+					GameControlThreadManager.setCurrentController(c);
+					GameControlThreadManager.startStopAction();
 				}
 			}.start();
 
@@ -216,95 +212,16 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		return title+" "+initialState.toSimpleString();
 	}
 
-	public void startStopAction() {
-		game.setDisable(true);
-		if (running)
-			stop();
-		else
-			try {
-				start();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		game.setDisable(false);
-	}
+
 	public void setMode(String m) {
 		BowlerStudio.runLater(()->{
 			mode.setText(m+" Mode");
 		});
 	}
 
-	public void stop() {
-		reset();
-		Thread tmp = scriptRunner;
-		if (tmp != null)
-			while (tmp.isAlive()) {
 
-				Log.debug("Interrupting");
-				ThreadUtil.wait(10);
-				try {
-					tmp.interrupt();
-					tmp.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 
-		scriptRunner = null;
-	}
 
-	public void start() throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		File currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git",
-				"jogWidget.groovy");
-		
-
-		running = true;
-		BowlerStudio.runLater(() -> {
-			BowlerStudio.setToStopButton(game);
-		});
-		scriptRunner = new Thread() {
-
-			public void run() {
-				try {
-					ArrayList<Object> args = new ArrayList<>();
-					args.add(self);
-					ScriptingEngine.inlineFileScriptRun(currentFile, args);
-					reset();
-
-				} catch (Throwable ex) {
-					ex.printStackTrace();
-					reset();
-				}
-
-			}
-		};
-
-		try {
-
-			scriptRunner.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public void reset() {
-		running = false;
-		BowlerStudio.runLater(() -> {
-			game.setText("Run Game Controller");
-			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
-			for(String classes : game.getStyleClass()) {
-				System.out.println("Clearing "+classes);
-			}
-			BowlerStudio.setToRunButton(game);
-			game.setGraphic(AssetFactory.loadIcon("Add-Game-Controller.png"));
-
-		});
-
-	}
 
 	public void setIncrements() {
 		tx.setJogIncrement(linearIncrement);
@@ -404,6 +321,54 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		this.onChange = onChange;
 		initialState = initial;
 		updatePose(initial);
+	}
+
+	@Override
+	public File getScriptFile() {
+		// TODO Auto-generated method stub
+		try {
+			return ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git",
+					"jogWidget.groovy");
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public ArrayList<Object> getArguments() {
+		ArrayList<Object> args = new ArrayList<>();
+		args.add(self);
+		return args;
+	}
+
+	@Override
+	public ImageView getRunAsset() {
+		return AssetFactory.loadIcon("Add-Game-Controller.png");
+	}
+
+	@Override
+	public Button getRunStopButton() {
+		return game;
+	}
+
+	@Override
+	public String getButtonRunText() {
+		return "Run Game Controller";
+	}
+	
+	public String getName() {
+		return title;
 	}
 
 }
