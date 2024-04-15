@@ -995,7 +995,7 @@ public class MobleBaseMenueFactory {
 					ll = (Affine) dh.getLinkObjectManipulator(linkIndex-1);
 				pose = TransformFactory.affineToNr(ll);
 			}
-			 return pose; 
+			return pose; 
 		});
 
 
