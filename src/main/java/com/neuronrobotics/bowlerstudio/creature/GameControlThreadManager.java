@@ -20,6 +20,8 @@ public class GameControlThreadManager {
 	public static void stop() {
 		if(!isRunning())
 			return;
+		//new RuntimeException().printStackTrace();
+
 		reset();
 		Thread tmp = scriptRunner;
 		if (tmp != null)
@@ -49,15 +51,19 @@ public class GameControlThreadManager {
 	 */
 	public static void setCurrentController(IAmControlled c) {
 		boolean was=isRunning();
-		if(currentController!=null)
-			if(c!=currentController)
+		boolean b =false;
+		if(currentController!=null) {
+			b = c!=currentController;
+			if(b)
 				stop();
+		}
 		currentController = c;
-		if(was) {
+		if(was && b) {
 			start();
 		}
 	}
 	public static void startStopAction() {
+		//new RuntimeException().printStackTrace();
 		currentController.getRunStopButton().setDisable(true);
 		if (isRunning())
 			stop();
@@ -78,10 +84,12 @@ public class GameControlThreadManager {
 		BowlerStudio.runLater(() -> {
 			BowlerStudio.setToStopButton(currentController.getRunStopButton());
 		});
+		//new RuntimeException().printStackTrace();
 		scriptRunner = new Thread() {
 
 			public void run() {
 				try {
+					
 					ScriptingEngine.inlineFileScriptRun(currentFile, currentController.getArguments());
 					reset();
 
