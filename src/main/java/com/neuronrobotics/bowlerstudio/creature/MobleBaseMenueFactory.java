@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -64,7 +65,7 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Group> widgetMapForTreeitems,ITransformProvider tfp) {
 		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
 				AssetFactory.loadIcon("Vitamins.png"));
-
+		HashMap<Group,VitatminWidget> widget = new HashMap<>();
 		callbackMapForTreeitems.put(vitaminsMenu, () -> {
 			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
 				FXMLLoader loader;
@@ -74,12 +75,17 @@ public class MobleBaseMenueFactory {
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
 					tw.setVitaminProvider(vitamins,tfp);
-					widgetMapForTreeitems.put(vitaminsMenu, new Group(w));
+					Group value = new Group(w);
+					widgetMapForTreeitems.put(vitaminsMenu, value);
+					widget.put(value, tw);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			VitatminWidget tw = widget.get(widgetMapForTreeitems.get(vitaminsMenu));
+			if(tw!=null)
+				tw.fireVitaminSelectedUpdate();
 		});
 		rootItem.getChildren().add(vitaminsMenu);
 	}
@@ -489,7 +495,7 @@ public class MobleBaseMenueFactory {
 			});
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
-			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, ()->{
+			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, selected->{
 				 return device.forwardOffset(new TransformNR()); 
 			});
 			if (root)
@@ -974,8 +980,22 @@ public class MobleBaseMenueFactory {
 		
 
 		link.getChildren().addAll(design);
-		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,()->{
-			 return dh.getLinkTip(linkIndex); 
+		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,selected->{
+			Affine linkObjectManipulator = (Affine) dh.getLinkObjectManipulator(linkIndex);
+			TransformNR pose = TransformFactory.affineToNr(linkObjectManipulator);
+			if(selected.getFrame()==VitaminFrame.LinkOrigin) {
+				TransformNR step = dh.getDHStep(linkIndex).inverse();
+				pose=pose.times(step);
+			}
+			if(selected.getFrame()==VitaminFrame.previousLinkTip) {
+				Affine ll;
+				if(linkIndex==0) {
+					ll=(Affine) dh.getRootListener();
+				}else
+					ll = (Affine) dh.getLinkObjectManipulator(linkIndex-1);
+				pose = TransformFactory.affineToNr(ll);
+			}
+			 return pose; 
 		});
 
 
