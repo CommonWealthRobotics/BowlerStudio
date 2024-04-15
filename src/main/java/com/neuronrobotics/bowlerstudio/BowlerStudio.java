@@ -526,7 +526,8 @@ public class BowlerStudio extends Application {
 			try {
 				ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
 						"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
-						"https://github.com/CommonWealthRobotics/DeviceProviders.git"
+						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
+						"https://github.com/OperationSmallKat/Katapult.git"
 						);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
@@ -945,5 +946,8 @@ public class BowlerStudio extends Application {
 		runLater(()->{
 			CreatureLab3dController.getEngine().zoomIncrement(increment);
 		});
+	}
+	public static TransformNR getTargetFrame() {
+		return CreatureLab3dController.getEngine().getTargetNR();
 	}
 }
