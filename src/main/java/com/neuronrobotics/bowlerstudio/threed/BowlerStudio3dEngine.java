@@ -217,6 +217,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HBox controlsChecks;
 	private Thread autospingThread=null;
 	private CheckMenuItem showRuler;
+	private TransformNR targetNR;
+	private TransformNR poseToMove;
+	
 	static {
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -1470,6 +1473,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			} else {
 				targetNR = TransformFactory.affineToNr(centering);
 			}
+			this.poseToMove = targetNR;
 			Affine interpolator = new Affine();
 			Affine correction = TransformFactory.nrToAffine(reverseRotation);
 			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
@@ -1497,6 +1501,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		});
 	}
 	public void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
+		this.poseToMove = poseToMove;
 		if (focusing)
 			return;
 		if (manipulator2 == null) {
@@ -1524,7 +1529,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			Affine correction = TransformFactory.nrToAffine(reverseRotation);
 
 			TransformNR startSelectNr = perviousTarget.copy();
-			TransformNR targetNR;// =
+			// =
 									// TransformFactory.affineToNr(selectedCsg.getManipulat/or());
 
 			targetNR = poseToMove.times(TransformFactory.affineToNr(manipulator2));
@@ -1667,6 +1672,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 	public void focusToAffine(Affine af) {
 		focusToAffine(new TransformNR(),af);
+	}
+
+	public TransformNR getTargetNR() {
+		// TODO Auto-generated method stub
+		return poseToMove;
 	}
 
 }
