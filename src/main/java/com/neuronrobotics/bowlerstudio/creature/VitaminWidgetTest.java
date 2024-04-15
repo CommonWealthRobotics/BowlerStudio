@@ -57,7 +57,7 @@ public class VitaminWidgetTest extends Application {
 				try {
 					MobileBase mb = (MobileBase) ScriptingEngine
 							.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
-					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),()->{
+					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),selected->{
 						 return mb.forwardOffset(new TransformNR()); 
 					});
 				} catch (Exception e) {
