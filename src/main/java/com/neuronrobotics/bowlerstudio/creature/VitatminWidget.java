@@ -188,6 +188,8 @@ public class VitatminWidget implements IOnTransformChange {
 		} catch (Exception e) {
 			//e.printStackTrace();
 		}
+		GameControlThreadManager.setCurrentController(tf);
+
 	}
 
 	public void setVitaminProvider(IVitaminHolder h,ITransformProvider currentTipProvider) {
