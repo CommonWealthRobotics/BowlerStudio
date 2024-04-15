@@ -18,7 +18,7 @@ public class GameControlThreadManager {
 	private static IAmControlled currentController=null;
 	private static boolean running = false;
 	public static void stop() {
-		if(!running)
+		if(!isRunning())
 			return;
 		reset();
 		Thread tmp = scriptRunner;
@@ -48,15 +48,18 @@ public class GameControlThreadManager {
 	 * @param currentController the currentController to set
 	 */
 	public static void setCurrentController(IAmControlled c) {
+		boolean was=isRunning();
 		if(currentController!=null)
 			if(c!=currentController)
 				stop();
 		currentController = c;
-		
+		if(was) {
+			start();
+		}
 	}
 	public static void startStopAction() {
 		currentController.getRunStopButton().setDisable(true);
-		if (running)
+		if (isRunning())
 			stop();
 		else
 			try {
@@ -67,11 +70,11 @@ public class GameControlThreadManager {
 			}
 		currentController.getRunStopButton().setDisable(false);
 	}
-	public static void start() throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+	public static void start()  {
 		File currentFile = currentController.getScriptFile();
 		
 
-		running = true;
+		setRunning(true);
 		BowlerStudio.runLater(() -> {
 			BowlerStudio.setToStopButton(currentController.getRunStopButton());
 		});
@@ -101,7 +104,7 @@ public class GameControlThreadManager {
 	}
 
 	public static void reset() {
-		running = false;
+		setRunning(false);
 		BowlerStudio.runLater(() -> {
 			currentController.getRunStopButton().setText(currentController.getButtonRunText());
 			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
@@ -112,5 +115,17 @@ public class GameControlThreadManager {
 			currentController.getRunStopButton().setGraphic(currentController.getRunAsset());
 		});
 
+	}
+	/**
+	 * @return the running
+	 */
+	public static boolean isRunning() {
+		return running;
+	}
+	/**
+	 * @param running the running to set
+	 */
+	private static void setRunning(boolean running) {
+		GameControlThreadManager.running = running;
 	}
 }
