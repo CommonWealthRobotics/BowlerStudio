@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerkernel.Bezier3d.manipulation;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
@@ -40,6 +41,7 @@ import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -740,7 +742,15 @@ public class BowlerStudio extends Application {
 				}
 				renderSplashFrame(96, "UI Launch...");
 
-				Scene scene = new Scene(mainControllerPanel.getRoot(), 1174, 768, true);
+				Parent root = mainControllerPanel.getRoot();
+				FontSizeManager.addListener(fontNum->{
+					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
+					int tmp = fontNum-10;
+					if(tmp<12)
+						tmp=12;
+					root.setStyle("-fx-font-size: "+tmp+"pt");
+				});
+				Scene scene = new Scene(root, 1174, 768, true);
 
 				setBowlerStudioCSS(scene);
 				BowlerStudio.runLater(() -> {
@@ -827,6 +837,7 @@ public class BowlerStudio extends Application {
 
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
+		
 		System.err.println("Loading CSS from " + nwfile);
 	}
 	

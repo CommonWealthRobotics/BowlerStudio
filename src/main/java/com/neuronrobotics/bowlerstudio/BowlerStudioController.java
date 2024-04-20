@@ -123,7 +123,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		for (String key : widgets.keySet()) {
 			widgets.get(key).setFontSize(size);
 		}
-		ConfigurationDatabase.setObject("BowlerStudioConfigs", "fontsize", size);
 	}
 
 	// Custom function for creation of New Tabs.

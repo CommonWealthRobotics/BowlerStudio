@@ -8,6 +8,7 @@ package com.neuronrobotics.bowlerstudio;
 import com.google.common.collect.Lists;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
@@ -1507,10 +1508,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		}
 
 // WindowMenu
-		int[] fonts = new int[] { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+		int[] fonts =FontSizeManager.getFontOptions();
 		Menu fontSelect = new Menu("Font Size");
 		ToggleGroup toggleGroup = new ToggleGroup();
-		int defSize = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize", 12)).intValue();
+		int defSize =FontSizeManager.getDefaultSize();
 		for (int i = 0; i < fonts.length; i++) {
 			int myFoneNum = fonts[i];
 			RadioMenuItem ftmp = new RadioMenuItem(myFoneNum + " pt");
@@ -1521,12 +1522,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				ftmp.setSelected(false);
 			ftmp.setOnAction((event) -> {
 				if (ftmp.isSelected()) {
-					BowlerStudioController.getBowlerStudio().setFontSize(myFoneNum);
+					FontSizeManager.setFontSize(myFoneNum);
 				}
 			});
 			ftmp.setToggleGroup(toggleGroup);
 			fontSelect.getItems().add(ftmp);
-
 		}
 		WindowMenu.getItems().add(fontSelect);
 		CheckMenuItem  autohighlight = new CheckMenuItem("Auto Highlight 3d Items");
