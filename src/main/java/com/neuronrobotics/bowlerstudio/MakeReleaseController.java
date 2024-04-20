@@ -17,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -234,6 +235,12 @@ public class MakeReleaseController extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
+		FontSizeManager.addListener(fontNum->{
+			int tmp = fontNum-10;
+			if(tmp<12)
+				tmp=12;
+			root.setStyle("-fx-font-size: "+tmp+"pt");
+		});
 		tags = ScriptingEngine.getAllTags(gitRepo);
 		for (String s : tags) {
 			listOfTags.getItems().add(s);

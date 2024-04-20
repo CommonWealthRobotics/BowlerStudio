@@ -744,6 +744,12 @@ public class BowlerStudio extends Application {
 
 				Parent root = mainControllerPanel.getRoot();
 				FontSizeManager.addListener(fontNum->{
+					int tmp = fontNum-10;
+					if(tmp<12)
+						tmp=12;
+					root.setStyle("-fx-font-size: "+tmp+"pt");
+				});
+				FontSizeManager.addListener(fontNum->{
 					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
 					int tmp = fontNum-10;
 					if(tmp<12)

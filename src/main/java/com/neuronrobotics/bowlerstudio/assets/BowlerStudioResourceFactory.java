@@ -70,6 +70,13 @@ public class BowlerStudioResourceFactory {
 
 		try {
 			githubLogin.load();
+			javafx.scene.Parent root = githubLogin.getRoot();
+			FontSizeManager.addListener(fontNum->{
+				int tmp = fontNum-10;
+				if(tmp<12)
+					tmp=12;
+				root.setStyle("-fx-font-size: "+tmp+"pt");
+			});
 		} catch (IOException e) {
 			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, e);
 		}

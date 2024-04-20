@@ -10,6 +10,7 @@ import org.firmata4j.firmata.FirmataDevice;
 import org.firmata4j.ui.JPinboard;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.JogTrainerWidget;
 import com.neuronrobotics.sdk.addons.kinematics.FirmataBowler;
@@ -52,7 +53,12 @@ public class CalibrateGameControl extends AbstractBowlerStudioTab {
 			// This is needed when loading on MAC
 			loader.setClassLoader(JogTrainerWidget.class.getClassLoader());
 			root = loader.load();
-			
+			FontSizeManager.addListener(fontNum->{
+				int tmp = fontNum-10;
+				if(tmp<12)
+					tmp=12;
+				root.setStyle("-fx-font-size: "+tmp+"pt");
+			});
 	        setContent(root);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

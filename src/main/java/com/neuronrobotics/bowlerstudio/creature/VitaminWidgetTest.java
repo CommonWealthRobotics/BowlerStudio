@@ -23,6 +23,7 @@ public class VitaminWidgetTest extends Application {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
 		loader.setClassLoader(VitatminWidget.class.getClassLoader());
 		Parent w = loader.load();
+		
 		tw = loader.getController();
 
 		File layoutFile = AssetFactory.loadFile("layout/default.css");
