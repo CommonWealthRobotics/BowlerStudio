@@ -1,14 +1,13 @@
 package com.neuronrobotics.bowlerstudio.tabs;
-
+import javafx.scene.control.ScrollPane;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -25,8 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import javafx.scene.layout.AnchorPane;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,7 +49,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private TextField urlField;
 	//private String currentAddress;
 	private ScriptingWebWidget scripting;
-    private Graphics2D splashGraphics;
+    private java.awt.Graphics2D splashGraphics;
     private static boolean firstBoot=true;
 
 	private boolean isTutorialTab =false;
@@ -180,11 +179,26 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		HBox hBox = new HBox(5);
 		hBox.getChildren().setAll(backButton,forwardButton,homeButton,goButton,urlField);
 		HBox.setHgrow(urlField, Priority.ALWAYS);
-
+		
+		FontSizeManager.addListener(fontNum->{
+	    	  double scale =((double)fontNum-10)/12.0;
+	    	  if(scale<1)
+	    		  scale=1;
+	    	  webView.setScaleX(scale);
+	    	  webView.setScaleY(scale);
+	    	  hBox.minHeight(fontNum*2);
+		});
+		ScrollPane sp = new ScrollPane();
+		AnchorPane web = new AnchorPane();
+		web.getChildren().add(webView);
+		sp.setContent(web);
 		vBox = new VBox(5);
-		vBox.getChildren().setAll(hBox, webView);
-		VBox.setVgrow(webView, Priority.ALWAYS);
+		vBox.getChildren().setAll(hBox, sp);
 
+		AnchorPane.setTopAnchor(webView, 0.0);
+		AnchorPane.setLeftAnchor(webView, 0.0);
+		AnchorPane.setRightAnchor(webView, 0.0);
+		AnchorPane.setBottomAnchor(webView, 0.0);
 		myTab.setContent(vBox);
 		//Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {
