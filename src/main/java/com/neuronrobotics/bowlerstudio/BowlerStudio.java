@@ -58,6 +58,7 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 import java.awt.Desktop;
+import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
 import java.io.File;
 import java.io.IOException;
@@ -744,21 +745,34 @@ public class BowlerStudio extends Application {
 
 				Parent root = mainControllerPanel.getRoot();
 				FontSizeManager.addListener(fontNum->{
-					int tmp = fontNum-10;
-					if(tmp<12)
-						tmp=12;
-					root.setStyle("-fx-font-size: "+tmp+"pt");
-				});
-				FontSizeManager.addListener(fontNum->{
 					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
 					int tmp = fontNum-10;
-					if(tmp<12)
-						tmp=12;
+					if(tmp<FontSizeManager.systemDefaultFontSize)
+						tmp=FontSizeManager.systemDefaultFontSize;
 					root.setStyle("-fx-font-size: "+tmp+"pt");
 				});
+				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+						.getDisplayMode().getWidth();
+				double sh = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+						.getDisplayMode().getHeight();
+				if (FontSizeManager.getDefaultSize() == FontSizeManager.systemDefaultFontSize) {
+					double newSize= sw/2256.0*(2*FontSizeManager.systemDefaultFontSize);
+					if(newSize<FontSizeManager.systemDefaultFontSize)
+						newSize=FontSizeManager.systemDefaultFontSize;
+					FontSizeManager.setFontSize((int)Math.round(newSize));
+					System.out.println("Screen "+sw+"x"+sh);
+				}
 				double scale = FontSizeManager.getDefaultSize()/12;
-
-				Scene scene = new Scene(root, 1174.0*scale, 768*scale, true);
+				if(scale<1)
+					scale=1;
+				double w = 1174.0*scale;
+				double h = 768*scale;
+				if(w>sw)
+					w=sw-100;
+				if(h>sh)
+					h=sh-100;
+				
+				Scene scene = new Scene(root, w, h, true);
 
 				setBowlerStudioCSS(scene);
 				BowlerStudio.runLater(() -> {
