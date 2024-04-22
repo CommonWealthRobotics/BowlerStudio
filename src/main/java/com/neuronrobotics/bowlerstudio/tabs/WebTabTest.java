@@ -1,31 +1,34 @@
-package com.neuronrobotics.bowlerstudio.creature;
+package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.io.File;
+import java.time.Duration;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
+import com.neuronrobotics.bowlerstudio.creature.VitaminWidgetTest;
+import com.neuronrobotics.bowlerstudio.creature.VitatminWidget;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.stage.Stage;
 
-public class VitaminWidgetTest extends Application {
-	private VitatminWidget tw;
+public class WebTabTest extends Application {
+	private WebTabController tw;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
-		loader.setClassLoader(VitatminWidget.class.getClassLoader());
+		FXMLLoader loader = AssetFactory.loadLayout("layout/WebTabLayout.fxml");
+		loader.setClassLoader(WebTabController.class.getClassLoader());
 		Parent w = loader.load();
-		
+
 		tw = loader.getController();
 
 		File layoutFile = AssetFactory.loadFile("layout/default.css");
@@ -35,6 +38,7 @@ public class VitaminWidgetTest extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		System.err.println("Loading CSS from " + nwfile);
+		
 		FontSizeManager.addListener(fontNum->{
 			int tmp = fontNum-10;
 			if(tmp<12)
@@ -45,32 +49,35 @@ public class VitaminWidgetTest extends Application {
 		primaryStage.setOnCloseRequest(arg0 -> {
 			System.exit(0);
 		});
+		BowlerStudio.runLater(
+				Duration.ofMillis(200) ,()->{
+					tw.loadUrl("https://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+				});
 		primaryStage.setScene(scene);
 		primaryStage.setWidth(600);
 		primaryStage.setHeight(777);
-		primaryStage.setTitle("Test Application");
+		primaryStage.setTitle("Web Tab Test Application");
 		primaryStage.show();
+
 	}
 
 	public static void main(String[] args) {
 		JavaFXInitializer.go();
+
 		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
 			//
-			VitaminWidgetTest controller = new VitaminWidgetTest();
+			WebTabTest controller = new WebTabTest();
 			try {
 				controller.start(s);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			VitatminWidget tw = controller.getTw();
+			WebTabController tw = controller.getTw();
 			new Thread(() -> {
 				try {
-					MobileBase mb = (MobileBase) ScriptingEngine
-							.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
-					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),selected->{
-						 return mb.forwardOffset(new TransformNR()); 
-					});
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -82,16 +89,9 @@ public class VitaminWidgetTest extends Application {
 	/**
 	 * @return the tw
 	 */
-	public VitatminWidget getTw() {
+	public WebTabController getTw() {
 		return tw;
 	}
 
-	/**
-	 * @param tw the tw to set
-	 */
-	public void setTw(VitatminWidget tw) {
-		if (tw == null)
-			throw new RuntimeException();
-		this.tw = tw;
-	}
+
 }

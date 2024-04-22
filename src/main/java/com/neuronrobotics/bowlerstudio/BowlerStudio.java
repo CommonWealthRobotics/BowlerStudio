@@ -756,7 +756,9 @@ public class BowlerStudio extends Application {
 						tmp=12;
 					root.setStyle("-fx-font-size: "+tmp+"pt");
 				});
-				Scene scene = new Scene(root, 1174, 768, true);
+				double scale = FontSizeManager.getDefaultSize()/12;
+
+				Scene scene = new Scene(root, 1174.0*scale, 768*scale, true);
 
 				setBowlerStudioCSS(scene);
 				BowlerStudio.runLater(() -> {
