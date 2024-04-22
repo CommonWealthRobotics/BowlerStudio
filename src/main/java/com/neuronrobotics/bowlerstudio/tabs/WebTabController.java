@@ -108,16 +108,22 @@ public class WebTabController {
 		assert iconHolder != null : "fx:id=\"iconHolder\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		assert copy != null : "fx:id=\"copy\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		assert fileCHoice != null : "fx:id=\"fileCHoice\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
-		assert scrollpane != null : "fx:id=\"scrollpane\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
+		//assert scrollpane != null : "fx:id=\"scrollpane\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		assert webview != null : "fx:id=\"webview\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		webEngine = webview.getEngine();
 		FontSizeManager.addListener(fontNum -> {
 			double scale = ((double) fontNum - 10) / 12.0;
 			if (scale < 1)
 				scale = 1;
-			webview.setScaleX(scale);
-			webview.setScaleY(scale);
+			System.out.println("Web scale "+scale);
+//			webview.setScaleX(scale);
+//			webview.setScaleY(scale);
+			double s=scale;
+			BowlerStudio.runLater(() ->webview.setZoom(s));
 		});
+		scrollpane.setFitToHeight(true);
+		scrollpane.setFitToWidth(true);
+		
 		refresh.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
 		home.setGraphic(AssetFactory.loadIcon("Home.png"));
 		back.setGraphic(AssetFactory.loadIcon("Back-Button.png"));

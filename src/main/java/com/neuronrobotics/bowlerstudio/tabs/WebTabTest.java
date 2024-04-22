@@ -74,7 +74,7 @@ public class WebTabTest extends Application {
 			}
 			WebTabController tw = controller.getTw();
 			new Thread(() -> {
-				FontSizeManager.setFontSize(24);
+				FontSizeManager.setFontSize(48);
 			}).start();
 		});
 	}

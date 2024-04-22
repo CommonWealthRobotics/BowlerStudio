@@ -1,14 +1,17 @@
 package com.neuronrobotics.bowlerstudio.tabs;
-import javafx.scene.control.ScrollPane;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
@@ -23,8 +26,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
-import javafx.scene.layout.AnchorPane;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,7 +51,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private TextField urlField;
 	//private String currentAddress;
 	private ScriptingWebWidget scripting;
-    private java.awt.Graphics2D splashGraphics;
+    private Graphics2D splashGraphics;
     private static boolean firstBoot=true;
 
 	private boolean isTutorialTab =false;
@@ -91,7 +94,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		
 		loaded=false;
 		setOnCloseRequest(this);
-		webEngine.getLoadWorker().workDoneProperty().addListener((observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
+		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	//System.err.println("Just finished! "+webEngine.getLocation());
 		    	
@@ -126,23 +129,35 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		    }
 		}));
 		urlField = new TextField(Current_URL);
-		webEngine.locationProperty().addListener((observable1, oldValue, newValue) -> 
-		BowlerStudio.runLater(() -> {
-			urlField.setText(newValue);
-		}));
+		webEngine.locationProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
+				
+						//System.out.println("Location Changed: "+newValue);
+						BowlerStudio.runLater(() -> {
+							urlField.setText(newValue);
+						});
+			}
+		});
 		
 		//goButton.setDefaultButton(true);
 	
-		webEngine.getLoadWorker().stateProperty()
-				.addListener( (observable, oldValue, newValue) -> {
-					if (State.SUCCEEDED == newValue) {
-						extractURLFromField();
-						Log.debug("Load Worker State Changed " + Current_URL);
-						if (!processNewTab(urlField.getText())) {
-							goBack();
+		webEngine.getLoadWorker().stateProperty().addListener(
+				new ChangeListener<Object>() {
+					public void changed(ObservableValue<?> observable,
+							Object oldValue, Object newValue) {
+						if (State.SUCCEEDED == newValue) {
+							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")|| urlField.getText().startsWith("file:")
+									? urlField.getText() 
+									: "http://" + urlField.getText();
+									
+							Log.debug("Load Worker State Changed "+Current_URL);	
+							if( !processNewTab(urlField.getText())){
+								goBack();
+							}
+						}else{
+							//Log.error("State load fault: "+newValue+" object:" +observable);
 						}
-					} else {
-						// Log.error("State load fault: "+newValue+" object:" +observable);
 					}
 				});
 		backButton.setOnAction(arg0 -> {
@@ -166,26 +181,18 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		HBox hBox = new HBox(5);
 		hBox.getChildren().setAll(backButton,forwardButton,homeButton,goButton,urlField);
 		HBox.setHgrow(urlField, Priority.ALWAYS);
-		
-		FontSizeManager.addListener(fontNum->{
-	    	  double scale =((double)fontNum-10)/12.0;
-	    	  if(scale<1)
-	    		  scale=1;
-	    	  webView.setScaleX(scale);
-	    	  webView.setScaleY(scale);
-	    	  hBox.minHeight(fontNum*2);
-		});
-		ScrollPane sp = new ScrollPane();
-		AnchorPane web = new AnchorPane();
-		web.getChildren().add(webView);
-		sp.setContent(web);
-		vBox = new VBox(5);
-		vBox.getChildren().setAll(hBox, sp);
 
-		AnchorPane.setTopAnchor(webView, 0.0);
-		AnchorPane.setLeftAnchor(webView, 0.0);
-		AnchorPane.setRightAnchor(webView, 0.0);
-		AnchorPane.setBottomAnchor(webView, 0.0);
+		vBox = new VBox(5);
+		vBox.getChildren().setAll(hBox, webView);
+		VBox.setVgrow(webView, Priority.ALWAYS);
+		FontSizeManager.addListener(fontNum -> {
+			double scale = ((double) fontNum - 10) / 12.0;
+			if (scale < 1)
+				scale = 1;
+			System.out.println("Web scale "+scale);
+			double s=scale;
+			BowlerStudio.runLater(() ->webView.setZoom(s));
+		});
 		myTab.setContent(vBox);
 		//Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {
@@ -207,13 +214,6 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		
 		
 	}
-
-	private void extractURLFromField() {
-		Current_URL = urlField.getText().startsWith("http://")
-				|| urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
-						? urlField.getText()
-						: "http://" + urlField.getText();
-	}
 	
 	
 	public void loadUrl(String url){
@@ -227,7 +227,9 @@ public class WebTab extends Tab implements EventHandler<Event>{
 
 	
 	private boolean processNewTab(String url){
-		extractURLFromField();
+		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
+				? urlField.getText() 
+				: "http://" + urlField.getText();
 		if(isTutorialTab ){
 			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
 					Current_URL.contains("gist.github.com/"+PasswordManager.getUsername() )||
