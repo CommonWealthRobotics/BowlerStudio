@@ -9,7 +9,6 @@ import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
@@ -92,7 +91,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		
 		loaded=false;
 		setOnCloseRequest(this);
-		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
+		webEngine.getLoadWorker().workDoneProperty().addListener((observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
 		    	//System.err.println("Just finished! "+webEngine.getLocation());
 		    	
@@ -127,35 +126,23 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		    }
 		}));
 		urlField = new TextField(Current_URL);
-		webEngine.locationProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
-				
-						//System.out.println("Location Changed: "+newValue);
-						BowlerStudio.runLater(() -> {
-							urlField.setText(newValue);
-						});
-			}
-		});
+		webEngine.locationProperty().addListener((observable1, oldValue, newValue) -> 
+		BowlerStudio.runLater(() -> {
+			urlField.setText(newValue);
+		}));
 		
 		//goButton.setDefaultButton(true);
 	
-		webEngine.getLoadWorker().stateProperty().addListener(
-				new ChangeListener<Object>() {
-					public void changed(ObservableValue<?> observable,
-							Object oldValue, Object newValue) {
-						if (State.SUCCEEDED == newValue) {
-							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")|| urlField.getText().startsWith("file:")
-									? urlField.getText() 
-									: "http://" + urlField.getText();
-									
-							Log.debug("Load Worker State Changed "+Current_URL);	
-							if( !processNewTab(urlField.getText())){
-								goBack();
-							}
-						}else{
-							//Log.error("State load fault: "+newValue+" object:" +observable);
+		webEngine.getLoadWorker().stateProperty()
+				.addListener( (observable, oldValue, newValue) -> {
+					if (State.SUCCEEDED == newValue) {
+						extractURLFromField();
+						Log.debug("Load Worker State Changed " + Current_URL);
+						if (!processNewTab(urlField.getText())) {
+							goBack();
 						}
+					} else {
+						// Log.error("State load fault: "+newValue+" object:" +observable);
 					}
 				});
 		backButton.setOnAction(arg0 -> {
@@ -220,6 +207,13 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		
 		
 	}
+
+	private void extractURLFromField() {
+		Current_URL = urlField.getText().startsWith("http://")
+				|| urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
+						? urlField.getText()
+						: "http://" + urlField.getText();
+	}
 	
 	
 	public void loadUrl(String url){
@@ -233,9 +227,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 
 	
 	private boolean processNewTab(String url){
-		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
-				? urlField.getText() 
-				: "http://" + urlField.getText();
+		extractURLFromField();
 		if(isTutorialTab ){
 			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
 					Current_URL.contains("gist.github.com/"+PasswordManager.getUsername() )||

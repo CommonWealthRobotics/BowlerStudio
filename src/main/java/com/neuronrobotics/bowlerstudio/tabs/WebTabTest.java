@@ -49,10 +49,8 @@ public class WebTabTest extends Application {
 		primaryStage.setOnCloseRequest(arg0 -> {
 			System.exit(0);
 		});
-		BowlerStudio.runLater(
-				Duration.ofMillis(200) ,()->{
-					tw.loadUrl("https://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
-				});
+		
+		
 		primaryStage.setScene(scene);
 		primaryStage.setWidth(600);
 		primaryStage.setHeight(777);
@@ -76,12 +74,7 @@ public class WebTabTest extends Application {
 			}
 			WebTabController tw = controller.getTw();
 			new Thread(() -> {
-				try {
-					
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				FontSizeManager.setFontSize(24);
 			}).start();
 		});
 	}

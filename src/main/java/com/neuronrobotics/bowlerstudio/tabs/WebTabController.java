@@ -5,14 +5,18 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.ResourceBundle;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.sdk.common.Log;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,7 +30,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 public class WebTabController {
-	private boolean initialized=false;
+	private boolean initialized = false;
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -77,8 +81,6 @@ public class WebTabController {
 
 	private String Current_URL;
 
-	private boolean isTutorialTab;
-
 	@FXML
 	void onCopy(ActionEvent event) {
 
@@ -116,53 +118,37 @@ public class WebTabController {
 			webview.setScaleX(scale);
 			webview.setScaleY(scale);
 		});
-		
+		refresh.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
+		home.setGraphic(AssetFactory.loadIcon("Home.png"));
+		back.setGraphic(AssetFactory.loadIcon("Back-Button.png"));
+		forward.setGraphic(AssetFactory.loadIcon("Forward-Button.png"));
+		BowlerStudio.setToRunButton(run);
+		webEngine.locationProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
+				
+						//System.out.println("Location Changed: "+newValue);
+						BowlerStudio.runLater(() -> {
+							urlField.setText(newValue);
+						});
+			}
+		});
 		
 		setInitialized(true);
+		BowlerStudio.runLater(
+				Duration.ofMillis(200) ,()->{
+					loadUrl("https://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+				});
 	}
-	public void loadUrl(String url){
 
-			BowlerStudio.runLater(() -> {
-				webEngine.load(url);
-				System.out.println("Go TO URL "+url);
-			});
-		
-	}
-	private boolean processNewTab(){
-		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
-				? urlField.getText() 
-				: "http://" + urlField.getText();
-		if(isTutorialTab() ){
-			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
-					Current_URL.contains("gist.github.com/"+PasswordManager.getUsername() )||
-					Current_URL.contains("localhost") ))){
-				try {
-					
-					Log.error("Non demo page found, opening new tab "+Current_URL);
-					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
-					return false;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}else{
-			Log.debug("no load new tab");
-//			if(getScripting()!=null){
-//				try{
-//					myTab.setText(getScripting().getFileName());
-//				}catch(java.lang.NullPointerException ex){
-//					try {
-//						getScripting().loadCodeFromGist(Current_URL, webEngine);
-//						myTab.setText(getScripting().getFileName());
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}			
-//			}
-		}
-		return true;
+	public void loadUrl(String url) {
+		BowlerStudio.runLater(() -> {
+			Current_URL = url.startsWith("http://") ||url.startsWith("https://")
+					|| url.startsWith("file:") ? url : "http://" + url;
+			webEngine.load(Current_URL);
+			System.out.println("Go TO URL " + url);
+		});
+
 	}
 	/**
 	 * @return the initialized
@@ -177,23 +163,5 @@ public class WebTabController {
 	private void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}
-
-	/**
-	 * @return the isTutorialTab
-	 */
-	public boolean isTutorialTab() {
-		return isTutorialTab;
-	}
-
-	/**
-	 * @param isTutorialTab the isTutorialTab to set
-	 * @return 
-	 */
-	public WebTabController setTutorialTab(boolean isTutorialTab) {
-		this.isTutorialTab = isTutorialTab;
-		return this;
-	}
-
-
 
 }
