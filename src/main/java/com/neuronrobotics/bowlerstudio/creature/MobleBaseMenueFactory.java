@@ -125,7 +125,7 @@ public class MobleBaseMenueFactory {
 			}
 		});
 		TreeItem<String> save;
-		save = new TreeItem<String>("Publish", AssetFactory.loadIcon("Save.png"));
+		save = new TreeItem<String>("Save to XML", AssetFactory.loadIcon("Save.png"));
 
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
