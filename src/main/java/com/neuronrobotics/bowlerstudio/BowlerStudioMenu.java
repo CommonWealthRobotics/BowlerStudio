@@ -1520,13 +1520,22 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				ftmp.setSelected(true);
 			} else
 				ftmp.setSelected(false);
-			ftmp.setOnAction((event) -> {
+			EventHandler<ActionEvent> eventHandler = (event) -> {
 				if (ftmp.isSelected()) {
 					FontSizeManager.setFontSize(myFoneNum);
 				}
-			});
+			};
+			ftmp.setOnAction(eventHandler);
 			ftmp.setToggleGroup(toggleGroup);
 			fontSelect.getItems().add(ftmp);
+			FontSizeManager.addListener(nf->{
+				ftmp.setOnAction(null);
+				if(myFoneNum==nf) {
+					ftmp.setSelected(true);
+				}else
+					ftmp.setSelected(false);
+				ftmp.setOnAction(eventHandler);
+			});
 		}
 		WindowMenu.getItems().add(fontSelect);
 		CheckMenuItem  autohighlight = new CheckMenuItem("Auto Highlight 3d Items");
