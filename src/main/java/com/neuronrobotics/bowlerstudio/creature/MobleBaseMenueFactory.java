@@ -30,6 +30,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -43,7 +45,9 @@ import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,6 +124,36 @@ public class MobleBaseMenueFactory {
 
 			}
 		});
+		TreeItem<String> save;
+		save = new TreeItem<String>("Publish", AssetFactory.loadIcon("Save.png"));
+
+		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
+			try {
+				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+
+				callbackMapForTreeitems.put(save, () -> {
+					
+					OutputStream out = null;
+					try {
+						out = FileUtils.openOutputStream(source, false);
+						IOUtils.write(device.getXml(), out, Charset.defaultCharset());
+						out.close(); // don't swallow close Exception if copy completes
+						// normally
+					} catch(Throwable t){
+						t.printStackTrace();
+					}finally {
+						try {
+							out.close();
+						} catch (IOException e) {
+							
+						}
+					}
+				});
+			} catch (Exception e) {
+				Log.error(device.getGitSelfSource()[0] + " " + device.getGitSelfSource()[1] + " failed to load");
+				e.printStackTrace();
+			}
+		}
 		TreeItem<String> publish;
 		publish = new TreeItem<String>("Publish", AssetFactory.loadIcon("Publish.png"));
 
@@ -137,7 +171,7 @@ public class MobleBaseMenueFactory {
 				e.printStackTrace();
 			}
 		}
-
+		rootItem.getChildren().addAll(save);
 		if (creatureIsOwnedByUser) {
 			if (root) {
 				rootItem.getChildren().addAll(publish);
