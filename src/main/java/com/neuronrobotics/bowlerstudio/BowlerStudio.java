@@ -533,6 +533,7 @@ public class BowlerStudio extends Application {
 						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"https://github.com/OperationSmallKat/Katapult.git"
 						);
+				renderSplashFrame(92, "Vitamin Scripts...");
 				for(String type:Vitamins.listVitaminTypes()) {
 					String url= Vitamins.getScriptGitURL(type);
 					ensureUpdated(url);
