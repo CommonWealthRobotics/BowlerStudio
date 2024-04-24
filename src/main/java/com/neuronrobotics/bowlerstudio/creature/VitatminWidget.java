@@ -61,7 +61,8 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@FXML
 	void onAdd(ActionEvent event) {
-		VitaminLocation newVit = new VitaminLocation(name.getText(), selectedType, sizeSelected, new TransformNR());
+		VitaminLocation newVit = new VitaminLocation(name.getText(), selectedType, sizeSelected, tf.getCurrent());
+		newVit.setFrame(frameType.getValue());
 		holder.addVitamin(newVit);
 		add(newVit);
 		validateInput();
