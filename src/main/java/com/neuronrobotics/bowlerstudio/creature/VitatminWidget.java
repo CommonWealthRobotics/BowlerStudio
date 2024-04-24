@@ -4,28 +4,23 @@
 
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.awt.event.InputMethodEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import com.google.crypto.tink.subtle.EngineWrapper.TMac;
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminFrame;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.transform.Affine;
 
