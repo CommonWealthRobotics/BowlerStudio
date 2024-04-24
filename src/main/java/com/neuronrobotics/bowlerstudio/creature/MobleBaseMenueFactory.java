@@ -227,10 +227,13 @@ public class MobleBaseMenueFactory {
 				System.out.println("Adding Leg");
 				String xmlContent;
 				try {
-					xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					String[] gitCadEngine = device.getGitCadEngine();
+					newLeg.setGitCadEngine(gitCadEngine);
+					newLeg.getElectroMechanicalSize(0);
 					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
@@ -410,10 +413,12 @@ public class MobleBaseMenueFactory {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Fixed Wheel");
 				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultFixed.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					newArm.setGitCadEngine(device.getGitCadEngine());
+
 					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
@@ -430,10 +435,12 @@ public class MobleBaseMenueFactory {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Steerable Wheel");
 				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultSteerable.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					newArm.setGitCadEngine(device.getGitCadEngine());
+
 					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
@@ -485,10 +492,11 @@ public class MobleBaseMenueFactory {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Arm");
 				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					newArm.setGitCadEngine(device.getGitCadEngine());
 					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
