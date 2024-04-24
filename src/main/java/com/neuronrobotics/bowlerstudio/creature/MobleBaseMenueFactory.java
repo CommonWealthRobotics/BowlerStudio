@@ -233,7 +233,6 @@ public class MobleBaseMenueFactory {
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					String[] gitCadEngine = device.getGitCadEngine();
 					newLeg.setGitCadEngine(gitCadEngine);
-					newLeg.getElectroMechanicalSize(0);
 					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
@@ -419,7 +418,7 @@ public class MobleBaseMenueFactory {
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					newArm.setGitCadEngine(device.getGitCadEngine());
 
-					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 				} catch (Exception e) {
@@ -441,7 +440,7 @@ public class MobleBaseMenueFactory {
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					newArm.setGitCadEngine(device.getGitCadEngine());
 
-					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					System.out.println("Steerable has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 				} catch (Exception e) {
