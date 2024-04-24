@@ -94,7 +94,7 @@ public class GameControlThreadManager {
 					reset();
 
 				} catch (Throwable ex) {
-					ex.printStackTrace();
+					BowlerStudio.printStackTrace(ex);
 					reset();
 				}
 
