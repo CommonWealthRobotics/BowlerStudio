@@ -21,6 +21,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.imageprovider.NativeResource;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
@@ -532,6 +533,11 @@ public class BowlerStudio extends Application {
 						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"https://github.com/OperationSmallKat/Katapult.git"
 						);
+				renderSplashFrame(92, "Vitamin Scripts...");
+				for(String type:Vitamins.listVitaminTypes()) {
+					String url= Vitamins.getScriptGitURL(type);
+					ensureUpdated(url);
+				}
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
