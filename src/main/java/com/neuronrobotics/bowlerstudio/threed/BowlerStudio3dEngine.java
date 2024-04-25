@@ -218,7 +218,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private Thread autospingThread=null;
 	private CheckMenuItem showRuler;
 	private TransformNR targetNR;
-	private TransformNR poseToMove;
+	private TransformNR poseToMove=new TransformNR();
 	
 	static {
 		BowlerStudio.runLater(() -> {
