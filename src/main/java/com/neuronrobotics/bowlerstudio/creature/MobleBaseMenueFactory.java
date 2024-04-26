@@ -66,10 +66,10 @@ public class MobleBaseMenueFactory {
 	
 	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems,ITransformProvider tfp) {
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems,ITransformProvider tfp) {
 		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
 				AssetFactory.loadIcon("Vitamins.png"));
-		HashMap<Group,VitatminWidget> widget = new HashMap<>();
+		HashMap<Parent,VitatminWidget> widget = new HashMap<>();
 		callbackMapForTreeitems.put(vitaminsMenu, () -> {
 			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
 				FXMLLoader loader;
@@ -79,9 +79,10 @@ public class MobleBaseMenueFactory {
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
 					tw.setVitaminProvider(vitamins,tfp);
-					Group value = new Group(w);
-					widgetMapForTreeitems.put(vitaminsMenu, value);
-					widget.put(value, tw);
+					
+					//Group value = new Group(w);
+					widgetMapForTreeitems.put(vitaminsMenu, w);
+					widget.put(w, tw);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -97,7 +98,7 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
 			boolean creatureIsOwnedByUser) {
 
 		// boolean creatureIsOwnedByUser = false;
@@ -676,7 +677,7 @@ public class MobleBaseMenueFactory {
 	private static void addAppendage(MobileBase base, TreeView<String> view,
 			ArrayList<DHParameterKinematics> deviceList, DHParameterKinematics newDevice, TreeItem<String> rootItem,
 			TreeItem<String> topLevel, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) {
 
 		BowlerStudio.runLater(() -> {
@@ -727,7 +728,7 @@ public class MobleBaseMenueFactory {
 	private static TreeItem<String> loadLimbs(MobileBase base, TreeView<String> view,
 			ArrayList<DHParameterKinematics> drivable, String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> apps = new TreeItem<>(label,
@@ -747,7 +748,7 @@ public class MobleBaseMenueFactory {
 	private static LinkConfigurationWidget setHardwareConfig(MobileBase myBase, LinkConfiguration MyConf,
 			LinkFactory myLinkFactory, TreeItem<String> rootItem1,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems1,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems1) throws Exception {
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems1) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
@@ -769,7 +770,7 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
 			throws Exception {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink;
@@ -1048,7 +1049,7 @@ public class MobleBaseMenueFactory {
 
 	private static TreeItem<String> setUpNewMobileBaseEditor(TreeView<String> view,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
 			DHLink dhLink) {
 		TreeItem<String> mobile = new TreeItem<>( dhLink.getSlaveMobileBase().getScriptingName(),
 				AssetFactory.loadIcon("creature.png"));
@@ -1059,7 +1060,7 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	private static void loadSingleLimb(MobileBase base, TreeView<String> view, DHParameterKinematics dh,
 			TreeItem<String> rootItem, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(), AssetFactory.loadIcon("Move-Limb.png"));

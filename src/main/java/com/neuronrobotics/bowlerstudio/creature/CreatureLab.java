@@ -181,7 +181,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			AnchorPane.setBottomAnchor(tree, 0.0);
 
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems = new HashMap<>();
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems = new HashMap<>();
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems = new HashMap<>();
 			File source;
 			boolean creatureIsOwnedByUser = false;
 			try {
@@ -216,7 +216,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 								BowlerStudio.runLater(() -> {
 									box.getChildren().clear();
-									Group g = widgetMapForTreeitems.get(treeItem);
+									Parent g = widgetMapForTreeitems.get(treeItem);
 									box.getChildren().add(g);
 									AnchorPane.setTopAnchor(g, 0.0);
 									AnchorPane.setLeftAnchor(g, 0.0);

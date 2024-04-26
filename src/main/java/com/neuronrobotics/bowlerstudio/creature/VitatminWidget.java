@@ -71,9 +71,9 @@ public class VitatminWidget implements IOnTransformChange {
 	private void add(VitaminLocation newVit) {
 		GridPane box = new GridPane();
 		box.getColumnConstraints().add(new ColumnConstraints(30)); // translate text
-		box.getColumnConstraints().add(new ColumnConstraints(120)); // translate values
-		box.getColumnConstraints().add(new ColumnConstraints(120)); // units
-		box.getColumnConstraints().add(new ColumnConstraints(120)); // rotate text
+		box.getColumnConstraints().add(new ColumnConstraints(200)); // translate values
+		box.getColumnConstraints().add(new ColumnConstraints(200)); // units
+		box.getColumnConstraints().add(new ColumnConstraints(200)); // rotate text
 		box.setHgap(20);// gab between elements
 		box.setVgap(10);// gab between elements
 		locationMap.put(box, newVit);
