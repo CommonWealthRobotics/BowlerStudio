@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerstudio;
  **/
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
@@ -141,6 +142,10 @@ public class Terminal {
 		try {
 			icon = AssetFactory.loadAsset("Script-Tab-" + langauges.getSelectionModel().getSelectedItem() + ".png");
 			langaugeIcon.setImage(icon);
+			FontSizeManager.addListener(fontNum->{
+		    	  langaugeIcon.setScaleX(FontSizeManager.getImageScale());
+		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
+		      });
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();

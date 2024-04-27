@@ -121,6 +121,10 @@ public class AddFileToGistController extends Application {
 
 			icon = AssetFactory.loadAsset(asset);
 			langaugeIcon.setImage(icon);
+			FontSizeManager.addListener(fontNum->{
+		    	  langaugeIcon.setScaleX(FontSizeManager.getImageScale());
+		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
+		      });
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -154,6 +158,7 @@ public class AddFileToGistController extends Application {
 		Image loadAsset = AssetFactory.loadAsset(file);
 		try {
 		langaugeIcon.setImage(loadAsset);
+		
 		}catch(Throwable t) {
 			t.printStackTrace();
 		}

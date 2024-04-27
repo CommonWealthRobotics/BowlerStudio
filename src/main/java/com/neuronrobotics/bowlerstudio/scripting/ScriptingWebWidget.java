@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -215,6 +216,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			try {
 				image.setImage(AssetFactory
 						.loadAsset("Script-Tab-" + ScriptingEngine.getShellType(currentFile.getName()) + ".png"));
+				FontSizeManager.addListener(fontNum->{
+			    	  image.setScaleX(FontSizeManager.getImageScale());
+			    	  image.setScaleY(FontSizeManager.getImageScale());
+			      });
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();

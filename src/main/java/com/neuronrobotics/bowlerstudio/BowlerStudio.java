@@ -752,10 +752,9 @@ public class BowlerStudio extends Application {
 				Parent root = mainControllerPanel.getRoot();
 				FontSizeManager.addListener(fontNum->{
 					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
-					int tmp = fontNum*2/3;
-					if(tmp<FontSizeManager.systemDefaultFontSize)
-						tmp=FontSizeManager.systemDefaultFontSize;
-					root.setStyle("-fx-font-size: "+tmp+"pt");
+					double tmp = FontSizeManager.getImageScale()*10;
+
+					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 				});
 				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getWidth();
@@ -807,7 +806,7 @@ public class BowlerStudio extends Application {
 
 				});
 				BowlerStudio.runLater(() -> {
-					primaryStage.setTitle("Bowler Studio: v " + StudioBuildInfo.getVersion());
+					setTitle(null);
 
 					try {
 						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
@@ -858,6 +857,13 @@ public class BowlerStudio extends Application {
 			}
 		}).start();
 
+	}
+
+	public static void setTitle(String title) {
+		if(title==null)
+			title="Bowler Studio: v " + StudioBuildInfo.getVersion();
+		if(primaryStage2!=null)
+			primaryStage2.setTitle(title);
 	}
 
 	public static void setBowlerStudioCSS(Scene scene) {
