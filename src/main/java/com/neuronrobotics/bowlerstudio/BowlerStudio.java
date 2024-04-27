@@ -762,12 +762,10 @@ public class BowlerStudio extends Application {
 						.getDisplayMode().getWidth();
 				double sh = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getHeight();
-				Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 				Rectangle2D primaryScreenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
 				double scalew = primaryScreenBounds.getWidth();
 				double screenZoom = sw/scalew;
-				sw=primaryScreenBounds.getWidth();
-				sh=primaryScreenBounds.getHeight();
+
 				if (FontSizeManager.getDefaultSize() == FontSizeManager.systemDefaultFontSize) {
 					double newSize= sw/2256.0*(2*FontSizeManager.systemDefaultFontSize)/screenZoom;
 					if(newSize<FontSizeManager.systemDefaultFontSize)
@@ -775,18 +773,14 @@ public class BowlerStudio extends Application {
 					FontSizeManager.setFontSize((int)Math.round(newSize));
 					System.out.println("Screen "+sw+"x"+sh);
 				}
-				double scale = FontSizeManager.getDefaultSize()/12;
-				if(scale<1)
-					scale=1;
-				double w = 1174.0*scale;
-				double h = 768*scale;
-				if(w>sw)
-					w=sw-100;
-				if(h>sh)
-					h=sh-100;
+				sw=primaryScreenBounds.getWidth();
+				sh=primaryScreenBounds.getHeight();
+				double w ;
+				double h ;
+				w=sw-40;
+				h=sh-40;
 				
 				Scene scene = new Scene(root, w, h, true);
-
 				setBowlerStudioCSS(scene);
 				BowlerStudio.runLater(() -> {
 
