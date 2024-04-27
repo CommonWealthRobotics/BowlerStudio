@@ -57,10 +57,10 @@ public class ExternalEditorController {
 				myEditor.launch(currentFile,advanced);
 				//autoRun.setSelected(true);
 			});
-			FontSizeManager.addListener(fontNum->{
-		    	  advanced.setScaleX(FontSizeManager.getImageScale());
-		    	  advanced.setScaleY(FontSizeManager.getImageScale());
-		      });
+//			FontSizeManager.addListener(fontNum->{
+//		    	  advanced.setScaleX(FontSizeManager.getImageScale());
+//		    	  advanced.setScaleY(FontSizeManager.getImageScale());
+//		      });
 		}else {
 			try {
 				Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");

@@ -42,6 +42,7 @@ import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -59,6 +60,7 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
 import java.io.File;
@@ -752,7 +754,7 @@ public class BowlerStudio extends Application {
 				Parent root = mainControllerPanel.getRoot();
 				FontSizeManager.addListener(fontNum->{
 					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
-					double tmp = FontSizeManager.getImageScale()*10;
+					double tmp = FontSizeManager.getImageScale()*9;
 
 					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 				});
@@ -760,8 +762,12 @@ public class BowlerStudio extends Application {
 						.getDisplayMode().getWidth();
 				double sh = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getHeight();
+				Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+				Rectangle2D primaryScreenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+				double scalew = primaryScreenBounds.getWidth();
+				double screenZoom = sw/scalew;
 				if (FontSizeManager.getDefaultSize() == FontSizeManager.systemDefaultFontSize) {
-					double newSize= sw/2256.0*(2*FontSizeManager.systemDefaultFontSize);
+					double newSize= sw/2256.0*(2*FontSizeManager.systemDefaultFontSize)/screenZoom;
 					if(newSize<FontSizeManager.systemDefaultFontSize)
 						newSize=FontSizeManager.systemDefaultFontSize;
 					FontSizeManager.setFontSize((int)Math.round(newSize));
