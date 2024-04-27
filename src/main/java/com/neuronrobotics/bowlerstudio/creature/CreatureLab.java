@@ -173,8 +173,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		// @JansenSmith - placed contents in llambda runnable - 20220915
 		BowlerStudio.runLater(() -> {
 			TreeView<String> tree = new TreeView<>(rootItemFinal);
+			
 			treebox1.getChildren().clear();
 			treebox1.getChildren().add(tree);
+			
 			AnchorPane.setTopAnchor(tree, 0.0);
 			AnchorPane.setLeftAnchor(tree, 0.0);
 			AnchorPane.setRightAnchor(tree, 0.0);
@@ -196,13 +198,18 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
 			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems,
 					this, true, creatureIsOwnedByUser);
-			tree.setPrefWidth(325);
+			//tree.setPrefWidth(325);
+			treebox1.widthProperty().addListener((obs, oldVal, newVal) -> {
+				//System.out.println("Creature lab width "+newVal);
+				tree.setPrefWidth((double)newVal);
+			});
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			JogMobileBase walkWidget = new JogMobileBase(device);
 			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
 				@Override
 				public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+					tree.autosize();
 					@SuppressWarnings("unchecked")
 					TreeItem<String> treeItem = (TreeItem<String>) newValue;
 					new Thread() {
