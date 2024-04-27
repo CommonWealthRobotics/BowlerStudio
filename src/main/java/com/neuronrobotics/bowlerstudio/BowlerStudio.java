@@ -766,6 +766,8 @@ public class BowlerStudio extends Application {
 				Rectangle2D primaryScreenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
 				double scalew = primaryScreenBounds.getWidth();
 				double screenZoom = sw/scalew;
+				sw=primaryScreenBounds.getWidth();
+				sh=primaryScreenBounds.getHeight();
 				if (FontSizeManager.getDefaultSize() == FontSizeManager.systemDefaultFontSize) {
 					double newSize= sw/2256.0*(2*FontSizeManager.systemDefaultFontSize)/screenZoom;
 					if(newSize<FontSizeManager.systemDefaultFontSize)
