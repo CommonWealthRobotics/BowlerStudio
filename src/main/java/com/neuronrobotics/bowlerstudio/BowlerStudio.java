@@ -999,4 +999,7 @@ public class BowlerStudio extends Application {
 	public static TransformNR getTargetFrame() {
 		return CreatureLab3dController.getEngine().getTargetNR();
 	}
+	public static void loadMobilBaseIntoUI(MobileBase base) {
+		BowlerStudioController.getBowlerStudio().onScriptFinished(base, base, null);
+	}
 }
