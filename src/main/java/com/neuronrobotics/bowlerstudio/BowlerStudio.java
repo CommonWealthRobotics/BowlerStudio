@@ -535,15 +535,17 @@ public class BowlerStudio extends Application {
 						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"https://github.com/OperationSmallKat/Katapult.git"
 						);
-				renderSplashFrame(92, "Vitamin Scripts...");
-				for(String type:Vitamins.listVitaminTypes()) {
-					String url= Vitamins.getScriptGitURL(type);
-					ensureUpdated(url);
-				}
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"loadAll.groovy", null);
+				renderSplashFrame(92, "Vitamin Scripts...");
+				new Thread(()->{
+					for(String type:Vitamins.listVitaminTypes()) {
+						String url= Vitamins.getScriptGitURL(type);
+						ensureUpdated(url);
+					}
+				}).start();
 			} catch (Exception e) {
 				e.printStackTrace();
 				reporter.uncaughtException(Thread.currentThread(), e);
