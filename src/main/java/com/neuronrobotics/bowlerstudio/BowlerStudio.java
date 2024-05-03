@@ -73,6 +73,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -541,10 +542,13 @@ public class BowlerStudio extends Application {
 						"loadAll.groovy", null);
 				renderSplashFrame(92, "Vitamin Scripts...");
 				new Thread(()->{
+					HashSet<String> urls = new HashSet<>();
 					for(String type:Vitamins.listVitaminTypes()) {
 						String url= Vitamins.getScriptGitURL(type);
-						ensureUpdated(url);
+						urls.add(url);
 					}
+					for(String url:urls)
+						ensureUpdated(url);
 				}).start();
 			} catch (Exception e) {
 				e.printStackTrace();
