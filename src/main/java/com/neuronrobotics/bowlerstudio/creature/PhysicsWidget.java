@@ -178,11 +178,12 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 							close();
 							return;
 						} // generate model before start counting time
-						BowlerStudioController.clearCSG();
-						BowlerStudioController.clearUserNodes();
-						BowlerStudioController.addObject(mujoco.getAllCSG(),null );
 						physicsThread = new Thread(){
 							public void run(){
+								blockingUpdateObjects();
+								BowlerStudioController.clearCSG();
+								BowlerStudioController.clearUserNodes();
+								BowlerStudioController.addObject(mujoco.getAllCSG(),null );
 								ConfigurationDatabase.save();
 								try{
 									while(isRun()){
@@ -262,50 +263,53 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	}
 	private void updateObjects() {
 		new Thread(()->{
-			if(movingObjects!=null) {
-				for(CSG c:movingObjects) {
-					BowlerStudioController.removeObject(c);
-				}
-			}
-			if(staticObjects!=null) {
-				for(CSG c:staticObjects) {
-					BowlerStudioController.removeObject(c);
-				}
-			}
-			try {
-				movingObjects=null;
-				String selectedItem = filesMoving.getSelectionModel().getSelectedItem();
-				movingObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitMoving.getText(), selectedItem);
-				ConfigurationDatabase.setObject("PhysicsWidget","movingObjects" ,selectedItem);
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				staticObjects=null;
-				String selectedItem = filesStatic.getSelectionModel().getSelectedItem();
-				staticObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitStatic.getText(), selectedItem);
-				ConfigurationDatabase.setObject("PhysicsWidget","staticObjects" ,selectedItem);
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(movingObjects!=null) {
-				for(CSG c:movingObjects) {
-					BowlerStudioController.addObject(c,null);
-				}
-			}
-			if(staticObjects!=null) {
-				for(CSG c:staticObjects) {
-					BowlerStudioController.addObject(c,null);
-				}
-			}
+			blockingUpdateObjects();
 			
 		}).start();
 
 		
+	}
+	private void blockingUpdateObjects() {
+		if(movingObjects!=null) {
+			for(CSG c:movingObjects) {
+				BowlerStudioController.removeObject(c);
+			}
+		}
+		if(staticObjects!=null) {
+			for(CSG c:staticObjects) {
+				BowlerStudioController.removeObject(c);
+			}
+		}
+		try {
+			movingObjects=null;
+			String selectedItem = filesMoving.getSelectionModel().getSelectedItem();
+			movingObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitMoving.getText(), selectedItem);
+			ConfigurationDatabase.setObject("PhysicsWidget","movingObjects" ,selectedItem);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			staticObjects=null;
+			String selectedItem = filesStatic.getSelectionModel().getSelectedItem();
+			staticObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitStatic.getText(), selectedItem);
+			ConfigurationDatabase.setObject("PhysicsWidget","staticObjects" ,selectedItem);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(movingObjects!=null) {
+			for(CSG c:movingObjects) {
+				BowlerStudioController.addObject(c,null);
+			}
+		}
+		if(staticObjects!=null) {
+			for(CSG c:staticObjects) {
+				BowlerStudioController.addObject(c,null);
+			}
+		}
 	}
 	
 	private void stopPhysics() {
