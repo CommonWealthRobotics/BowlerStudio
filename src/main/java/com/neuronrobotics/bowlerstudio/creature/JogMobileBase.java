@@ -442,7 +442,8 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 			}
 		}
 		try {
-			c.setDesiredJointSpaceVector(joints, 0);
+			double time =c.getBestTime(joints);
+			c.setDesiredJointSpaceVector(joints, time);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -279,7 +279,7 @@ public class JogWidget extends GridPane
 			}
 		}
 		try {
-			c.setDesiredJointSpaceVector(joints, 0);
+			c.setDesiredJointSpaceVector(joints, c.getBestTime(joints));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
