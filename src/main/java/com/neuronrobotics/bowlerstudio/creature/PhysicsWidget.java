@@ -16,7 +16,6 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
