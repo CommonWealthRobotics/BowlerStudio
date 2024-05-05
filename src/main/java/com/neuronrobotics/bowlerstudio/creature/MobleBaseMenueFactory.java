@@ -121,7 +121,7 @@ public class MobleBaseMenueFactory {
 
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
-				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
+				widgetMapForTreeitems.put(physics, new Group(new PhysicsWidget(device)));
 
 			}
 		});

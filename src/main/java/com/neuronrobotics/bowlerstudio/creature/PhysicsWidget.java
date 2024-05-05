@@ -33,7 +33,7 @@ import javax.xml.bind.JAXBException;
 import org.mujoco.xml.attributetypes.IntegratorType;
 
 @SuppressWarnings("restriction")
-public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListener {
+public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	Button runstop = new Button("Run", AssetFactory.loadIcon("Run.png"));
 	Button pauseresume = new Button("Pause", AssetFactory.loadIcon("Pause.png"));
 	Button step = new Button("Step", AssetFactory.loadIcon("Step.png"));
@@ -47,7 +47,7 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 	private MobileBase base;
 	private  MuJoCoPhysicsManager mujoco;
 	@SuppressWarnings("restriction")
-	public CreaturePhysicsWidget(MobileBase base){
+	public PhysicsWidget(MobileBase base){
 
 		this.base = base;
 		base.addConnectionEventListener(new IDeviceConnectionEventListener() {
@@ -62,11 +62,18 @@ public class CreaturePhysicsWidget extends GridPane  implements IMUUpdateListene
 			@Override
 			public void onConnect(BowlerAbstractDevice arg0) {}
 		});
-		add(runstop,0,0);
-		add(pauseresume,1,0);
-		add(step,2,0);
-		add(new Label("MS loop"),3,0);
-		add(msLoopTime,4,0);
+		GridPane controls=new GridPane();
+		controls.add(runstop,0,0);
+		controls.add(pauseresume,1,0);
+		controls.add(step,2,0);
+		controls.add(new Label("MS loop"),3,0);
+		controls.add(msLoopTime,4,0);
+		add(controls,0,0);
+		add(new Label("Static Objects:"),0,1);
+		
+		add(new Label("Moving Objects:"),0,4);
+
+		
 		pauseresume.setDisable(true);
 		step.setDisable(true);
 		pauseresume.setOnAction(event->{
