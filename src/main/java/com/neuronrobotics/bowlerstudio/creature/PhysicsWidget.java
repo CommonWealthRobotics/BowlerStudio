@@ -95,12 +95,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		add(gitMoving,0,5);
 		add(filesMoving,1,5);
 		
-		gitMoving.textProperty().addListener((observable, oldValue, newValue) -> {
-			validateInput();
-		});
-		gitStatic.textProperty().addListener((observable, oldValue, newValue) -> {
-			validateInput();
-		});
+
 		filesMoving.setDisable(true);
 		filesStatic.setDisable(true);
 		filesMoving.setOnAction(event->{
@@ -109,10 +104,17 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		filesStatic.setOnAction(event->{
 			updateObjects();
 		});
-		gitMoving.setText( ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "").toString());
-		gitStatic.setText( ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "").toString());
+		String string = ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "").toString();
+		gitMoving.setText( string);
+		String string2 = ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "").toString();
+		gitStatic.setText( string2);
 		validateInput();
-
+		gitMoving.textProperty().addListener((observable, oldValue, newValue) -> {
+			validateInput();
+		});
+		gitStatic.textProperty().addListener((observable, oldValue, newValue) -> {
+			validateInput();
+		});
 
 		pauseresume.setDisable(true);
 		step.setDisable(true);
@@ -224,8 +226,10 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		
 	}
 	private void validateInput() {
-		validateInput(gitMoving,filesMoving,"gitMoving","movingObjects");
-		validateInput(gitStatic,filesStatic,"gitStatic","staticObjects");
+		new Thread(()->{
+			validateInput(gitMoving,filesMoving,"gitMoving","movingObjects");
+			validateInput(gitStatic,filesStatic,"gitStatic","staticObjects");
+		}).start();
 	}
 	private void validateInput(TextField text,ComboBox<String> box,String key,String key2) {
 		box.getItems().clear();
@@ -245,29 +249,29 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			}
 		}
 		box.setDisable(false);
-		new Thread(()->{
-			try {
-				ArrayList<String> files = ScriptingEngine.filesInGit(text2);
-				
-				for(String name:files) {
-					BowlerStudio.runLater(()->box.getItems().add(name));
-				}
-				String file=ConfigurationDatabase.getObject("PhysicsWidget",key2 ,"").toString();
-				if(file.length()>0) {
-					boolean hasFile=false;
-					for(String s:files)
-						if(s.contentEquals(file)) hasFile=true;
-					if(!hasFile)
-						return;
-					Thread.sleep(16*files.size());
-					BowlerStudio.runLater(()->box.getSelectionModel().select(file));
-					updateObjects();
-				}
-			} catch (Exception e) {
-				BowlerStudio.runLater(()->box.setDisable(true));
-				e.printStackTrace();
+		
+		try {
+			ArrayList<String> files = ScriptingEngine.filesInGit(text2);
+			
+			for(String name:files) {
+				BowlerStudio.runLater(()->box.getItems().add(name));
 			}
-		}).start();
+			String file=ConfigurationDatabase.getObject("PhysicsWidget",key2 ,"").toString();
+			if(file.length()>0) {
+				boolean hasFile=false;
+				for(String s:files)
+					if(s.contentEquals(file)) hasFile=true;
+				if(!hasFile)
+					return;
+				Thread.sleep(16*files.size());
+				BowlerStudio.runLater(()->box.getSelectionModel().select(file));
+				updateObjects();
+			}
+		} catch (Exception e) {
+			BowlerStudio.runLater(()->box.setDisable(true));
+			e.printStackTrace();
+		}
+	
 	}
 	private void updateObjects() {
 		new Thread(()->{
