@@ -227,6 +227,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		box.getItems().clear();
 		box.setDisable(true);
 		String text2 = text.getText();
+		ConfigurationDatabase.setObject("PhysicsWidget",key ,text2);
 		if(!text2.endsWith(".git"))
 			return;
 		if(text2.length()<=5)
@@ -247,7 +248,6 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 				for(String name:files) {
 					BowlerStudio.runLater(()->box.getItems().add(name));
 				}
-				ConfigurationDatabase.setObject("PhysicsWidget",key ,text2);
 				String file=ConfigurationDatabase.getObject("PhysicsWidget",key2 ,"").toString();
 				if(file.length()>0) {
 					box.getSelectionModel().select(file);
