@@ -250,7 +250,8 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 				}
 				String file=ConfigurationDatabase.getObject("PhysicsWidget",key2 ,"").toString();
 				if(file.length()>0) {
-					box.getSelectionModel().select(file);
+					
+					BowlerStudio.runLater(()->box.getSelectionModel().select(file));
 					updateObjects();
 				}
 			} catch (Exception e) {
