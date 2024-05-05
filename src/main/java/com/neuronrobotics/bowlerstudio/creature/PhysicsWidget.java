@@ -16,6 +16,8 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
+
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -28,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -251,7 +254,12 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 				}
 				String file=ConfigurationDatabase.getObject("PhysicsWidget",key2 ,"").toString();
 				if(file.length()>0) {
-					
+					boolean hasFile=false;
+					for(String s:files)
+						if(s.contentEquals(file)) hasFile=true;
+					if(!hasFile)
+						return;
+					Thread.sleep(16*files.size());
 					BowlerStudio.runLater(()->box.getSelectionModel().select(file));
 					updateObjects();
 				}
@@ -283,7 +291,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		try {
 			movingObjects=null;
 			String selectedItem = filesMoving.getSelectionModel().getSelectedItem();
-			movingObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitMoving.getText(), selectedItem);
+			movingObjects=loadObjects(gitMoving.getText(),selectedItem);
 			ConfigurationDatabase.setObject("PhysicsWidget","movingObjects" ,selectedItem);
 
 		} catch (Exception e) {
@@ -293,7 +301,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		try {
 			staticObjects=null;
 			String selectedItem = filesStatic.getSelectionModel().getSelectedItem();
-			staticObjects=(ArrayList<CSG>) ScriptingEngine.gitScriptRun(gitStatic.getText(), selectedItem);
+			staticObjects=loadObjects(gitStatic.getText(), selectedItem);
 			ConfigurationDatabase.setObject("PhysicsWidget","staticObjects" ,selectedItem);
 
 		} catch (Exception e) {
@@ -308,6 +316,28 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		if(staticObjects!=null) {
 			for(CSG c:staticObjects) {
 				BowlerStudioController.addObject(c,null);
+			}
+		}
+	}
+	private ArrayList<CSG> loadObjects(String url,String selectedItem) throws Exception {
+		ArrayList<CSG> ret= new ArrayList<CSG>();
+		Object o=ScriptingEngine.gitScriptRun(url, selectedItem);
+		load(o,ret);
+		return ret;
+	}
+	private void load(Object o,ArrayList<CSG> storage) {
+		if(CSG.class.isInstance(o))
+			storage.add((CSG)o);
+		if(ArrayList.class.isInstance(o)) {
+			ArrayList l=(ArrayList)o;
+			for(int i=0;i<l.size();i++) {
+				load(l.get(i),storage);
+			}
+		}
+		if(Map.class.isInstance(o)) {
+			Map l=(Map)o;
+			for(Object x:l.keySet()) {
+				load(l.get(x),storage);
 			}
 		}
 	}
