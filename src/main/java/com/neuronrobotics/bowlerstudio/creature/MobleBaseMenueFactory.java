@@ -130,25 +130,9 @@ public class MobleBaseMenueFactory {
 
 		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
 			try {
-				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
 
 				callbackMapForTreeitems.put(save, () -> {
-					
-					OutputStream out = null;
-					try {
-						out = FileUtils.openOutputStream(source, false);
-						IOUtils.write(device.getXml(), out, Charset.defaultCharset());
-						out.close(); // don't swallow close Exception if copy completes
-						// normally
-					} catch(Throwable t){
-						t.printStackTrace();
-					}finally {
-						try {
-							out.close();
-						} catch (IOException e) {
-							
-						}
-					}
+					saveToXML(device);
 				});
 			} catch (Exception e) {
 				Log.error(device.getGitSelfSource()[0] + " " + device.getGitSelfSource()[1] + " failed to load");
@@ -237,6 +221,8 @@ public class MobleBaseMenueFactory {
 					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -422,6 +408,8 @@ public class MobleBaseMenueFactory {
 					System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -444,6 +432,7 @@ public class MobleBaseMenueFactory {
 					System.out.println("Steerable has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -500,6 +489,7 @@ public class MobleBaseMenueFactory {
 					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+
 				} catch (Exception e) {
 					new IssueReportingExceptionHandler().except(e);
 
@@ -552,6 +542,42 @@ public class MobleBaseMenueFactory {
 			new IssueReportingExceptionHandler().except(e);
 		}
 	}
+	
+	private static void reload(MobileBase device) {
+		saveToXML(device);
+		String[]source=device.getGitSelfSource();
+		device.disconnect();
+		try {
+			MobileBase reloaded=MobileBaseLoader.fromGit(source[0], source[1]);
+			BowlerStudio.loadMobilBaseIntoUI(reloaded);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private static void saveToXML(MobileBase device) {
+		OutputStream out = null;
+		try {
+			File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+
+			out = FileUtils.openOutputStream(source, false);
+			IOUtils.write(device.getXml(), out, Charset.defaultCharset());
+			out.close(); // don't swallow close Exception if copy completes
+			// normally
+		} catch(Throwable t){
+			t.printStackTrace();
+		}finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				
+			}
+		}
+	}
+	
+	
 
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
 		return new Thread() {
@@ -717,7 +743,7 @@ public class MobleBaseMenueFactory {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						creatureLab.generateCad();
+						reload(base);
 					}
 				}.start();
 			}

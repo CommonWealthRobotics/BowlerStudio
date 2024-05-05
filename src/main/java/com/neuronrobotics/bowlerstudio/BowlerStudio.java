@@ -73,6 +73,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -535,15 +536,20 @@ public class BowlerStudio extends Application {
 						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"https://github.com/OperationSmallKat/Katapult.git"
 						);
-				renderSplashFrame(92, "Vitamin Scripts...");
-				for(String type:Vitamins.listVitaminTypes()) {
-					String url= Vitamins.getScriptGitURL(type);
-					ensureUpdated(url);
-				}
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 						"hotfix.groovy", null);
 				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
 						"loadAll.groovy", null);
+				renderSplashFrame(92, "Vitamin Scripts...");
+				new Thread(()->{
+					HashSet<String> urls = new HashSet<>();
+					for(String type:Vitamins.listVitaminTypes()) {
+						String url= Vitamins.getScriptGitURL(type);
+						urls.add(url);
+					}
+					for(String url:urls)
+						ensureUpdated(url);
+				}).start();
 			} catch (Exception e) {
 				e.printStackTrace();
 				reporter.uncaughtException(Thread.currentThread(), e);
@@ -996,5 +1002,8 @@ public class BowlerStudio extends Application {
 	}
 	public static TransformNR getTargetFrame() {
 		return CreatureLab3dController.getEngine().getTargetNR();
+	}
+	public static void loadMobilBaseIntoUI(MobileBase base) {
+		BowlerStudioController.getBowlerStudio().onScriptFinished(base, base, null);
 	}
 }
