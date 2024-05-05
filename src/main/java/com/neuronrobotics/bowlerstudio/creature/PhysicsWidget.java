@@ -154,9 +154,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);
 						ArrayList<MobileBase> bases=new ArrayList<>();
 						bases.add(base);
-						File cache = new File(
-								ScriptingEngine.getRepositoryCloneDirectory(
-										base.getGitSelfSource()[0]).getAbsolutePath()+"/physics/");
+						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/physics-"+base.getScriptingName());
 						try {
 							mujoco = new MuJoCoPhysicsManager(base.getScriptingName(),bases,movingObjects,staticObjects,cache);
 							
