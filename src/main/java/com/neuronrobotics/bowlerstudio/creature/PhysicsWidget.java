@@ -232,8 +232,8 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		}).start();
 	}
 	private void validateInput(TextField text,ComboBox<String> box,String key,String key2) {
-		box.getItems().clear();
-		box.setDisable(true);
+		BowlerStudio.runLater(()->box.getItems().clear());
+		BowlerStudio.runLater(()->box.setDisable(true));
 		String text2 = text.getText();
 		ConfigurationDatabase.setObject("PhysicsWidget",key ,text2);
 		if(!text2.endsWith(".git"))
@@ -248,7 +248,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 				return;
 			}
 		}
-		box.setDisable(false);
+		BowlerStudio.runLater(()->box.setDisable(false));
 		
 		try {
 			ArrayList<String> files = ScriptingEngine.filesInGit(text2);
