@@ -325,6 +325,8 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	}
 	private ArrayList<CSG> loadObjects(String url,String selectedItem) throws Exception {
 		ArrayList<CSG> ret= new ArrayList<CSG>();
+		if(url==null||selectedItem==null)
+			return ret;
 		Object o=ScriptingEngine.gitScriptRun(url, selectedItem);
 		load(o,ret);
 		return ret;
