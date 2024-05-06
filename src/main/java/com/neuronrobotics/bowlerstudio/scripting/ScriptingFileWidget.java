@@ -444,7 +444,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 								}
 							}
 							if(enableArraange) {
-								Platform.runLater(()->{arrange.setDisable(false);});
+								BowlerStudio.runLater(()->{arrange.setDisable(false);});
 								if (git != null && isArrange) {
 									manager = new PrintBedManager(git, cache);
 									obj=manager.get();
