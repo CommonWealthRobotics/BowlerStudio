@@ -205,7 +205,7 @@ public class VitatminWidget implements IOnTransformChange {
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
 		// TODO Auto-generated method stub
-
+		selectedVitamin.setLocation(newTrans);
 	}
 
 	@Override
