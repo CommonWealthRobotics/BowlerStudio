@@ -1387,9 +1387,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} // if a selection is called before the limb is loaded
 		resetMouseTime();
 	}
-
 	public void setSelectedCsg(CSG scg) {
-		if (scg == this.selectedCsg || focusing || scg == null)
+		setSelectedCsg(scg,false);
+	}
+	public void setSelectedCsg(CSG scg, boolean justHighlight) {
+		if (scg == this.selectedCsg )
+			return;
+		if ( focusing )
+			return;
+		if (scg == null)
 			return;
 		this.selectedCsg = scg;
 
@@ -1403,46 +1409,37 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			});
 		}
 		lastSelectedTime = System.currentTimeMillis();
-		// System.err.println("Selecting a CSG");
 
-		// System.err.println("Selecting one");
-
-//		FxTimer.runLater(java.time.Duration.ofMillis(1),
-//
-//				new Runnable() {
-//					@Override
-//					public void run() {
 		BowlerStudio.runLater(() -> {
 			try {
 				getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 			} catch (Exception e) {
 			}
 		});
-//					}
-		// });
-		// System.out.println("Selecting "+selectedCsg);
-		double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
-		double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
-		double zcenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
-
-		TransformNR poseToMove = new TransformNR();
-		CSG finalCSG = selectedCsg;
-		if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-			finalCSG = finalCSG.movex(-xcenter);
-			poseToMove.translateX(xcenter);
+		if(!justHighlight) {
+			double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
+			double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
+			double zcenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
+	
+			TransformNR poseToMove = new TransformNR();
+			CSG finalCSG = selectedCsg;
+			if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
+				finalCSG = finalCSG.movex(-xcenter);
+				poseToMove.translateX(xcenter);
+			}
+			if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
+				finalCSG = finalCSG.movey(-ycenter);
+				poseToMove.translateY(ycenter);
+			}
+			if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
+				finalCSG = finalCSG.movez(-zcenter);
+				poseToMove.translateZ(zcenter);
+			}
+	
+			Affine manipulator2 = selectedCsg.getManipulator();
+	
+			focusToAffine(poseToMove, manipulator2);
 		}
-		if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-			finalCSG = finalCSG.movey(-ycenter);
-			poseToMove.translateY(ycenter);
-		}
-		if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-			finalCSG = finalCSG.movez(-zcenter);
-			poseToMove.translateZ(zcenter);
-		}
-
-		Affine manipulator2 = selectedCsg.getManipulator();
-
-		focusToAffine(poseToMove, manipulator2);
 		resetMouseTime();
 	}
 

@@ -416,6 +416,9 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void setSelectedCsg(CSG obj) {
 		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
+	public static void highlightCsg(CSG obj) {
+		CreatureLab3dController.getEngine().setSelectedCsg(obj,true);
+	}
 	public static void setSelectedCsg(Vector3d v) {
 		Affine manipulator2 = new Affine();
 		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
