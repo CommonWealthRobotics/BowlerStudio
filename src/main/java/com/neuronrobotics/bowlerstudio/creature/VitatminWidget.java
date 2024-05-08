@@ -18,6 +18,7 @@ import com.neuronrobotics.sdk.addons.kinematics.VitaminFrame;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import eu.mihosoft.vrl.v3d.CSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -183,6 +184,8 @@ public class VitatminWidget implements IOnTransformChange {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			TransformNR poseToMove = currentTipProvider.get(selectedVitamin).copy();
 			//poseToMove.setRotation(new RotationNR());
+			CSG current = manager.getVitaminDisplay(selectedVitamin, af, poseToMove);
+			BowlerStudioController.highlightCsg(current);
 			BowlerStudioController.targetAndFollow(poseToMove,af);
 		} catch (Exception e) {
 			//e.printStackTrace();
