@@ -569,6 +569,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
 		infomenu.getItems().add(new MenuItem("Name= " + currentCsg.getName()));
+		infomenu.getItems().add(new MenuItem("Mass = " + (currentCsg.getMassKG(0.001)*1000)+" grams "));
 		infomenu.getItems().add(new MenuItem("Total X= " + currentCsg.getTotalX()));
 		infomenu.getItems().add(new MenuItem("Total Y= " + currentCsg.getTotalY()));
 		infomenu.getItems().add(new MenuItem("Total Z= " + currentCsg.getTotalZ()));
