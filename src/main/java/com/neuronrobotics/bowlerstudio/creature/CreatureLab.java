@@ -48,7 +48,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	Parent root;
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();
-
+	boolean stateOfAutoWhenForced = true;
 	private long timeSinceLastUpdate = 0;
 
 	private GridPane radioOptions;
@@ -72,14 +72,15 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		this.pm = pm;
 		autoRegen.setSelected(true);
 
-		disable();
 		autoRegen.setOnAction(event -> {
+			stateOfAutoWhenForced = autoRegen.isSelected();
 			baseManager.setAutoRegen(autoRegen.isSelected());
 			//BowlerStudio.runLater(() -> {
 				regenFromUiEvent();
 			//});
 		});
 		regen.setOnAction(event -> {
+			stateOfAutoWhenForced = autoRegen.isSelected();
 			autoRegen.setSelected(true);
 			baseManager.setAutoRegen(true);
 			//BowlerStudio.runLater(()->{
@@ -135,7 +136,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		timeSinceLastUpdate = System.currentTimeMillis();
 		BowlerStudio.runLater(() -> {
 			if (autoRegen.isSelected()) {
-				disable();
 				generateCad();
 			}
 		});
@@ -256,7 +256,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb1.setToggleGroup(group);
 		rb1.setSelected(true);
 		rb1.setOnAction(event -> {
-				disable();
+				//disable();
 			//autoRegen.setText("Auto-Generate CAD");
 			regen.setText("Generate CAD Now");
 			
@@ -268,7 +268,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb2.setToggleGroup(group);
 		rb2.fire();
 		rb2.setOnAction(event -> {
-				disable();
+				//disable();
 		
 			//autoRegen.setText("Auto-Generate Vitamins");
 			regen.setText("Generate Vitamins Now");
@@ -301,12 +301,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				} catch (InterruptedException e) {
 					return;
 				}
-				if(!enabled)
-					if(d>0.999) {
-						enabled=true;
-							enable();
-						
-					}
+//				if(d>0.999) {
+//					//System.out.println("Re-enabled from availible thread "+d);
+//					enable();
+//				}else {
+//					disable();
+//				}
+				
 			}
 		}).start();
 		//HBox progressIndicatorPanel = new HBox(10);
@@ -325,7 +326,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
-		generateCad();
+		//generateCad();
 
 //		pi.progressProperty().addListener((observable,  oldValue,  newValue)-> {
 //				//System.out.println("Progress listener " + newValue);
@@ -342,10 +343,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 //		});
 	}
 	private void disable() {
-		
 		enabled=false;
-		if(baseManager!=null)
-			baseManager.getProcesIndictor().set(0);
 		BowlerStudio.runLater(() -> {
 			autoRegen.setDisable(true);
 			if (radioOptions != null)
@@ -375,12 +373,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void generateCad() {
+		new RuntimeException().printStackTrace();
+		if(!enabled)
+			return;
 		disable();
-		
 		baseManager.generateCadWithEnd(()->{
-			
 				enable();
-			
+				autoRegen.setSelected(stateOfAutoWhenForced );
 		});
 	}
 
