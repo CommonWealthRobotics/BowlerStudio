@@ -75,6 +75,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			public void onConnect(BowlerAbstractDevice arg0) {}
 		});
 		GridPane controls=new GridPane();
+		BowlerStudio.setToRunButton(runstop);
 		controls.add(runstop,0,0);
 		controls.add(pauseresume,1,0);
 		controls.add(step,2,0);
@@ -143,8 +144,9 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 //				}.start();
 			}else{
 				//System.gc();// clean up any objects created by the physics engine
-				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
-				runstop.setText("Stop");
+//				runstop.setGraphic(AssetFactory.loadIcon("Stop.png"));
+//				runstop.setText("Stop");
+				BowlerStudio.setToStopButton(runstop);
 				msLoopTime.setDisable(true);
 				pauseresume.setDisable(false);
 				base.getImu().addvirtualListeners(this);
@@ -348,8 +350,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	}
 	
 	private void stopPhysics() {
-		runstop.setGraphic(AssetFactory.loadIcon("Run.png"));
-		runstop.setText("Run");
+		BowlerStudio.setToRunButton(runstop);
 		if(physicsThread!=null)
 			physicsThread.interrupt();
 		
