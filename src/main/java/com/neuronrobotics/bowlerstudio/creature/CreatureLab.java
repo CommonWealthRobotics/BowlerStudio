@@ -15,7 +15,6 @@ import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos; 
@@ -205,44 +204,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			});
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			JogMobileBase walkWidget = new JogMobileBase(device);
-			tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
+			tree.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Object>) (observable, oldValue, newValue) -> {
+				tree.autosize();
+				@SuppressWarnings("unchecked")
+				TreeItem<String> treeItem = (TreeItem<String>) newValue;
+				mainWidget(device, callbackMapForTreeitems, widgetMapForTreeitems, walkWidget, treeItem);
 
-				@Override
-				public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-					tree.autosize();
-					@SuppressWarnings("unchecked")
-					TreeItem<String> treeItem = (TreeItem<String>) newValue;
-					new Thread() {
-						public void run() {
-
-							if (callbackMapForTreeitems.get(treeItem) != null) {
-								callbackMapForTreeitems.get(treeItem).run();
-							}
-							AnchorPane box = hasWalking(device) ? tab.getControlsBox() : tab.getWalkingBox();
-							if (widgetMapForTreeitems.get(treeItem) != null) {
-
-								BowlerStudio.runLater(() -> {
-									box.getChildren().clear();
-									Parent g = widgetMapForTreeitems.get(treeItem);
-									box.getChildren().add(g);
-									AnchorPane.setTopAnchor(g, 0.0);
-									AnchorPane.setLeftAnchor(g, 0.0);
-									AnchorPane.setRightAnchor(g, 0.0);
-									AnchorPane.setBottomAnchor(g, 0.0);
-								});
-							} else {
-								BowlerStudio.runLater(() -> {
-									box.getChildren().clear();
-									if (hasWalking(device)) {
-										tab.setOverlayTopRight(walkWidget);
-									}
-								});
-							}
-						}
-
-					}.start();
-
-				}
 			});
 			if (hasWalking(device)) {
 				tab.setOverlayTopRight(walkWidget);
@@ -291,56 +258,52 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		pi = new ProgressIndicator(0);
 		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
-		//pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
-		new Thread(()->{
-			while(device.isAvailable()) {
-				double d = baseManager.getProcesIndictor().get();
-				pi.setProgress(d);
-				try {
-					Thread.sleep(30);
-				} catch (InterruptedException e) {
-					return;
-				}
-//				if(d>0.999) {
-//					//System.out.println("Re-enabled from availible thread "+d);
-//					enable();
-//				}else {
-//					disable();
-//				}
-				
-			}
-		}).start();
-		//HBox progressIndicatorPanel = new HBox(10);
+		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+
 		radioOptions.add(pi, 1, 0);
 		radioOptions.add(autoRegen, 1, 3);
 		radioOptions.add(regen,0,3);
 		
-		//progress.getChildren().addAll( regen,autoRegen, radioOptions);
-//		progressIndicatorPanel.getChildren().addAll( radioOptions,pi);
-//
-//		progressIndicatorPanel.setStyle("-fx-background-color: #FFFFFF;");
-//		progressIndicatorPanel.setOpacity(.7);
-//		progressIndicatorPanel.setMinHeight(100);
-//		progressIndicatorPanel.setPrefSize(325, 150);
+
 		tab.setOverlayTop(radioOptions);
 
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
 		setCadMode(true);// start the UI in config mode
-		//generateCad();
 
-//		pi.progressProperty().addListener((observable,  oldValue,  newValue)-> {
-//				//System.out.println("Progress listener " + newValue);
-//				if (newValue.doubleValue() > 0.99) {
-//					BowlerStudio.runLater(() -> {
-//						enable();
-//					});
-//				}else {
-//					BowlerStudio.runLater(() -> {
-//						disable();
-//					});
-//				}
-//			
-//		});
+	}
+
+	private void mainWidget(MobileBase device, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, JogMobileBase walkWidget,
+			TreeItem<String> treeItem) {
+		new Thread() {
+			public void run() {
+
+				if (callbackMapForTreeitems.get(treeItem) != null) {
+					callbackMapForTreeitems.get(treeItem).run();
+				}
+				AnchorPane box = hasWalking(device) ? tab.getControlsBox() : tab.getWalkingBox();
+				if (widgetMapForTreeitems.get(treeItem) != null) {
+
+					BowlerStudio.runLater(() -> {
+						box.getChildren().clear();
+						Parent g = widgetMapForTreeitems.get(treeItem);
+						box.getChildren().add(g);
+						AnchorPane.setTopAnchor(g, 0.0);
+						AnchorPane.setLeftAnchor(g, 0.0);
+						AnchorPane.setRightAnchor(g, 0.0);
+						AnchorPane.setBottomAnchor(g, 0.0);
+					});
+				} else {
+					BowlerStudio.runLater(() -> {
+						box.getChildren().clear();
+						if (hasWalking(device)) {
+							tab.setOverlayTopRight(walkWidget);
+						}
+					});
+				}
+			}
+
+		}.start();
 	}
 	private void disable() {
 		enabled=false;
