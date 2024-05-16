@@ -136,13 +136,17 @@ public class Axis extends Group {
 	}
 
 	private void showAll() {
-		for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText.getMesh(), yText.getMesh(), zText.getMesh())) {
-			try {
-				n.setPickOnBounds(false);
-				n.setMouseTransparent(true);
-				getChildren().add(n);
-			} catch (Exception e) {
+		try {
+			for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText.getMesh(), yText.getMesh(), zText.getMesh())) {
+				try {
+					n.setPickOnBounds(false);
+					n.setMouseTransparent(true);
+					getChildren().add(n);
+				} catch (Exception e) {
+				}
 			}
+		}catch(Exception ex) {
+			// no exception on exit
 		}
 	}
 
