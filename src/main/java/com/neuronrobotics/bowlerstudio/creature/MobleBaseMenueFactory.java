@@ -571,7 +571,7 @@ public class MobleBaseMenueFactory {
 		}finally {
 			try {
 				out.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				
 			}
 		}
