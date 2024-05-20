@@ -328,6 +328,8 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		ArrayList<CSG> ret= new ArrayList<CSG>();
 		if(url==null||selectedItem==null)
 			return ret;
+		ScriptingEngine.cloneRepo(url, null);
+		ScriptingEngine.pull(url);
 		Object o=ScriptingEngine.gitScriptRun(url, selectedItem);
 		load(o,ret);
 		return ret;

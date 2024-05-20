@@ -336,7 +336,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void generateCad() {
-		new RuntimeException().printStackTrace();
+		//new RuntimeException().printStackTrace();
 		if(!enabled)
 			return;
 		disable();
