@@ -117,7 +117,7 @@ public class GameControlThreadManager {
 			currentController.getRunStopButton().setText(currentController.getButtonRunText());
 			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
 			for(String classes : currentController.getRunStopButton().getStyleClass()) {
-				System.out.println("Clearing "+classes);
+				//System.out.println("Clearing "+classes);
 			}
 			BowlerStudio.setToRunButton(currentController.getRunStopButton());
 			currentController.getRunStopButton().setGraphic(currentController.getRunAsset());

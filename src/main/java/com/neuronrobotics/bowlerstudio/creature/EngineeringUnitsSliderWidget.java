@@ -94,10 +94,10 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue,
 					Boolean newPropertyValue) {
 				if (newPropertyValue) {
-					System.out.println("Textfield on focus");
+					//System.out.println("Textfield on focus");
 					editing = true;
 				} else {
-					System.out.println("Textfield out focus");
+					//System.out.println("Textfield out focus");
 					editing = false;
 				}
 			}
@@ -297,7 +297,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	 * @param jogIncrement the jogIncrement to set
 	 */
 	public void setJogIncrement(double j) {
-		System.out.println("Increment set to "+j+" "+units);
+		//System.out.println("Increment set to "+j+" "+units);
 		jogIncrement=Math.abs(j);
 		BowlerStudio.runLater(()->{
 			increment.setText(""+jogIncrement);
