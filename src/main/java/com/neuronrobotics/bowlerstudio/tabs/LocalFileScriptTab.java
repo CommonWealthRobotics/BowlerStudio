@@ -435,14 +435,14 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			timeSinceLastUpdate=now;
 
 			System.out.println("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
-			if (current.length() > MaxTextSize) {
-				textArea.setText(
-						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
-				textArea.setEnabled(false);
-			} else {
+//			if (current.length() > MaxTextSize) {
+//				textArea.setText(
+//						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
+//				textArea.setEnabled(false);
+//			} else {
 				if (!textArea.getText().contentEquals(content))
 					textArea.setText(current);
-			}
+			//}
 		}
 	}
 

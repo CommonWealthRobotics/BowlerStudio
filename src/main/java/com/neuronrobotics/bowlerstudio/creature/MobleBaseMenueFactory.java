@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class MobleBaseMenueFactory {
 
@@ -397,24 +398,65 @@ public class MobleBaseMenueFactory {
 
 			callbackMapForTreeitems.put(addFixed, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Fixed Wheel");
-				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-							"defaultFixed.xml")[0];
-					DHParameterKinematics newArm = new DHParameterKinematics(null,
-							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					newArm.setGitCadEngine(device.getGitCadEngine());
+				System.out.println("Adding Wheel");
+				
+				
+					HashMap<String, HashMap<String, Object>> options;
+					try {
+						options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+										"wheelOptions.json");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+					Set<String> optionsKeys = options.keySet();
+					BowlerStudio.runLater(() -> {
+						ChoiceDialog<String> d = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
 
-					System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
-					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
-							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-					
+						Optional<String> result = d.showAndWait();
+						if (result.isPresent())
+							new Thread(() -> {
+								String back = result.get();
+								HashMap<String,Object> values = options.get(back);
+								if (back.toLowerCase().contains("fixed")) {
+									try {
+										
+										String xmlContent = ScriptingEngine.codeFromGit(
+												values.get("scriptGit").toString(),
+												values.get("scriptFile").toString())[0];
+										DHParameterKinematics newArm = new DHParameterKinematics(null,
+												IOUtils.toInputStream(xmlContent, "UTF-8"));
+										newArm.setGitCadEngine(device.getGitCadEngine());
+	
+										System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
+										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+												creatureIsOwnedByUserTmp);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+								}else {
+									try {
+										MobileBase base = (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(), values.get("scriptFile").toString());
+										DHParameterKinematics newArm = base.getDrivable().get(0);
+										newArm.setGitCadEngine(device.getGitCadEngine());
+										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+												creatureIsOwnedByUserTmp);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+										return;
+									}
+								}
+							}).start();
+					});
 
+			
 			});
 			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
 					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
@@ -557,7 +599,7 @@ public class MobleBaseMenueFactory {
 		
 	}
 
-	private static void saveToXML(MobileBase device) {
+	public static void saveToXML(MobileBase device) {
 		OutputStream out = null;
 		try {
 			File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
@@ -666,6 +708,24 @@ public class MobleBaseMenueFactory {
 	private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
 		HashMap<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
 
+		searchForAllLinks(base, deviceMap);
+		for (Map.Entry<String, HashMap<Integer, Boolean>> entry : deviceMap.entrySet()) {
+			HashMap<Integer, Boolean> chans = entry.getValue();
+			for (int i = 0; i < 48; i++) {
+
+				if (chans.get(i) == null) {
+					System.err.println("Channel free: " + i + " on device " + entry.getKey());
+					confOfChannel.setDeviceScriptingName(entry.getKey());
+					confOfChannel.setHardwareIndex(i);
+					return;
+				}
+			}
+		}
+
+		throw new RuntimeException("No channels are availible on given devices");
+	}
+
+	private static void searchForAllLinks(MobileBase base, HashMap<String, HashMap<Integer, Boolean>> deviceMap) {
 		for (DHParameterKinematics dh : base.getAllDHChains()) {
 			for (LinkConfiguration conf : dh.getLinkConfigurations()) {
 				HashMap<Integer, Boolean> channelMap;
@@ -682,22 +742,11 @@ public class MobleBaseMenueFactory {
 					slavechannelMap = deviceMap.get(sl.getDeviceScriptingName());
 					slavechannelMap.put(sl.getHardwareIndex(), true);
 				}
-			}
-		}
-		for (Map.Entry<String, HashMap<Integer, Boolean>> entry : deviceMap.entrySet()) {
-			HashMap<Integer, Boolean> chans = entry.getValue();
-			for (int i = 0; i < 24; i++) {
-
-				if (chans.get(i) == null) {
-					System.err.println("Channel free: " + i + " on device " + entry.getKey());
-					confOfChannel.setDeviceScriptingName(entry.getKey());
-					confOfChannel.setHardwareIndex(i);
-					return;
+				if(dh.getFollowerMobileBase(conf)!=null) {
+					searchForAllLinks(dh.getFollowerMobileBase(conf),deviceMap);
 				}
 			}
 		}
-
-		throw new RuntimeException("No channels are availible on given devices");
 	}
 
 	private static void addAppendage(MobileBase base, TreeView<String> view,
@@ -719,7 +768,7 @@ public class MobleBaseMenueFactory {
 				new Thread() {
 					public void run() {
 						System.out.println("Your new limb: " + result.get());
-						newDevice.setScriptingName(result.get());
+						setDeviceName(newDevice, result.get());
 						ConnectionManager.addConnection(newDevice, newDevice.getScriptingName());
 						deviceList.add(newDevice);
 						for (LinkConfiguration conf : newDevice.getLinkConfigurations()) {
@@ -735,15 +784,22 @@ public class MobleBaseMenueFactory {
 
 						}
 
-						rootItem.setExpanded(true);
-						try {
-							loadSingleLimb(base, view, newDevice, rootItem, callbackMapForTreeitems,
-									widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						reload(base);
+					}
+
+					private void setDeviceName(DHParameterKinematics newDevice, String name) {
+						newDevice.setScriptingName(name);
+						for(int i=0;i<newDevice.getNumberOfLinks();i++) {
+							LinkConfiguration conf = newDevice.getLinkConfiguration(i);
+							conf.setName(result.get()+"_"+conf.getName());
+							MobileBase base  =newDevice.getFollowerMobileBase(i);
+							if(base!=null) {
+								base.setScriptingName(name+"_"+base.getScriptingName());
+								for(DHParameterKinematics kin:base.getAllDHChains()) {
+									setDeviceName(kin,name+"_"+kin.getScriptingName());
+								}
+							}
+						}
 					}
 				}.start();
 			}
