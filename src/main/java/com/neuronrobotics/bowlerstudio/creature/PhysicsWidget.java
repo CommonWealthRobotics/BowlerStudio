@@ -192,14 +192,18 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 								BowlerStudioController.addObject(mujoco.getAllCSG(),null );
 								ConfigurationDatabase.save();
 								try{
+									long timeSinceLastPrint=0;
 									while(isRun()){
 										while(isPause() && isTakestep()==false){
 											ThreadUtil.wait(0,100);
 										}
 										setTakestep(false);
 										long now;
-										if((now=mujoco.stepAndWait())>mujoco.getTimestepMilliSeconds()) {
-											System.err.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
+										if((now=mujoco.stepAndWait())>(3*mujoco.getTimestepMilliSeconds())) {
+											if(System.currentTimeMillis()-timeSinceLastPrint>500) {
+												timeSinceLastPrint=System.currentTimeMillis();
+												System.out.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
+											}
 										}
 									}
 								}catch(Exception e){
