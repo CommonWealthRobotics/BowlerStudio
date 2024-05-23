@@ -175,7 +175,7 @@ public class BowlerStudioMenuWorkspace {
 
 					new Thread(() -> {
 						for (String url : menu) {
-							System.out.println("Workspace : " + url);
+							//System.out.println("Workspace : " + url);
 							ArrayList<String> arrayList = (ArrayList<String>) getWorkspaceData().get(url);
 							if (arrayList != null)
 								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false, arrayList.get(0));
@@ -192,7 +192,7 @@ public class BowlerStudioMenuWorkspace {
 			ex.printStackTrace();
 		}
 		if (rankChanged) {
-			System.out.println("Sorting workspace...");
+			//System.out.println("Sorting workspace...");
 			new Thread(() -> {
 				ConfigurationDatabase.save();
 			}).start();
