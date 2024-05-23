@@ -45,6 +45,8 @@ public class BowlerStudioMenuWorkspace {
 					try {
 						String o = (String) getWorkspaceData().keySet().toArray()[i];
 						if (o.endsWith(".git")) {
+							boolean wasState = ScriptingEngine.isPrintProgress();
+							ScriptingEngine.setPrintProgress(false);
 							System.err.println("Pulling workspace " + o);
 							try {
 								if (!ScriptingEngine.isUrlAlreadyOpen(o))
@@ -59,6 +61,8 @@ public class BowlerStudioMenuWorkspace {
 								// ScriptingEngine.deleteRepo(o);
 								// i--;
 							}
+							ScriptingEngine.setPrintProgress(wasState);
+
 
 						} else {
 							getWorkspaceData().remove(o);
@@ -92,7 +96,7 @@ public class BowlerStudioMenuWorkspace {
 					data.add(menueMessage);
 					data.add(new Long(System.currentTimeMillis()).toString());
 					getWorkspaceData().put(url, data);
-					System.out.println("Workspace add: " + url);
+					//System.out.println("Workspace add: " + url);
 				}
 			}
 		// data = (ArrayList<String>) workspaceData.get(url);

@@ -547,12 +547,17 @@ public class BowlerStudio extends Application {
 					String url= Vitamins.getScriptGitURL(type);
 					urls.add(url);
 				}
-				for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
-					String url = iterator.next();
-					new Thread(()->{
-							ensureUpdated(url);
-					}).start();
-				}
+				new Thread(()->{
+					boolean wasState = ScriptingEngine.isPrintProgress();
+					ScriptingEngine.setPrintProgress(false);
+					for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
+						String url = iterator.next();
+						
+								ensureUpdated(url);
+						
+					}
+					ScriptingEngine.setPrintProgress(wasState);
+				}).start();
 			} catch (Exception e) {
 				e.printStackTrace();
 				reporter.uncaughtException(Thread.currentThread(), e);

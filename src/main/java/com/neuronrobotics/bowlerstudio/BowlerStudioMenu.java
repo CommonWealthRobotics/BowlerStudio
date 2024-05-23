@@ -412,6 +412,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				for (GHGist gist : gists) {
 
 					String url = gist.getGitPushUrl();
+					
 					String desc = gist.getDescription();
 					if (desc == null || desc.length() == 0 || desc.contentEquals("Adding new file from BowlerStudio")) {
 						desc = gist.getFiles().keySet().toArray()[0].toString();
@@ -450,7 +451,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public static void setUpRepoMenue(Menu repoMenue, String url, boolean useAddToWorkspaceItem, boolean threaded) {
-		setUpRepoMenue(repoMenue, url, useAddToWorkspaceItem, threaded, gitURLtoMessage(url));
+		if(url.endsWith(".git"))
+			setUpRepoMenue(repoMenue, url, useAddToWorkspaceItem, threaded, gitURLtoMessage(url));
 	}
 
 	private static void resetRepoMenue(Menu repoMenue, GHRepository repo) {
