@@ -913,7 +913,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		hand = new Group(cylinder.getMesh());
 
 		camera.setNearClip(.1);
-		camera.setFarClip(100.0);
+		camera.setFarClip(1000.0);
 		getSubScene().setCamera(camera);
 
 		camera.setRotationAxis(Rotate.Z_AXIS);
