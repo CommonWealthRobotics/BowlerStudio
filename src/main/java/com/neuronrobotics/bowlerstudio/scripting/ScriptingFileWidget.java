@@ -395,7 +395,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			}
 		} catch (Exception e) {
 			// ignore CSG database
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
