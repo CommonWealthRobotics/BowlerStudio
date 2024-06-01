@@ -53,6 +53,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
@@ -221,6 +222,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private TransformNR poseToMove=new TransformNR();
 	
 	static {
+		//JavaFXInitializer.go();
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
@@ -233,7 +235,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public BowlerStudio3dEngine() {
 
 		System.err.println("Setting Scene ");
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
+		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.DISABLED));
 
 		// Set up the Ui THread explosion handler
 
@@ -563,7 +565,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 
 		MeshView current = getCsgMap().get(currentCsg);
-
+		current.setCullFace(javafx.scene.shape.CullFace.NONE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
@@ -1297,6 +1299,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSubScene(SubScene scene) {
 		System.out.println("Setting UI scene");
 		this.scene = scene;
+		
 	}
 
 	/**
