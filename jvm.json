@@ -3,13 +3,15 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"tar.gz",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-linux_x64"
+			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-linux_x64",
+			  "jvmargs":["-Dprism.forceGPU=true"]
 			  },
 "Linux-aarch64":{
 				"url":"https://cdn.azul.com/zulu/bin/.tar.gz"
 			 ,
 			  "type":"tar.gz",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-linux_aarch64"
+			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-linux_aarch64",
+			  "jvmargs":["-Dprism.forceGPU=true"]
 			  
 			  },
 "Windows-x64":{
@@ -22,13 +24,15 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_x64"
+			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_x64",
+			  "jvmargs":["-Dprism.forceGPU=true"]
 			  },
 "Mac-aarch64":{
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_aarch64"
+			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_aarch64",
+			  "jvmargs":["-Dprism.forceGPU=true"]
 			  }			  
 
 }
