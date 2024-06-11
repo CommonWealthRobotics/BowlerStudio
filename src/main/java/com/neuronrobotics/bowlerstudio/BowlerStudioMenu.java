@@ -216,7 +216,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
-			ConfigurationDatabase.loginEvent(null);
+			//ConfigurationDatabase.loginEvent(null);
 			this.username=null;
 		});
 		while(this.username!=null)
@@ -239,7 +239,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			logoutGithub.setText("Log out " + username);
 			new Thread() {
 				public void run() {
-					ConfigurationDatabase.loginEvent(username);
+					//ConfigurationDatabase.loginEvent(username);
 					ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())

@@ -413,7 +413,6 @@ public class BowlerStudio extends Application {
 					} catch (Throwable t) {
 						System.err.println("Resetting the configs repo...");
 						// clear the configs repo
-						ScriptingEngine.deleteRepo(ConfigurationDatabase.getGitSource());
 						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 								StudioBuildInfo.getVersion());
 					}
