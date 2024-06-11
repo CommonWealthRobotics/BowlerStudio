@@ -1,8 +1,10 @@
-package com.neuronrobotics.bowlerstudio.scripting;
+package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.io.FileInputStream;
 
+import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;

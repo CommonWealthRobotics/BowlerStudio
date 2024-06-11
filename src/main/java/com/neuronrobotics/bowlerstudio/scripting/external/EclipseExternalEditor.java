@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerstudio.scripting;
+package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +20,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
 
 import javafx.scene.control.Button;

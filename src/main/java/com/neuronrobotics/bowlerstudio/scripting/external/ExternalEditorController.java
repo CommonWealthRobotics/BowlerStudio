@@ -1,10 +1,12 @@
-package com.neuronrobotics.bowlerstudio.scripting;
+package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
+import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
