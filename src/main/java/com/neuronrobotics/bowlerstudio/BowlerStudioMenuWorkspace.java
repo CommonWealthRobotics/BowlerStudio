@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -15,7 +16,9 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
@@ -42,25 +45,26 @@ public class BowlerStudioMenuWorkspace {
 					try {
 						String o = (String) getWorkspaceData().keySet().toArray()[i];
 						if (o.endsWith(".git")) {
+							boolean wasState = ScriptingEngine.isPrintProgress();
+							ScriptingEngine.setPrintProgress(false);
 							System.err.println("Pulling workspace " + o);
 							try {
 								if (!ScriptingEngine.isUrlAlreadyOpen(o))
 									ScriptingEngine.pull(o);
-							} catch (Throwable e) {
-								try {
-									ScriptingEngine.pull(o);
-								} catch (InvalidRemoteException ex) {
-									System.err.println("Deleting repo from workspace " + ex.getMessage());
-									getWorkspaceData().remove(o);
-									ScriptingEngine.deleteRepo(o);
-								} catch (Throwable ex) {
-									e.printStackTrace();
-									getWorkspaceData().remove(o);
-									// ScriptingEngine.deleteRepo(o);
-									// i--;
-								}
+							} catch(WrongRepositoryStateException ex) {
+								// ignore, unsaved work
+							}catch (Exception e) {
+								BowlerStudioMenu.checkandDelete(o);
+							}catch (Throwable ex) {
+								ex.printStackTrace();
+								getWorkspaceData().remove(o);
+								// ScriptingEngine.deleteRepo(o);
+								// i--;
 							}
-						}else {
+							ScriptingEngine.setPrintProgress(wasState);
+
+
+						} else {
 							getWorkspaceData().remove(o);
 						}
 					} catch (Exception e) {
@@ -92,7 +96,7 @@ public class BowlerStudioMenuWorkspace {
 					data.add(menueMessage);
 					data.add(new Long(System.currentTimeMillis()).toString());
 					getWorkspaceData().put(url, data);
-					System.out.println("Workspace add: " + url);
+					//System.out.println("Workspace add: " + url);
 				}
 			}
 		// data = (ArrayList<String>) workspaceData.get(url);
@@ -171,7 +175,7 @@ public class BowlerStudioMenuWorkspace {
 
 					new Thread(() -> {
 						for (String url : menu) {
-							System.out.println("Workspace : " + url);
+							//System.out.println("Workspace : " + url);
 							ArrayList<String> arrayList = (ArrayList<String>) getWorkspaceData().get(url);
 							if (arrayList != null)
 								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false, arrayList.get(0));
@@ -188,7 +192,7 @@ public class BowlerStudioMenuWorkspace {
 			ex.printStackTrace();
 		}
 		if (rankChanged) {
-			System.out.println("Sorting workspace...");
+			//System.out.println("Sorting workspace...");
 			new Thread(() -> {
 				ConfigurationDatabase.save();
 			}).start();

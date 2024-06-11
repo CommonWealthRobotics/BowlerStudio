@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -149,10 +150,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Run");
-			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToRunButton(runfx);
 		});
 
 	}
@@ -218,6 +216,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			try {
 				image.setImage(AssetFactory
 						.loadAsset("Script-Tab-" + ScriptingEngine.getShellType(currentFile.getName()) + ".png"));
+				FontSizeManager.addListener(fontNum->{
+			    	  image.setScaleX(FontSizeManager.getImageScale());
+			    	  image.setScaleY(FontSizeManager.getImageScale());
+			      });
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -303,18 +305,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private void start() {
 		BowlerStudio.clearConsole();
-		try {
-			ScriptingEngine.setAutoupdate(true);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		running = true;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Stop");
-			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToStopButton(runfx);
 		});
 		scriptRunner = new Thread() {
 

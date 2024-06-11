@@ -45,6 +45,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javafx.scene.control.Tooltip;
 
 @SuppressWarnings("unused")
 public class ScriptingFileWidget extends BorderPane implements IFileChangeListener {
@@ -59,7 +60,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private ArrayList<IScriptEventListener> listeners = new ArrayList<>();
 
 	private Button runfx = new Button("Run");
-	private Button arrange = new Button("Arrange");
+	private Button arrange = new Button("Bed");
 
 	private Button publish = new Button("Save");
 
@@ -128,6 +129,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		});
 		publish.setTooltip(new Tooltip("Save this code to Git"));
 		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
+		
+		arrange.setMinWidth(80);
+		publish.setMinWidth(80);
+		
 
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -168,14 +173,18 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 																			// little bit
 			});
 		});
-		System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
+		
+		//System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
 			externalEditorController = new ExternalEditorController(currentFile, autoRun);
 		}catch(Throwable t) {
 			t.printStackTrace();
 		}
 
-		Button openFile = new Button("Open...");
+		Button openFile = new Button("Open");
+		openFile.setGraphic(AssetFactory.loadIcon("Folder.png"));
+		openFile.setMinWidth(85);
+		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		openFile.setOnAction(event -> {
 			new Thread(() -> {
 				Desktop desktop = Desktop.getDesktop();
@@ -188,7 +197,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			}).start();
 
 		});
-		 printbed = new Button("Export");
+		 printbed = new Button("STL");
+		 printbed.setMinWidth(80);
 		 printbed.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
 		 BowlerStudio.runLater(() -> {
 				printbed.setDisable(true);
@@ -207,7 +217,6 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		tooltip.setText("\nMake a print bed and export all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
 		printbed.setTooltip(tooltip);
 		
-		openFile.setTooltip(new Tooltip("Click here to open the file in the OS browser"));
 		controlPane.getChildren().add(runfx);
 		if (isOwnedByLoggedInUser) {
 			controlPane.getChildren().add(arrange);
@@ -218,10 +227,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(autoRun);
 		controlPane.getChildren().add(publish);
 		controlPane.getChildren().add(openFile);
-		controlPane.getChildren().add(new Label("file:"));
+		Label e = new Label("file:");
+		e.setMinWidth(30);
+		controlPane.getChildren().add(e);
 		controlPane.getChildren().add(fileNameBox);
 		fileNameBox.setMaxWidth(Double.MAX_VALUE);
-		controlPane.getChildren().add(new Label("git:"));
+		Label e2 = new Label("git:");
+		e2.setMinWidth(30);
+		controlPane.getChildren().add(e2);
 		controlPane.getChildren().add(fileListBox);
 		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
@@ -318,10 +331,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Run");
-			runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
+			BowlerStudio.setToRunButton(runfx);
 		});
 
 	}
@@ -385,21 +395,15 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			}
 		} catch (Exception e) {
 			// ignore CSG database
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
-		try {
-			ScriptingEngine.setAutoupdate(false);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		running = true;
 		BowlerStudio.runLater(() -> {
-			runfx.setText("Stop");
-			runfx.setGraphic(AssetFactory.loadIcon("Stop.png"));
-			runfx.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+			BowlerStudio.setToStopButton(runfx);
+			
 		});
 		scriptRunner = new Thread() {
 
@@ -440,7 +444,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 								}
 							}
 							if(enableArraange) {
-								Platform.runLater(()->{arrange.setDisable(false);});
+								BowlerStudio.runLater(()->{arrange.setDisable(false);});
 								if (git != null && isArrange) {
 									manager = new PrintBedManager(git, cache);
 									obj=manager.get();
@@ -537,9 +541,11 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			BowlerStudio.runLater(() -> {
 				// fileListBox.setMinWidth(remote.getBytes().length*10);
 				fileListBox.setText(remote);
+				fileListBox.setTooltip(new Tooltip(remote));
 				// fileListBox.res
 
 				fileNameBox.setText(findLocalPath);
+				fileNameBox.setTooltip(new Tooltip(findLocalPath));
 				// These values are display only, so if hte user tries to change them, they
 				// reset
 				// the use of text field for static dats is so the user cna copy the vlaues and

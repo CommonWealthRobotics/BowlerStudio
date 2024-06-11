@@ -1,6 +1,5 @@
 include ':libraries:bowler-script-kernel'
 include ':libraries:bowler-script-kernel:java-bowler'
-include ':libraries:bowler-script-kernel:JCSG'
 include ':libraries:dockfx'
 include ':libraries:bowler-script-kernel:GithubPasswordManager:GithubPasswordManager'
 rootProject.name = 'BowlerStudio'

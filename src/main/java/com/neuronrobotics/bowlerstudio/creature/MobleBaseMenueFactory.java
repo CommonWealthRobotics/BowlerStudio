@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -20,13 +21,17 @@ import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -40,11 +45,14 @@ import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class MobleBaseMenueFactory {
 
@@ -56,11 +64,42 @@ public class MobleBaseMenueFactory {
 	public static String[] copyGitFile(String sourceGit, String targetGit, String filename) {
 		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
+	
+	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
+			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems,ITransformProvider tfp) {
+		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
+				AssetFactory.loadIcon("Vitamins.png"));
+		HashMap<Parent,VitatminWidget> widget = new HashMap<>();
+		callbackMapForTreeitems.put(vitaminsMenu, () -> {
+			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
+				FXMLLoader loader;
+				try {
+					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml",true);
+					//loader.setClassLoader(VitatminWidget.class.getClassLoader());
+					Parent w = loader.load();
+					VitatminWidget tw = loader.getController();
+					tw.setVitaminProvider(vitamins,tfp);
+					
+					//Group value = new Group(w);
+					widgetMapForTreeitems.put(vitaminsMenu, w);
+					widget.put(w, tw);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			VitatminWidget tw = widget.get(widgetMapForTreeitems.get(vitaminsMenu));
+			if(tw!=null)
+				tw.fireVitaminSelectedUpdate();
+		});
+		rootItem.getChildren().add(vitaminsMenu);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static void load(MobileBase device, TreeView<String> view, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean root,
 			boolean creatureIsOwnedByUser) {
 
 		// boolean creatureIsOwnedByUser = false;
@@ -83,10 +122,24 @@ public class MobleBaseMenueFactory {
 
 		callbackMapForTreeitems.put(physics, () -> {
 			if (widgetMapForTreeitems.get(physics) == null) {
-				widgetMapForTreeitems.put(physics, new Group(new CreaturePhysicsWidget(device)));
+				widgetMapForTreeitems.put(physics, new Group(new PhysicsWidget(device)));
 
 			}
 		});
+		TreeItem<String> save;
+		save = new TreeItem<String>("Save to XML", AssetFactory.loadIcon("Save.png"));
+
+		if (!(device.getGitSelfSource()[0] == null || device.getGitSelfSource()[1] == null)) {
+			try {
+
+				callbackMapForTreeitems.put(save, () -> {
+					saveToXML(device);
+				});
+			} catch (Exception e) {
+				Log.error(device.getGitSelfSource()[0] + " " + device.getGitSelfSource()[1] + " failed to load");
+				e.printStackTrace();
+			}
+		}
 		TreeItem<String> publish;
 		publish = new TreeItem<String>("Publish", AssetFactory.loadIcon("Publish.png"));
 
@@ -104,10 +157,11 @@ public class MobleBaseMenueFactory {
 				e.printStackTrace();
 			}
 		}
-
+		rootItem.getChildren().addAll(save);
 		if (creatureIsOwnedByUser) {
-			if (root)
+			if (root) {
 				rootItem.getChildren().addAll(publish);
+			}
 
 		}
 
@@ -115,6 +169,7 @@ public class MobleBaseMenueFactory {
 				AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
 		if (root)
 			rootItem.getChildren().addAll(makeCopy);
+		rootItem.getChildren().addAll(physics);
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			BowlerStudio.runLater(() -> {
 				String oldname = device.getScriptingName();
@@ -158,13 +213,17 @@ public class MobleBaseMenueFactory {
 				System.out.println("Adding Leg");
 				String xmlContent;
 				try {
-					xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultleg.xml")[0];
 					DHParameterKinematics newLeg = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					String[] gitCadEngine = device.getGitCadEngine();
+					newLeg.setGitCadEngine(gitCadEngine);
 					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -339,20 +398,65 @@ public class MobleBaseMenueFactory {
 
 			callbackMapForTreeitems.put(addFixed, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Fixed Wheel");
-				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
-							"defaultFixed.xml")[0];
-					DHParameterKinematics newArm = new DHParameterKinematics(null,
-							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
-					addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem, callbackMapForTreeitems,
-							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println("Adding Wheel");
+				
+				
+					HashMap<String, HashMap<String, Object>> options;
+					try {
+						options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+										"wheelOptions.json");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+					Set<String> optionsKeys = options.keySet();
+					BowlerStudio.runLater(() -> {
+						ChoiceDialog<String> d = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
 
+						Optional<String> result = d.showAndWait();
+						if (result.isPresent())
+							new Thread(() -> {
+								String back = result.get();
+								HashMap<String,Object> values = options.get(back);
+								if (back.toLowerCase().contains("fixed")) {
+									try {
+										
+										String xmlContent = ScriptingEngine.codeFromGit(
+												values.get("scriptGit").toString(),
+												values.get("scriptFile").toString())[0];
+										DHParameterKinematics newArm = new DHParameterKinematics(null,
+												IOUtils.toInputStream(xmlContent, "UTF-8"));
+										newArm.setGitCadEngine(device.getGitCadEngine());
+	
+										System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
+										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+												creatureIsOwnedByUserTmp);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
+								}else {
+									try {
+										MobileBase base = (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(), values.get("scriptFile").toString());
+										DHParameterKinematics newArm = base.getDrivable().get(0);
+										newArm.setGitCadEngine(device.getGitCadEngine());
+										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+												creatureIsOwnedByUserTmp);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+										return;
+									}
+								}
+							}).start();
+					});
+
+			
 			});
 			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
 					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
@@ -361,13 +465,16 @@ public class MobleBaseMenueFactory {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Steerable Wheel");
 				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultSteerable.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					newArm.setGitCadEngine(device.getGitCadEngine());
+
+					System.out.println("Steerable has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -416,13 +523,15 @@ public class MobleBaseMenueFactory {
 				// TODO Auto-generated method stub
 				System.out.println("Adding Arm");
 				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://gist.github.com/b5b9450f869dd0d2ea30.git",
+					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
+					newArm.setGitCadEngine(device.getGitCadEngine());
 					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+
 				} catch (Exception e) {
 					new IssueReportingExceptionHandler().except(e);
 
@@ -460,8 +569,11 @@ public class MobleBaseMenueFactory {
 			});
 			
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
+			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, selected->{
+				 return device.forwardOffset(new TransformNR()); 
+			});
 			if (root)
-				rootItem.getChildren().addAll(physics,  printable,arrangeBed, kinematics);
+				rootItem.getChildren().addAll(  printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)
@@ -472,6 +584,42 @@ public class MobleBaseMenueFactory {
 			new IssueReportingExceptionHandler().except(e);
 		}
 	}
+	
+	private static void reload(MobileBase device) {
+		saveToXML(device);
+		String[]source=device.getGitSelfSource();
+		device.disconnect();
+		try {
+			MobileBase reloaded=MobileBaseLoader.fromGit(source[0], source[1]);
+			BowlerStudio.loadMobilBaseIntoUI(reloaded);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public static void saveToXML(MobileBase device) {
+		OutputStream out = null;
+		try {
+			File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
+
+			out = FileUtils.openOutputStream(source, false);
+			IOUtils.write(device.getXml(), out, Charset.defaultCharset());
+			out.close(); // don't swallow close Exception if copy completes
+			// normally
+		} catch(Throwable t){
+			t.printStackTrace();
+		}finally {
+			try {
+				out.close();
+			} catch (Exception e) {
+				
+			}
+		}
+	}
+	
+	
 
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
 		return new Thread() {
@@ -560,6 +708,24 @@ public class MobleBaseMenueFactory {
 	private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
 		HashMap<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
 
+		searchForAllLinks(base, deviceMap);
+		for (Map.Entry<String, HashMap<Integer, Boolean>> entry : deviceMap.entrySet()) {
+			HashMap<Integer, Boolean> chans = entry.getValue();
+			for (int i = 0; i < 48; i++) {
+
+				if (chans.get(i) == null) {
+					System.err.println("Channel free: " + i + " on device " + entry.getKey());
+					confOfChannel.setDeviceScriptingName(entry.getKey());
+					confOfChannel.setHardwareIndex(i);
+					return;
+				}
+			}
+		}
+
+		throw new RuntimeException("No channels are availible on given devices");
+	}
+
+	private static void searchForAllLinks(MobileBase base, HashMap<String, HashMap<Integer, Boolean>> deviceMap) {
 		for (DHParameterKinematics dh : base.getAllDHChains()) {
 			for (LinkConfiguration conf : dh.getLinkConfigurations()) {
 				HashMap<Integer, Boolean> channelMap;
@@ -576,28 +742,17 @@ public class MobleBaseMenueFactory {
 					slavechannelMap = deviceMap.get(sl.getDeviceScriptingName());
 					slavechannelMap.put(sl.getHardwareIndex(), true);
 				}
-			}
-		}
-		for (Map.Entry<String, HashMap<Integer, Boolean>> entry : deviceMap.entrySet()) {
-			HashMap<Integer, Boolean> chans = entry.getValue();
-			for (int i = 0; i < 24; i++) {
-
-				if (chans.get(i) == null) {
-					System.err.println("Channel free: " + i + " on device " + entry.getKey());
-					confOfChannel.setDeviceScriptingName(entry.getKey());
-					confOfChannel.setHardwareIndex(i);
-					return;
+				if(dh.getFollowerMobileBase(conf)!=null) {
+					searchForAllLinks(dh.getFollowerMobileBase(conf),deviceMap);
 				}
 			}
 		}
-
-		throw new RuntimeException("No channels are availible on given devices");
 	}
 
 	private static void addAppendage(MobileBase base, TreeView<String> view,
 			ArrayList<DHParameterKinematics> deviceList, DHParameterKinematics newDevice, TreeItem<String> rootItem,
 			TreeItem<String> topLevel, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) {
 
 		BowlerStudio.runLater(() -> {
@@ -613,7 +768,7 @@ public class MobleBaseMenueFactory {
 				new Thread() {
 					public void run() {
 						System.out.println("Your new limb: " + result.get());
-						newDevice.setScriptingName(result.get());
+						setDeviceName(newDevice, result.get());
 						ConnectionManager.addConnection(newDevice, newDevice.getScriptingName());
 						deviceList.add(newDevice);
 						for (LinkConfiguration conf : newDevice.getLinkConfigurations()) {
@@ -629,15 +784,22 @@ public class MobleBaseMenueFactory {
 
 						}
 
-						rootItem.setExpanded(true);
-						try {
-							loadSingleLimb(base, view, newDevice, rootItem, callbackMapForTreeitems,
-									widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						reload(base);
+					}
+
+					private void setDeviceName(DHParameterKinematics newDevice, String name) {
+						newDevice.setScriptingName(name);
+						for(int i=0;i<newDevice.getNumberOfLinks();i++) {
+							LinkConfiguration conf = newDevice.getLinkConfiguration(i);
+							conf.setName(result.get()+"_"+conf.getName());
+							MobileBase base  =newDevice.getFollowerMobileBase(i);
+							if(base!=null) {
+								base.setScriptingName(name+"_"+base.getScriptingName());
+								for(DHParameterKinematics kin:base.getAllDHChains()) {
+									setDeviceName(kin,name+"_"+kin.getScriptingName());
+								}
+							}
 						}
-						creatureLab.generateCad();
 					}
 				}.start();
 			}
@@ -648,7 +810,7 @@ public class MobleBaseMenueFactory {
 	private static TreeItem<String> loadLimbs(MobileBase base, TreeView<String> view,
 			ArrayList<DHParameterKinematics> drivable, String label, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> apps = new TreeItem<>(label,
@@ -668,7 +830,7 @@ public class MobleBaseMenueFactory {
 	private static LinkConfigurationWidget setHardwareConfig(MobileBase myBase, LinkConfiguration MyConf,
 			LinkFactory myLinkFactory, TreeItem<String> rootItem1,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems1,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems1) throws Exception {
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems1) throws Exception {
 
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
@@ -690,7 +852,7 @@ public class MobleBaseMenueFactory {
 	private static void loadSingleLink(int linkIndex, MobileBase base, TreeView<String> view, LinkConfiguration conf,
 			DHParameterKinematics dh, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner)
 			throws Exception {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink;
@@ -942,6 +1104,24 @@ public class MobleBaseMenueFactory {
 		
 
 		link.getChildren().addAll(design);
+		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,selected->{
+			Affine linkObjectManipulator = (Affine) dh.getLinkObjectManipulator(linkIndex);
+			TransformNR pose = TransformFactory.affineToNr(linkObjectManipulator);
+			if(selected.getFrame()==VitaminFrame.LinkOrigin) {
+				TransformNR step = dh.getDHStep(linkIndex).inverse();
+				pose=pose.times(step);
+			}
+			if(selected.getFrame()==VitaminFrame.previousLinkTip) {
+				Affine ll;
+				if(linkIndex==0) {
+					ll=(Affine) dh.getRootListener();
+				}else
+					ll = (Affine) dh.getLinkObjectManipulator(linkIndex-1);
+				pose = TransformFactory.affineToNr(ll);
+			}
+			return pose; 
+		});
+
 
 		link.getChildren().addAll(slaves, remove);
 		
@@ -951,7 +1131,7 @@ public class MobleBaseMenueFactory {
 
 	private static TreeItem<String> setUpNewMobileBaseEditor(TreeView<String> view,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
 			DHLink dhLink) {
 		TreeItem<String> mobile = new TreeItem<>( dhLink.getSlaveMobileBase().getScriptingName(),
 				AssetFactory.loadIcon("creature.png"));
@@ -962,7 +1142,7 @@ public class MobleBaseMenueFactory {
 	@SuppressWarnings("unchecked")
 	private static void loadSingleLimb(MobileBase base, TreeView<String> view, DHParameterKinematics dh,
 			TreeItem<String> rootItem, HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Group> widgetMapForTreeitems, CreatureLab creatureLab,
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab,
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(), AssetFactory.loadIcon("Move-Limb.png"));

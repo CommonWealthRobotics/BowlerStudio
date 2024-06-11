@@ -123,7 +123,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		for (String key : widgets.keySet()) {
 			widgets.get(key).setFontSize(size);
 		}
-		ConfigurationDatabase.setObject("BowlerStudioConfigs", "fontsize", size);
 	}
 
 	// Custom function for creation of New Tabs.
@@ -417,6 +416,9 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void setSelectedCsg(CSG obj) {
 		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
+	public static void highlightCsg(CSG obj) {
+		CreatureLab3dController.getEngine().setSelectedCsg(obj,true);
+	}
 	public static void setSelectedCsg(Vector3d v) {
 		Affine manipulator2 = new Affine();
 		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
@@ -425,6 +427,15 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void setSelectedCsg(TransformNR poseToMove) {
 		Affine manipulator2 = new Affine();
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
+	}
+	public static void setSelectedAffine(TransformNR poseToMove, Affine manipulator2) {
+		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
+	}
+	public static void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
+		CreatureLab3dController.getEngine().targetAndFollow(poseToMove, manipulator2);
+	}
+	public static void setSelectedAffine(Affine af) {
+		CreatureLab3dController.getEngine().focusToAffine(af);
 	}
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
@@ -660,6 +671,8 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
+
+	
 
 
 

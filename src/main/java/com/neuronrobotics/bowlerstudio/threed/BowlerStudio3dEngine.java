@@ -53,6 +53,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
@@ -217,7 +218,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private HBox controlsChecks;
 	private Thread autospingThread=null;
 	private CheckMenuItem showRuler;
+	private TransformNR targetNR;
+	private TransformNR poseToMove=new TransformNR();
+	
 	static {
+		//JavaFXInitializer.go();
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
@@ -230,7 +235,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public BowlerStudio3dEngine() {
 
 		System.err.println("Setting Scene ");
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
+		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.DISABLED));
 
 		// Set up the Ui THread explosion handler
 
@@ -560,12 +565,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		}
 
 		MeshView current = getCsgMap().get(currentCsg);
-
+		current.setCullFace(javafx.scene.shape.CullFace.NONE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
 		infomenu.getItems().add(new MenuItem("Name= " + currentCsg.getName()));
+		infomenu.getItems().add(new MenuItem("Mass = " + (currentCsg.getMassKG(0.001)*1000)+" grams "));
 		infomenu.getItems().add(new MenuItem("Total X= " + currentCsg.getTotalX()));
 		infomenu.getItems().add(new MenuItem("Total Y= " + currentCsg.getTotalY()));
 		infomenu.getItems().add(new MenuItem("Total Z= " + currentCsg.getTotalZ()));
@@ -909,7 +915,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		hand = new Group(cylinder.getMesh());
 
 		camera.setNearClip(.1);
-		camera.setFarClip(100.0);
+		//camera.setFarClip(1000.0);//this is set in VirtualCameraMobileBase
 		getSubScene().setCamera(camera);
 
 		camera.setRotationAxis(Rotate.Z_AXIS);
@@ -1111,7 +1117,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 							// reset only if an object is not being selected
 							if (lastClickedDifference < offset) {
 								cancelSelection();
-								// System.err.println("Cancel event detected");
+								System.err.println("Cancel event detected");
 							}
 						} else {
 							// System.err.println("too soon after a select
@@ -1184,23 +1190,27 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		scene.addEventHandler(ScrollEvent.ANY, t -> {
 			if (ScrollEvent.SCROLL == t.getEventType()) {
 
-				double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
-				//
-				// double z = camera.getTranslateY();
-				// double newZ = z + zoomFactor;
-				// camera.setTranslateY(newZ);
-				// System.out.println("Z = "+zoomFactor);
-
-				getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
+				double deltaY = t.getDeltaY();
+				zoomIncrement(deltaY);
 			}
 			t.consume();
 		});
 
 	}
 
-	private void moveCamera(TransformNR newPose) {
-		getFlyingCamera().DriveArc(newPose);
+	public void zoomIncrement(double deltaY) {
+		double zoomFactor = -deltaY * getVirtualcam().getZoomDepth() / 500;
+		//
+		// double z = camera.getTranslateY();
+		// double newZ = z + zoomFactor;
+		// camera.setTranslateY(newZ);
+		// System.out.println("Z = "+zoomFactor);
 
+		getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
+	}
+
+	public void moveCamera(TransformNR newPose) {
+		getFlyingCamera().DriveArc(newPose);
 	}
 
 	private void selectObjectsSourceFile(CSG source) {
@@ -1289,6 +1299,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	public void setSubScene(SubScene scene) {
 		System.out.println("Setting UI scene");
 		this.scene = scene;
+		
 	}
 
 	/**
@@ -1339,26 +1350,26 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		this.selectedCsg = null;
 		// new Exception().printStackTrace();
-		TransformNR startSelectNr = perviousTarget.copy();
-		TransformNR targetNR = new TransformNR();
-		Affine interpolator = new Affine();
-
-		BowlerStudio.runLater(() -> {
-			TransformFactory.nrToAffine(startSelectNr, interpolator);
-
-			removeAllFocusTransforms();
-
-			focusGroup.getTransforms().add(interpolator);
-
-			focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
-
-		});
+		focusToAffine(new TransformNR(), new Affine());
 		resetMouseTime();
 	}
-
-	public void setSelected(Affine rootListener) {
-		focusToAffine(new TransformNR(), rootListener);
+/**
+ * Select a provided affine that is in a given global pose
+ * @param startingLocation the starting pose
+ * @param rootListener what affine to attach to 
+ */
+	public void setSelected(TransformNR startingLocation,Affine rootListener) {
+		focusToAffine(startingLocation, rootListener);
 	}
+	
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param startingLocation the starting pose
+	 * @param rootListener what affine to attach to 
+	 */
+		public void setSelected(Affine rootListener) {
+			focusToAffine(new TransformNR(), rootListener);
+		}
 
 	public void setSelectedCsg(List<CSG> selectedCsg) {
 		// System.err.println("Selecting group");
@@ -1380,9 +1391,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		} // if a selection is called before the limb is loaded
 		resetMouseTime();
 	}
-
 	public void setSelectedCsg(CSG scg) {
-		if (scg == this.selectedCsg || focusing || scg == null)
+		setSelectedCsg(scg,false);
+	}
+	public void setSelectedCsg(CSG scg, boolean justHighlight) {
+		if (scg == this.selectedCsg )
+			return;
+		if ( focusing )
+			return;
+		if (scg == null)
 			return;
 		this.selectedCsg = scg;
 
@@ -1396,46 +1413,37 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			});
 		}
 		lastSelectedTime = System.currentTimeMillis();
-		// System.err.println("Selecting a CSG");
 
-		// System.err.println("Selecting one");
-
-//		FxTimer.runLater(java.time.Duration.ofMillis(1),
-//
-//				new Runnable() {
-//					@Override
-//					public void run() {
 		BowlerStudio.runLater(() -> {
 			try {
 				getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD));
 			} catch (Exception e) {
 			}
 		});
-//					}
-		// });
-		// System.out.println("Selecting "+selectedCsg);
-		double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
-		double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
-		double zcenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
-
-		TransformNR poseToMove = new TransformNR();
-		CSG finalCSG = selectedCsg;
-		if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-			finalCSG = finalCSG.movex(-xcenter);
-			poseToMove.translateX(xcenter);
+		if(!justHighlight) {
+			double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
+			double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
+			double zcenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
+	
+			TransformNR poseToMove = new TransformNR();
+			CSG finalCSG = selectedCsg;
+			if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
+				finalCSG = finalCSG.movex(-xcenter);
+				poseToMove.translateX(xcenter);
+			}
+			if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
+				finalCSG = finalCSG.movey(-ycenter);
+				poseToMove.translateY(ycenter);
+			}
+			if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
+				finalCSG = finalCSG.movez(-zcenter);
+				poseToMove.translateZ(zcenter);
+			}
+	
+			Affine manipulator2 = selectedCsg.getManipulator();
+	
+			focusToAffine(poseToMove, manipulator2);
 		}
-		if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-			finalCSG = finalCSG.movey(-ycenter);
-			poseToMove.translateY(ycenter);
-		}
-		if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-			finalCSG = finalCSG.movez(-zcenter);
-			poseToMove.translateZ(zcenter);
-		}
-
-		Affine manipulator2 = selectedCsg.getManipulator();
-
-		focusToAffine(poseToMove, manipulator2);
 		resetMouseTime();
 	}
 
@@ -1466,6 +1474,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 			} else {
 				targetNR = TransformFactory.affineToNr(centering);
 			}
+			this.poseToMove = targetNR;
 			Affine interpolator = new Affine();
 			Affine correction = TransformFactory.nrToAffine(reverseRotation);
 			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
@@ -1487,63 +1496,119 @@ public class BowlerStudio3dEngine extends JFXPanel {
 				// });
 			} catch (Exception ex) {
 
+				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
+			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
 		});
 	}
+	public void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
+		this.poseToMove = poseToMove;
+		if (focusing)
+			return;
+		if (manipulator2 == null) {
+			new RuntimeException("Can not focus on null affine").printStackTrace();
+			return;
+		}
+		focusing = true;
+		BowlerStudio.runLater(() -> {
+			Affine referenceFrame = TransformFactory.nrToAffine(poseToMove);
+			// this section keeps the camera orented the same way to avoid whipping
+			// around
 
+			TransformNR rotationOnlyCOmponentOfManipulator2 = poseToMove.copy();
+			rotationOnlyCOmponentOfManipulator2.setX(0);
+			rotationOnlyCOmponentOfManipulator2.setY(0);
+			rotationOnlyCOmponentOfManipulator2.setZ(0);
+			TransformNR reverseRotation2 = rotationOnlyCOmponentOfManipulator2.inverse();
+			Affine correction2 = TransformFactory.nrToAffine(reverseRotation2);
+			
+			TransformNR rotationOnlyCOmponentOfManipulator = TransformFactory.affineToNr(manipulator2);
+			rotationOnlyCOmponentOfManipulator.setX(0);
+			rotationOnlyCOmponentOfManipulator.setY(0);
+			rotationOnlyCOmponentOfManipulator.setZ(0);
+			TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
+			Affine correction = TransformFactory.nrToAffine(reverseRotation);
+
+			TransformNR startSelectNr = perviousTarget.copy();
+			// =
+									// TransformFactory.affineToNr(selectedCsg.getManipulat/or());
+
+			targetNR = poseToMove.times(TransformFactory.affineToNr(manipulator2));
+			
+			Affine interpolator = new Affine();
+			interpolator.setTx(startSelectNr.getX() - targetNR.getX());
+			interpolator.setTy(startSelectNr.getY() - targetNR.getY());
+			interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
+			removeAllFocusTransforms();
+			focusGroup.getTransforms().add(interpolator);
+			focusGroup.getTransforms().add(referenceFrame);
+			try {
+					focusGroup.getTransforms().add(manipulator2);
+					focusGroup.getTransforms().add(correction);
+					focusGroup.getTransforms().add(correction2);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
+		});
+	}
 	private void resetMouseTime() {
 		// System.err.println("Resetting mouse");
 		this.lastMosueMovementTime = System.currentTimeMillis();
 
 	}
 
-	private void focusInterpolate(TransformNR start, TransformNR target, int depth, int targetDepth,
+	private void focusInterpolate(TransformNR start, TransformNR target, int targetDepth,
 			Affine interpolator) {
-		double depthScale = 1 - (double) depth / (double) targetDepth;
-		double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
-
-		// double xIncrement =target.getX()- ((start.getX() - target.getX()) *
-		// depthScale) + start.getX();
-		double difference = start.getX() - target.getX();
-		double scaledDifference = (difference * sinunsoidalScale);
-
-		double xIncrement = scaledDifference;
-		double yIncrement = ((start.getY() - target.getY()) * sinunsoidalScale);
-		double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
-
-		BowlerStudio.runLater(() -> {
-			interpolator.setTx(xIncrement);
-			interpolator.setTy(yIncrement);
-			interpolator.setTz(zIncrement);
-		});
-		// System.err.println("Interpolation step " + depth + " x " + xIncrement
-		// + " y " + yIncrement + " z " + zIncrement);
-		if (depth < targetDepth) {
-			BowlerStudio.runLater(Duration.ofMillis(16), new Runnable() {
-				@Override
-				public void run() {
-					focusInterpolate(start, target, depth + 1, targetDepth, interpolator);
+		
+		new Thread(() -> {
+			int depth=0;
+			while (focusing) {
+				try {
+					Thread.sleep(16);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					focusing = false;
 				}
-			});
-		} else {
-			// System.err.println("Camera intrpolation done");
-			BowlerStudio.runLater(() -> {
-				focusGroup.getTransforms().remove(interpolator);
-			});
-			perviousTarget = target.copy();
-			perviousTarget.setRotation(new RotationNR());
-			focusing = false;
-		}
+				double depthScale = 1 - (double) depth / (double) targetDepth;
+				double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
+
+				// double xIncrement =target.getX()- ((start.getX() - target.getX()) *
+				// depthScale) + start.getX();
+				double difference = start.getX() - target.getX();
+				double scaledDifference = (difference * sinunsoidalScale);
+
+				double xIncrement = scaledDifference;
+				double yIncrement = ((start.getY() - target.getY()) * sinunsoidalScale);
+				double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
+
+				BowlerStudio.runLater(() -> {
+					interpolator.setTx(xIncrement);
+					interpolator.setTy(yIncrement);
+					interpolator.setTz(zIncrement);
+				});
+				// System.err.println("Interpolation step " + depth + " x " + xIncrement
+				// + " y " + yIncrement + " z " + zIncrement);
+				if (depth >= targetDepth) {
+					// System.err.println("Camera intrpolation done");
+					BowlerStudio.runLater(() -> {
+						focusGroup.getTransforms().remove(interpolator);
+					});
+					perviousTarget = target.copy();
+					perviousTarget.setRotation(new RotationNR());
+					focusing = false;
+				}
+
+				depth++;
+			}
+		}).start();
+
 
 	}
 
 	private void removeAllFocusTransforms() {
-		ObservableList<Transform> allTrans = focusGroup.getTransforms();
-		List<Object> toRemove = Arrays.asList(allTrans.toArray());
-		for (Object t : toRemove) {
-			allTrans.remove(t);
-		}
+		focusGroup.getTransforms().clear();
 	}
 
 	public HashMap<CSG, MeshView> getCsgMap() {
@@ -1604,6 +1669,15 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 */
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
+	}
+
+	public void focusToAffine(Affine af) {
+		focusToAffine(new TransformNR(),af);
+	}
+
+	public TransformNR getTargetNR() {
+		// TODO Auto-generated method stub
+		return poseToMove;
 	}
 
 }

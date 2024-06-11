@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -33,6 +34,10 @@ public class ExternalEditorController {
 				hasEditor=true;
 				myEditor=e;
 				image.setImage(e.getImage());
+				FontSizeManager.addListener(fontNum->{
+			    	  image.setScaleX(FontSizeManager.getImageScale());
+			    	  image.setScaleY(FontSizeManager.getImageScale());
+			      });
 				System.err.println("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
 				break;
 			}else {
@@ -45,16 +50,25 @@ public class ExternalEditorController {
 			advanced.setGraphic(image);
 			advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
 			advanced.setText(myEditor.nameOfEditor());
-			
+			advanced.setMinWidth(100);
+			advanced.setTextOverrun(javafx.scene.control.OverrunStyle.CLIP);
 			advanced.setOnAction(event -> {
 				advanced.setDisable(true);
 				myEditor.launch(currentFile,advanced);
 				//autoRun.setSelected(true);
 			});
+//			FontSizeManager.addListener(fontNum->{
+//		    	  advanced.setScaleX(FontSizeManager.getImageScale());
+//		    	  advanced.setScaleY(FontSizeManager.getImageScale());
+//		      });
 		}else {
 			try {
 				Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");
 				image.setImage(loadAsset);
+				FontSizeManager.addListener(fontNum->{
+			    	  image.setScaleX(FontSizeManager.getImageScale());
+			    	  image.setScaleY(FontSizeManager.getImageScale());
+			      });
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

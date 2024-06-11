@@ -4,6 +4,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
@@ -184,7 +185,14 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		vBox = new VBox(5);
 		vBox.getChildren().setAll(hBox, webView);
 		VBox.setVgrow(webView, Priority.ALWAYS);
-
+		FontSizeManager.addListener(fontNum -> {
+			double scale = ((double) fontNum - 10) / 12.0;
+			if (scale < 1)
+				scale = 1;
+			System.out.println("Web scale "+scale);
+			double s=scale;
+			BowlerStudio.runLater(() ->webView.setZoom(s));
+		});
 		myTab.setContent(vBox);
 		//Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {

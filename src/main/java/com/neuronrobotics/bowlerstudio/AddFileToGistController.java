@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -94,6 +95,12 @@ public class AddFileToGistController extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
+		FontSizeManager.addListener(fontNum->{
+			int tmp = fontNum-10;
+			if(tmp<12)
+				tmp=12;
+			root.setStyle("-fx-font-size: "+tmp+"pt");
+		});
 		extention.getItems().clear();
 		if (getGitRepo() != null) {
 			newProject.getChildren().clear();
@@ -114,6 +121,10 @@ public class AddFileToGistController extends Application {
 
 			icon = AssetFactory.loadAsset(asset);
 			langaugeIcon.setImage(icon);
+			FontSizeManager.addListener(fontNum->{
+		    	  langaugeIcon.setScaleX(FontSizeManager.getImageScale());
+		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
+		      });
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -147,6 +158,7 @@ public class AddFileToGistController extends Application {
 		Image loadAsset = AssetFactory.loadAsset(file);
 		try {
 		langaugeIcon.setImage(loadAsset);
+		
 		}catch(Throwable t) {
 			t.printStackTrace();
 		}
