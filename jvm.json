@@ -7,7 +7,7 @@
 			  "jvmargs":["-Dprism.forceGPU=true"]
 			  },
 "Linux-aarch64":{
-				"url":"https://cdn.azul.com/zulu/bin/.tar.gz"
+				"url":"https://cdn.azul.com/zulu/bin/"
 			 ,
 			  "type":"tar.gz",
 			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-linux_aarch64",
