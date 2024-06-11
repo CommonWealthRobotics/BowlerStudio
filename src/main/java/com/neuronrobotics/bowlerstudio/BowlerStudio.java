@@ -304,6 +304,12 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		if (args.length != 0) {
+			//System.err.println("Arguments detected, starting Kernel mode.");
+			//SplashManager.closeSplash();
+			BowlerKernel.main(args);
+			return;
+		}
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
@@ -366,206 +372,198 @@ public class BowlerStudio extends Application {
 				return BowlerStudio.getCamerDepth();
 			}
 		});
-		if (args.length != 0) {
-			System.err.println("Arguments detected, starting Kernel mode.");
-			SplashManager.closeSplash();
-			BowlerKernel.main(args);
-		} else {
-			renderSplashFrame(5, "Loging In...");
-			// ScriptingEngine.logout();
-			// switching to Web Flow auth
-			List<String> listOfScopes = Arrays.asList("repo", "gist", "user", "admin:org", "admin:org_hook",
-					"workflow");
-			if (OSUtil.isOSX())
-				GitHubWebFlow.setOpen(new IURLOpen() {
-					public void open(URI toOpe) {
-						try {
-							BowlerStudio.openExternalWebpage(toOpe.toURL());
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+
+		renderSplashFrame(5, "Loging In...");
+		// ScriptingEngine.logout();
+		// switching to Web Flow auth
+		List<String> listOfScopes = Arrays.asList("repo", "gist", "user", "admin:org", "admin:org_hook", "workflow");
+		if (OSUtil.isOSX())
+			GitHubWebFlow.setOpen(new IURLOpen() {
+				public void open(URI toOpe) {
+					try {
+						BowlerStudio.openExternalWebpage(toOpe.toURL());
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				});
-			PasswordManager.setListOfScopes(listOfScopes);
-			GitHubWebFlow.setMyAPI(() -> {
-				String line = System.getProperty("API-ID");
-				if (line != null)
-					return line;
-				return "1edf79fae494c232d4d2";
+				}
 			});
-			NameGetter mykey = new NameGetter();
-			GitHubWebFlow.setName(mykey);
-			String myAssets = AssetFactory.getGitSource();
-			if (PasswordManager.hasNetwork()) {
-				System.err.println("Attempt to log in with disk credentials");
-				ScriptingEngine.waitForLogin();
-				if (ScriptingEngine.isLoginSuccess()) {
+		PasswordManager.setListOfScopes(listOfScopes);
+		GitHubWebFlow.setMyAPI(() -> {
+			String line = System.getProperty("API-ID");
+			if (line != null)
+				return line;
+			return "1edf79fae494c232d4d2";
+		});
+		NameGetter mykey = new NameGetter();
+		GitHubWebFlow.setName(mykey);
+		String myAssets = AssetFactory.getGitSource();
+		if (PasswordManager.hasNetwork()) {
+			System.err.println("Attempt to log in with disk credentials");
+			ScriptingEngine.waitForLogin();
+			if (ScriptingEngine.isLoginSuccess()) {
 
 //					if (BowlerStudio.hasNetwork()) {
 //						ScriptingEngine.setAutoupdate(true);
 //
 //					}
-					renderSplashFrame(15, "Load Configs");
-					try {
-						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-								StudioBuildInfo.getVersion());
-					} catch (Throwable t) {
-						System.err.println("Resetting the configs repo...");
-						// clear the configs repo
-						firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
-								StudioBuildInfo.getVersion());
-					}
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion",
+				renderSplashFrame(15, "Load Configs");
+				try {
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
-					renderSplashFrame(16, "Done Load Configs");
+				} catch (Throwable t) {
+					System.err.println("Resetting the configs repo...");
+					// clear the configs repo
+					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
+							StudioBuildInfo.getVersion());
+				}
+				ConfigurationDatabase.setObject("BowlerStudioConfigs", "currentVersion", StudioBuildInfo.getVersion());
+				renderSplashFrame(16, "Done Load Configs");
 //					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
 //							myAssets);
-					renderSplashFrame(20, "DL'ing Image Assets");
-					System.err.println("Asset Repo " + myAssets);
+				renderSplashFrame(20, "DL'ing Image Assets");
+				System.err.println("Asset Repo " + myAssets);
 
-					System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
-					ScriptingEngine.cloneRepo(myAssets, null);
-					try {
-						ScriptingEngine.pull(myAssets, "main");
-						System.err.println("Studio version is the same");
-					} catch (Exception e) {
-						e.printStackTrace();
-						ScriptingEngine.deleteRepo(myAssets);
-						ScriptingEngine.cloneRepo(myAssets, null);
-					}
-
-					if (ScriptingEngine.checkOwner(myAssets)) {
-						if (!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
-							System.out.println("Tagging Assets at " + StudioBuildInfo.getVersion());
-							ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
-						}
-					}
-
-					if (BowlerStudio.hasNetwork()) {
-						renderSplashFrame(25, "Populating Menu");
-					}
-				} else {
-					renderSplashFrame(20, "DL'ing Image Assets");
-					ScriptingEngine.cloneRepo(myAssets, null);
-					ScriptingEngine.pull(myAssets, "main");
-				}
-			}
-			layoutFile = AssetFactory.loadFile("layout/default.css");
-			if (layoutFile == null || !layoutFile.exists()) {
-				ScriptingEngine.deleteRepo(myAssets);
+				System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
 				ScriptingEngine.cloneRepo(myAssets, null);
-				layoutFile = AssetFactory.loadFile("layout/default.css");
-			}
-			// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
-			renderSplashFrame(50, "DL'ing Tutorials...");
-			// load tutorials repo
-
-			Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
-			// force the current version in to the version number
-			// Download and Load all of the assets
-
-			renderSplashFrame(60, "Vitamins...");
-			// load the vitimins repo so the demo is always snappy
-			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
-
-			renderSplashFrame(80, "Example Robots");
-			ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", null);
-			ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git");
-			renderSplashFrame(81, "CSG database");
-			CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
-
-			// System.err.println("Loading assets ");
-
-			// System.err.println("Loading Main.fxml");
-			renderSplashFrame(81, "Find arduino");
-			String arduino = "arduino";
-			if (NativeResource.isLinux()) {
-
-				// Slic3r.setExecutableLocation("/usr/bin/slic3r");
-
-			} else if (NativeResource.isWindows()) {
-				arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
-				if (!new File(arduino).exists()) {
-					arduino = "C:\\Program Files\\Arduino\\arduino.exe";
+				try {
+					ScriptingEngine.pull(myAssets, "main");
+					System.err.println("Studio version is the same");
+				} catch (Exception e) {
+					e.printStackTrace();
+					ScriptingEngine.deleteRepo(myAssets);
+					ScriptingEngine.cloneRepo(myAssets, null);
 				}
 
-			} else if (NativeResource.isOSX()) {
-				arduino = "/Applications/Arduino.app/Contents/MacOS/Arduino";
-			}
-			try {
-				if (!new File(arduino).exists() && !NativeResource.isLinux()) {
-					boolean alreadyNotified = Boolean.getBoolean(ConfigurationDatabase
-							.getObject("BowlerStudioConfigs", "notifiedArduinoDep", false).toString());
-					if (!alreadyNotified) {
-						ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep", true);
-						String adr = arduino;
-
+				if (ScriptingEngine.checkOwner(myAssets)) {
+					if (!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
+						System.out.println("Tagging Assets at " + StudioBuildInfo.getVersion());
+						ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 					}
+				}
+
+				if (BowlerStudio.hasNetwork()) {
+					renderSplashFrame(25, "Populating Menu");
+				}
+			} else {
+				renderSplashFrame(20, "DL'ing Image Assets");
+				ScriptingEngine.cloneRepo(myAssets, null);
+				ScriptingEngine.pull(myAssets, "main");
+			}
+		}
+		layoutFile = AssetFactory.loadFile("layout/default.css");
+		if (layoutFile == null || !layoutFile.exists()) {
+			ScriptingEngine.deleteRepo(myAssets);
+			ScriptingEngine.cloneRepo(myAssets, null);
+			layoutFile = AssetFactory.loadFile("layout/default.css");
+		}
+		// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+		renderSplashFrame(50, "DL'ing Tutorials...");
+		// load tutorials repo
+
+		Tutorial.getHomeUrl(); // Dowload and launch the Tutorial server
+		// force the current version in to the version number
+		// Download and Load all of the assets
+
+		renderSplashFrame(60, "Vitamins...");
+		// load the vitimins repo so the demo is always snappy
+		ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git", null);
+
+		renderSplashFrame(80, "Example Robots");
+		ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", null);
+		ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git");
+		renderSplashFrame(81, "CSG database");
+		CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
+
+		// System.err.println("Loading assets ");
+
+		// System.err.println("Loading Main.fxml");
+		renderSplashFrame(81, "Find arduino");
+		String arduino = "arduino";
+		if (NativeResource.isLinux()) {
+
+			// Slic3r.setExecutableLocation("/usr/bin/slic3r");
+
+		} else if (NativeResource.isWindows()) {
+			arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
+			if (!new File(arduino).exists()) {
+				arduino = "C:\\Program Files\\Arduino\\arduino.exe";
+			}
+
+		} else if (NativeResource.isOSX()) {
+			arduino = "/Applications/Arduino.app/Contents/MacOS/Arduino";
+		}
+		try {
+			if (!new File(arduino).exists() && !NativeResource.isLinux()) {
+				boolean alreadyNotified = Boolean.getBoolean(
+						ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep", false).toString());
+				if (!alreadyNotified) {
+					ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep", true);
+					String adr = arduino;
 
 				}
-				System.err.println("Arduino exec found at: " + arduino);
-				ArduinoLoader.setARDUINOExec(arduino);
-			} catch (Exception e) {
-				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
-			renderSplashFrame(82, "Set up UI");
-			try {
-				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				// This is a workaround for #8 and is only relavent on osx
-				// it causes the SwingNodes not to load if not called way ahead
-				// of time
-				javafx.scene.text.Font.getFamilies();
-			} catch (Exception e) {
-				reporter.uncaughtException(Thread.currentThread(), e);
-
-			}
-			renderSplashFrame(90, "Loading STL Loader");
-			// Add the engine handeler for STLs
-			ScriptingEngine.addScriptingLanguage(new StlLoader());
-			// add a new link provider to the link factory
-			FirmataLink.addLinkFactory();
-			// Log.enableInfoPrint();
-			renderSplashFrame(91, "DL'ing Devices...");
-			// ThreadUtil.wait(100);
-
-			try {
-				ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
-						"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
-						"https://github.com/CommonWealthRobotics/DeviceProviders.git",
-						"https://github.com/OperationSmallKat/Katapult.git"
-						);
-				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
-						"hotfix.groovy", null);
-				ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
-						"loadAll.groovy", null);
-				renderSplashFrame(92, "Vitamin Scripts...");
-				HashSet<String> urls = new HashSet<>();
-				for(String type:Vitamins.listVitaminTypes()) {
-					String url= Vitamins.getScriptGitURL(type);
-					urls.add(url);
-				}
-				new Thread(()->{
-					boolean wasState = ScriptingEngine.isPrintProgress();
-					ScriptingEngine.setPrintProgress(false);
-					for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
-						String url = iterator.next();
-						
-								ensureUpdated(url);
-						
-					}
-					ScriptingEngine.setPrintProgress(wasState);
-				}).start();
-			} catch (Exception e) {
-				e.printStackTrace();
-				reporter.uncaughtException(Thread.currentThread(), e);
-
-			}
-			renderSplashFrame(92, "Launching UI");
-			launch();
+			System.err.println("Arduino exec found at: " + arduino);
+			ArduinoLoader.setARDUINOExec(arduino);
+		} catch (Exception e) {
+			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
+		renderSplashFrame(82, "Set up UI");
+		try {
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			// This is a workaround for #8 and is only relavent on osx
+			// it causes the SwingNodes not to load if not called way ahead
+			// of time
+			javafx.scene.text.Font.getFamilies();
+		} catch (Exception e) {
+			reporter.uncaughtException(Thread.currentThread(), e);
+
+		}
+		renderSplashFrame(90, "Loading STL Loader");
+		// Add the engine handeler for STLs
+		ScriptingEngine.addScriptingLanguage(new StlLoader());
+		// add a new link provider to the link factory
+		FirmataLink.addLinkFactory();
+		// Log.enableInfoPrint();
+		renderSplashFrame(91, "DL'ing Devices...");
+		// ThreadUtil.wait(100);
+
+		try {
+			ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
+					"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
+					"https://github.com/CommonWealthRobotics/DeviceProviders.git",
+					"https://github.com/OperationSmallKat/Katapult.git");
+			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
+					"hotfix.groovy", null);
+			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
+					"loadAll.groovy", null);
+			renderSplashFrame(92, "Vitamin Scripts...");
+			HashSet<String> urls = new HashSet<>();
+			for (String type : Vitamins.listVitaminTypes()) {
+				String url = Vitamins.getScriptGitURL(type);
+				urls.add(url);
+			}
+			new Thread(() -> {
+				boolean wasState = ScriptingEngine.isPrintProgress();
+				ScriptingEngine.setPrintProgress(false);
+				for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
+					String url = iterator.next();
+
+					ensureUpdated(url);
+
+				}
+				ScriptingEngine.setPrintProgress(wasState);
+			}).start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			reporter.uncaughtException(Thread.currentThread(), e);
+
+		}
+		renderSplashFrame(92, "Launching UI");
+		launch();
+		
 
 	}
 	
