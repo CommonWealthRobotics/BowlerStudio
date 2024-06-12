@@ -67,7 +67,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		this.advanced = advanced;
 		EclipseExternalEditor ee=this;
 		new Thread(() -> {
-			File exeFile = getExecutable("eclipse",null,null);
+			File exeFile = getExecutable("eclipse",null);
 			String eclipseEXE = exeFile.getAbsolutePath();
 
 			try {
@@ -167,7 +167,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
 					
-					run(this,ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
+					run(getEnvironment("eclipse"),this,ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -195,7 +195,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					}
 				}
-				run(this,dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
+				run(getEnvironment("eclipse"),this,dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

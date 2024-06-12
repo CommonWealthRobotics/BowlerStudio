@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
 
+import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.getEnvironment;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,6 +27,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -48,6 +51,7 @@ import com.neuronrobotics.video.OSUtil;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -56,7 +60,11 @@ public class DownloadManager {
 	private static String editorsURL= "https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git";
 	private static String 		bindir = System.getProperty("user.home") + "/bin/BowlerStudioInstall/";
 	private static int ev=0;
+	private static ButtonType buttonType=null;
 	public static Thread run(IExternalEditor editor,File dir, PrintStream out,String... finalCommand) {
+		return run(new HashMap<String,String>(),editor,dir,out,finalCommand);
+	}
+	public static Thread run(Map<String,String> env,IExternalEditor editor,File dir, PrintStream out,String... finalCommand) {
 		List<String> tnp = Arrays.asList(finalCommand);
 		String command ="";
 		out.println("Running:\n\n");
@@ -79,6 +87,12 @@ public class DownloadManager {
 				// creating the process
 				
 				ProcessBuilder pb = new ProcessBuilder(asList);
+				Map<String, String> envir = pb.environment();
+				// set environment variable u
+				envir.putAll(env);
+				for (String s : envir.keySet()) {
+					// System.out.println("Environment var set: "+s+" to "+envir.get(s));
+				}
 				// setting the directory
 				pb.directory(dir);
 				// startinf the process
@@ -136,8 +150,43 @@ public class DownloadManager {
 		thread.start();
 		return thread;
 	}
+	public static Map<String,String> getEnvironment(String exeType) {
+		String key = discoverKey();
+		
+		try {
+			for(String f:ScriptingEngine.filesInGit(editorsURL)) {
+				File file = ScriptingEngine.fileFromGit(editorsURL, f);
+				if( file.getName().toLowerCase().startsWith(exeType.toLowerCase())&&
+					file.getName().toLowerCase().endsWith(".json")) {
+					String jsonText = new String(Files.readAllBytes(file.toPath()));
+					Type TT_mapStringString = new TypeToken<HashMap<String, Object>>() {
+					}.getType();
+					Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+					HashMap<String, Object> database = gson.fromJson(jsonText, TT_mapStringString);
+					Map<String, Object> vm = (Map<String, Object>) database.get(key);
+					if(vm!=null) {
+						String baseURL = vm.get("url").toString();
+						String type = vm.get("type").toString();
+						String name = vm.get("name").toString();
+						String exeInZip=vm.get("executable").toString();
+						String jvmURL = baseURL + name + "." + type;
+						Map<String,String> environment;
+						Object o = vm.get("environment");
+						if(o!=null) {
+							System.out.println("Environment found for "+exeType+" on "+key);
 
-	public static File getExecutable(String exeType,ProgressBar progress,IExternalEditor editor) {
+							return (Map<String, String>) o;
+						}						
+					}
+				}
+			}
+		}catch(Throwable t) {
+			t.printStackTrace();
+			
+		}
+		return new HashMap<>();
+	}
+	public static File getExecutable(String exeType ,IExternalEditor editor) {
 		String key = discoverKey();
 		
 		try {
@@ -158,7 +207,14 @@ public class DownloadManager {
 						String name = vm.get("name").toString();
 						String exeInZip=vm.get("executable").toString();
 						String jvmURL = baseURL + name + "." + type;
-						File jvmArchive = download("", jvmURL, 400000000, progress, bindir, name + "." + type);
+						Map<String,String> environment;
+						Object o = vm.get("environment");
+						if(o!=null) {
+							environment=(Map<String, String>) o;
+						}else
+							environment= new HashMap<>();
+						
+						File jvmArchive = download("", jvmURL, 400000000, bindir, name + "." + type,exeType);
 						File dest = new File(bindir + name);
 						String cmd = bindir + name + "/"+exeInZip;
 						if (!dest.exists()) {
@@ -377,8 +433,9 @@ public class DownloadManager {
 	}
 
 
-	public static File download(String version, String downloadJsonURL, long sizeOfJson, ProgressBar progress,
-			String bindir, String filename) throws MalformedURLException, IOException, FileNotFoundException {
+	public static File download(String version, String downloadJsonURL, long sizeOfJson,String bindir, String filename, String downloadName) throws MalformedURLException, IOException, FileNotFoundException, InterruptedException {
+		
+		
 		URL url = new URL(downloadJsonURL);
 		URLConnection connection = url.openConnection();
 		InputStream is = connection.getInputStream();
@@ -387,17 +444,40 @@ public class DownloadManager {
 			@Override
 			public void process(double percent) {
 				System.out.println("Download percent " + percent);
-				if(progress!=null)
-					Platform.runLater(() -> {
-						progress.setProgress(percent);
-					});
+//				if(progress!=null)
+//					Platform.runLater(() -> {
+//						progress.setProgress(percent);
+//					});
 			}
 		});
 		File folder = new File(bindir + version + "/");
 		File exe = new File(bindir + version + "/" + filename);
 
 		if (!folder.exists() || !exe.exists()) {
-			System.out.println("Start Downloading " + filename);
+			buttonType=null;
+			
+			BowlerStudio.runLater(()->{
+				Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+				alert.setTitle("Message");
+				alert.setHeaderText("Would you like to download: "+downloadName+"\nfrom:\n"+downloadJsonURL);
+				Optional<ButtonType> result = alert.showAndWait();
+				buttonType = result.get();
+				alert.close();
+			});
+			
+			while(buttonType==null) {
+				Thread.sleep(100);
+				
+			}
+			
+			if (buttonType.equals(ButtonType.OK)) { 
+				System.out.println("Start Downloading " + filename);
+
+			}else  {
+				pis.close();
+				throw new RuntimeException("No Eclipse insalled");
+			}
+			
 			folder.mkdirs();
 			exe.createNewFile();
 			byte dataBuffer[] = new byte[1024];
@@ -440,11 +520,11 @@ public class DownloadManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		File f = getExecutable("eclipse",null,null);
+		File f = getExecutable("eclipse",null);
 		String ws = EclipseExternalEditor.getEclipseWorkspace();
 		if(f.exists()) {
 			System.out.println("Executable retrived:\n"+f.getAbsolutePath());
-			run(null,f.getParentFile(), System.err,f.getAbsolutePath(),"-data", ws);
+			run(getEnvironment("eclipse"),null,f.getParentFile(), System.err,f.getAbsolutePath(),"-data", ws);
 		}
 		else
 			System.out.println("Failed to load file!\n"+f.getAbsolutePath());
