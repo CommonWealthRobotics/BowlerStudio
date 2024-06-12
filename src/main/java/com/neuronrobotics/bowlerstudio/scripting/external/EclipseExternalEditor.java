@@ -67,9 +67,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		this.advanced = advanced;
 		EclipseExternalEditor ee=this;
 		new Thread(() -> {
-			File exeFile = getExecutable("eclipse",null);
-			String eclipseEXE = exeFile.getAbsolutePath();
-
+//			File exeFile = getExecutable("eclipse",null);
+//			String eclipseEXE = exeFile.getAbsolutePath();
+			
 			try {
 				Git locateGit = ScriptingEngine.locateGit(file);
 				Repository repository = locateGit.getRepository();
@@ -166,7 +166,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
-					
+					File exeFile = getConfigExecutable("eclipse",null);
+					String eclipseEXE = exeFile.getAbsolutePath();
 					run(getEnvironment("eclipse"),this,ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
 					while (!isEclipseOpen( ws)) {
 						try {
@@ -195,6 +196,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					}
 				}
+				File exeFile = getRunExecutable("eclipse",null);
+				String eclipseEXE = exeFile.getAbsolutePath();
 				if(OSUtil.isOSX()) {
 					File app=exeFile;
 					while(!app.getName().toLowerCase().endsWith(".app")) {

@@ -186,7 +186,13 @@ public class DownloadManager {
 		}
 		return new HashMap<>();
 	}
-	public static File getExecutable(String exeType ,IExternalEditor editor) {
+	public static File getRunExecutable(String exeType ,IExternalEditor editor) {
+		return getExecutable(exeType,editor,"executable");
+	}
+	public static File getConfigExecutable(String exeType ,IExternalEditor editor) {
+		return getExecutable(exeType,editor,"configExecutable");
+	}
+	public static File getExecutable(String exeType ,IExternalEditor editor,String executable) {
 		String key = discoverKey();
 		
 		try {
@@ -205,7 +211,8 @@ public class DownloadManager {
 						String baseURL = vm.get("url").toString();
 						String type = vm.get("type").toString();
 						String name = vm.get("name").toString();
-						String exeInZip=vm.get("executable").toString();
+						String exeInZip=vm.get(executable).toString();
+						String configexe=vm.get("configExecutable").toString();
 						String jvmURL = baseURL + name + "." + type;
 						Map<String,String> environment;
 						Object o = vm.get("environment");
@@ -272,7 +279,7 @@ public class DownloadManager {
 								};
 								for(int i=0;i<configs.size();i++) {
 									System.out.println("Running "+exeType+" Configuration "+(i+1)+" of "+configs.size());
-									String toRun = cmd+" "+configs.get(i);
+									String toRun = bindir + name + "/"+configexe+" "+configs.get(i);
 									System.out.println(toRun);
 									
 									Thread thread =run(errorcheckerEditor,new File(bindir), System.err,toRun);
@@ -520,7 +527,7 @@ public class DownloadManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		File f = getExecutable("eclipse",null);
+		File f = getRunExecutable("eclipse",null);
 		String ws = EclipseExternalEditor.getEclipseWorkspace();
 		if(f.exists()) {
 			System.out.println("Executable retrived:\n"+f.getAbsolutePath());
