@@ -178,7 +178,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						System.out.println("Waiting for workspace, please wait until it opens "+ws);
 						//return;
 					}
-					
+					this.onProcessExit(0);
 				}else {
 					System.out.println("Eclipse is already open at "+ws);
 				}
