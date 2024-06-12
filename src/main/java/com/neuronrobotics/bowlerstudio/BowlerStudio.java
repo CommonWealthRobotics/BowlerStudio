@@ -59,18 +59,25 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.delim;
+
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -301,7 +308,22 @@ public class BowlerStudio extends Application {
 	 * @param args the command line arguments
 	 * @throws Exception
 	 */
-
+	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
+		String latestVersionString;
+		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim()
+				+ "BowlerStudioInstall" + delim() + "currentversion.txt");
+		String s = "";
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
+		String line;
+		try {
+			while (null != (line = br.readLine())) {
+				s += line;
+			}
+		} catch (IOException e) {
+		}
+		latestVersionString = s.trim();
+		return latestVersionString;
+	}
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		if (args.length != 0) {
@@ -310,6 +332,7 @@ public class BowlerStudio extends Application {
 			BowlerKernel.main(args);
 			return;
 		}
+		makeSymLinkOfCurrentVersion();
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
@@ -565,6 +588,20 @@ public class BowlerStudio extends Application {
 		launch();
 		
 
+	}
+
+	private static void makeSymLinkOfCurrentVersion() {
+		try {
+			String version = getBowlerStudioBinaryVersion();
+			File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());
+			File link = new File(installDir.getAbsolutePath()+delim()+"latest");
+			File latest = new File(installDir.getAbsolutePath()+delim()+version);
+			if(link.exists())
+				link.delete();
+			Files.createSymbolicLink( link.toPath(),latest.toPath());
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
 	}
 	
 	private static void ensureUpdated(String ... urls) {

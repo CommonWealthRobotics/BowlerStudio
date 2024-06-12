@@ -2,7 +2,9 @@ package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
@@ -83,17 +85,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 //		} finally {
 //			is.close();
 //		}
-		File currentVerFile =  new File(System.getProperty("user.home")+delim()+"bin"+delim()+"BowlerStudioInstall"+delim()+"currentversion.txt");
-	    String s = "";
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
-	    String line;
-	    try {
-	      while (null != (line = br.readLine())) {
-	        s += line ;
-	      }
-	    } catch (IOException e) {
-	    }
-		latestVersionString=s.trim();
+		latestVersionString = "latest";
 		
 		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
 				+delim()+ "BowlerStudio.jar";
@@ -108,6 +100,9 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		Files.write(Paths.get(classpath.getAbsolutePath()), classpathContent.getBytes());
 		
 	}
+
+
+
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
