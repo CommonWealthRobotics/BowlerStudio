@@ -71,7 +71,7 @@ public class DownloadManager {
 		for(String s:tnp)
 			command+=(s+" ");
 		String cmd = command;
-		out.println(command);
+		System.out.println(command);
 		out.println("\nIn "+dir.getAbsolutePath());
 		out.println("\n\n");
 		String[] splited = command.split("\\s+");

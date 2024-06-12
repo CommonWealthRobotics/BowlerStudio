@@ -195,6 +195,14 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					}
 				}
+				if(OSUtil.isOSX()) {
+					File app=exeFile;
+					while(!app.getName().toLowerCase().endsWith(".app")) {
+						app=app.getParentFile();
+					}
+					
+					run(getEnvironment("eclipse"),this,dir,System.err, "open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim());
+				}
 				run(getEnvironment("eclipse"),this,dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
