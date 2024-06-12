@@ -130,7 +130,11 @@ public class BowlerStudio extends Application {
 		}
 
 		@SuppressWarnings("restriction")
-		public void appendText(String valueOf) {
+		public void appendText(String v) {
+			if(v.length()>LengthOfOutputLog) {
+				v=v.substring(v.length()-LengthOfOutputLog, v.length());
+			}
+			String valueOf=v;
 			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
 				return;
 			}
