@@ -1,4 +1,5 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
+import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,9 +33,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			File dir = repository.getWorkTree();
 			ScriptingEngine.closeGit(locateGit);
 			if (OSUtil.isLinux())
-				run(dir,System.err, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
+				run(this,dir,System.err, "bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath() );
 			if (OSUtil.isWindows())
-				run(dir,System.err, "C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath());
+				run(this,dir,System.err, "C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

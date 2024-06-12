@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -37,23 +39,105 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
+import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.video.OSUtil;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 
 public class DownloadManager {
 	private static String editorsURL= "https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git";
 	private static String 		bindir = System.getProperty("user.home") + "/bin/BowlerStudioInstall/";
+	private static int ev=0;
+	public static Thread run(IExternalEditor editor,File dir, PrintStream out,String... finalCommand) {
+		List<String> tnp = Arrays.asList(finalCommand);
+		String command ="";
+		out.println("Running:\n\n");
+		for(String s:tnp)
+			command+=(s+" ");
+		String cmd = command;
+		out.println(command);
+		out.println("\nIn "+dir.getAbsolutePath());
+		out.println("\n\n");
+		String[] splited = command.split("\\s+");
 
-	public static void main(String[] args) {
-		File f = getExecutable("eclipse",null);
-		if(f.exists())
-			System.out.println("Executable retrived:\n"+f.getAbsolutePath());
-		else
-			System.out.println("Failed to load file!\n"+f.getAbsolutePath());
+		Thread thread = new Thread(() -> {
+			
+			ArrayList<String>asList= new ArrayList<>();
+			for(int i=0;i<splited.length;i++) {
+				if(splited[i].length()>0)
+					asList.add(splited[i]);
+			}
+			try {
+				// creating the process
+				
+				ProcessBuilder pb = new ProcessBuilder(asList);
+				// setting the directory
+				pb.directory(dir);
+				// startinf the process
+				Process process = pb.start();
+				
+				// for reading the ouput from stream
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				BufferedReader errInput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+				String s = null;
+				String e = null;
+				Thread.sleep(100);
+				while ((s = stdInput.readLine()) != null || (e = errInput.readLine()) != null) {
+					if (s != null)
+						out.println(s);
+					if (e != null)
+						out.println(e);
+					//
+				}
+				process.waitFor();
+				int ev = process.exitValue();
+				// out.println("Running "+commands);
+				if (ev != 0) {
+					out.println("ERROR PROCESS Process exited with " + ev);
+				}
+				while (process.isAlive()) {
+					Thread.sleep(100);
+				}
+				out.println("");
+				if(editor!=null)editor.onProcessExit(ev);
+					
+			} catch (Throwable e) {
+				if(editor!=null)
+					BowlerStudio.runLater(()->{
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle(editor.nameOfEditor()+" is missing");
+						alert.setHeaderText("failed to run "+cmd);
+						alert.setContentText("Close to bring me to the install website");
+						alert.showAndWait();
+						new Thread(() -> {
+							try {
+								BowlerStudio.openExternalWebpage(editor.getInstallURL());
+							} catch (MalformedURLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace(out);
+							}
+						}).start();
+					});
+				else
+					e.printStackTrace();
+			
+
+			}
+		});
+		thread.start();
+		return thread;
 	}
-	public static File getExecutable(String exeType,ProgressBar progress) {
+
+	public static File getExecutable(String exeType,ProgressBar progress,IExternalEditor editor) {
 		String key = discoverKey();
 		
 		try {
@@ -72,9 +156,11 @@ public class DownloadManager {
 						String baseURL = vm.get("url").toString();
 						String type = vm.get("type").toString();
 						String name = vm.get("name").toString();
+						String exeInZip=vm.get("executable").toString();
 						String jvmURL = baseURL + name + "." + type;
 						File jvmArchive = download("", jvmURL, 400000000, progress, bindir, name + "." + type);
 						File dest = new File(bindir + name);
+						String cmd = bindir + name + "/"+exeInZip;
 						if (!dest.exists()) {
 							if (type.toLowerCase().contains("zip")) {
 								unzip(jvmArchive, bindir+name);
@@ -82,10 +168,68 @@ public class DownloadManager {
 							if (type.toLowerCase().contains("tar.gz")) {
 								untar(jvmArchive, bindir+name);
 							}
+							Object configurations =database.get("Meta-Configuration");
+							if(configurations!=null) {
+								List<String> configs=(List<String>) configurations;
+								System.out.println("Got Configurations "+configs.size());
+								ev=-1;
+								IExternalEditor errorcheckerEditor = new IExternalEditor() {
+									
+									
+
+									@Override
+									public void onProcessExit(int e) {
+										ev = e;
+										// TODO Auto-generated method stub
+										
+									}
+									
+									@Override
+									public String nameOfEditor() {
+										// TODO Auto-generated method stub
+										return null;
+									}
+									
+									@Override
+									public void launch(File file, Button advanced) {
+										// TODO Auto-generated method stub
+										
+									}
+									
+									@Override
+									public Class getSupportedLangauge() {
+										// TODO Auto-generated method stub
+										return null;
+									}
+									
+									@Override
+									public URL getInstallURL() throws MalformedURLException {
+										// TODO Auto-generated method stub
+										return null;
+									}
+									
+									@Override
+									public Image getImage() {
+										// TODO Auto-generated method stub
+										return null;
+									}
+								};
+								for(int i=0;i<configs.size();i++) {
+									System.out.println("Running "+exeType+" Configuration "+(i+1)+" of "+configs.size());
+									String toRun = cmd+" "+configs.get(i);
+									System.out.println(toRun);
+									
+									Thread thread =run(errorcheckerEditor,new File(bindir), System.err,toRun);
+									thread.join();
+									if(ev!=0) {
+										throw new RuntimeException("Configuration failed for OS: "+key+" has no entry for "+exeType);
+									}
+								}
+							}
 						} else {
 							System.out.println("Not extraction, VM exists " + dest.getAbsolutePath());
 						}
-						String cmd = bindir + name + "/bin/eclipse" + (isWin() ? ".exe" : "") + " ";
+						
 						return new File(cmd);
 					}
 				}
@@ -283,6 +427,27 @@ public class DownloadManager {
 	 */
 	public static void setEditorsURL(String editorsURL) {
 		DownloadManager.editorsURL = editorsURL;
+	}
+	public static String delim() {
+		if (OSUtil.isWindows())
+			return "\\";
+		return "/";
+	}
+	public static void main(String[] args) {
+		try {
+			PasswordManager.login();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		File f = getExecutable("eclipse",null,null);
+		String ws = EclipseExternalEditor.getEclipseWorkspace();
+		if(f.exists()) {
+			System.out.println("Executable retrived:\n"+f.getAbsolutePath());
+			run(null,f.getParentFile(), System.err,f.getAbsolutePath(),"-data", ws);
+		}
+		else
+			System.out.println("Failed to load file!\n"+f.getAbsolutePath());
 	}
 
 }

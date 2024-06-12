@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
 
+import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -63,40 +65,11 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	@Override
 	public void launch(File file, Button advanced) {
 		this.advanced = advanced;
+		EclipseExternalEditor ee=this;
 		new Thread(() -> {
-			String eclipseEXE = "eclipse";
-			if (OSUtil.isLinux()) {
-				try {
-					ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",null);
-					ScriptingEngine.pull("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git");
-					eclipseEXE = ScriptingEngine
-							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",
-									"eclipse")
-							.getAbsolutePath();
+			File exeFile = getExecutable("eclipse",null,null);
+			String eclipseEXE = exeFile.getAbsolutePath();
 
-				} catch (GitAPIException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}else if (OSUtil.isOSX()) {
-				try {
-					ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",null);
-					ScriptingEngine.pull("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git");
-					eclipseEXE = ScriptingEngine
-							.fileFromGit("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller.git",
-									"eclipse-mac")
-							.getAbsolutePath();
-
-				} catch (GitAPIException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if (OSUtil.isWindows()) {
-				eclipseEXE = "\"C:\\RBE\\sloeber\\eclipse.exe\"";
-			} else {
-				System.out.println("OS is not supported!");
-				return;
-			}
 			try {
 				Git locateGit = ScriptingEngine.locateGit(file);
 				Repository repository = locateGit.getRepository();
@@ -104,7 +77,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				ScriptingEngine.closeGit(locateGit);
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
-				String ws = ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse";
+				String ws = getEclipseWorkspace();
 
 				File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
 				File project = new File(dir.getAbsolutePath() + delim() + ".project");
@@ -148,57 +121,53 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 				}
 				
-				File currentws = null;
-				if (OSUtil.isOSX())
-					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/Eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
-				
-				if (OSUtil.isLinux())
-					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
-				if (OSUtil.isWindows())
-					currentws= new File("C:\\RBE\\sloeber\\configuration\\.settings\\org.eclipse.ui.ide.prefs");
-				
-				try {
-					BufferedReader reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
-					String line = reader.readLine();
-					while (line != null) {
-						//System.out.println(line);
-						// read next line
-						line = reader.readLine();
-						if(line.startsWith("RECENT_WORKSPACES=")) {
-							String[] split = line
-									.split("=");
-							String[] split2 = split[1].split("\\\\n");
-							if(OSUtil.isWindows()) {
-								String replaceAll = split2[0]
-										.replace("\\:", ":");
-								String replaceAll2 = replaceAll
-										.replace("\\\\", "\\");
-								
-								ws=replaceAll2;
-							}else {
-								ws= split2[0];
-							}
-							System.out.println("Using workspace config: "+line);
-							
-							break;
-						}
-					}
-					reader.close();
-				
-
-				}catch(Exception ex) {
-					//ex.printStackTrace();
-					System.out.println("Workspace missing, opening eclipse");
-				}
+//				File currentws = null;
+//				if (OSUtil.isOSX())
+//					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/Eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
+//				
+//				if (OSUtil.isLinux())
+//					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
+//				if (OSUtil.isWindows())
+//					currentws= new File("C:\\RBE\\sloeber\\configuration\\.settings\\org.eclipse.ui.ide.prefs");
+//				
+//				try {
+//					BufferedReader reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
+//					String line = reader.readLine();
+//					while (line != null) {
+//						//System.out.println(line);
+//						// read next line
+//						line = reader.readLine();
+//						if(line.startsWith("RECENT_WORKSPACES=")) {
+//							String[] split = line
+//									.split("=");
+//							String[] split2 = split[1].split("\\\\n");
+//							if(OSUtil.isWindows()) {
+//								String replaceAll = split2[0]
+//										.replace("\\:", ":");
+//								String replaceAll2 = replaceAll
+//										.replace("\\\\", "\\");
+//								
+//								ws=replaceAll2;
+//							}else {
+//								ws= split2[0];
+//							}
+//							System.out.println("Using workspace config: "+line);
+//							
+//							break;
+//						}
+//					}
+//					reader.close();
+//				
+//
+//				}catch(Exception ex) {
+//					//ex.printStackTrace();
+//					System.out.println("Workspace missing, opening eclipse");
+//				}
 				
 				System.out.println("Opening workspace "+ws);
 				if(!isEclipseOpen( ws)) {
-					if (OSUtil.isOSX())
-						run( ScriptingEngine.getWorkspace(),System.out, "bash", eclipseEXE, "-data", ws);
-					if (OSUtil.isLinux())
-						run( ScriptingEngine.getWorkspace(),System.out, "bash", eclipseEXE, "-data", ws);
-					if (OSUtil.isWindows())
-						run(ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
+					
+					run(this,ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -206,8 +175,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						System.out.println("Waiting for workspace "+ws);
-						
+						System.out.println("Waiting for workspace, please wait until it opens "+ws);
+						//return;
 					}
 					
 				}else {
@@ -226,17 +195,16 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						}
 					}
 				}
-				if (OSUtil.isOSX())
-					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
-				if (OSUtil.isLinux())
-					run(dir,System.err, "bash", eclipseEXE, dir.getAbsolutePath() + delim());
-				if (OSUtil.isWindows())
-					run(dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
+				run(this,dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
+	}
+
+	public static String getEclipseWorkspace() {
+		return ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse-workspace";
 	}
 	
 	private boolean isEclipseOpen(String ws) {

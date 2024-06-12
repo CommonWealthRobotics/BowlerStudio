@@ -1,4 +1,5 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
+import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class SVGExternalEditor implements IExternalEditor {
 			File dir = locateGit.getRepository().getWorkTree();
 			ScriptingEngine.closeGit(locateGit);
 			if(OSUtil.isLinux())
-				run(dir,System.err,"inkscape",filename);
+				run(this,dir,System.err,"inkscape",filename);
 			if(OSUtil.isWindows()) {
 				String exe="inkscape.exe";
 				String [] options = {"C:\\Program Files\\Inkscape\\bin\\inkscape.exe",
@@ -49,7 +50,7 @@ public class SVGExternalEditor implements IExternalEditor {
 					}
 				}
 				
-				run(dir,System.err,"\""+exe+"\"",filename);	
+				run(this,dir,System.err,"\""+exe+"\"",filename);	
 			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block
