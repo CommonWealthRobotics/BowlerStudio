@@ -344,6 +344,8 @@ public class DownloadManager {
 							}
 							try (OutputStream out = new FileOutputStream(entryPath.toFile())) {
 								IOUtils.copy(in, out);
+								System.out.println("Inflating "+entryPath);
+
 							}
 							if(isExecutable(entry)) {
 								entryPath.toFile().setExecutable(true);
@@ -372,7 +374,7 @@ public class DownloadManager {
 		// tarIn is a TarArchiveInputStream
 		while (tarEntry != null) {// create a file with the same name as the tarEntry
 			File destPath = new File(dest.toString() + System.getProperty("file.separator") + tarEntry.getName());
-			System.out.println("working: " + destPath.getCanonicalPath());
+			System.out.println("Inflating: " + destPath.getCanonicalPath());
 			if (tarEntry.isDirectory()) {
 				destPath.mkdirs();
 			} else {
@@ -450,7 +452,7 @@ public class DownloadManager {
 		pis.addListener(new Listener() {
 			@Override
 			public void process(double percent) {
-				System.out.println("Download percent " + percent);
+				System.out.println("Download percent " + (int)(percent*100));
 //				if(progress!=null)
 //					Platform.runLater(() -> {
 //						progress.setProgress(percent);
@@ -496,6 +498,7 @@ public class DownloadManager {
 			fileOutputStream.close();
 			pis.close();
 			System.out.println("Finished downloading " + filename);
+			System.out.println("Download percent " + (int)(1*100));
 		} else {
 			System.out.println("Not downloadeing, it existst " + filename);
 		}

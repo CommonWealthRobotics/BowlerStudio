@@ -56,14 +56,22 @@ public class ProcessInputStream extends InputStream {
 	private void evaluatePercent(long readCount) {
 		if (readCount != -1) {
 			sumRead += readCount;
-			percent = sumRead * 1.0 / length;
+			setPercent(sumRead * 1.0 / length);
 		}
 		notifyListener();
 	}
 
 	private void notifyListener() {
 		for (Listener listener : listeners) {
-			listener.process(percent);
+			listener.process(getPercent());
 		}
+	}
+
+	public double getPercent() {
+		return percent;
+	}
+
+	public void setPercent(double percent) {
+		this.percent = percent;
 	}
 }
