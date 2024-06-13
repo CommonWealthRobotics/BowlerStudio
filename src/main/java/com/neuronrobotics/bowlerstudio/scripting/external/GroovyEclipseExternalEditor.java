@@ -67,7 +67,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.core.prefs"), java8Prefs.getBytes());
 		
 		Files.write(Paths.get(project.getAbsolutePath()), ProjectContent.getBytes());
-		String latestVersionString = "1.12.0";
+		//String latestVersionString = "1.12.0";
 //		InputStream is = new URL(
 //				"https://api.github.com/repos/CommonWealthRobotics/BowlerStudio/releases/latest")
 //						.openStream();
@@ -85,10 +85,14 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 //		} finally {
 //			is.close();
 //		}
-		latestVersionString = "latest";
+		//latestVersionString = BowlerStudio.getBowlerStudioBinaryVersion();
 		
-		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
+		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ "latest"
 				+delim()+ "BowlerStudio.jar";
+		if(!new File(jar).exists()) {
+			jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ BowlerStudio.getBowlerStudioBinaryVersion()
+					+delim()+ "BowlerStudio.jar";
+		}
 		String classpathContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"
 				+ "	<classpathentry kind=\"src\" path=\"\"/>\n"
 				+ "	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\">\n"
