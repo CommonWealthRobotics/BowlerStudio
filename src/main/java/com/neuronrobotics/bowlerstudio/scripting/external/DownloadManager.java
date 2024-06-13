@@ -282,7 +282,7 @@ public class DownloadManager {
 									String toRun = bindir + name + "/"+configexe+" "+configs.get(i);
 									System.out.println(toRun);
 									
-									Thread thread =run(errorcheckerEditor,new File(bindir), System.err,toRun);
+									Thread thread =run(errorcheckerEditor,new File(bindir), System.out,toRun);
 									thread.join();
 									if(ev!=0) {
 										throw new RuntimeException("Configuration failed for OS: "+key+" has no entry for "+exeType);
