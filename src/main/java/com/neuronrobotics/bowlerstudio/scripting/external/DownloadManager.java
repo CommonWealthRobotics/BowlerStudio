@@ -71,7 +71,7 @@ public class DownloadManager {
 		for(String s:tnp)
 			command+=(s+" ");
 		String cmd = command;
-		out.println(command);
+		System.out.println(command);
 		out.println("\nIn "+dir.getAbsolutePath());
 		out.println("\n\n");
 		String[] splited = command.split("\\s+");
@@ -116,7 +116,7 @@ public class DownloadManager {
 				int ev = process.exitValue();
 				// out.println("Running "+commands);
 				if (ev != 0) {
-					out.println("ERROR PROCESS Process exited with " + ev);
+					System.out.println("ERROR PROCESS Process exited with " + ev);
 				}
 				while (process.isAlive()) {
 					Thread.sleep(100);
@@ -280,7 +280,7 @@ public class DownloadManager {
 								for(int i=0;i<configs.size();i++) {
 									System.out.println("Running "+exeType+" Configuration "+(i+1)+" of "+configs.size());
 									String toRun = bindir + name + "/"+configexe+" "+configs.get(i);
-									System.out.println(toRun);
+									//System.out.println(toRun);
 									
 									Thread thread =run(errorcheckerEditor,new File(bindir), System.out,toRun);
 									thread.join();
