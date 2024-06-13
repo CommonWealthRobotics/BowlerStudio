@@ -450,9 +450,13 @@ public class DownloadManager {
 		InputStream is = connection.getInputStream();
 		ProcessInputStream pis = new ProcessInputStream(is, (int) sizeOfJson);
 		pis.addListener(new Listener() {
+			long timeSinceePrint=System.currentTimeMillis();
 			@Override
 			public void process(double percent) {
-				System.out.println("Download percent " + (int)(percent*100));
+				if(System.currentTimeMillis()-timeSinceePrint>100) {
+					timeSinceePrint=System.currentTimeMillis();
+					System.out.println("Download percent " + (int)(percent*100));
+				}
 //				if(progress!=null)
 //					Platform.runLater(() -> {
 //						progress.setProgress(percent);
