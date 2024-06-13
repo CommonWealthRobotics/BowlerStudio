@@ -561,7 +561,8 @@ public class BowlerStudio extends Application {
 			ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
 					"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"https://github.com/CommonWealthRobotics/DeviceProviders.git",
-					"https://github.com/OperationSmallKat/Katapult.git");
+					"https://github.com/OperationSmallKat/Katapult.git",
+					"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git");
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"hotfix.groovy", null);
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
