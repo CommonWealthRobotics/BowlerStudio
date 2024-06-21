@@ -61,11 +61,11 @@ public class DownloadManager {
 	private static String 		bindir = System.getProperty("user.home") + "/bin/BowlerStudioInstall/";
 	private static int ev=0;
 	private static ButtonType buttonType=null;
-	public static Thread run(IExternalEditor editor,File dir, PrintStream out,String... finalCommand) {
+	public static Thread run(IExternalEditor editor,File dir, PrintStream out,List<String> finalCommand) {
 		return run(new HashMap<String,String>(),editor,dir,out,finalCommand);
 	}
-	public static Thread run(Map<String,String> env,IExternalEditor editor,File dir, PrintStream out,String... finalCommand) {
-		List<String> tnp = Arrays.asList(finalCommand);
+	public static Thread run(Map<String,String> env,IExternalEditor editor,File dir, PrintStream out,List<String> finalCommand) {
+		List<String> tnp = finalCommand;
 		String command ="";
 		out.println("Running:\n\n");
 		for(String s:tnp)
@@ -74,24 +74,24 @@ public class DownloadManager {
 		System.out.println(command);
 		out.println("\nIn "+dir.getAbsolutePath());
 		out.println("\n\n");
-		String[] splited = command.split("\\s+");
+		//String[] splited = command.split("\\s+");
 
 		Thread thread = new Thread(() -> {
 			
-			ArrayList<String>asList= new ArrayList<>();
-			for(int i=0;i<splited.length;i++) {
-				if(splited[i].length()>0)
-					asList.add(splited[i]);
-			}
+//			ArrayList<String>asList= new ArrayList<>();
+//			for(int i=0;i<splited.length;i++) {
+//				if(splited[i].length()>0)
+//					asList.add(splited[i]);
+//			}
 			try {
 				// creating the process
 				
-				ProcessBuilder pb = new ProcessBuilder(asList);
+				ProcessBuilder pb = new ProcessBuilder(finalCommand);
 				Map<String, String> envir = pb.environment();
 				// set environment variable u
 				envir.putAll(env);
-				for (String s : envir.keySet()) {
-					// System.out.println("Environment var set: "+s+" to "+envir.get(s));
+				for (String s : env.keySet()) {
+					System.out.println("Environment var set: "+s+" to "+envir.get(s));
 				}
 				// setting the directory
 				pb.directory(dir);
@@ -279,7 +279,14 @@ public class DownloadManager {
 								};
 								for(int i=0;i<configs.size();i++) {
 									System.out.println("Running "+exeType+" Configuration "+(i+1)+" of "+configs.size());
-									String toRun = bindir + name + "/"+configexe+" "+configs.get(i);
+									ArrayList<String> toRun=new ArrayList<>();
+									toRun.add(bindir + name + "/"+configexe);
+									String[] conf = configs.get(i).split(" ");
+									for(int j=0;j<conf.length;j++) {
+										toRun.add(conf[j]);
+									}
+									//= +" "+configs.get(i);
+									
 									//System.out.println(toRun);
 									
 									Thread thread =run(errorcheckerEditor,new File(bindir), System.out,toRun);
@@ -538,7 +545,7 @@ public class DownloadManager {
 		String ws = EclipseExternalEditor.getEclipseWorkspace();
 		if(f.exists()) {
 			System.out.println("Executable retrived:\n"+f.getAbsolutePath());
-			run(getEnvironment("eclipse"),null,f.getParentFile(), System.err,f.getAbsolutePath(),"-data", ws);
+			run(getEnvironment("eclipse"),null,f.getParentFile(), System.err,Arrays.asList(f.getAbsolutePath(),"-data", ws));
 		}
 		else
 			System.out.println("Failed to load file!\n"+f.getAbsolutePath());

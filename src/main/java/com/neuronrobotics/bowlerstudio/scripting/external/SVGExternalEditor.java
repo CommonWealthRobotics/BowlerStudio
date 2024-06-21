@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -38,7 +39,7 @@ public class SVGExternalEditor implements IExternalEditor {
 			File dir = locateGit.getRepository().getWorkTree();
 			ScriptingEngine.closeGit(locateGit);
 			if(OSUtil.isLinux())
-				run(this,dir,System.err,"inkscape",filename);
+				run(this,dir,System.err,Arrays.asList("inkscape",filename));
 			if(OSUtil.isWindows()) {
 				String exe="inkscape.exe";
 				String [] options = {"C:\\Program Files\\Inkscape\\bin\\inkscape.exe",
@@ -50,7 +51,7 @@ public class SVGExternalEditor implements IExternalEditor {
 					}
 				}
 				
-				run(this,dir,System.err,"\""+exe+"\"",filename);	
+				run(this,dir,System.err,Arrays.asList("\""+exe+"\"",filename));	
 			}
 		} catch (NoWorkTreeException e) {
 			// TODO Auto-generated catch block

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -168,7 +169,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				if(!isEclipseOpen( ws)) {
 					File exeFile = getConfigExecutable("eclipse",null);
 					String eclipseEXE = exeFile.getAbsolutePath();
-					run(getEnvironment("eclipse"),this,ScriptingEngine.getWorkspace() ,System.out, eclipseEXE, "-data", ws);
+					run(getEnvironment("eclipse"),this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -204,9 +205,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						app=app.getParentFile();
 					}
 					
-					run(getEnvironment("eclipse"),this,dir,System.err, "open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim());
+					run(getEnvironment("eclipse"),this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim()));
 				}else
-					run(getEnvironment("eclipse"),this,dir,System.err, eclipseEXE, dir.getAbsolutePath() + delim());
+					run(getEnvironment("eclipse"),this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() + delim()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
