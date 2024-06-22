@@ -62,6 +62,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 
+	private String sanitize(String s){
+		if(OSUtil.isWindows()) {
+			return "\""+s+"\"";
+		}
+		return s;
+	}
 
 	@Override
 	public void launch(File file, Button advanced) {
@@ -174,20 +180,21 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					File epf = ScriptingEngine.fileFromGit(
 							"https://github.com/CommonWealthRobotics/HatRack.git",
 							"settings.epf");
-					run(getEnvironment("eclipse"),
+					Thread thread = run(getEnvironment("eclipse"),
 							this,
 							ScriptingEngine.getWorkspace() ,
 							System.out,
 							Arrays.asList(
-									eclipseEXE,
+									sanitize(eclipseEXE),
 									"-nosplash",
 									"-application",
 									"org.eclipse.ui.ide.workbench",
 									"-import",
-									epf.getAbsolutePath(),
+									sanitize(epf.getAbsolutePath()),
 									"-data",
-									ws
+									sanitize(ws)
 									));
+					thread.join();
 
 				}
 				if(!isEclipseOpen( ws)) {
