@@ -78,6 +78,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -336,7 +337,11 @@ public class BowlerStudio extends Application {
 			BowlerKernel.main(args);
 			return;
 		}
-		makeSymLinkOfCurrentVersion();
+		try {
+			makeSymLinkOfCurrentVersion();
+		}catch(Throwable t) {
+			System.err.println("Symlink not creaded");
+		}
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
@@ -595,17 +600,20 @@ public class BowlerStudio extends Application {
 
 	}
 
-	private static void makeSymLinkOfCurrentVersion() {
+	private static void makeSymLinkOfCurrentVersion() throws Exception {
+		String version = getBowlerStudioBinaryVersion();
+		File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());
+		File link = new File(installDir.getAbsolutePath()+delim()+"latest");
+		File latest = new File(installDir.getAbsolutePath()+delim()+version);
+		if(link.exists())
+			link.delete();
 		try {
-			String version = getBowlerStudioBinaryVersion();
-			File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());
-			File link = new File(installDir.getAbsolutePath()+delim()+"latest");
-			File latest = new File(installDir.getAbsolutePath()+delim()+version);
-			if(link.exists())
-				link.delete();
+
 			Files.createSymbolicLink( link.toPath(),latest.toPath());
 		}catch(Throwable t) {
-			t.printStackTrace();
+			Files.createSymbolicLink( link.toPath(), Paths.get(".", "latest"));
+
+			//t.printStackTrace();
 		}
 	}
 	
