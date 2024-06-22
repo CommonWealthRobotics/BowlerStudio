@@ -183,11 +183,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 									"-nosplash",
 									"-application",
 									"org.eclipse.ui.ide.workbench",
-
-									"-data",
-									ws,
 									"-import",
-									epf.getAbsolutePath()
+									epf.getAbsolutePath(),
+									"-data",
+									ws
 									));
 
 				}
