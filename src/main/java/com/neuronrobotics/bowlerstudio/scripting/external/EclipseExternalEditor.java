@@ -78,7 +78,6 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				ScriptingEngine.closeGit(locateGit);
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
-				String ws = getEclipseWorkspace();
 
 				File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
 				File project = new File(dir.getAbsolutePath() + delim() + ".project");
@@ -164,8 +163,34 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 //					//ex.printStackTrace();
 //					System.out.println("Workspace missing, opening eclipse");
 //				}
-				
+				String ws = getEclipseWorkspace();
+
 				System.out.println("Opening workspace "+ws);
+				File wsDir=  new File(ws);
+				if(!wsDir.exists()) {
+					File exeFile = getConfigExecutable("eclipse",null);
+					String eclipseEXE = exeFile.getAbsolutePath();
+					System.out.println("Creating the workspace");
+					File epf = ScriptingEngine.fileFromGit(
+							"https://github.com/CommonWealthRobotics/HatRack.git",
+							"settings.epf");
+					run(getEnvironment("eclipse"),
+							this,
+							ScriptingEngine.getWorkspace() ,
+							System.out,
+							Arrays.asList(
+									eclipseEXE,
+									"-nosplash",
+									"-application",
+									"org.eclipse.ui.ide.workbench",
+
+									"-data",
+									ws,
+									"-import",
+									epf.getAbsolutePath()
+									));
+
+				}
 				if(!isEclipseOpen( ws)) {
 					File exeFile = getConfigExecutable("eclipse",null);
 					String eclipseEXE = exeFile.getAbsolutePath();
@@ -216,7 +241,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	public static String getEclipseWorkspace() {
-		return ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse-workspace";
+		return ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse-bowler-workspace";
 	}
 	
 	private boolean isEclipseOpen(String ws) {
