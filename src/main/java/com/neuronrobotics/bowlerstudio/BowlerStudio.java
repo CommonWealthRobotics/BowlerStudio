@@ -78,6 +78,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -340,6 +341,7 @@ public class BowlerStudio extends Application {
 		try {
 			makeSymLinkOfCurrentVersion();
 		}catch(Throwable t) {
+			//t.printStackTrace();
 			System.err.println("Symlink not creaded");
 		}
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
@@ -611,9 +613,10 @@ public class BowlerStudio extends Application {
 
 			Files.createSymbolicLink( link.toPath(),latest.toPath());
 		}catch(Throwable t) {
-			Files.createSymbolicLink( link.toPath(), Paths.get(".", "latest"));
-
 			//t.printStackTrace();
+			//link = new File("\""+link.getAbsolutePath()+"\"");
+			Path ret = Files.createSymbolicLink( link.toPath(), Paths.get(".", version));
+			System.out.println("Path created "+ret);
 		}
 	}
 	
