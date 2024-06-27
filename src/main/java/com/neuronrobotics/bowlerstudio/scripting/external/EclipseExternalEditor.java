@@ -12,9 +12,12 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.FileLock;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -173,34 +176,33 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 				System.out.println("Opening workspace "+ws);
 				File wsDir=  new File(ws);
-				if(!wsDir.exists()) {
-					File exeFile = getConfigExecutable("eclipse",null);
-					String eclipseEXE = exeFile.getAbsolutePath();
-					System.out.println("Creating the workspace");
-					File epf = ScriptingEngine.fileFromGit(
-							"https://github.com/CommonWealthRobotics/HatRack.git",
-							"settings.epf");
-					Thread thread = run(getEnvironment("eclipse"),
-							this,
-							ScriptingEngine.getWorkspace() ,
-							System.out,
-							Arrays.asList(
-									sanitize(eclipseEXE),
-									"-nosplash",
-									"-application",
-									"org.eclipse.ui.ide.workbench",
-									"-import",
-									sanitize(epf.getAbsolutePath()),
-									"-data",
-									sanitize(ws)
-									));
-					thread.join();
-
+				Map<String, String> env = getEnvironment("eclipse");
+				HashMap<String, String> environment = new HashMap<>();;
+				environment.putAll(env);
+				File settings=new File(ws+delim()+"bowler-settings.epf");
+				File java=DownloadManager.getConfigExecutable("java8", null);
+				if(!settings.exists()) {
+					if(!wsDir.exists())
+						wsDir.mkdirs();
+					File prefssource =  ScriptingEngine.fileFromGit(
+							"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
+							"settingsTEMPLATE.epf");
+					try {
+						String  template =FileUtils.readFileToString(prefssource, StandardCharsets.UTF_8);
+						template=template.replace("MYWORKSPACES",getEclipseWorkspace());
+						template=template.replace("MYJAVAHOME",java.getAbsolutePath());
+						FileUtils.write(settings, template, StandardCharsets.UTF_8);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
+				environment.put("JAVA_HOME", java.getAbsolutePath());
+				environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 				if(!isEclipseOpen( ws)) {
 					File exeFile = getConfigExecutable("eclipse",null);
 					String eclipseEXE = exeFile.getAbsolutePath();
-					run(getEnvironment("eclipse"),this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
+					
+					run(environment,this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
 					while (!isEclipseOpen( ws)) {
 						try {
 							Thread.sleep(5000);
@@ -236,9 +238,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						app=app.getParentFile();
 					}
 					
-					run(getEnvironment("eclipse"),this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim()));
+					run(environment,this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim()));
 				}else
-					run(getEnvironment("eclipse"),this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() + delim()));
+					run(environment,this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() + delim()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

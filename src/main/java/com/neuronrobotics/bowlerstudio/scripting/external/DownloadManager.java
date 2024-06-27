@@ -1,7 +1,5 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
 
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.getEnvironment;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,11 +46,9 @@ import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
 
-import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 
