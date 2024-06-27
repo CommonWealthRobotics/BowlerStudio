@@ -179,7 +179,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				Map<String, String> env = getEnvironment("eclipse");
 				HashMap<String, String> environment = new HashMap<>();;
 				environment.putAll(env);
-				File settings=new File(ws+delim()+"bowler-settings.epf");
+				File settings=new File(ScriptingEngine.getWorkspace().getAbsolutePath()+delim()+"bowler-settings.epf");
 				File java=DownloadManager.getConfigExecutable("java8", null);
 				if(!settings.exists()) {
 					if(!wsDir.exists())
@@ -189,19 +189,18 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							"settingsTEMPLATE.epf");
 					try {
 						String  template =FileUtils.readFileToString(prefssource, StandardCharsets.UTF_8);
-						template=template.replace("MYWORKSPACES",getEclipseWorkspace());
-						template=template.replace("MYJAVAHOME",java.getAbsolutePath());
+						template=template.replace("MYWORKSPACES",eclipseSanatize(getEclipseWorkspace()));
+						template=template.replace("MYJAVAHOME",eclipseSanatize(java.getAbsolutePath()));
 						FileUtils.write(settings, template, StandardCharsets.UTF_8);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 				environment.put("JAVA_HOME", java.getAbsolutePath());
-				environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 				if(!isEclipseOpen( ws)) {
 					File exeFile = getConfigExecutable("eclipse",null);
 					String eclipseEXE = exeFile.getAbsolutePath();
-					
+					environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 					run(environment,this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
 					while (!isEclipseOpen( ws)) {
 						try {
@@ -246,6 +245,15 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				e.printStackTrace();
 			}
 		}).start();
+	}
+
+	private CharSequence eclipseSanatize(String absolutePath) {
+		if(isWin()) {
+			// this replaces one slash with 2 slashes, just trust me
+			absolutePath=absolutePath.replaceAll("\\\\", "\\\\\\\\");
+			absolutePath=absolutePath.replaceAll(":", "\\\\:");
+		}
+		return absolutePath;
 	}
 
 	public static String getEclipseWorkspace() {
