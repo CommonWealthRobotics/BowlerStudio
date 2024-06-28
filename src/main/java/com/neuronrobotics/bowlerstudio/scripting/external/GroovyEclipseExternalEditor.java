@@ -25,7 +25,7 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	

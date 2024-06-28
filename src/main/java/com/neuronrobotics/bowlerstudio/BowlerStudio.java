@@ -59,7 +59,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.delim;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.delim;
 
 import java.awt.Desktop;
 import java.awt.Dimension;

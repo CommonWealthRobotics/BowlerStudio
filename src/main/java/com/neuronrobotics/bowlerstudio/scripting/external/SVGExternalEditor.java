@@ -1,5 +1,5 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,5 +1,5 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
@@ -33,10 +34,8 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			repository = locateGit.getRepository();
 			File dir = repository.getWorkTree();
 			ScriptingEngine.closeGit(locateGit);
-			if (OSUtil.isLinux())
-				run(this,dir,System.err, Arrays.asList("bash", System.getProperty("user.home")+"/bin/arduino-1.8.13/arduino", file.getAbsolutePath()) );
-			if (OSUtil.isWindows())
-				run(this,dir,System.err, Arrays.asList("C:\\RBE\\arduino-1.8.5\\arduino.exe", file.getAbsolutePath()));
+			File exe = DownloadManager.getRunExecutable("arduino2", null);
+			run(this,dir,System.err, Arrays.asList(exe.getAbsolutePath(), file.getAbsolutePath()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,9 +73,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 
 	@Override
 	public Class getSupportedLangauge() {
-		if (OSUtil.isLinux() || OSUtil.isWindows())
-			return ArduinoLoader.class;
-		return null;
+		return ArduinoLoader.class;
 	}
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();

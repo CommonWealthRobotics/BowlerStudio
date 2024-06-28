@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerstudio.scripting.external;
 
-import static com.neuronrobotics.bowlerstudio.scripting.external.DownloadManager.*;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
