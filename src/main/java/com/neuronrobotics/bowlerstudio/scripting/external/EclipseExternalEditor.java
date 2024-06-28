@@ -179,7 +179,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				Map<String, String> env = getEnvironment("eclipse");
 				HashMap<String, String> environment = new HashMap<>();;
 				environment.putAll(env);
-				File settings=new File(ScriptingEngine.getWorkspace().getAbsolutePath()+delim()+"bowler-settings.epf");
+				File settings=new File(ScriptingEngine.getWorkspace().getAbsolutePath()+delim()+"appdata"+delim()+"bowler-settings.epf");
 				File java=DownloadManager.getConfigExecutable("java8", null);
 				if(!wsDir.exists()) {
 					File prefssource =  ScriptingEngine.fileFromGit(
@@ -263,16 +263,21 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			return false;
 		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
 		System.out.println("Checking WS "+lockFile);
+		File lock = new File(lockFile);
+		if(!lock.exists())
+			return false;
+
 		try {
-			File lock = new File(lockFile);
-			if (lock.exists()) {
-				RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
-
-				FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
-				fileLock.release();
+			System.err.println("Attempting to test workspace lockfile...");
+			RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
+			FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
+			if(fileLock==null) {
 				raFile.close();
+				return true;
 			}
-
+			fileLock.release();
+			raFile.close();
+			
 		} catch (Exception ex) {
 			// lock failed eclipse is open already
 			return true;
