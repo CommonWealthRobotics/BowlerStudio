@@ -181,9 +181,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				environment.putAll(env);
 				File settings=new File(ScriptingEngine.getWorkspace().getAbsolutePath()+delim()+"bowler-settings.epf");
 				File java=DownloadManager.getConfigExecutable("java8", null);
-				if(!settings.exists()) {
-					if(!wsDir.exists())
-						wsDir.mkdirs();
+				if(!wsDir.exists()) {
 					File prefssource =  ScriptingEngine.fileFromGit(
 							"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
 							"settingsTEMPLATE.epf");
@@ -195,12 +193,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 				}
 				environment.put("JAVA_HOME", java.getAbsolutePath());
 				if(!isEclipseOpen( ws)) {
 					File exeFile = getConfigExecutable("eclipse",null);
 					String eclipseEXE = exeFile.getAbsolutePath();
-					environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 					run(environment,this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
 					while (!isEclipseOpen( ws)) {
 						try {
