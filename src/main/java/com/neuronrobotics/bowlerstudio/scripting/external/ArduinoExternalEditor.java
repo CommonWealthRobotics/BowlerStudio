@@ -28,21 +28,8 @@ public class ArduinoExternalEditor implements IExternalEditor {
 	@Override
 	public void launch(File file, Button advanced) {
 		this.advanced = advanced;
-		Repository repository;
-		try {
-			Git locateGit = ScriptingEngine.locateGit(file);
-			repository = locateGit.getRepository();
-			File dir = repository.getWorkTree();
-			ScriptingEngine.closeGit(locateGit);
-			File exe = DownloadManager.getRunExecutable("arduino2", null);
-			run(this,dir,System.err, Arrays.asList(exe.getAbsolutePath(), file.getAbsolutePath()));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-
+		File exe = DownloadManager.getRunExecutable("arduino2", null);
+		run(this,file.getParentFile(),System.err, Arrays.asList(exe.getAbsolutePath(), file.getAbsolutePath()));
 	}
 	
 	public Image getImage() {
@@ -76,11 +63,18 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		return ArduinoLoader.class;
 	}
 	public static void main(String[] args) throws Exception {
+		/*
 		JavaFXInitializer.go();
 		ScriptingEngine.pull("https://github.com/OperationSmallKat/LunaMotherboardFirmware.git");
 		File f = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/LunaMotherboardFirmware.git", "LunaMotherboardFirmware.ino");
 
 		new ArduinoExternalEditor().launch(f, new javafx.scene.control.Button());
+		*/
+		//File exe = DownloadManager.getRunExecutable("arduino2", null);
+		//File file = new File();
+		String absolutePath = "C:\\Users\\Kevin Bad Name\\bin\\BowlerStudioInstall\\arduino2\\Arduino IDE.exe";// exe.getAbsolutePath();
+		run(null,new File("C:\\Users\\Kevin Bad Name\\bin\\BowlerStudioInstall\\arduino2"),System.err, Arrays.asList(absolutePath, "C:\\Users\\Kevin Bad Name\\Documents\\bowler-workspace\\gitcache\\github.com\\OperationSmallKat\\LunaMotherboardFirmware\\LunaMotherboardFirmware.ino"));
+	
 	}
 
 	
