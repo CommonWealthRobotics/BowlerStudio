@@ -236,9 +236,9 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						app=app.getParentFile();
 					}
 					
-					run(environment,this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() + delim()));
+					run(environment,this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() ));
 				}else
-					run(environment,this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() + delim()));
+					run(environment,this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() ));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
