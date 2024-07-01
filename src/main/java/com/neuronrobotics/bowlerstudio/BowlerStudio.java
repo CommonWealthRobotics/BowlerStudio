@@ -513,37 +513,6 @@ public class BowlerStudio extends Application {
 
 		// System.err.println("Loading Main.fxml");
 		renderSplashFrame(81, "Find arduino");
-		String arduino = "arduino";
-		if (NativeResource.isLinux()) {
-
-			// Slic3r.setExecutableLocation("/usr/bin/slic3r");
-
-		} else if (NativeResource.isWindows()) {
-			arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
-			if (!new File(arduino).exists()) {
-				arduino = "C:\\Program Files\\Arduino\\arduino.exe";
-			}
-
-		} else if (NativeResource.isOSX()) {
-			arduino = "/Applications/Arduino.app/Contents/MacOS/Arduino";
-		}
-		try {
-			if (!new File(arduino).exists() && !NativeResource.isLinux()) {
-				boolean alreadyNotified = Boolean.getBoolean(
-						ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep", false).toString());
-				if (!alreadyNotified) {
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep", true);
-					String adr = arduino;
-
-				}
-
-			}
-			System.err.println("Arduino exec found at: " + arduino);
-			ArduinoLoader.setARDUINOExec(arduino);
-		} catch (Exception e) {
-			reporter.uncaughtException(Thread.currentThread(), e);
-
-		}
 		renderSplashFrame(82, "Set up UI");
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
