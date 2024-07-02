@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -41,7 +42,12 @@ public class SVGExternalEditor implements IExternalEditor {
 
 				File exe = DownloadManager.getRunExecutable("inkscape", null);
 
-				Thread t=run(this, dir, System.err, Arrays.asList(exe.getAbsolutePath(), filename));
+				List<String> asList = Arrays.asList(exe.getAbsolutePath(), filename);
+				if(isMac()) {
+					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), filename);
+					
+				}
+				Thread t=run(this, dir, System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
 				// TODO Auto-generated catch block
