@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.video.OSUtil;
 
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
@@ -88,6 +89,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 	public static void main(String[] args)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+		JavaFXInitializer.go();
 		File f = ScriptingEngine.fileFromGit("https://github.com/NeuronRobotics/NASACurisoity.git",
 				"STL/upper-arm.STL");
 
