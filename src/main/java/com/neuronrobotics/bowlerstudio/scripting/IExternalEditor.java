@@ -22,11 +22,12 @@ import javafx.scene.image.Image;
 public interface IExternalEditor {
 	
 	
-	Class getSupportedLangauge();
+	List<Class> getSupportedLangauge();
 	
 	default boolean isSupportedByExtention(File file) {
 		if(getSupportedLangauge()!=null)
-			if (getSupportedLangauge().isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {
+			for(Class c:getSupportedLangauge())
+			if (c.isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {
 				return true;
 			}
 		return false;

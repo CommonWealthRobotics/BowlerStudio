@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
@@ -80,10 +81,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public Class getSupportedLangauge() {
-		return ArduinoLoader.class;
+	public List<Class> getSupportedLangauge() {
+		return Arrays.asList( ArduinoLoader.class);
 	}
-
 	public static void main(String[] args) throws Exception {
 		/*
 		 * JavaFXInitializer.go(); ScriptingEngine.pull(

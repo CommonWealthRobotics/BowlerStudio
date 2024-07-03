@@ -47,22 +47,23 @@ public class BlenderExternalEditor implements IExternalEditor {
 							"https://github.com/CommonWealthRobotics/blender-bowler-cli.git", 
 							"import.py");
 					File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
-					
-					//blender --background --python import_stl_to_blend.py -- /path/to/input/file.stl /path/to/output/file.blend
-					ArrayList<String> args = new ArrayList<>();
-					if(isMac()) {
-						args.add("open");
-						args.add("-a");
+					if(!blenderfile.exists()) {
+						//blender --background --python import_stl_to_blend.py -- /path/to/input/file.stl /path/to/output/file.blend
+						ArrayList<String> args = new ArrayList<>();
+						if(isMac()) {
+							args.add("open");
+							args.add("-a");
+						}
+						args.add(exe.getAbsolutePath());
+						args.add("--background");
+						args.add("--python");
+						args.add(importFile.getAbsolutePath());
+						args.add("--");
+						args.add(filename);
+						args.add(blenderfile.getAbsolutePath());
+						Thread t=run(this, dir, System.err, args);
+						t.join();
 					}
-					args.add(exe.getAbsolutePath());
-					args.add("--background");
-					args.add("--python");
-					args.add(importFile.getAbsolutePath());
-					args.add("--");
-					args.add(filename);
-					args.add(blenderfile.getAbsolutePath());
-					Thread t=run(this, dir, System.err, args);
-					t.join();
 					filename=blenderfile.getAbsolutePath();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -128,9 +129,8 @@ public class BlenderExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public Class getSupportedLangauge() {
-		return StlLoader.class;
-
+	public List<Class> getSupportedLangauge() {
+		return Arrays.asList( StlLoader.class);
 	}
 
 }

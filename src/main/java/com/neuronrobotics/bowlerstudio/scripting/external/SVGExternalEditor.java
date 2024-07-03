@@ -16,8 +16,12 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
+import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
+import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
+import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.video.OSUtil;
@@ -94,9 +98,7 @@ public class SVGExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public Class getSupportedLangauge() {
-		return SvgLoader.class;
-
+	public List<Class> getSupportedLangauge() {
+		return Arrays.asList( SvgLoader.class);
 	}
-
 }

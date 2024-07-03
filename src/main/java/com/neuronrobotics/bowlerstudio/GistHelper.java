@@ -25,7 +25,7 @@ public class GistHelper
     {
         //TODO: Perhaps this method should throw GitAPIException and IOException
         //Setup gist
-    	String defaultContents = ScriptingEngine.getLangaugeByExtention(filename).getDefaultContents();
+    	String defaultContents = "";//;
         GitHub gitHub = PasswordManager.getGithub();
         GHGistBuilder builder = gitHub.createGist();
         builder.file(filename, defaultContents);
@@ -93,6 +93,7 @@ public class GistHelper
             }
 
             System.out.println("Creating gist at " + filename);
+            ScriptingEngine.getLangaugeByExtention(filename).getDefaultContents(gist.getGitPullUrl(), filename);
             return gist.getGitPullUrl();
         }
         catch (IOException e)

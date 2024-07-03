@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
+import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
+import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
@@ -21,7 +25,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -123,10 +130,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	}
 
 	@Override
-	public Class getSupportedLangauge() {
-		if (OSSupportsEclipse() )
-			return GroovyHelper.class;
-		return null;
+	public List<Class> getSupportedLangauge() {
+		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class);
 	}
-
 }
