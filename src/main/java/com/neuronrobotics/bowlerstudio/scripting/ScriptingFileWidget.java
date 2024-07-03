@@ -142,8 +142,13 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		controlPane = new HBox(20);
 		double lengthScalar = fileNameBox.getFont().getSize() * 1.5;
-		fileNameBox.prefColumnCountProperty().bind(fileNameBox.textProperty().length());
-		fileListBox.prefColumnCountProperty().bind(fileListBox.textProperty().length());
+		//fileNameBox.prefColumnCountProperty().bind(fileNameBox.textProperty().length());
+		//fileListBox.prefColumnCountProperty().bind(fileListBox.textProperty().length());
+		
+		HBox.setHgrow(fileNameBox, Priority.ALWAYS);
+		fileNameBox.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(fileListBox, Priority.ALWAYS);
+		fileListBox.setMaxWidth(Double.MAX_VALUE);
 
 //		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
 //			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
