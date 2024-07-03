@@ -51,11 +51,9 @@ public class BlenderExternalEditor implements IExternalEditor {
 					if(!blenderfile.exists()) {
 						//blender --background --python import_stl_to_blend.py -- /path/to/input/file.stl /path/to/output/file.blend
 						ArrayList<String> args = new ArrayList<>();
-						if(isMac()) {
-							args.add("open");
-							args.add("-a");
-						}
-						args.add(exe.getAbsolutePath());
+
+						args.add(DownloadManager.getConfigExecutable("blender", null).getAbsolutePath());
+
 						args.add("--background");
 						args.add("--python");
 						args.add(importFile.getAbsolutePath());
