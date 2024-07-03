@@ -131,8 +131,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		publish.setTooltip(new Tooltip("Save this code to Git"));
 		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
 		
-		arrange.setMinWidth(80);
-		publish.setMinWidth(80);
+//		arrange.setMinWidth(80);
+//		publish.setMinWidth(80);
 		
 
 		// Set up the run controls and the code area
@@ -142,38 +142,41 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		controlPane = new HBox(20);
 		double lengthScalar = fileNameBox.getFont().getSize() * 1.5;
-		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-			// first
-			// time and so on
-			BowlerStudio.runLater(() -> {
-				Text text = new Text(currText);
-				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
-				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-						+ fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of
-																									// the TextField
-						+ lengthScalar; // Add some spacing
-				fileNameBox.setPrefWidth(width); // Set the width
-				fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a
-																			// little bit
-			});
-		});
-		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-			// first
-			// time and so on
-			BowlerStudio.runLater(() -> {
-				Text text = new Text(currText);
-				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
-				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-						+ fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of
-																									// the TextField
-						+ lengthScalar; // Add some spacing
-				fileListBox.setPrefWidth(width); // Set the width
-				fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a
-																			// little bit
-			});
-		});
+		fileNameBox.prefColumnCountProperty().bind(fileNameBox.textProperty().length());
+		fileListBox.prefColumnCountProperty().bind(fileListBox.textProperty().length());
+
+//		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
+//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+//			// first
+//			// time and so on
+//			BowlerStudio.runLater(() -> {
+//				Text text = new Text(currText);
+//				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
+//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+//						+ fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of
+//																									// the TextField
+//						+ lengthScalar; // Add some spacing
+//				fileNameBox.setPrefWidth(width); // Set the width
+//				fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a
+//																			// little bit
+//			});
+//		});
+//		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
+//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+//			// first
+//			// time and so on
+//			BowlerStudio.runLater(() -> {
+//				Text text = new Text(currText);
+//				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
+//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+//						+ fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of
+//																									// the TextField
+//						+ lengthScalar; // Add some spacing
+//				fileListBox.setPrefWidth(width); // Set the width
+//				fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a
+//																			// little bit
+//			});
+//		});
 		
 		//System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
@@ -296,7 +299,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		new Thread() {
 			public void run() {
 
-				if (langaugeType.getIsTextFile())
+				
 					save();
 				// do not attempt to save no binary files
 				startStopAction();
@@ -308,10 +311,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		new Thread(() -> {
 			if (isOwnedByLoggedInUser) {
 				save();
-				CommitWidget.commit(currentFile, getCode());
+				CommitWidget.commit(currentFile, langaugeType.getIsTextFile()?getCode():null);
 			} else {
 				String reponame = currentFile.getName().split("\\.")[0] + "_" + PasswordManager.getLoginID();
-				String content = getCode();
+				String content = langaugeType.getIsTextFile()?getCode():null;
 				String newGit;
 				try {
 					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: " + remote);
@@ -616,8 +619,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	public void save() {
-		// TODO Auto-generated method stub
+		if (!langaugeType.getIsTextFile())
+			return;
 		try {
+			
 			String content = new String(Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
 			String ineditor = getCode();
 			if (content.contentEquals(ineditor)) {

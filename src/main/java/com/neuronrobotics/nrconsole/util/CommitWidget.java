@@ -26,10 +26,11 @@ import javafx.util.Pair;
 
 public class CommitWidget {
 	public static void commit(File currentFile, String code){
-		if(code.length()<1){
-			Log.error("COmmit failed with no code to commit");
-			return;
-		}
+		if(code!=null)
+			if(code.length()<1){
+				Log.error("COmmit failed with no code to commit");
+				return;
+			}
 		BowlerStudio.runLater(() ->{
 			// Create the custom dialog.
 			Dialog<Pair<String, String>> dialog = new Dialog<>();
@@ -103,7 +104,7 @@ public class CommitWidget {
 							String relativePath = ScriptingEngine.findLocalPath(currentFile,git);
 							ScriptingEngine.closeGit(git);
 							ScriptingEngine.pull(remote);
-						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message);
+						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message,true);
 						    
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block

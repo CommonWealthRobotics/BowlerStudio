@@ -17,6 +17,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.BlenderLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -61,7 +62,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 						args.add("--");
 						args.add(filename);
 						args.add(blenderfile.getAbsolutePath());
-						Thread t=run(this, dir, System.err, args);
+						Thread t=run(this, dir, System.out, args);
 						t.join();
 					}
 					filename=blenderfile.getAbsolutePath();
@@ -81,7 +82,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), filename);
 					
 				}
-				Thread t=run(this, dir, System.err, asList);
+				Thread t=run(this, dir, System.out, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
 				// TODO Auto-generated catch block
@@ -130,7 +131,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( StlLoader.class);
+		return Arrays.asList( StlLoader.class,BlenderLoader.class);
 	}
 
 }
