@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,14 +37,44 @@ public class BlenderExternalEditor implements IExternalEditor {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = file.getAbsolutePath();
+			File dir = new File(filename).getParentFile();
+			File exe = DownloadManager.getRunExecutable("blender", null);
 
+			if(filename.toLowerCase().endsWith(".stl")) {
+				System.out.println("Converting to Blender file before loading");
+				try {
+					File importFile = ScriptingEngine.fileFromGit(
+							"https://github.com/CommonWealthRobotics/blender-bowler-cli.git", 
+							"import.py");
+					File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
+					
+					//blender --background --python import_stl_to_blend.py -- /path/to/input/file.stl /path/to/output/file.blend
+					ArrayList<String> args = new ArrayList<>();
+					if(isMac()) {
+						args.add("open");
+						args.add("-a");
+					}
+					args.add(exe.getAbsolutePath());
+					args.add("--background");
+					args.add("--python");
+					args.add(importFile.getAbsolutePath());
+					args.add("--");
+					args.add(filename);
+					args.add(blenderfile.getAbsolutePath());
+					Thread t=run(this, dir, System.err, args);
+					t.join();
+					filename=blenderfile.getAbsolutePath();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
+			}
+			if(filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
+				System.out.println("ERROR blender conversion failed!");
+				return;
+			}
 			try {
-				Git locateGit = ScriptingEngine.locateGit(file);
-				File dir = locateGit.getRepository().getWorkTree();
-				ScriptingEngine.closeGit(locateGit);
-
-				File exe = DownloadManager.getRunExecutable("blender", null);
-
 				List<String> asList = Arrays.asList(exe.getAbsolutePath(), filename);
 				if(isMac()) {
 					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), filename);
