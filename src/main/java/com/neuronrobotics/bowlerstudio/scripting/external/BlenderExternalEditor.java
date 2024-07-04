@@ -16,6 +16,8 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.BlenderLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
@@ -42,33 +44,10 @@ public class BlenderExternalEditor implements IExternalEditor {
 			File exe = DownloadManager.getRunExecutable("blender", null);
 
 			if(filename.toLowerCase().endsWith(".stl")) {
-				System.out.println("Converting to Blender file before loading");
-				try {
-					File importFile = ScriptingEngine.fileFromGit(
-							"https://github.com/CommonWealthRobotics/blender-bowler-cli.git", 
-							"import.py");
-					File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
-					if(!blenderfile.exists()) {
-						//blender --background --python import_stl_to_blend.py -- /path/to/input/file.stl /path/to/output/file.blend
-						ArrayList<String> args = new ArrayList<>();
-
-						args.add(DownloadManager.getConfigExecutable("blender", null).getAbsolutePath());
-
-						args.add("--background");
-						args.add("--python");
-						args.add(importFile.getAbsolutePath());
-						args.add("--");
-						args.add(filename);
-						args.add(blenderfile.getAbsolutePath());
-						Thread t=run(this, dir, System.out, args);
-						t.join();
-					}
-					filename=blenderfile.getAbsolutePath();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
+				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
+				BlenderLoader.toBlenderFile(file, blenderfile);
+				filename=blenderfile.getAbsolutePath();
+				BowlerStudio.createFileTab(blenderfile);
 			}
 			if(filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
 				System.out.println("ERROR blender conversion failed!");
