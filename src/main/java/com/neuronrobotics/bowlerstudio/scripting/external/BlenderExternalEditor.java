@@ -47,7 +47,11 @@ public class BlenderExternalEditor implements IExternalEditor {
 				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
 				BlenderLoader.toBlenderFile(file, blenderfile);
 				filename=blenderfile.getAbsolutePath();
-				BowlerStudio.createFileTab(blenderfile);
+				try {
+					BowlerStudio.createFileTab(blenderfile);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if(filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
 				System.out.println("ERROR blender conversion failed!");

@@ -208,9 +208,11 @@ public class AddFileToGistController extends Application {
 				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), fileSlug );
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
-
-				BowlerStudio.createFileTab(nf);
-
+				try {
+					BowlerStudio.createFileTab(nf);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
 				refreshevent.setToLoggedIn();
 			} catch (Exception e) {
 				new IssueReportingExceptionHandler().except(e);
