@@ -205,7 +205,7 @@ public class AddFileToGistController extends Application {
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
-				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), fileSlug );
+				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), filename );
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 				try {
