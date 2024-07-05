@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.scripting.BlenderLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.video.OSUtil;
@@ -45,6 +46,9 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 			if(filename.toLowerCase().endsWith(".stl")) {
 				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
+				if(ScriptingFileWidget.DeleteExisting(blenderfile.getName())) {
+					blenderfile.delete();
+				}
 				BlenderLoader.toBlenderFile(file, blenderfile);
 				filename=blenderfile.getAbsolutePath();
 				try {
