@@ -696,6 +696,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		});
 		cm.getItems().add(exportDXF);
+		MenuItem blend = new MenuItem("Export Blender File...");
+		blend.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				currentCsg.addExportFormat("blend");
+				exportManufacturingPart(currentCsg, source);
+			}
+		});
+		cm.getItems().add(blend);
+		
 		MenuItem export = new MenuItem("Export STL...");
 		export.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
