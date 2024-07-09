@@ -8,6 +8,7 @@ import org.jfree.util.Log;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
 
@@ -22,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 public class CommitWidget {
@@ -86,6 +88,18 @@ public class CommitWidget {
 				dialog.initModality(mode);
 			}
 			System.err.println("Show commit Dialog");
+			Node root = dialog.getDialogPane();
+			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				dialog.getDialogPane().applyCss();
+				dialog.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			Optional<Pair<String, String>> result = dialog.showAndWait();
 			System.err.println("Commit Dialog finished");
 			dialog.close();
