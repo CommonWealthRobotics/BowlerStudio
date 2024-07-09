@@ -377,14 +377,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 			stage.setOnCloseRequest(event -> alert.hide());
 			Node root = alert.getDialogPane();
-			FontSizeManager.addListener(fontNum->{
-				int tmp = fontNum-10;
-				if(tmp<12)
-					tmp=12;
-				root.setStyle("-fx-font-size: "+tmp+"pt");
-	            alert.getDialogPane().applyCss();
-	            alert.getDialogPane().layout();
-	            stage.sizeToScene();
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
 			});
 			boolean result = alert.showAndWait().map(response -> {
 				if (response == yes)
