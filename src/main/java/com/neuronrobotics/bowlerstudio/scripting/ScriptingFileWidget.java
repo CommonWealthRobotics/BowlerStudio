@@ -333,6 +333,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				if(fileType.toLowerCase().contains("blend")) {
 					BlenderLoader.toBlenderFile(c, newFile);
 				}
+				if(fileType.toLowerCase().contains("FCStd")) {
+					//BlenderLoader.toBlenderFile(c, newFile);
+					FreecadLoader.addCSGToFreeCAD(newFile, c);
+				}
 				BowlerStudio.createFileTab(newFile);
 			} catch (GitAPIException | IOException e) {
 				// TODO Auto-generated catch block
@@ -396,9 +400,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 			ButtonType stlButton = new ButtonType("STL");
 			ButtonType blenderButton = new ButtonType("Blender");
+			ButtonType freecad = new ButtonType("Blender");
 			ButtonType cancelButton = new ButtonType("Cancel");
 
-			alert.getButtonTypes().setAll(stlButton, blenderButton, cancelButton);
+			alert.getButtonTypes().setAll(stlButton, blenderButton,freecad, cancelButton);
 			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 			stage.setOnCloseRequest(event -> alert.hide());
 			Node root = alert.getDialogPane();
@@ -416,6 +421,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					return "stl";
 				if (response == blenderButton)
 					return "blend";
+				if (response == freecad)
+					return "FCStd";
 				return null;
 			}).orElse(null);
 
