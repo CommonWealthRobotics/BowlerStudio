@@ -311,16 +311,32 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		ArrayList<CSG> cache = new ArrayList<>();
 		addObject(obj,cache);
 		int index=0;
+		String url = getURL();
+
+		boolean freecad=fileType.toLowerCase().contains("fcstd");
+		if(freecad) {
+			String file = fileNameBox.getText()+"."+fileType;
+			File newFile = ScriptingEngine.fileFromGit(url, file);
+			if(newFile.exists() && !freecad) {
+				if(DeleteExisting(file)) {
+					newFile.delete();
+				}
+			}
+		}
 		for(CSG c:cache) {
 			String objectName = c.getName().length()>0?"_"+c.getName():"";
 			String indexString = cache.size()>1?"_"+index:"";
-			String url = getURL();
+			if(freecad) {
+				// In freeecad we add each item to the same model
+				objectName="";
+				indexString="";
+			}
 			String file = fileNameBox.getText()+objectName+indexString+"."+fileType;
 			System.out.println("File Name "+file);
 			System.out.println("Placing file in "+url);
 			try {
 				File newFile = ScriptingEngine.fileFromGit(url, file);
-				if(newFile.exists()) {
+				if(newFile.exists() && !freecad) {
 					if(DeleteExisting(file)) {
 						newFile.delete();
 					}else
@@ -333,8 +349,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				if(fileType.toLowerCase().contains("blend")) {
 					BlenderLoader.toBlenderFile(c, newFile);
 				}
-				if(fileType.toLowerCase().contains("FCStd")) {
-					//BlenderLoader.toBlenderFile(c, newFile);
+				if(freecad) {
 					FreecadLoader.addCSGToFreeCAD(newFile, c);
 				}
 				BowlerStudio.createFileTab(newFile);
@@ -400,7 +415,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 			ButtonType stlButton = new ButtonType("STL");
 			ButtonType blenderButton = new ButtonType("Blender");
-			ButtonType freecad = new ButtonType("Blender");
+			ButtonType freecad = new ButtonType("FreeCAD");
 			ButtonType cancelButton = new ButtonType("Cancel");
 
 			alert.getButtonTypes().setAll(stlButton, blenderButton,freecad, cancelButton);
