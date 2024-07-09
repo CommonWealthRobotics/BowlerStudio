@@ -46,7 +46,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 			if(filename.toLowerCase().endsWith(".stl")) {
 				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
-				if(ScriptingFileWidget.DeleteExisting(blenderfile.getName())) {
+				if(ScriptingFileWidget.askToDeleteFile(blenderfile.getName())) {
 					blenderfile.delete();
 				}
 				BlenderLoader.toBlenderFile(file, blenderfile);

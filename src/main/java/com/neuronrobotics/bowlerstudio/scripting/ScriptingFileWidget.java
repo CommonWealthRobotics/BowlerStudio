@@ -317,8 +317,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		if(freecad) {
 			String file = fileNameBox.getText()+"."+fileType;
 			File newFile = ScriptingEngine.fileFromGit(url, file);
-			if(newFile.exists() && !freecad) {
-				if(DeleteExisting(file)) {
+			if(newFile.exists() ) {
+				if(askToDeleteFile(file)) {
 					newFile.delete();
 				}
 			}
@@ -337,7 +337,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			try {
 				File newFile = ScriptingEngine.fileFromGit(url, file);
 				if(newFile.exists() && !freecad) {
-					if(DeleteExisting(file)) {
+					if(askToDeleteFile(file)) {
 						newFile.delete();
 					}else
 						continue;
@@ -361,7 +361,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}
 	}
 	
-	public static boolean DeleteExisting(String name) {
+	public static boolean askToDeleteFile(String name) {
 		CompletableFuture<Boolean> future = new CompletableFuture<>();
 
 		Platform.runLater(() -> {
