@@ -27,6 +27,8 @@ public class ExternalEditorController {
 		editors.add(new GroovyEclipseExternalEditor());
 		editors.add(new ArduinoExternalEditor());
 		editors.add(new BlenderExternalEditor());
+		editors.add(new FreeCADExternalEditor());
+
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
