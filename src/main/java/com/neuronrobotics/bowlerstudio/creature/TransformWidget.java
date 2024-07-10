@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
@@ -169,15 +170,33 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		// X line
 
 		int startIndex = 3;
+		linearIncrement= Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"linear", 
+						linearIncrement).toString());
+		rotationIncrement=Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"rot",
+						rotationIncrement).toString());
 		TextField lin = new TextField(linearIncrement + "");
 		TextField rot = new TextField(rotationIncrement + "");
 		lin.setOnAction(ac -> {
-			linearIncrement = Double.parseDouble(lin.getText());
-			setIncrements();
+			try {
+				linearIncrement = Double.parseDouble(lin.getText());
+				setIncrements();
+			}catch(NumberFormatException ex) {
+				
+			}
 		});
 		rot.setOnAction(ac -> {
-			rotationIncrement = Double.parseDouble(rot.getText());
-			setIncrements();
+			try {
+				rotationIncrement = Double.parseDouble(rot.getText());
+				setIncrements();
+			} catch (NumberFormatException ex) {
+
+			}
 		});
 
 		add(new Label("Linear "), 0, startIndex-1);
@@ -228,6 +247,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 
 
 	public void setIncrements() {
+		ConfigurationDatabase.setObject("TransformWidget", "linear", linearIncrement);
+		ConfigurationDatabase.setObject("TransformWidget", "rot", rotationIncrement);
+
 		tx.setJogIncrement(linearIncrement);
 		ty.setJogIncrement(linearIncrement);
 		tz.setJogIncrement(linearIncrement);
