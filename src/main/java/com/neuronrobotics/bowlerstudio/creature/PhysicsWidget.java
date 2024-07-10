@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.physics.MuJoCoPhysicsManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.imu.IMUUpdate;
@@ -241,17 +242,8 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		BowlerStudio.runLater(()->box.setDisable(true));
 		String text2 = text.getText();
 		ConfigurationDatabase.setObject("PhysicsWidget",key ,text2);
-		if(!text2.endsWith(".git"))
+		if(!Vitamins.isGitURL(text2)) {
 			return;
-		if(text2.length()<=5)
-			return;
-		try {
-			new java.net.URL(text2);
-		}catch(Exception ex) {
-			if(!text2.startsWith("git@")) {
-				ex.printStackTrace();
-				return;
-			}
 		}
 		BowlerStudio.runLater(()->box.setDisable(false));
 		

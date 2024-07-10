@@ -69,8 +69,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@FXML
 	void onAdd(ActionEvent event) {
-		VitaminLocation newVit = new VitaminLocation(name.getText(), selectedType, sizeSelected, tf.getCurrent());
-		newVit.setScript(isScript.isSelected());
+		VitaminLocation newVit = new VitaminLocation(isScript.isSelected(),name.getText(), selectedType, sizeSelected, tf.getCurrent());
 		VitaminFrame value = frameType.getValue();
 		if(value==null)
 			value=VitaminFrame.DefaultFrame;
@@ -112,17 +111,8 @@ public class VitatminWidget implements IOnTransformChange {
 	void validateURL() {
 		size.setDisable(true);
 		String text2= scriptSource.getText();
-		if(!text2.endsWith(".git"))
+		if(!Vitamins.isGitURL(text2)) {
 			return;
-		if(text2.length()<=5)
-			return;
-		try {
-			new java.net.URL(text2);
-		}catch(Exception ex) {
-			if(!text2.startsWith("git@")) {
-				ex.printStackTrace();
-				return;
-			}
 		}
 		size.setDisable(false);
 		size.getItems().clear();
