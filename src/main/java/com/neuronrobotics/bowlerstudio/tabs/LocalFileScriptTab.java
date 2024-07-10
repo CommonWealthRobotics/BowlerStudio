@@ -286,7 +286,6 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		getScripting().setFocusTraversable(false);
 
-		getChildren().setAll(swingNode, getScripting());
 		swingNode.setOnMouseEntered(mouseEvent -> {
 			// System.err.println("On mouse entered " + file.getName());
 			// resizeEvent();
@@ -364,6 +363,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				t.printStackTrace();
 			}
 		});
+		getChildren().setAll(swingNode, getScripting());
 
 	}
 

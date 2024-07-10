@@ -52,6 +52,8 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	private String title;
 	private TransformWidget self;
 	private Label mode= new Label("");
+	private TextField lin;
+	private TextField rot;
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange) {
 		TransformWidget c = this;
@@ -146,7 +148,6 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tx.showSlider(false);
 		ty.showSlider(false);
 		tz.showSlider(false);
-		setIncrements();
 		GameControlThreadManager.setCurrentController(c);
 		GameControlThreadManager.reset();
 		game.setOnAction(event -> {
@@ -170,18 +171,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		// X line
 
 		int startIndex = 3;
-		linearIncrement= Double.parseDouble(
-				ConfigurationDatabase.getObject(
-						"TransformWidget", 
-						"linear", 
-						linearIncrement).toString());
-		rotationIncrement=Double.parseDouble(
-				ConfigurationDatabase.getObject(
-						"TransformWidget", 
-						"rot",
-						rotationIncrement).toString());
-		TextField lin = new TextField(linearIncrement + "");
-		TextField rot = new TextField(rotationIncrement + "");
+		lin = new TextField(linearIncrement + "");
+		rot = new TextField(rotationIncrement + "");
+		setDefaultValues();
+		setIncrements();
 		lin.setOnAction(ac -> {
 			try {
 				linearIncrement = Double.parseDouble(lin.getText());
@@ -229,6 +222,23 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		
 
 		updatePose(is);
+	}
+
+	private void setDefaultValues() {
+		linearIncrement= Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"linear", 
+						linearIncrement).toString());
+		rotationIncrement=Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"rot",
+						rotationIncrement).toString());
+		BowlerStudio.runLater(()->{
+			lin.setText(linearIncrement+"");
+			rot.setText(rotationIncrement + "");
+		});
 	}
 	
 	public String toString() {
@@ -314,7 +324,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		azimuth.setValue(aVar);
 		// Set the rotation after setting the UI so the read will load the rotation in
 		// its pure form
-
+		setDefaultValues();
 	}
 
 	public static void main(String[] args) {
