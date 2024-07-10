@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
@@ -66,7 +67,10 @@ public class VitatminWidget implements IOnTransformChange {
 	private HashMap<GridPane, VitaminLocation> locationMap = new HashMap<>();
 	private VitaminLocation selectedVitamin;
 	private ITransformProvider currentTipProvider;
-
+	private Affine lastLinkAffine = null;
+	private Affine manipulator=null;
+	private TransformNR offset= new TransformNR();
+	
 	@FXML
 	void onAdd(ActionEvent event) {
 		VitaminLocation newVit = new VitaminLocation(isScript.isSelected(),name.getText(), selectedType, sizeSelected, tf.getCurrent());
@@ -77,6 +81,28 @@ public class VitatminWidget implements IOnTransformChange {
 		holder.addVitamin(newVit);
 		add(newVit);
 		validateInput();
+		CSG newDisplay = getCSG(newVit);
+		if(newDisplay!=null) {
+			BowlerStudioController.addCsg(newDisplay);
+		}
+
+	}
+
+	private CSG getCSG(VitaminLocation newVit) {
+		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
+		CSG newDisplay=null;
+		switch(newVit.getFrame()) {
+		case DefaultFrame:
+			newDisplay = manager.getVitaminDisplay(newVit, manipulator, new TransformNR());
+			break;
+		case LinkOrigin:
+			newDisplay = manager.getVitaminDisplay(newVit, manipulator, offset);
+			break;
+		case previousLinkTip:
+			newDisplay = manager.getVitaminDisplay(newVit, lastLinkAffine,  new TransformNR());
+			break;
+		}
+		return newDisplay;
 	}
 
 	private void add(VitaminLocation newVit) {
@@ -100,6 +126,9 @@ public class VitatminWidget implements IOnTransformChange {
 			holder.removeVitamin(newVit);
 			validateInput();
 			locationMap.remove(box);
+			CSG part = getCSG( newVit);
+			if(part!=null)
+				BowlerStudioController.removeObject(part);
 		});
 		box.add(remove, 0, 0);
 		box.add(new Label(newVit.getName()), 1, 0);
@@ -269,5 +298,29 @@ public class VitatminWidget implements IOnTransformChange {
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
 		selectedVitamin.setLocation(newTrans);
+	}
+
+	public Affine getLastLinkAffine() {
+		return lastLinkAffine;
+	}
+
+	public void setLastLinkAffine(Affine lastLinkAffine) {
+		this.lastLinkAffine = lastLinkAffine;
+	}
+
+	public Affine getManipulator() {
+		return manipulator;
+	}
+
+	public void setManipulator(Affine manipulator) {
+		this.manipulator = manipulator;
+	}
+
+	public TransformNR getOffset() {
+		return offset;
+	}
+
+	public void setOffset(TransformNR offset) {
+		this.offset = offset;
 	}
 }

@@ -67,7 +67,7 @@ public class MobleBaseMenueFactory {
 	
 	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems,ITransformProvider tfp) {
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems,ITransformProvider tfp,Affine manipulator, Affine lastLink, TransformNR offset) {
 		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
 				AssetFactory.loadIcon("Vitamins.png"));
 		HashMap<Parent,VitatminWidget> widget = new HashMap<>();
@@ -80,7 +80,9 @@ public class MobleBaseMenueFactory {
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
 					tw.setVitaminProvider(vitamins,tfp);
-					
+					tw.setManipulator(manipulator);
+					tw.setLastLinkAffine(lastLink);
+					tw.setOffset(offset);
 					//Group value = new Group(w);
 					widgetMapForTreeitems.put(vitaminsMenu, w);
 					widget.put(w, tw);
@@ -571,7 +573,7 @@ public class MobleBaseMenueFactory {
 			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
 			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, selected->{
 				 return device.forwardOffset(new TransformNR()); 
-			});
+			},(Affine)device.getRootListener(),(Affine)device.getRootListener(),new TransformNR());
 			if (root)
 				rootItem.getChildren().addAll(  printable,arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
@@ -1104,6 +1106,10 @@ public class MobleBaseMenueFactory {
 		
 
 		link.getChildren().addAll(design);
+		Affine manipulator = (Affine) dh.getListener(linkIndex);
+		TransformNR offset = dh.getDHStep(linkIndex).inverse();
+		Affine lastLinkAffine = linkIndex==0? (Affine) dh.getRootListener() :(Affine) dh.getListener(linkIndex-1);
+
 		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,selected->{
 			Affine linkObjectManipulator = (Affine) dh.getLinkObjectManipulator(linkIndex);
 			TransformNR pose = TransformFactory.affineToNr(linkObjectManipulator);
@@ -1120,7 +1126,7 @@ public class MobleBaseMenueFactory {
 				pose = TransformFactory.affineToNr(ll);
 			}
 			return pose; 
-		});
+		},manipulator,lastLinkAffine,offset);
 
 
 		link.getChildren().addAll(slaves, remove);
