@@ -5,6 +5,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -12,6 +13,8 @@ import java.util.stream.Collectors;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.IVitaminHolder;
 import com.neuronrobotics.sdk.addons.kinematics.VitaminFrame;
@@ -42,6 +45,10 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@FXML // fx:id="name"
 	private TextField name; // Value injected by FXMLLoader
+	@FXML // fx:id="name"
+	private TextField scriptSource; // Value injected by FXMLLoader
+	@FXML // fx:id="name"
+	private CheckBox isScript; // Value injected by FXMLLoader
 
 	@FXML // fx:id="type"
 	private ComboBox<String> type; // Value injected by FXMLLoader
@@ -63,6 +70,7 @@ public class VitatminWidget implements IOnTransformChange {
 	@FXML
 	void onAdd(ActionEvent event) {
 		VitaminLocation newVit = new VitaminLocation(name.getText(), selectedType, sizeSelected, tf.getCurrent());
+		newVit.setScript(isScript.isSelected());
 		VitaminFrame value = frameType.getValue();
 		if(value==null)
 			value=VitaminFrame.DefaultFrame;
@@ -74,12 +82,14 @@ public class VitatminWidget implements IOnTransformChange {
 
 	private void add(VitaminLocation newVit) {
 		GridPane box = new GridPane();
-		box.getColumnConstraints().add(new ColumnConstraints(30)); // translate text
-		box.getColumnConstraints().add(new ColumnConstraints(200)); // translate values
-		box.getColumnConstraints().add(new ColumnConstraints(200)); // units
-		box.getColumnConstraints().add(new ColumnConstraints(200)); // rotate text
-		box.setHgap(20);// gab between elements
-		box.setVgap(10);// gab between elements
+		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+
+		box.getColumnConstraints().add(new ColumnConstraints(25*scale)); // translate text
+		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // translate values
+		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // units
+		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // rotate text
+		box.setHgap(20*scale);// gab between elements
+		box.setVgap(10*scale);// gab between elements
 		locationMap.put(box, newVit);
 		Button remove = new Button();
 		remove.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
@@ -99,14 +109,43 @@ public class VitatminWidget implements IOnTransformChange {
 
 		listOfItems.getItems().add(box);
 	}
-
+	void validateURL() {
+		size.setDisable(true);
+		String text2= scriptSource.getText();
+		if(!text2.endsWith(".git"))
+			return;
+		if(text2.length()<=5)
+			return;
+		try {
+			new java.net.URL(text2);
+		}catch(Exception ex) {
+			if(!text2.startsWith("git@")) {
+				ex.printStackTrace();
+				return;
+			}
+		}
+		size.setDisable(false);
+		size.getItems().clear();
+		sizeSelected=null;
+		selectedType=text2;
+		try {
+			ArrayList<String> files = ScriptingEngine.filesInGit(selectedType);
+			for(String s:files) {
+				size.getItems().add(s);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
 		//System.out.println("Validating " + nameTmp);
-
 		if (nameTmp.length() == 0)
 			return;
+		nameTmp=nameTmp.trim();
 		if (selectedType == null)
 			return;
 		if (sizeSelected == null)
@@ -115,7 +154,7 @@ public class VitatminWidget implements IOnTransformChange {
 			String name2 = l.getName();
 			if (name2.contentEquals(nameTmp))
 				return;
-			//System.out.println(nameTmp + " is not " + name2);
+			System.out.println(nameTmp + " is not " + name2);
 		}
 		add.setDisable(false);
 	}
@@ -126,10 +165,7 @@ public class VitatminWidget implements IOnTransformChange {
 		assert name != null : "fx:id=\"name\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
 		assert type != null : "fx:id=\"type\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
 		assert size != null : "fx:id=\"size\" was not injected: check your FXML file 'AddRemoveVitamins.fxml'.";
-		List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
-		for (String s : types) {
-			type.getItems().add(s);
-		}
+		populateType();
 		type.setOnAction(action -> {
 			add.setDisable(true);
 			size.getItems().clear();
@@ -165,6 +201,33 @@ public class VitatminWidget implements IOnTransformChange {
 		for(VitaminFrame vf:VitaminFrame.values()) {
 			frameType.getItems().add(vf);
 		}
+		isScript.setOnAction( action ->{
+			if(isScript.isSelected()) {
+				setScriptMode();
+			}else {
+				populateType();
+			}
+		});
+		scriptSource.textProperty().addListener((observable, oldValue, newValue) -> {
+			validateURL();
+		});
+
+	}
+
+	private void setScriptMode() {
+		type.getItems().clear();
+		type.setDisable(true);
+		scriptSource.setDisable(false);
+	}
+
+	private void populateType() {
+		List<String> types = Vitamins.listVitaminTypes().stream().sorted().collect(Collectors.toList());
+		for (String s : types) {
+			type.getItems().add(s);
+		}
+		type.setDisable(false);
+		scriptSource.setDisable(true);
+		validateURL();
 	}
 
 	public void fireVitaminSelectedUpdate() {
@@ -172,7 +235,12 @@ public class VitatminWidget implements IOnTransformChange {
 			return;
 		System.out.println("Selected " + selectedVitamin.getName());
 		name.setText(selectedVitamin.getName());
-		type.getSelectionModel().select(selectedVitamin.getType());
+		isScript.setSelected(selectedVitamin.isScript());
+		if(selectedVitamin.isScript()) {
+			scriptSource.setText(selectedVitamin.getType());
+		}else {
+			type.getSelectionModel().select(selectedVitamin.getType());
+		}
 		size.getSelectionModel().select(selectedVitamin.getSize());
 		
 		tf.updatePose(selectedVitamin.getLocation());

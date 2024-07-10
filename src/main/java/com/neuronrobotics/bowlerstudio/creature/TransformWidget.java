@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -63,9 +64,12 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //		tx.setOnAction(this);
 //		ty.setOnAction(this);
 //		tz.setOnAction(this);
-		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), 100, "mm");
-		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), 100, "mm");
-		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), 100, "mm");
+		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+
+		double width = 200*scale;
+		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), width, "mm");
+		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), width, "mm");
+		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), width, "mm");
 
 		storeRotation = initialState.getRotation();
 		double t = 0;
@@ -100,7 +104,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				onChange.onTransformFinished(getCurrent());
 
 			}
-		}, -179.99, 179.99, t, 100, "degrees");
+		}, -179.99, 179.99, t, width, "degrees");
 		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -114,7 +118,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				initialState.setElevationDegrees(newAngleDegrees);
 				onChange.onTransformFinished(getCurrent());
 			}
-		}, -89.99, 89.99, e, 100, "degrees");
+		}, -89.99, 89.99, e, width, "degrees");
 		azimuth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -128,14 +132,14 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				initialState.setAzimuthDegrees(newAngleDegrees);
 				onChange.onTransformFinished(getCurrent());
 			}
-		}, -179.99, 179.99, a, 100, "degrees");
+		}, -179.99, 179.99, a, width, "degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimuth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(60)); // translate text
-		getColumnConstraints().add(new ColumnConstraints(200)); // translate values
-		getColumnConstraints().add(new ColumnConstraints(60)); // units
-		getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(width)); // translate values
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // units
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // rotate text
 		setHgap(20);// gab between elements
 
 		tx.showSlider(false);

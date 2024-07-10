@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -127,12 +128,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.valueProperty().addListener(this);
 
 		String unitsString = "(" + units + ")";
-
-		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(40)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(30)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7)); // column 2 is 100 wide
+		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+		getColumnConstraints().add(new ColumnConstraints(30*scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(40*scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(30*scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(100*scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7*scale)); // column 2 is 100 wide
 
 		add(setpoint, 3, 1);
 		add(jogplus, 2, 0);
