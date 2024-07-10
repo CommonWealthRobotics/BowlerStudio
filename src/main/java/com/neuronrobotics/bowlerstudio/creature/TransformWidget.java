@@ -46,7 +46,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public TransformNR initialState;
 	public RotationNR storeRotation;
 	public double linearIncrement = 1;
-	public double rotationIncrement = 5;
+	public double rotationIncrement = 45;
 	public Button game = new Button("Jog With Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
 	public Thread scriptRunner = null;
 	private String title;
