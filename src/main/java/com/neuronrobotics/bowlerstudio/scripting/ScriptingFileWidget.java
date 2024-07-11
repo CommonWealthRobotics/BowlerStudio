@@ -1,13 +1,15 @@
 package com.neuronrobotics.bowlerstudio.scripting;
-
+import javafx.scene.Node;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.MobleBaseMenueFactory;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
+import com.neuronrobotics.bowlerstudio.scripting.external.ExternalEditorController;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -17,6 +19,7 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -35,6 +38,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.*;
@@ -46,7 +52,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javafx.scene.control.Tooltip;
-
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("unused")
 public class ScriptingFileWidget extends BorderPane implements IFileChangeListener {
 
@@ -63,6 +72,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private Button arrange = new Button("Bed");
 
 	private Button publish = new Button("Save");
+	private Button convert = new Button("Convert...");
+	
 
 	private CheckBox autoRun = new CheckBox();
 
@@ -128,10 +139,16 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		});
 		publish.setTooltip(new Tooltip("Save this code to Git"));
+		
+		convert.setOnAction(e -> {
+			launchConvert(currentFile);
+		});
+		convert.setTooltip(new Tooltip("Convert the output of this file to a different file type. For instance convert each  of the CSG's from a script into STL's or Blender Files in the working repo."));
+
 		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
 		
-		arrange.setMinWidth(80);
-		publish.setMinWidth(80);
+//		arrange.setMinWidth(80);
+//		publish.setMinWidth(80);
 		
 
 		// Set up the run controls and the code area
@@ -141,38 +158,46 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		controlPane = new HBox(20);
 		double lengthScalar = fileNameBox.getFont().getSize() * 1.5;
-		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-			// first
-			// time and so on
-			BowlerStudio.runLater(() -> {
-				Text text = new Text(currText);
-				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
-				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-						+ fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of
-																									// the TextField
-						+ lengthScalar; // Add some spacing
-				fileNameBox.setPrefWidth(width); // Set the width
-				fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a
-																			// little bit
-			});
-		});
-		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
-			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-			// first
-			// time and so on
-			BowlerStudio.runLater(() -> {
-				Text text = new Text(currText);
-				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
-				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-						+ fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of
-																									// the TextField
-						+ lengthScalar; // Add some spacing
-				fileListBox.setPrefWidth(width); // Set the width
-				fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a
-																			// little bit
-			});
-		});
+		//fileNameBox.prefColumnCountProperty().bind(fileNameBox.textProperty().length());
+		//fileListBox.prefColumnCountProperty().bind(fileListBox.textProperty().length());
+		
+		HBox.setHgrow(fileNameBox, Priority.ALWAYS);
+		fileNameBox.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(fileListBox, Priority.ALWAYS);
+		fileListBox.setMaxWidth(Double.MAX_VALUE);
+
+//		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
+//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+//			// first
+//			// time and so on
+//			BowlerStudio.runLater(() -> {
+//				Text text = new Text(currText);
+//				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
+//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+//						+ fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of
+//																									// the TextField
+//						+ lengthScalar; // Add some spacing
+//				fileNameBox.setPrefWidth(width); // Set the width
+//				fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a
+//																			// little bit
+//			});
+//		});
+//		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
+//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
+//			// first
+//			// time and so on
+//			BowlerStudio.runLater(() -> {
+//				Text text = new Text(currText);
+//				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
+//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+//						+ fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of
+//																									// the TextField
+//						+ lengthScalar; // Add some spacing
+//				fileListBox.setPrefWidth(width); // Set the width
+//				fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a
+//																			// little bit
+//			});
+//		});
 		
 		//System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
@@ -238,6 +263,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		controlPane.getChildren().add(fileListBox);
 		fileListBox.setMaxWidth(Double.MAX_VALUE);
 		controlPane.setMaxWidth(Double.MAX_VALUE);
+		//convert
+		controlPane.getChildren().add(convert);
 
 		// put the flowpane in the top area of the BorderPane
 		setTop(controlPane);
@@ -257,9 +284,187 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		else
 			publish.setGraphic(AssetFactory.loadIcon("Fork.png"));
 		arrange.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+		convert.setGraphic(AssetFactory.loadIcon("Forward-Button.png"));
 		arrange.setDisable(true);
+		convert.setDisable(true);
 		reset();
 	}
+	private void launchConvert(File currentFile2) {
+		// TODO Auto-generated method stub
+		new Thread(()->{
+			String fileType = chooseFileType();
+			if (fileType != null) {
+				try {
+					System.out.println("User selected: " + fileType);
+
+					convertResults(fileType);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	private void convertResults(String fileType) throws Exception {
+		Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
+		ArrayList<CSG> cache = new ArrayList<>();
+		addObject(obj,cache);
+		int index=0;
+		String url = getURL();
+
+		boolean useSingleFileFOrImports=
+				fileType.toLowerCase().contains("fcstd")||
+				fileType.toLowerCase().contains("blend");
+		File newFile = null;
+		if(useSingleFileFOrImports) {
+			String file = fileNameBox.getText()+"."+fileType;
+			newFile = ScriptingEngine.fileFromGit(url, file);
+			ScriptingEngine.ignore(url, "/**.FCBak");
+			ScriptingEngine.ignore(url, "**.blend1");
+			if(newFile.exists() ) {
+				if(askToDeleteFile(file)) {
+					newFile.delete();
+				}
+			}
+		}
+		for(CSG c:cache) {
+			String objectName = c.getName().length()>0?"_"+c.getName():"";
+			String indexString = cache.size()>1?"_"+index:"";
+			if(useSingleFileFOrImports) {
+				// In freeecad we add each item to the same model
+				objectName="";
+				indexString="";
+			}
+			String file = fileNameBox.getText()+objectName+indexString+"."+fileType;
+			System.out.println("File Name "+file);
+			System.out.println("Placing file in "+url);
+			try {
+				newFile = ScriptingEngine.fileFromGit(url, file);
+				if(newFile.exists() && !useSingleFileFOrImports) {
+					if(askToDeleteFile(file)) {
+						newFile.delete();
+					}else
+						continue;
+				}
+				// do the conversion now
+				if(fileType.toLowerCase().contains("stl")) {
+					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
+				}
+				if(fileType.toLowerCase().contains("blend")) {
+					BlenderLoader.toBlenderFile(c, newFile);
+					System.out.println("Added mesh to "+newFile);
+				}
+				if(fileType.toLowerCase().contains("fcstd")) {
+					FreecadLoader.addCSGToFreeCAD(newFile, c);
+				}
+				if(!useSingleFileFOrImports)
+					BowlerStudio.createFileTab(newFile);
+			} catch (GitAPIException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			index++;
+		}
+		if(useSingleFileFOrImports && newFile!=null)
+			BowlerStudio.createFileTab(newFile);
+	}
+	
+	public static boolean askToDeleteFile(String name) {
+		CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+		Platform.runLater(() -> {
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("File Exists");
+			alert.setHeaderText(name);
+			alert.setContentText("Delete existing and replace?");
+
+			ButtonType yes = new ButtonType("Yes");
+			ButtonType no = new ButtonType("No");
+
+			alert.getButtonTypes().setAll(yes, no);
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(event -> alert.hide());
+			Node root = alert.getDialogPane();
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
+			boolean result = alert.showAndWait().map(response -> {
+				if (response == yes)
+					return true;
+				if (response == no)
+					return false;
+				return null;
+			}).orElse(null);
+
+			future.complete(result);
+		});
+
+		try {
+			return future.get();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	public String chooseFileType() {
+		CompletableFuture<String> future = new CompletableFuture<>();
+
+		Platform.runLater(() -> {
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("File Type Selection");
+			alert.setHeaderText("Choose file type");
+			alert.setContentText("Output results to type:");
+
+			ButtonType stlButton = new ButtonType("STL");
+			ButtonType blenderButton = new ButtonType("Blender");
+			ButtonType freecad = new ButtonType("FreeCAD");
+			ButtonType cancelButton = new ButtonType("Cancel");
+
+			alert.getButtonTypes().setAll(stlButton, blenderButton,freecad, cancelButton);
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(event -> alert.hide());
+			Node root = alert.getDialogPane();
+			FontSizeManager.addListener(fontNum->{
+				int tmp = fontNum-10;
+				if(tmp<12)
+					tmp=12;
+				root.setStyle("-fx-font-size: "+tmp+"pt");
+	            alert.getDialogPane().applyCss();
+	            alert.getDialogPane().layout();
+	            stage.sizeToScene();
+			});
+			String result = alert.showAndWait().map(response -> {
+				if (response == stlButton)
+					return "stl";
+				if (response == blenderButton)
+					return "blend";
+				if (response == freecad)
+					return "FCStd";
+				return null;
+			}).orElse(null);
+
+			future.complete(result);
+		});
+
+		try {
+			return future.get();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private String getURL() {
+		return fileListBox.getText();
+	}
+
 	private void exportAll(boolean makePrintBed) {
 		new Thread() {
 			public void run() {
@@ -295,7 +500,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		new Thread() {
 			public void run() {
 
-				if (langaugeType.getIsTextFile())
+				
 					save();
 				// do not attempt to save no binary files
 				startStopAction();
@@ -307,10 +512,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		new Thread(() -> {
 			if (isOwnedByLoggedInUser) {
 				save();
-				CommitWidget.commit(currentFile, getCode());
+				CommitWidget.commit(currentFile, langaugeType.getIsTextFile()?getCode():null);
 			} else {
 				String reponame = currentFile.getName().split("\\.")[0] + "_" + PasswordManager.getLoginID();
-				String content = getCode();
+				String content = langaugeType.getIsTextFile()?getCode():null;
 				String newGit;
 				try {
 					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: " + remote);
@@ -407,21 +612,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		});
 		scriptRunner = new Thread() {
 
-			void addObject(Object o, ArrayList<CSG> cache) {
-				if (List.class.isInstance(o)) {
-					List<Object> c = (List<Object>) o;
-					for (int i = 0; i < c.size(); i++) {
-						// Log.warning("Loading array Lists with removals " + c.get(i));
-						addObject(c.get(i), cache);
-					}
-					return;
-				}
-				if (CSG.class.isInstance(o)) {
-					CSG csg = (CSG) o;
-					cache.add(csg);
-					return;
-				}
-			}
+
 
 			public void run() {
 //				String name;
@@ -435,25 +626,26 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					ArrayList<CSG> cache = new ArrayList<>();
 					addObject(obj,cache);
 					String git;
-						git = ScriptingEngine.locateGitUrl(currentFile);
-						if (cache.size() > 0) {
-							boolean enableArraange = false;
-							for(CSG c:cache) {
-								if(c.getName().length()>0) {
-									enableArraange = true;
-								}
-							}
-							if(enableArraange) {
-								BowlerStudio.runLater(()->{arrange.setDisable(false);});
-								if (git != null && isArrange) {
-									manager = new PrintBedManager(git, cache);
-									obj=manager.get();
-									BowlerStudio.runLater(() -> {
-										printbed.setDisable(false);
-									});
-								}
+					git = ScriptingEngine.locateGitUrl(currentFile);
+					if (cache.size() > 0) {
+						BowlerStudio.runLater(()->{convert.setDisable(false);});
+						boolean enableArraange = false;
+						for(CSG c:cache) {
+							if(c.getName().length()>0) {
+								enableArraange = true;
 							}
 						}
+						if(enableArraange) {
+							BowlerStudio.runLater(()->{arrange.setDisable(false);});
+							if (git != null && isArrange) {
+								manager = new PrintBedManager(git, cache);
+								obj=manager.get();
+								BowlerStudio.runLater(() -> {
+									printbed.setDisable(false);
+								});
+							}
+						}
+					}
 						
 					for (int i = 0; i < listeners.size(); i++) {
 						IScriptEventListener l = listeners.get(i);
@@ -501,7 +693,21 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}
 
 	}
-
+	void addObject(Object o, ArrayList<CSG> cache) {
+		if (List.class.isInstance(o)) {
+			List<Object> c = (List<Object>) o;
+			for (int i = 0; i < c.size(); i++) {
+				// Log.warning("Loading array Lists with removals " + c.get(i));
+				addObject(c.get(i), cache);
+			}
+			return;
+		}
+		if (CSG.class.isInstance(o)) {
+			CSG csg = (CSG) o;
+			cache.add(csg);
+			return;
+		}
+	}
 	private void append(String s) {
 		System.out.println(s);
 	}
@@ -615,8 +821,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	public void save() {
-		// TODO Auto-generated method stub
+		if (!langaugeType.getIsTextFile())
+			return;
 		try {
+			
 			String content = new String(Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
 			String ineditor = getCode();
 			if (content.contentEquals(ineditor)) {

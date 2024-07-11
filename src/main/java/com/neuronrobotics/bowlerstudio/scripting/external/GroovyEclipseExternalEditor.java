@@ -1,8 +1,16 @@
-package com.neuronrobotics.bowlerstudio.scripting;
+package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
+import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
+import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
+import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
@@ -17,10 +25,14 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	
@@ -62,7 +74,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.core.prefs"), java8Prefs.getBytes());
 		
 		Files.write(Paths.get(project.getAbsolutePath()), ProjectContent.getBytes());
-		String latestVersionString = "1.12.0";
+		//String latestVersionString = "1.12.0";
 //		InputStream is = new URL(
 //				"https://api.github.com/repos/CommonWealthRobotics/BowlerStudio/releases/latest")
 //						.openStream();
@@ -80,20 +92,14 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 //		} finally {
 //			is.close();
 //		}
-		File currentVerFile =  new File(System.getProperty("user.home")+delim()+"bin"+delim()+"BowlerStudioInstall"+delim()+"currentversion.txt");
-	    String s = "";
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
-	    String line;
-	    try {
-	      while (null != (line = br.readLine())) {
-	        s += line ;
-	      }
-	    } catch (IOException e) {
-	    }
-		latestVersionString=s.trim();
+		//latestVersionString = BowlerStudio.getBowlerStudioBinaryVersion();
 		
-		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ latestVersionString
+		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ "latest"
 				+delim()+ "BowlerStudio.jar";
+		if(!new File(jar).exists()) {
+			jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ BowlerStudio.getBowlerStudioBinaryVersion()
+					+delim()+ "BowlerStudio.jar";
+		}
 		String classpathContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"
 				+ "	<classpathentry kind=\"src\" path=\"\"/>\n"
 				+ "	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\">\n"
@@ -105,6 +111,9 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		Files.write(Paths.get(classpath.getAbsolutePath()), classpathContent.getBytes());
 		
 	}
+
+
+
 	public static void main(String[] args) throws Exception {
 		JavaFXInitializer.go();
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
@@ -121,10 +130,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	}
 
 	@Override
-	public Class getSupportedLangauge() {
-		if (OSSupportsEclipse() )
-			return GroovyHelper.class;
-		return null;
+	public List<Class> getSupportedLangauge() {
+		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class);
 	}
-
 }

@@ -10,6 +10,8 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -44,12 +46,14 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public TransformNR initialState;
 	public RotationNR storeRotation;
 	public double linearIncrement = 1;
-	public double rotationIncrement = 5;
+	public double rotationIncrement = 45;
 	public Button game = new Button("Jog With Game Controller", AssetFactory.loadIcon("Add-Game-Controller.png"));
 	public Thread scriptRunner = null;
 	private String title;
 	private TransformWidget self;
 	private Label mode= new Label("");
+	private TextField lin;
+	private TextField rot;
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange) {
 		TransformWidget c = this;
@@ -63,9 +67,12 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 //		tx.setOnAction(this);
 //		ty.setOnAction(this);
 //		tz.setOnAction(this);
-		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), 100, "mm");
-		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), 100, "mm");
-		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), 100, "mm");
+		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+
+		double width = 200*scale;
+		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), width, "mm");
+		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), width, "mm");
+		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), width, "mm");
 
 		storeRotation = initialState.getRotation();
 		double t = 0;
@@ -100,7 +107,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				onChange.onTransformFinished(getCurrent());
 
 			}
-		}, -179.99, 179.99, t, 100, "degrees");
+		}, -179.99, 179.99, t, width, "degrees");
 		elevation = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -114,7 +121,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				initialState.setElevationDegrees(newAngleDegrees);
 				onChange.onTransformFinished(getCurrent());
 			}
-		}, -89.99, 89.99, e, 100, "degrees");
+		}, -89.99, 89.99, e, width, "degrees");
 		azimuth = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
@@ -128,20 +135,19 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 				initialState.setAzimuthDegrees(newAngleDegrees);
 				onChange.onTransformFinished(getCurrent());
 			}
-		}, -179.99, 179.99, a, 100, "degrees");
+		}, -179.99, 179.99, a, width, "degrees");
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimuth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(60)); // translate text
-		getColumnConstraints().add(new ColumnConstraints(200)); // translate values
-		getColumnConstraints().add(new ColumnConstraints(60)); // units
-		getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(width)); // translate values
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // units
+		getColumnConstraints().add(new ColumnConstraints(60*scale)); // rotate text
 		setHgap(20);// gab between elements
 
 		tx.showSlider(false);
 		ty.showSlider(false);
 		tz.showSlider(false);
-		setIncrements();
 		GameControlThreadManager.setCurrentController(c);
 		GameControlThreadManager.reset();
 		game.setOnAction(event -> {
@@ -165,15 +171,25 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		// X line
 
 		int startIndex = 3;
-		TextField lin = new TextField(linearIncrement + "");
-		TextField rot = new TextField(rotationIncrement + "");
+		lin = new TextField(linearIncrement + "");
+		rot = new TextField(rotationIncrement + "");
+		setDefaultValues();
+		setIncrements();
 		lin.setOnAction(ac -> {
-			linearIncrement = Double.parseDouble(lin.getText());
-			setIncrements();
+			try {
+				linearIncrement = Double.parseDouble(lin.getText());
+				setIncrements();
+			}catch(NumberFormatException ex) {
+				
+			}
 		});
 		rot.setOnAction(ac -> {
-			rotationIncrement = Double.parseDouble(rot.getText());
-			setIncrements();
+			try {
+				rotationIncrement = Double.parseDouble(rot.getText());
+				setIncrements();
+			} catch (NumberFormatException ex) {
+
+			}
 		});
 
 		add(new Label("Linear "), 0, startIndex-1);
@@ -207,6 +223,23 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 
 		updatePose(is);
 	}
+
+	private void setDefaultValues() {
+		linearIncrement= Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"linear", 
+						linearIncrement).toString());
+		rotationIncrement=Double.parseDouble(
+				ConfigurationDatabase.getObject(
+						"TransformWidget", 
+						"rot",
+						rotationIncrement).toString());
+		BowlerStudio.runLater(()->{
+			lin.setText(linearIncrement+"");
+			rot.setText(rotationIncrement + "");
+		});
+	}
 	
 	public String toString() {
 		return title+" "+initialState.toSimpleString();
@@ -224,6 +257,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 
 
 	public void setIncrements() {
+		ConfigurationDatabase.setObject("TransformWidget", "linear", linearIncrement);
+		ConfigurationDatabase.setObject("TransformWidget", "rot", rotationIncrement);
+
 		tx.setJogIncrement(linearIncrement);
 		ty.setJogIncrement(linearIncrement);
 		tz.setJogIncrement(linearIncrement);
@@ -288,7 +324,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		azimuth.setValue(aVar);
 		// Set the rotation after setting the UI so the read will load the rotation in
 		// its pure form
-
+		setDefaultValues();
 	}
 
 	public static void main(String[] args) {

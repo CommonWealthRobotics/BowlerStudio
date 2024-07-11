@@ -282,11 +282,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		swingNode = new MySwingNode(this);
 		// swingNode=new javafx.embed.swing.SwingNode();
-		BowlerStudio.invokeLater(() -> swingNode.setContent(spscrollPane));
 
 		getScripting().setFocusTraversable(false);
 
-		getChildren().setAll(swingNode, getScripting());
 		swingNode.setOnMouseEntered(mouseEvent -> {
 			// System.err.println("On mouse entered " + file.getName());
 			// resizeEvent();
@@ -364,7 +362,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				t.printStackTrace();
 			}
 		});
-
+		BowlerStudio.invokeLater(() -> swingNode.setContent(spscrollPane));
+		BowlerStudio.runLater(()->{
+			getChildren().setAll(swingNode, getScripting());
+		});
 	}
 
 	private void resizeEvent() {

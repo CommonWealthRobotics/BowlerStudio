@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 
 //import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
@@ -13,8 +14,9 @@ import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
-import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
+import com.neuronrobotics.bowlerstudio.scripting.IApprovalForDownload;
 import com.neuronrobotics.bowlerstudio.scripting.IURLOpen;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -22,7 +24,6 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
-import com.neuronrobotics.imageprovider.NativeResource;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.neuronrobotics.javacad.JavaCadBuildInfo;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -59,23 +60,32 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.delim;
+
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.SplashScreen;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -123,7 +133,11 @@ public class BowlerStudio extends Application {
 		}
 
 		@SuppressWarnings("restriction")
-		public void appendText(String valueOf) {
+		public void appendText(String v) {
+			if(v.length()>LengthOfOutputLog) {
+				v=v.substring(v.length()-LengthOfOutputLog, v.length());
+			}
+			String valueOf=v;
 			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
 				return;
 			}
@@ -301,7 +315,22 @@ public class BowlerStudio extends Application {
 	 * @param args the command line arguments
 	 * @throws Exception
 	 */
-
+	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
+		String latestVersionString;
+		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim()
+				+ "BowlerStudioInstall" + delim() + "currentversion.txt");
+		String s = "";
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
+		String line;
+		try {
+			while (null != (line = br.readLine())) {
+				s += line;
+			}
+		} catch (IOException e) {
+		}
+		latestVersionString = s.trim();
+		return latestVersionString;
+	}
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		if (args.length != 0) {
@@ -309,6 +338,12 @@ public class BowlerStudio extends Application {
 			//SplashManager.closeSplash();
 			BowlerKernel.main(args);
 			return;
+		}
+		try {
+			makeSymLinkOfCurrentVersion();
+		}catch(Throwable t) {
+			//t.printStackTrace();
+			System.err.println("Symlink not creaded");
 		}
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
@@ -479,37 +514,6 @@ public class BowlerStudio extends Application {
 
 		// System.err.println("Loading Main.fxml");
 		renderSplashFrame(81, "Find arduino");
-		String arduino = "arduino";
-		if (NativeResource.isLinux()) {
-
-			// Slic3r.setExecutableLocation("/usr/bin/slic3r");
-
-		} else if (NativeResource.isWindows()) {
-			arduino = "C:\\Program Files (x86)\\Arduino\\arduino.exe";
-			if (!new File(arduino).exists()) {
-				arduino = "C:\\Program Files\\Arduino\\arduino.exe";
-			}
-
-		} else if (NativeResource.isOSX()) {
-			arduino = "/Applications/Arduino.app/Contents/MacOS/Arduino";
-		}
-		try {
-			if (!new File(arduino).exists() && !NativeResource.isLinux()) {
-				boolean alreadyNotified = Boolean.getBoolean(
-						ConfigurationDatabase.getObject("BowlerStudioConfigs", "notifiedArduinoDep", false).toString());
-				if (!alreadyNotified) {
-					ConfigurationDatabase.setObject("BowlerStudioConfigs", "notifiedArduinoDep", true);
-					String adr = arduino;
-
-				}
-
-			}
-			System.err.println("Arduino exec found at: " + arduino);
-			ArduinoLoader.setARDUINOExec(arduino);
-		} catch (Exception e) {
-			reporter.uncaughtException(Thread.currentThread(), e);
-
-		}
 		renderSplashFrame(82, "Set up UI");
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -534,7 +538,10 @@ public class BowlerStudio extends Application {
 			ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
 					"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"https://github.com/CommonWealthRobotics/DeviceProviders.git",
-					"https://github.com/OperationSmallKat/Katapult.git");
+					"https://github.com/OperationSmallKat/Katapult.git",
+					"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
+					"https://github.com/CommonWealthRobotics/freecad-bowler-cli.git",
+					"https://github.com/CommonWealthRobotics/blender-bowler-cli.git");
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"hotfix.groovy", null);
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
@@ -561,10 +568,57 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
+		DownloadManager.setApproval(new IApprovalForDownload() {
+			private ButtonType buttonType = null;
+
+			@Override
+			public boolean get(String name, String url) {
+				buttonType = null;
+
+				BowlerKernel.runLater(() -> {
+					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+					alert.setTitle("Message");
+					alert.setHeaderText("Would you like to download: " + name + "\nfrom:\n" + url);
+					Optional<ButtonType> result = alert.showAndWait();
+					buttonType = result.get();
+					alert.close();
+				});
+
+				while (buttonType == null) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+
+				return buttonType.equals(ButtonType.OK);
+			}
+		});
 		renderSplashFrame(92, "Launching UI");
 		launch();
 		
 
+	}
+
+	private static void makeSymLinkOfCurrentVersion() throws Exception {
+		String version = getBowlerStudioBinaryVersion();
+		File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());
+		File link = new File(installDir.getAbsolutePath()+delim()+"latest");
+		File latest = new File(installDir.getAbsolutePath()+delim()+version);
+		if(link.exists())
+			link.delete();
+		try {
+
+			Files.createSymbolicLink( link.toPath(),latest.toPath());
+		}catch(Throwable t) {
+			//t.printStackTrace();
+			//link = new File("\""+link.getAbsolutePath()+"\"");
+			Path ret = Files.createSymbolicLink( link.toPath(), Paths.get(".", version));
+			System.out.println("Path created "+ret);
+		}
 	}
 	
 	private static void ensureUpdated(String ... urls) {

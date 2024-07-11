@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import java.io.File;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import javafx.application.Application;
@@ -37,10 +38,11 @@ public class TransformWidgetTest extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		System.err.println("Loading CSS from " + nwfile);
-		
+		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+
 		primaryStage.setScene(scene);
-        primaryStage.setWidth(370);
-        primaryStage.setHeight(490);
+        //primaryStage.setWidth(668*scale);
+        //primaryStage.setHeight(664*scale);
         primaryStage.setTitle("Test Application");
         primaryStage.show();
 	}

@@ -1,10 +1,12 @@
-package com.neuronrobotics.bowlerstudio.scripting;
+package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
+import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -24,6 +26,9 @@ public class ExternalEditorController {
 		editors.add(new SVGExternalEditor());
 		editors.add(new GroovyEclipseExternalEditor());
 		editors.add(new ArduinoExternalEditor());
+		editors.add(new BlenderExternalEditor());
+		editors.add(new FreeCADExternalEditor());
+
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){

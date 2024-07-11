@@ -201,16 +201,18 @@ public class AddFileToGistController extends Application {
 			System.out.println("Adding new file" + filename + " to " + getGitRepo());
 			try {
 				ScriptingEngine.pull(getGitRepo());
-				String defaultContents = ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), fileSlug );
+				//String defaultContents = 
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
-				
-				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, defaultContents, message);
+				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), filename );
+				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
-
-				BowlerStudio.createFileTab(nf);
-
+				try {
+					BowlerStudio.createFileTab(nf);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
 				refreshevent.setToLoggedIn();
 			} catch (Exception e) {
 				new IssueReportingExceptionHandler().except(e);
