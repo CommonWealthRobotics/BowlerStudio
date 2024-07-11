@@ -81,7 +81,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 
 	public Image getImage() {
 		try {
-			return AssetFactory.loadAsset("Script-Tab-SVG.png");
+			return AssetFactory.loadAsset("Script-Tab-fxml.png");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
