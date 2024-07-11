@@ -313,11 +313,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		int index=0;
 		String url = getURL();
 
-		boolean freecad=fileType.toLowerCase().contains("fcstd");
-		if(freecad) {
+		boolean useSingleFileFOrImports=
+				fileType.toLowerCase().contains("fcstd")||
+				fileType.toLowerCase().contains("blend");
+		if(useSingleFileFOrImports) {
 			String file = fileNameBox.getText()+"."+fileType;
 			File newFile = ScriptingEngine.fileFromGit(url, file);
 			ScriptingEngine.ignore(url, "/**.FCBak");
+			ScriptingEngine.ignore(url, "**.blend1");
 			if(newFile.exists() ) {
 				if(askToDeleteFile(file)) {
 					newFile.delete();
@@ -327,7 +330,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		for(CSG c:cache) {
 			String objectName = c.getName().length()>0?"_"+c.getName():"";
 			String indexString = cache.size()>1?"_"+index:"";
-			if(freecad) {
+			if(useSingleFileFOrImports) {
 				// In freeecad we add each item to the same model
 				objectName="";
 				indexString="";
@@ -337,7 +340,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			System.out.println("Placing file in "+url);
 			try {
 				File newFile = ScriptingEngine.fileFromGit(url, file);
-				if(newFile.exists() && !freecad) {
+				if(newFile.exists() && !useSingleFileFOrImports) {
 					if(askToDeleteFile(file)) {
 						newFile.delete();
 					}else
@@ -348,10 +351,9 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
 				}
 				if(fileType.toLowerCase().contains("blend")) {
-					ScriptingEngine.ignore(url, "**.blend1");
 					BlenderLoader.toBlenderFile(c, newFile);
 				}
-				if(freecad) {
+				if(fileType.toLowerCase().contains("fcstd")) {
 					FreecadLoader.addCSGToFreeCAD(newFile, c);
 				}
 				BowlerStudio.createFileTab(newFile);
