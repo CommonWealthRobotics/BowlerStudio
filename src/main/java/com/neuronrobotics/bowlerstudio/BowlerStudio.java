@@ -539,7 +539,9 @@ public class BowlerStudio extends Application {
 					"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 					"https://github.com/OperationSmallKat/Katapult.git",
-					"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git");
+					"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
+					"https://github.com/CommonWealthRobotics/freecad-bowler-cli.git",
+					"https://github.com/CommonWealthRobotics/blender-bowler-cli.git");
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"hotfix.groovy", null);
 			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",

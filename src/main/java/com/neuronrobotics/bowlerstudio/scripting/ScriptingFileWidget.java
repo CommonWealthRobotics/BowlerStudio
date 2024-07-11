@@ -316,9 +316,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		boolean useSingleFileFOrImports=
 				fileType.toLowerCase().contains("fcstd")||
 				fileType.toLowerCase().contains("blend");
+		File newFile = null;
 		if(useSingleFileFOrImports) {
 			String file = fileNameBox.getText()+"."+fileType;
-			File newFile = ScriptingEngine.fileFromGit(url, file);
+			newFile = ScriptingEngine.fileFromGit(url, file);
 			ScriptingEngine.ignore(url, "/**.FCBak");
 			ScriptingEngine.ignore(url, "**.blend1");
 			if(newFile.exists() ) {
@@ -339,7 +340,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			System.out.println("File Name "+file);
 			System.out.println("Placing file in "+url);
 			try {
-				File newFile = ScriptingEngine.fileFromGit(url, file);
+				newFile = ScriptingEngine.fileFromGit(url, file);
 				if(newFile.exists() && !useSingleFileFOrImports) {
 					if(askToDeleteFile(file)) {
 						newFile.delete();
@@ -352,17 +353,21 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				}
 				if(fileType.toLowerCase().contains("blend")) {
 					BlenderLoader.toBlenderFile(c, newFile);
+					System.out.println("Added mesh to "+newFile);
 				}
 				if(fileType.toLowerCase().contains("fcstd")) {
 					FreecadLoader.addCSGToFreeCAD(newFile, c);
 				}
-				BowlerStudio.createFileTab(newFile);
+				if(!useSingleFileFOrImports)
+					BowlerStudio.createFileTab(newFile);
 			} catch (GitAPIException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			index++;
 		}
+		if(useSingleFileFOrImports && newFile!=null)
+			BowlerStudio.createFileTab(newFile);
 	}
 	
 	public static boolean askToDeleteFile(String name) {

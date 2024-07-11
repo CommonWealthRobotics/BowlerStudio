@@ -328,7 +328,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.github.kurbatov/firmata4j
 
 	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
-	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.0'
+	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '3.4.1'
 
 	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
 	// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen
