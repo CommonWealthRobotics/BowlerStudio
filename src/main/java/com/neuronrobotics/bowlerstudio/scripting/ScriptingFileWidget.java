@@ -317,6 +317,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		if(freecad) {
 			String file = fileNameBox.getText()+"."+fileType;
 			File newFile = ScriptingEngine.fileFromGit(url, file);
+			ScriptingEngine.ignore(url, "/**.FCBak");
 			if(newFile.exists() ) {
 				if(askToDeleteFile(file)) {
 					newFile.delete();
@@ -347,6 +348,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
 				}
 				if(fileType.toLowerCase().contains("blend")) {
+					ScriptingEngine.ignore(url, "**.blend1");
 					BlenderLoader.toBlenderFile(c, newFile);
 				}
 				if(freecad) {
