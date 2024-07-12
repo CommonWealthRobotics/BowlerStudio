@@ -19,6 +19,7 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.scripting.AskToDeleteWidget;
 import com.neuronrobotics.bowlerstudio.scripting.BlenderLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
@@ -46,7 +47,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 			if(filename.toLowerCase().endsWith(".stl")) {
 				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
-				if(ScriptingFileWidget.askToDeleteFile(blenderfile.getName())) {
+				if(AskToDeleteWidget.askToDeleteFile(blenderfile.getName())) {
 					blenderfile.delete();
 				}
 				BlenderLoader.toBlenderFile(file, blenderfile);

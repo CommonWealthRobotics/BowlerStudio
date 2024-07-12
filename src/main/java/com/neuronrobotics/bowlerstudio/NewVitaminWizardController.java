@@ -29,6 +29,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -213,6 +214,18 @@ public class NewVitaminWizardController  extends Application {
 					alert.setTitle("No name specified!");
 					alert.setHeaderText("Names must be at least 2 charrectors long");
 					alert.setContentText("Try again...");
+					Node root = alert.getDialogPane();
+					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+					stage.setOnCloseRequest(ev -> alert.hide());
+					FontSizeManager.addListener(fontNum -> {
+						int tmp = fontNum - 10;
+						if (tmp < 12)
+							tmp = 12;
+						root.setStyle("-fx-font-size: " + tmp + "pt");
+						alert.getDialogPane().applyCss();
+						alert.getDialogPane().layout();
+						stage.sizeToScene();
+					});
 					alert.showAndWait();
 				});
 				return;
@@ -269,6 +282,18 @@ public class NewVitaminWizardController  extends Application {
 						alert.setTitle("Size already Exists");
 						alert.setHeaderText("Name must be unique");
 						alert.setContentText("Rename and confirm to continue...");
+						Node root = alert.getDialogPane();
+						Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+						stage.setOnCloseRequest(ev -> alert.hide());
+						FontSizeManager.addListener(fontNum -> {
+							int tmp = fontNum - 10;
+							if (tmp < 12)
+								tmp = 12;
+							root.setStyle("-fx-font-size: " + tmp + "pt");
+							alert.getDialogPane().applyCss();
+							alert.getDialogPane().layout();
+							stage.sizeToScene();
+						});
 						alert.showAndWait();
 					});
 					return;
@@ -353,6 +378,18 @@ public class NewVitaminWizardController  extends Application {
     				alert.setTitle("No name specified!");
     				alert.setHeaderText("Names must be at least 2 charrectors long");
     				alert.setContentText("Try again...");
+    				Node root = alert.getDialogPane();
+    				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+    				stage.setOnCloseRequest(ev -> alert.hide());
+    				FontSizeManager.addListener(fontNum -> {
+    					int tmp = fontNum - 10;
+    					if (tmp < 12)
+    						tmp = 12;
+    					root.setStyle("-fx-font-size: " + tmp + "pt");
+    					alert.getDialogPane().applyCss();
+    					alert.getDialogPane().layout();
+    					stage.sizeToScene();
+    				});
     				alert.showAndWait();
     			});
     			return;
@@ -364,6 +401,18 @@ public class NewVitaminWizardController  extends Application {
     				alert.setTitle("Name Format Wrong");
     				alert.setHeaderText("Name must be without spaces or special chars");
     				alert.setContentText("Changed to "+slug+" confirm to continue...");
+    				Node root = alert.getDialogPane();
+    				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+    				stage.setOnCloseRequest(ev -> alert.hide());
+    				FontSizeManager.addListener(fontNum -> {
+    					int tmp = fontNum - 10;
+    					if (tmp < 12)
+    						tmp = 12;
+    					root.setStyle("-fx-font-size: " + tmp + "pt");
+    					alert.getDialogPane().applyCss();
+    					alert.getDialogPane().layout();
+    					stage.sizeToScene();
+    				});
     				alert.showAndWait();
     				BowlerStudio.runLater(() -> newTypeNameField.setText(slug));
     			});

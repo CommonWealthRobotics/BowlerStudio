@@ -44,6 +44,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -357,6 +358,18 @@ public class BowlerStudio extends Application {
 				alert.setHeaderText("Insuffient Ram Capibilities in 32 bit mode");
 				alert.setContentText("This applications uses more that 4gb of ram\nA 32 bit JVM mode detected: "
 						+ System.getProperty("os.arch"));
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				alert.showAndWait();
 				System.exit(1);
 			});
@@ -579,6 +592,18 @@ public class BowlerStudio extends Application {
 					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 					alert.setTitle("Message");
 					alert.setHeaderText("Would you like to download: " + name + "\nfrom:\n" + url);
+					Node root = alert.getDialogPane();
+					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+					stage.setOnCloseRequest(ev -> alert.hide());
+					FontSizeManager.addListener(fontNum -> {
+						int tmp = fontNum - 10;
+						if (tmp < 12)
+							tmp = 12;
+						root.setStyle("-fx-font-size: " + tmp + "pt");
+						alert.getDialogPane().applyCss();
+						alert.getDialogPane().layout();
+						stage.sizeToScene();
+					});
 					Optional<ButtonType> result = alert.showAndWait();
 					buttonType = result.get();
 					alert.close();

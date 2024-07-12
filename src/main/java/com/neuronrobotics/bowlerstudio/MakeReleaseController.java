@@ -25,6 +25,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextFormatter.Change;
@@ -107,13 +108,25 @@ public class MakeReleaseController extends Application {
 
 	private void CreatenewWorkflow(ActionEvent event, String newTag, Object[] st) {
 		BowlerStudio.runLater(() -> {
-			ChoiceDialog d = new ChoiceDialog(st[0], st);
-			d.setTitle("Choose File From this Repo to release");
-			d.setHeaderText("Select file to compile in CI");
-			d.setContentText("File:");
+			ChoiceDialog alert = new ChoiceDialog(st[0], st);
+			alert.setTitle("Choose File From this Repo to release");
+			alert.setHeaderText("Select file to compile in CI");
+			alert.setContentText("File:");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// show the dialog
-			d.showAndWait();
-			String selectedItem = (String) d.getSelectedItem();
+			alert.showAndWait();
+			String selectedItem = (String) alert.getSelectedItem();
 
 			new Thread(() -> {
 				String filename = selectedItem.split("\\.")[0];

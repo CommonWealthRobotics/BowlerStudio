@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.utils.BowlerConnectionMenu;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
@@ -140,14 +141,25 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		List<String> choices = DeviceManager.listConnectedDevice(class1);
 		
 		if(!choices.isEmpty()){
-			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0),
+			ChoiceDialog<String> alert = new ChoiceDialog<>(choices.get(0),
 					choices);
-			dialog.setTitle("Bowler Device Chooser");
-			dialog.setHeaderText("Choose connected bowler device");
-			dialog.setContentText("Device Name:");
-	
+			alert.setTitle("Bowler Device Chooser");
+			alert.setHeaderText("Choose connected bowler device");
+			alert.setContentText("Device Name:");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// Traditional way to get the response value.
-			Optional<String> result = dialog.showAndWait();
+			Optional<String> result = alert.showAndWait();
 			if (result.isPresent()) {
 				for (int i = 0; i < plugins.size(); i++) {
 					if (plugins.get(i).getManager().getName().contains(result.get())) {
@@ -275,13 +287,24 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	public static void onConnectURLSourceCamera() {
-		TextInputDialog dialog = new TextInputDialog("http://neuronrobotics.com/img/AndrewHarrington/2014-09-15-86.jpg");
-		dialog.setTitle("URL Image Source");
-		dialog.setHeaderText("This url will be loaded each capture.");
-		dialog.setContentText("URL ");
-
+		TextInputDialog alert = new TextInputDialog("http://neuronrobotics.com/img/AndrewHarrington/2014-09-15-86.jpg");
+		alert.setTitle("URL Image Source");
+		alert.setHeaderText("This url will be loaded each capture.");
+		alert.setContentText("URL ");
+		Node root = alert.getDialogPane();
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest(ev -> alert.hide());
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
+			alert.getDialogPane().applyCss();
+			alert.getDialogPane().layout();
+			stage.sizeToScene();
+		});
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<String> result = alert.showAndWait();
 		if (result.isPresent()){
 			URLImageProvider p;
 			try {
@@ -306,13 +329,24 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 
 			
-			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-			dialog.setTitle("GCODE Device Serial Port Chooser");
-			dialog.setHeaderText("Supports Marlin");
-			dialog.setContentText("GCODE Device Port:");
-
+			ChoiceDialog<String> alert = new ChoiceDialog<>(choices.get(0), choices);
+			alert.setTitle("GCODE Device Serial Port Chooser");
+			alert.setHeaderText("Supports Marlin");
+			alert.setContentText("GCODE Device Port:");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// Traditional way to get the response value.
-			Optional<String> result = dialog.showAndWait();
+			Optional<String> result = alert.showAndWait();
 			
 			// The Java 8 way to get the response value (with lambda expression).
 			result.ifPresent(letter -> {
@@ -333,13 +367,24 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		}
 
 		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("LIDAR Serial Port Chooser");
-		dialog.setHeaderText("Supports URG-04LX-UG01");
-		dialog.setContentText("Lidar Port:");
-
+		ChoiceDialog<String> alert = new ChoiceDialog<>(choices.get(0), choices);
+		alert.setTitle("LIDAR Serial Port Chooser");
+		alert.setHeaderText("Supports URG-04LX-UG01");
+		alert.setContentText("Lidar Port:");
+		Node root = alert.getDialogPane();
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest(ev -> alert.hide());
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
+			alert.getDialogPane().applyCss();
+			alert.getDialogPane().layout();
+			stage.sizeToScene();
+		});
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<String> result = alert.showAndWait();
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
@@ -360,13 +405,24 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 		}
 
 		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("JInput Game Controller Select");
-		dialog.setHeaderText("Connect a game controller");
-		dialog.setContentText("Controller:");
-
+		ChoiceDialog<String> alert = new ChoiceDialog<>(choices.get(0), choices);
+		alert.setTitle("JInput Game Controller Select");
+		alert.setHeaderText("Connect a game controller");
+		alert.setContentText("Controller:");
+		Node root = alert.getDialogPane();
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest(ev -> alert.hide());
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
+			alert.getDialogPane().applyCss();
+			alert.getDialogPane().layout();
+			stage.sizeToScene();
+		});
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<String> result = alert.showAndWait();
 		
 		// The Java 8 way to get the response value (with lambda expression).
 		result.ifPresent(letter -> {
@@ -538,13 +594,24 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 
 			
-			ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-			dialog.setTitle("Firmata Device Serial Port Chooser");
-			dialog.setHeaderText("Supports Firmata");
-			dialog.setContentText("Firmata Device Port:");
-
+			ChoiceDialog<String> alert = new ChoiceDialog<>(choices.get(0), choices);
+			alert.setTitle("Firmata Device Serial Port Chooser");
+			alert.setHeaderText("Supports Firmata");
+			alert.setContentText("Firmata Device Port:");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// Traditional way to get the response value.
-			Optional<String> result = dialog.showAndWait();
+			Optional<String> result = alert.showAndWait();
 			
 			// The Java 8 way to get the response value (with lambda expression).
 			result.ifPresent(letter -> {

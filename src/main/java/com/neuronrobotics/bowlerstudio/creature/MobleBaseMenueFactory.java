@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
@@ -23,6 +24,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -30,6 +32,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -175,13 +178,24 @@ public class MobleBaseMenueFactory {
 		callbackMapForTreeitems.put(makeCopy, () -> {
 			BowlerStudio.runLater(() -> {
 				String oldname = device.getScriptingName();
-				TextInputDialog dialog = new TextInputDialog(oldname + "_copy");
-				dialog.setTitle("Making a copy of " + oldname);
-				dialog.setHeaderText("Set the scripting name for this creature");
-				dialog.setContentText("Set the name of the new creature:");
-
+				TextInputDialog alert = new TextInputDialog(oldname + "_copy");
+				alert.setTitle("Making a copy of " + oldname);
+				alert.setHeaderText("Set the scripting name for this creature");
+				alert.setContentText("Set the name of the new creature:");
+				Node r = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					r.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
+				Optional<String> result = alert.showAndWait();
 				if (result.isPresent()) {
 					view.getSelectionModel().select(rootItem);
 					System.out.println("Your new creature: " + result.get());
@@ -415,9 +429,20 @@ public class MobleBaseMenueFactory {
 					}
 					Set<String> optionsKeys = options.keySet();
 					BowlerStudio.runLater(() -> {
-						ChoiceDialog<String> d = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
-
-						Optional<String> result = d.showAndWait();
+						ChoiceDialog<String> alert = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
+						Node r = alert.getDialogPane();
+						Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+						stage.setOnCloseRequest(ev -> alert.hide());
+						FontSizeManager.addListener(fontNum -> {
+							int tmp = fontNum - 10;
+							if (tmp < 12)
+								tmp = 12;
+							r.setStyle("-fx-font-size: " + tmp + "pt");
+							alert.getDialogPane().applyCss();
+							alert.getDialogPane().layout();
+							stage.sizeToScene();
+						});
+						Optional<String> result = alert.showAndWait();
 						if (result.isPresent())
 							new Thread(() -> {
 								String back = result.get();
@@ -758,13 +783,24 @@ public class MobleBaseMenueFactory {
 			boolean creatureIsOwnedByUser) {
 
 		BowlerStudio.runLater(() -> {
-			TextInputDialog dialog = new TextInputDialog(newDevice.getScriptingName());
-			dialog.setTitle("Add a new limb of");
-			dialog.setHeaderText("Set the scripting name for this limb");
-			dialog.setContentText("Please the name of the new limb:");
-
+			TextInputDialog alert = new TextInputDialog(newDevice.getScriptingName());
+			alert.setTitle("Add a new limb of");
+			alert.setHeaderText("Set the scripting name for this limb");
+			alert.setContentText("Please the name of the new limb:");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// Traditional way to get the response value.
-			Optional<String> result = dialog.showAndWait();
+			Optional<String> result = alert.showAndWait();
 			if (result.isPresent()) {
 				view.getSelectionModel().select(rootItem);
 				new Thread() {
@@ -929,7 +965,18 @@ public class MobleBaseMenueFactory {
 				alert.setTitle("Confirm removing MobileBase");
 				alert.setHeaderText("This will remove " + dhLink.getSlaveMobileBase().getScriptingName());
 				alert.setContentText("Are sure you wish to remove this MobileBase?");
-
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				Optional<ButtonType> result = alert.showAndWait();
 				view.getSelectionModel().select(rootItem);
 				if (result.get() == ButtonType.OK) {
@@ -950,13 +997,24 @@ public class MobleBaseMenueFactory {
 
 		callbackMapForTreeitems.put(addMobileBase, () -> {
 			BowlerStudio.runLater(() -> {
-				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
-				dialog.setTitle("Add a new Follower mobilebase of");
-				dialog.setHeaderText("Set the scripting name for this Follower link");
-				dialog.setContentText("Please the name of the new Follower link:");
-
+				TextInputDialog alert = new TextInputDialog(conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
+				alert.setTitle("Add a new Follower mobilebase of");
+				alert.setHeaderText("Set the scripting name for this Follower link");
+				alert.setContentText("Please the name of the new Follower link:");
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
+				Optional<String> result = alert.showAndWait();
 				if (result.isPresent()) {
 					view.getSelectionModel().select(rootItem);
 					new Thread() {
@@ -985,13 +1043,24 @@ public class MobleBaseMenueFactory {
 			// creatureLab));
 			// }
 			BowlerStudio.runLater(() -> {
-				TextInputDialog dialog = new TextInputDialog(conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
-				dialog.setTitle("Add a new Follower link of");
-				dialog.setHeaderText("Set the scripting name for this Follower link");
-				dialog.setContentText("Please the name of the new Follower link:");
-
+				TextInputDialog alert = new TextInputDialog(conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
+				alert.setTitle("Add a new Follower link of");
+				alert.setHeaderText("Set the scripting name for this Follower link");
+				alert.setContentText("Please the name of the new Follower link:");
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
+				Optional<String> result = alert.showAndWait();
 				if (result.isPresent()) {
 					view.getSelectionModel().select(rootItem);
 					new Thread() {
@@ -1033,7 +1102,18 @@ public class MobleBaseMenueFactory {
 				alert.setTitle("Confirm removing link");
 				alert.setHeaderText("This will remove " + conf.getName());
 				alert.setContentText("Are sure you wish to remove this link?");
-
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				Optional<ButtonType> result = alert.showAndWait();
 				view.getSelectionModel().select(rootItem);
 				if (result.get() == ButtonType.OK) {
@@ -1186,7 +1266,18 @@ public class MobleBaseMenueFactory {
 				alert.setTitle("Confirm removing limb");
 				alert.setHeaderText("This will remove " + dh.getScriptingName());
 				alert.setContentText("Are sure you wish to remove this limb?");
-
+				Node root = alert.getDialogPane();
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.setOnCloseRequest(ev -> alert.hide());
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					alert.getDialogPane().applyCss();
+					alert.getDialogPane().layout();
+					stage.sizeToScene();
+				});
 				Optional<ButtonType> result = alert.showAndWait();
 				view.getSelectionModel().select(rootItem);
 				if (result.get() == ButtonType.OK) {
@@ -1231,13 +1322,24 @@ public class MobleBaseMenueFactory {
 				// }
 				BowlerStudio.runLater(() -> {
 					int size = dh.getLinkConfigurations().size();
-					TextInputDialog dialog = new TextInputDialog("Link_" + size);
-					dialog.setTitle("Add a new link of");
-					dialog.setHeaderText("Set the scripting name for this link");
-					dialog.setContentText("Please the name of the new link:");
-
+					TextInputDialog alert = new TextInputDialog("Link_" + size);
+					alert.setTitle("Add a new link of");
+					alert.setHeaderText("Set the scripting name for this link");
+					alert.setContentText("Please the name of the new link:");
+					Node root = alert.getDialogPane();
+					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+					stage.setOnCloseRequest(ev -> alert.hide());
+					FontSizeManager.addListener(fontNum -> {
+						int tmp = fontNum - 10;
+						if (tmp < 12)
+							tmp = 12;
+						root.setStyle("-fx-font-size: " + tmp + "pt");
+						alert.getDialogPane().applyCss();
+						alert.getDialogPane().layout();
+						stage.sizeToScene();
+					});
 					// Traditional way to get the response value.
-					Optional<String> result = dialog.showAndWait();
+					Optional<String> result = alert.showAndWait();
 					if (result.isPresent()) {
 						view.getSelectionModel().select(rootItem);
 						new Thread() {

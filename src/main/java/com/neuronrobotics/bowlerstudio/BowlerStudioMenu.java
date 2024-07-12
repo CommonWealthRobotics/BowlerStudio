@@ -32,6 +32,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -604,7 +605,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		alert.setTitle("Are you sure you have published all your work?");
 		alert.setHeaderText("This will wipe out the local cache for "+url);
 		alert.setContentText("All files that are not published will be deleted");
-
+		Node root = alert.getDialogPane();
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest(ev -> alert.hide());
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
+			alert.getDialogPane().applyCss();
+			alert.getDialogPane().layout();
+			stage.sizeToScene();
+		});
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			new Thread(() -> {
@@ -762,12 +774,24 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	private static void promptForNewBranch(String exampleName, String reasonForCreating, Consumer<String> resultEvent) {
 		BowlerStudio.runLater(() -> {
-			TextInputDialog dialog = new TextInputDialog(exampleName);
-			dialog.setTitle("Create New Branch");
-			dialog.setHeaderText(reasonForCreating);
-			dialog.setContentText("Enter a new branch name: ");
+			TextInputDialog alert = new TextInputDialog(exampleName);
+			alert.setTitle("Create New Branch");
+			alert.setHeaderText(reasonForCreating);
+			alert.setContentText("Enter a new branch name: ");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			// Traditional way to get the response value.
-			Optional<String> result = dialog.showAndWait();
+			Optional<String> result = alert.showAndWait();
 			// The Java 8 way to get the response value (with lambda expression).
 			result.ifPresent(resultEvent);
 		});
@@ -902,6 +926,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 							alert.setTitle("CheckoutConflictException");// line 2
 							alert.setHeaderText("This repo is in an a dirty state");// line 3
 							alert.setContentText("Please commit your changes before switching.\nAlternatly you can revert your changes.\nRepository must not have uncommitted changes before changing branches.");// line 4
+							Node root = alert.getDialogPane();
+							Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+							stage.setOnCloseRequest(ev -> alert.hide());
+							FontSizeManager.addListener(fontNum -> {
+								int tmp = fontNum - 10;
+								if (tmp < 12)
+									tmp = 12;
+								root.setStyle("-fx-font-size: " + tmp + "pt");
+								alert.getDialogPane().applyCss();
+								alert.getDialogPane().layout();
+								stage.sizeToScene();
+							});
 							alert.showAndWait(); // line 5
 						});
 						return;
@@ -1207,7 +1243,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			alert.setTitle("Are you sure you have published all your work?");
 			alert.setHeaderText("This will wipe out the local cache");
 			alert.setContentText("All files that are not published will be deleted");
-
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK) {
 				new Thread(() -> {
@@ -1341,6 +1388,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				TextInputDialog td = new TextInputDialog();
 				td.setHeaderText("Enter Git URL");
 				td.setResizable(true);
+				Node root = td.getDialogPane();
+				FontSizeManager.addListener(fontNum -> {
+					int tmp = fontNum - 10;
+					if (tmp < 12)
+						tmp = 12;
+					root.setStyle("-fx-font-size: " + tmp + "pt");
+					td.getDialogPane().applyCss();
+					td.getDialogPane().layout();
+				});
 				td.showAndWait();
 
 				// set the text of the label
