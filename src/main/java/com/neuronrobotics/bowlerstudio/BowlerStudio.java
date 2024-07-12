@@ -106,238 +106,12 @@ public class BowlerStudio extends Application {
 	private static IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
 	// private static String lastVersion;
 
-	private static class Console extends OutputStream {
-		private static final int LengthOfOutputLog = 5000;
-		ByteList incoming = new ByteList();
-		Thread update = new Thread() {
-			public void run() {
-				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
-
-				while (true) {
-					ThreadUtil.wait(150);
-					if (incoming.size() > 0)
-						try {
-							String text = incoming.asString();
-							incoming.clear();
-							if (text != null && text.length() > 0)
-								appendText(text);
-							text = null;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-				}
-			}
-		};
-
-		public Console() {
-			update.start();
-		}
-
-		@SuppressWarnings("restriction")
-		public void appendText(String v) {
-			if(v.length()>LengthOfOutputLog) {
-				v=v.substring(v.length()-LengthOfOutputLog, v.length());
-			}
-			String valueOf=v;
-			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
-				return;
-			}
-			try {
-				BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
-			} catch (Exception ex) {
-				// frame not open yet
-				ex.printStackTrace();
-			}
-			if (getLogViewRefStatic() != null) {
-				String text = getLogViewRefStatic().getText();
-				if (text.length() > LengthOfOutputLog) {
-
-					BowlerStudio.runLater(() -> {
-						try {
-							getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
-
-							getLogViewRefStatic().appendText(valueOf);
-						} catch (Throwable t) {
-						}
-
-					});
-				} else {
-					BowlerStudio.runLater(() -> {
-						getLogViewRefStatic().appendText(valueOf);
-
-					});
-				}
-			}
-			System.err.print(valueOf);
-		}
-
-		public void write(int b) throws IOException {
-			incoming.add(b);
-			// appendText(String.valueOf((char)b));
-			// if(b=='[')
-			// new RuntimeException().printStackTrace();
-		}
-	}
-
-	public static void runLater(java.time.Duration delay, Runnable action) {
-		Throwable t = new Exception("Delayed UI Thread Exception here!");
-		// t.printStackTrace();
-		new Thread() {
-			public void run() {
-				setName("UI Delay Thread ");
-				try {
-					Thread.sleep(delay.getSeconds() * 1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				runLater(action, t);
-			}
-		}.start();
-	}
-
-	public static void runLater(Runnable r) {
-		if (Platform.isFxApplicationThread())
-			try {
-				r.run();
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		else
-			runLater(r, new Exception("UI Thread Exception here!"));
-	}
-
-	public static void runLater(Runnable r, Throwable ex) {
-		if (Platform.isFxApplicationThread())
-			try {
-				r.run();
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		else
-			Platform.runLater(() -> {
-				try {
-					r.run();
-				} catch (Throwable t) {
-					t.printStackTrace();
-					ex.printStackTrace();
-				}
-
-			});
-	}
-
-	public static OutputStream getOut() {
-		if (out == null)
-			out = new Console();
-		return out;
-	}
-
-	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception {
-		return MobileBaseLoader.fromGit(id, file);
-	}
-
-	public static void select(MobileBase base) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
-		}
-		/*
-		 * try {
-		 * 
-		 * ArrayList<CSG> csg =
-		 * MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
-		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg.get(0));
-		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg); } catch (Exception
-		 * ex) { System.err.println("Base not loaded yet"); }
-		 */
-
-	}
-
-	public static void select(MobileBase base, DHParameterKinematics limb) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
-		}
-		/*
-		 * try {
-		 * 
-		 * ArrayList<CSG> limCad =
-		 * MobileBaseCadManager.get(base).getDHtoCadMap().get(limb); try {
-		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
-		 * - 1)); } catch (Exception ex) { // initialization has no csgs yet }
-		 * CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
-		 */
-	}
-	/**
-	 * Select a provided affine that is in a given global pose
-	 * @param startingLocation the starting pose
-	 * @param rootListener what affine to attach to 
-	 */
-	public static void select(TransformNR startingLocation,Affine rootListener) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			CreatureLab3dController.getEngine().setSelected(startingLocation,rootListener);
-		}
-	}
-	/**
-	 * Select a provided affine that is in a given global pose
-	 * @param rootListener what affine to attach to 
-	 */
-	public static void select(Affine rootListener) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			CreatureLab3dController.getEngine().setSelected(new TransformNR(),rootListener);
-		}
-	}
-	public static void select(MobileBase base, LinkConfiguration limb) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
-		}
-		/*
-		 * try {
-		 * 
-		 * ArrayList<CSG> limCad =
-		 * MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
-		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
-		 * - 1)); CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
-		 */
-	}
-
-	public static void select(File script, int lineNumber) {
-		if (CreatureLab3dController.getEngine().isAutoHightlight())
-			try {
-				CreatureLab3dController.getEngine().setSelectedCsg(script, lineNumber);
-			} catch (Exception ex) {
-				System.err.println("File not found");
-			}
-	}
-
-
-
-	/**
-	 * @param args the command line arguments
-	 * @throws Exception
-	 */
-	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
-		String latestVersionString;
-		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim()
-				+ "BowlerStudioInstall" + delim() + "currentversion.txt");
-		String s = "";
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
-		String line;
-		try {
-			while (null != (line = br.readLine())) {
-				s += line;
-			}
-		} catch (IOException e) {
-		}
-		latestVersionString = s.trim();
-		return latestVersionString;
-	}
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		if (args.length != 0) {
 			//System.err.println("Arguments detected, starting Kernel mode.");
 			//SplashManager.closeSplash();
-			BowlerKernel.main(args);
+			BowlerKernel.runArgumentsAfterStartup(args, System.currentTimeMillis());
 			return;
 		}
 		try {
@@ -628,6 +402,233 @@ public class BowlerStudio extends Application {
 
 	}
 
+
+	private static class Console extends OutputStream {
+		private static final int LengthOfOutputLog = 5000;
+		ByteList incoming = new ByteList();
+		Thread update = new Thread() {
+			public void run() {
+				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+
+				while (true) {
+					ThreadUtil.wait(150);
+					if (incoming.size() > 0)
+						try {
+							String text = incoming.asString();
+							incoming.clear();
+							if (text != null && text.length() > 0)
+								appendText(text);
+							text = null;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+				}
+			}
+		};
+
+		public Console() {
+			update.start();
+		}
+
+		@SuppressWarnings("restriction")
+		public void appendText(String v) {
+			if(v.length()>LengthOfOutputLog) {
+				v=v.substring(v.length()-LengthOfOutputLog, v.length());
+			}
+			String valueOf=v;
+			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
+				return;
+			}
+			try {
+				BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
+			} catch (Exception ex) {
+				// frame not open yet
+				ex.printStackTrace();
+			}
+			if (getLogViewRefStatic() != null) {
+				String text = getLogViewRefStatic().getText();
+				if (text.length() > LengthOfOutputLog) {
+
+					BowlerStudio.runLater(() -> {
+						try {
+							getLogViewRefStatic().deleteText(0, text.length() - LengthOfOutputLog);
+
+							getLogViewRefStatic().appendText(valueOf);
+						} catch (Throwable t) {
+						}
+
+					});
+				} else {
+					BowlerStudio.runLater(() -> {
+						getLogViewRefStatic().appendText(valueOf);
+
+					});
+				}
+			}
+			System.err.print(valueOf);
+		}
+
+		public void write(int b) throws IOException {
+			incoming.add(b);
+			// appendText(String.valueOf((char)b));
+			// if(b=='[')
+			// new RuntimeException().printStackTrace();
+		}
+	}
+
+	public static void runLater(java.time.Duration delay, Runnable action) {
+		Throwable t = new Exception("Delayed UI Thread Exception here!");
+		// t.printStackTrace();
+		new Thread() {
+			public void run() {
+				setName("UI Delay Thread ");
+				try {
+					Thread.sleep(delay.getSeconds() * 1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				runLater(action, t);
+			}
+		}.start();
+	}
+
+	public static void runLater(Runnable r) {
+		if (Platform.isFxApplicationThread())
+			try {
+				r.run();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		else
+			runLater(r, new Exception("UI Thread Exception here!"));
+	}
+
+	public static void runLater(Runnable r, Throwable ex) {
+		if (Platform.isFxApplicationThread())
+			try {
+				r.run();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		else
+			Platform.runLater(() -> {
+				try {
+					r.run();
+				} catch (Throwable t) {
+					t.printStackTrace();
+					ex.printStackTrace();
+				}
+
+			});
+	}
+
+	public static OutputStream getOut() {
+		if (out == null)
+			out = new Console();
+		return out;
+	}
+
+	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception {
+		return MobileBaseLoader.fromGit(id, file);
+	}
+
+	public static void select(MobileBase base) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
+		}
+		/*
+		 * try {
+		 * 
+		 * ArrayList<CSG> csg =
+		 * MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg.get(0));
+		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg); } catch (Exception
+		 * ex) { System.err.println("Base not loaded yet"); }
+		 */
+
+	}
+
+	public static void select(MobileBase base, DHParameterKinematics limb) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
+		}
+		/*
+		 * try {
+		 * 
+		 * ArrayList<CSG> limCad =
+		 * MobileBaseCadManager.get(base).getDHtoCadMap().get(limb); try {
+		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
+		 * - 1)); } catch (Exception ex) { // initialization has no csgs yet }
+		 * CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
+		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
+		 */
+	}
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param startingLocation the starting pose
+	 * @param rootListener what affine to attach to 
+	 */
+	public static void select(TransformNR startingLocation,Affine rootListener) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			CreatureLab3dController.getEngine().setSelected(startingLocation,rootListener);
+		}
+	}
+	/**
+	 * Select a provided affine that is in a given global pose
+	 * @param rootListener what affine to attach to 
+	 */
+	public static void select(Affine rootListener) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			CreatureLab3dController.getEngine().setSelected(new TransformNR(),rootListener);
+		}
+	}
+	public static void select(MobileBase base, LinkConfiguration limb) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
+			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
+		}
+		/*
+		 * try {
+		 * 
+		 * ArrayList<CSG> limCad =
+		 * MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
+		 * - 1)); CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
+		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
+		 */
+	}
+
+	public static void select(File script, int lineNumber) {
+		if (CreatureLab3dController.getEngine().isAutoHightlight())
+			try {
+				CreatureLab3dController.getEngine().setSelectedCsg(script, lineNumber);
+			} catch (Exception ex) {
+				System.err.println("File not found");
+			}
+	}
+
+
+
+	/**
+	 * @param args the command line arguments
+	 * @throws Exception
+	 */
+	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
+		String latestVersionString;
+		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim()
+				+ "BowlerStudioInstall" + delim() + "currentversion.txt");
+		String s = "";
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
+		String line;
+		try {
+			while (null != (line = br.readLine())) {
+				s += line;
+			}
+		} catch (IOException e) {
+		}
+		latestVersionString = s.trim();
+		return latestVersionString;
+	}
 	private static void makeSymLinkOfCurrentVersion() throws Exception {
 		String version = getBowlerStudioBinaryVersion();
 		File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());

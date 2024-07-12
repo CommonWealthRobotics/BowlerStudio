@@ -9,7 +9,7 @@ public class NameGetter  implements Supplier<String>{
 
 	@Override
 	public String get() {
-		String sec = "REPLACE_ME";
+		String sec = "45a3ab20cd9960c24e691458ccd5bac69a7718d9";
 		if(sec.contains("REPLACE")) {
 			String line = System.getProperty("API-SECRET");
 			if(line!=null)
