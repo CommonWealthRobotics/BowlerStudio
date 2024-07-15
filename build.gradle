@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		[
-			jcenter(),
+			//jcenter(),
 			mavenCentral(),
 			maven {
 				url "https://plugins.gradle.org/m2/"
@@ -68,18 +68,12 @@ String getOsArch() {
 
 plugins {
 	id 'com.github.jk1.dependency-license-report' version '1.17'
-	id 'com.github.johnrengelman.shadow' version '5.0.0'
 	id 'java'
 	id 'signing'
 	id 'application'
 }
-allprojects {
-	configurations.all {
-		resolutionStrategy {
-			force 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
-		}
-	}
-}
+apply plugin: 'com.github.johnrengelman.shadow'
+
 
 import com.github.jk1.license.render.*
 import com.github.jk1.license.importer.*
@@ -178,7 +172,7 @@ repositories {
 	    }
 	maven { url 'https://maven-central.storage-download.googleapis.com/repos/central/data/'}
 	maven {url 'https://repo.jenkins-ci.org/public/'}
-	jcenter()
+	//jcenter()
 	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
