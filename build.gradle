@@ -71,7 +71,6 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '5.0.0'
 	id 'java'
 	id 'signing'
-	id 'maven'
 	id 'application'
 }
 import com.github.jk1.license.render.*
@@ -189,54 +188,54 @@ repositories {
 dependencies {
 
 
-	compile group: 'org.json', name: 'json', version: '20180813'
-	compile 'com.google.crypto.tink:tink:1.3.0-rc1'
+	implementation group: 'org.json', name: 'json', version: '20180813'
+	implementation 'com.google.crypto.tink:tink:1.3.0-rc1'
 
-	compile 'gov.nist.math:jama:1.0.2'
+	implementation 'gov.nist.math:jama:1.0.2'
 
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
+	implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
 
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
+	implementation group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
 	//make grapes work
-	compile group: 'org.apache.ivy', name:'ivy', version:'2.2.0'
+	implementation group: 'org.apache.ivy', name:'ivy', version:'2.2.0'
 
-	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
-	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
+	implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
+	implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
+	implementation group: 'commons-codec', name: 'commons-codec', version: '1.7'
 
 	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
 	implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.13.1.202206130422-r'
 
-	compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
-	compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
-	compile group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
+	implementation group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.0.0'
+	implementation group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+	implementation group: 'com.infradna.tool', name: 'bridge-method-injector', version: '1.14'
 	//compile group: 'com.neuronrobotics', name:'GithubPasswordManager', version:'0.6.1'
 
-	compile 'com.miglayout:miglayout-swing:4.2'
-	compile 'commons-io:commons-io:2.6'
-	compile group:'org.python',name:'jython',version:'2.5.3'
-	compile group:'org.python',name:'jython-standalone',version:'2.5.2'
-	compile 'org.clojure:clojure:1.8.0'
+	implementation 'com.miglayout:miglayout-swing:4.2'
+	implementation 'commons-io:commons-io:2.6'
+	implementation group:'org.python',name:'jython',version:'2.5.3'
+	implementation group:'org.python',name:'jython-standalone',version:'2.5.2'
+	implementation 'org.clojure:clojure:1.8.0'
 	// jetty server
-	compile "org.eclipse.jetty:jetty-server:9.4.36.v20210114"
-	compile "org.eclipse.jetty:jetty-servlet:9.4.36.v20210114"
-	compile "org.eclipse.jetty:jetty-servlets:9.4.36.v20210114"
-	compile "org.eclipse.jetty:jetty-webapp:9.4.36.v20210114"
-	compile "javax.servlet:javax.servlet-api:3.1.0"
+	implementation "org.eclipse.jetty:jetty-server:9.4.36.v20210114"
+	implementation "org.eclipse.jetty:jetty-servlet:9.4.36.v20210114"
+	implementation "org.eclipse.jetty:jetty-servlets:9.4.36.v20210114"
+	implementation "org.eclipse.jetty:jetty-webapp:9.4.36.v20210114"
+	implementation "javax.servlet:javax.servlet-api:3.1.0"
 
 
 	//compile 'org.clojure:tools.nrepl:0.2.10'
 	//compile "overtone:overtone:0.9.1"
 	//compile "edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT"
 	//compile "edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT"
-	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
-	compile 'org.slf4j:slf4j-simple:1.6.1'
+	implementation group: 'java3d', name: 'vecmath', version: '1.3.1'
+	implementation 'org.slf4j:slf4j-simple:1.6.1'
 
-	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
+	implementation "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
 	//compile "com.neuronrobotics:java-bowler:3.25.4"
 	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.23.3-jar-with-dependencies.jar'])
-	compile "com.neuronrobotics:WalnutiQ:2.3.3"
+	implementation "com.neuronrobotics:WalnutiQ:2.3.3"
 
 
 	/*
@@ -266,16 +265,16 @@ dependencies {
 	 }
 	 */
 	//compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
-	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
+	implementation group: 'jexcelapi', name: 'jxl', version: '2.4.2'
 	//compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
 	//compile group:'com.github.ellzord', name:'JALSE', version:'1.0.9'
 
-	compile group:'de.huxhorn.sulky', name:'de.huxhorn.sulky.3rdparty.jlayer', version:'1.0'
+	implementation group:'de.huxhorn.sulky', name:'de.huxhorn.sulky.3rdparty.jlayer', version:'1.0'
 	//compile("org.springframework.boot:spring-boot-starter-web:1.2.7.RELEASE")
 
-	compile 'com.google.code.gson:gson:2.5'
-	compile 'org.jsoup:jsoup:1.8.3'
-	compile 'org.apache.httpcomponents:httpclient:4.5.1'
+	implementation 'com.google.code.gson:gson:2.5'
+	implementation 'org.jsoup:jsoup:1.8.3'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.1'
 	//compile 'cz.advel.jbullet:jbullet:20101010-1'
 	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'// replaced by local jar because jbullet maven went down
 	//compile "alda:alda:1.0.0-rc14"
@@ -294,18 +293,18 @@ dependencies {
 	// JScience:
 	//compile 'org.jscience:jscience:4.3.1'
 
-	compile 'javax.media:jmf:2.1.1e'
+	implementation 'javax.media:jmf:2.1.1e'
 
 	//Weka
 	//compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
 
 	//Firmata
-	compile 'com.github.kurbatov:firmata4j:2.3.4.1'
+	implementation 'com.github.kurbatov:firmata4j:2.3.4.1'
 
-	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
+	implementation group: 'jfree', name: 'jfreechart', version: '1.0.12'
 
 	//compile fileTree (dir: '../bowler-script-kernel/build/libs', includes: ['BowlerScriptingKernel-0.25.4.jar'])
-	testCompile group: 'junit', name: 'junit', version: '4.10'
+	testImplementation group: 'junit', name: 'junit', version: '4.10'
 	//compile "org.jfxtras:jfxtras-common:8.0-r4"
 	//compile "org.jfxtras:jfxtras-fxml:8.0-r4"
 	//compile "org.jfxtras:jfxtras-controls:8.0-r4"
@@ -318,7 +317,7 @@ dependencies {
 	//compile 'org.dockfx:DockFX:0.1.12'
 	//compile 'com.github.movisens:SmartGattLib:1.7'
 	// https://mvnrepository.com/artifact/org.apache.xmlrpc/xmlrpc-client
-	compile group: 'org.apache.xmlrpc', name: 'xmlrpc-client', version: '3.1.3'
+	implementation group: 'org.apache.xmlrpc', name: 'xmlrpc-client', version: '3.1.3'
 	// https://mvnrepository.com/artifact/com.abercap/odoo-java-api
 	//compile group: 'com.abercap', name: 'odoo-java-api', version: '1.1.0.RELEASE'
 	//http://www.jocl.org/
@@ -328,33 +327,33 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.github.kurbatov/firmata4j
 
 	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
-	compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '3.4.1'
+	implementation group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '3.4.1'
 
 	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
 	// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen
     implementation group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.17'
 	// https://mvnrepository.com/artifact/org.axsl.org.w3c.dom.svg/svg-dom-java
-	compile group: 'org.axsl.org.w3c.dom.svg', name: 'svg-dom-java', version: '1.1'
+	implementation group: 'org.axsl.org.w3c.dom.svg', name: 'svg-dom-java', version: '1.1'
 
 
 	//compile fileTree (dir: 'libraries/bowler-script-kernel/libs/', includes: ['*.jar'])
-	compile project(':libraries:bowler-script-kernel:java-bowler')
-	compile project(':libraries:bowler-script-kernel')
+	implementation project(':libraries:bowler-script-kernel:java-bowler')
+	implementation project(':libraries:bowler-script-kernel')
 	//compile project(':libraries:bowler-script-kernel:JCSG')
 	
-	compile project(':libraries:dockfx')
-	compile project(':libraries:bowler-script-kernel:GithubPasswordManager:GithubPasswordManager')
+	implementation project(':libraries:dockfx')
+	implementation project(':libraries:bowler-script-kernel:GithubPasswordManager:GithubPasswordManager')
 	//compile project(':kinematics-chef')
 	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
-	compile 'com.google.guava:guava:19+'
+	implementation 'com.google.guava:guava:19+'
 	implementation 'org.kohsuke.stapler:stapler:1.263'
 	implementation group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
 
 
 	//https://github.com/HanSolo/Medusa
-	compile group: 'eu.hansolo', name: 'Medusa', version: '7.1'
+	implementation group: 'eu.hansolo', name: 'Medusa', version: '7.1'
 	//MuJoCo
 	implementation group: 'org.bytedeco', name: 'javacpp', version: '1.5.7'
 	implementation group: 'com.neuronrobotics', name: 'mujoco-java', version:'3.1.3-pre.11'
