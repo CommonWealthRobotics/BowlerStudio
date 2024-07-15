@@ -73,6 +73,14 @@ plugins {
 	id 'signing'
 	id 'application'
 }
+allprojects {
+	configurations.all {
+		resolutionStrategy {
+			force 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+		}
+	}
+}
+
 import com.github.jk1.license.render.*
 import com.github.jk1.license.importer.*
 
