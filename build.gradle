@@ -73,6 +73,11 @@ plugins {
 	id 'application'
 }
 apply plugin: 'com.github.johnrengelman.shadow'
+if (project == rootProject) {
+	apply plugin: 'application'
+}else {
+	apply plugin: 'java-library'
+}
 
 
 import com.github.jk1.license.render.*
@@ -370,7 +375,6 @@ dependencies {
 jar {
 	//zip64 true
 	jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	jar.baseName= "BowlerStudio";
 	// project class files compiled from source
 	//from files(sourceSets.main.output.classesDir)
 
@@ -410,8 +414,14 @@ task ('showAll') {
 shadowJar {
 	zip64 true
 	mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
-	baseName = 'BowlerStudio'
-	classifier = ""
+	if (project == rootProject) {
+		baseName = 'BowlerStudio'
+		classifier = ""
+	}else {
+		archiveBaseName.set('BowlerStudio')
+		archiveClassifier.set('')
+		archiveVersion.set('')
+	}
 	mergeServiceFiles()
 }
 
