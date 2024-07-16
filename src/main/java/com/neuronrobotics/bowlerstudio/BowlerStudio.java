@@ -53,7 +53,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
+import org.dockfx.DockNode;
 import org.dockfx.DockPane;
+import org.dockfx.IStageModifyer;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -849,6 +851,7 @@ public class BowlerStudio extends Application {
 
 					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 				});
+				
 				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getWidth();
 				double sh = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()

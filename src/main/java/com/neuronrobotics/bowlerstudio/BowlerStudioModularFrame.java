@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerstudio;
  **/
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -16,6 +17,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.dockfx.IStageModifyer;
 
 import java.io.File;
 import java.io.IOException;
@@ -345,6 +348,18 @@ public class BowlerStudioModularFrame {
 
 	public static void setPrimaryStage(Stage primaryStage) {
 		BowlerStudioModularFrame.primaryStage = primaryStage;
+		DockNode.addStageToDockingSystem(primaryStage);
+		DockNode.setModifyer(new IStageModifyer() {
+			@Override
+			public void onNewStage(Stage s) {
+				Parent r = s.getScene().getRoot();
+				FontSizeManager.addListener(fontNum->{
+					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
+					double tmp = FontSizeManager.getImageScale()*9;
+					r.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+				});
+			}
+		});
 	}
 
 	public ScriptingFileWidget createFileTab(File file) {
