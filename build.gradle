@@ -203,10 +203,6 @@ dependencies {
 	implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
 
-	implementation group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-	//make grapes work
-	implementation group: 'org.apache.ivy', name:'ivy', version:'2.2.0'
-
 	implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
 	implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	implementation group: 'commons-codec', name: 'commons-codec', version: '1.7'
