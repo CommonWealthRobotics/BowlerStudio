@@ -360,10 +360,12 @@ public class JogWidget extends GridPane
 			game.setText("Remove Game Controller");
 
 			paramsKey = gameController.getControllerName();
-			HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
+			//HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
 			boolean hasmap = false;
-			if (map.containsKey("jogKinx") && map.containsKey("jogKiny") && map.containsKey("jogKinz")
-					&& map.containsKey("jogKinslider")) {
+			if (ConfigurationDatabase.containsKey(paramsKey,"jogKinx") && 
+					ConfigurationDatabase.containsKey(paramsKey,"jogKiny") && 
+					ConfigurationDatabase.containsKey(paramsKey,"jogKinz")
+					&& ConfigurationDatabase.containsKey(paramsKey,"jogKinslider")) {
 				hasmap = true;
 			}
 
