@@ -957,7 +957,7 @@ public class BowlerStudio extends Application {
 
 	public static void setTitle(String title) {
 		if(title==null)
-			title="Bowler Studio: v " + StudioBuildInfo.getVersion();
+			title=StudioBuildInfo.getAppName()+" v " + StudioBuildInfo.getVersion();
 		if(primaryStage2!=null)
 			primaryStage2.setTitle(title);
 	}
