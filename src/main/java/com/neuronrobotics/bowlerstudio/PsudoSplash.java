@@ -25,7 +25,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	JFrame interfaceFrame;
 	private String message = "";
 	private String log = "";
-	private URL resource = getClass().getResource("splash.png");
+	private static URL resource = PsudoSplash.class.getResource("splash.png");
 
 	@Override
 	public void onUpdate(String update, Exception e) {
@@ -192,12 +192,12 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		log="";
 	}
 
-	public URL getResource() {
+	public static URL getResource() {
 		return resource;
 	}
 
-	public void setResource(URL resource) {
-		this.resource = resource;
+	public static void setResource(URL r) {
+		resource = r;
 	}
 
 
