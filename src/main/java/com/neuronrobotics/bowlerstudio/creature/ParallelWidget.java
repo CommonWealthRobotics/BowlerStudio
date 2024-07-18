@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import org.jfree.util.Log;
+//import org.jfree.util.Log;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
