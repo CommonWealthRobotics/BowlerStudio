@@ -50,6 +50,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
@@ -905,7 +906,9 @@ public class BowlerStudio extends Application {
 					setTitle(null);
 
 					try {
-						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+						
+						Image loadAsset = new Image(PsudoSplash.getResource().toString());
+						primaryStage.getIcons().add(loadAsset);
 					} catch (Exception e) {
 						reporter.uncaughtException(Thread.currentThread(), e);
 
