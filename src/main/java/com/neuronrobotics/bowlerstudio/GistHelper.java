@@ -2,9 +2,10 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.jfree.util.Log;
+//import org.jfree.util.Log;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GHGistFile;
@@ -89,7 +90,7 @@ public class GistHelper
                 }
 
                 ThreadUtil.wait(500);
-                Log.warn(filename + " not built yet");
+                //Log.warn(filename + " not built yet");
             }
 
             System.out.println("Creating gist at " + filename);

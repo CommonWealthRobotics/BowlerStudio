@@ -50,10 +50,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
+import org.dockfx.DockNode;
 import org.dockfx.DockPane;
+import org.dockfx.IStageModifyer;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -849,6 +852,7 @@ public class BowlerStudio extends Application {
 
 					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 				});
+				
 				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getWidth();
 				double sh = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
@@ -902,7 +906,9 @@ public class BowlerStudio extends Application {
 					setTitle(null);
 
 					try {
-						primaryStage.getIcons().add(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
+						
+						Image loadAsset = new Image(PsudoSplash.getResource().toString());
+						primaryStage.getIcons().add(loadAsset);
 					} catch (Exception e) {
 						reporter.uncaughtException(Thread.currentThread(), e);
 
@@ -954,7 +960,7 @@ public class BowlerStudio extends Application {
 
 	public static void setTitle(String title) {
 		if(title==null)
-			title="Bowler Studio: v " + StudioBuildInfo.getVersion();
+			title=StudioBuildInfo.getAppName()+" v " + StudioBuildInfo.getVersion();
 		if(primaryStage2!=null)
 			primaryStage2.setTitle(title);
 	}

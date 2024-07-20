@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
-import org.jfree.util.Log;
+//import org.jfree.util.Log;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.video.OSUtil;
 
 import javafx.application.Platform;

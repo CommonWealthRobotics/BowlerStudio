@@ -71,6 +71,7 @@ plugins {
 	id 'java'
 	id 'signing'
 	id 'application'
+	id 'eclipse'
 }
 apply plugin: 'com.github.johnrengelman.shadow'
 if (project == rootProject) {
@@ -202,10 +203,6 @@ dependencies {
 
 	implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
 
-
-	implementation group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-	//make grapes work
-	implementation group: 'org.apache.ivy', name:'ivy', version:'2.2.0'
 
 	implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
 	implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
@@ -410,7 +407,17 @@ task ('showAll') {
 		}
 	}
 }
-
+eclipse{
+	jdt {
+		sourceCompatibility = 1.8
+		targetCompatibility = 1.8
+		file {
+			withProperties { properties ->
+				properties.setProperty('org.eclipse.jdt.core.compiler.problem.forbiddenReference', 'ignore')
+			}
+		}
+	}
+}
 shadowJar {
 	zip64 true
 	mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'

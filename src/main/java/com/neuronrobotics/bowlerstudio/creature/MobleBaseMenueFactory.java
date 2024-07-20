@@ -20,6 +20,7 @@ import com.neuronrobotics.sdk.addons.kinematics.*;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -39,7 +40,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.jfree.util.Log;
+//import org.jfree.util.Log;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
@@ -359,7 +360,7 @@ public class MobleBaseMenueFactory {
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From a Gist", device.getGitCadEngine()[0], (gitsId, file) -> {
-					Log.warn("Loading cad engine");
+					Log.warning("Loading cad engine");
 					try {
 						creatureLab.setGitCadEngine(gitsId, file, device);
 						File code = ScriptingEngine.fileFromGit(gitsId, file);
@@ -386,7 +387,7 @@ public class MobleBaseMenueFactory {
 			callbackMapForTreeitems.put(resetWalking, () -> {
 				PromptForGit.prompt("Select a Walking Engine From a Gist", device.getGitWalkingEngine()[0],
 						(gitsId, file) -> {
-							Log.warn("Loading walking engine");
+							Log.warning("Loading walking engine");
 							try {
 								creatureLab.setGitWalkingEngine(gitsId, file, device);
 								File code = ScriptingEngine.fileFromGit(gitsId, file);
@@ -683,7 +684,7 @@ public class MobleBaseMenueFactory {
 
 						}
 						ThreadUtil.wait(500);
-						Log.warn(gist + " not built yet");
+						Log.warning(gist + " not built yet");
 					}
 					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
 					System.out.println("Creating gist at: " + gitURL);
@@ -1460,7 +1461,7 @@ public class MobleBaseMenueFactory {
 			TreeItem<String> setCAD = new TreeItem<>("Set CAD Engine...", AssetFactory.loadIcon("Set-CAD-Engine.png"));
 			callbackMapForTreeitems.put(setCAD, () -> {
 				PromptForGit.prompt("Select a CAD Engine From Git", dh.getGitCadEngine()[0], (gitsId, file) -> {
-					Log.warn("Loading cad engine");
+					Log.warning("Loading cad engine");
 					try {
 						creatureLab.setGitCadEngine(gitsId, file, dh);
 						openCadTab(creatureLab, gitsId, file);
@@ -1485,7 +1486,7 @@ public class MobleBaseMenueFactory {
 					AssetFactory.loadIcon("Set-DH-Kinematics.png"));
 			callbackMapForTreeitems.put(resetWalking, () -> {
 				PromptForGit.prompt("Select a DH Solver Engine From Git", dh.getGitDhEngine()[0], (gitsId, file) -> {
-					Log.warn("Loading walking engine");
+					Log.warning("Loading walking engine");
 					try {
 						creatureLab.setGitDhEngine(gitsId, file, dh);
 						File code = ScriptingEngine.fileFromGit(gitsId, file);

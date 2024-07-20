@@ -22,6 +22,7 @@ import javafx.scene.control.Alert.AlertType;
 
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
+	private static final String key = "workspace";
 	private static Menu workspaceMenu;
 	private static final int maxMenueSize = 20;
 	private static boolean sorting = false;
@@ -41,9 +42,10 @@ public class BowlerStudioMenuWorkspace {
 		rank.clear();
 		new Thread(() -> {
 			if (ScriptingEngine.hasNetwork())
-				for (int i = 0; i < getWorkspaceData().keySet().size(); i++) {
+				
+				for (int i = 0; i < ConfigurationDatabase.keySet(key).size(); i++) {
 					try {
-						String o = (String) getWorkspaceData().keySet().toArray()[i];
+						String o = (String) ConfigurationDatabase.keySet(key).toArray()[i];
 						if (o.endsWith(".git")) {
 							boolean wasState = ScriptingEngine.isPrintProgress();
 							ScriptingEngine.setPrintProgress(false);
@@ -57,7 +59,7 @@ public class BowlerStudioMenuWorkspace {
 								BowlerStudioMenu.checkandDelete(o);
 							}catch (Throwable ex) {
 								ex.printStackTrace();
-								getWorkspaceData().remove(o);
+								ConfigurationDatabase.removeObject(key, o);
 								// ScriptingEngine.deleteRepo(o);
 								// i--;
 							}
@@ -65,7 +67,7 @@ public class BowlerStudioMenuWorkspace {
 
 
 						} else {
-							getWorkspaceData().remove(o);
+							ConfigurationDatabase.remove(key,o);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -89,16 +91,16 @@ public class BowlerStudioMenuWorkspace {
 			menueMessage = new Date().toString();
 		}
 		ArrayList<String> data;
-		if (getWorkspaceData() != null)
-			synchronized (getWorkspaceData()) {
-				if (getWorkspaceData().get(url) == null) {
+		
+			
+				if (ConfigurationDatabase.getObject(key,url,null) == null) {
 					data = new ArrayList<String>();
 					data.add(menueMessage);
 					data.add(new Long(System.currentTimeMillis()).toString());
-					getWorkspaceData().put(url, data);
+					ConfigurationDatabase.put(key,url, data);
 					//System.out.println("Workspace add: " + url);
 				}
-			}
+			
 		// data = (ArrayList<String>) workspaceData.get(url);
 		// data.set(1, new Long(System.currentTimeMillis()).toString());
 		sort();
@@ -115,20 +117,20 @@ public class BowlerStudioMenuWorkspace {
 		boolean rankChanged = false;
 		try {
 			ArrayList<String> myOptions = new ArrayList<String>();
-			synchronized (getWorkspaceData()) {
-				for (String o : getWorkspaceData().keySet()) {
+			
+				for (String o : ConfigurationDatabase.keySet(key)) {
 					// System.out.println("Opt: "+o);
 					myOptions.add(o);
 				}
-			}
+			
 			ArrayList<String> menu = new ArrayList<>();
 			while (myOptions.size() > 0) {
 				int bestIndex = 0;
 				String besturl = (String) myOptions.get(bestIndex);
-				long newestTime = Long.parseLong(((ArrayList<String>) getWorkspaceData().get(besturl)).get(1));
+				long newestTime = Long.parseLong(((ArrayList<String>) ConfigurationDatabase.get(key,besturl)).get(1));
 				for (int i = 0; i < myOptions.size(); i++) {
 					String nowurl = (String) myOptions.get(i);
-					long myTime = Long.parseLong(((ArrayList<String>) getWorkspaceData().get(nowurl)).get(1));
+					long myTime = Long.parseLong(((ArrayList<String>) ConfigurationDatabase.get(key,nowurl)).get(1));
 					if (myTime >= newestTime) {
 						newestTime = myTime;
 						besturl = nowurl;
@@ -176,7 +178,7 @@ public class BowlerStudioMenuWorkspace {
 					new Thread(() -> {
 						for (String url : menu) {
 							//System.out.println("Workspace : " + url);
-							ArrayList<String> arrayList = (ArrayList<String>) getWorkspaceData().get(url);
+							ArrayList<String> arrayList = (ArrayList<String>) ConfigurationDatabase.getObject(key,url,new ArrayList<>());
 							if (arrayList != null)
 								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false, arrayList.get(0));
 
@@ -199,14 +201,12 @@ public class BowlerStudioMenuWorkspace {
 		}
 	}
 
-	public static HashMap<String, Object> getWorkspaceData() {
-		return ConfigurationDatabase.getParamMap("workspace");
-	}
+//	public static HashMap<String, Object> getWorkspaceData() {
+//		return ConfigurationDatabase.getParamMap("workspace");
+//	}
 
 	public static void remove(String url) {
-		synchronized (getWorkspaceData()) {
-			getWorkspaceData().remove(url);
-		}
+		ConfigurationDatabase.removeObject(key, url);
 	}
 
 }

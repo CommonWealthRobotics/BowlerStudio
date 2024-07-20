@@ -241,7 +241,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			new Thread() {
 				public void run() {
 					//ConfigurationDatabase.loginEvent(username);
-					ConfigurationDatabase.getParamMap("workspace");
+					//ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())
 						return;
@@ -269,8 +269,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	}
 	private void openFilesInUI() {
-		HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
-		Object[] set = openGits.keySet().toArray();
+		String key ="studio-open-git";
+		//HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+		Object[] set = ConfigurationDatabase.keySet("studio-open-git").toArray();
 		for (int i = 0; i < set.length; i++) {
 			try {
 				Thread.sleep(300);
@@ -281,22 +282,24 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				String s = (String) set[i];
 				try {
 					@SuppressWarnings("unchecked")
-					ArrayList<String> repoFile = (ArrayList<String>) openGits.get(s);
+					ArrayList<String> repoFile = (ArrayList<String>) ConfigurationDatabase.getObject(key,s, new ArrayList<>());
 					File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 					if (!f.exists() || BowlerStudio.createFileTab(f) == null) {
-						openGits.remove(s);
+						ConfigurationDatabase.removeObject(key, s);
 						System.err.println("Removing missing " + s);
 					}
 
 				} catch (Throwable e) {
-					openGits.remove(s);
+					ConfigurationDatabase.removeObject(key, s);
 					System.out.println("Error loading file " + s);
 				}
 			}
 		}
-		HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
-		for (String s : openWeb.keySet()) {
-			String repoFile = (String) openWeb.get(s);
+		//HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
+		String webKey="studio-open-web";
+		for (String s : ConfigurationDatabase.keySet(webKey)) {
+			String repoFile = (String) ConfigurationDatabase.getObject(webKey,s,null);
+			if(repoFile!=null)
 			try {
 				bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
 			} catch (Exception e) {

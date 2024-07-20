@@ -3,19 +3,15 @@ package com.neuronrobotics.bowlerstudio;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 
-import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -29,6 +25,8 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	JFrame interfaceFrame;
 	private String message = "";
 	private String log = "";
+	private static URL resource = PsudoSplash.class.getResource("splash.png");
+
 	@Override
 	public void onUpdate(String update, Exception e) {
 		//e.printStackTrace(System.err);
@@ -55,7 +53,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 				 * | | package image(folder) ( or | .class 404error.jpg files, if no package
 				 * exists.)
 				 */
-				image = ImageIO.read(getClass().getResource("splash.png"));
+				image = ImageIO.read(getResource());
 
 			} catch (IOException ioe) {
 				System.out.println("Unable to fetch image.");
@@ -130,7 +128,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 				interfaceFrame.setVisible(true);
 				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
 				try {
-					interfaceFrame.setIconImage(ImageIO.read(getClass().getResource("splash.png")));
+					interfaceFrame.setIconImage(ImageIO.read(resource));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -192,6 +190,14 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		}
 		ScriptingEngine.addLogListener(this);
 		log="";
+	}
+
+	public static URL getResource() {
+		return resource;
+	}
+
+	public static void setResource(URL r) {
+		resource = r;
 	}
 
 
