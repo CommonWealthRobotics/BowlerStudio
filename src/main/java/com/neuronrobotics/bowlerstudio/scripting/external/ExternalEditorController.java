@@ -29,6 +29,8 @@ public class ExternalEditorController {
 		editors.add(new BlenderExternalEditor());
 		editors.add(new FreeCADExternalEditor());
 		editors.add(new SceneBuilderExternalEditor());
+		editors.add(new OpenSCADExternalEditor());
+		
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
