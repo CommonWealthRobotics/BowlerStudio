@@ -80,7 +80,7 @@ public class OpenSCADExternalEditor implements IExternalEditor {
 
 	public Image getImage() {
 		try {
-			return AssetFactory.loadAsset("Script-Tab-OpenSCADl.png");
+			return AssetFactory.loadAsset("Script-Tab-OpenSCAD.png");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
