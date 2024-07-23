@@ -1268,47 +1268,7 @@ public class BowlerStudio3dEngine  {
 	//
 	// }
 
-	/**
-	 * The main() method is ignored in correctly deployed JavaFX application. main()
-	 * serves only as fallback in case the application can not be launched through
-	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
-	 * main().
-	 *
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) {
-		JavaFXInitializer.go();
-		System.setProperty("prism.dirtyopts", "false");
 
-		AnchorPane view3d = new AnchorPane();
-        BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
-        engine.rebuild();
-		SubScene subScene = engine .getSubScene();
-		view3d.getChildren().add(subScene);
-
-		subScene.setFocusTraversable(false);
-		subScene.widthProperty().bind(view3d.widthProperty());
-		subScene.heightProperty().bind(view3d.heightProperty());
-
-		AnchorPane.setTopAnchor(subScene, 0.0);
-		AnchorPane.setRightAnchor(subScene, 0.0);
-		AnchorPane.setLeftAnchor(subScene, 0.0);
-		AnchorPane.setBottomAnchor(subScene, 0.0);
-		BowlerKernel.runLater(()->{
-			Stage newStage = new Stage();
-			Scene scene = new Scene(view3d,1024, 960,true);
-			newStage.setScene(scene);
-			scene.getRoot().setStyle("-fx-font-family: 'Arial';");
-			scene.getRoot().applyCss();
-			scene.getRoot().layout();
-			// Add a close request handler
-			newStage.setOnCloseRequest(event -> {
-				// Exit the JVM when the window is closed
-				BowlerKernel.runLater(()->Platform.exit());
-			});
-			newStage.show();
-		});
-	}
 
 	/**
 	 * Gets the sub scene.
@@ -1707,5 +1667,45 @@ public class BowlerStudio3dEngine  {
 		// TODO Auto-generated method stub
 		return poseToMove;
 	}
+	/**
+	 * The main() method is ignored in correctly deployed JavaFX application. main()
+	 * serves only as fallback in case the application can not be launched through
+	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
+	 * main().
+	 *
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		JavaFXInitializer.go();
+		System.setProperty("prism.dirtyopts", "false");
 
+		AnchorPane view3d = new AnchorPane();
+        BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+        engine.rebuild();
+		SubScene subScene = engine .getSubScene();
+		view3d.getChildren().add(subScene);
+
+		subScene.setFocusTraversable(false);
+		subScene.widthProperty().bind(view3d.widthProperty());
+		subScene.heightProperty().bind(view3d.heightProperty());
+
+		AnchorPane.setTopAnchor(subScene, 0.0);
+		AnchorPane.setRightAnchor(subScene, 0.0);
+		AnchorPane.setLeftAnchor(subScene, 0.0);
+		AnchorPane.setBottomAnchor(subScene, 0.0);
+		BowlerKernel.runLater(()->{
+			Stage newStage = new Stage();
+			Scene scene = new Scene(view3d,1024, 960,true);
+			newStage.setScene(scene);
+			scene.getRoot().setStyle("-fx-font-family: 'Arial';");
+			scene.getRoot().applyCss();
+			scene.getRoot().layout();
+			// Add a close request handler
+			newStage.setOnCloseRequest(event -> {
+				// Exit the JVM when the window is closed
+				BowlerKernel.runLater(()->Platform.exit());
+			});
+			newStage.show();
+		});
+	}
 }
