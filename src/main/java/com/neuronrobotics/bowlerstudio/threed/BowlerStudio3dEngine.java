@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import com.neuronrobotics.bowlerstudio.BowlerKernel;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 
 /*
@@ -60,8 +61,8 @@ import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
-import javafx.embed.swing.SwingFXUtils;
+//import javafx.embed.swing.JFXPanel;
+//import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.*;
@@ -72,6 +73,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
 import javafx.scene.shape.DrawMode;
@@ -80,8 +82,10 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.stage.Stage;
+
 import javax.imageio.ImageIO;
-import javax.swing.*;
+//import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -94,7 +98,7 @@ import java.util.*;
 /**
  * MoleculeSampleApp.
  */
-public class BowlerStudio3dEngine extends JFXPanel {
+public class BowlerStudio3dEngine  {
 	private boolean focusing = false;
 	/**
 	 * 
@@ -221,29 +225,21 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	private TransformNR targetNR;
 	private TransformNR poseToMove=new TransformNR();
 	
-	static {
-		//JavaFXInitializer.go();
-		BowlerStudio.runLater(() -> {
-			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
-
-		});
-	}
-
 	/**
 	 * Instantiates a new jfx3d manager.
 	 */
 	public BowlerStudio3dEngine() {
-
+		BowlerStudio.runLater(() -> {
+			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
+		});
 		System.err.println("Setting Scene ");
-		setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.DISABLED));
+		setSubScene(new SubScene(getRoot(), 10, 10, true, SceneAntialiasing.DISABLED));
 
 		// Set up the Ui THread explosion handler
-
-		
 		
 	}
 
-	private void rebuild() {
+	public void rebuild() {
 		rebuildingUIOnerror = true;
 		System.err.println("Building scene");
 		buildScene();
@@ -265,7 +261,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
 		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-			setScene(s);
+			//setScene(s);
 			rebuildingUIOnerror = false;
 			getControlsBox();
 		});
@@ -895,7 +891,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 		getRoot().snapshot(snapshotParameters, snapshot);
 
 		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
+			ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			Log.error(ex.getMessage());
@@ -1034,7 +1030,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 						ground.getTransforms().add(groundPlacment);
 						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
-						boolean selected = showRuler.isSelected();
+						boolean selected =showRuler!=null? showRuler.isSelected():true;
 						children.addAll(new Axis(selected), ground);
 						showAxis();
 						axisGroup.getChildren().addAll(focusGroup, userGroup);
@@ -1110,7 +1106,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param scene the scene
 	 */
 	private void handleMouse(SubScene scene) {
-
+		System.out.println("Settinng up Mouse Handelers");
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			long lastClickedTimeLocal = 0;
 			long offset = 500;
@@ -1281,15 +1277,37 @@ public class BowlerStudio3dEngine extends JFXPanel {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		JavaFXInitializer.go();
 		System.setProperty("prism.dirtyopts", "false");
 
-		JFrame frame = new JFrame();
-		frame.setContentPane(new BowlerStudio3dEngine());
+		AnchorPane view3d = new AnchorPane();
+        BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+        engine.rebuild();
+		SubScene subScene = engine .getSubScene();
+		view3d.getChildren().add(subScene);
 
-		frame.setSize(1024, 1024);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		subScene.setFocusTraversable(false);
+		subScene.widthProperty().bind(view3d.widthProperty());
+		subScene.heightProperty().bind(view3d.heightProperty());
 
+		AnchorPane.setTopAnchor(subScene, 0.0);
+		AnchorPane.setRightAnchor(subScene, 0.0);
+		AnchorPane.setLeftAnchor(subScene, 0.0);
+		AnchorPane.setBottomAnchor(subScene, 0.0);
+		BowlerKernel.runLater(()->{
+			Stage newStage = new Stage();
+			Scene scene = new Scene(view3d,1024, 960,true);
+			newStage.setScene(scene);
+			scene.getRoot().setStyle("-fx-font-family: 'Arial';");
+			scene.getRoot().applyCss();
+			scene.getRoot().layout();
+			// Add a close request handler
+			newStage.setOnCloseRequest(event -> {
+				// Exit the JVM when the window is closed
+				BowlerKernel.runLater(()->Platform.exit());
+			});
+			newStage.show();
+		});
 	}
 
 	/**
