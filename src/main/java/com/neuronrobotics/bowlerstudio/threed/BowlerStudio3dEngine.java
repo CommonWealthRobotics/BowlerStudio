@@ -267,6 +267,7 @@ public class BowlerStudio3dEngine {
 
 	};
 	private double mouseScale=2.0;
+	private MeshView handMesh;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -948,7 +949,13 @@ public class BowlerStudio3dEngine {
 		world.ry.setAngle(180);// arm out towards user
 		BowlerStudio.runLater(() -> getRoot().getChildren().add(world));
 	}
-
+	
+	public void hideHand() {
+		hand.getChildren().remove(handMesh);
+	}
+	public void showand() {
+		hand.getChildren().add(handMesh);
+	}
 	/**
 	 * Builds the camera.
 	 */
@@ -960,8 +967,11 @@ public class BowlerStudio3dEngine {
 				(int) 20 // resolution
 		).toCSG().roty(90).setColor(Color.BLACK);
 
-		hand = addHand?new Group(cylinder.getMesh()):new Group();
-
+		handMesh = cylinder.getMesh();
+		
+		hand = new Group();
+		if(addHand)
+			showand();
 		camera.setNearClip(.1);
 		// camera.setFarClip(1000.0);//this is set in VirtualCameraMobileBase
 		getSubScene().setCamera(camera);

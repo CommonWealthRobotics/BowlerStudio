@@ -30,6 +30,8 @@ public class VirtualCameraMobileBase {
 	
 
 	private Affine camerUserPerspective=new Affine();
+	private VirtualCameraMobileBase flyingCamera;
+	private TransformNR newPose=new TransformNR();
 
 	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand) {
 		this.hand = hand;
@@ -69,6 +71,7 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void DriveArc(TransformNR newPose) {
+		
 		// TODO Auto-generated method stub
 		pureTrans.setX(newPose.getX());
 		pureTrans.setY(newPose.getY());
@@ -86,8 +89,10 @@ public class VirtualCameraMobileBase {
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
+		setRotation(newPose);
 	}
 	
+
 	public double getPanAngle() {
 		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuth());
 	}
@@ -140,5 +145,24 @@ public class VirtualCameraMobileBase {
 	public static Affine getOffset() {
 		return offset;
 	}
+
+	public void bind(VirtualCameraMobileBase f) {
+		if(flyingCamera!=null) {
+			return;
+		}
+		this.flyingCamera = f;
+		//f.bind(this);
+	}
+	private void setRotation(TransformNR n) {
+		if(n.getRotation()==newPose.getRotation())
+			return;
+		this.newPose = n;
+		if(flyingCamera!=null) {
+			TransformNR newGlob = flyingCamera.getFiducialToGlobalTransform().copy()
+									.setRotation(getFiducialToGlobalTransform().getRotation());
+			flyingCamera.setGlobalToFiducialTransform(newGlob);
+		}
+	}
+
 
 }
