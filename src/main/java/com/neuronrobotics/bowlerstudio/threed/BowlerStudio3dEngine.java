@@ -374,9 +374,10 @@ public class BowlerStudio3dEngine {
 		home.setTooltip(new javafx.scene.control.Tooltip("Home the camera"));
 		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
 		home.setOnAction(event -> {
-			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
-			getVirtualcam().setZoomDepth(VirtualCameraMobileBase.getDefaultZoomDepth());
-			getFlyingCamera().updatePositions();
+			focusOrentation(
+					new TransformNR(0,0,0,new RotationNR(0,45,-45)),
+					new TransformNR(),
+					getFlyingCamera().getDefaultZoomDepth());
 		});
 		export = new Button("Export");
 		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
@@ -1464,7 +1465,9 @@ public class BowlerStudio3dEngine {
 		}
 		resetMouseTime();
 	}
-
+	public void focusTo(TransformNR poseToMove) {
+		focusToAffine(poseToMove,new Affine());
+	}
 	public void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
 		if (focusing)
 			return;
@@ -1577,13 +1580,15 @@ public class BowlerStudio3dEngine {
 		this.lastMosueMovementTime = System.currentTimeMillis();
 
 	}
-
 	public void focusOrentation(TransformNR orent) {
+		focusOrentation(orent,null,getFlyingCamera().getDefaultZoomDepth());
+	}
+	public void focusOrentation(TransformNR orent, TransformNR trans, double zoom) {
 		if (focusing)
 			return;
 		focusing = true;
 		new Thread(() -> {
-			runSyncFocus(orent);
+			runSyncFocus(orent,trans,zoom);
 		}).start();
 	}
 
@@ -1595,20 +1600,37 @@ public class BowlerStudio3dEngine {
 		return in;
 	}
 
-	private void runSyncFocus(TransformNR orent) {
-		double az = bound(
+	private void runSyncFocus(TransformNR orent,TransformNR trans, double zoom) {
+		double az = orent==null?0:bound(
 				getFlyingCamera().getPanAngle() - 90 + Math.toDegrees(orent.getRotation().getRotationAzimuth()));
-		double el = bound(
+		double el = orent==null?0:bound(
 				getFlyingCamera().getTiltAngle() + 90 + Math.toDegrees(orent.getRotation().getRotationElevation()));
 		//System.out.println("Focus from\n\taz:" + az + " \n\tel:" + el);
+		double x=0;
+		double y=0;
+		double z=0;
+		double zoomDelta = zoom -getFlyingCamera().getZoomDepth();
+		
+		if(trans!=null) {
+			x=trans.getX()-getFlyingCamera().getGlobalX();
+			y=trans.getY()-getFlyingCamera().getGlobalY();
+			z=trans.getZ()-getFlyingCamera().getGlobalZ();
+		}
 		try {
 			double d = 1.0 / targetDepth;
 			for (double i = 0; i < 1; i += d) {
-				double aztmp = getFlyingCamera().getPanAngle();
-				double eltmp = getFlyingCamera().getTiltAngle();
+//				double aztmp = getFlyingCamera().getPanAngle();
+//				double eltmp = getFlyingCamera().getTiltAngle();
 				//System.out.println("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
-				BowlerStudio.runLater(() -> moveCamera(
-						new TransformNR(0, 0, 0, new RotationNR(-el / targetDepth, -az / targetDepth, 0))));
+				double mx=x/ targetDepth;
+				double my=y/ targetDepth;
+				double mz=z/ targetDepth;
+				BowlerStudio.runLater(() -> {
+					moveCamera(new TransformNR(0, 0, 0, new RotationNR(-el / targetDepth, -az / targetDepth, 0)));
+					getFlyingCamera().DrivePositionAbsolute(mx, my, mz);
+					if(!getFlyingCamera().isZoomLocked())
+						getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth()+(zoomDelta/targetDepth));
+				});
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
@@ -1617,10 +1639,13 @@ public class BowlerStudio3dEngine {
 					focusing = false;
 				}
 			}
+			
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		focusing = false;
+		
+			//focusTo(trans);
 	}
 
 	private void focusInterpolate(TransformNR start, TransformNR target, int targetDepth, Affine interpolator) {
@@ -1799,5 +1824,9 @@ public class BowlerStudio3dEngine {
 
 	public void setMouseScale(double  mouseScale) {
 		this.mouseScale = mouseScale;
+	}
+
+	public void lockZoom() {
+		getFlyingCamera().lockZoom();
 	}
 }

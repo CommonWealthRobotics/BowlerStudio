@@ -32,6 +32,7 @@ public class VirtualCameraMobileBase {
 	private Affine camerUserPerspective=new Affine();
 	private VirtualCameraMobileBase flyingCamera;
 	private TransformNR newPose=new TransformNR();
+	private boolean zoomlock;
 
 	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand) {
 		this.hand = hand;
@@ -69,7 +70,13 @@ public class VirtualCameraMobileBase {
 	public TransformNR getFiducialToGlobalTransform() {
 		return myGlobal;
 	}
-
+	public void DrivePositionAbsolute(double x, double y, double z) {
+		TransformNR global = getFiducialToGlobalTransform().copy()
+				.translateX(x)
+				.translateY(y)
+				.translateZ(z);
+		setGlobalToFiducialTransform(global);		
+	}
 	public void DriveArc(TransformNR newPose) {
 		
 		// TODO Auto-generated method stub
@@ -89,7 +96,7 @@ public class VirtualCameraMobileBase {
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
-		setRotation(newPose);
+		synchronizePositionWIthOtherFlyingCamera(newPose);
 	}
 	
 
@@ -98,6 +105,16 @@ public class VirtualCameraMobileBase {
 	}
 	public double getTiltAngle() {
 		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationTilt());
+	}
+	
+	public double getGlobalX() {
+		return getFiducialToGlobalTransform().getX();
+	}
+	public double getGlobalY() {
+		return getFiducialToGlobalTransform().getY();
+	}
+	public double getGlobalZ() {
+		return getFiducialToGlobalTransform().getZ();
 	}
 	public TransformNR getCamerFrame() {
 		TransformNR offset = TransformFactory.affineToNr(getOffset());
@@ -126,6 +143,8 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void setZoomDepth(double zoomDepth) {
+		if(zoomlock)
+			throw new RuntimeException("Zoom can not be set when locked");
 		if (zoomDepth > 2)
 			zoomDepth = 2;
 		if (zoomDepth < -9000)
@@ -153,7 +172,7 @@ public class VirtualCameraMobileBase {
 		this.flyingCamera = f;
 		//f.bind(this);
 	}
-	private void setRotation(TransformNR n) {
+	private void synchronizePositionWIthOtherFlyingCamera(TransformNR n) {
 		if(n.getRotation()==newPose.getRotation())
 			return;
 		this.newPose = n;
@@ -162,6 +181,15 @@ public class VirtualCameraMobileBase {
 									.setRotation(getFiducialToGlobalTransform().getRotation());
 			flyingCamera.setGlobalToFiducialTransform(newGlob);
 		}
+	}
+
+	public void lockZoom() {
+		zoomlock = true;
+	}
+
+	public boolean isZoomLocked() {
+		// TODO Auto-generated method stub
+		return zoomlock;
 	}
 
 
