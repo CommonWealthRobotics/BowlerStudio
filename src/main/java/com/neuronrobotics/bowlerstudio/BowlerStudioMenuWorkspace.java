@@ -127,16 +127,22 @@ public class BowlerStudioMenuWorkspace {
 			while (myOptions.size() > 0) {
 				int bestIndex = 0;
 				String besturl = (String) myOptions.get(bestIndex);
-				long newestTime = Long.parseLong(((ArrayList<String>) ConfigurationDatabase.get(key,besturl)).get(1));
-				for (int i = 0; i < myOptions.size(); i++) {
-					String nowurl = (String) myOptions.get(i);
-					long myTime = Long.parseLong(((ArrayList<String>) ConfigurationDatabase.get(key,nowurl)).get(1));
-					if (myTime >= newestTime) {
-						newestTime = myTime;
-						besturl = nowurl;
-						bestIndex = i;
+				ArrayList<String> arrayList = (ArrayList<String>) ConfigurationDatabase.get(key,besturl);
+				long newestTime=0;
+				if(arrayList!=null)
+				if(arrayList.size()>1) {
+					newestTime= Long.parseLong(arrayList.get(1));
+					for (int i = 0; i < myOptions.size(); i++) {
+						String nowurl = (String) myOptions.get(i);
+						long myTime = Long.parseLong(arrayList.get(1));
+						if (myTime >= newestTime) {
+							newestTime = myTime;
+							besturl = nowurl;
+							bestIndex = i;
+						}
 					}
-				}
+				}else
+					continue;
 				String removedURL = (String) myOptions.remove(bestIndex);
 				if (menu.size() < maxMenueSize) {
 
@@ -180,7 +186,13 @@ public class BowlerStudioMenuWorkspace {
 							//System.out.println("Workspace : " + url);
 							ArrayList<String> arrayList = (ArrayList<String>) ConfigurationDatabase.getObject(key,url,new ArrayList<>());
 							if (arrayList != null)
-								BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false, arrayList.get(0));
+								if (arrayList.size() >= 0)
+									try {
+										BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false,
+												arrayList.get(0));
+									} catch (Throwable t) {
+										t.printStackTrace();
+									}
 
 						}
 						sorting = false;
