@@ -1600,13 +1600,13 @@ public class BowlerStudio3dEngine {
 				getFlyingCamera().getPanAngle() - 90 + Math.toDegrees(orent.getRotation().getRotationAzimuth()));
 		double el = bound(
 				getFlyingCamera().getTiltAngle() + 90 + Math.toDegrees(orent.getRotation().getRotationElevation()));
-		System.out.println("Focus from\n\taz:" + az + " \n\tel:" + el);
+		//System.out.println("Focus from\n\taz:" + az + " \n\tel:" + el);
 		try {
 			double d = 1.0 / targetDepth;
 			for (double i = 0; i < 1; i += d) {
 				double aztmp = getFlyingCamera().getPanAngle();
 				double eltmp = getFlyingCamera().getTiltAngle();
-				System.out.println("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
+				//System.out.println("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
 				BowlerStudio.runLater(() -> moveCamera(
 						new TransformNR(0, 0, 0, new RotationNR(-el / targetDepth, -az / targetDepth, 0))));
 				try {
