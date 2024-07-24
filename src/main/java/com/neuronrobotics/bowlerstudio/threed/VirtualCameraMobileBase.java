@@ -86,7 +86,13 @@ public class VirtualCameraMobileBase {
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
-		
+	}
+	
+	public double getPanAngle() {
+		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuth());
+	}
+	public double getTiltAngle() {
+		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationTilt());
 	}
 	public TransformNR getCamerFrame() {
 		TransformNR offset = TransformFactory.affineToNr(getOffset());

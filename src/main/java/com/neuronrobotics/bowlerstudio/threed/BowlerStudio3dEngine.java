@@ -100,6 +100,8 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine  {
 	private boolean focusing = false;
+	private int targetDepth = 30;
+
 	/**
 	 * 
 	 */
@@ -1486,9 +1488,10 @@ public class BowlerStudio3dEngine  {
 
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
+			focusInterpolate(startSelectNr, targetNR,  targetDepth, interpolator);
 		});
 	}
+
 	public void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
 		this.poseToMove = poseToMove;
 		if (focusing)
@@ -1537,7 +1540,7 @@ public class BowlerStudio3dEngine  {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR,  30, interpolator);
+			focusInterpolate(startSelectNr, targetNR, targetDepth , interpolator);
 		});
 	}
 	private void resetMouseTime() {
@@ -1545,7 +1548,47 @@ public class BowlerStudio3dEngine  {
 		this.lastMosueMovementTime = System.currentTimeMillis();
 
 	}
-
+	public void focusOrentation(TransformNR orent) {
+		if (focusing)
+			return;
+		focusing=true;
+        new Thread(()->{
+        	runSyncFocus(orent);
+        }).start();
+	}
+	double bound(double in) {
+		while(in>180)
+			in-=360;
+		while(in<-180)
+			in+=360;
+		return in;
+	}
+	private void runSyncFocus(TransformNR orent) {
+        double az = bound(getFlyingCamera().getPanAngle()-90+Math.toDegrees(orent.getRotation().getRotationAzimuth()));
+        double el = bound(getFlyingCamera().getTiltAngle()+90+Math.toDegrees(orent.getRotation().getRotationElevation()));
+        System.out.println("Focus from\n\taz:"+az+" \n\tel:"+el);
+		try {
+			double d = 1.0/targetDepth;
+			for(double i=0;i<1;i+=d) {
+				double aztmp =getFlyingCamera().getPanAngle();
+				double eltmp =getFlyingCamera().getTiltAngle();
+		        System.out.println("\tFocus to \n\t\taz:"+aztmp+" \n\t\tel:"+eltmp);
+		        BowlerStudio.runLater(()->
+		        	moveCamera(new TransformNR(0,0,0,new RotationNR(-el/targetDepth,-az/targetDepth,0)))
+		        );
+		        try {
+					Thread.sleep(16);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					focusing = false;
+				}
+			}	
+		}catch(Throwable t) {
+			t.printStackTrace();
+		}
+		focusing=false;
+	}
 	private void focusInterpolate(TransformNR start, TransformNR target, int targetDepth,
 			Affine interpolator) {
 		
