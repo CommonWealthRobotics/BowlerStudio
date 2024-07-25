@@ -5,9 +5,11 @@ import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
+import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
+import com.neuronrobotics.bowlerstudio.scripting.cadoodle.CaDoodleFile;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
@@ -459,7 +461,10 @@ public class BowlerStudioController implements IScriptEventListener {
 			}
 			return;
 		}
-
+		if(CaDoodleFile.class.isInstance(o)) {
+			addObject(CaDoodleLoader.process((CaDoodleFile)o), source,cache);
+			return;
+		}
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
 			if (cache == null) {
