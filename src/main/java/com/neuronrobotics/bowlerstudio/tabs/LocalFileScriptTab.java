@@ -182,6 +182,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			break;
 		case "fxml":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
+			break;
+		case "CaDoodle":
+			type = SyntaxConstants.SYNTAX_STYLE_JSON;
+			break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
