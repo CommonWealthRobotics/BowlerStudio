@@ -352,8 +352,8 @@ dependencies {
 
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 	implementation 'com.google.guava:guava:19+'
-	implementation 'org.kohsuke.stapler:stapler:1.263'
-	implementation group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
+	api 'org.kohsuke.stapler:stapler:1.263'
+	api group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
 
 
 	//https://github.com/HanSolo/Medusa
