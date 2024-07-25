@@ -100,7 +100,7 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine {
 	private boolean focusing = false;
-	private int targetDepth = 30;
+	private double targetDepth = 30;
 
 	/**
 	 * 
@@ -1519,7 +1519,7 @@ public class BowlerStudio3dEngine {
 
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, targetDepth, interpolator);
+			focusInterpolate(startSelectNr, targetNR,(int) targetDepth, interpolator);
 		});
 	}
 
@@ -1571,7 +1571,7 @@ public class BowlerStudio3dEngine {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, targetDepth, interpolator);
+			focusInterpolate(startSelectNr, targetNR, (int)targetDepth, interpolator);
 		});
 	}
 
@@ -1618,7 +1618,7 @@ public class BowlerStudio3dEngine {
 		}
 		try {
 			double d = 1.0 / targetDepth;
-			for (double i = 0; i < 1; i += d) {
+			for (double i = 0; i <= 1+0.000001; i += d) {
 //				double aztmp = getFlyingCamera().getPanAngle();
 //				double eltmp = getFlyingCamera().getTiltAngle();
 				//System.out.println("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
