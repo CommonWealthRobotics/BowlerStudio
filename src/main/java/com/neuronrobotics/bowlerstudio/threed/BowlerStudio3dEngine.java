@@ -854,10 +854,12 @@ public class BowlerStudio3dEngine {
 					// duplicate
 				}
 			});
-			Axis axis = new Axis(showRuler.isSelected());
-			BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
-			axisMap.put(current, axis);
-			BowlerStudio.runLater(() -> lookGroup.getChildren().add(axis));
+			if(showRuler!=null) {
+				Axis axis = new Axis(showRuler.isSelected());
+				BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
+				axisMap.put(current, axis);
+				BowlerStudio.runLater(() -> lookGroup.getChildren().add(axis));
+			}
 		}
 
 		// Log.warning("Adding new axis");
