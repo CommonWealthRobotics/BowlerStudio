@@ -76,6 +76,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
+import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Affine;
@@ -605,7 +606,7 @@ public class BowlerStudio3dEngine {
 		}
 
 		MeshView current = getCsgMap().get(currentCsg);
-		current.setCullFace(javafx.scene.shape.CullFace.NONE);
+		current.setCullFace(CullFace.BACK);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
