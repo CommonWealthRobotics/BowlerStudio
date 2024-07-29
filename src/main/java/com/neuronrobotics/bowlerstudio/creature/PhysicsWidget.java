@@ -105,9 +105,9 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		filesStatic.setOnAction(event->{
 			updateObjects();
 		});
-		String string = ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "").toString();
+		String string = ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "https://github.com/madhephaestus/VexHighStakes2024.git").toString();
 		gitMoving.setText( string);
-		String string2 = ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "").toString();
+		String string2 = ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "https://github.com/madhephaestus/VexHighStakes2024.git").toString();
 		gitStatic.setText( string2);
 		validateInput();
 		gitMoving.textProperty().addListener((observable, oldValue, newValue) -> {
