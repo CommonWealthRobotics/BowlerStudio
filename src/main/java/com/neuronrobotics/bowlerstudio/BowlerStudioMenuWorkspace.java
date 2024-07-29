@@ -91,34 +91,7 @@ public class BowlerStudioMenuWorkspace {
 	public static void add(String url) {
 		add(url, BowlerStudioMenu.gitURLtoMessage(url));
 	}
-	public static void showExceptionAlert(Exception ex, String message) {
-	    Alert alert = new Alert(Alert.AlertType.ERROR);
-	    alert.setTitle("Error");
-	    alert.setHeaderText(message);
-	    alert.setContentText(ex.getMessage());
 
-	    StringWriter sw = new StringWriter();
-	    PrintWriter pw = new PrintWriter(sw);
-	    ex.printStackTrace(pw);
-	    String stackTrace = sw.toString();
-
-	    TextArea textArea = new TextArea(stackTrace);
-	    textArea.setEditable(false);
-	    textArea.setWrapText(true);
-
-	    textArea.setMaxWidth(Double.MAX_VALUE);
-	    textArea.setMaxHeight(Double.MAX_VALUE);
-	    GridPane.setVgrow(textArea, Priority.ALWAYS);
-	    GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-	    GridPane expContent = new GridPane();
-	    expContent.setMaxWidth(Double.MAX_VALUE);
-	    expContent.add(textArea, 0, 0);
-
-	    alert.getDialogPane().setExpandableContent(expContent);
-
-	    alert.showAndWait();
-	}
 	@SuppressWarnings("unchecked")
 	public static void add(String url, String menueMessage) {
 		if (menueMessage == null)
@@ -126,12 +99,8 @@ public class BowlerStudioMenuWorkspace {
 		if (menueMessage.length() < 2) {
 			menueMessage = new Date().toString();
 		}
-		try {
-			new URL(url);// check that the URL string contains a valid URL
-		}catch(Exception e) {
-			// not a url
-			BowlerStudio.runLater(()->showExceptionAlert(e,"URL does not exist: "+url));
-			new IssueReportingExceptionHandler().except(e);
+		if(!BowlerStudio.checkValidURL(url)) {
+			BowlerStudio.runLater(()->BowlerStudio.showExceptionAlert(new RuntimeException(),"URL does not exist: "+url));
 			return;
 		}
 		ArrayList<String> data;
@@ -151,6 +120,8 @@ public class BowlerStudioMenuWorkspace {
 		//
 
 	}
+
+	
 
 	@SuppressWarnings("unchecked")
 	public static void sort() {
@@ -235,6 +206,7 @@ public class BowlerStudioMenuWorkspace {
 										BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false,
 												arrayList.get(0));
 									} catch (Throwable t) {
+										System.out.println("Error with "+url+" "+arrayList.toArray());
 										t.printStackTrace();
 									}
 

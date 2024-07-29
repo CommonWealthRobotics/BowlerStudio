@@ -51,6 +51,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
@@ -77,6 +79,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -1096,5 +1100,53 @@ public class BowlerStudio extends Application {
 	}
 	public static void loadMobilBaseIntoUI(MobileBase base) {
 		BowlerStudioController.getBowlerStudio().onScriptFinished(base, base, null);
+	}
+	public static void showExceptionAlert(Exception ex, String message) {
+	    Alert alert = new Alert(Alert.AlertType.ERROR);
+	    alert.setTitle("Error");
+	    alert.setHeaderText(message);
+	    alert.setContentText(ex.getMessage());
+
+	    StringWriter sw = new StringWriter();
+	    PrintWriter pw = new PrintWriter(sw);
+	    ex.printStackTrace(pw);
+	    String stackTrace = sw.toString();
+
+	    TextArea textArea = new TextArea(stackTrace);
+	    textArea.setEditable(false);
+	    textArea.setWrapText(true);
+
+	    textArea.setMaxWidth(Double.MAX_VALUE);
+	    textArea.setMaxHeight(Double.MAX_VALUE);
+	    GridPane.setVgrow(textArea, Priority.ALWAYS);
+	    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+	    GridPane expContent = new GridPane();
+	    expContent.setMaxWidth(Double.MAX_VALUE);
+	    expContent.add(textArea, 0, 0);
+
+	    alert.getDialogPane().setExpandableContent(expContent);
+
+	    alert.showAndWait();
+	}
+	public static boolean checkValidURL(String url) {
+		try {
+			if(url==null)
+				throw new NullPointerException();
+			if(url.length()<5)
+				throw new NullPointerException();
+			if(url.startsWith("http"))
+				new URL(url);// check that the URL string contains a valid URL
+			else
+				if(url.startsWith("git@")) {
+					// assume this is a URL 
+				}
+		}catch(Exception e) {
+			// not a url
+			//
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

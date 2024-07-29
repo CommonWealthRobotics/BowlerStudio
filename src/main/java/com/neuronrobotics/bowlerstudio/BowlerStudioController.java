@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,7 +150,9 @@ public class BowlerStudioController implements IScriptEventListener {
 						String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
 						if (gitRepo.length() < 5 || (message == null))
 							message = "Project " + gitRepo;
-						BowlerStudioMenuWorkspace.add(gitRepo, message);
+						if(BowlerStudio.checkValidURL(gitRepo)) {
+							BowlerStudioMenuWorkspace.add(gitRepo, message);
+						}
 					}
 				}
 			}.start();

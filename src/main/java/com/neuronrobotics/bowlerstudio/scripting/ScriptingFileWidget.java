@@ -274,8 +274,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		try {
 			loadCodeFromFile(currentFile);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// file has no git
+			isOwnedByLoggedInUser=false;
 		}
 		// publish.setDisable(!isOwnedByLoggedInUser);
 		runfx.setGraphic(AssetFactory.loadIcon("Run.png"));
