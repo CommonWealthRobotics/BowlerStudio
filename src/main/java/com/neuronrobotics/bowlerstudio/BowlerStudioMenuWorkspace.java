@@ -1,6 +1,9 @@
 package com.neuronrobotics.bowlerstudio;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +22,13 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 @SuppressWarnings("restriction")
 public class BowlerStudioMenuWorkspace {
 	private static final String key = "workspace";
@@ -82,13 +91,48 @@ public class BowlerStudioMenuWorkspace {
 	public static void add(String url) {
 		add(url, BowlerStudioMenu.gitURLtoMessage(url));
 	}
+	public static void showExceptionAlert(Exception ex, String message) {
+	    Alert alert = new Alert(Alert.AlertType.ERROR);
+	    alert.setTitle("Error");
+	    alert.setHeaderText(message);
+	    alert.setContentText(ex.getMessage());
 
+	    StringWriter sw = new StringWriter();
+	    PrintWriter pw = new PrintWriter(sw);
+	    ex.printStackTrace(pw);
+	    String stackTrace = sw.toString();
+
+	    TextArea textArea = new TextArea(stackTrace);
+	    textArea.setEditable(false);
+	    textArea.setWrapText(true);
+
+	    textArea.setMaxWidth(Double.MAX_VALUE);
+	    textArea.setMaxHeight(Double.MAX_VALUE);
+	    GridPane.setVgrow(textArea, Priority.ALWAYS);
+	    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+	    GridPane expContent = new GridPane();
+	    expContent.setMaxWidth(Double.MAX_VALUE);
+	    expContent.add(textArea, 0, 0);
+
+	    alert.getDialogPane().setExpandableContent(expContent);
+
+	    alert.showAndWait();
+	}
 	@SuppressWarnings("unchecked")
 	public static void add(String url, String menueMessage) {
 		if (menueMessage == null)
 			throw new RuntimeException("Menu Message can not be " + menueMessage);
 		if (menueMessage.length() < 2) {
 			menueMessage = new Date().toString();
+		}
+		try {
+			new URL(url);// check that the URL string contains a valid URL
+		}catch(Exception e) {
+			// not a url
+			BowlerStudio.runLater(()->showExceptionAlert(e,"URL does not exist: "+url));
+			new IssueReportingExceptionHandler().except(e);
+			return;
 		}
 		ArrayList<String> data;
 		
