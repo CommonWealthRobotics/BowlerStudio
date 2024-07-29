@@ -607,6 +607,7 @@ public class BowlerStudio3dEngine {
 
 		MeshView current = getCsgMap().get(currentCsg);
 		current.setCullFace(CullFace.BACK);
+		((PhongMaterial)current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
