@@ -1153,7 +1153,8 @@ public class BowlerStudio3dEngine {
 		MeshView meshView = new MeshView(mesh);
 
 		// Set material properties for thin lines
-		PhongMaterial material = new PhongMaterial(Color.WHITE);
+		PhongMaterial material = new PhongMaterial();
+		material.setDiffuseColor(Color.BLACK);
 		meshView.setMaterial(material);
 
 		// Make lines appear thin
