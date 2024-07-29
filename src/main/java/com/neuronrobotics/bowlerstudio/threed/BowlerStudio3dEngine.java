@@ -92,10 +92,11 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.*;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.paint.Color;
 
-//import javafx.util.Duration;
-
-// TODO: Auto-generated Javadoc
 /**
  * MoleculeSampleApp.
  */
@@ -1039,11 +1040,8 @@ public class BowlerStudio3dEngine {
 			public void run() {
 				try {
 					Image ruler = AssetFactory.loadAsset("ruler.png");
-					Image groundLocal = AssetFactory.loadAsset("ground.png");
-					Affine groundMove = new Affine();
-					// groundMove.setTz(-3);
-					groundMove.setTx(-groundLocal.getHeight() / 2);
-					groundMove.setTy(-groundLocal.getWidth() / 2);
+					//Image groundLocal = AssetFactory.loadAsset("ground.png");
+
 
 					Affine zRuler = new Affine();
 					double scale = 0.25;
@@ -1068,18 +1066,23 @@ public class BowlerStudio3dEngine {
 					xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					MeshView grid = createGridMesh(1000,1000,20);
+					
 					BowlerStudio.runLater(() -> {
 						ImageView rulerImage = new ImageView(ruler);
 						ImageView yrulerImage = new ImageView(ruler);
 						ImageView zrulerImage = new ImageView(ruler);
-						ImageView groundView = new ImageView(groundLocal);
-						groundView.getTransforms().addAll(groundMove, downset);
-						groundView.setOpacity(0.3);
+						//ImageView groundView = new ImageView(groundLocal);
+						//groundView.getTransforms().addAll(groundMove, downset);
+						//groundView.setOpacity(0.3);
 						zrulerImage.getTransforms().addAll(zRuler, downset);
 						rulerImage.getTransforms().addAll(xp, downset);
 						yrulerImage.getTransforms().addAll(yRuler, downset);
 						ObservableList<Node> children = gridGroup.getChildren();
-						children.addAll(zrulerImage, rulerImage, yrulerImage, groundView);
+						children.addAll(zrulerImage, rulerImage, yrulerImage,grid);
+						//children.addAll(grid);
+						
+						//children.addAll(groundView);
 
 						Affine groundPlacment = new Affine();
 						groundPlacment.setTz(-1);
@@ -1106,6 +1109,61 @@ public class BowlerStudio3dEngine {
 
 	}
 
+
+	public MeshView createGridMesh(int width, int height, int cellSize) {
+		Affine groundMove = new Affine();
+		// groundMove.setTz(-3);
+		groundMove.setTx(-width / 2);
+		groundMove.setTy(-height/ 2);
+		
+		TriangleMesh mesh = new TriangleMesh();
+
+		// Create points
+		for (int y = 0; y <= height; y += cellSize) {
+			for (int x = 0; x <= width; x += cellSize) {
+				mesh.getPoints().addAll(x, y, 0);
+			}
+		}
+
+		// Create lines (faces in TriangleMesh terms)
+		int numXLines = (width / cellSize) + 1;
+		int numYLines = (height / cellSize) + 1;
+
+		// Horizontal lines
+		for (int y = 0; y < numYLines; y++) {
+			for (int x = 0; x < numXLines - 1; x++) {
+				int p1 = y * numXLines + x;
+				int p2 = y * numXLines + x + 1;
+				mesh.getFaces().addAll(p1, 0, p2, 0, p1, 0);
+			}
+		}
+
+		// Vertical lines
+		for (int x = 0; x < numXLines; x++) {
+			for (int y = 0; y < numYLines - 1; y++) {
+				int p1 = y * numXLines + x;
+				int p2 = (y + 1) * numXLines + x;
+				mesh.getFaces().addAll(p1, 0, p2, 0, p1, 0);
+			}
+		}
+
+		// Dummy texture coordinates (required by TriangleMesh)
+		mesh.getTexCoords().addAll(0, 0);
+
+		MeshView meshView = new MeshView(mesh);
+
+		// Set material properties for thin lines
+		PhongMaterial material = new PhongMaterial(Color.WHITE);
+		meshView.setMaterial(material);
+
+		// Make lines appear thin
+		meshView.setDrawMode(DrawMode.LINE);
+
+		// Ensure the mesh is visible
+		meshView.setCullFace(CullFace.NONE);
+		meshView.getTransforms().add(groundMove);
+		return meshView;
+	}
 	public void addUserNode(Node n) {
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
