@@ -1044,7 +1044,7 @@ public class BowlerStudio3dEngine {
 
 
 					Affine zRuler = new Affine();
-					double scale = 0.25;
+					double scale = 0.2522;
 					// zRuler.setTx(-130*scale);
 					zRuler.setTz(-20 * scale);
 					zRuler.appendScale(scale, scale, scale);
