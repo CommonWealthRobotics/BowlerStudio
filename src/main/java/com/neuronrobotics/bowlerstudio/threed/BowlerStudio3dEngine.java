@@ -100,7 +100,7 @@ import javafx.scene.paint.Color;
 /**
  * MoleculeSampleApp.
  */
-public class BowlerStudio3dEngine {
+public class BowlerStudio3dEngine implements ICameraChangeListener {
 	private boolean focusing = false;
 	private double targetDepth = 30;
 
@@ -227,6 +227,18 @@ public class BowlerStudio3dEngine {
 	private CheckMenuItem showRuler;
 	private TransformNR targetNR;
 	private TransformNR poseToMove = new TransformNR();
+	private ArrayList<ICameraChangeListener> listeners = new ArrayList<>();
+
+	public BowlerStudio3dEngine addListener(ICameraChangeListener l) {
+		if(!listeners.contains(l))
+			listeners.add(l);
+		return this;
+	}
+	public BowlerStudio3dEngine removeListener(ICameraChangeListener l) {
+		if(listeners.contains(l))
+			listeners.remove(l);
+		return this;
+	}
 	private IControlsMap map = new IControlsMap() {
 		long lastClickedTimeLocal = 0;
 		long offset = 500;
@@ -985,7 +997,7 @@ public class BowlerStudio3dEngine {
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 		camera.setDepthTest(DepthTest.ENABLE);
-		setVirtualcam(new VirtualCameraMobileBase(camera, hand));
+		setVirtualcam(new VirtualCameraMobileBase(camera, hand,this));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
@@ -1891,5 +1903,16 @@ public class BowlerStudio3dEngine {
 
 	public void lockZoom() {
 		getFlyingCamera().lockZoom();
+	}
+
+	@Override
+	public void onChange(VirtualCameraMobileBase camera) {
+		for(ICameraChangeListener c:listeners) {
+			try {
+				c.onChange(camera);
+			}catch(Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import java.util.ArrayList;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
@@ -33,10 +35,14 @@ public class VirtualCameraMobileBase {
 	private VirtualCameraMobileBase flyingCamera;
 	private TransformNR newPose=new TransformNR();
 	private boolean zoomlock;
+	private ArrayList<ICameraChangeListener> listeners = new ArrayList<>();
+	
+	
 
-	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand) {
+	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand,ICameraChangeListener lis) {
 		this.hand = hand;
 		this.setCamera(camera);
+		addListener(lis);
 		// System.out.println("Setting camera frame transform");
 
 		manipulationFrame = new Group();
@@ -48,6 +54,26 @@ public class VirtualCameraMobileBase {
 		manipulationFrame.getTransforms().add(camerUserPerspective);
 		cameraFrame.getChildren().add(manipulationFrame);
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
+	}
+	
+	public VirtualCameraMobileBase addListener(ICameraChangeListener l) {
+		if(!listeners.contains(l))
+			listeners.add(l);
+		return this;
+	}
+	public VirtualCameraMobileBase removeListener(ICameraChangeListener l) {
+		if(listeners.contains(l))
+			listeners.remove(l);
+		return this;
+	}
+	public void fireUpdate() {
+		for(ICameraChangeListener c:listeners) {
+			try {
+				c.onChange(this);
+			}catch(Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
@@ -75,7 +101,8 @@ public class VirtualCameraMobileBase {
 				.translateX(x)
 				.translateY(y)
 				.translateZ(z);
-		setGlobalToFiducialTransform(global);		
+		setGlobalToFiducialTransform(global);
+		fireUpdate();
 	}
 	public void DriveArc(TransformNR newPose) {
 		
@@ -87,24 +114,25 @@ public class VirtualCameraMobileBase {
 		TransformNR global = getFiducialToGlobalTransform().times(pureTrans);
 		global.setRotation(new RotationNR(
 				tlOffset + (Math.toDegrees(
-						newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt()) % 360),
+						newPose.getRotation().getRotationTiltRadians() + global.getRotation().getRotationTiltRadians()) % 360),
 				azOffset + (Math.toDegrees(
-						newPose.getRotation().getRotationAzimuth() + global.getRotation().getRotationAzimuth()) % 360),
+						newPose.getRotation().getRotationAzimuthRadians() + global.getRotation().getRotationAzimuthRadians()) % 360),
 				elOffset + Math.toDegrees(
-						newPose.getRotation().getRotationElevation() + global.getRotation().getRotationElevation())));
+						newPose.getRotation().getRotationElevationRadians() + global.getRotation().getRotationElevationRadians())));
 //		 global.getRotation().setStorage(nr);
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 		synchronizePositionWIthOtherFlyingCamera(newPose);
+		fireUpdate();
 	}
 	
 
 	public double getPanAngle() {
-		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuth());
+		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuthRadians());
 	}
 	public double getTiltAngle() {
-		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationTilt());
+		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationTiltRadians());
 	}
 	
 	public double getGlobalX() {
@@ -155,6 +183,7 @@ public class VirtualCameraMobileBase {
 		else
 			camera.setFarClip(10000);
 		zoomAffine.setTz(getZoomDepth());
+		fireUpdate();
 	}
 
 	public static int getDefaultZoomDepth() {
@@ -170,7 +199,6 @@ public class VirtualCameraMobileBase {
 			return;
 		}
 		this.flyingCamera = f;
-		//f.bind(this);
 	}
 	private void synchronizePositionWIthOtherFlyingCamera(TransformNR n) {
 		if(n.getRotation()==newPose.getRotation())
