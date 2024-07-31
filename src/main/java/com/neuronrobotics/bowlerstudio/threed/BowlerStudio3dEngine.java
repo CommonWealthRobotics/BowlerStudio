@@ -291,7 +291,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		});
 		System.err.println("Setting Scene ");
-		setSubScene(new SubScene(getRoot(), 10, 10, true, SceneAntialiasing.DISABLED));
+		setSubScene(new SubScene(getRoot(), 10, 10, true, SceneAntialiasing.BALANCED));
 
 		// Set up the Ui THread explosion handler
 
@@ -1246,9 +1246,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
 		});
-		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_PRESSED,new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
+				System.out.println("Bowler 3d start");
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -1879,7 +1880,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			// Add a close request handler
 			newStage.setOnCloseRequest(event -> {
 				// Exit the JVM when the window is closed
-				BowlerKernel.runLater(() -> Platform.exit());
+				System.exit(0);
 			});
 			newStage.show();
 		});

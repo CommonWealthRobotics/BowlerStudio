@@ -79,6 +79,7 @@ public class VirtualCameraMobileBase {
 	public void setGlobalToFiducialTransform(TransformNR defautcameraView) {
 		myGlobal = defautcameraView;
 		updatePositions();
+		fireUpdate();
 	}
 
 	public void updatePositions() {
@@ -102,7 +103,7 @@ public class VirtualCameraMobileBase {
 				.translateY(y)
 				.translateZ(z);
 		setGlobalToFiducialTransform(global);
-		fireUpdate();
+		
 	}
 	public void DriveArc(TransformNR newPose) {
 		
@@ -124,7 +125,6 @@ public class VirtualCameraMobileBase {
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 		synchronizePositionWIthOtherFlyingCamera(newPose);
-		fireUpdate();
 	}
 	
 
