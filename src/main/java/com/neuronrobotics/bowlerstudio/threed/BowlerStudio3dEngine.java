@@ -38,7 +38,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+//import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
@@ -282,6 +282,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	};
 	private double mouseScale=2.0;
 	private MeshView handMesh;
+	private ImageView homeIcon;
+	private ImageView generateIcon;
+	private ImageView clearIcon;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -320,7 +323,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			// setScene(s);
 			rebuildingUIOnerror = false;
-			getControlsBox();
+			getControlsBox(homeIcon,generateIcon,clearIcon);
 		});
 	}
 
@@ -382,11 +385,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 
 	}
 
-	public Group getControlsBox() {
+	public Group getControlsBox(ImageView homeIcon, ImageView generateIcon, ImageView clearIcon) {
+		this.homeIcon = homeIcon;
+		this.generateIcon = generateIcon;
+		this.clearIcon = clearIcon;
 		HBox controls = new HBox(10);
 		home = new Button("Home");
 		home.setTooltip(new javafx.scene.control.Tooltip("Home the camera"));
-		home.setGraphic(AssetFactory.loadIcon("Home-Camera.png"));
+		if(homeIcon!=null)
+		home.setGraphic(homeIcon);
 		home.setOnAction(event -> {
 			focusOrentation(
 					new TransformNR(0,0,0,new RotationNR(0,45,-45)),
@@ -394,7 +401,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 					getFlyingCamera().getDefaultZoomDepth());
 		});
 		export = new Button("Export");
-		export.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
+		if(generateIcon!=null)
+		export.setGraphic(generateIcon);
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
 				exportAll(false);
@@ -409,7 +417,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		tooltip.setText("\nExport all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
 		export.setTooltip(tooltip);
 		Button clear = new Button("Clear");
-		clear.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
+		if(clearIcon!=null)
+		clear.setGraphic(clearIcon);
 		clear.setOnAction(event -> {
 			clearUserNode();
 			removeObjects();
@@ -1051,7 +1060,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		new Thread() {
 			public void run() {
 				try {
-					Image ruler = AssetFactory.loadAsset("ruler.png");
+					//Image ruler = AssetFactory.loadAsset("ruler.png");
+					Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
 					//Image groundLocal = AssetFactory.loadAsset("ground.png");
 
 

@@ -10,6 +10,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 
 import javafx.application.Platform;
@@ -171,7 +172,10 @@ public class CreatureLab3dController {
 			getEngine() .getSubScene().heightProperty().bind(viewContainer.heightProperty());
 		});
 		BowlerStudio.runLater(() -> {
-			jfx3dControls.getChildren().add(getEngine().getControlsBox());
+			jfx3dControls.getChildren().add(getEngine().getControlsBox(AssetFactory.loadIcon("Home-Camera.png"),
+					AssetFactory.loadIcon("Generate-Cad.png"),
+					AssetFactory.loadIcon("Clear-Screen.png")
+					));
 			viewContainer.getChildren().add(getEngine() .getSubScene());
 			AnchorPane.setTopAnchor(getEngine() .getSubScene(), 0.0);
 			AnchorPane.setRightAnchor(getEngine() .getSubScene(), 0.0);
