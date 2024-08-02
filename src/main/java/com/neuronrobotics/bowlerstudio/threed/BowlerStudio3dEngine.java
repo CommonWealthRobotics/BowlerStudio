@@ -102,7 +102,7 @@ import javafx.scene.paint.Color;
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener {
 	private boolean focusing = false;
-	private double targetDepth = 30;
+	private double numberOfInterpolationSteps = 30;
 
 	/**
 	 * 
@@ -1606,7 +1606,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR,(int) targetDepth, interpolator);
+			focusInterpolate(startSelectNr, targetNR,(int) numberOfInterpolationSteps, interpolator);
 		});
 	}
 
@@ -1658,7 +1658,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, (int)targetDepth, interpolator);
+			focusInterpolate(startSelectNr, targetNR, (int)numberOfInterpolationSteps, interpolator);
 		});
 	}
 
@@ -1704,28 +1704,34 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 			z=trans.getZ()-getFlyingCamera().getGlobalZ();
 		}
 		try {
-			double d = 1.0 / targetDepth;
-			for (double i = 0; i <= 1+0.000001; i += d) {
+			double d = 1.0 / numberOfInterpolationSteps;
+			for (double i = 0; i < 1; i += d) {
+				if(i>1)
+					i=1;
 //				double aztmp = getFlyingCamera().getPanAngle();
 //				double eltmp = getFlyingCamera().getTiltAngle();
 				//System.out.println("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
-				double mx=x/ targetDepth;
-				double my=y/ targetDepth;
-				double mz=z/ targetDepth;
+				double mx=x/ numberOfInterpolationSteps;
+				double my=y/ numberOfInterpolationSteps;
+				double mz=z/ numberOfInterpolationSteps;
 				BowlerStudio.runLater(() -> {
-					moveCamera(new TransformNR(0, 0, 0, new RotationNR(-el / targetDepth, -az / targetDepth, 0)));
+					moveCamera(new TransformNR(0, 0, 0, new RotationNR(-el / numberOfInterpolationSteps, -az / numberOfInterpolationSteps, 0)));
 					getFlyingCamera().DrivePositionAbsolute(mx, my, mz);
 					if(!getFlyingCamera().isZoomLocked())
-						getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth()+(zoomDelta/targetDepth));
+						getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth()+(zoomDelta/numberOfInterpolationSteps));
 				});
 				try {
-					Thread.sleep(16);
+					Thread.sleep(36);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					focusing = false;
 				}
 			}
+			BowlerStudio.runLater(() ->{
+				getFlyingCamera().SetOrentation(orent);
+				getFlyingCamera().SetPosition(trans);
+			});
 			
 		} catch (Throwable t) {
 			t.printStackTrace();
