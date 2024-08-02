@@ -13,11 +13,11 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
 
 public class VirtualCameraMobileBase {
+	private static final TransformNR CameraGlobalOffset = new TransformNR(0, 0, 0, new RotationNR(180, 0, 0));
 	private TransformNR myGlobal = new TransformNR();
-	double azOffset = 0;
-	double elOffset = 0;
-	double tlOffset = 0;
-	TransformNR pureTrans = new TransformNR();
+//	double azOffset = 0;
+//	double elOffset = 0;
+//	double tlOffset = 0;
 	private static final int DEFAULT_ZOOM_DEPTH = -1500;
 	private PerspectiveCamera camera;
 	private Group hand;
@@ -48,7 +48,7 @@ public class VirtualCameraMobileBase {
 		manipulationFrame = new Group();
 		camera.getTransforms().add(zoomAffine);
 		BowlerStudio.runLater(
-				() -> TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)), offset));
+				() -> TransformFactory.nrToAffine(CameraGlobalOffset, offset));
 		cameraFrame.getTransforms().add(getOffset());
 		manipulationFrame.getChildren().addAll(camera, hand);
 		manipulationFrame.getTransforms().add(camerUserPerspective);
@@ -106,7 +106,8 @@ public class VirtualCameraMobileBase {
 		
 	}
 	public void DriveArc(TransformNR newPose) {
-		
+		TransformNR pureTrans = new TransformNR();
+
 		// TODO Auto-generated method stub
 		pureTrans.setX(newPose.getX());
 		pureTrans.setY(newPose.getY());
@@ -114,11 +115,11 @@ public class VirtualCameraMobileBase {
 
 		TransformNR global = getFiducialToGlobalTransform().times(pureTrans);
 		global.setRotation(new RotationNR(
-				tlOffset + (Math.toDegrees(
+				  (Math.toDegrees(
 						newPose.getRotation().getRotationTiltRadians() + global.getRotation().getRotationTiltRadians()) % 360),
-				azOffset + (Math.toDegrees(
+			(Math.toDegrees(
 						newPose.getRotation().getRotationAzimuthRadians() + global.getRotation().getRotationAzimuthRadians()) % 360),
-				elOffset + Math.toDegrees(
+				 Math.toDegrees(
 						newPose.getRotation().getRotationElevationRadians() + global.getRotation().getRotationElevationRadians())));
 //		 global.getRotation().setStorage(nr);
 		//System.err.println("Camera tilt="+global);
@@ -126,7 +127,37 @@ public class VirtualCameraMobileBase {
 		setGlobalToFiducialTransform(global);
 		synchronizePositionWIthOtherFlyingCamera(newPose);
 	}
-	
+	public void SetPosition(TransformNR newPose) {
+		if(newPose==null)
+			return;
+		setGlobalToFiducialTransform(newPose.copy().setRotation(getFiducialToGlobalTransform().getRotation()));
+		synchronizePositionWIthOtherFlyingCamera(newPose);
+	}
+	public void SetOrentation(TransformNR newPose) {
+		if(newPose==null)
+			return;
+		//newPose=CameraGlobalOffset.times(newPose);
+//		TransformNR pureTrans = new TransformNR();
+//
+//		// TODO Auto-generated method stub
+//		pureTrans.setX(newPose.getX());
+//		pureTrans.setY(newPose.getY());
+//		pureTrans.setZ(newPose.getZ());
+
+		TransformNR global = getFiducialToGlobalTransform().copy();
+		// use the camera global fraame elevation
+		double rotationElevationDegrees = -newPose.getRotation().getRotationElevationDegrees()-90;
+		double azimuth = 90-Math.toDegrees(
+				newPose.getRotation().getRotationAzimuthRadians() );
+		// Apply globals to the internal camer frame
+		global.setRotation(new RotationNR(
+				rotationElevationDegrees ,
+				 azimuth,
+				Math.toDegrees(
+						global.getRotation().getRotationElevationRadians())));
+		setGlobalToFiducialTransform(global);
+		synchronizePositionWIthOtherFlyingCamera(newPose);
+	}
 
 	public double getPanAngle() {
 		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuthRadians());

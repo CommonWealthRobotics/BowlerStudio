@@ -1202,6 +1202,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	}
 
 	public void clearUserNode() {
+		//new RuntimeException("Clearing all user nodes!");
 		BowlerStudio.runLater(() -> userGroup.getChildren().clear());
 	}
 
