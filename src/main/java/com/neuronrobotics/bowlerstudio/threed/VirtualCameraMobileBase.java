@@ -29,18 +29,19 @@ public class VirtualCameraMobileBase {
 	private Group manipulationFrame;
 	long timeSinceLastUpdate=System.currentTimeMillis()-17;
 	boolean error=false;
-	
+	private boolean move=true;
 
 	private Affine camerUserPerspective=new Affine();
-	private VirtualCameraMobileBase flyingCamera;
-	private TransformNR newPose=new TransformNR();
+	private ArrayList<VirtualCameraMobileBase> flyingCamera=new ArrayList<>();
 	private boolean zoomlock;
 	private ArrayList<ICameraChangeListener> listeners = new ArrayList<>();
+	private String name;
 	
 	
 
-	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand,ICameraChangeListener lis) {
+	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand,ICameraChangeListener lis, String name) {
 		this.hand = hand;
+		this.name = name;
 		this.setCamera(camera);
 		addListener(lis);
 		// System.out.println("Setting camera frame transform");
@@ -67,6 +68,7 @@ public class VirtualCameraMobileBase {
 		return this;
 	}
 	public void fireUpdate() {
+		synchronizePositionWithOtherFlyingCamera(myGlobal);
 		for(ICameraChangeListener c:listeners) {
 			try {
 				c.onChange(this);
@@ -107,31 +109,33 @@ public class VirtualCameraMobileBase {
 	}
 	public void DriveArc(TransformNR newPose) {
 		TransformNR pureTrans = new TransformNR();
-
-		// TODO Auto-generated method stub
-		pureTrans.setX(newPose.getX());
-		pureTrans.setY(newPose.getY());
-		pureTrans.setZ(newPose.getZ());
+		if(move) {
+			pureTrans.setX(newPose.getX());
+			pureTrans.setY(newPose.getY());
+			pureTrans.setZ(newPose.getZ());
+		}
 
 		TransformNR global = getFiducialToGlobalTransform().times(pureTrans);
+		double rotationTiltRadians = newPose.getRotation().getRotationTiltRadians();
+		double rotationAzimuthRadians = newPose.getRotation().getRotationAzimuthRadians();
+		double rotationElevationRadians = newPose.getRotation().getRotationElevationRadians();
+
 		global.setRotation(new RotationNR(
 				  (Math.toDegrees(
-						newPose.getRotation().getRotationTiltRadians() + global.getRotation().getRotationTiltRadians()) % 360),
+						rotationTiltRadians + global.getRotation().getRotationTiltRadians()) % 360),
 			(Math.toDegrees(
-						newPose.getRotation().getRotationAzimuthRadians() + global.getRotation().getRotationAzimuthRadians()) % 360),
+						rotationAzimuthRadians + global.getRotation().getRotationAzimuthRadians()) % 360),
 				 Math.toDegrees(
-						newPose.getRotation().getRotationElevationRadians() + global.getRotation().getRotationElevationRadians())));
+						rotationElevationRadians + global.getRotation().getRotationElevationRadians())));
 //		 global.getRotation().setStorage(nr);
 		//System.err.println("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
-		synchronizePositionWIthOtherFlyingCamera(newPose);
 	}
 	public void SetPosition(TransformNR newPose) {
-		if(newPose==null)
+		if(newPose==null || !move)
 			return;
 		setGlobalToFiducialTransform(newPose.copy().setRotation(getFiducialToGlobalTransform().getRotation()));
-		synchronizePositionWIthOtherFlyingCamera(newPose);
 	}
 	public void SetOrentation(TransformNR newPose) {
 		if(newPose==null)
@@ -156,7 +160,6 @@ public class VirtualCameraMobileBase {
 				Math.toDegrees(
 						global.getRotation().getRotationElevationRadians())));
 		setGlobalToFiducialTransform(global);
-		synchronizePositionWIthOtherFlyingCamera(newPose);
 	}
 
 	public double getPanAngle() {
@@ -226,19 +229,30 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void bind(VirtualCameraMobileBase f) {
-		if(flyingCamera!=null) {
+		if(flyingCamera.contains(f)) {
 			return;
 		}
-		this.flyingCamera = f;
+		this.flyingCamera .add(f);
 	}
-	private void synchronizePositionWIthOtherFlyingCamera(TransformNR n) {
-		if(n.getRotation()==newPose.getRotation())
-			return;
-		this.newPose = n;
-		if(flyingCamera!=null) {
-			TransformNR newGlob = flyingCamera.getFiducialToGlobalTransform().copy()
-									.setRotation(getFiducialToGlobalTransform().getRotation());
-			flyingCamera.setGlobalToFiducialTransform(newGlob);
+	private void synchronizePositionWithOtherFlyingCamera(TransformNR n) {
+
+		for(VirtualCameraMobileBase cam:flyingCamera) {
+			RotationNR rotation = getFiducialToGlobalTransform().getRotation();
+			if (!zoomlock && !cam.zoomlock && ((int)cam.getZoomDepth())!=((int)getZoomDepth())) {
+				//System.out.println(name+" Sync zoom to "+cam.name);
+				cam.setZoomDepth(zoomDepth);
+			}
+			if(rotation==cam.myGlobal.getRotation())
+				continue;
+			//System.out.println(name+" pusing update to "+cam.name);
+			if(!cam.move || !move) {
+				TransformNR newGlob = cam.getFiducialToGlobalTransform().copy()
+										.setRotation(rotation);
+				cam.setGlobalToFiducialTransform(newGlob);
+			}else {
+				cam.setGlobalToFiducialTransform(n.copy().setRotation(rotation));
+			}
+
 		}
 	}
 
@@ -249,6 +263,11 @@ public class VirtualCameraMobileBase {
 	public boolean isZoomLocked() {
 		// TODO Auto-generated method stub
 		return zoomlock;
+	}
+
+	public void lockMove() {
+		// TODO Auto-generated method stub
+		move = false;
 	}
 
 

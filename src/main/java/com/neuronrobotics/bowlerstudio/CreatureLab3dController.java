@@ -60,7 +60,7 @@ public class CreatureLab3dController {
 	
     public  CreatureLab3dController (){
     
-    	setEngine(new BowlerStudio3dEngine());
+    	setEngine(new BowlerStudio3dEngine("BowlerStudio3d"));
     }
     
 	public void setOverlayLeft(Node content) {

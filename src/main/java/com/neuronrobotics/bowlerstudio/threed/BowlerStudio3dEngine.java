@@ -285,11 +285,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	private ImageView homeIcon;
 	private ImageView generateIcon;
 	private ImageView clearIcon;
+	private boolean move=true;
+	private boolean disabeControl=false;
+	private String name;;
 
 	/**
 	 * Instantiates a new jfx3d manager.
+	 * @param string 
 	 */
-	public BowlerStudio3dEngine() {
+	public BowlerStudio3dEngine(String name) {
+		this.name = name;
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		});
@@ -302,16 +307,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 
 	public void rebuild(boolean b) {
 		rebuildingUIOnerror = true;
-		System.err.println("Building scene");
+		System.err.println("Building scene "+name);
 		buildScene();
-		System.err.println("Building camera");
+		System.err.println("Building camera "+name);
 
 		buildCamera(b);
-		System.err.println("Building axis");
+		System.err.println("Building axis "+name);
 		buildAxes(b);
 		
 		Stop[] stops = null;
-		System.err.println("Building gradiant");
+		System.err.println("Building gradiant "+name );
 
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		group = new Group(getSubScene());
@@ -366,9 +371,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 							e.printStackTrace();
 						}
 					}
-					System.err.println("Autospin Thread clean exit");
+					System.err.println("Autospin Thread clean exit "+name);
 				});
-				autospingThread.setName("UI Autospin Thread");
+				autospingThread.setName("UI Autospin Thread "+name);
 				autospingThread.start();
 			}
 		});
@@ -1006,7 +1011,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 		camera.setDepthTest(DepthTest.ENABLE);
-		setVirtualcam(new VirtualCameraMobileBase(camera, hand,this));
+		setVirtualcam(new VirtualCameraMobileBase(camera, hand,this, name));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
@@ -1251,7 +1256,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	 */
 
 	private void handleMouse(SubScene scene) {
-		System.out.println("Settinng up Mouse Handelers");
+		if(disabeControl) {
+			System.out.println("No mouse control added "+name);
+			scene.setPickOnBounds(false);
+			return;
+		}
+		System.out.println("Settinng up Mouse Handelers "+name);
 		scene.setOnMouseClicked(event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
@@ -1260,7 +1270,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED,new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				System.out.println("Bowler 3d start");
+				System.out.println("Bowler 3d start "+name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -1299,7 +1309,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 					moveCamera(trans);
 				}
 
-				if (getControlsMap().isMove(me)) {
+				if (getControlsMap().isMove(me) && move) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
 
 					TransformNR newPose = new TransformNR(mouseDeltaX * modifierFactor * modifier *  (mouseScale/2) / depth,
@@ -1874,7 +1884,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		System.setProperty("prism.dirtyopts", "false");
 
 		AnchorPane view3d = new AnchorPane();
-		BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+		BowlerStudio3dEngine engine = new BowlerStudio3dEngine("Test");
 		engine.rebuild(true);
 		SubScene subScene = engine.getSubScene();
 		view3d.getChildren().add(subScene);
@@ -1932,5 +1942,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 				t.printStackTrace();
 			}
 		}
+	}
+	public void lockMove() {
+		move = false;
+		getFlyingCamera().lockMove();
+	}
+	public void disableControls() {
+		// TODO Auto-generated method stub
+		disabeControl=true;
 	}
 }
