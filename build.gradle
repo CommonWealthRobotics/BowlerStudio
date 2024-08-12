@@ -5,7 +5,10 @@ buildscript {
 			maven {
 				url "https://plugins.gradle.org/m2/"
 			},
-			mavenLocal()
+			mavenLocal(),
+			maven {
+				url "https://repo.jenkins-ci.org/releases/"
+			}
 		]
 	}
 	dependencies {
@@ -153,6 +156,9 @@ props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/c
 
 
 repositories {
+	maven {
+		url "https://repo.jenkins-ci.org/public/"
+	}
 	mavenCentral()
 	maven {
 		url 'https://mlt.jfrog.io/artifactory/mlt-mvn-releases-local/'
@@ -182,16 +188,29 @@ repositories {
 
 	maven { url 'https://plugins.gradle.org/m2/' }
 	//maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
+
+	maven { url '	https://repo.spring.io/plugins-release/'  }
+
 	maven { url "https://jitpack.io" }
-
-	//maven { url 'https://dl.bintray.com/commonwealthrobotics/maven-artifacts'  }
-
-
+	maven { url "https://repo.eclipse.org/content/groups/releases/" }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+	maven { url "https://dl.bintray.com/dfki-lt/maven/" }
+	maven { url "https://raw.github.com/marytts/marytts/master/repository/" }
+	maven { url "https://repo.jenkins-ci.org/public/" }
+	maven { url "https://raw.githubusercontent.com/DFKI-MLT/DFKI-LT-MAVEN/master/repository" }
+	
+	maven {
+		url 'https://commonwealthrobotics.com/jcenter-mirror/'
+		allowInsecureProtocol = true
+	}
 }
 
 dependencies {
 
-
+	implementation 'org.kohsuke.stapler:stapler:1.263'
+	// https://mvnrepository.com/artifact/org.kohsuke.stapler/stapler
+	//implementation group: 'org.kohsuke.stapler', name: 'stapler', version: '1881.vd39f3ee5c629'
+	
 	implementation group: 'org.json', name: 'json', version: '20180813'
 	implementation 'com.google.crypto.tink:tink:1.3.0-rc1'
 
@@ -348,7 +367,7 @@ dependencies {
 
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
 	implementation 'com.google.guava:guava:19+'
-	implementation 'org.kohsuke.stapler:stapler:1.263'
+
 	implementation group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
 
 
