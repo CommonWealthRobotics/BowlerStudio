@@ -6,7 +6,7 @@ import javafx.scene.control.ButtonType;
 //import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerkernel.Bezier3d.IInteractiveUIElementProvider;
-import com.neuronrobotics.bowlerkernel.Bezier3d.manipulation;
+import com.neuronrobotics.bowlerkernel.Bezier3d.Manipulation;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -188,7 +188,7 @@ public class BowlerStudio extends Application {
 			}
 		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
-		manipulation.setUi(new IInteractiveUIElementProvider() {
+		Manipulation.setUi(new IInteractiveUIElementProvider() {
 			public void runLater(Runnable r) {
 				BowlerStudio.runLater(r);
 			}
