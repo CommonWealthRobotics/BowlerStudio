@@ -228,6 +228,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	private TransformNR targetNR;
 	private TransformNR poseToMove = new TransformNR();
 	private ArrayList<ICameraChangeListener> listeners = new ArrayList<>();
+	private Affine gridPlacementAffine = new Affine();
 
 	public BowlerStudio3dEngine addListener(ICameraChangeListener l) {
 		if(!listeners.contains(l))
@@ -1189,7 +1190,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 
 		// Ensure the mesh is visible
 		meshView.setCullFace(CullFace.NONE);
-		meshView.getTransforms().add(groundMove);
+		meshView.getTransforms().addAll(gridPlacementAffine,groundMove);
 		return meshView;
 	}
 	public void addUserNode(Node n) {
@@ -1950,5 +1951,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 	public void disableControls() {
 		// TODO Auto-generated method stub
 		disabeControl=true;
+	}
+	public void placeGrid(TransformNR workplane) {
+		BowlerKernel.runLater(()->{
+			TransformFactory.nrToAffine(workplane, gridPlacementAffine);
+		});
 	}
 }
