@@ -103,6 +103,7 @@ import javafx.scene.paint.Color;
 public class BowlerStudio3dEngine implements ICameraChangeListener {
 	private boolean focusing = false;
 	private double numberOfInterpolationSteps = 30;
+	private MeshView grid;
 
 	/**
 	 * 
@@ -1064,6 +1065,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		// }
 
 		new Thread() {
+
 			public void run() {
 				try {
 					//Image ruler = AssetFactory.loadAsset("ruler.png");
@@ -1094,7 +1096,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 					xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
-					MeshView grid = createGridMesh(1000,1000,20);
+					grid = createGridMesh(1000,1000,20);
 					
 					BowlerStudio.runLater(() -> {
 						ImageView rulerImage = new ImageView(ruler);
@@ -1107,7 +1109,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 						rulerImage.getTransforms().addAll(xp, downset);
 						yrulerImage.getTransforms().addAll(yRuler, downset);
 						ObservableList<Node> children = gridGroup.getChildren();
-						children.addAll(zrulerImage, rulerImage, yrulerImage,grid);
+						children.addAll(zrulerImage, rulerImage, yrulerImage,getGrid());
 						//children.addAll(grid);
 						
 						//children.addAll(groundView);
@@ -1133,11 +1135,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 					e.printStackTrace();
 				}
 			}
+
 		}.start();
 
 	}
 
 
+	public MeshView getGrid() {
+		return grid;
+	}
 	public MeshView createGridMesh(int width, int height, int cellSize) {
 		Affine groundMove = new Affine();
 		// groundMove.setTz(-3);
