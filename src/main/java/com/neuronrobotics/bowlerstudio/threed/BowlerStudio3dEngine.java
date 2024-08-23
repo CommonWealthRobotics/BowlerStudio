@@ -1277,7 +1277,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED,new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				System.out.println("Bowler 3d start "+name);
+				//System.out.println("Bowler 3d start "+name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
