@@ -41,6 +41,7 @@ import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 //import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
 import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -100,7 +101,7 @@ import javafx.scene.paint.Color;
 /**
  * MoleculeSampleApp.
  */
-public class BowlerStudio3dEngine implements ICameraChangeListener {
+public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI {
 	private boolean focusing = false;
 	private double numberOfInterpolationSteps = 30;
 	private MeshView grid;
@@ -1962,5 +1963,28 @@ public class BowlerStudio3dEngine implements ICameraChangeListener {
 		BowlerKernel.runLater(()->{
 			TransformFactory.nrToAffine(workplane, gridPlacementAffine);
 		});
+	}
+	@Override
+	public void setAllCSG(Collection<CSG> toAdd, File source) {
+		clearUserNode();
+		addCSG(toAdd,source);
+	}
+	@Override
+	public void addCSG(Collection<CSG> toAdd, File source) {
+		for(CSG c:toAdd)
+			addObject(c, source);	
+	}
+	@Override
+	public void highlightException(File fileEngineRunByName, Throwable ex) {
+		
+	}
+	@Override
+	public Set<CSG> getVisibleCSGs() {
+		return getCsgMap().keySet();
+	}
+	@Override
+	public void setSelectedCsg(Collection<CSG> selectedCsg) {
+		for(CSG c:selectedCsg)
+			selectObjectsSourceFile(c);
 	}
 }
