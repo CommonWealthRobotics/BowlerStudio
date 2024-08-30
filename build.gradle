@@ -160,10 +160,6 @@ repositories {
 		url "https://repo.jenkins-ci.org/public/"
 	}
 	mavenCentral()
-	maven {
-		url 'https://mlt.jfrog.io/artifactory/mlt-mvn-releases-local/'
-	}
-	maven { url 'https://repo.maven.apache.org/maven2/' }
 	
 	maven { url 'https://repo1.maven.org/maven2/'}
 
