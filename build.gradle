@@ -169,12 +169,12 @@ repositories {
 	//com.neuronrobotics hosting point
 	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
 
-	    maven {
-	        url "https://repo.myrobotlab.org/artifactory/myrobotlab/"
-	        content {
-	            includeGroup("de.dfki.mary")
-	        }
-	    }
+//	    maven {
+//	        url "https://repo.myrobotlab.org/artifactory/myrobotlab/"
+//	        content {
+//	            includeGroup("de.dfki.mary")
+//	        }
+//	    }
 	maven { url 'https://maven-central.storage-download.googleapis.com/repos/central/data/'}
 	maven {url 'https://repo.jenkins-ci.org/public/'}
 	maven { url 'https://clojars.org/repo' }
