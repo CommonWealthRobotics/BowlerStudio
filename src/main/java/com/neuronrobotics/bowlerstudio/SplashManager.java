@@ -29,7 +29,7 @@ public class SplashManager {
 		psudo.closeSplashLocal();
 	}
 
-	private static boolean isVisableSplash() {
+	public static boolean isVisableSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();
 		return psudo.isVisableSplash();
