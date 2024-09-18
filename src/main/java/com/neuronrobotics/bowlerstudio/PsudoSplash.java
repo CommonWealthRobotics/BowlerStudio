@@ -133,6 +133,8 @@ public class PsudoSplash implements GitLogProgressMonitor{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				interfaceFrame.setAlwaysOnTop(true);
+
 			}
 		});
 		while (interfaceFrame == null)
