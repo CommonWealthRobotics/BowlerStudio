@@ -32,6 +32,8 @@ public class SplashManager {
 	public static boolean isVisableSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();
+		if(psudo==null)
+			return false;
 		return psudo.isVisableSplash();
 	}
 
