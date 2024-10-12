@@ -319,9 +319,6 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
-		renderSplashFrame(90, "Loading STL Loader");
-		// Add the engine handeler for STLs
-		ScriptingEngine.addScriptingLanguage(new StlLoader());
 		// add a new link provider to the link factory
 		FirmataLink.addLinkFactory();
 		// Log.enableInfoPrint();
