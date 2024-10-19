@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -14,26 +15,63 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitLogProgressMonitor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.video.OSUtil;
 
-public class PsudoSplash implements GitLogProgressMonitor{
+public class PsudoSplash implements GitLogProgressMonitor {
 	JFrame interfaceFrame;
 	private String message = "";
 	private String log = "";
 	private static URL resource = PsudoSplash.class.getResource("splash.png");
 
+	private static PsudoSplash singelton = null;
+
+	public static boolean isInitialized() {
+		return singelton != null;
+	}
+
+	public static PsudoSplash get() {
+		if (singelton == null)
+			singelton = new PsudoSplash();
+		return singelton;
+	}
+
+	public static void close() {
+		if (singelton != null)
+			singelton.closeSplashLocal();
+		singelton = null;
+
+	}
+
 	@Override
 	public void onUpdate(String update, Exception e) {
-		//e.printStackTrace(System.err);
-		log=update;
+		// e.printStackTrace(System.err);
+		log = update;
 		updateSplash();
+		System.out.println(update);
 	}
+
 	class CustomPanel extends JPanel {
+	    private BufferedImage offscreenImage;
+	    private Graphics2D offscreenGraphics;
+	    private void createOffscreenImage() {
+	        offscreenImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+	        offscreenGraphics = offscreenImage.createGraphics();
+	        offscreenGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    }
+	    @Override
+	    public void addNotify() {
+	        super.addNotify();
+	        createOffscreenImage();
+	    }
+
 		/**
 		 * 
 		 */
@@ -71,16 +109,35 @@ public class PsudoSplash implements GitLogProgressMonitor{
 			return (new Dimension(image.getWidth(), image.getHeight()));
 		}
 
+	    @Override
+	    protected void paintComponent(Graphics g) {
+	        super.paintComponent(g);
+
+	        if (offscreenImage == null) {
+	            createOffscreenImage();
+	        }
+
+	        // Clear the offscreen image with a fully transparent color
+	        offscreenGraphics.setComposite(AlphaComposite.Clear);
+	        offscreenGraphics.fillRect(0, 0, getWidth(), getHeight());
+	        offscreenGraphics.setComposite(AlphaComposite.SrcOver);
+
+	        // Your custom painting code goes here
+	        paintCustomGraphics(offscreenGraphics);
+
+	        // Draw the offscreen image onto the panel
+	        ((Graphics2D)g).setComposite(AlphaComposite.SrcOver);
+	        g.drawImage(offscreenImage, 0, 0, this);
+	    }
 		/*
 		 * This is where the actual Painting Code for the JPanel/JComponent goes. Here
 		 * we will draw the image. Here the first line super.paintComponent(...), means
 		 * we want the JPanel to be drawn the usual Java way first, then later on we
 		 * will add our image to it, by writing the other line, g.drawImage(...).
 		 */
-		@Override
-		protected void paintComponent(Graphics g) {
+		protected void paintCustomGraphics(Graphics g) {
 
-			super.paintComponent(g);
+			// super.paintComponent(g);
 			g.drawImage(image, 0, 0, this);
 			Graphics2D splashGraphics = (Graphics2D) g;
 			splashGraphics.setComposite(AlphaComposite.Clear);
@@ -94,7 +151,7 @@ public class PsudoSplash implements GitLogProgressMonitor{
 			splashGraphics.setPaintMode();
 			splashGraphics.setColor(Color.WHITE);
 			splashGraphics.drawString(getMessage(), 65, 280);
-			
+
 			splashGraphics.setComposite(AlphaComposite.Clear);
 			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
@@ -104,17 +161,16 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		}
 	}
 
-	public PsudoSplash() {
-		
+	private PsudoSplash() {
+
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
+					// if(!OSUtil.isLinux())
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException ex) {
-				} catch (InstantiationException ex) {
-				} catch (IllegalAccessException ex) {
-				} catch (UnsupportedLookAndFeelException ex) {
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 
 				interfaceFrame = new JFrame("Loading BowlerStudio...");
@@ -137,19 +193,20 @@ public class PsudoSplash implements GitLogProgressMonitor{
 
 			}
 		});
-		while (interfaceFrame == null)
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		while (interfaceFrame == null)
+//			try {
+//				Thread.sleep(100);
+//				System.out.println("Waiting for spalsh...");
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		try {
+//			Thread.sleep(100);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 //	public void setIcon(Image img) {
@@ -163,17 +220,20 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		return false;
 	}
 
-	void closeSplashLocal() {
+	private void closeSplashLocal() {
 		if (interfaceFrame != null)
 			interfaceFrame.setVisible(false);
-		//ScriptingEngine.removeLogListener(this);
-		
+		// ScriptingEngine.removeLogListener(this);
+
 	}
 
 	void updateSplash() {
 		if (interfaceFrame != null) {
-			interfaceFrame.invalidate();
-			interfaceFrame.repaint();
+			SwingUtilities.invokeLater(() -> {
+				interfaceFrame.invalidate();
+				interfaceFrame.repaint();
+			});
+
 		}
 	}
 
@@ -191,7 +251,8 @@ public class PsudoSplash implements GitLogProgressMonitor{
 			interfaceFrame.setVisible(true);
 		}
 		ScriptingEngine.addLogListener(this);
-		log="";
+		DownloadManager.addLogListener(this);
+		log = "";
 	}
 
 	public static URL getResource() {
@@ -201,6 +262,5 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	public static void setResource(URL r) {
 		resource = r;
 	}
-
 
 }

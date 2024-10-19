@@ -12,7 +12,6 @@ public class SplashManager {
 	private static Graphics2D splashGraphics;
 
 	private static boolean loadFirst = true;
-	private static PsudoSplash psudo = null;
 
 	public static void closeSplash() {
 		if (isVisableSplash())
@@ -26,36 +25,37 @@ public class SplashManager {
 			splashGraphics = null;
 			return;
 		}
-		psudo.closeSplashLocal();
+		PsudoSplash.close();
 	}
 
 	public static boolean isVisableSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();
-		if(psudo==null)
+		if(!PsudoSplash.isInitialized())
 			return false;
-		return psudo.isVisableSplash();
+		return PsudoSplash.get().isVisableSplash();
 	}
 
 	private static void updateSplash() {
-		psudo.updateSplash();
+		PsudoSplash.get().updateSplash();
 	}
 
 	public static void renderSplashFrame(int frame, String message) {
 		if (loadFirst) {
-			loadFirst = false;
+			
 			initialize();
 		}
 		String string = frame + "% " + message;
 		System.err.println(" Splash Rendering " + frame + " " + message);
-		psudo.setMessage(string);
+		PsudoSplash.get().setMessage(string);
 		updateSplash();
 	}
 
 	private static void initialize() {
-
 		System.err.println("No splash screen availible!");
-		psudo = new PsudoSplash();
 
+		loadFirst = false;
 	}
+
+
 }
