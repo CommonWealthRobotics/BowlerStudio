@@ -99,8 +99,13 @@ public class BowlerStudioMenuWorkspace {
 		if (menueMessage.length() < 2) {
 			menueMessage = new Date().toString();
 		}
+		try {
 		if(!BowlerStudio.checkValidURL(url)) {
 			BowlerStudio.runLater(()->BowlerStudio.showExceptionAlert(new RuntimeException(),"URL does not exist: "+url));
+			return;
+		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
 			return;
 		}
 		ArrayList<String> data;
