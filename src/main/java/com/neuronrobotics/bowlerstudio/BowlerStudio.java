@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
 import com.neuronrobotics.bowlerstudio.scripting.IApprovalForDownload;
+import com.neuronrobotics.bowlerstudio.scripting.IDownloadManagerEvents;
 import com.neuronrobotics.bowlerstudio.scripting.IURLOpen;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -359,6 +360,18 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
+		DownloadManager.setDownloadEvents(new IDownloadManagerEvents() {
+			
+			@Override
+			public void startDownload() {
+				SplashManager.renderSplashFrame(0, "Downloading...");
+			}
+			
+			@Override
+			public void finishDownload() {
+				SplashManager.closeSplash();
+			}
+		});
 		DownloadManager.setApproval(new IApprovalForDownload() {
 			private ButtonType buttonType = null;
 
@@ -369,7 +382,7 @@ public class BowlerStudio extends Application {
 				BowlerKernel.runLater(() -> {
 					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 					alert.setTitle("Message");
-					alert.setHeaderText("Would you like to download: " + name + "\nfrom:\n" + url);
+					alert.setHeaderText("Would you like add the " + name + "plugin?" );
 					Node root = alert.getDialogPane();
 					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 					stage.setOnCloseRequest(ev -> alert.hide());
