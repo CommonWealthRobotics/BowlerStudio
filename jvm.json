@@ -24,15 +24,45 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_x64",
-			  "jvmargs":["-Dprism.forceGPU=true"]
+			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-macosx_x64",
+			  "jvmargs":["-Dprism.forceGPU=true",	"--add-exports",
+	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+	"--add-opens",
+	"javafx.graphics/javafx.scene=ALL-UNNAMED"]
 			  },
 "Mac-aarch64":{
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu8.78.0.19-ca-fx-jdk8.0.412-macosx_aarch64",
-			  "jvmargs":["-Dprism.forceGPU=true"]
+			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-macosx_aarch64",
+			  "jvmargs":["-Dprism.forceGPU=true",	"--add-exports",
+	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+	"--add-exports",
+	"javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+	"--add-opens",
+	"javafx.graphics/javafx.scene=ALL-UNNAMED"]
 			  }			  
 
 }
