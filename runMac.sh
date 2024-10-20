@@ -15,8 +15,11 @@ else
 	mv $JAVA_HOME/$JVM/* $JAVA_HOME/
 fi
 echo "Java home set to $JAVA_HOME"
-
-./gradlew build shadowJar
+ ./gradlew --stop
+#rm -rf ~/.gradle/caches/
+#rm -rf ~/.gradle/daemon/
+./gradlew clean build --refresh-dependencies
+./gradlew shadowJar
 
 $JAVA_HOME/bin/java -Dprism.forceGPU=true --add-exports \
 	javafx.graphics/com.sun.javafx.css=ALL-UNNAMED \
