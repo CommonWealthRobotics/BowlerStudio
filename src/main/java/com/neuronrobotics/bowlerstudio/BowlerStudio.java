@@ -411,6 +411,16 @@ public class BowlerStudio extends Application {
 
 				return buttonType.equals(ButtonType.OK);
 			}
+
+			@Override
+			public void onInstallFail(String url) {
+				try {
+					BowlerStudio.openExternalWebpage(new URL(url));
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		});
 		renderSplashFrame(92, "Launching UI");
 		launch();
