@@ -673,7 +673,7 @@ public class BowlerStudio extends Application {
 		}
 	}
 	
-	private static void ensureUpdated(String ... urls) {
+	public static void ensureUpdated(String ... urls) {
 		for(String s:urls) {
 
 			ScriptingEngine.cloneRepo(s, null);
