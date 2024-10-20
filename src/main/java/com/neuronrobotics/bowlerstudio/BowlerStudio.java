@@ -381,7 +381,7 @@ public class BowlerStudio extends Application {
 				BowlerKernel.runLater(() -> {
 					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 					alert.setTitle("Message");
-					alert.setHeaderText("Would you like add the " + name + "plugin?" );
+					alert.setHeaderText("Would you like add the " + name + " plugin?" );
 					Node root = alert.getDialogPane();
 					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 					stage.setOnCloseRequest(ev -> alert.hide());

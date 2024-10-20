@@ -15,7 +15,7 @@ import com.neuronrobotics.video.OSUtil;
 
 public class Tutorial {
 	private static int WEBSERVER_PORT = 37037;
-	private static String HOME_Local_URL_ROOT = null;
+	private static final String HOME_Local_URL_ROOT = "/BowlerStudio/Welcome-To-BowlerStudio/";
 	private static final String weburl = "http://CommonWealthRobotics.com"+HOME_Local_URL_ROOT;
 	private static String HOME_URL =null;
 	private static String HOME_Local_URL = null;
@@ -42,8 +42,6 @@ public class Tutorial {
 					"docs/index.html");
 		}while(!i.exists());
 		ScriptingEngine.pull(remoteURI);
-		HOME_Local_URL_ROOT=(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBaseUrl",
-				"/BowlerStudio/Welcome-To-BowlerStudio/");
 		File indexOfTutorial=i;
 		if(!doneLoadingTutorials ){
 			if(!startedLoadingTutorials){
