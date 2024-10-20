@@ -308,7 +308,6 @@ public class BowlerStudio extends Application {
 		// System.err.println("Loading assets ");
 
 		// System.err.println("Loading Main.fxml");
-		renderSplashFrame(81, "Find arduino");
 		renderSplashFrame(82, "Set up UI");
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
