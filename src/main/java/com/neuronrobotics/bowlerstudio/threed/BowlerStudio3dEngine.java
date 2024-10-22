@@ -1070,14 +1070,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 			public void run() {
 				try {
 					//Image ruler = AssetFactory.loadAsset("ruler.png");
-					Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
+					//Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
 					//Image groundLocal = AssetFactory.loadAsset("ground.png");
 
 
 					Affine zRuler = new Affine();
-					double scale = 0.2522;
+					double scale = 1;
 					// zRuler.setTx(-130*scale);
-					zRuler.setTz(-20 * scale);
+					//zRuler.setTz(-20 * scale);
 					zRuler.appendScale(scale, scale, scale);
 					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
@@ -1085,24 +1085,24 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 
 					Affine yRuler = new Affine();
-					yRuler.setTx(-130 * scale);
-					yRuler.setTy(-20 * scale);
+					//yRuler.setTx(-130 * scale);
+					//yRuler.setTy(-20 * scale);
 					yRuler.appendScale(scale, scale, scale);
-					yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
-					yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+					//yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					yRuler.appendRotation(90, 0, 0, 0, 0, 0, 1);
 
 					Affine xp = new Affine();
 					Affine downset = new Affine();
 					downset.setTz(0.1);
-					xp.setTx(-20 * scale);
+					//xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 					grid = createGridMesh(1000,1000,20);
 					
 					BowlerStudio.runLater(() -> {
-						ImageView rulerImage = new ImageView(ruler);
-						ImageView yrulerImage = new ImageView(ruler);
-						ImageView zrulerImage = new ImageView(ruler);
+						Node rulerImage =MakeRuler.createRuler(true);// new ImageView(ruler);
+						Node yrulerImage =MakeRuler.createRuler(false);// new ImageView(ruler);
+						Node zrulerImage = MakeRuler.createRuler(true);//new ImageView(ruler);
 						//ImageView groundView = new ImageView(groundLocal);
 						//groundView.getTransforms().addAll(groundMove, downset);
 						//groundView.setOpacity(0.3);
