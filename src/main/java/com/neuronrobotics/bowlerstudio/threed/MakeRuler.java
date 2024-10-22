@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.threed;
 
 import java.util.HashMap;
 
+import com.neuronrobotics.bowlerstudio.BowlerKernel;
+
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.scene.Group;
 import javafx.scene.shape.CullFace;
@@ -27,72 +29,72 @@ public class MakeRuler {
 		double width = 0.15;
 		double height = 10;
 		Group ruler = new Group();
+		new Thread(()->{
+			// Create base mesh for the ruler line
+			TriangleMesh baseMesh = createRectangleMesh(width, 1.0f);
+			MeshView baseView = new MeshView(baseMesh);
+			PhongMaterial phongMaterial = new PhongMaterial(Color.BLACK);
 
-		// Create base mesh for the ruler line
-		TriangleMesh baseMesh = createRectangleMesh(width, 1.0f);
-		MeshView baseView = new MeshView(baseMesh);
-		PhongMaterial phongMaterial = new PhongMaterial(Color.BLACK);
+			baseView.setMaterial(phongMaterial);
 
-		baseView.setMaterial(phongMaterial);
+			// Position the base line in the middle
+			Affine baseTransform = new Affine();
+			baseTransform.setTy(height / 2 - 1.0);
+			baseView.getTransforms().add(baseTransform);
+			BowlerKernel.runLater(()->ruler.getChildren().add(baseView));
 
-		// Position the base line in the middle
-		Affine baseTransform = new Affine();
-		baseTransform.setTy(height / 2 - 1.0);
-		baseView.getTransforms().add(baseTransform);
-		ruler.getChildren().add(baseView);
+			// Constants for spacing
+			double mmSpacing = width / (numCentimeters * 10.0);
+			double tickWidth=0.25;
+			// Draw tick marks and labels
+			for (int i = 0; i <= numCentimeters * 10; i++) {
+				double x = i * mmSpacing;
+				TriangleMesh tickMesh;
 
-		// Constants for spacing
-		double mmSpacing = width / (numCentimeters * 10.0);
-		double tickWidth=0.25;
-		// Draw tick marks and labels
-		for (int i = 0; i <= numCentimeters * 10; i++) {
-			double x = i * mmSpacing;
-			TriangleMesh tickMesh;
-
-			// Determine tick type based on position
-			if (i % 10 == 0) {
-				// Centimeter marks
-				tickMesh = createRectangleMesh(tickWidth, height / 1.5);
-				if (i % 20 == 0) {
-					// Add centimeter number using SVGPath
-					int number = i / 10;
-					if(numbers.get(number)==null) {
-						numbers.put(number,CSG.textToSize(""+i, 4, 6, 0.1).movey(height).moveToCenterX().setColor(Color.BLACK));
+				// Determine tick type based on position
+				if (i % 10 == 0) {
+					// Centimeter marks
+					tickMesh = createRectangleMesh(tickWidth, height / 1.5);
+					if (i % 20 == 0) {
+						// Add centimeter number using SVGPath
+						int number = i / 10;
+						if(numbers.get(number)==null) {
+							numbers.put(number,CSG.textToSize(""+i, 4, 6, 0.1).movey(height).moveToCenterX().setColor(Color.BLACK));
+						}
+						CSG movey = numbers.get(number);
+						if(flipNumber) {
+							movey=movey.roty(180);
+						}
+						MeshView numberGroup = movey.newMesh();
+		
+						// Scale and position the number
+						Affine numberTransform = new Affine();
+						numberTransform.appendTranslation(i, 0);
+						numberGroup.getTransforms().add(numberTransform);
+						BowlerKernel.runLater(()->ruler.getChildren().add(numberGroup));
 					}
-					CSG movey = numbers.get(number);
-					if(flipNumber) {
-						movey=movey.roty(180);
-					}
-					MeshView numberGroup = movey.newMesh();
-	
-					// Scale and position the number
-					Affine numberTransform = new Affine();
-					numberTransform.appendTranslation(i, 0);
-					numberGroup.getTransforms().add(numberTransform);
-					ruler.getChildren().add(numberGroup);
+				} else if (i % 5 == 0) {
+					// 5mm marks
+					tickMesh = createRectangleMesh(tickWidth, height / 2.5);
+				} else {
+					// 1mm marks
+					tickMesh = createRectangleMesh(tickWidth, height / 4);
 				}
-			} else if (i % 5 == 0) {
-				// 5mm marks
-				tickMesh = createRectangleMesh(tickWidth, height / 2.5);
-			} else {
-				// 1mm marks
-				tickMesh = createRectangleMesh(tickWidth, height / 4);
+
+				// Create and position tick mark
+				MeshView tickView = new MeshView(tickMesh);
+				tickView.setMaterial(phongMaterial);
+
+				// Use Affine transform for tick positioning
+				System.out.println("Tick for " + i);
+				Affine tickTransform = new Affine();
+				tickTransform.setTx(i-tickWidth/2);
+				// tickTransform.setTy((height - tickView.getBoundsInLocal().getHeight()) / 2);
+				tickView.getTransforms().add(tickTransform);
+				tickView.setCullFace(CullFace.NONE);
+				BowlerKernel.runLater(()->ruler.getChildren().add(tickView));
 			}
-
-			// Create and position tick mark
-			MeshView tickView = new MeshView(tickMesh);
-			tickView.setMaterial(phongMaterial);
-
-			// Use Affine transform for tick positioning
-			System.out.println("Tick for " + i);
-			Affine tickTransform = new Affine();
-			tickTransform.setTx(i-tickWidth/2);
-			// tickTransform.setTy((height - tickView.getBoundsInLocal().getHeight()) / 2);
-			tickView.getTransforms().add(tickTransform);
-			tickView.setCullFace(CullFace.NONE);
-			ruler.getChildren().add(tickView);
-		}
-
+		}).start();
 		return ruler;
 	}
 
