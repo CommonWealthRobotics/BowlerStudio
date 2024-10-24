@@ -86,7 +86,7 @@ public class MakeRuler {
 				tickView.setMaterial(phongMaterial);
 
 				// Use Affine transform for tick positioning
-				System.out.println("Tick for " + i);
+				//System.out.println("Tick for " + i);
 				Affine tickTransform = new Affine();
 				tickTransform.setTx(i-tickWidth/2);
 				// tickTransform.setTy((height - tickView.getBoundsInLocal().getHeight()) / 2);
