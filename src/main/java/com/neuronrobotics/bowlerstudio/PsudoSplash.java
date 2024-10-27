@@ -55,7 +55,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		// e.printStackTrace(System.err);
 		log = update;
 		updateSplash();
-		System.out.println(update);
+		
+		int length = update.length();
+		System.err.println(update.substring(0, length>100?100:length));
 	}
 
 	class CustomPanel extends JPanel {
