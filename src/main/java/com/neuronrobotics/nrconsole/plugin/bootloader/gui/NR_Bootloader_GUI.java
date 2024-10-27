@@ -37,7 +37,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 	File file = null;
 	
 	public NR_Bootloader_GUI(){
-		////System.out.println("Starting GUI");
+		////com.neuronrobotics.sdk.common.Log.error("Starting GUI");
 		
 		fileButton = new JButton();
 		fileButton.addActionListener(this);
@@ -74,7 +74,7 @@ public class NR_Bootloader_GUI implements ActionListener {
         	loadFile();
         }
 //        if (e.getSource() == portButton) {
-//        	////System.out.println("Go for port selection");
+//        	////com.neuronrobotics.sdk.common.Log.error("Go for port selection");
 //        	setPortSelect(false);
 //        	try {
 //				Thread.sleep(50);
@@ -89,7 +89,7 @@ public class NR_Bootloader_GUI implements ActionListener {
         if (e.getSource() == loadButton) {
         	try{
 	        	if (getBlApp()!=null){
-	        		////System.out.println("Loading firmware");
+	        		////com.neuronrobotics.sdk.common.Log.error("Loading firmware");
 	        		reloadFile();
 	        		getBlApp().loadCores(hex.getCores());
 		    		loadButton.setText("Loading....");
@@ -150,7 +150,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 	}
 	
 	public void loadFile() {
-		//System.out.println("Loading file:");
+		//com.neuronrobotics.sdk.common.Log.error("Loading file:");
     	JFileChooser fc = new JFileChooser();
     	File dir1 = new File (".");
     	File dir2=null; 
@@ -161,14 +161,14 @@ public class NR_Bootloader_GUI implements ActionListener {
     	}
     	if(file!=null){
     		fc.setSelectedFile(file);
-    		System.out.println("Starting with: "+file.getAbsolutePath());
+    		com.neuronrobotics.sdk.common.Log.error("Starting with: "+file.getAbsolutePath());
     	}else{
     		if(dir2 == null) {
     			fc.setCurrentDirectory(dir1);
-    			System.out.println("Starting in: "+dir1.getAbsolutePath());
+    			com.neuronrobotics.sdk.common.Log.error("Starting in: "+dir1.getAbsolutePath());
     		}
     		else {
-    			System.out.println("Starting in: "+dir2.getAbsolutePath());
+    			com.neuronrobotics.sdk.common.Log.error("Starting in: "+dir2.getAbsolutePath());
     			fc.setCurrentDirectory(dir2);
     		}
     	}

@@ -232,7 +232,7 @@ public class LinkSliderWidget extends Group
 			}
 		});
 		parentProperty().addListener((observable, oldValue, newValue) -> {
-			System.out.println("Changed visibility of linkslider " + newValue);
+			com.neuronrobotics.sdk.common.Log.error("Changed visibility of linkslider " + newValue);
 			isNowVis = newValue != null;
 			if (isNowVis) {
 				event(conf);
@@ -385,7 +385,7 @@ public class LinkSliderWidget extends Group
 
 		if (controller != null) {
 			paramsKey = controller.getControllerName();
-			System.err.println("Controller key: " + paramsKey);
+			com.neuronrobotics.sdk.common.Log.error("Controller key: " + paramsKey);
 			getGameController().clearListeners();
 			getGameController().addListeners(this);
 			controllerLoop();
@@ -406,7 +406,7 @@ public class LinkSliderWidget extends Group
 		if (Math.abs(slider) < .01)
 			slider = 0;
 		if (slider == 0) {
-			// System.out.println("Stoping on="+comp.getName());
+			// com.neuronrobotics.sdk.common.Log.error("Stoping on="+comp.getName());
 			stop = true;
 		} else
 			stop = false;

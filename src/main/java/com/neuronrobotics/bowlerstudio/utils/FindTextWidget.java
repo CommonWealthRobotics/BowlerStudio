@@ -51,7 +51,7 @@ public class FindTextWidget extends Application {
 	private int find(double direction) {
 		// BowlerStudio.invokeLater(() -> {
 		try {
-			// System.out.println("Got ctrl f "+
+			// com.neuronrobotics.sdk.common.Log.error("Got ctrl f "+
 			// textArea.getSelectedText());
 			// Get the text to find...convert it to
 			// lower

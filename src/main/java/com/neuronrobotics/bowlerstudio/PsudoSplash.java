@@ -58,7 +58,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		updateSplash();
 
 		int length = update.length();
-		// System.err.println(update.substring(0, length>100?100:length));
+		// com.neuronrobotics.sdk.common.Log.error(update.substring(0, length>100?100:length));
 	}
 
 	class CustomPanel extends JPanel {
@@ -99,7 +99,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				image = ImageIO.read(getResource());
 
 			} catch (IOException ioe) {
-				System.out.println("Unable to fetch image.");
+				com.neuronrobotics.sdk.common.Log.error("Unable to fetch image.");
 				ioe.printStackTrace();
 			}
 		}
@@ -202,7 +202,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 //		while (interfaceFrame == null)
 //			try {
 //				Thread.sleep(100);
-//				System.out.println("Waiting for spalsh...");
+//				com.neuronrobotics.sdk.common.Log.error("Waiting for spalsh...");
 //			} catch (InterruptedException e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();

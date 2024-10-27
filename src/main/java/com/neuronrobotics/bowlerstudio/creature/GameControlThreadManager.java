@@ -27,7 +27,7 @@ public class GameControlThreadManager {
 		if (tmp != null)
 			while (tmp.isAlive()) {
 
-				System.out.println("Interrupting "+currentController.getName());
+				com.neuronrobotics.sdk.common.Log.error("Interrupting "+currentController.getName());
 				ThreadUtil.wait(10);
 				try {
 					tmp.interrupt();
@@ -117,7 +117,7 @@ public class GameControlThreadManager {
 			currentController.getRunStopButton().setText(currentController.getButtonRunText());
 			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
 			for(String classes : currentController.getRunStopButton().getStyleClass()) {
-				//System.out.println("Clearing "+classes);
+				//com.neuronrobotics.sdk.common.Log.error("Clearing "+classes);
 			}
 			BowlerStudio.setToRunButton(currentController.getRunStopButton());
 			currentController.getRunStopButton().setGraphic(currentController.getRunAsset());

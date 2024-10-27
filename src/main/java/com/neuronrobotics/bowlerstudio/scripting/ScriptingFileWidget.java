@@ -199,7 +199,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //			});
 //		});
 		
-		//System.err.println("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
+		//com.neuronrobotics.sdk.common.Log.error("\n\n\nScriptingFileWidget loading the editor loader:\n\n\n");
 		try {
 			externalEditorController = new ExternalEditorController(currentFile, autoRun);
 		}catch(Throwable t) {
@@ -235,7 +235,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					printbed.setDisable(true);
 				});
 			} else {
-				System.out.println("Nothing to export!");
+				com.neuronrobotics.sdk.common.Log.error("Nothing to export!");
 			}
 		});
 		final Tooltip tooltip = new Tooltip();
@@ -295,7 +295,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			String fileType = chooseFileType();
 			if (fileType != null) {
 				try {
-					System.out.println("User selected: " + fileType);
+					com.neuronrobotics.sdk.common.Log.error("User selected: " + fileType);
 
 					convertResults(fileType);
 				} catch (Exception e) {
@@ -337,8 +337,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				indexString="";
 			}
 			String file = fileNameBox.getText()+objectName+indexString+"."+fileType;
-			System.out.println("File Name "+file);
-			System.out.println("Placing file in "+url);
+			com.neuronrobotics.sdk.common.Log.error("File Name "+file);
+			com.neuronrobotics.sdk.common.Log.error("Placing file in "+url);
 			try {
 				newFile = ScriptingEngine.fileFromGit(url, file);
 				if(newFile.exists() && !useSingleFileFOrImports) {
@@ -353,7 +353,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				}
 				if(fileType.toLowerCase().contains("blend")) {
 					BlenderLoader.toBlenderFile(c, newFile);
-					System.out.println("Added mesh to "+newFile);
+					com.neuronrobotics.sdk.common.Log.error("Added mesh to "+newFile);
 				}
 				if(fileType.toLowerCase().contains("fcstd")) {
 					FreecadLoader.addCSGToFreeCAD(newFile, c);
@@ -430,16 +430,16 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				if(makePrintBed) {
 					
 				}
-				System.out.println("Exporting " + csgs.size() + " parts");
+				com.neuronrobotics.sdk.common.Log.error("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(MobleBaseMenueFactory.getBaseDirForFiles());
 				try {
 					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI())
 							.generateManufacturingParts(csgs, baseDirForFiles);
 					for (File f : files) {
-						System.out.println("Exported " + f.getAbsolutePath());
+						com.neuronrobotics.sdk.common.Log.error("Exported " + f.getAbsolutePath());
 
 					}
-					System.out.println("Success! " + files.size() + " parts exported");
+					com.neuronrobotics.sdk.common.Log.error("Success! " + files.size() + " parts exported");
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -615,7 +615,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
 					BowlerStudioController.highlightException(currentFile, d);
 				} catch (Throwable ex) {
-					System.err.println("Script exception of type= " + ex.getClass().getName());
+					com.neuronrobotics.sdk.common.Log.error("Script exception of type= " + ex.getClass().getName());
 
 					try {
 						if (ex.getMessage().contains("sleep interrupted")) {
@@ -666,7 +666,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		}
 	}
 	private void append(String s) {
-		System.out.println(s);
+		com.neuronrobotics.sdk.common.Log.error(s);
 	}
 
 	public String getGitRepo() {
@@ -678,7 +678,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	private void setUpFile(File f) {
-		System.err.println("Setup ScriptingFileWidget "+f.getAbsolutePath());
+		com.neuronrobotics.sdk.common.Log.error("Setup ScriptingFileWidget "+f.getAbsolutePath());
 		currentFile = f;
 		try {
 			watch = FileChangeWatcher.watch(currentFile);
@@ -785,10 +785,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			String content = new String(Files.readAllBytes(Paths.get(currentFile.getAbsolutePath())));
 			String ineditor = getCode();
 			if (content.contentEquals(ineditor)) {
-				System.out.println("Skip Writing file contents, file is same");
+				com.neuronrobotics.sdk.common.Log.error("Skip Writing file contents, file is same");
 				return;
 			}
-			System.out.println("Writing file contents");
+			com.neuronrobotics.sdk.common.Log.error("Writing file contents");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile));
 			writer.write(ineditor);
 			writer.close();
@@ -811,10 +811,10 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					// TODO Auto-generated method stub
 					String absolutePath = fileThatChanged.getAbsolutePath();
 					String absolutePath2 = currentFile.getAbsolutePath();
-					//System.out.println(absolutePath+" "+absolutePath2);
+					//com.neuronrobotics.sdk.common.Log.error(absolutePath+" "+absolutePath2);
 					if (absolutePath.contains(absolutePath2)) {
 
-						//System.out.println("Code in " + absolutePath + " changed");
+						//com.neuronrobotics.sdk.common.Log.error("Code in " + absolutePath + " changed");
 						String content = new String(
 								Files.readAllBytes(Paths.get(absolutePath)));
 						BowlerStudio.runLater(() -> {
@@ -834,7 +834,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 						});
 
 					} else {
-						// System.out.println("Othr Code in "+fileThatChanged.getAbsolutePath()+"
+						// com.neuronrobotics.sdk.common.Log.error("Othr Code in "+fileThatChanged.getAbsolutePath()+"
 						// changed");
 						watch.addIFileChangeListener(this);
 					}
@@ -855,7 +855,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	public void setCode(String string) {
 		String pervious = codeText;
 		codeText = string;
-		// System.out.println(codeText);
+		// com.neuronrobotics.sdk.common.Log.error(codeText);
 		for (int i = 0; i < listeners.size(); i++) {
 			listeners.get(i).onScriptChanged(pervious, string, currentFile);
 		}

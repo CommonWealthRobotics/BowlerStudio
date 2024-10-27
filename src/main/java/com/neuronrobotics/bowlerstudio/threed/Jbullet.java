@@ -72,7 +72,7 @@ public class Jbullet {
 			Transform trans = new Transform();
 			fallRigidBody.getMotionState().getWorldTransform(trans);
 
-			System.out.println("sphere height: " + trans.origin.y);
+			com.neuronrobotics.sdk.common.Log.error("sphere height: " + trans.origin.y);
 		}
 	}
 }

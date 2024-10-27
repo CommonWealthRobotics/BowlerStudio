@@ -59,7 +59,7 @@ public class Tutorial {
 							ResourceHandler resource_handler = new ResourceHandler();
 							resource_handler.setDirectoriesListed(true);
 							resource_handler.setWelcomeFiles(new String[] { "index.html" });
-							System.out.println("Serving "+ indexOfTutorial.getParent());
+							com.neuronrobotics.sdk.common.Log.error("Serving "+ indexOfTutorial.getParent());
 							resource_handler.setResourceBase(indexOfTutorial.getParent());
 		
 							HandlerList handlers = new HandlerList();

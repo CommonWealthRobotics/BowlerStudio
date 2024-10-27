@@ -203,7 +203,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 										if((now=mujoco.stepAndWait())>(3*mujoco.getTimestepMilliSeconds())) {
 											if(System.currentTimeMillis()-timeSinceLastPrint>500) {
 												timeSinceLastPrint=System.currentTimeMillis();
-												System.out.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
+												com.neuronrobotics.sdk.common.Log.error("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
 											}
 										}
 									}
@@ -384,7 +384,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	}
 	@Override
 	public void onIMUUpdate(IMUUpdate arg0) {
-//		System.err.println("X = "+arg0.getxAcceleration()+
+//		com.neuronrobotics.sdk.common.Log.error("X = "+arg0.getxAcceleration()+
 //				" Y = "+arg0.getyAcceleration()+
 //				" Z = "+arg0.getzAcceleration()+
 //				" rX = "+arg0.getRotxAcceleration()+

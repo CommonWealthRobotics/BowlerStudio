@@ -144,7 +144,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 //					BufferedReader reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
 //					String line = reader.readLine();
 //					while (line != null) {
-//						//System.out.println(line);
+//						//com.neuronrobotics.sdk.common.Log.error(line);
 //						// read next line
 //						line = reader.readLine();
 //						if(line.startsWith("RECENT_WORKSPACES=")) {
@@ -161,7 +161,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 //							}else {
 //								ws= split2[0];
 //							}
-//							System.out.println("Using workspace config: "+line);
+//							com.neuronrobotics.sdk.common.Log.error("Using workspace config: "+line);
 //							
 //							break;
 //						}
@@ -171,11 +171,11 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 //
 //				}catch(Exception ex) {
 //					//ex.printStackTrace();
-//					System.out.println("Workspace missing, opening eclipse");
+//					com.neuronrobotics.sdk.common.Log.error("Workspace missing, opening eclipse");
 //				}
 				String ws = getEclipseWorkspace();
 
-				System.out.println("Opening workspace "+ws);
+				com.neuronrobotics.sdk.common.Log.error("Opening workspace "+ws);
 				File wsDir=  new File(ws);
 				Map<String, String> env = getEnvironment("eclipse");
 				HashMap<String, String> environment = new HashMap<>();;
@@ -208,12 +208,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						System.out.println("Waiting for workspace, please wait until it opens "+ws);
+						com.neuronrobotics.sdk.common.Log.error("Waiting for workspace, please wait until it opens "+ws);
 						//return;
 					}
 					this.onProcessExit(0);
 				}else {
-					System.out.println("Eclipse is already open at "+ws);
+					com.neuronrobotics.sdk.common.Log.error("Eclipse is already open at "+ws);
 				}
 				
 				File projects = new File(ws + delim() + ".metadata" + delim() + ".plugins" + delim()
@@ -222,7 +222,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				if (projects.exists()) {
 					for (String pathname : projects.list()) {
 						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
-							System.out.println("Project "+name+" is already in the workspace!");
+							com.neuronrobotics.sdk.common.Log.error("Project "+name+" is already in the workspace!");
 							advanced.setDisable(false);
 							return;
 						}
@@ -263,13 +263,13 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		if(!new File(ws).exists())
 			return false;
 		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
-		System.out.println("Checking WS "+lockFile);
+		com.neuronrobotics.sdk.common.Log.error("Checking WS "+lockFile);
 		File lock = new File(lockFile);
 		if(!lock.exists())
 			return false;
 
 		try {
-			System.err.println("Attempting to test workspace lockfile...");
+			com.neuronrobotics.sdk.common.Log.error("Attempting to test workspace lockfile...");
 			RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 			FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
 			if(fileLock==null) {

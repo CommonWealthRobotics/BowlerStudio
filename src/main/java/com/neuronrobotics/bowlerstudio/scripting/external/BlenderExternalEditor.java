@@ -59,7 +59,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 				}
 			}
 			if(filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
-				System.out.println("ERROR blender conversion failed!");
+				com.neuronrobotics.sdk.common.Log.error("ERROR blender conversion failed!");
 				return;
 			}
 			try {

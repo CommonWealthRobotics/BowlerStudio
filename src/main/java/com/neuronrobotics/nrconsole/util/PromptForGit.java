@@ -47,7 +47,7 @@ public class PromptForGit {
 			    	gistcode=result.get();
 			    else
 			    	gistcode= "https://gist.github.com/"+ScriptingEngine.urlToGist(result.get())+".git";
-			    System.out.println("Creature Git " + gistcode);
+			    com.neuronrobotics.sdk.common.Log.error("Creature Git " + gistcode);
 			    ArrayList<String> choices;
 			    String suggestedChoice="";
 			    int numXml=0;
@@ -78,7 +78,7 @@ public class PromptForGit {
 				    // Traditional way to get the response value.
 				    Optional<String> r = d.showAndWait();
 				    if (r.isPresent()){
-				        System.out.println("Your choice: " + r.get());
+				        com.neuronrobotics.sdk.common.Log.error("Your choice: " + r.get());
 				        listener.done(gistcode,r.get());
 				    }
 				} catch (Exception e) {
@@ -86,7 +86,7 @@ public class PromptForGit {
 					e.printStackTrace();
 				}
 			    if(numXml ==1){
-			    	//System.out.println("Found just one file at  " + suggestedChoice);
+			    	//com.neuronrobotics.sdk.common.Log.error("Found just one file at  " + suggestedChoice);
 			    	//loadMobilebaseFromGist(gistcode,suggestedChoice);
 			    	//return;
 			    	

@@ -47,7 +47,7 @@ public class PIDSimFullTest {
     		try{
     			pid.setTorque((torque*-1)-tGravity+tFriction);
     		}catch (Exception ex){
-    			System.out.println("Max Torque exceded");
+    			com.neuronrobotics.sdk.common.Log.error("Max Torque exceded");
     		}
     		
     	}

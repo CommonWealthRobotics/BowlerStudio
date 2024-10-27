@@ -131,7 +131,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
 			return;
 		}
-		System.out.println("Regenerating robot "+System.currentTimeMillis());
+		com.neuronrobotics.sdk.common.Log.error("Regenerating robot "+System.currentTimeMillis());
 		timeSinceLastUpdate = System.currentTimeMillis();
 		BowlerStudio.runLater(() -> {
 			if (autoRegen.isSelected()) {
@@ -199,7 +199,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 					this, true, creatureIsOwnedByUser);
 			//tree.setPrefWidth(325);
 			treebox1.widthProperty().addListener((obs, oldVal, newVal) -> {
-				//System.out.println("Creature lab width "+newVal);
+				//com.neuronrobotics.sdk.common.Log.error("Creature lab width "+newVal);
 				tree.setPrefWidth((double)newVal);
 			});
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);

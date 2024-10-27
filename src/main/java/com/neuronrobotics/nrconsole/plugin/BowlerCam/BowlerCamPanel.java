@@ -126,7 +126,7 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 		thr.setText(Integer.toString(threshhold.getValue()));
 		target.getColor();
 		if(scaleSet != Double.parseDouble(scale.getText())){
-			//System.out.println("Resetting scale : "+scale.getText());
+			//com.neuronrobotics.sdk.common.Log.error("Resetting scale : "+scale.getText());
 			scaleSet = Double.parseDouble(scale.getText());
 			cam.startHighSpeedAutoCapture(0,scaleSet,0);
 		}
@@ -148,7 +148,7 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 	}
 	
 	public void onNewImage(int camera,BufferedImage image) {
-		//System.out.println("Got image: "+camera+" at "+System.currentTimeMillis());
+		//com.neuronrobotics.sdk.common.Log.error("Got image: "+camera+" at "+System.currentTimeMillis());
 		if(camera == 0){
 			double s=((double)(System.currentTimeMillis()-time))/1000.0;
 			fps.setText("FPS: "+(int)(1/(s)));
@@ -171,7 +171,7 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 			cam.disconnect();
 			cam.stopAutoCapture(0);
 			cam.stopAutoCapture(1);
-			//System.out.println("Bowler cam exiting");
+			//com.neuronrobotics.sdk.common.Log.error("Bowler cam exiting");
 		}
 	}
 }

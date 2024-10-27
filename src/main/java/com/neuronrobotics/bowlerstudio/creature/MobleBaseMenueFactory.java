@@ -199,7 +199,7 @@ public class MobleBaseMenueFactory {
 				Optional<String> result = alert.showAndWait();
 				if (result.isPresent()) {
 					view.getSelectionModel().select(rootItem);
-					System.out.println("Your new creature: " + result.get());
+					com.neuronrobotics.sdk.common.Log.error("Your new creature: " + result.get());
 					String newName = result.get();
 					makeACopyOfACreature(device, oldname, newName).start();
 				}
@@ -227,7 +227,7 @@ public class MobleBaseMenueFactory {
 			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
 			callbackMapForTreeitems.put(addleg, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Leg");
+				com.neuronrobotics.sdk.common.Log.error("Adding Leg");
 				String xmlContent;
 				try {
 					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
@@ -236,7 +236,7 @@ public class MobleBaseMenueFactory {
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					String[] gitCadEngine = device.getGitCadEngine();
 					newLeg.setGitCadEngine(gitCadEngine);
-					System.out.println("Leg has " + newLeg.getNumberOfLinks() + " links");
+					com.neuronrobotics.sdk.common.Log.error("Leg has " + newLeg.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 					
@@ -415,7 +415,7 @@ public class MobleBaseMenueFactory {
 
 			callbackMapForTreeitems.put(addFixed, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Wheel");
+				com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
 				
 				
 					HashMap<String, HashMap<String, Object>> options;
@@ -458,7 +458,7 @@ public class MobleBaseMenueFactory {
 												IOUtils.toInputStream(xmlContent, "UTF-8"));
 										newArm.setGitCadEngine(device.getGitCadEngine());
 	
-										System.out.println("Wheel has " + newArm.getNumberOfLinks() + " links");
+										com.neuronrobotics.sdk.common.Log.error("Wheel has " + newArm.getNumberOfLinks() + " links");
 										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
 												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 												creatureIsOwnedByUserTmp);
@@ -491,7 +491,7 @@ public class MobleBaseMenueFactory {
 
 			callbackMapForTreeitems.put(addsteerable, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Steerable Wheel");
+				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
 				try {
 					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultSteerable.xml")[0];
@@ -499,7 +499,7 @@ public class MobleBaseMenueFactory {
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					newArm.setGitCadEngine(device.getGitCadEngine());
 
-					System.out.println("Steerable has " + newArm.getNumberOfLinks() + " links");
+					com.neuronrobotics.sdk.common.Log.error("Steerable has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 					
@@ -549,14 +549,14 @@ public class MobleBaseMenueFactory {
 
 			callbackMapForTreeitems.put(addArm, () -> {
 				// TODO Auto-generated method stub
-				System.out.println("Adding Arm");
+				com.neuronrobotics.sdk.common.Log.error("Adding Arm");
 				try {
 					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 							"defaultarm.xml")[0];
 					DHParameterKinematics newArm = new DHParameterKinematics(null,
 							IOUtils.toInputStream(xmlContent, "UTF-8"));
 					newArm.setGitCadEngine(device.getGitCadEngine());
-					System.out.println("Arm has " + newArm.getNumberOfLinks() + " links");
+					com.neuronrobotics.sdk.common.Log.error("Arm has " + newArm.getNumberOfLinks() + " links");
 					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 
@@ -580,7 +580,7 @@ public class MobleBaseMenueFactory {
 
 											@Override
 											public void onTransformFinished(TransformNR newTrans) {
-												System.err.println("Limb to base" + newTrans.toString());
+												com.neuronrobotics.sdk.common.Log.error("Limb to base" + newTrans.toString());
 												device.setRobotToFiducialTransform(newTrans);
 											}
 
@@ -675,7 +675,7 @@ public class MobleBaseMenueFactory {
 					}
 					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
 
-					System.out.println("Creating new Robot repo");
+					com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
 					while (true) {
 						try {
 							ScriptingEngine.fileFromGit(gitURL, filename);
@@ -687,21 +687,21 @@ public class MobleBaseMenueFactory {
 						Log.warning(gist + " not built yet");
 					}
 					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
-					System.out.println("Creating gist at: " + gitURL);
+					com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);
 
-					System.out.println("copy Cad engine ");
+					com.neuronrobotics.sdk.common.Log.error("copy Cad engine ");
 					device.setGitCadEngine(
 							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-					System.out.println("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
+					com.neuronrobotics.sdk.common.Log.error("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
 							+ device.getGitWalkingEngine()[1]);
 					device.setGitWalkingEngine(
 							copyGitFile(device.getGitWalkingEngine()[0], gitURL, device.getGitWalkingEngine()[1]));
-					// System.out.println("is now "+device.getGitWalkingEngine());
+					// com.neuronrobotics.sdk.common.Log.error("is now "+device.getGitWalkingEngine());
 					for (DHParameterKinematics dh : device.getAllDHChains()) {
-						// System.out.println("copy Leg Cad engine "+dh.getGitCadEngine());
+						// com.neuronrobotics.sdk.common.Log.error("copy Leg Cad engine "+dh.getGitCadEngine());
 						dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
 
-						// System.out.println("copy Leg Dh engine ");
+						// com.neuronrobotics.sdk.common.Log.error("copy Leg Dh engine ");
 						dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
 					}
 					device.setScriptingName(newName);
@@ -742,7 +742,7 @@ public class MobleBaseMenueFactory {
 			for (int i = 0; i < 48; i++) {
 
 				if (chans.get(i) == null) {
-					System.err.println("Channel free: " + i + " on device " + entry.getKey());
+					com.neuronrobotics.sdk.common.Log.error("Channel free: " + i + " on device " + entry.getKey());
 					confOfChannel.setDeviceScriptingName(entry.getKey());
 					confOfChannel.setHardwareIndex(i);
 					return;
@@ -806,7 +806,7 @@ public class MobleBaseMenueFactory {
 				view.getSelectionModel().select(rootItem);
 				new Thread() {
 					public void run() {
-						System.out.println("Your new limb: " + result.get());
+						com.neuronrobotics.sdk.common.Log.error("Your new limb: " + result.get());
 						setDeviceName(newDevice, result.get());
 						ConnectionManager.addConnection(newDevice, newDevice.getScriptingName());
 						deviceList.add(newDevice);
@@ -815,7 +815,7 @@ public class MobleBaseMenueFactory {
 								getNextChannel(base, conf);
 							} catch (RuntimeException exc) {
 								String newname = conf.getDeviceScriptingName() + "_new";
-								System.err.println("Adding new device to provide new channels: " + newname);
+								com.neuronrobotics.sdk.common.Log.error("Adding new device to provide new channels: " + newname);
 								conf.setDeviceScriptingName(newname);
 								getNextChannel(base, conf);
 							}
@@ -935,7 +935,7 @@ public class MobleBaseMenueFactory {
 				else
 					BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 			} catch (Exception ex) {
-				System.err.println("Limb not loaded yet");
+				com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet");
 			}
 			((LinkSliderWidget)widgetMapForTreeitems.get(hwConf)).enable();
 			// select( base, dh);
@@ -1066,7 +1066,7 @@ public class MobleBaseMenueFactory {
 					view.getSelectionModel().select(rootItem);
 					new Thread() {
 						public void run() {
-							System.out.println("Your new link: " + result.get());
+							com.neuronrobotics.sdk.common.Log.error("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
 							//newLink.setType(conf.getTypeEnum());
 							newLink.setTypeString(conf.getTypeString());
@@ -1345,7 +1345,7 @@ public class MobleBaseMenueFactory {
 						view.getSelectionModel().select(rootItem);
 						new Thread() {
 							public void run() {
-								System.out.println("Your new link: " + result.get());
+								com.neuronrobotics.sdk.common.Log.error("Your new link: " + result.get());
 								LinkConfiguration newLink = new LinkConfiguration( dh.getLinkConfigurations().get(size-1));
 								newLink.setLinkIndex(newLink.getLinkIndex()+1);
 								ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory()

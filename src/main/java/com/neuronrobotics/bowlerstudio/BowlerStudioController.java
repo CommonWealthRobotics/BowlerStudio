@@ -140,7 +140,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		openFiles.put(file.getAbsolutePath(), fileTab);
 
 		try {
-			System.err.println("Loading local file from: " + file.getAbsolutePath());
+			com.neuronrobotics.sdk.common.Log.error("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
 
 			new Thread() {
@@ -179,7 +179,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				openFiles.remove(file.getAbsolutePath());
 				ConfigurationDatabase.removeObject("studio-open-git", key);
 				t.getScripting().close();
-				System.out.println("Closing " + file.getAbsolutePath());
+				com.neuronrobotics.sdk.common.Log.error("Closing " + file.getAbsolutePath());
 			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
@@ -210,7 +210,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
-		// System.out.println("Highlighting line "+lineNumber+" in
+		// com.neuronrobotics.sdk.common.Log.error("Highlighting line "+lineNumber+" in
 		// "+fileEngineRunByName);
 		if (openFiles.get(fileEngineRunByName.getAbsolutePath()) == null) {
 			createFileTab(fileEngineRunByName);
@@ -218,7 +218,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 
 		// BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
-		// System.out.println("Highlighting "+fileEngineRunByName+" at line
+		// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+" at line
 		// "+lineNumber+" to color "+color);
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber, color);
@@ -260,13 +260,13 @@ public class BowlerStudioController implements IScriptEventListener {
 					} catch (java.lang.NullPointerException e) {
 						return;
 					}
-					// System.out.println("Highlighting "+fileEngineRunByName+" at line
+					// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+" at line
 					// "+lineNumber+" to color "+color);
 					StackTraceElement[] stackTrace = ex.getStackTrace();
 
 					for (StackTraceElement el : stackTrace) {
 						try {
-							// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
+							// com.neuronrobotics.sdk.common.Log.error("Compairing "+fileEngineRunByName.getName()+" to
 							// "+el.getFileName());
 							if (el.getFileName().contentEquals(fileEngineRunByName.getName())) {
 								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),
@@ -276,13 +276,13 @@ public class BowlerStudioController implements IScriptEventListener {
 							// StringWriter sw = new StringWriter();
 							// PrintWriter pw = new PrintWriter(sw);
 							// e.printStackTrace(pw);
-							// System.out.println(sw.toString());
+							// com.neuronrobotics.sdk.common.Log.error(sw.toString());
 						}
 					}
 					if (ex.getCause() != null) {
 						for (StackTraceElement el : ex.getCause().getStackTrace()) {
 							try {
-								// System.out.println("Compairing "+fileEngineRunByName.getName()+" to
+								// com.neuronrobotics.sdk.common.Log.error("Compairing "+fileEngineRunByName.getName()+" to
 								// "+el.getFileName());
 								if (el.getFileName().contentEquals(fileEngineRunByName.getName())) {
 									widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),
@@ -292,7 +292,7 @@ public class BowlerStudioController implements IScriptEventListener {
 								// StringWriter sw = new StringWriter();
 								// PrintWriter pw = new PrintWriter(sw);
 								// e.printStackTrace(pw);
-								// System.out.println(sw.toString());
+								// com.neuronrobotics.sdk.common.Log.error(sw.toString());
 							}
 						}
 					}
@@ -301,7 +301,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				try {
 					if (widgets.get(fileEngineRunByName.getAbsolutePath()) != null) {
 						String message = ex.getMessage();
-						// System.out.println(message);
+						// com.neuronrobotics.sdk.common.Log.error(message);
 						if (message != null && message.contains(fileEngineRunByName.getName()))
 							try {
 								int indexOfFile = message.lastIndexOf(fileEngineRunByName.getName());
@@ -314,7 +314,7 @@ public class BowlerStudioController implements IScriptEventListener {
 								StringWriter sw = new StringWriter();
 								PrintWriter pw = new PrintWriter(sw);
 								e.printStackTrace(pw);
-								System.out.println(sw.toString());
+								com.neuronrobotics.sdk.common.Log.error(sw.toString());
 							}
 					}
 				} catch (Exception ex1) {
@@ -323,7 +323,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 				try {
 					String sw = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
-					System.out.println(sw.toString());
+					com.neuronrobotics.sdk.common.Log.error(sw.toString());
 					// space out the exception highlights, ensure any sub threads spawned here have
 					// time to finish
 					Thread.sleep(100);

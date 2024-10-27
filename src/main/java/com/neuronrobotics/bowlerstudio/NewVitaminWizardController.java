@@ -600,7 +600,7 @@ public class NewVitaminWizardController  extends Application {
 				
 				@Override
 				public Menu getTypeMenu(String type) {
-					System.out.println("Get Vitamin Menu");
+					com.neuronrobotics.sdk.common.Log.error("Get Vitamin Menu");
 	
 					return new Menu(type);
 				}
@@ -612,12 +612,12 @@ public class NewVitaminWizardController  extends Application {
 					for(String size:sizes) {
 						addSizesToMenu(size,s);
 					}
-					System.out.println("Add addVitaminType "+s);
+					com.neuronrobotics.sdk.common.Log.error("Add addVitaminType "+s);
 				}
 				
 				@Override
 				public void addSizesToMenu(String size, String type) {
-					System.out.println("Add addSizesToMenu "+type+" "+size );
+					com.neuronrobotics.sdk.common.Log.error("Add addSizesToMenu "+type+" "+size );
 				}
 			});
     	

@@ -32,7 +32,7 @@ public class FirmataBowler extends NonBowlerDevice {
 
 	@Override
 	public void disconnectDeviceImp() {
-		System.out.println("Closing Firmata");
+		com.neuronrobotics.sdk.common.Log.error("Closing Firmata");
 		try {
 			getFirmataDevice().stop();
 		} catch (IOException e) {

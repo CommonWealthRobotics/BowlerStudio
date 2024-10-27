@@ -44,7 +44,7 @@ public class VirtualCameraMobileBase {
 		this.name = name;
 		this.setCamera(camera);
 		addListener(lis);
-		// System.out.println("Setting camera frame transform");
+		// com.neuronrobotics.sdk.common.Log.error("Setting camera frame transform");
 
 		manipulationFrame = new Group();
 		camera.getTransforms().add(zoomAffine);
@@ -128,7 +128,7 @@ public class VirtualCameraMobileBase {
 				 Math.toDegrees(
 						rotationElevationRadians + global.getRotation().getRotationElevationRadians())));
 //		 global.getRotation().setStorage(nr);
-		//System.err.println("Camera tilt="+global);
+		//com.neuronrobotics.sdk.common.Log.error("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 	}
@@ -239,12 +239,12 @@ public class VirtualCameraMobileBase {
 		for(VirtualCameraMobileBase cam:flyingCamera) {
 			RotationNR rotation = getFiducialToGlobalTransform().getRotation();
 			if (!zoomlock && !cam.zoomlock && ((int)cam.getZoomDepth())!=((int)getZoomDepth())) {
-				//System.out.println(name+" Sync zoom to "+cam.name);
+				//com.neuronrobotics.sdk.common.Log.error(name+" Sync zoom to "+cam.name);
 				cam.setZoomDepth(zoomDepth);
 			}
 			if(rotation==cam.myGlobal.getRotation())
 				continue;
-			//System.out.println(name+" pusing update to "+cam.name);
+			//com.neuronrobotics.sdk.common.Log.error(name+" pusing update to "+cam.name);
 			if(!cam.move || !move) {
 				TransformNR newGlob = cam.getFiducialToGlobalTransform().copy()
 										.setRotation(rotation);

@@ -46,13 +46,13 @@ public class SplashManager {
 			initialize();
 		}
 		String string = frame + "% " + message;
-		System.err.println(" Splash Rendering " + frame + " " + message);
+		com.neuronrobotics.sdk.common.Log.error(" Splash Rendering " + frame + " " + message);
 		PsudoSplash.get().setMessage(string);
 		updateSplash();
 	}
 
 	private static void initialize() {
-		System.err.println("No splash screen availible!");
+		com.neuronrobotics.sdk.common.Log.error("No splash screen availible!");
 
 		loadFirst = false;
 	}

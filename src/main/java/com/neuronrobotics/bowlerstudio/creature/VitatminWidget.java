@@ -161,7 +161,7 @@ public class VitatminWidget implements IOnTransformChange {
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
-		//System.out.println("Validating " + nameTmp);
+		//com.neuronrobotics.sdk.common.Log.error("Validating " + nameTmp);
 		if (nameTmp.length() == 0)
 			return;
 		nameTmp=nameTmp.trim();
@@ -173,7 +173,7 @@ public class VitatminWidget implements IOnTransformChange {
 			String name2 = l.getName();
 			if (name2.contentEquals(nameTmp))
 				return;
-			System.out.println(nameTmp + " is not " + name2);
+			com.neuronrobotics.sdk.common.Log.error(nameTmp + " is not " + name2);
 		}
 		add.setDisable(false);
 	}
@@ -252,7 +252,7 @@ public class VitatminWidget implements IOnTransformChange {
 	public void fireVitaminSelectedUpdate() {
 		if(selectedVitamin==null)
 			return;
-		System.out.println("Selected " + selectedVitamin.getName());
+		com.neuronrobotics.sdk.common.Log.error("Selected " + selectedVitamin.getName());
 		name.setText(selectedVitamin.getName());
 		isScript.setSelected(selectedVitamin.isScript());
 		if(selectedVitamin.isScript()) {

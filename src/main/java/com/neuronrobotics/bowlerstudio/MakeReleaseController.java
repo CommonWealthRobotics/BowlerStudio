@@ -130,7 +130,7 @@ public class MakeReleaseController extends Application {
 
 			new Thread(() -> {
 				String filename = selectedItem.split("\\.")[0];
-				System.out.println(selectedItem + " selected");
+				com.neuronrobotics.sdk.common.Log.error(selectedItem + " selected");
 				String fileContents;
 				try {
 					fileContents = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/Bowler-Script-Release-CI.git", "TEMPLATE.job")[0];

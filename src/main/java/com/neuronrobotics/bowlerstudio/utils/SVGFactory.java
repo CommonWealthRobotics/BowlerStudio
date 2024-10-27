@@ -16,7 +16,7 @@ public class SVGFactory{
 
 
 	public static File exportSVG(CSG currentCsg, File defaultDir) {
-		System.out.println("Starting SVG ...");
+		com.neuronrobotics.sdk.common.Log.error("Starting SVG ...");
 
 		File baseDirForFiles = FileSelectionFactory.GetFile(defaultDir, true);
 
@@ -28,7 +28,7 @@ public class SVGFactory{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("SVG at "+baseDirForFiles);
+		com.neuronrobotics.sdk.common.Log.error("SVG at "+baseDirForFiles);
 		return baseDirForFiles.getParentFile();
 
 	}

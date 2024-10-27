@@ -47,7 +47,7 @@ public class StatusLabel extends JLabel {
 		}
 
 
-        System.err.println("Couldn't find file: " + path);
+        com.neuronrobotics.sdk.common.Log.error("Couldn't find file: " + path);
         return null;
 
 	}

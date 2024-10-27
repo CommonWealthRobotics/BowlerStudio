@@ -199,7 +199,7 @@ public class BowlerStudioModularFrame {
 		// focus on the tutorial to start
 		BowlerStudio.runLater(() -> getTutorialDockNode().requestFocus());
 		connectionManagerDockNode.onMouseClickedProperty().addListener((a, b, c) -> {
-			System.err.println("Cloick");
+			com.neuronrobotics.sdk.common.Log.error("Cloick");
 		});
 
 	}
@@ -384,7 +384,7 @@ public class BowlerStudioModularFrame {
 	
 	public void closeTab(Tab newTab) {
 		if (webTabs.get(newTab) != null) {
-			System.err.println("Closing tab: " + newTab.getText());
+			com.neuronrobotics.sdk.common.Log.error("Closing tab: " + newTab.getText());
 			DockNode dn=webTabs.get(newTab);
 			webTabs.remove(newTab);
 			if(dn!=null)
@@ -402,7 +402,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void addTab(Tab newTab, boolean b) {
-		System.err.println("Loading a new tab: " + newTab.getText());
+		com.neuronrobotics.sdk.common.Log.error("Loading a new tab: " + newTab.getText());
 		if (webTabs.get(newTab) != null) {
 			BowlerStudio.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {

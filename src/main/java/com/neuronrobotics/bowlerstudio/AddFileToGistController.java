@@ -199,7 +199,7 @@ public class AddFileToGistController extends Application {
 			if (getGitRepo() == null) {
 				setGitRepo(GistHelper.createNewGist(filename, message, true));
 			}
-			System.out.println("Adding new file" + filename + " to " + getGitRepo());
+			com.neuronrobotics.sdk.common.Log.error("Adding new file" + filename + " to " + getGitRepo());
 			try {
 				ScriptingEngine.pull(getGitRepo());
 				//String defaultContents = 

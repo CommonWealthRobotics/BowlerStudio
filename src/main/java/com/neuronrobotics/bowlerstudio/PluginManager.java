@@ -83,7 +83,7 @@ public class PluginManager {
 			try{
 				if(		deviceSupport.get(i).getDevice() == newMap.getDevice() && 
 						deviceSupport.get(i).getPlugin() == newMap.getPlugin() ){
-					System.out.println("Removing duplicate plugin: "+deviceSupport.remove(i));
+					com.neuronrobotics.sdk.common.Log.error("Removing duplicate plugin: "+deviceSupport.remove(i));
 				}
 			}catch(Exception e){
 				e.printStackTrace();
@@ -168,7 +168,7 @@ public class PluginManager {
 							CreatureLab.class ==c.getPlugin()
 							){
 						if(getBowlerStudioController()!=null){
-							System.out.println("Auto loading "+c.getPlugin().getSimpleName());
+							com.neuronrobotics.sdk.common.Log.error("Auto loading "+c.getPlugin().getSimpleName());
 							Log.warning("Attempting Autoloading "+c);
 							//if(CreatureLab.class !=c.getPlugin())
 								launchTab( c,launcher);	
@@ -224,7 +224,7 @@ public class PluginManager {
 					// allow the threads to finish before adding
 					ThreadUtil.wait(150);
 					if(t.getContent()==null) {
-						System.out.println("ERROR tab failed to load!");
+						com.neuronrobotics.sdk.common.Log.error("ERROR tab failed to load!");
 						return;
 					}
 					getBowlerStudioController().addTab(t, true);
@@ -232,7 +232,7 @@ public class PluginManager {
 					t.setOnCloseRequest(new EventHandler<Event>() {
 						@Override
 						public void handle(Event arg0) {
-							System.out.println("PM is Closing "+t.getText());
+							com.neuronrobotics.sdk.common.Log.error("PM is Closing "+t.getText());
 							t.onTabClosing();
 							BowlerStudio.runLater(()->launcher.setDisable(false));
 							
@@ -241,7 +241,7 @@ public class PluginManager {
 					BowlerStudio.runLater(()->{
 						launcher.setDisable(true);
 					});	
-					System.out.println("Launching "+c.getPlugin().getSimpleName());
+					com.neuronrobotics.sdk.common.Log.error("Launching "+c.getPlugin().getSimpleName());
 		        	
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

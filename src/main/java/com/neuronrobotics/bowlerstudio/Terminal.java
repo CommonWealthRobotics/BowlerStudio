@@ -84,7 +84,7 @@ public class Terminal {
 		executionBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 			// BowlerStudio.runLater(() -> {
 			if ((event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN)) {
-				System.err.println("Key pressed " + event.getCode() + " history index = " + historyIndex
+				com.neuronrobotics.sdk.common.Log.error("Key pressed " + event.getCode() + " history index = " + historyIndex
 						+ " history size= " + history.size());
 				if (historyIndex == 0) {
 					String text = executionBox.getText();
@@ -194,7 +194,7 @@ public class Terminal {
 					});
 
 				} catch (Exception ex) {
-					System.err.println("Script exception of type= " + ex.getClass().getName());
+					com.neuronrobotics.sdk.common.Log.error("Script exception of type= " + ex.getClass().getName());
 					BowlerStudio.runLater(() -> {
 						reset();
 					});
@@ -215,7 +215,7 @@ public class Terminal {
 		BowlerStudio.runLater(() -> {
 			executionBox.setText("");
 		});
-		System.out.println(text);
+		com.neuronrobotics.sdk.common.Log.error(text);
 		history.add(text);
 		BowlerKernel.writeHistory(history);
 		if (historyIndex != 0)

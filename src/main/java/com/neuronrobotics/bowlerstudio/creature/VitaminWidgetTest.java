@@ -34,12 +34,12 @@ public class VitaminWidgetTest extends Application {
 
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
-		System.err.println("Loading CSS from " + nwfile);
+		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
 		FontSizeManager.addListener(fontNum->{
 			int tmp = fontNum-10;
 			if(tmp<12)
 				tmp=12;
-			System.out.println("Setting font size to "+fontNum);
+			com.neuronrobotics.sdk.common.Log.error("Setting font size to "+fontNum);
 			w.setStyle("-fx-font-size: "+tmp+"pt");
 		});
 		primaryStage.setOnCloseRequest(arg0 -> {

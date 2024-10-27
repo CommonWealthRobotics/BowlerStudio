@@ -98,7 +98,7 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 		getPid();
 		new Thread(){
 			public void run() {
-				System.out.println("Starting physics engine.");
+				com.neuronrobotics.sdk.common.Log.error("Starting physics engine.");
 				Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 				while (run) {
@@ -112,7 +112,7 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 					double tTotal = torque + tGravity;
 					
 					if( w==0 && (getMuStatic()>Math.abs(tTotal))){
-						//System.out.println("Static friction not overcome");
+						//com.neuronrobotics.sdk.common.Log.error("Static friction not overcome");
 						tTotal=0;
 					}
 					if(w!=0){
@@ -123,7 +123,7 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 							tTotal =t+getMuDynamic()*w*-1;
 						}
 //						if(tTotal!=0)
-//							System.out.println("Torque: \n\tgravity="+ tGravity+" \n\tgravity plus set="+t+" \n\tafter friction="+tTotal);
+//							com.neuronrobotics.sdk.common.Log.error("Torque: \n\tgravity="+ tGravity+" \n\tgravity plus set="+t+" \n\tafter friction="+tTotal);
 					}
 
 					acceleration = tTotal/I;
@@ -144,7 +144,7 @@ public class LinearPhysicsEngine extends NonBowlerDevice {
 						w=0;
 					}
 					
-					//System.out.println("Controls: \n\ttorque: "+torque+" \n\tTorque Total: "+tTotal+" \n\tTg: "+tGravity+" \n\tAceleration: "+acceleration+" \n\tAngular velocity: "+w+" \n\tAngle: "+Math.toDegrees(angle));
+					//com.neuronrobotics.sdk.common.Log.error("Controls: \n\ttorque: "+torque+" \n\tTorque Total: "+tTotal+" \n\tTg: "+tGravity+" \n\tAceleration: "+acceleration+" \n\tAngular velocity: "+w+" \n\tAngle: "+Math.toDegrees(angle));
 					getPid().setPosition(Math.toDegrees(angle));
 					
 					try {Thread.sleep(localStep);} catch (InterruptedException e) {}

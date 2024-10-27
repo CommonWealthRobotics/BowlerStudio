@@ -33,7 +33,7 @@ public class NRBootLoaderApp {
 				}else if(coreType.contains("PIC")){
 					param.setType(NRBootCoreType.PIC32);
 				}else{
-					System.err.println("Core Types are:\nAVR\nPIC32");
+					com.neuronrobotics.sdk.common.Log.error("Core Types are:\nAVR\nPIC32");
 					fail();
 				}
 				String hexFile = args[i+3];
@@ -41,7 +41,7 @@ public class NRBootLoaderApp {
 					new FileInputStream(hexFile);
 					param.setHexFilePath(hexFile);
 				} catch (FileNotFoundException e) {
-					System.err.println("File "+hexFile+" Does not exist");
+					com.neuronrobotics.sdk.common.Log.error("File "+hexFile+" Does not exist");
 					fail();
 				}
 				cores.add(new Core(param.getCore(),param.getHexFilePath(),param.getType()));
@@ -73,7 +73,7 @@ public class NRBootLoaderApp {
 	}
 //	public NRBootLoaderApp(){
 //		NR_Bootloader_GUI gui = new NR_Bootloader_GUI();
-//		////System.out.println("Waiting for port selection");
+//		////com.neuronrobotics.sdk.common.Log.error("Waiting for port selection");
 //		boolean getAp = false;
 //		boolean wasSelected = false;
 //		while (true){
@@ -98,7 +98,7 @@ public class NRBootLoaderApp {
 //	}
 	
 	private static void fail() {
-		System.err.println("Paramaters are:\n(Can be more then one core)\n--core <num> <type> <path to hex>\n--xml <path to xml>");
+		com.neuronrobotics.sdk.common.Log.error("Paramaters are:\n(Can be more then one core)\n--core <num> <type> <path to hex>\n--xml <path to xml>");
 		System.exit(1);	
 	}
 

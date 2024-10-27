@@ -531,7 +531,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 
 	private static void disconectAndRemoveDevice(PluginManager mp){
-		System.out.println("CM Disconnecting " + mp.getName());
+		com.neuronrobotics.sdk.common.Log.error("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
 		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp)) {
 			try {

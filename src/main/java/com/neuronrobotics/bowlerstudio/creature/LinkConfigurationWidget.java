@@ -160,7 +160,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				//editHardware.setText("Edit " + conf.getElectroMechanicalSize());
 //				Map<String, Object> vitaminData = Vitamins.getConfiguration(conf.getElectroMechanicalType(),
 //						conf.getElectroMechanicalSize());
-//				System.out.println("New size " + vitaminData);
+//				com.neuronrobotics.sdk.common.Log.error("New size " + vitaminData);
 				String shafttype = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
 						conf.getElectroMechanicalSize(),"shaftType");
 				String shaftsize = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
@@ -174,7 +174,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 							@Override
 							public void run() {
 
-								System.out.println("Settting shaft size: " + shaftsize + " of " + shafttype);
+								com.neuronrobotics.sdk.common.Log.error("Settting shaft size: " + shaftsize + " of " + shafttype);
 
 								BowlerStudio.runLater(() -> shaftType.getSelectionModel().select(shafttype));
 								BowlerStudio.runLater(() -> shaftSize.getSelectionModel().select(shaftsize));
@@ -200,7 +200,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			String selectedItem = emHardwareType.getSelectionModel().getSelectedItem();
 			if (selectedItem == null)
 				return;
-			System.out.println("New hwType " + selectedItem);
+			com.neuronrobotics.sdk.common.Log.error("New hwType " + selectedItem);
 
 			emHardwareSize.getItems().clear();
 			for (String s : Vitamins.listVitaminSizes(selectedItem)) {
@@ -217,7 +217,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			conf.setDeviceScriptingName(deviceName.getText());
 			factory.refreshHardwareLayer(conf);
 			activLink = factory.getLink(conf);
-			System.out.println("Link device to " + conf.getDeviceScriptingName());
+			com.neuronrobotics.sdk.common.Log.error("Link device to " + conf.getDeviceScriptingName());
 			if (manager != null)
 				manager.generateCad();
 
@@ -324,7 +324,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				factory.refreshHardwareLayer(conf);
 				activLink = factory.getLink(conf);
 				activLink.flush(0);
-				System.out.println("Link channel to " + conf.getTypeString());
+				com.neuronrobotics.sdk.common.Log.error("Link channel to " + conf.getTypeString());
 				if (manager != null)
 					manager.generateCad();
 
@@ -343,7 +343,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			@Override
 			public void handle(ActionEvent event) {
 				conf.setTypeString(comboBox.getSelectionModel().getSelectedItem());
-				System.out.println("Link type changed to " + conf.getTypeString());
+				com.neuronrobotics.sdk.common.Log.error("Link type changed to " + conf.getTypeString());
 				if (manager != null)
 					manager.generateCad();
 

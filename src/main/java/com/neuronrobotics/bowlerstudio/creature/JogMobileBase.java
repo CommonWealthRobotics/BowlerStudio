@@ -476,7 +476,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		if (Math.abs(slider) < .01)
 			slider = 0;
 		if (x == 0.0 && y == 0.0 && rz == 0.0 && slider == 0) {
-			// System.out.println("Stoping on="+comp.getName());
+			// com.neuronrobotics.sdk.common.Log.error("Stoping on="+comp.getName());
 			stop = true;
 
 		} else

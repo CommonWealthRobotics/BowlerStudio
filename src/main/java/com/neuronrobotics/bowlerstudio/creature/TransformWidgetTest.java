@@ -18,12 +18,12 @@ public class TransformWidgetTest extends Application {
 			
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
-				System.out.println("Finished "+newTrans.toSimpleString() );
+				com.neuronrobotics.sdk.common.Log.error("Finished "+newTrans.toSimpleString() );
 			}
 			
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
-				System.out.println("Changing "+newTrans.toSimpleString() );
+				com.neuronrobotics.sdk.common.Log.error("Changing "+newTrans.toSimpleString() );
 			}
 		});
 
@@ -37,7 +37,7 @@ public class TransformWidgetTest extends Application {
 
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
-		System.err.println("Loading CSS from " + nwfile);
+		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
 		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
 
 		primaryStage.setScene(scene);

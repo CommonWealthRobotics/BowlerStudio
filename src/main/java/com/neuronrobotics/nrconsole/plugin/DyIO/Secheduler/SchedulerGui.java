@@ -108,7 +108,7 @@ public class SchedulerGui extends JPanel{
 			  //Close the output stream
 			  out.close();
 		}catch (Exception e){//Catch exception if any
-			  System.err.println("Error: " + e.getMessage());
+			  com.neuronrobotics.sdk.common.Log.error("Error: " + e.getMessage());
 		}
 		  
 	}

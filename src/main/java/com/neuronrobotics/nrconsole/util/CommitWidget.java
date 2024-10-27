@@ -88,7 +88,7 @@ public class CommitWidget {
 				Modality mode = Modality.NONE;
 				dialog.initModality(mode);
 			}
-			System.err.println("Show commit Dialog");
+			com.neuronrobotics.sdk.common.Log.error("Show commit Dialog");
 			Node root = dialog.getDialogPane();
 			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 
@@ -102,9 +102,9 @@ public class CommitWidget {
 				stage.sizeToScene();
 			});
 			Optional<Pair<String, String>> result = dialog.showAndWait();
-			System.err.println("Commit Dialog finished");
+			com.neuronrobotics.sdk.common.Log.error("Commit Dialog finished");
 			dialog.close();
-			System.err.println("Result: "+result);
+			com.neuronrobotics.sdk.common.Log.error("Result: "+result);
 			result.ifPresent(commitBody -> {
 			    new Thread(){
 			    	public void run(){

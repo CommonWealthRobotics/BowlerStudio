@@ -58,7 +58,7 @@ public class BowlerStudioMenuWorkspace {
 						if (o.endsWith(".git")) {
 							boolean wasState = ScriptingEngine.isPrintProgress();
 							ScriptingEngine.setPrintProgress(false);
-							System.err.println("Pulling workspace " + o);
+							com.neuronrobotics.sdk.common.Log.error("Pulling workspace " + o);
 							try {
 								if (!ScriptingEngine.isUrlAlreadyOpen(o))
 									ScriptingEngine.pull(o);
@@ -116,7 +116,7 @@ public class BowlerStudioMenuWorkspace {
 					data.add(menueMessage);
 					data.add(new Long(System.currentTimeMillis()).toString());
 					ConfigurationDatabase.put(key,url, data);
-					//System.out.println("Workspace add: " + url);
+					//com.neuronrobotics.sdk.common.Log.error("Workspace add: " + url);
 				}
 			
 		// data = (ArrayList<String>) workspaceData.get(url);
@@ -139,7 +139,7 @@ public class BowlerStudioMenuWorkspace {
 			ArrayList<String> myOptions = new ArrayList<String>();
 			
 				for (String o : ConfigurationDatabase.keySet(key)) {
-					// System.out.println("Opt: "+o);
+					// com.neuronrobotics.sdk.common.Log.error("Opt: "+o);
 					myOptions.add(o);
 				}
 			
@@ -173,12 +173,12 @@ public class BowlerStudioMenuWorkspace {
 					} catch (Exception e) {
 						// repo is broken or missing
 						e.printStackTrace();
-						System.out.println("Removing from workspace: " + removedURL);
+						com.neuronrobotics.sdk.common.Log.error("Removing from workspace: " + removedURL);
 						remove(removedURL);
 					}
 
 				} else {
-					System.out.println("Removing from workspace: " + removedURL);
+					com.neuronrobotics.sdk.common.Log.error("Removing from workspace: " + removedURL);
 					remove(removedURL);
 				}
 			}
@@ -188,7 +188,7 @@ public class BowlerStudioMenuWorkspace {
 				if (rank.get(url) == null) {
 					rankChanged = true;
 					rank.put(url, i);
-					// System.out.println("Rank firstNoted : "+url+" "+i);
+					// com.neuronrobotics.sdk.common.Log.error("Rank firstNoted : "+url+" "+i);
 				}
 				if (rank.get(url).intValue() != i) {
 					rankChanged = true;
@@ -203,7 +203,7 @@ public class BowlerStudioMenuWorkspace {
 
 					new Thread(() -> {
 						for (String url : menu) {
-							//System.out.println("Workspace : " + url);
+							//com.neuronrobotics.sdk.common.Log.error("Workspace : " + url);
 							ArrayList<String> arrayList = (ArrayList<String>) ConfigurationDatabase.getObject(key,url,new ArrayList<>());
 							if (arrayList != null)
 								if (arrayList.size() >= 0)
@@ -211,7 +211,7 @@ public class BowlerStudioMenuWorkspace {
 										BowlerStudioMenu.setUpRepoMenue(workspaceMenu, url, false, false,
 												arrayList.get(0));
 									} catch (Throwable t) {
-										System.out.println("Error with "+url+" "+arrayList.toArray());
+										com.neuronrobotics.sdk.common.Log.error("Error with "+url+" "+arrayList.toArray());
 										t.printStackTrace();
 									}
 
@@ -227,7 +227,7 @@ public class BowlerStudioMenuWorkspace {
 			ex.printStackTrace();
 		}
 		if (rankChanged) {
-			//System.out.println("Sorting workspace...");
+			//com.neuronrobotics.sdk.common.Log.error("Sorting workspace...");
 			new Thread(() -> {
 				ConfigurationDatabase.save();
 			}).start();
