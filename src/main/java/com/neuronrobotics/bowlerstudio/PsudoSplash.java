@@ -32,6 +32,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private static URL resource = PsudoSplash.class.getResource("splash.png");
 
 	private static PsudoSplash singelton = null;
+	private long timeSinceLastUpdate = 0;
 
 	public static boolean isInitialized() {
 		return singelton != null;
@@ -55,24 +56,26 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		// e.printStackTrace(System.err);
 		log = update;
 		updateSplash();
-		
+
 		int length = update.length();
-		System.err.println(update.substring(0, length>100?100:length));
+		// System.err.println(update.substring(0, length>100?100:length));
 	}
 
 	class CustomPanel extends JPanel {
-	    private BufferedImage offscreenImage;
-	    private Graphics2D offscreenGraphics;
-	    private void createOffscreenImage() {
-	        offscreenImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-	        offscreenGraphics = offscreenImage.createGraphics();
-	        offscreenGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	    }
-	    @Override
-	    public void addNotify() {
-	        super.addNotify();
-	        createOffscreenImage();
-	    }
+		private BufferedImage offscreenImage;
+		private Graphics2D offscreenGraphics;
+
+		private void createOffscreenImage() {
+			offscreenImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			offscreenGraphics = offscreenImage.createGraphics();
+			offscreenGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+
+		@Override
+		public void addNotify() {
+			super.addNotify();
+			createOffscreenImage();
+		}
 
 		/**
 		 * 
@@ -111,26 +114,27 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			return (new Dimension(image.getWidth(), image.getHeight()));
 		}
 
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	        super.paintComponent(g);
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
 
-	        if (offscreenImage == null) {
-	            createOffscreenImage();
-	        }
+			if (offscreenImage == null) {
+				createOffscreenImage();
+			}
 
-	        // Clear the offscreen image with a fully transparent color
-	        offscreenGraphics.setComposite(AlphaComposite.Clear);
-	        offscreenGraphics.fillRect(0, 0, getWidth(), getHeight());
-	        offscreenGraphics.setComposite(AlphaComposite.SrcOver);
+			// Clear the offscreen image with a fully transparent color
+			offscreenGraphics.setComposite(AlphaComposite.Clear);
+			offscreenGraphics.fillRect(0, 0, getWidth(), getHeight());
+			offscreenGraphics.setComposite(AlphaComposite.SrcOver);
 
-	        // Your custom painting code goes here
-	        paintCustomGraphics(offscreenGraphics);
+			// Your custom painting code goes here
+			paintCustomGraphics(offscreenGraphics);
 
-	        // Draw the offscreen image onto the panel
-	        ((Graphics2D)g).setComposite(AlphaComposite.SrcOver);
-	        g.drawImage(offscreenImage, 0, 0, this);
-	    }
+			// Draw the offscreen image onto the panel
+			((Graphics2D) g).setComposite(AlphaComposite.SrcOver);
+			g.drawImage(offscreenImage, 0, 0, this);
+		}
+
 		/*
 		 * This is where the actual Painting Code for the JPanel/JComponent goes. Here
 		 * we will draw the image. Here the first line super.paintComponent(...), means
@@ -231,11 +235,13 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 	void updateSplash() {
 		if (interfaceFrame != null) {
-			SwingUtilities.invokeLater(() -> {
-				interfaceFrame.invalidate();
-				interfaceFrame.repaint();
-			});
-
+			if (System.currentTimeMillis() - timeSinceLastUpdate > 200) {
+				timeSinceLastUpdate = System.currentTimeMillis();
+				SwingUtilities.invokeLater(() -> {
+					interfaceFrame.invalidate();
+					interfaceFrame.repaint();
+				});
+			}
 		}
 	}
 
