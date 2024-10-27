@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.kohsuke.github.GHCreateRepositoryBuilder;
@@ -562,7 +563,7 @@ public class NewVitaminWizardController  extends Application {
         existingTypeRadio.setToggleGroup(groupForType);
         newTypeRadio.setToggleGroup(groupForType);
         newTypeNameField.setEditable(false);
-        ArrayList<String> types = Vitamins.listVitaminTypes();
+        CopyOnWriteArrayList<String> types = Vitamins.listVitaminTypes();
         
 		for(String s:types) {
 			typeComboBox.getItems().add(s);
