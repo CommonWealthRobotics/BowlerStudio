@@ -960,13 +960,13 @@ public class BowlerStudio extends Application {
 				BowlerStudio.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
 					String javaVersion = System.getProperty("java.version");
 					String javafxVersion = System.getProperty("javafx.version");
-					com.neuronrobotics.sdk.common.Log.error("Java Version : " + javaVersion);
-					com.neuronrobotics.sdk.common.Log.error("JavaFX Version : " + javafxVersion);
-					com.neuronrobotics.sdk.common.Log.error("BowlerStudio First Version: " + firstVer);
-					com.neuronrobotics.sdk.common.Log.error("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.error("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.error("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.error("Welcome to BowlerStudio!");
+					System.out.println("Java Version : " + javaVersion);
+					System.out.println("JavaFX Version : " + javafxVersion);
+					System.out.println("BowlerStudio First Version: " + firstVer);
+					System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+					System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+					System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+					System.out.println("Welcome to BowlerStudio!");
 
 				});
 				closeSplash();
