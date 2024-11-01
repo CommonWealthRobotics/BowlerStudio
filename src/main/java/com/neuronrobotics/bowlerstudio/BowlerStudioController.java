@@ -314,7 +314,7 @@ public class BowlerStudioController implements IScriptEventListener {
 								StringWriter sw = new StringWriter();
 								PrintWriter pw = new PrintWriter(sw);
 								e.printStackTrace(pw);
-								com.neuronrobotics.sdk.common.Log.error(sw.toString());
+								System.out.println(sw.toString());
 							}
 					}
 				} catch (Exception ex1) {
@@ -323,7 +323,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 				try {
 					String sw = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
-					com.neuronrobotics.sdk.common.Log.error(sw.toString());
+					System.out.println(sw.toString());
 					// space out the exception highlights, ensure any sub threads spawned here have
 					// time to finish
 					Thread.sleep(100);

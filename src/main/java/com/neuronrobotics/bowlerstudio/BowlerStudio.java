@@ -1163,7 +1163,7 @@ public class BowlerStudio extends Application {
 		}catch(Exception e) {
 			// not a url
 			//
-			com.neuronrobotics.sdk.common.Log.error("Invalid URL "+url);
+			System.out.println("Invalid URL "+url);
 			e.printStackTrace();
 			return false;
 		}
