@@ -1163,8 +1163,8 @@ public class BowlerStudio extends Application {
 		}catch(Exception e) {
 			// not a url
 			//
-			System.out.println("Invalid URL "+url);
-			e.printStackTrace();
+			//System.out.println("Invalid URL "+url);
+			//e.printStackTrace();
 			return false;
 		}
 		return true;
