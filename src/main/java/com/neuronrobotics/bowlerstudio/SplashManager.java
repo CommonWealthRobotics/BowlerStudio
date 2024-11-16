@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 
 public class SplashManager {
@@ -46,9 +47,20 @@ public class SplashManager {
 			initialize();
 		}
 		String string = frame + "% " + message;
-		com.neuronrobotics.sdk.common.Log.error(" Splash Rendering " + frame + " " + message);
+		System.out.println(" Splash Rendering " + frame + " " + message);
 		PsudoSplash.get().setMessage(string);
 		updateSplash();
+
+		if (Platform.isFxApplicationThread())
+			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
+		while(!SplashManager.isVisableSplash()) {
+			System.out.println("Waiting for splash to open before moving on");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				return;
+			}
+		}
 	}
 
 	private static void initialize() {
