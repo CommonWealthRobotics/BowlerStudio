@@ -70,6 +70,7 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+
 public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
@@ -149,8 +150,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		bowlerStudioModularFrame = tl;
 		this.creatureLab3dController = creatureLab3dController;
 
-
-		
 	}
 
 	@FXML
@@ -159,7 +158,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			loadMobilebaseFromGist(gitsId, file);
 		});
 	}
-
 
 	public void loadMobilebaseFromGist(String id, String file) {
 		loadMobilebaseFromGit("https://gist.github.com/" + id + ".git", file);
@@ -212,17 +210,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public void setToLoggedOut() {
-		this.username="";
+		this.username = "";
 		BowlerStudio.runLater(() -> {
 			myGists.getItems().clear();
 			logoutGithub.disableProperty().set(true);
 			logoutGithub.setText("Anonymous");
-			//ConfigurationDatabase.loginEvent(null);
-			this.username=null;
+			// ConfigurationDatabase.loginEvent(null);
+			this.username = null;
 		});
-		while(this.username!=null)
+		while (this.username != null)
 			ThreadUtil.wait(4);
-		
+
 	}
 
 	public void setToLoggedIn() {
@@ -230,18 +228,18 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private void setToLoggedIn(final String n) {
-		//new Exception().printStackTrace();
+		// new Exception().printStackTrace();
 		if (n == null)
 			return;
 		this.username = n;
-		
+
 		BowlerStudio.runLater(() -> {
 			logoutGithub.disableProperty().set(false);
 			logoutGithub.setText("Log out " + username);
 			new Thread() {
 				public void run() {
-					//ConfigurationDatabase.loginEvent(username);
-					//ConfigurationDatabase.getParamMap("workspace");
+					// ConfigurationDatabase.loginEvent(username);
+					// ConfigurationDatabase.getParamMap("workspace");
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())
 						return;
@@ -250,7 +248,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						gh = PasswordManager.getGithub();
 						ThreadUtil.wait(200);
 					}
-					new Thread(()->{
+					new Thread(() -> {
 						openFilesInUI();
 					}).start();
 					GitHub github = gh;
@@ -258,19 +256,19 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					loadMyRepos(github);
 					loadWatchingRepos(github);
 					LoadGistMenu(github);
-					
+
 				}
-
-
 
 			}.start();
 
 		});
 
 	}
+
 	private void openFilesInUI() {
-		String key ="studio-open-git";
-		//HashMap<String, Object> openGits = ConfigurationDatabase.getParamMap("studio-open-git");
+		String key = "studio-open-git";
+		// HashMap<String, Object> openGits =
+		// ConfigurationDatabase.getParamMap("studio-open-git");
 		Object[] set = ConfigurationDatabase.keySet("studio-open-git").toArray();
 		for (int i = 0; i < set.length; i++) {
 			try {
@@ -282,7 +280,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				String s = (String) set[i];
 				try {
 					@SuppressWarnings("unchecked")
-					ArrayList<String> repoFile = (ArrayList<String>) ConfigurationDatabase.getObject(key,s, new ArrayList<>());
+					ArrayList<String> repoFile = (ArrayList<String>) ConfigurationDatabase.getObject(key, s,
+							new ArrayList<>());
 					File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
 					if (!f.exists() || BowlerStudio.createFileTab(f) == null) {
 						ConfigurationDatabase.removeObject(key, s);
@@ -295,18 +294,20 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				}
 			}
 		}
-		//HashMap<String, Object> openWeb = ConfigurationDatabase.getParamMap("studio-open-web");
-		String webKey="studio-open-web";
+		// HashMap<String, Object> openWeb =
+		// ConfigurationDatabase.getParamMap("studio-open-web");
+		String webKey = "studio-open-web";
 		for (String s : ConfigurationDatabase.keySet(webKey)) {
-			String repoFile = (String) ConfigurationDatabase.getObject(webKey,s,null);
-			if(repoFile!=null)
-			try {
-				bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
-			} catch (Exception e) {
-				exp.uncaughtException(Thread.currentThread(), e);
-			}
+			String repoFile = (String) ConfigurationDatabase.getObject(webKey, s, null);
+			if (repoFile != null)
+				try {
+					bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
+				} catch (Exception e) {
+					exp.uncaughtException(Thread.currentThread(), e);
+				}
 		}
 	}
+
 	private void loadWatchingRepos(GitHub github) {
 		new Thread(() -> {
 			BowlerStudio.runLater(() -> watchingRepos.getItems().clear());
@@ -352,13 +353,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						myownerMenue.put(g.getOwnerName(), new Menu(g.getOwnerName()));
 						BowlerStudio.runLater(() -> {
 							String ownerName = g.getOwnerName();
-							if(ownerName==null)
+							if (ownerName == null)
 								throw new RuntimeException("ownerName can not be null");
 							Menu e = myownerMenue.get(ownerName);
-							if(e==null)
+							if (e == null)
 								throw new RuntimeException("Menu can not be null");
 							ObservableList<MenuItem> items = myRepos.getItems();
-							if(items==null)
+							if (items == null)
 								throw new RuntimeException("Menue items can not be null");
 							items.add(e);
 						});
@@ -416,7 +417,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				for (GHGist gist : gists) {
 
 					String url = gist.getGitPushUrl();
-					
+
 					String desc = gist.getDescription();
 					if (desc == null || desc.length() == 0 || desc.contentEquals("Adding new file from BowlerStudio")) {
 						desc = gist.getFiles().keySet().toArray()[0].toString();
@@ -455,7 +456,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public static void setUpRepoMenue(Menu repoMenue, String url, boolean useAddToWorkspaceItem, boolean threaded) {
-		if(url.endsWith(".git"))
+		if (url.endsWith(".git"))
 			setUpRepoMenue(repoMenue, url, useAddToWorkspaceItem, threaded, gitURLtoMessage(url));
 	}
 
@@ -520,8 +521,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						public void run() {
 							try {
 								ScriptingEngine.pull(url, ScriptingEngine.getBranch(url));
-							} catch(WrongRepositoryStateException ex) {
-								// ignore unsaved files 
+							} catch (WrongRepositoryStateException ex) {
+								// ignore unsaved files
 								BowlerStudio.runLater(() -> {
 									@SuppressWarnings("restriction")
 									Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -529,7 +530,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 									alert.setHeaderText("You have Un-Saved work, commit first");
 									alert.setContentText("You have Un-Saved work, commit first");
 								});
-							}catch (Exception e) {
+							} catch (Exception e) {
 								BowlerStudioMenu.checkandDelete(url);
 							}
 							myEvent.run();
@@ -572,12 +573,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						// selfRef.onRefresh(null);
 					});
 				});
-				
+
 				MenuItem delete = new MenuItem("Delete Local Copy...");
-				delete.setOnAction(event->{
+				delete.setOnAction(event -> {
 					checkandDelete(url);
 				});
-				
 
 				ScriptingEngine.addOnCommitEventListeners(url, myEvent);
 				orgRepo.setOnShowing(event -> {
@@ -587,7 +587,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				BowlerStudio.runLater(() -> {
 					if (useAddToWorkspaceItem)
 						orgRepo.getItems().add(addToWs);
-					orgRepo.getItems().addAll(updateRepo, addFile, makeRelease, orgFiles, orgCommits, orgBranches,delete);
+					orgRepo.getItems().addAll(updateRepo, addFile, makeRelease, orgFiles, orgCommits, orgBranches,
+							delete);
 					// BowlerStudio.runLater(() -> {
 					repoMenue.getItems().add(orgRepo);
 					// });
@@ -595,18 +596,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 			}
 
-
-
 		};
 		if (threaded)
 			t.start();
 		else
 			t.run();
 	}
+
 	public static void checkandDelete(String url) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Are you sure you have published all your work?");
-		alert.setHeaderText("This will wipe out the local cache for "+url);
+		alert.setHeaderText("This will wipe out the local cache for " + url);
 		alert.setContentText("All files that are not published will be deleted");
 		Node root = alert.getDialogPane();
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -625,7 +625,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			new Thread(() -> {
 				ScriptingEngine.deleteRepo(url);
 				BowlerStudioMenuWorkspace.remove(url);
-				BowlerStudio.runLater(()->{
+				BowlerStudio.runLater(() -> {
 					BowlerStudioMenuWorkspace.sort();
 				});
 			}).start();
@@ -633,6 +633,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			com.neuronrobotics.sdk.common.Log.error("Nothing was deleted");
 		}
 	}
+
 	private static MenuResettingEventHandler createLoadCommitsEvent(String url, Menu orgCommits) {
 		return new MenuResettingEventHandler() {
 			public boolean gistFlag = false;
@@ -722,7 +723,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 															public void run() {
 																try {
 																	String slugify = slugify(newBranch);
-																	com.neuronrobotics.sdk.common.Log.error("Creating " + slugify);
+																	com.neuronrobotics.sdk.common.Log
+																			.error("Creating " + slugify);
 																	ScriptingEngine.setCommitContentsAsCurrent(url,
 																			slugify, commit);
 																} catch (IOException e) {
@@ -875,15 +877,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						orgBranches.getItems().add(newBranchItem);
 						orgBranches.getItems().add(new SeparatorMenuItem());
 					});
-					if(PasswordManager.hasNetwork())
-					try {
-						Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
-						for (Ref r : branches) {
-							createRepoMenuItem(url, orgBranches, onBranch, r, getMenuReset());
+					if (PasswordManager.hasNetwork())
+						try {
+							Collection<Ref> branches = ScriptingEngine.getAllBranches(url);
+							for (Ref r : branches) {
+								createRepoMenuItem(url, orgBranches, onBranch, r, getMenuReset());
+							}
+						} catch (Throwable e) {
+							exp.uncaughtException(Thread.currentThread(), e);
 						}
-					} catch (Throwable e) {
-						exp.uncaughtException(Thread.currentThread(), e);
-					}
 					com.neuronrobotics.sdk.common.Log.error("Refreshing menu Branches");
 					BowlerStudio.runLater(() -> {
 						orgBranches.hide();
@@ -904,7 +906,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		Ref select = r;
 		String[] name = select.getName().split("/");
 		String myName = name[name.length - 1];
-		// com.neuronrobotics.sdk.common.Log.error("Selecting Branch\r\n"+url+" \t\t"+myName);
+		// com.neuronrobotics.sdk.common.Log.error("Selecting Branch\r\n"+url+"
+		// \t\t"+myName);
 		tmp.setOnAction(ev -> {
 			new Thread() {
 				public void run() {
@@ -922,13 +925,15 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						throws Exception {
 					String was = ScriptingEngine.getBranch(url);
 					try {
-					ScriptingEngine.checkout(url, select);
-					}catch(org.eclipse.jgit.api.errors.CheckoutConflictException ex) {
-						BowlerStudio.runLater(()->{
+						ScriptingEngine.checkout(url, select);
+					} catch (org.eclipse.jgit.api.errors.CheckoutConflictException ex) {
+						BowlerStudio.runLater(() -> {
 							Alert alert = new Alert(AlertType.ERROR);// line 1
 							alert.setTitle("CheckoutConflictException");// line 2
 							alert.setHeaderText("This repo is in an a dirty state");// line 3
-							alert.setContentText("Please commit your changes before switching.\nAlternatly you can revert your changes.\nRepository must not have uncommitted changes before changing branches.");// line 4
+							alert.setContentText(
+									"Please commit your changes before switching.\nAlternatly you can revert your changes.\nRepository must not have uncommitted changes before changing branches.");// line
+																																																		// 4
 							Node root = alert.getDialogPane();
 							Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 							stage.setOnCloseRequest(ev -> alert.hide());
@@ -947,7 +952,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					}
 					String s = ScriptingEngine.getBranch(url);
 					if (myName.contentEquals(s))
-						com.neuronrobotics.sdk.common.Log.error("Changing from " + was + " to " + myName + " is now " + s + "... Success!");
+						com.neuronrobotics.sdk.common.Log
+								.error("Changing from " + was + " to " + myName + " is now " + s + "... Success!");
 					onBranch.setText("On Branch " + s);
 				}
 			}.start();
@@ -1023,7 +1029,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						ArrayList<String> listofFiles;
 						try {
 							listofFiles = ScriptingEngine.filesInGit(url, ScriptingEngine.getFullBranch(url), null);
-							com.neuronrobotics.sdk.common.Log.error("Clone Done for " + url + listofFiles.size() + " files");
+							com.neuronrobotics.sdk.common.Log
+									.error("Clone Done for " + url + listofFiles.size() + " files");
 						} catch (Exception e1) {
 							e1.printStackTrace();
 							return;
@@ -1090,7 +1097,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	@FXML
 	public void onConnectVirtual(ActionEvent e) {
 
-		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000,"virtual"), "virtual");
+		ConnectionManager.addConnection(new VirtualGenericPIDDevice(10000, "virtual"), "virtual");
 	}
 
 	@FXML
@@ -1143,7 +1150,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onLogin(ActionEvent event) {
-		//new Exception().printStackTrace();
+		// new Exception().printStackTrace();
 		new Thread() {
 			public void run() {
 				PasswordManager.checkInternet();
@@ -1169,7 +1176,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onLogout(ActionEvent event) {
-		new Thread(()->{
+		new Thread(() -> {
 			try {
 				ScriptingEngine.logout();
 			} catch (IOException e) {
@@ -1523,9 +1530,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
 							.inlineFileScriptRun(f, null);
-					
+
 					List<String> entrySet = asSortedList(map.keySet());
-					
+
 					for (String entry : entrySet) {
 						HashMap<String, Object> script = map.get(entry);
 						MenuItem item = new MenuItem(entry);
@@ -1556,6 +1563,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			public void onLogout(String arg0) {
 				setToLoggedOut();
 			}
+
 			@Override
 			public void onLogin(String arg0) {
 				setToLoggedIn(arg0);
@@ -1569,10 +1577,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		}
 
 // WindowMenu
-		int[] fonts =FontSizeManager.getFontOptions();
+		int[] fonts = FontSizeManager.getFontOptions();
 		Menu fontSelect = new Menu("Font Size");
 		ToggleGroup toggleGroup = new ToggleGroup();
-		int defSize =FontSizeManager.getDefaultSize();
+		int defSize = FontSizeManager.getDefaultSize();
 		for (int i = 0; i < fonts.length; i++) {
 			int myFoneNum = fonts[i];
 			RadioMenuItem ftmp = new RadioMenuItem(myFoneNum + " pt");
@@ -1589,31 +1597,44 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			ftmp.setOnAction(eventHandler);
 			ftmp.setToggleGroup(toggleGroup);
 			fontSelect.getItems().add(ftmp);
-			FontSizeManager.addListener(nf->{
+			FontSizeManager.addListener(nf -> {
 				ftmp.setOnAction(null);
-				if(myFoneNum==nf) {
+				if (myFoneNum == nf) {
 					ftmp.setSelected(true);
-				}else
+				} else
 					ftmp.setSelected(false);
 				ftmp.setOnAction(eventHandler);
 			});
 		}
 		WindowMenu.getItems().add(fontSelect);
-		CheckMenuItem  autohighlight = new CheckMenuItem("Auto Highlight 3d Items");
+		CheckMenuItem autohighlight = new CheckMenuItem("Auto Highlight 3d Items");
 		autohighlight.setSelected(true);
-		CheckMenuItem  idlespin = new CheckMenuItem("Idle Spin ");
+		CheckMenuItem idlespin = new CheckMenuItem("Idle Spin ");
 		idlespin.setSelected(false);
-		CheckMenuItem  showRuler = new CheckMenuItem("Show Ruler ");
+		CheckMenuItem showRuler = new CheckMenuItem("Show Ruler ");
 		showRuler.setSelected(true);
-		CheckMenuItem  showCSGProgress = new CheckMenuItem("Show CSG Update");
+		CheckMenuItem showCSGProgress = new CheckMenuItem("Show CSG Update");
 		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
-			String x = intermediateShape.getName()+" "+type.trim()+"ing "+(currentIndex+1)+" of "+finalIndex;
-			if(showCSGProgress.isSelected())
-				com.neuronrobotics.sdk.common.Log.error(x);
-			else
-				com.neuronrobotics.sdk.common.Log.error(x);
+			try {
+				int i = currentIndex + 1;
+
+				double percent =((double)i)/((double)finalIndex)*100;
+				String x = intermediateShape.getName() + " " + type.trim() + " "+String.format("%.1f", percent)+"% finished : " + i + " of "
+						+ finalIndex;
+				if (showCSGProgress.isSelected()) {
+					System.out.println(x);
+					if(percent>99 && finalIndex>100) {
+						SplashManager.closeSplash();
+					}else {
+						SplashManager.renderSplashFrame((int)percent, x);
+					}
+				}else
+					com.neuronrobotics.sdk.common.Log.error(x);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		});
-		showCSGProgress.setOnAction(event->{
+		showCSGProgress.setOnAction(event -> {
 			ConfigurationDatabase.setObject("MenueSettings", "printCSG", showCSGProgress.isSelected());
 		});
 		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
@@ -1623,13 +1644,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //				BowlerStudioController.addCsg(newShape);
 //			}
 //		});
-		Runnable r= ()->{
-		showCSGProgress.setSelected(Boolean.parseBoolean( ConfigurationDatabase.getObject("MenueSettings", "printCSG", true).toString()));
+		Runnable r = () -> {
+			showCSGProgress.setSelected(Boolean
+					.parseBoolean(ConfigurationDatabase.getObject("MenueSettings", "printCSG", true).toString()));
 		};
 		new Thread(r).start();
-		
-		CreatureLab3dController.getEngine().setControls(showRuler,idlespin,autohighlight);
-		WindowMenu.getItems().addAll(showRuler,idlespin,autohighlight,showCSGProgress);
+
+		CreatureLab3dController.getEngine().setControls(showRuler, idlespin, autohighlight);
+		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress);
 
 		new Thread() {
 			public void run() {
@@ -1656,21 +1678,20 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				} catch (Exception e) {
 					exp.uncaughtException(Thread.currentThread(), e);
 				}
-				if(!PasswordManager.hasNetwork()) {
-					new Thread(()->{
+				if (!PasswordManager.hasNetwork()) {
+					new Thread(() -> {
 						openFilesInUI();
 					}).start();
 				}
 			}
 		}.start();
-		
 
 	}
-	public static
-	<T extends Comparable<? super T>> List<T> asSortedList(Set<T> c) {
-	  List<T> list = new ArrayList<T>(c);
-	  java.util.Collections.sort(list);
-	  return list;
+
+	public static <T extends Comparable<? super T>> List<T> asSortedList(Set<T> c) {
+		List<T> list = new ArrayList<T>(c);
+		java.util.Collections.sort(list);
+		return list;
 	}
 
 	public static BowlerStudioMenu getSelfRef() {

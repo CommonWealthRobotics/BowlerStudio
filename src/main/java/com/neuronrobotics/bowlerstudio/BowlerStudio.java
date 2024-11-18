@@ -175,6 +175,7 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
+		CSG.setPreventNonManifoldTriangles(false);
 		Debug3dProvider.setProvider(new IDebug3dProvider() {
 
 			@Override
