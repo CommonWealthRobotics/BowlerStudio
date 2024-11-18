@@ -177,7 +177,7 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-		CSG.setPreventNonManifoldTriangles(true);
+		//CSG.setPreventNonManifoldTriangles(true);
 		Plane.setEPSILON(1.0e-9);
 		Vector3d.setEXPORTEPSILON(10);
 		

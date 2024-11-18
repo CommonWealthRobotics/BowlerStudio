@@ -1614,6 +1614,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		CheckMenuItem showRuler = new CheckMenuItem("Show Ruler ");
 		showRuler.setSelected(true);
 		CheckMenuItem showCSGProgress = new CheckMenuItem("Show CSG Update");
+		CheckMenuItem useAdvancedSTL = new CheckMenuItem("Generate Advanced STL (Fully Manifold)");
 		CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
 			try {
 				int i = currentIndex + 1;
@@ -1623,8 +1624,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						+ finalIndex;
 				if (showCSGProgress.isSelected()) {
 					System.out.println(x);
-					if(finalIndex>100) {
-						if(percent>99) {
+					if(finalIndex>50) {
+						if(percent>90) {
 							SplashManager.closeSplash();
 						}else {
 							SplashManager.renderSplashFrame((int)percent, x);
@@ -1638,6 +1639,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				ex.printStackTrace();
 			}
 		});
+		useAdvancedSTL.setOnAction(event -> {
+			boolean selected = useAdvancedSTL.isSelected();
+			ConfigurationDatabase.setObject("MenueSettings", "CSG_Advanced_STL", selected);
+			CSG.setPreventNonManifoldTriangles(selected);
+		});
 		showCSGProgress.setOnAction(event -> {
 			ConfigurationDatabase.setObject("MenueSettings", "printCSG", showCSGProgress.isSelected());
 		});
@@ -1649,13 +1655,17 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //			}
 //		});
 		Runnable r = () -> {
+			boolean parseBoolean = Boolean
+					.parseBoolean(ConfigurationDatabase.getObject("MenueSettings", "CSG_Advanced_STL", CSG.isPreventNonManifoldTriangles()).toString());
+			CSG.setPreventNonManifoldTriangles(parseBoolean);
+			useAdvancedSTL.setSelected(parseBoolean);
 			showCSGProgress.setSelected(Boolean
 					.parseBoolean(ConfigurationDatabase.getObject("MenueSettings", "printCSG", true).toString()));
 		};
 		new Thread(r).start();
 
 		CreatureLab3dController.getEngine().setControls(showRuler, idlespin, autohighlight);
-		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress);
+		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress,useAdvancedSTL);
 
 		new Thread() {
 			public void run() {
