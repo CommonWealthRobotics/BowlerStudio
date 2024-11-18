@@ -1623,10 +1623,14 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						+ finalIndex;
 				if (showCSGProgress.isSelected()) {
 					System.out.println(x);
-					if(percent>99 && finalIndex>100) {
-						SplashManager.closeSplash();
+					if(finalIndex>100) {
+						if(percent>99) {
+							SplashManager.closeSplash();
+						}else {
+							SplashManager.renderSplashFrame((int)percent, x);
+						}
 					}else {
-						SplashManager.renderSplashFrame((int)percent, x);
+						SplashManager.closeSplash();
 					}
 				}else
 					com.neuronrobotics.sdk.common.Log.error(x);

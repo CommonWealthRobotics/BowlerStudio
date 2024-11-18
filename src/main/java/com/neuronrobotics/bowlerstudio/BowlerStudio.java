@@ -40,6 +40,8 @@ import com.neuronrobotics.video.OSUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Debug3dProvider;
 import eu.mihosoft.vrl.v3d.IDebug3dProvider;
+import eu.mihosoft.vrl.v3d.Plane;
+import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -175,7 +177,10 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-		CSG.setPreventNonManifoldTriangles(false);
+		CSG.setPreventNonManifoldTriangles(true);
+		Plane.setEPSILON(1.0e-9);
+		Vector3d.setEXPORTEPSILON(10);
+		
 		Debug3dProvider.setProvider(new IDebug3dProvider() {
 
 			@Override
