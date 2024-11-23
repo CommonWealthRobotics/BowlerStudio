@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.function.BooleanSupplier;
 
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 
@@ -13,7 +14,7 @@ public class SplashManager {
 	private static Graphics2D splashGraphics;
 
 	private static boolean loadFirst = true;
-
+	private static BooleanSupplier closePreventer = () -> false;
 	public static void closeSplash() {
 		if (isVisableSplash())
 			closeSplashLocal();
@@ -26,6 +27,8 @@ public class SplashManager {
 			splashGraphics = null;
 			return;
 		}
+		if(closePreventer.getAsBoolean())
+			return;
 		PsudoSplash.close();
 	}
 
@@ -67,6 +70,14 @@ public class SplashManager {
 		com.neuronrobotics.sdk.common.Log.error("No splash screen availible!");
 
 		loadFirst = false;
+	}
+
+	public BooleanSupplier getClosePreventer() {
+		return closePreventer;
+	}
+
+	public void setClosePreventer(BooleanSupplier closePreventer) {
+		this.closePreventer = closePreventer;
 	}
 
 
