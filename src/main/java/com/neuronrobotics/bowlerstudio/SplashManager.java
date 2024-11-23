@@ -72,12 +72,12 @@ public class SplashManager {
 		loadFirst = false;
 	}
 
-	public BooleanSupplier getClosePreventer() {
+	public static BooleanSupplier getClosePreventer() {
 		return closePreventer;
 	}
 
-	public void setClosePreventer(BooleanSupplier closePreventer) {
-		this.closePreventer = closePreventer;
+	public static void setClosePreventer(BooleanSupplier cp) {
+		closePreventer = cp;
 	}
 
 
