@@ -274,6 +274,14 @@ public class JogWidget extends GridPane
 		double[] joints = c.getCurrentJointSpaceVector();
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			joints[i] = 0;
+		}
+		try {
+			c.setDesiredJointSpaceVector(joints, c.getBestTime(joints));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			try {
 				if(c.getFollowerMobileBase(i)!=null) {
 					homeBase(c.getFollowerMobileBase(i));
@@ -282,13 +290,6 @@ public class JogWidget extends GridPane
 				ex.printStackTrace();
 			}
 		}
-		try {
-			c.setDesiredJointSpaceVector(joints, c.getBestTime(joints));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
