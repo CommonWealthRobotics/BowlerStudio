@@ -274,8 +274,12 @@ public class JogWidget extends GridPane
 		double[] joints = c.getCurrentJointSpaceVector();
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			joints[i] = 0;
-			if(c.getFollowerMobileBase(i)!=null) {
-				homeBase(c.getFollowerMobileBase(i));
+			try {
+				if(c.getFollowerMobileBase(i)!=null) {
+					homeBase(c.getFollowerMobileBase(i));
+				}
+			}catch(Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 		try {
