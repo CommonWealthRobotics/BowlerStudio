@@ -57,7 +57,7 @@ public class FreeCADExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-FreeCAD.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}		return null;
 	}

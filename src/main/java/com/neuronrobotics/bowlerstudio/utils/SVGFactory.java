@@ -25,7 +25,7 @@ public class SVGFactory{
 		try {
 			SVGExporter.export(currentCsg, baseDirForFiles);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		com.neuronrobotics.sdk.common.Log.error("SVG at "+baseDirForFiles);

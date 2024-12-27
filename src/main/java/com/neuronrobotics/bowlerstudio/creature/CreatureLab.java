@@ -60,7 +60,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	@Override
 	public String[] getMyNameSpaces() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return new String[0];
 	}
 
@@ -87,7 +87,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			//});
 		});
 		regen.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		setText(pm.getScriptingName());
 
 
@@ -109,20 +109,20 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 						finishLoading(device);
 					}).start();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
 			ThreadUtil.wait(16);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
 		while (getContent() == null)
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
@@ -363,7 +363,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	@Override
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 

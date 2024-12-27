@@ -233,7 +233,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 			
 			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "launch.groovy");
 		} catch (GitAPIException | IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		mobilebase.addConnectionEventListener(new IDeviceConnectionEventListener() {
@@ -245,7 +245,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 			
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -298,7 +298,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 					tmp.interrupt();
 					tmp.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -335,7 +335,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 
 			scriptRunner.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -445,7 +445,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 			double time =c.getBestTime(joints);
 			c.setDesiredJointSpaceVector(joints, time);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 

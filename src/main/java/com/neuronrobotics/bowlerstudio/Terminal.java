@@ -121,7 +121,7 @@ public class Terminal {
 		try {
 			history = BowlerKernel.loadHistory();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -147,7 +147,7 @@ public class Terminal {
 		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
 		      });
 		} catch (Exception e2) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -157,7 +157,7 @@ public class Terminal {
 				langaugeIcon.setImage(AssetFactory
 						.loadAsset("Script-Tab-" + langauges.getSelectionModel().getSelectedItem() + ".png"));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -229,7 +229,7 @@ public class Terminal {
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 		reset();
 		if (scriptRunner != null)
@@ -241,7 +241,7 @@ public class Terminal {
 					scriptRunner.interrupt();
 					scriptRunner.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

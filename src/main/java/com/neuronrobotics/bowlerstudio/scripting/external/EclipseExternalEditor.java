@@ -205,7 +205,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 						}
 						com.neuronrobotics.sdk.common.Log.error("Waiting for workspace, please wait until it opens "+ws);
@@ -240,7 +240,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				}else
 					run(environment,this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() ));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();

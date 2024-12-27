@@ -166,7 +166,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 							mujoco = new MuJoCoPhysicsManager(base.getScriptingName(),bases,movingObjects,staticObjects,cache);
 							
 						} catch (IOException | JAXBException e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 							return;
 						}
@@ -180,7 +180,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 						try {
 							mujoco.generateNewModel();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace(System.out);
 							close();
 							return;
@@ -296,7 +296,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			ConfigurationDatabase.setObject("PhysicsWidget","movingObjects" ,selectedItem);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -306,7 +306,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			ConfigurationDatabase.setObject("PhysicsWidget","staticObjects" ,selectedItem);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(movingObjects!=null) {

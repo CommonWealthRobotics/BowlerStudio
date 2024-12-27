@@ -361,21 +361,21 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 
 	@Override
 	public File getScriptFile() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		try {
 			return ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git",
 					"jogWidget.groovy");
 		} catch (InvalidRemoteException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (TransportException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (GitAPIException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

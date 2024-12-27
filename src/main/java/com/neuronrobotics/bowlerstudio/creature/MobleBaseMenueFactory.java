@@ -91,7 +91,7 @@ public class MobleBaseMenueFactory {
 					widgetMapForTreeitems.put(vitaminsMenu, w);
 					widget.put(w, tw);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -119,7 +119,7 @@ public class MobleBaseMenueFactory {
 				File code = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
 				BowlerStudio.createFileTab(code);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -226,7 +226,7 @@ public class MobleBaseMenueFactory {
 			}
 			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
 			callbackMapForTreeitems.put(addleg, () -> {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Leg");
 				String xmlContent;
 				try {
@@ -242,7 +242,7 @@ public class MobleBaseMenueFactory {
 					
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -366,7 +366,7 @@ public class MobleBaseMenueFactory {
 						File code = ScriptingEngine.fileFromGit(gitsId, file);
 						BowlerStudio.createFileTab(code);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				});
@@ -378,7 +378,7 @@ public class MobleBaseMenueFactory {
 					File code = ScriptingEngine.fileFromGit(device.getGitCadEngine()[0], device.getGitCadEngine()[1]);
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -393,7 +393,7 @@ public class MobleBaseMenueFactory {
 								File code = ScriptingEngine.fileFromGit(gitsId, file);
 								BowlerStudio.createFileTab(code);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
+								// Auto-generated catch block
 								e.printStackTrace();
 							}
 						});
@@ -406,7 +406,7 @@ public class MobleBaseMenueFactory {
 							device.getGitWalkingEngine()[1]);
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -414,7 +414,7 @@ public class MobleBaseMenueFactory {
 			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
 
 			callbackMapForTreeitems.put(addFixed, () -> {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
 				
 				
@@ -424,7 +424,7 @@ public class MobleBaseMenueFactory {
 								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 										"wheelOptions.json");
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 						return;
 					}
@@ -463,7 +463,7 @@ public class MobleBaseMenueFactory {
 												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 												creatureIsOwnedByUserTmp);
 									} catch (Exception e) {
-										// TODO Auto-generated catch block
+										// Auto-generated catch block
 										e.printStackTrace();
 									}
 
@@ -476,7 +476,7 @@ public class MobleBaseMenueFactory {
 												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 												creatureIsOwnedByUserTmp);
 									} catch (Exception e) {
-										// TODO Auto-generated catch block
+										// Auto-generated catch block
 										e.printStackTrace();
 										return;
 									}
@@ -490,7 +490,7 @@ public class MobleBaseMenueFactory {
 					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
 
 			callbackMapForTreeitems.put(addsteerable, () -> {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
 				try {
 					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
@@ -504,7 +504,7 @@ public class MobleBaseMenueFactory {
 							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 					
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -548,7 +548,7 @@ public class MobleBaseMenueFactory {
 			TreeItem<String> addArm = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
 
 			callbackMapForTreeitems.put(addArm, () -> {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Arm");
 				try {
 					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
@@ -621,7 +621,7 @@ public class MobleBaseMenueFactory {
 			MobileBase reloaded=MobileBaseLoader.fromGit(source[0], source[1]);
 			BowlerStudio.loadMobilBaseIntoUI(reloaded);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -661,7 +661,7 @@ public class MobleBaseMenueFactory {
 				try {
 					builder.description(newName + " copy of " + oldname);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				GHRepository gist = null;
@@ -723,7 +723,7 @@ public class MobleBaseMenueFactory {
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -1078,7 +1078,7 @@ public class MobleBaseMenueFactory {
 								setHardwareConfig(base, newLink, slaveFactory, slaves, callbackMapForTreeitems,
 										widgetMapForTreeitems);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
+								// Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -1167,7 +1167,7 @@ public class MobleBaseMenueFactory {
 
 					@Override
 					public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-						// TODO Auto-generated method stub
+						// Auto-generated method stub
 
 					}
 
@@ -1364,7 +1364,7 @@ public class MobleBaseMenueFactory {
 									try {
 										dh.setDesiredJointSpaceVector(dh.getCurrentJointSpaceTarget(), 0);
 									} catch (Exception e) {
-										// TODO Auto-generated catch block
+										// Auto-generated catch block
 										e.printStackTrace();
 									}
 								}
@@ -1376,7 +1376,7 @@ public class MobleBaseMenueFactory {
 											creatureIsOwnedByUser);
 									MobileBaseCadManager.get(base).generateCad();
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
+									// Auto-generated catch block
 									e.printStackTrace();
 								}
 								creatureLab.generateCad();
@@ -1467,7 +1467,7 @@ public class MobleBaseMenueFactory {
 						openCadTab(creatureLab, gitsId, file);
 
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				});
@@ -1478,7 +1478,7 @@ public class MobleBaseMenueFactory {
 				try {
 					openCadTab(creatureLab, dh.getGitCadEngine()[0], dh.getGitCadEngine()[1]);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -1492,7 +1492,7 @@ public class MobleBaseMenueFactory {
 						File code = ScriptingEngine.fileFromGit(gitsId, file);
 						BowlerStudio.createFileTab(code);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				});
@@ -1504,7 +1504,7 @@ public class MobleBaseMenueFactory {
 					File code = ScriptingEngine.fileFromGit(dh.getGitDhEngine()[0], dh.getGitDhEngine()[1]);
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -1519,7 +1519,7 @@ public class MobleBaseMenueFactory {
 		try {
 			dh.setDesiredJointSpaceVector(vect, 1);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		dh.updateCadLocations();

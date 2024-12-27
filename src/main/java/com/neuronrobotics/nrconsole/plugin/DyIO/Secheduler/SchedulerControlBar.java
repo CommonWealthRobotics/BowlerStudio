@@ -216,7 +216,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -232,13 +232,13 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	@Override
 	public void onPlay() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 

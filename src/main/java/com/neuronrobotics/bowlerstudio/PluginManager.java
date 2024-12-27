@@ -179,7 +179,7 @@ public class PluginManager {
 						Log.warning("Not autoloading "+c);
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 					
 				}
@@ -244,7 +244,7 @@ public class PluginManager {
 					com.neuronrobotics.sdk.common.Log.error("Launching "+c.getPlugin().getSimpleName());
 		        	
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}

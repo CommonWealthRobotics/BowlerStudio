@@ -77,7 +77,7 @@ public class ExternalEditorController {
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

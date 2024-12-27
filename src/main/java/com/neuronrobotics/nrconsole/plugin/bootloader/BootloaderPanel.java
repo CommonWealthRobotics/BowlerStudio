@@ -233,7 +233,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -246,7 +246,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
        
 			blApp = new NRBoot(pm);
 			loadButton.setEnabled(true);
@@ -256,7 +256,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 

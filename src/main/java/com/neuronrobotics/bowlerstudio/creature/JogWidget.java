@@ -68,7 +68,7 @@ public class JogWidget extends GridPane
 			
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -91,7 +91,7 @@ public class JogWidget extends GridPane
 			
 			@Override
 			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -278,7 +278,7 @@ public class JogWidget extends GridPane
 		try {
 			c.setDesiredJointSpaceVector(joints, c.getBestTime(joints));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
@@ -345,7 +345,7 @@ public class JogWidget extends GridPane
 			try {
 				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(), 0);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else
@@ -436,7 +436,7 @@ public class JogWidget extends GridPane
 					
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

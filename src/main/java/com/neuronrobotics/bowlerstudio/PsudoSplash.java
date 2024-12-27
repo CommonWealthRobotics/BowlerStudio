@@ -192,7 +192,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				try {
 					interfaceFrame.setIconImage(ImageIO.read(resource));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				interfaceFrame.setAlwaysOnTop(true);
@@ -204,13 +204,13 @@ public class PsudoSplash implements GitLogProgressMonitor {
 //				Thread.sleep(100);
 //				com.neuronrobotics.sdk.common.Log.error("Waiting for spalsh...");
 //			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
+//				// Auto-generated catch block
 //				e.printStackTrace();
 //			}
 //		try {
 //			Thread.sleep(100);
 //		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
+//			// Auto-generated catch block
 //			e.printStackTrace();
 //		}
 	}

@@ -12,7 +12,7 @@ public abstract class MenuResettingEventHandler implements EventHandler<Event> {
 				
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 					
 				}
 			};

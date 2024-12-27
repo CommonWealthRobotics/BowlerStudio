@@ -143,7 +143,7 @@ public class VirtualCameraMobileBase {
 		//newPose=CameraGlobalOffset.times(newPose);
 //		TransformNR pureTrans = new TransformNR();
 //
-//		// TODO Auto-generated method stub
+//		// Auto-generated method stub
 //		pureTrans.setX(newPose.getX());
 //		pureTrans.setY(newPose.getY());
 //		pureTrans.setZ(newPose.getZ());
@@ -261,12 +261,12 @@ public class VirtualCameraMobileBase {
 	}
 
 	public boolean isZoomLocked() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return zoomlock;
 	}
 
 	public void lockMove() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		move = false;
 	}
 

@@ -216,7 +216,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				try {
 					desktop.open(currentFile.getParentFile());
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}).start();
@@ -290,7 +290,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		reset();
 	}
 	private void launchConvert(File currentFile2) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		new Thread(()->{
 			String fileType = chooseFileType();
 			if (fileType != null) {
@@ -299,7 +299,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 					convertResults(fileType);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -361,7 +361,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				if(!useSingleFileFOrImports)
 					BowlerStudio.createFileTab(newFile);
 			} catch (GitAPIException | IOException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 			index++;
@@ -442,7 +442,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					com.neuronrobotics.sdk.common.Log.error("Success! " + files.size() + " parts exported");
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					BowlerStudio.printStackTrace(e);
 				}
 
@@ -482,7 +482,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					Thread.sleep(500);
 					BowlerStudio.createFileTab(file);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -509,7 +509,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 		reset();
 		if (scriptRunner != null)
@@ -521,7 +521,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					scriptRunner.interrupt();
 					scriptRunner.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -645,7 +645,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 			scriptRunner.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -683,14 +683,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		try {
 			watch = FileChangeWatcher.watch(currentFile);
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e2.printStackTrace();
 		}
 		String langType = ScriptingEngine.getShellType(currentFile.getName());
 //		try {
 //			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
 //		} catch (Exception e2) {
-//			// TODO Auto-generated catch block
+//			// Auto-generated catch block
 //			e2.printStackTrace();
 //		}
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
@@ -746,7 +746,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		try {
 			watch.addIFileChangeListener(this);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -772,7 +772,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		try {
 			setCode(new String(Files.readAllBytes(currentFile.toPath())));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			// e.printStackTrace();
 		}
 	}
@@ -808,7 +808,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //				@Override
 //				public void run() {
 					//updateneeded = false;
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 					String absolutePath = fileThatChanged.getAbsolutePath();
 					String absolutePath2 = currentFile.getAbsolutePath();
 					//com.neuronrobotics.sdk.common.Log.error(absolutePath+" "+absolutePath2);
@@ -841,7 +841,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //				}
 //			});
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		updateneeded = false;

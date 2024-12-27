@@ -27,13 +27,13 @@ public class CalibrateGameControl extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 
 	@Override
 	public String[] getMyNameSpaces() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return new String[0];
 	}
 
@@ -61,7 +61,7 @@ public class CalibrateGameControl extends AbstractBowlerStudioTab {
 			});
 	        setContent(root);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 

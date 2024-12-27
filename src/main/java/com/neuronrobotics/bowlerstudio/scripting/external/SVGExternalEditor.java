@@ -54,10 +54,10 @@ public class SVGExternalEditor implements IExternalEditor {
 				Thread t=run(this, file.getParentFile(), System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 			onProcessExit(0) ;
@@ -83,7 +83,7 @@ public class SVGExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-SVG.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

@@ -253,13 +253,13 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 				@Override
 				public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 
 				}
 
 				@Override
 				public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 
 				}
 

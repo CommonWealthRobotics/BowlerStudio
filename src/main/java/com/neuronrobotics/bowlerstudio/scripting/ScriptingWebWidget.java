@@ -78,7 +78,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		try {
 			loadCodeFromGist(currentGist, engine);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -166,7 +166,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 		reset();
 		if (scriptRunner != null)
@@ -178,7 +178,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					scriptRunner.interrupt();
 					scriptRunner.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -221,7 +221,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
 			} catch (Exception e2) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e2.printStackTrace();
 			}
 
@@ -282,16 +282,16 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				try {
 					currentFile=ScriptingEngine.fileFromGit(currentGit, fileListToDisplay.get(0));
 				} catch (InvalidRemoteException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (TransportException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (GitAPIException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				fileListBox.valueProperty().addListener(this);
@@ -361,7 +361,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 			scriptRunner.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 

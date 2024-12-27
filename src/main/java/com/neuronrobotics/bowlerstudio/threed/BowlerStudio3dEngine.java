@@ -370,7 +370,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 						try {
 							Thread.sleep(30);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -462,7 +462,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					com.neuronrobotics.sdk.common.Log.error("Success! " + files.size() + " parts exported");
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					BowlerStudio.printStackTrace(e);
 				}
 
@@ -1741,7 +1741,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				try {
 					Thread.sleep(36);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 					focusing = false;
 				}
@@ -1767,7 +1767,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				try {
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 					focusing = false;
 				}
@@ -1875,7 +1875,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 	}
 
 	public TransformNR getTargetNR() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return poseToMove;
 	}
 
@@ -1956,7 +1956,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		getFlyingCamera().lockMove();
 	}
 	public void disableControls() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		disabeControl=true;
 	}
 	public void placeGrid(TransformNR workplane) {

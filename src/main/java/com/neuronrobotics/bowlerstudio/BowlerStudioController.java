@@ -99,7 +99,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		@Override
 		public void addCSG(Collection<CSG> toAdd, File source) {
-			// TODO Auto-generated method stub
+			// Auto-generated method stub
 			for (CSG b : toAdd)
 				BowlerStudioController.addCsg(b);
 		}
@@ -197,7 +197,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			t.setFontSize(size);
 			return t.getScripting();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -328,7 +328,7 @@ public class BowlerStudioController implements IScriptEventListener {
 					// time to finish
 					Thread.sleep(100);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				runningExceptionHighlight = false;
@@ -534,7 +534,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				bad = new DMDevice(o);
 				ConnectionManager.addConnection(bad, bad.getScriptingName());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -579,7 +579,7 @@ public class BowlerStudioController implements IScriptEventListener {
 //				}
 //			}
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
+//			// Auto-generated catch block
 //			e.printStackTrace();
 //			addObject(cache, source,null);
 //		}
@@ -606,7 +606,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	@Override
 	public void onScriptError(Throwable except, File source) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 
@@ -615,7 +615,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public Stage getPrimaryStage() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return BowlerStudioModularFrame.getPrimaryStage();
 	}
 
@@ -632,7 +632,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void setup() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 

@@ -23,7 +23,7 @@ public class FirmataBowler extends NonBowlerDevice {
 			getFirmataDevice().start(); // initiate communication to the device
 			getFirmataDevice().ensureInitializationIsDone();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		} // wait for initialization is done
@@ -36,14 +36,14 @@ public class FirmataBowler extends NonBowlerDevice {
 		try {
 			getFirmataDevice().stop();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} // stop communication to the device
 	}
 
 	@Override
 	public ArrayList<String> getNamespacesImp() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return new ArrayList<String>();
 	}
 

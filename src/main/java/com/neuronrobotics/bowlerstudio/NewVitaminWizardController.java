@@ -186,7 +186,7 @@ public class NewVitaminWizardController  extends Application {
 					if(!editExisting.isSelected())
 						callback.addSizesToMenu(sizeOfVitaminString, typeOfVitaminString);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
 			}
 			try {
@@ -196,7 +196,7 @@ public class NewVitaminWizardController  extends Application {
 				});
 				
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 				
 			}
@@ -463,7 +463,7 @@ public class NewVitaminWizardController  extends Application {
 				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 		    	sizePane.setDisable(false);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 				
 			}

@@ -122,7 +122,7 @@ public class CommitWidget {
 						    ScriptingEngine.pushCodeToGit(remote,ScriptingEngine.getFullBranch(remote), relativePath, code, message,true);
 						    
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e1.printStackTrace();
 							if(git!=null)
 								ScriptingEngine.closeGit(git);

@@ -47,7 +47,7 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 			// this should make anon mode stick
 			ScriptingEngine.setupAnyonmous();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		finish();
