@@ -1200,6 +1200,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		meshView.getTransforms().addAll(gridPlacementAffine,groundMove);
 		return meshView;
 	}
+	public boolean contains(Node n) {
+		return userGroup.getChildren().contains(n);
+	}
 	public void addUserNode(Node n) {
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
