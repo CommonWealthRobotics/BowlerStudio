@@ -1198,6 +1198,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		// Ensure the mesh is visible
 		meshView.setCullFace(CullFace.NONE);
 		meshView.getTransforms().addAll(gridPlacementAffine,groundMove);
+		meshView.setMouseTransparent(true);
 		return meshView;
 	}
 	public boolean contains(Node n) {

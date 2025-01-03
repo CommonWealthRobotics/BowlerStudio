@@ -33,6 +33,7 @@ public class MakeRuler {
 			// Create base mesh for the ruler line
 			TriangleMesh baseMesh = createRectangleMesh(width, 1.0f);
 			MeshView baseView = new MeshView(baseMesh);
+			baseView.setMouseTransparent(true);
 			PhongMaterial phongMaterial = new PhongMaterial(Color.BLACK);
 
 			baseView.setMaterial(phongMaterial);
@@ -66,7 +67,7 @@ public class MakeRuler {
 							movey=movey.roty(180);
 						}
 						MeshView numberGroup = movey.newMesh();
-		
+						numberGroup.setMouseTransparent(true);
 						// Scale and position the number
 						Affine numberTransform = new Affine();
 						numberTransform.appendTranslation(i, 0);
@@ -83,6 +84,7 @@ public class MakeRuler {
 
 				// Create and position tick mark
 				MeshView tickView = new MeshView(tickMesh);
+				tickView.setMouseTransparent(true);
 				tickView.setMaterial(phongMaterial);
 
 				// Use Affine transform for tick positioning
