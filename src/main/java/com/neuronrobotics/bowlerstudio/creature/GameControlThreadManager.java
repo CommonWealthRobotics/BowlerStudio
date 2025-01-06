@@ -33,7 +33,7 @@ public class GameControlThreadManager {
 					tmp.interrupt();
 					tmp.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					//e.printStackTrace();
 				}
 			}
@@ -71,7 +71,7 @@ public class GameControlThreadManager {
 			try {
 				start();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		currentController.getRunStopButton().setDisable(false);
@@ -105,7 +105,7 @@ public class GameControlThreadManager {
 
 			scriptRunner.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 

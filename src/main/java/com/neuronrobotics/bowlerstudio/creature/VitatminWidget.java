@@ -153,7 +153,7 @@ public class VitatminWidget implements IOnTransformChange {
 				size.getItems().add(s);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -291,7 +291,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		selectedVitamin.setLocation(newTrans);
 	}
 

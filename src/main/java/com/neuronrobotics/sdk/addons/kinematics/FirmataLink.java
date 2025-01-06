@@ -23,13 +23,13 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 
 	@Override
 	public void cacheTargetValueDevice() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
 	@Override
 	public void flushAllDevice(double arg0) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		flushDevice(arg0);
 	}
 
@@ -70,13 +70,13 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 					try {
 						return new FirmataLink(config, dev);
 					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				return null;

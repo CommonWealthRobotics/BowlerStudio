@@ -179,7 +179,7 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 	}
 	
 	public int getChannelNumber() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return getChannel().getChannelNumber();
 	}
 	public void setChannel(ServoOutputScheduleChannel channel) {
@@ -209,12 +209,12 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 	}
 	@Override
 	public void onTimeUpdate(double ms) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 	@Override

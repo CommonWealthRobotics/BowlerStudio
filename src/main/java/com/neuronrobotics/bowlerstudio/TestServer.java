@@ -54,7 +54,7 @@ public class TestServer {
 					try {
 						startNetworkServer(1865);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}// starts the UDP server
 						// this also starts tcp server on port+1, in this case 1866

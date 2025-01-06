@@ -13,7 +13,7 @@ public class AnamationSequencer extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -24,7 +24,7 @@ public class AnamationSequencer extends AbstractBowlerStudioTab {
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		gui.setConnection(pm);
 		SwingNode sn = new SwingNode();
         sn.setContent(gui);
@@ -38,7 +38,7 @@ public class AnamationSequencer extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 

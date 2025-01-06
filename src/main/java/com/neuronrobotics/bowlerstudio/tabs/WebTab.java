@@ -111,7 +111,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    					try {
 	    						getScripting().loadCodeFromGist(Current_URL, webEngine);
 	    					} catch (Exception e) {
-	    						// TODO Auto-generated catch block
+	    						// Auto-generated catch block
 	    						//e.printStackTrace();
 	    					} 
 	    				}
@@ -164,15 +164,15 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			goBack();
 		});
 		forwardButton.setOnAction(arg0 -> {
-			// TODO Auto-generated method stub
+			// Auto-generated method stub
 			goForward();
 		});
 		homeButton.setOnAction(arg0 -> {
-			// TODO Auto-generated method stub
+			// Auto-generated method stub
 			try {
 				loadUrl(Tutorial.getHomeUrl());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -240,7 +240,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -254,7 +254,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 						getScripting().loadCodeFromGist(Current_URL, webEngine);
 						myTab.setText(getScripting().getFileName());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				}			
@@ -318,7 +318,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			try {
 				getScripting().loadCodeFromGist(Current_URL, webEngine);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} 
 		}).start();

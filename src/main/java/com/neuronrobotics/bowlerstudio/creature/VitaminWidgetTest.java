@@ -72,7 +72,7 @@ public class VitaminWidgetTest extends Application {
 						 return mb.forwardOffset(new TransformNR()); 
 					});
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}).start();

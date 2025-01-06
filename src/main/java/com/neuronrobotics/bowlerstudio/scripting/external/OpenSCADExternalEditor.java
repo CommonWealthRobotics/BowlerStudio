@@ -53,10 +53,10 @@ public class OpenSCADExternalEditor implements IExternalEditor {
 				Thread t=run(this, dir, System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 			onProcessExit(0) ;
@@ -82,7 +82,7 @@ public class OpenSCADExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-OpenSCAD.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

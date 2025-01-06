@@ -96,7 +96,7 @@ public class MakeReleaseController extends Application {
 				}
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
@@ -142,11 +142,11 @@ public class MakeReleaseController extends Application {
 						ScriptingEngine.tagRepo(gitRepo, newTag);
 						return;
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				

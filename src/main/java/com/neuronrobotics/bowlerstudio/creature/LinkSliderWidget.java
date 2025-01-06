@@ -221,13 +221,13 @@ public class LinkSliderWidget extends Group
 			
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -271,7 +271,7 @@ public class LinkSliderWidget extends Group
 	
 	@Override
 	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 	
@@ -358,7 +358,7 @@ public class LinkSliderWidget extends Group
 						device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
 						getSetpoint().setValue(newValue);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 					controlThreadRunning = false;
@@ -414,7 +414,7 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		try {
 			if (newAngleDegrees > device.getAbstractLink(linkIndex).getMaxEngineeringUnits()) {
 				newAngleDegrees = device.getAbstractLink(linkIndex).getMaxEngineeringUnits();
@@ -425,7 +425,7 @@ public class LinkSliderWidget extends Group
 			device.setDesiredJointAxisValue(linkIndex, newAngleDegrees, 0);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			// e.printStackTrace();
 		}
 		;
@@ -439,7 +439,7 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 
@@ -449,7 +449,7 @@ public class LinkSliderWidget extends Group
 			return;
 		if(getSetpoint().isEditing())
 			return;
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		try {
 			getSetpoint().setValue(arg1);
 		} catch (Exception ex) {

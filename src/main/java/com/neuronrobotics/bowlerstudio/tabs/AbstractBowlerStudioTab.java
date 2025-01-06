@@ -71,7 +71,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 			
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});

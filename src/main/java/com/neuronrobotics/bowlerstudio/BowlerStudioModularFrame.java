@@ -113,13 +113,13 @@ public class BowlerStudioModularFrame {
 					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
 					getTutorialDockNode().setPrefSize(1024, 730);
 				} catch (IOException | InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 			});;
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -164,7 +164,7 @@ public class BowlerStudioModularFrame {
 			WindowLoader3d.load();
 			commandLine.load();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 			throw e;
 		}
@@ -363,7 +363,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	public ScriptingFileWidget createFileTab(File file) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return controller.createFileTab(file);
 	}
 
@@ -376,7 +376,7 @@ public class BowlerStudioModularFrame {
 					addTab(newTab, true);
 				}
 			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		});

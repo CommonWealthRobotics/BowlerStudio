@@ -219,7 +219,7 @@ public class BowlerStudio extends Application {
 					try {
 						BowlerStudio.openExternalWebpage(toOpe.toURL());
 					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -409,7 +409,7 @@ public class BowlerStudio extends Application {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -423,7 +423,7 @@ public class BowlerStudio extends Application {
 				try {
 					BowlerStudio.openExternalWebpage(new URL(url));
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -517,7 +517,7 @@ public class BowlerStudio extends Application {
 				try {
 					Thread.sleep(delay.getSeconds() * 1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				runLater(action, t);
@@ -686,25 +686,25 @@ public class BowlerStudio extends Application {
 			try {
 				ScriptingEngine.pull(s);
 			} catch (RefAlreadyExistsException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (RefNotFoundException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidRefNameException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidRemoteException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (TransportException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

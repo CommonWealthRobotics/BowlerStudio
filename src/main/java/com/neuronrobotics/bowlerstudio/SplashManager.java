@@ -56,13 +56,17 @@ public class SplashManager {
 
 		if (Platform.isFxApplicationThread())
 			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
+		int index=0;
 		while(!SplashManager.isVisableSplash()) {
 			System.out.println("Waiting for splash to open before moving on");
 			try {
 				Thread.sleep(100);
+				index++;
 			} catch (InterruptedException e) {
 				return;
 			}
+			if(index>10)
+				return;
 		}
 	}
 
