@@ -26,6 +26,15 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.video.OSUtil;
 
 public class PsudoSplash implements GitLogProgressMonitor {
+	private static Color TextColor = Color.WHITE;
+	private static int versionX=65;
+	private static int versionY=45;
+	private static  int messageX = 65;
+	private static int messageY = 280;
+
+	private static  int logY = 120;
+	private static  int logX = 15;
+	
 	JFrame interfaceFrame;
 	private String message = "";
 	private String log = "";
@@ -33,6 +42,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 	private static PsudoSplash singelton = null;
 	private long timeSinceLastUpdate = 0;
+	private static URL resource2;
 
 	public static boolean isInitialized() {
 		return singelton != null;
@@ -82,6 +92,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		 */
 		private static final long serialVersionUID = 8749662598444052868L;
 		private BufferedImage image;
+
 
 		public CustomPanel() {
 			setOpaque(false);
@@ -149,24 +160,40 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			splashGraphics.setComposite(AlphaComposite.Clear);
 			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
+			splashGraphics.setColor(getTextColor());
+			splashGraphics.drawString(StudioBuildInfo.getVersion(), getVersionX(), getVersionY());
 
 			splashGraphics.setComposite(AlphaComposite.Clear);
 			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(getMessage(), 65, 280);
+			splashGraphics.setColor(getTextColor());
+			splashGraphics.drawString(getMessage(), getMessageX(), getMessageY());
 
 			splashGraphics.setComposite(AlphaComposite.Clear);
 			// splashGraphics.fillRect(65, 270, 200, 40);
 			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(log, 15, 120);
+			splashGraphics.setColor(getTextColor());
+			splashGraphics.drawString(log, getLogX(), getLogY());
 
 		}
+
+
+	}
+	public static int getVersionX() {
+		return versionX;
 	}
 
+	public static  void setVersionX(int x) {
+		versionX = x;
+	}
+
+	public  static int getVersionY() {
+		return versionY;
+	}
+
+	public  static  void setVersionY(int y) {
+		versionY = y;
+	}
 	private PsudoSplash() {
 
 		EventQueue.invokeLater(new Runnable() {
@@ -190,7 +217,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				interfaceFrame.setVisible(true);
 				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
 				try {
-					interfaceFrame.setIconImage(ImageIO.read(resource));
+					if(resource2==null)
+						resource2=resource;
+					interfaceFrame.setIconImage(ImageIO.read(resource2));
 				} catch (IOException e) {
 					// Auto-generated catch block
 					e.printStackTrace();
@@ -269,6 +298,50 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 	public static void setResource(URL r) {
 		resource = r;
+	}
+
+	public static Color getTextColor() {
+		return TextColor;
+	}
+
+	public static void setTextColor(Color textColor) {
+		TextColor = textColor;
+	}
+
+	public static int getMessageX() {
+		return messageX;
+	}
+
+	public static void setMessageX(int messageX) {
+		PsudoSplash.messageX = messageX;
+	}
+
+	public static int getMessageY() {
+		return messageY;
+	}
+
+	public static void setMessageY(int messageY) {
+		PsudoSplash.messageY = messageY;
+	}
+
+	public static int getLogY() {
+		return logY;
+	}
+
+	public static void setLogY(int logY) {
+		PsudoSplash.logY = logY;
+	}
+
+	public static int getLogX() {
+		return logX;
+	}
+
+	public static void setLogX(int logX) {
+		PsudoSplash.logX = logX;
+	}
+
+	public static void setTrayIcon(URL resource2) {
+		PsudoSplash.resource2 = resource2;	
 	}
 
 }
