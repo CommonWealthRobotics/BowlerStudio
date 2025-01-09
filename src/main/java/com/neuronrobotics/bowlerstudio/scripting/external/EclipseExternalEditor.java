@@ -37,6 +37,7 @@ import javafx.scene.image.Image;
 public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	protected Button advanced;
+	private File dir;
 
 	protected abstract void setUpEclipseProjectFiles(File dir, File project, String name)
 			throws IOException, MalformedURLException;
@@ -82,10 +83,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 //			String eclipseEXE = exeFile.getAbsolutePath();
 			
 			try {
-				Git locateGit = ScriptingEngine.locateGit(file);
-				Repository repository = locateGit.getRepository();
-				File dir = repository.getWorkTree();
-				ScriptingEngine.closeGit(locateGit);
+				ScriptingEngine.locateGit(file,git->{
+					Repository repository = git.getRepository();
+					dir = repository.getWorkTree();
+				});
 				String remoteURL = ScriptingEngine.locateGitUrlString(file);
 				String branch = ScriptingEngine.getBranch(remoteURL);
 

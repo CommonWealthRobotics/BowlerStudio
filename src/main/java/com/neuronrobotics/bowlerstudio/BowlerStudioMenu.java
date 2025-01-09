@@ -662,89 +662,90 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 						orgCommits.setOnShowing(null);
 						gistFlag = false;
 					});
-					Repository repo = null;
-					Git git = null;
 					try {
 						ScriptingEngine.checkout(url, branchName);
 
-						git = ScriptingEngine.openGit(url);
-						repo = git.getRepository();
-						// com.neuronrobotics.sdk.common.Log.error("Commits of branch: " + branchName);
-						// com.neuronrobotics.sdk.common.Log.error("-------------------------------------");
+						ScriptingEngine.openGit(url,git->{
+							Repository repo = git.getRepository();
+							// com.neuronrobotics.sdk.common.Log.error("Commits of branch: " + branchName);
+							// com.neuronrobotics.sdk.common.Log.error("-------------------------------------");
 
-						ObjectId resolve = repo.resolve(branchName);
-						if (resolve != null) {
-							Iterable<RevCommit> commits = git.log().add(resolve).call();
+							ObjectId resolve = repo.resolve(branchName);
+							if (resolve != null) {
+								Iterable<RevCommit> commits = git.log().add(resolve).call();
 
-							List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
-							BowlerStudio.runLater(() -> {
-								try {
-									orgCommits.getItems()
-											.add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
-								} catch (Exception e) {
-									exp.uncaughtException(Thread.currentThread(), e);
-								}
-								orgCommits.getItems().add(new SeparatorMenuItem());
-							});
-							// RevCommit previous = null;
-							for (RevCommit commit : commitsList) {
-								String date = format.format(new Date(commit.getCommitTime() * 1000L));
-								String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
-										+ date + "\r\n" + commit.getFullMessage() + "\r\n"
-										+ "---------------------------------------------------\r\n";// +
-								// previous==null?"":getDiffOfCommit(previous,commit, repo, git);
-
-								// previous = commit;
-								String string = date + " " + commit.getAuthorIdent().getName() + " "
-										+ commit.getShortMessage();
-								if (string.length() > 80)
-									string = string.substring(0, 80);
-								// MenuItem tmp = new MenuItem(string);
-								CustomMenuItem tmp = new CustomMenuItem(new Label(string));
-								Tooltip tooltip = new Tooltip(fullData);
-								Tooltip.install(tmp.getContent(), tooltip);
-								tmp.setOnAction(ev -> {
-									new Thread() {
-										public void run() {
-											com.neuronrobotics.sdk.common.Log.error("Selecting \r\n\r\n" + fullData);
-
-											String branch;
-											try {
-												branch = ScriptingEngine.getBranch(url);
-											} catch (Exception e1) {
-												branch = "newBranch";
-											}
-
-											String dateString = formatSimple
-													.format(new Date(commit.getCommitTime() * 1000L));
-											promptForNewBranch(branch + "-" + dateString,
-													"Creating Branch From Commit:\n\n" + fullData, newBranch -> {
-														new Thread() {
-															public void run() {
-																try {
-																	String slugify = slugify(newBranch);
-																	com.neuronrobotics.sdk.common.Log
-																			.error("Creating " + slugify);
-																	ScriptingEngine.setCommitContentsAsCurrent(url,
-																			slugify, commit);
-																} catch (IOException e) {
-																	exp.uncaughtException(Thread.currentThread(), e);
-																} catch (GitAPIException e) {
-																	exp.uncaughtException(Thread.currentThread(), e);
-																}
-															}
-														}.start();
-													});
-
-										}
-									}.start();
-
-								});
+								List<RevCommit> commitsList = Lists.newArrayList(commits.iterator());
 								BowlerStudio.runLater(() -> {
-									orgCommits.getItems().add(tmp);
+									try {
+										orgCommits.getItems()
+												.add(new MenuItem("On Branch " + ScriptingEngine.getBranch(url)));
+									} catch (Exception e) {
+										exp.uncaughtException(Thread.currentThread(), e);
+									}
+									orgCommits.getItems().add(new SeparatorMenuItem());
 								});
+								// RevCommit previous = null;
+								for (RevCommit commit : commitsList) {
+									String date = format.format(new Date(commit.getCommitTime() * 1000L));
+									String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
+											+ date + "\r\n" + commit.getFullMessage() + "\r\n"
+											+ "---------------------------------------------------\r\n";// +
+									// previous==null?"":getDiffOfCommit(previous,commit, repo, git);
+
+									// previous = commit;
+									String string = date + " " + commit.getAuthorIdent().getName() + " "
+											+ commit.getShortMessage();
+									if (string.length() > 80)
+										string = string.substring(0, 80);
+									// MenuItem tmp = new MenuItem(string);
+									CustomMenuItem tmp = new CustomMenuItem(new Label(string));
+									Tooltip tooltip = new Tooltip(fullData);
+									Tooltip.install(tmp.getContent(), tooltip);
+									tmp.setOnAction(ev -> {
+										new Thread() {
+											public void run() {
+												com.neuronrobotics.sdk.common.Log.error("Selecting \r\n\r\n" + fullData);
+
+												String branch;
+												try {
+													branch = ScriptingEngine.getBranch(url);
+												} catch (Exception e1) {
+													branch = "newBranch";
+												}
+
+												String dateString = formatSimple
+														.format(new Date(commit.getCommitTime() * 1000L));
+												promptForNewBranch(branch + "-" + dateString,
+														"Creating Branch From Commit:\n\n" + fullData, newBranch -> {
+															new Thread() {
+																public void run() {
+																	try {
+																		String slugify = slugify(newBranch);
+																		com.neuronrobotics.sdk.common.Log
+																				.error("Creating " + slugify);
+																		ScriptingEngine.setCommitContentsAsCurrent(url,
+																				slugify, commit);
+																	} catch (IOException e) {
+																		exp.uncaughtException(Thread.currentThread(), e);
+																	} catch (GitAPIException e) {
+																		exp.uncaughtException(Thread.currentThread(), e);
+																	}
+																}
+															}.start();
+														});
+
+											}
+										}.start();
+
+									});
+									BowlerStudio.runLater(() -> {
+										orgCommits.getItems().add(tmp);
+									});
+								}
 							}
-						}
+						});
+
+						
 
 						BowlerStudio.runLater(() -> {
 							orgCommits.hide();
@@ -763,7 +764,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					} catch (Throwable e) {
 						exp.uncaughtException(Thread.currentThread(), e);
 					}
-					ScriptingEngine.closeGit(git);
 				}).start();
 			}
 		};
