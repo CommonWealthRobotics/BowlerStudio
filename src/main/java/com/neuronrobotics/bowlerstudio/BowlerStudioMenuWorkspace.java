@@ -60,8 +60,7 @@ public class BowlerStudioMenuWorkspace {
 							ScriptingEngine.setPrintProgress(false);
 							com.neuronrobotics.sdk.common.Log.error("Pulling workspace " + o);
 							try {
-								if (!ScriptingEngine.isUrlAlreadyOpen(o))
-									ScriptingEngine.pull(o);
+								ScriptingEngine.pull(o);
 							} catch(WrongRepositoryStateException ex) {
 								// ignore, unsaved work
 							}catch (Exception e) {

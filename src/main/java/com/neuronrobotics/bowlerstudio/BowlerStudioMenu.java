@@ -604,34 +604,38 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	public static void checkandDelete(String url) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Are you sure you have published all your work?");
-		alert.setHeaderText("This will wipe out the local cache for " + url);
-		alert.setContentText("All files that are not published will be deleted");
-		Node root = alert.getDialogPane();
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.setOnCloseRequest(ev -> alert.hide());
-		FontSizeManager.addListener(fontNum -> {
-			int tmp = fontNum - 10;
-			if (tmp < 12)
-				tmp = 12;
-			root.setStyle("-fx-font-size: " + tmp + "pt");
-			alert.getDialogPane().applyCss();
-			alert.getDialogPane().layout();
-			stage.sizeToScene();
+		BowlerStudio.runLater(() -> {
+
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Are you sure you have published all your work?");
+			alert.setHeaderText("This will wipe out the local cache for " + url);
+			alert.setContentText("All files that are not published will be deleted");
+			Node root = alert.getDialogPane();
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.setOnCloseRequest(ev -> alert.hide());
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
+				alert.getDialogPane().applyCss();
+				alert.getDialogPane().layout();
+				stage.sizeToScene();
+			});
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) {
+				new Thread(() -> {
+					ScriptingEngine.deleteRepo(url);
+					BowlerStudioMenuWorkspace.remove(url);
+					BowlerStudio.runLater(() -> {
+						BowlerStudioMenuWorkspace.sort();
+					});
+				}).start();
+			} else {
+				com.neuronrobotics.sdk.common.Log.error("Nothing was deleted");
+			}
+
 		});
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == ButtonType.OK) {
-			new Thread(() -> {
-				ScriptingEngine.deleteRepo(url);
-				BowlerStudioMenuWorkspace.remove(url);
-				BowlerStudio.runLater(() -> {
-					BowlerStudioMenuWorkspace.sort();
-				});
-			}).start();
-		} else {
-			com.neuronrobotics.sdk.common.Log.error("Nothing was deleted");
-		}
 	}
 
 	private static MenuResettingEventHandler createLoadCommitsEvent(String url, Menu orgCommits) {
@@ -665,7 +669,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					try {
 						ScriptingEngine.checkout(url, branchName);
 
-						ScriptingEngine.openGit(url,git->{
+						ScriptingEngine.openGit(url, git -> {
 							Repository repo = git.getRepository();
 							// com.neuronrobotics.sdk.common.Log.error("Commits of branch: " + branchName);
 							// com.neuronrobotics.sdk.common.Log.error("-------------------------------------");
@@ -687,8 +691,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								// RevCommit previous = null;
 								for (RevCommit commit : commitsList) {
 									String date = format.format(new Date(commit.getCommitTime() * 1000L));
-									String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName() + "\r\n"
-											+ date + "\r\n" + commit.getFullMessage() + "\r\n"
+									String fullData = commit.getName() + "\r\n" + commit.getAuthorIdent().getName()
+											+ "\r\n" + date + "\r\n" + commit.getFullMessage() + "\r\n"
 											+ "---------------------------------------------------\r\n";// +
 									// previous==null?"":getDiffOfCommit(previous,commit, repo, git);
 
@@ -704,7 +708,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 									tmp.setOnAction(ev -> {
 										new Thread() {
 											public void run() {
-												com.neuronrobotics.sdk.common.Log.error("Selecting \r\n\r\n" + fullData);
+												com.neuronrobotics.sdk.common.Log
+														.error("Selecting \r\n\r\n" + fullData);
 
 												String branch;
 												try {
@@ -726,9 +731,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 																		ScriptingEngine.setCommitContentsAsCurrent(url,
 																				slugify, commit);
 																	} catch (IOException e) {
-																		exp.uncaughtException(Thread.currentThread(), e);
+																		exp.uncaughtException(Thread.currentThread(),
+																				e);
 																	} catch (GitAPIException e) {
-																		exp.uncaughtException(Thread.currentThread(), e);
+																		exp.uncaughtException(Thread.currentThread(),
+																				e);
 																	}
 																}
 															}.start();
@@ -744,8 +751,6 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 								}
 							}
 						});
-
-						
 
 						BowlerStudio.runLater(() -> {
 							orgCommits.hide();
@@ -1619,21 +1624,21 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			try {
 				int i = currentIndex + 1;
 
-				double percent =((double)i)/((double)finalIndex)*100;
-				String x = intermediateShape.getName() + " " + type.trim() + " "+String.format("%.1f", percent)+"% finished : " + i + " of "
-						+ finalIndex;
+				double percent = ((double) i) / ((double) finalIndex) * 100;
+				String x = intermediateShape.getName() + " " + type.trim() + " " + String.format("%.1f", percent)
+						+ "% finished : " + i + " of " + finalIndex;
 				if (showCSGProgress.isSelected()) {
 					System.out.println(x);
-					if(finalIndex>50) {
-						if(percent>90) {
+					if (finalIndex > 50) {
+						if (percent > 90) {
 							SplashManager.closeSplash();
-						}else {
-							SplashManager.renderSplashFrame((int)percent, x);
+						} else {
+							SplashManager.renderSplashFrame((int) percent, x);
 						}
-					}else {
+					} else {
 						SplashManager.closeSplash();
 					}
-				}else
+				} else
 					com.neuronrobotics.sdk.common.Log.error(x);
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -1655,8 +1660,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 //			}
 //		});
 		Runnable r = () -> {
-			boolean parseBoolean = Boolean
-					.parseBoolean(ConfigurationDatabase.getObject("MenueSettings", "CSG_Advanced_STL", CSG.isPreventNonManifoldTriangles()).toString());
+			boolean parseBoolean = Boolean.parseBoolean(ConfigurationDatabase
+					.getObject("MenueSettings", "CSG_Advanced_STL", CSG.isPreventNonManifoldTriangles()).toString());
 			CSG.setPreventNonManifoldTriangles(parseBoolean);
 			useAdvancedSTL.setSelected(parseBoolean);
 			showCSGProgress.setSelected(Boolean
@@ -1665,7 +1670,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		new Thread(r).start();
 
 		CreatureLab3dController.getEngine().setControls(showRuler, idlespin, autohighlight);
-		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress,useAdvancedSTL);
+		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress, useAdvancedSTL);
 
 		new Thread() {
 			public void run() {
