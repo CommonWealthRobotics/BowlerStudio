@@ -38,6 +38,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	protected Button advanced;
 	private File dir;
+	private String name;
 
 	protected abstract void setUpEclipseProjectFiles(File dir, File project, String name)
 			throws IOException, MalformedURLException;
@@ -52,7 +53,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		}
 		return sb.toString();
 	}
-	
+
 	public Image getImage() {
 		try {
 			Image loadAsset = AssetFactory.loadAsset("eclipse.png");
@@ -63,13 +64,12 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	protected boolean OSSupportsEclipse() {
-		return OSUtil.isLinux() || OSUtil.isWindows()|| OSUtil.isOSX();
+		return OSUtil.isLinux() || OSUtil.isWindows() || OSUtil.isOSX();
 	}
 
-
-	private String sanitize(String s){
-		if(OSUtil.isWindows()) {
-			return "\""+s+"\"";
+	private String sanitize(String s) {
+		if (OSUtil.isWindows()) {
+			return "\"" + s + "\"";
 		}
 		return s;
 	}
@@ -77,120 +77,88 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	@Override
 	public void launch(File file, Button advanced) {
 		this.advanced = advanced;
-		EclipseExternalEditor ee=this;
+		EclipseExternalEditor ee = this;
 		new Thread(() -> {
 //			File exeFile = getExecutable("eclipse",null);
 //			String eclipseEXE = exeFile.getAbsolutePath();
-			
-			try {
-				ScriptingEngine.locateGit(file,git->{
-					Repository repository = git.getRepository();
-					dir = repository.getWorkTree();
-				});
-				String remoteURL = ScriptingEngine.locateGitUrlString(file);
-				String branch = ScriptingEngine.getBranch(remoteURL);
 
-				File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
-				File project = new File(dir.getAbsolutePath() + delim() + ".project");
-				String name = dir.getName();
-				if (dir.getAbsolutePath().contains("gist.github.com")) {
-					String name2 = file.getName();
-					String[] split = name2.split("\\.");
-					name = split[0];
-				}
-				if (!ignore.exists() || !project.exists() || !checkForExistingProjectFiles(dir)) {
-					String content = "";
-					String toIgnore = "\n/.settings\n" +"/.project\n" + "/.classpath\n" + "/.cproject\n" + "/cache/\n" + "/*.class";
+			try {
+				dir=file.getParentFile();
+				name = dir.getName();
+				try {
+					ScriptingEngine.locateGit(file, git -> {
+						Repository repository = git.getRepository();
+						dir = repository.getWorkTree();
+						name = dir.getName();
+					});
+					String remoteURL = ScriptingEngine.locateGitUrlString(file);
+					String branch = ScriptingEngine.getBranch(remoteURL);
+
+					File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
+					File project = new File(dir.getAbsolutePath() + delim() + ".project");
 					
-					if (ignore.exists())
-						try {
-							content = new String(Files.readAllBytes(Paths.get(ignore.getAbsolutePath())));
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					if (!content.contains(toIgnore)) {
-						content += toIgnore;
-						if(ScriptingEngine.checkOwner(remoteURL)) {
-							ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content,
-								"Ignore the project files");
-						}else {
-							content+="\n.gitignore\n";
-							File gistDir = ScriptingEngine.cloneRepo(remoteURL, branch);
-							File desired = new File(gistDir.getAbsoluteFile() + "/" + ".gitignore");
-							OutputStream out = null;
+					if (dir.getAbsolutePath().contains("gist.github.com")) {
+						String name2 = file.getName();
+						String[] split = name2.split("\\.");
+						name = split[0];
+					}
+					if (!ignore.exists() || !project.exists() || !checkForExistingProjectFiles(dir)) {
+						String content = "";
+						String toIgnore = "\n/.settings\n" + "/.project\n" + "/.classpath\n" + "/.cproject\n"
+								+ "/cache/\n" + "/*.class";
+
+						if (ignore.exists())
 							try {
-								out = FileUtils.openOutputStream(desired, false);
-								IOUtils.write(content, out);
-								out.close(); // don't swallow close Exception if copy completes
-								// normally
-							} finally {
-								IOUtils.closeQuietly(out);
+								content = new String(Files.readAllBytes(Paths.get(ignore.getAbsolutePath())));
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						if (!content.contains(toIgnore)) {
+							content += toIgnore;
+							if (ScriptingEngine.checkOwner(remoteURL)) {
+								ScriptingEngine.pushCodeToGit(remoteURL, branch, ".gitignore", content,
+										"Ignore the project files");
+							} else {
+								content += "\n.gitignore\n";
+								File gistDir = ScriptingEngine.cloneRepo(remoteURL, branch);
+								File desired = new File(gistDir.getAbsoluteFile() + "/" + ".gitignore");
+								OutputStream out = null;
+								try {
+									out = FileUtils.openOutputStream(desired, false);
+									IOUtils.write(content, out);
+									out.close(); // don't swallow close Exception if copy completes
+									// normally
+								} finally {
+									IOUtils.closeQuietly(out);
+								}
 							}
 						}
-					}
-					setUpEclipseProjectFiles(dir, project, name);
+						setUpEclipseProjectFiles(dir, project, name);
 
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-				
-//				File currentws = null;
-//				if (OSUtil.isOSX())
-//					currentws= new File(System.getProperty("user.home")+"/bin/eclipse/Eclipse.app/Contents/Eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
-//				
-//				if (OSUtil.isLinux())
-//					currentws= new File(System.getProperty("user.home")+"/bin/eclipse-slober-rbe/eclipse/configuration/.settings/org.eclipse.ui.ide.prefs");
-//				if (OSUtil.isWindows())
-//					currentws= new File("C:\\RBE\\sloeber\\configuration\\.settings\\org.eclipse.ui.ide.prefs");
-//				
-//				try {
-//					BufferedReader reader = new BufferedReader(new FileReader(currentws.getAbsolutePath()));
-//					String line = reader.readLine();
-//					while (line != null) {
-//						//com.neuronrobotics.sdk.common.Log.error(line);
-//						// read next line
-//						line = reader.readLine();
-//						if(line.startsWith("RECENT_WORKSPACES=")) {
-//							String[] split = line
-//									.split("=");
-//							String[] split2 = split[1].split("\\\\n");
-//							if(OSUtil.isWindows()) {
-//								String replaceAll = split2[0]
-//										.replace("\\:", ":");
-//								String replaceAll2 = replaceAll
-//										.replace("\\\\", "\\");
-//								
-//								ws=replaceAll2;
-//							}else {
-//								ws= split2[0];
-//							}
-//							com.neuronrobotics.sdk.common.Log.error("Using workspace config: "+line);
-//							
-//							break;
-//						}
-//					}
-//					reader.close();
-//				
-//
-//				}catch(Exception ex) {
-//					//ex.printStackTrace();
-//					com.neuronrobotics.sdk.common.Log.error("Workspace missing, opening eclipse");
-//				}
+
 				String ws = getEclipseWorkspace();
 
-				com.neuronrobotics.sdk.common.Log.error("Opening workspace "+ws);
-				File wsDir=  new File(ws);
+				com.neuronrobotics.sdk.common.Log.error("Opening workspace " + ws);
+				File wsDir = new File(ws);
 				Map<String, String> env = getEnvironment("eclipse");
-				HashMap<String, String> environment = new HashMap<>();;
+				HashMap<String, String> environment = new HashMap<>();
+				;
 				environment.putAll(env);
-				File settings=new File(ScriptingEngine.getWorkspace().getAbsolutePath()+delim()+"appdata"+delim()+"bowler-settings.epf");
-				File java=DownloadManager.getConfigExecutable("java8", null);
-				if(!wsDir.exists()) {
-					File prefssource =  ScriptingEngine.fileFromGit(
+				File settings = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "appdata"
+						+ delim() + "bowler-settings.epf");
+				File java = DownloadManager.getConfigExecutable("java8", null);
+				if (!wsDir.exists()) {
+					File prefssource = ScriptingEngine.fileFromGit(
 							"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
 							"settingsTEMPLATE.epf");
 					try {
-						String  template =FileUtils.readFileToString(prefssource, StandardCharsets.UTF_8);
-						template=template.replace("MYWORKSPACES",eclipseSanatize(getEclipseWorkspace()));
-						template=template.replace("MYJAVAHOME",eclipseSanatize(java.getAbsolutePath()));
+						String template = FileUtils.readFileToString(prefssource, StandardCharsets.UTF_8);
+						template = template.replace("MYWORKSPACES", eclipseSanatize(getEclipseWorkspace()));
+						template = template.replace("MYJAVAHOME", eclipseSanatize(java.getAbsolutePath()));
 						FileUtils.write(settings, template, StandardCharsets.UTF_8);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -198,48 +166,52 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 				}
 				environment.put("JAVA_HOME", java.getAbsolutePath());
-				if(!isEclipseOpen( ws)) {
-					File exeFile = getConfigExecutable("eclipse",null);
+				if (!isEclipseOpen(ws)) {
+					File exeFile = getConfigExecutable("eclipse", null);
 					String eclipseEXE = exeFile.getAbsolutePath();
-					run(environment,this,ScriptingEngine.getWorkspace() ,System.out, Arrays.asList(eclipseEXE, "-data", ws));
-					while (!isEclipseOpen( ws)) {
+					run(environment, this, ScriptingEngine.getWorkspace(), System.out,
+							Arrays.asList(eclipseEXE, "-data", ws));
+					while (!isEclipseOpen(ws)) {
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 							// Auto-generated catch block
 							e.printStackTrace();
 						}
-						com.neuronrobotics.sdk.common.Log.error("Waiting for workspace, please wait until it opens "+ws);
-						//return;
+						com.neuronrobotics.sdk.common.Log
+								.error("Waiting for workspace, please wait until it opens " + ws);
+						// return;
 					}
 					this.onProcessExit(0);
-				}else {
-					com.neuronrobotics.sdk.common.Log.error("Eclipse is already open at "+ws);
+				} else {
+					com.neuronrobotics.sdk.common.Log.error("Eclipse is already open at " + ws);
 				}
-				
+
 				File projects = new File(ws + delim() + ".metadata" + delim() + ".plugins" + delim()
 						+ "org.eclipse.core.resources" + delim() + ".projects" + delim());
 				// For each pathname in the pathnames array
 				if (projects.exists()) {
 					for (String pathname : projects.list()) {
 						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
-							com.neuronrobotics.sdk.common.Log.error("Project "+name+" is already in the workspace!");
+							com.neuronrobotics.sdk.common.Log
+									.error("Project " + name + " is already in the workspace!");
 							advanced.setDisable(false);
 							return;
 						}
 					}
 				}
-				File exeFile = getRunExecutable("eclipse",null);
+				File exeFile = getRunExecutable("eclipse", null);
 				String eclipseEXE = exeFile.getAbsolutePath();
-				if(OSUtil.isOSX()) {
-					File app=exeFile;
-					while(!app.getName().toLowerCase().endsWith(".app")) {
-						app=app.getParentFile();
+				if (OSUtil.isOSX()) {
+					File app = exeFile;
+					while (!app.getName().toLowerCase().endsWith(".app")) {
+						app = app.getParentFile();
 					}
-					
-					run(environment,this,dir,System.err, Arrays.asList("open","-a", app.getAbsolutePath(), dir.getAbsolutePath() ));
-				}else
-					run(environment,this,dir,System.err,Arrays.asList( eclipseEXE, dir.getAbsolutePath() ));
+
+					run(environment, this, dir, System.err,
+							Arrays.asList("open", "-a", app.getAbsolutePath(), dir.getAbsolutePath()));
+				} else
+					run(environment, this, dir, System.err, Arrays.asList(eclipseEXE, dir.getAbsolutePath()));
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
@@ -248,10 +220,10 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	private CharSequence eclipseSanatize(String absolutePath) {
-		if(isWin()) {
+		if (isWin()) {
 			// this replaces one slash with 2 slashes, just trust me
-			absolutePath=absolutePath.replaceAll("\\\\", "\\\\\\\\");
-			absolutePath=absolutePath.replaceAll(":", "\\\\:");
+			absolutePath = absolutePath.replaceAll("\\\\", "\\\\\\\\");
+			absolutePath = absolutePath.replaceAll(":", "\\\\:");
 		}
 		return absolutePath;
 	}
@@ -259,27 +231,27 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	public static String getEclipseWorkspace() {
 		return ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "eclipse-bowler-workspace";
 	}
-	
+
 	private boolean isEclipseOpen(String ws) {
-		if(!new File(ws).exists())
+		if (!new File(ws).exists())
 			return false;
 		String lockFile = ws + delim() + ".metadata" + delim() + ".lock";
-		com.neuronrobotics.sdk.common.Log.error("Checking WS "+lockFile);
+		com.neuronrobotics.sdk.common.Log.error("Checking WS " + lockFile);
 		File lock = new File(lockFile);
-		if(!lock.exists())
+		if (!lock.exists())
 			return false;
 
 		try {
 			com.neuronrobotics.sdk.common.Log.error("Attempting to test workspace lockfile...");
 			RandomAccessFile raFile = new RandomAccessFile(lock.getAbsoluteFile(), "rw");
 			FileLock fileLock = raFile.getChannel().tryLock(0, 1, false);
-			if(fileLock==null) {
+			if (fileLock == null) {
 				raFile.close();
 				return true;
 			}
 			fileLock.release();
 			raFile.close();
-			
+
 		} catch (Exception ex) {
 			// lock failed eclipse is open already
 			return true;
