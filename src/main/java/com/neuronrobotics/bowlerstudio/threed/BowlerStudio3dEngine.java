@@ -121,6 +121,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 	/** The grid group. */
 	final Group gridGroup = new Group();
+	/** The grid group. */
+	private final Group rulerGroup = new Group();
 	/** The world. */
 	final Xform world = new Xform();
 
@@ -1109,8 +1111,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 						zrulerImage.getTransforms().addAll(zRuler, downset);
 						rulerImage.getTransforms().addAll(xp, downset);
 						yrulerImage.getTransforms().addAll(yRuler, downset);
+						
 						ObservableList<Node> children = gridGroup.getChildren();
-						children.addAll(zrulerImage, rulerImage, yrulerImage,getGrid());
+						rulerGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage);
+						children.addAll(rulerGroup,getGrid());
 						//children.addAll(grid);
 						
 						//children.addAll(groundView);
@@ -1990,5 +1994,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 	public void setSelectedCsg(Collection<CSG> selectedCsg) {
 		for(CSG c:selectedCsg)
 			selectObjectsSourceFile(c);
+	}
+	public Group getRulerGroup() {
+		return rulerGroup;
 	}
 }
