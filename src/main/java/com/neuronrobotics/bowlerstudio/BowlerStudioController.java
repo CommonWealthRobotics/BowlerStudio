@@ -158,6 +158,8 @@ public class BowlerStudioController implements IScriptEventListener {
 			}.start();
 
 			String key = t.getScripting().getGitRepo() + ":" + t.getScripting().getGitFile();
+			if(key.length()==1)
+				throw new RuntimeException("Failed to create a file key");
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());
 			files.add(t.getScripting().getGitFile());
@@ -174,12 +176,15 @@ public class BowlerStudioController implements IScriptEventListener {
 
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
+			System.err.println("Open Tab " + file.getAbsolutePath());
+
 			fileTab.setOnCloseRequest(event -> {
+				
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
 				ConfigurationDatabase.removeObject("studio-open-git", key);
 				t.getScripting().close();
-				com.neuronrobotics.sdk.common.Log.error("Closing " + file.getAbsolutePath());
+				System.err.println("Closing " + file.getAbsolutePath());
 			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
