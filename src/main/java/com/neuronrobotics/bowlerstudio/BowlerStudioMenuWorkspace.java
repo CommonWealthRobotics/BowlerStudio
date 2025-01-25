@@ -35,7 +35,7 @@ public class BowlerStudioMenuWorkspace {
 	private static final String key = "workspaceList";
 	private static String catagory = "list";
 	private static Menu workspaceMenu;
-	private static final int maxMenueSize = 20;
+	private static final int maxMenueSize = 40;
 	private static boolean sorting = false;
 	private static HashMap<String, Integer> rank = new HashMap<String, Integer>();
 	private static boolean running = false;
@@ -139,7 +139,10 @@ public class BowlerStudioMenuWorkspace {
 		data.add(url);
 		data.add(menueMessage);
 		wp.add(0, data);
+		if(wp.size()>=maxMenueSize)
+			wp.remove(wp.size()-1);
 		ConfigurationDatabase.save();
+		
 //
 //		Object object = ConfigurationDatabase.getObject(key, url, null);
 //		if (object == null) {
