@@ -498,7 +498,7 @@ public class BowlerStudioController implements IScriptEventListener {
 
 		} else if (Polygon.class.isInstance(o)) {
 			Polygon poly = (Polygon) o;
-			List<Vertex> vertices = poly.vertices;
+			List<Vertex> vertices = poly.getVertices();
 			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
 					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
 			double stroke = 0.5;
@@ -519,7 +519,7 @@ public class BowlerStudioController implements IScriptEventListener {
 					getBowlerStudio().addNode(current);
 				}
 			});
-			BowlerStudioController.setSelectedCsg(poly.vertices.get(0).pos);
+			BowlerStudioController.setSelectedCsg(poly.getVertices().get(0).pos);
 			return;
 		}else if (Vector3d.class.isInstance(o)) {
 			Vector3d v=(Vector3d)o;
