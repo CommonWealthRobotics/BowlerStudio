@@ -681,31 +681,16 @@ public class BowlerStudio extends Application {
 	
 	public static void ensureUpdated(String ... urls) {
 		for(String s:urls) {
-
+			if(s==null)
+				continue;
 			ScriptingEngine.cloneRepo(s, null);
 			try {
 				ScriptingEngine.pull(s);
-			} catch (RefAlreadyExistsException e) {
+			} catch (Throwable e) {
 				// Auto-generated catch block
 				e.printStackTrace();
-			} catch (RefNotFoundException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidRefNameException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidRemoteException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransportException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// Auto-generated catch block
-				e.printStackTrace();
+				//ScriptingEngine.deleteRepo(s);
+				//ScriptingEngine.cloneRepo(s, null);
 			}
 		}
 	}
