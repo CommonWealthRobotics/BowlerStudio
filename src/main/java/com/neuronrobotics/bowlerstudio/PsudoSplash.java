@@ -76,7 +76,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			Platform.runLater(() -> {
 				singelton.popupStage.show();
 			});
-			new Exception("Opening Splash").printStackTrace();
+			//new Exception("Opening Splash").printStackTrace();
 		}
 		return singelton;
 	}
@@ -186,7 +186,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		Platform.runLater(() -> {
 			popupStage.hide();
 		});
-		new Exception("Closing Splash").printStackTrace();
+		//new Exception("Closing Splash").printStackTrace();
 	}
 
 	void updateSplash() {
