@@ -24,44 +24,46 @@ import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitLogProgressMonitor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.video.OSUtil;
 
-import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.paint.Color;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class PsudoSplash implements GitLogProgressMonitor {
-	// private static Color TextColor = Color.WHITE;
+	// Static configuration
 	private static int versionX = 65;
 	private static int versionY = 45;
 	private static int messageX = 65;
 	private static int messageY = 280;
-
 	private static int logY = 120;
 	private static int logX = 15;
-
-	// JFrame interfaceFrame;
-	private String message = "";
-	private String log = "";
-	private static URL resource = PsudoSplash.class.getResource("splash.png");
-
 	private static PsudoSplash singelton = null;
-	private long timeSinceLastUpdate = 0;
+	private static URL resource = PsudoSplash.class.getResource("splash.png");
 	private static URL resource2;
 	private static Color TextColor;
-
+	
+	
+	// Class Variables
+	private long timeOfLastUpdate=0;
+	private String message = "";
+	private String log = "";
 	private Stage popupStage;
 	private ImageView imageView;
 	private Scene popupScene;
-	private StackPane popupRoot;
+	private AnchorPane popupRoot;
+	private Label verL = new Label();
+	private Label logL = new Label();
+	private Label mesL = new Label();
+
 
 	public static boolean isInitialized() {
 		return singelton != null;
@@ -70,14 +72,18 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public static PsudoSplash get() {
 		if (singelton == null)
 			singelton = new PsudoSplash();
+		if(!singelton.isVisableSplash()) {
+			Platform.runLater(() -> {
+				singelton.popupStage.show();
+			});
+			new Exception("Opening Splash").printStackTrace();
+		}
 		return singelton;
 	}
 
 	public static void close() {
 		if (singelton != null)
 			singelton.closeSplashLocal();
-		singelton = null;
-
 	}
 
 	@Override
@@ -85,10 +91,6 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		// e.printStackTrace(System.err);
 		log = update;
 		updateSplash();
-
-		int length = update.length();
-		// com.neuronrobotics.sdk.common.Log.error(update.substring(0,
-		// length>100?100:length));
 	}
 
 	public static int getVersionX() {
@@ -123,7 +125,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			// Always show on top
 			popupStage.setAlwaysOnTop(true);
 
-			popupRoot = new StackPane();
+			popupRoot = new AnchorPane();
 
 			// Load your image
 
@@ -141,6 +143,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 			// Add the image to the popup root
 			popupRoot.getChildren().add(imageView);
+			popupRoot.getChildren().add(verL);
+			popupRoot.getChildren().add(mesL);
+			popupRoot.getChildren().add(logL);
 
 			popupScene = new Scene(popupRoot);
 			popupScene.setFill(null); // Make scene background transparent
@@ -163,29 +168,50 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupStage.show();
 			updateSplash();
 		});
+		try {
+			Thread.sleep(20);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	boolean isVisableSplash() {
-		if (popupStage == null)
+	public static boolean isVisableSplash() {
+		if (singelton.popupStage == null)
 			return false;
-		return popupStage.isShowing();
+		return singelton.popupStage.isShowing();
 	}
 
 	private void closeSplashLocal() {
 		Platform.runLater(() -> {
 			popupStage.hide();
 		});
+		new Exception("Closing Splash").printStackTrace();
 	}
 
 	void updateSplash() {
-		if (popupScene != null)
+		if(System.currentTimeMillis()-timeOfLastUpdate<100) {
+			return;
+		}
+		timeOfLastUpdate=System.currentTimeMillis();
+		if (popupScene != null) {
+			System.out.println("Updating Splash");
 			Platform.runLater(() -> {
 				popupScene.setFill(null);
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
 				popupRoot.setStyle("-fx-background-color: transparent;");
+				logL.setLayoutX(logX);
+				logL.setLayoutY(logY);
+				mesL.setLayoutX(messageX);
+				mesL.setLayoutY(messageY);
+				verL.setLayoutX(versionX);
+				verL.setLayoutY(versionY);
+				logL.setText(log);
+				mesL.setText(message);
+				verL.setText(StudioBuildInfo.getVersion());
 			}); // Make scene background transparent
-
+		}
 	}
 
 	public String getMessage() {

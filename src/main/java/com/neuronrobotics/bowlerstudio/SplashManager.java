@@ -37,7 +37,7 @@ public class SplashManager {
 			return BowlerStudio.splash.isVisible();
 		if(!PsudoSplash.isInitialized())
 			return false;
-		return PsudoSplash.get().isVisableSplash();
+		return PsudoSplash.isVisableSplash();
 	}
 
 	private static void updateSplash() {
