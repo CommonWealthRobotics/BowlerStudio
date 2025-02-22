@@ -49,7 +49,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private static PsudoSplash singelton = null;
 	private static URL resource = PsudoSplash.class.getResource("splash.png");
 	private static URL resource2;
-	private static Color TextColor;
+	private static Color TextColor = Color.WHITE;
 	
 	
 	// Class Variables
@@ -63,6 +63,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private Label verL = new Label();
 	private Label logL = new Label();
 	private Label mesL = new Label();
+	private double setWidth;
+	private double scale;
 
 
 	public static boolean isInitialized() {
@@ -90,7 +92,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public void onUpdate(String update, Exception e) {
 		// e.printStackTrace(System.err);
 		log = update;
-		updateSplash();
+		if(isVisableSplash())
+			updateSplash();
 	}
 
 	public static int getVersionX() {
@@ -140,6 +143,15 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			System.out.println("Loading splash image: " + path);
 			Image image = new Image(path);
 			imageView = new ImageView(image);
+			double height = image.getHeight();
+			double width = image.getWidth();
+			
+			setWidth = 800;
+			
+			scale = setWidth/width;
+			double caclulatedHeight = scale*height;
+			imageView.setFitWidth(setWidth);
+			imageView.setFitHeight(caclulatedHeight);
 
 			// Add the image to the popup root
 			popupRoot.getChildren().add(imageView);
@@ -195,18 +207,24 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		}
 		timeOfLastUpdate=System.currentTimeMillis();
 		if (popupScene != null) {
-			System.out.println("Updating Splash");
+			//System.out.println("Updating Splash "+imageView.getFitWidth());
 			Platform.runLater(() -> {
+				
 				popupScene.setFill(null);
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
 				popupRoot.setStyle("-fx-background-color: transparent;");
-				logL.setLayoutX(logX);
-				logL.setLayoutY(logY);
-				mesL.setLayoutX(messageX);
-				mesL.setLayoutY(messageY);
-				verL.setLayoutX(versionX);
-				verL.setLayoutY(versionY);
+				logL.setLayoutX(logX*scale);
+				logL.setLayoutY(logY*scale);
+				mesL.setLayoutX(messageX*scale);
+				mesL.setLayoutY(messageY*scale);
+				verL.setLayoutX(versionX*scale);
+				verL.setLayoutY(versionY*scale);
+				
+				logL.setTextFill(TextColor);
+				mesL.setTextFill(TextColor);
+				verL.setTextFill(TextColor);
+				
 				logL.setText(log);
 				mesL.setText(message);
 				verL.setText(StudioBuildInfo.getVersion());
