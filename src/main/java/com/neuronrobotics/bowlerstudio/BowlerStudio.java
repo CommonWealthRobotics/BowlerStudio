@@ -851,8 +851,13 @@ public class BowlerStudio extends Application {
 				// mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 				try {
 					renderSplashFrame(96, "Controller load");
-
-					mainControllerPanel.load();
+					BowlerStudio.runLater(() -> {
+						try {
+							mainControllerPanel.load();
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					});
 				} catch (Exception e) {
 					reporter.uncaughtException(Thread.currentThread(), e);
 
@@ -861,7 +866,8 @@ public class BowlerStudio extends Application {
 
 				Parent root = mainControllerPanel.getRoot();
 				FontSizeManager.addListener(fontNum->{
-					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
+					BowlerStudioController bowlerStudio = BowlerStudioController.getBowlerStudio();
+					bowlerStudio.setFontSize(fontNum);
 					double tmp = FontSizeManager.getImageScale()*9;
 
 					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
