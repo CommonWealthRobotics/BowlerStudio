@@ -20,6 +20,7 @@ import java.net.URL;
 //import javax.swing.UIManager;
 //import javax.swing.UnsupportedLookAndFeelException;
 
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitLogProgressMonitor;
@@ -158,6 +159,13 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupRoot.getChildren().add(verL);
 			popupRoot.getChildren().add(mesL);
 			popupRoot.getChildren().add(logL);
+			
+			FontSizeManager.addListener(fontNum->{
+				double tmp = fontNum*0.3;
+				mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+				logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+				verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+			});
 
 			popupScene = new Scene(popupRoot);
 			popupScene.setFill(null); // Make scene background transparent
