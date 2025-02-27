@@ -159,13 +159,6 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupRoot.getChildren().add(verL);
 			popupRoot.getChildren().add(mesL);
 			popupRoot.getChildren().add(logL);
-			
-			FontSizeManager.addListener(fontNum->{
-				double tmp = fontNum*0.3;
-				mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-				logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-				verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-			});
 
 			popupScene = new Scene(popupRoot);
 			popupScene.setFill(null); // Make scene background transparent
@@ -194,6 +187,12 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FontSizeManager.addListener(fontNum->{
+			double tmp =FontSizeManager.getImageScale()*9;
+			mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+			logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+			verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+		});
 	}
 
 	public static boolean isVisableSplash() {
