@@ -54,8 +54,8 @@ public class SplashManager {
 		PsudoSplash.get().setMessage(string);
 		updateSplash();
 
-		if (Platform.isFxApplicationThread())
-			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
+//		if (Platform.isFxApplicationThread())
+//			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
 		int index=0;
 		while(!SplashManager.isVisableSplash()) {
 			System.out.println("Waiting for splash to open before moving on");

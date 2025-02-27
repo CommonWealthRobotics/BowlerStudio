@@ -810,7 +810,7 @@ public class BowlerStudio extends Application {
 
 		}
 		com.neuronrobotics.sdk.common.Log.error("Class loader: " + Thread.currentThread().getContextClassLoader());
-		new Thread(() -> {
+		//new Thread(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 			try {
@@ -860,18 +860,13 @@ public class BowlerStudio extends Application {
 					});
 				} catch (Exception e) {
 					reporter.uncaughtException(Thread.currentThread(), e);
+					System.exit(5);
 
 				}
 				renderSplashFrame(96, "UI Launch...");
 
 				Parent root = mainControllerPanel.getRoot();
-				FontSizeManager.addListener(fontNum->{
-					BowlerStudioController bowlerStudio = BowlerStudioController.getBowlerStudio();
-					bowlerStudio.setFontSize(fontNum);
-					double tmp = FontSizeManager.getImageScale()*9;
 
-					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-				});
 				
 				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getWidth();
@@ -915,6 +910,13 @@ public class BowlerStudio extends Application {
 					// this must be called after the primary stage is shown
 					// https://bugs.openjdk.java.net/browse/JDK-8132900
 					DockPane.initializeDefaultUserAgentStylesheet();
+					FontSizeManager.addListener(fontNum->{
+						BowlerStudioController bowlerStudio = BowlerStudioController.getBowlerStudio();
+						bowlerStudio.setFontSize(fontNum);
+						double tmp = FontSizeManager.getImageScale()*9;
+
+						root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+					});
 				});
 
 				primaryStage.setOnCloseRequest(arg0 -> {
@@ -974,7 +976,7 @@ public class BowlerStudio extends Application {
 				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
-		}).start();
+		//}).start();
 
 	}
 
