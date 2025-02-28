@@ -147,7 +147,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			double height = image.getHeight();
 			double width = image.getWidth();
 			
-			setWidth = 800;
+			setWidth = 500;
 			
 			scale = setWidth/width;
 			double caclulatedHeight = scale*height;
