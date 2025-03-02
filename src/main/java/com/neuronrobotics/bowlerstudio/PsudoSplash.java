@@ -188,7 +188,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			e.printStackTrace();
 		}
 		FontSizeManager.addListener(fontNum->{
-			double tmp =FontSizeManager.getImageScale()*9;
+			double tmp =FontSizeManager.getImageScale()*14;
 			mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 			logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
 			verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
