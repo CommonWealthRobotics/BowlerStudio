@@ -244,8 +244,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	}
 
 	public void setMessage(String message) {
-		if (message.length() > 23) {
-			this.message = message.subSequence(0, 23).toString();
+		if (message.length() > 45) {
+			this.message = message.subSequence(0, 45).toString();
 			// new RuntimeException().printStackTrace();
 		} else
 			this.message = message;
