@@ -677,14 +677,17 @@ public class MobleBaseMenueFactory {
 
 					com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
 					while (true) {
+						ThreadUtil.wait(500);
+						Log.warning(gist + " not built yet");
 						try {
 							ScriptingEngine.fileFromGit(gitURL, filename);
 							break;
 						} catch (Exception e) {
-
+							
+							System.out.println("Waiting for repo "+e.getMessage());
+							e.printStackTrace();
 						}
-						ThreadUtil.wait(500);
-						Log.warning(gist + " not built yet");
+		
 					}
 					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
 					com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);

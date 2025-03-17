@@ -122,7 +122,7 @@ public class Terminal {
 			history = BowlerKernel.loadHistory();
 		} catch (IOException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			//e1.printStackTrace();
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override

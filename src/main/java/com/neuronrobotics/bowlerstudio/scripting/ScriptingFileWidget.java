@@ -481,7 +481,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: " + remote);
 					ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
 					File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
-					ScriptingEngine.deleteRepo(remote);
+					//ScriptingEngine.deleteRepo(remote);
 					Thread.sleep(500);
 					BowlerStudio.createFileTab(file);
 				} catch (Exception e1) {
