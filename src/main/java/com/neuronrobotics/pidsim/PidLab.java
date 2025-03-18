@@ -17,7 +17,7 @@ public class PidLab extends AbstractBowlerStudioTab {
 	
 	@Override
 	public void onTabClosing() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 
@@ -42,7 +42,7 @@ public class PidLab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void onTabReOpening() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 

@@ -113,13 +113,13 @@ public class BowlerStudioModularFrame {
 					setTutorialDockNode(new DockNode(webtab.getContent(), webtab.getText(), webtab.getGraphic()));
 					getTutorialDockNode().setPrefSize(1024, 730);
 				} catch (IOException | InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 			});;
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -164,7 +164,7 @@ public class BowlerStudioModularFrame {
 			WindowLoader3d.load();
 			commandLine.load();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 			throw e;
 		}
@@ -199,7 +199,7 @@ public class BowlerStudioModularFrame {
 		// focus on the tutorial to start
 		BowlerStudio.runLater(() -> getTutorialDockNode().requestFocus());
 		connectionManagerDockNode.onMouseClickedProperty().addListener((a, b, c) -> {
-			System.err.println("Cloick");
+			com.neuronrobotics.sdk.common.Log.error("Cloick");
 		});
 
 	}
@@ -363,7 +363,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	public ScriptingFileWidget createFileTab(File file) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return controller.createFileTab(file);
 	}
 
@@ -376,7 +376,7 @@ public class BowlerStudioModularFrame {
 					addTab(newTab, true);
 				}
 			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -384,7 +384,7 @@ public class BowlerStudioModularFrame {
 	
 	public void closeTab(Tab newTab) {
 		if (webTabs.get(newTab) != null) {
-			System.err.println("Closing tab: " + newTab.getText());
+			com.neuronrobotics.sdk.common.Log.error("Closing tab: " + newTab.getText());
 			DockNode dn=webTabs.get(newTab);
 			webTabs.remove(newTab);
 			if(dn!=null)
@@ -402,7 +402,7 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void addTab(Tab newTab, boolean b) {
-		System.err.println("Loading a new tab: " + newTab.getText());
+		com.neuronrobotics.sdk.common.Log.error("Loading a new tab: " + newTab.getText());
 		if (webTabs.get(newTab) != null) {
 			BowlerStudio.runLater(() -> webTabs.get(newTab).requestFocus());
 		} else {

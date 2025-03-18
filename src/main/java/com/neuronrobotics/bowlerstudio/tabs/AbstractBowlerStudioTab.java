@@ -64,14 +64,14 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 				}
 				else {
 					// Not a bug, expected to ensure one device disconnects the rest of the dependent devices
-//					System.err.println("Device type was "+source.getClass()+" named "+source.getScriptingName()+" expected "+pm.getClass()+" named "+pm.getScriptingName());
+//					com.neuronrobotics.sdk.common.Log.error("Device type was "+source.getClass()+" named "+source.getScriptingName()+" expected "+pm.getClass()+" named "+pm.getScriptingName());
 //					new Exception().printStackTrace();
 				}
 			}
 			
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -95,7 +95,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	public void setOnCloseRequest(EventHandler<Event> value){
 		this.localCopyOfEventHandler = value;
 		super.setOnCloseRequest(value);
-		System.err.println(" A close requested for "+getText());
+		com.neuronrobotics.sdk.common.Log.error(" A close requested for "+getText());
 	}
     public void requestClose() {
     	BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(this);
@@ -115,7 +115,7 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	
 	@Override
 	public void handle(Event event){
-		System.out.println("Closing "+getText());
+		com.neuronrobotics.sdk.common.Log.error("Closing "+getText());
 		onTabClosing();
 	}
 }

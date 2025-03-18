@@ -1,177 +1,241 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.awt.AlphaComposite;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.net.URISyntaxException;
+//import java.awt.AlphaComposite;
+//import java.awt.BorderLayout;
+//import java.awt.Color;
+//import java.awt.Dimension;
+//import java.awt.EventQueue;
+//import java.awt.Graphics;
+//import java.awt.Graphics2D;
+//import java.awt.RenderingHints;
+//import java.awt.image.BufferedImage;
+//import java.io.IOException;
 import java.net.URL;
+//
+//import javax.imageio.ImageIO;
+//import javax.swing.JFrame;
+//import javax.swing.JPanel;
+//import javax.swing.SwingUtilities;
+//import javax.swing.UIManager;
+//import javax.swing.UnsupportedLookAndFeelException;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
+import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitLogProgressMonitor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
-public class PsudoSplash implements GitLogProgressMonitor{
-	JFrame interfaceFrame;
+import eu.mihosoft.vrl.v3d.JavaFXInitializer;
+import javafx.scene.paint.Color;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+public class PsudoSplash implements GitLogProgressMonitor {
+	// Static configuration
+	private static int versionX = 65;
+	private static int versionY = 45;
+	private static int messageX = 65;
+	private static int messageY = 280;
+	private static int logY = 120;
+	private static int logX = 15;
+	private static PsudoSplash singelton = null;
+	private static URL resource = PsudoSplash.class.getResource("splash.png");
+	private static URL resource2;
+	private static Color TextColor = Color.WHITE;
+	
+	
+	// Class Variables
+	private long timeOfLastUpdate=0;
 	private String message = "";
 	private String log = "";
-	private static URL resource = PsudoSplash.class.getResource("splash.png");
+	private Stage popupStage;
+	private ImageView imageView;
+	private Scene popupScene;
+	private AnchorPane popupRoot;
+	private Label verL = new Label();
+	private Label logL = new Label();
+	private Label mesL = new Label();
+	private double setWidth;
+	private double scale;
+
+
+	public static boolean isInitialized() {
+		return singelton != null;
+	}
+
+	public static PsudoSplash get() {
+		if (singelton == null)
+			singelton = new PsudoSplash();
+		if(!singelton.isVisableSplash()) {
+			Platform.runLater(() -> {
+				singelton.popupStage.show();
+			});
+			//new Exception("Opening Splash").printStackTrace();
+		}
+		return singelton;
+	}
+
+	public static void close() {
+		if (singelton != null)
+			singelton.closeSplashLocal();
+	}
 
 	@Override
 	public void onUpdate(String update, Exception e) {
-		//e.printStackTrace(System.err);
-		log=update;
-		updateSplash();
-	}
-	class CustomPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 8749662598444052868L;
-		private BufferedImage image;
-
-		public CustomPanel() {
-			setOpaque(false);
-			try {
-				/*
-				 * Since Images are Application Resources, it's always best to access them in
-				 * the form of a URL, instead of File, as you are doing. Uncomment this below
-				 * line and watch this answer of mine, as to HOW TO ADD IMAGES TO THE PROJECT
-				 * https://stackoverflow.com/a/9866659/1057230 In order to access images with
-				 * getClass().getResource(path) here your Directory structure has to be like
-				 * this Project | ------------------------ | | bin src | | --------- .java files
-				 * | | package image(folder) ( or | .class 404error.jpg files, if no package
-				 * exists.)
-				 */
-				image = ImageIO.read(getResource());
-
-			} catch (IOException ioe) {
-				System.out.println("Unable to fetch image.");
-				ioe.printStackTrace();
-			}
-		}
-
-		/*
-		 * Make this one customary habbit, of overriding this method, when you extends a
-		 * JPanel/JComponent, to define it's Preferred Size. Now in this case we want it
-		 * to be as big as the Image itself.
-		 */
-		@Override
-		public Dimension getPreferredSize() {
-			return (new Dimension(image.getWidth(), image.getHeight()));
-		}
-
-		/*
-		 * This is where the actual Painting Code for the JPanel/JComponent goes. Here
-		 * we will draw the image. Here the first line super.paintComponent(...), means
-		 * we want the JPanel to be drawn the usual Java way first, then later on we
-		 * will add our image to it, by writing the other line, g.drawImage(...).
-		 */
-		@Override
-		protected void paintComponent(Graphics g) {
-
-			super.paintComponent(g);
-			g.drawImage(image, 0, 0, this);
-			Graphics2D splashGraphics = (Graphics2D) g;
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			// splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(StudioBuildInfo.getVersion(), 65, 45);
-
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			// splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(getMessage(), 65, 280);
-			
-			splashGraphics.setComposite(AlphaComposite.Clear);
-			// splashGraphics.fillRect(65, 270, 200, 40);
-			splashGraphics.setPaintMode();
-			splashGraphics.setColor(Color.WHITE);
-			splashGraphics.drawString(log, 15, 120);
-
-		}
+		// e.printStackTrace(System.err);
+		log = update;
+		if(isVisableSplash())
+			updateSplash();
 	}
 
-	public PsudoSplash() {
-		
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException ex) {
-				} catch (InstantiationException ex) {
-				} catch (IllegalAccessException ex) {
-				} catch (UnsupportedLookAndFeelException ex) {
-				}
+	public static int getVersionX() {
+		return versionX;
+	}
 
-				interfaceFrame = new JFrame("Loading BowlerStudio...");
-				interfaceFrame.setUndecorated(true);
-				interfaceFrame.setLayout(new BorderLayout());
-				CustomPanel contentPane = new CustomPanel();
-				// interfaceFrame.setBackground(Color.black);
-				interfaceFrame.setContentPane(contentPane);
-				interfaceFrame.pack();
-				interfaceFrame.setLocationRelativeTo(null);
-				interfaceFrame.setVisible(true);
-				interfaceFrame.setBackground(new Color(0, 0, 0, 0));
-				try {
-					interfaceFrame.setIconImage(ImageIO.read(resource));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		while (interfaceFrame == null)
+	public static void setVersionX(int x) {
+		versionX = x;
+	}
+
+	public static int getVersionY() {
+		return versionY;
+	}
+
+	public static void setVersionY(int y) {
+		versionY = y;
+	}
+
+	private PsudoSplash() {
+
+		Platform.runLater(() -> {
+
 			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				popupStage = new Stage(StageStyle.TRANSPARENT);
+			} catch (IllegalStateException ex) {
+				JavaFXInitializer.go();
+				popupStage = new Stage(StageStyle.TRANSPARENT);
+			}
+			// Use NONE modality to prevent the window from becoming disabled
+			popupStage.initModality(Modality.NONE);
+
+			// Always show on top
+			popupStage.setAlwaysOnTop(true);
+
+			popupRoot = new AnchorPane();
+
+			// Load your image
+
+			String path;
+			try {
+				path = resource.toURI().toString();
+			} catch (URISyntaxException e) {
 				e.printStackTrace();
+				close();
+				return;
 			}
+			System.out.println("Loading splash image: " + path);
+			Image image = new Image(path);
+			imageView = new ImageView(image);
+			double height = image.getHeight();
+			double width = image.getWidth();
+			
+			setWidth = 500;
+			
+			scale = setWidth/width;
+			double caclulatedHeight = scale*height;
+			imageView.setFitWidth(setWidth);
+			imageView.setFitHeight(caclulatedHeight);
+
+			// Add the image to the popup root
+			popupRoot.getChildren().add(imageView);
+			popupRoot.getChildren().add(verL);
+			popupRoot.getChildren().add(mesL);
+			popupRoot.getChildren().add(logL);
+
+			popupScene = new Scene(popupRoot);
+			popupScene.setFill(null); // Make scene background transparent
+
+			popupStage.setScene(popupScene);
+
+			// Optional: Allow the popup to be dragged
+			final double[] xOffset = { 0 };
+			final double[] yOffset = { 0 };
+
+			popupRoot.setOnMousePressed(event -> {
+				xOffset[0] = event.getSceneX();
+				yOffset[0] = event.getSceneY();
+			});
+
+			popupRoot.setOnMouseDragged(event -> {
+				popupStage.setX(event.getScreenX() - xOffset[0]);
+				popupStage.setY(event.getScreenY() - yOffset[0]);
+			});
+			popupStage.show();
+			updateSplash();
+		});
 		try {
-			Thread.sleep(100);
+			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FontSizeManager.addListener(fontNum->{
+			double tmp =FontSizeManager.getImageScale()*14;
+			mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+			logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+			verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+		});
 	}
 
-//	public void setIcon(Image img) {
-//		BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(img, null);
-//		if (interfaceFrame != null)
-//			interfaceFrame.setIconImage(image);
-//	}
-	boolean isVisableSplash() {
-		if (interfaceFrame != null)
-			return interfaceFrame.isVisible();
-		return false;
+	public static boolean isVisableSplash() {
+		if (singelton.popupStage == null)
+			return false;
+		return singelton.popupStage.isShowing();
 	}
 
-	void closeSplashLocal() {
-		if (interfaceFrame != null)
-			interfaceFrame.setVisible(false);
-		//ScriptingEngine.removeLogListener(this);
-		
+	private void closeSplashLocal() {
+		Platform.runLater(() -> {
+			popupStage.hide();
+		});
+		//new Exception("Closing Splash").printStackTrace();
 	}
 
 	void updateSplash() {
-		if (interfaceFrame != null) {
-			interfaceFrame.invalidate();
-			interfaceFrame.repaint();
+		if(System.currentTimeMillis()-timeOfLastUpdate<100) {
+			return;
+		}
+		timeOfLastUpdate=System.currentTimeMillis();
+		if (popupScene != null) {
+			//System.out.println("Updating Splash "+imageView.getFitWidth());
+			Platform.runLater(() -> {
+				
+				popupScene.setFill(null);
+				popupScene.getStylesheets().clear();
+				// Explicitly set an empty style
+				popupRoot.setStyle("-fx-background-color: transparent;");
+				logL.setLayoutX(logX*scale);
+				logL.setLayoutY(logY*scale);
+				mesL.setLayoutX(messageX*scale);
+				mesL.setLayoutY(messageY*scale);
+				verL.setLayoutX(versionX*scale);
+				verL.setLayoutY(versionY*scale);
+				
+				logL.setTextFill(TextColor);
+				mesL.setTextFill(TextColor);
+				verL.setTextFill(TextColor);
+				
+				logL.setText(log);
+				mesL.setText(message);
+				verL.setText(StudioBuildInfo.getVersion());
+			}); // Make scene background transparent
 		}
 	}
 
@@ -180,16 +244,15 @@ public class PsudoSplash implements GitLogProgressMonitor{
 	}
 
 	public void setMessage(String message) {
-		if (message.length() > 23) {
-			this.message = message.subSequence(0, 23).toString();
+		if (message.length() > 45) {
+			this.message = message.subSequence(0, 45).toString();
 			// new RuntimeException().printStackTrace();
 		} else
 			this.message = message;
-		if (interfaceFrame != null) {
-			interfaceFrame.setVisible(true);
-		}
+
 		ScriptingEngine.addLogListener(this);
-		log="";
+		DownloadManager.addLogListener(this);
+		log = "";
 	}
 
 	public static URL getResource() {
@@ -200,5 +263,48 @@ public class PsudoSplash implements GitLogProgressMonitor{
 		resource = r;
 	}
 
+	public static Color getTextColor() {
+		return TextColor;
+	}
+
+	public static void setTextColor(Color textColor) {
+		TextColor = textColor;
+	}
+
+	public static int getMessageX() {
+		return messageX;
+	}
+
+	public static void setMessageX(int messageX) {
+		PsudoSplash.messageX = messageX;
+	}
+
+	public static int getMessageY() {
+		return messageY;
+	}
+
+	public static void setMessageY(int messageY) {
+		PsudoSplash.messageY = messageY;
+	}
+
+	public static int getLogY() {
+		return logY;
+	}
+
+	public static void setLogY(int logY) {
+		PsudoSplash.logY = logY;
+	}
+
+	public static int getLogX() {
+		return logX;
+	}
+
+	public static void setLogX(int logX) {
+		PsudoSplash.logX = logX;
+	}
+
+	public static void setTrayIcon(URL resource2) {
+		PsudoSplash.resource2 = resource2;
+	}
 
 }

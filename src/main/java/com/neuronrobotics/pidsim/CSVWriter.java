@@ -21,7 +21,7 @@ public class CSVWriter {
 		try {
 			fstream = new FileWriter(f.getAbsolutePath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -35,7 +35,7 @@ public class CSVWriter {
 		try {
 			cache = data.createCopy(0, data.getItemCount() - 1);
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -56,7 +56,7 @@ public class CSVWriter {
 		try {
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

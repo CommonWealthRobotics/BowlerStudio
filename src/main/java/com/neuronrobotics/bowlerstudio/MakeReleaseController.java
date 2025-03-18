@@ -96,7 +96,7 @@ public class MakeReleaseController extends Application {
 				}
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
@@ -130,7 +130,7 @@ public class MakeReleaseController extends Application {
 
 			new Thread(() -> {
 				String filename = selectedItem.split("\\.")[0];
-				System.out.println(selectedItem + " selected");
+				com.neuronrobotics.sdk.common.Log.error(selectedItem + " selected");
 				String fileContents;
 				try {
 					fileContents = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/Bowler-Script-Release-CI.git", "TEMPLATE.job")[0];
@@ -142,11 +142,11 @@ public class MakeReleaseController extends Application {
 						ScriptingEngine.tagRepo(gitRepo, newTag);
 						return;
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				

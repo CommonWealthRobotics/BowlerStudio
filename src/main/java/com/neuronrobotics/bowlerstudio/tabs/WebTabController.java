@@ -115,7 +115,7 @@ public class WebTabController {
 			double scale = ((double) fontNum - 10) / 12.0;
 			if (scale < 1)
 				scale = 1;
-			System.out.println("Web scale "+scale);
+			com.neuronrobotics.sdk.common.Log.error("Web scale "+scale);
 //			webview.setScaleX(scale);
 //			webview.setScaleY(scale);
 			double s=scale;
@@ -133,7 +133,7 @@ public class WebTabController {
 			@Override
 			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
 				
-						//System.out.println("Location Changed: "+newValue);
+						//com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
 						BowlerStudio.runLater(() -> {
 							urlField.setText(newValue);
 						});
@@ -152,7 +152,7 @@ public class WebTabController {
 			Current_URL = url.startsWith("http://") ||url.startsWith("https://")
 					|| url.startsWith("file:") ? url : "http://" + url;
 			webEngine.load(Current_URL);
-			System.out.println("Go TO URL " + url);
+			com.neuronrobotics.sdk.common.Log.error("Go TO URL " + url);
 		});
 
 	}

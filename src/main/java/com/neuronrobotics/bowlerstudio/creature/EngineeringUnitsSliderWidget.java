@@ -45,14 +45,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 	private void onSliderMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		editing = true;
-		//System.out.println("Slider moving ");
+		//com.neuronrobotics.sdk.common.Log.error("Slider moving ");
 		getListener().onSliderMoving(this, newAngleDegrees);
 	}
 
 	private void onSliderDoneMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		editing = false;
 		instantValueStore=(newAngleDegrees);
-		//System.out.println("Slider done");
+		//com.neuronrobotics.sdk.common.Log.error("Slider done");
 		getListener().onSliderDoneMoving(this, newAngleDegrees);
 	}
 
@@ -95,10 +95,10 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue,
 					Boolean newPropertyValue) {
 				if (newPropertyValue) {
-					//System.out.println("Textfield on focus");
+					//com.neuronrobotics.sdk.common.Log.error("Textfield on focus");
 					editing = true;
 				} else {
-					//System.out.println("Textfield out focus");
+					//com.neuronrobotics.sdk.common.Log.error("Textfield out focus");
 					editing = false;
 				}
 			}
@@ -115,7 +115,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setMaxWidth(width);
 		setpoint.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			try {
-				//System.err.println("Slider moving = "+newValue);
+				//com.neuronrobotics.sdk.common.Log.error("Slider moving = "+newValue);
 				if (!newValue)
 					onSliderDoneMovingInternal(this, setpoint.getValue());
 			} catch (java.lang.NumberFormatException ex) {
@@ -191,7 +191,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	@Override
 	public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 		updateValue();
-		//System.out.println("Updating value to "+newValue);
+		//com.neuronrobotics.sdk.common.Log.error("Updating value to "+newValue);
 	}
 
 	private void updateValue() {
@@ -234,7 +234,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setValue(value);
 		spv.setText(getFormatted(setpoint.getValue()));
 		setpoint.valueProperty().addListener(this);
-		// System.out.println("Setpoint changed to "+val);
+		// com.neuronrobotics.sdk.common.Log.error("Setpoint changed to "+val);
 	}
 
 	public double getValue() {
@@ -253,13 +253,13 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
 				@Override
 				public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 
 				}
 
 				@Override
 				public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-					// TODO Auto-generated method stub
+					// Auto-generated method stub
 
 				}
 
@@ -298,7 +298,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	 * @param jogIncrement the jogIncrement to set
 	 */
 	public void setJogIncrement(double j) {
-		//System.out.println("Increment set to "+j+" "+units);
+		//com.neuronrobotics.sdk.common.Log.error("Increment set to "+j+" "+units);
 		jogIncrement=Math.abs(j);
 		BowlerStudio.runLater(()->{
 			increment.setText(""+jogIncrement);

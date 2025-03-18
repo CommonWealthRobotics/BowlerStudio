@@ -78,7 +78,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		try {
 			loadCodeFromGist(currentGist, engine);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -135,7 +135,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		if (isOwnedByLoggedInUser)
 			BowlerStudio.createFileTab(currentFile);
 		else {
-			System.out.println("Making Fork...");
+			com.neuronrobotics.sdk.common.Log.error("Making Fork...");
 			String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
 			try {
 				String newGit = ScriptingEngine.fork(currentGit, reponame, "Making fork from web gist");
@@ -166,7 +166,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 		reset();
 		if (scriptRunner != null)
@@ -178,7 +178,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					scriptRunner.interrupt();
 					scriptRunner.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -194,7 +194,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	// }
 
 	private void loadGitLocal(String id, String file) {
-		// System.out.println("Loading "+file+" from "+id);
+		// com.neuronrobotics.sdk.common.Log.error("Loading "+file+" from "+id);
 		String[] code;
 		try {
 			code = ScriptingEngine.codeFromGit(id, file);
@@ -221,7 +221,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
 			} catch (Exception e2) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e2.printStackTrace();
 			}
 
@@ -229,7 +229,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			System.out.println(sw.toString());
+			com.neuronrobotics.sdk.common.Log.error(sw.toString());
 		}
 	}
 
@@ -264,7 +264,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				fileList.add(s);
 		}
 		// for(String s:fileList){
-		// System.out.println("GITS: "+s);
+		// com.neuronrobotics.sdk.common.Log.error("GITS: "+s);
 		// }
 		if (!fileList.isEmpty())
 			loadGitLocal(currentGit, fileList.get(0));
@@ -282,16 +282,16 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				try {
 					currentFile=ScriptingEngine.fileFromGit(currentGit, fileListToDisplay.get(0));
 				} catch (InvalidRemoteException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (TransportException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (GitAPIException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				fileListBox.valueProperty().addListener(this);
@@ -329,7 +329,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					reset();
 
 				} catch (Throwable ex) {
-					System.err.println("Script exception of type= " + ex.getClass().getName());
+					com.neuronrobotics.sdk.common.Log.error("Script exception of type= " + ex.getClass().getName());
 					BowlerStudio.runLater(() -> {
 						try {
 							if (ex.getMessage().contains("sleep interrupted")) {
@@ -361,14 +361,14 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 			scriptRunner.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
 	private void append(String s) {
-		System.out.println(s);
+		com.neuronrobotics.sdk.common.Log.error(s);
 	}
 
 	public String getCode() {
@@ -378,7 +378,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	public void setCode(String string) {
 		String pervious = codeText;
 		codeText = string;
-		// System.out.println(codeText);
+		// com.neuronrobotics.sdk.common.Log.error(codeText);
 		for (IScriptEventListener l : listeners) {
 			l.onScriptChanged(pervious, string, currentFile);
 		}

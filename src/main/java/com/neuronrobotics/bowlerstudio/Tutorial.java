@@ -11,18 +11,25 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import com.neuronrobotics.video.OSUtil;
 
 public class Tutorial {
 	private static int WEBSERVER_PORT = 37037;
-	private static String HOME_Local_URL_ROOT = null;
+	private static final String HOME_Local_URL_ROOT = "/BowlerStudio/Welcome-To-BowlerStudio/";
+	private static final String weburl = "http://CommonWealthRobotics.com"+HOME_Local_URL_ROOT;
 	private static String HOME_URL =null;
 	private static String HOME_Local_URL = null;
 	private static boolean doneLoadingTutorials;
 	private static Boolean startedLoadingTutorials = false;
 	public static String getHomeUrl() throws Exception{
-		File i=null;
 		ConfigurationDatabase.setObject("BowlerStudioConfigs", "tutorialBranch",
 				"deploy");
+		if(OSUtil.isOSX()) {
+			ConfigurationDatabase.setObject("BowlerStudioConfigs", "tutorialSource",
+					weburl);
+			return weburl;
+		}
+		File i=null;
 		String remoteURI = (String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialSource",
 				"https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git");
 		do{
@@ -35,8 +42,6 @@ public class Tutorial {
 					"docs/index.html");
 		}while(!i.exists());
 		ScriptingEngine.pull(remoteURI);
-		HOME_Local_URL_ROOT=(String)ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBaseUrl",
-				"/BowlerStudio/Welcome-To-BowlerStudio/");
 		File indexOfTutorial=i;
 		if(!doneLoadingTutorials ){
 			if(!startedLoadingTutorials){
@@ -54,7 +59,7 @@ public class Tutorial {
 							ResourceHandler resource_handler = new ResourceHandler();
 							resource_handler.setDirectoriesListed(true);
 							resource_handler.setWelcomeFiles(new String[] { "index.html" });
-							System.out.println("Serving "+ indexOfTutorial.getParent());
+							com.neuronrobotics.sdk.common.Log.error("Serving "+ indexOfTutorial.getParent());
 							resource_handler.setResourceBase(indexOfTutorial.getParent());
 		
 							HandlerList handlers = new HandlerList();
@@ -84,7 +89,7 @@ public class Tutorial {
 			if(doneLoadingTutorials )
 					HOME_URL = HOME_Local_URL;
 			else
-				HOME_URL= "http://CommonWealthRobotics.com"+HOME_Local_URL_ROOT;
+				HOME_URL= weburl;
 		}
 		return HOME_URL;
 	}

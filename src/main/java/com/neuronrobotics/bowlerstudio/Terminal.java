@@ -84,7 +84,7 @@ public class Terminal {
 		executionBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 			// BowlerStudio.runLater(() -> {
 			if ((event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN)) {
-				System.err.println("Key pressed " + event.getCode() + " history index = " + historyIndex
+				com.neuronrobotics.sdk.common.Log.error("Key pressed " + event.getCode() + " history index = " + historyIndex
 						+ " history size= " + history.size());
 				if (historyIndex == 0) {
 					String text = executionBox.getText();
@@ -121,8 +121,8 @@ public class Terminal {
 		try {
 			history = BowlerKernel.loadHistory();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// Auto-generated catch block
+			//e1.printStackTrace();
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -147,7 +147,7 @@ public class Terminal {
 		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
 		      });
 		} catch (Exception e2) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -157,7 +157,7 @@ public class Terminal {
 				langaugeIcon.setImage(AssetFactory
 						.loadAsset("Script-Tab-" + langauges.getSelectionModel().getSelectedItem() + ".png"));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -194,7 +194,7 @@ public class Terminal {
 					});
 
 				} catch (Exception ex) {
-					System.err.println("Script exception of type= " + ex.getClass().getName());
+					com.neuronrobotics.sdk.common.Log.error("Script exception of type= " + ex.getClass().getName());
 					BowlerStudio.runLater(() -> {
 						reset();
 					});
@@ -215,7 +215,7 @@ public class Terminal {
 		BowlerStudio.runLater(() -> {
 			executionBox.setText("");
 		});
-		System.out.println(text);
+		com.neuronrobotics.sdk.common.Log.error(text);
 		history.add(text);
 		BowlerKernel.writeHistory(history);
 		if (historyIndex != 0)
@@ -229,7 +229,7 @@ public class Terminal {
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 		reset();
 		if (scriptRunner != null)
@@ -241,7 +241,7 @@ public class Terminal {
 					scriptRunner.interrupt();
 					scriptRunner.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

@@ -48,7 +48,7 @@ public class ExcelWriter {
 			workbook.createSheet("Data", 0);
 			excelSheet = workbook.getSheet(0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -63,7 +63,7 @@ public class ExcelWriter {
 			try {
 				cache = data.createCopy(0, data.getItemCount() - 1);
 			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
@@ -75,10 +75,10 @@ public class ExcelWriter {
 				col++;
 			}
 		} catch (RowsExceededException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (WriteException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		lineOffset+=2;
@@ -89,7 +89,7 @@ public class ExcelWriter {
 			workbook.write();
 			workbook.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

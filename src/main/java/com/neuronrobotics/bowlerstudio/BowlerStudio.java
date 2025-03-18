@@ -6,7 +6,7 @@ import javafx.scene.control.ButtonType;
 //import com.neuronrobotics.kinematicschef.InverseKinematicsEngine;
 import com.neuronrobotics.bowlerkernel.BowlerKernelBuildInfo;
 import com.neuronrobotics.bowlerkernel.Bezier3d.IInteractiveUIElementProvider;
-import com.neuronrobotics.bowlerkernel.Bezier3d.manipulation;
+import com.neuronrobotics.bowlerkernel.Bezier3d.Manipulation;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.BowlerStudioResourceFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GitHubWebFlow;
 import com.neuronrobotics.bowlerstudio.scripting.IApprovalForDownload;
+import com.neuronrobotics.bowlerstudio.scripting.IDownloadManagerEvents;
 import com.neuronrobotics.bowlerstudio.scripting.IURLOpen;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -39,6 +40,8 @@ import com.neuronrobotics.video.OSUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Debug3dProvider;
 import eu.mihosoft.vrl.v3d.IDebug3dProvider;
+import eu.mihosoft.vrl.v3d.Plane;
+import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,6 +54,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
@@ -77,6 +82,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -112,7 +119,7 @@ public class BowlerStudio extends Application {
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
 		if (args.length != 0) {
-			//System.err.println("Arguments detected, starting Kernel mode.");
+			//com.neuronrobotics.sdk.common.Log.error("Arguments detected, starting Kernel mode.");
 			//SplashManager.closeSplash();
 			BowlerKernel.runArgumentsAfterStartup(args, System.currentTimeMillis());
 			return;
@@ -121,7 +128,7 @@ public class BowlerStudio extends Application {
 			makeSymLinkOfCurrentVersion();
 		}catch(Throwable t) {
 			//t.printStackTrace();
-			System.err.println("Symlink not creaded");
+			com.neuronrobotics.sdk.common.Log.error("Symlink not creaded");
 		}
 		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
@@ -170,6 +177,10 @@ public class BowlerStudio extends Application {
 
 		}
 		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
+		//CSG.setPreventNonManifoldTriangles(true);
+		Plane.setEPSILON(1.0e-9);
+		Vector3d.setEXPORTEPSILON(1.0e-10);
+		
 		Debug3dProvider.setProvider(new IDebug3dProvider() {
 
 			@Override
@@ -184,7 +195,7 @@ public class BowlerStudio extends Application {
 			}
 		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
-		manipulation.setUi(new IInteractiveUIElementProvider() {
+		Manipulation.setUi(new IInteractiveUIElementProvider() {
 			public void runLater(Runnable r) {
 				BowlerStudio.runLater(r);
 			}
@@ -208,7 +219,7 @@ public class BowlerStudio extends Application {
 					try {
 						BowlerStudio.openExternalWebpage(toOpe.toURL());
 					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -224,7 +235,7 @@ public class BowlerStudio extends Application {
 		GitHubWebFlow.setName(mykey);
 		String myAssets = AssetFactory.getGitSource();
 		if (PasswordManager.hasNetwork()) {
-			System.err.println("Attempt to log in with disk credentials");
+			com.neuronrobotics.sdk.common.Log.error("Attempt to log in with disk credentials");
 			ScriptingEngine.waitForLogin();
 			if (ScriptingEngine.isLoginSuccess()) {
 
@@ -237,7 +248,7 @@ public class BowlerStudio extends Application {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
 				} catch (Throwable t) {
-					System.err.println("Resetting the configs repo...");
+					com.neuronrobotics.sdk.common.Log.error("Resetting the configs repo...");
 					// clear the configs repo
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
@@ -247,13 +258,13 @@ public class BowlerStudio extends Application {
 //					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
 //							myAssets);
 				renderSplashFrame(20, "DL'ing Image Assets");
-				System.err.println("Asset Repo " + myAssets);
+				com.neuronrobotics.sdk.common.Log.error("Asset Repo " + myAssets);
 
-				System.err.println("Asset intended ver " + StudioBuildInfo.getVersion());
+				com.neuronrobotics.sdk.common.Log.error("Asset intended ver " + StudioBuildInfo.getVersion());
 				ScriptingEngine.cloneRepo(myAssets, null);
 				try {
 					ScriptingEngine.pull(myAssets, "main");
-					System.err.println("Studio version is the same");
+					com.neuronrobotics.sdk.common.Log.error("Studio version is the same");
 				} catch (Exception e) {
 					e.printStackTrace();
 					ScriptingEngine.deleteRepo(myAssets);
@@ -262,7 +273,7 @@ public class BowlerStudio extends Application {
 
 				if (ScriptingEngine.checkOwner(myAssets)) {
 					if (!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
-						System.out.println("Tagging Assets at " + StudioBuildInfo.getVersion());
+						com.neuronrobotics.sdk.common.Log.error("Tagging Assets at " + StudioBuildInfo.getVersion());
 						ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 					}
 				}
@@ -300,10 +311,9 @@ public class BowlerStudio extends Application {
 		renderSplashFrame(81, "CSG database");
 		CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
 
-		// System.err.println("Loading assets ");
+		// com.neuronrobotics.sdk.common.Log.error("Loading assets ");
 
-		// System.err.println("Loading Main.fxml");
-		renderSplashFrame(81, "Find arduino");
+		// com.neuronrobotics.sdk.common.Log.error("Loading Main.fxml");
 		renderSplashFrame(82, "Set up UI");
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -315,9 +325,6 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
-		renderSplashFrame(90, "Loading STL Loader");
-		// Add the engine handeler for STLs
-		ScriptingEngine.addScriptingLanguage(new StlLoader());
 		// add a new link provider to the link factory
 		FirmataLink.addLinkFactory();
 		// Log.enableInfoPrint();
@@ -344,7 +351,7 @@ public class BowlerStudio extends Application {
 			}
 			new Thread(() -> {
 				boolean wasState = ScriptingEngine.isPrintProgress();
-				ScriptingEngine.setPrintProgress(false);
+				//ScriptingEngine.setPrintProgress(false);
 				for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
 					String url = iterator.next();
 
@@ -358,6 +365,18 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
+		DownloadManager.setDownloadEvents(new IDownloadManagerEvents() {
+			
+			@Override
+			public void startDownload() {
+				SplashManager.renderSplashFrame(0, "Downloading...");
+			}
+			
+			@Override
+			public void finishDownload() {
+				SplashManager.closeSplash();
+			}
+		});
 		DownloadManager.setApproval(new IApprovalForDownload() {
 			private ButtonType buttonType = null;
 
@@ -368,7 +387,7 @@ public class BowlerStudio extends Application {
 				BowlerKernel.runLater(() -> {
 					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 					alert.setTitle("Message");
-					alert.setHeaderText("Would you like to download: " + name + "\nfrom:\n" + url);
+					alert.setHeaderText("Would you like add the " + name + " plugin?" );
 					Node root = alert.getDialogPane();
 					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 					stage.setOnCloseRequest(ev -> alert.hide());
@@ -390,13 +409,23 @@ public class BowlerStudio extends Application {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 
 				}
 
 				return buttonType.equals(ButtonType.OK);
+			}
+
+			@Override
+			public void onInstallFail(String url) {
+				try {
+					BowlerStudio.openExternalWebpage(new URL(url));
+				} catch (MalformedURLException e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		renderSplashFrame(92, "Launching UI");
@@ -488,7 +517,7 @@ public class BowlerStudio extends Application {
 				try {
 					Thread.sleep(delay.getSeconds() * 1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 				runLater(action, t);
@@ -547,7 +576,7 @@ public class BowlerStudio extends Application {
 		 * MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg.get(0));
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg); } catch (Exception
-		 * ex) { System.err.println("Base not loaded yet"); }
+		 * ex) { com.neuronrobotics.sdk.common.Log.error("Base not loaded yet"); }
 		 */
 
 	}
@@ -564,7 +593,7 @@ public class BowlerStudio extends Application {
 		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
 		 * - 1)); } catch (Exception ex) { // initialization has no csgs yet }
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
+		 * (Exception ex) { com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet"); }
 		 */
 	}
 	/**
@@ -597,7 +626,7 @@ public class BowlerStudio extends Application {
 		 * MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
 		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
 		 * - 1)); CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { System.err.println("Limb not loaded yet"); }
+		 * (Exception ex) { com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet"); }
 		 */
 	}
 
@@ -606,7 +635,7 @@ public class BowlerStudio extends Application {
 			try {
 				CreatureLab3dController.getEngine().setSelectedCsg(script, lineNumber);
 			} catch (Exception ex) {
-				System.err.println("File not found");
+				com.neuronrobotics.sdk.common.Log.error("File not found");
 			}
 	}
 
@@ -646,44 +675,29 @@ public class BowlerStudio extends Application {
 			//t.printStackTrace();
 			//link = new File("\""+link.getAbsolutePath()+"\"");
 			Path ret = Files.createSymbolicLink( link.toPath(), Paths.get(".", version));
-			System.out.println("Path created "+ret);
+			com.neuronrobotics.sdk.common.Log.error("Path created "+ret);
 		}
 	}
 	
-	private static void ensureUpdated(String ... urls) {
+	public static void ensureUpdated(String ... urls) {
 		for(String s:urls) {
-
+			if(s==null)
+				continue;
 			ScriptingEngine.cloneRepo(s, null);
 			try {
 				ScriptingEngine.pull(s);
-			} catch (RefAlreadyExistsException e) {
-				// TODO Auto-generated catch block
+			} catch (Throwable e) {
+				// Auto-generated catch block
 				e.printStackTrace();
-			} catch (RefNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidRefNameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidRemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransportException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//ScriptingEngine.deleteRepo(s);
+				//ScriptingEngine.cloneRepo(s, null);
 			}
 		}
 	}
 
 //	private static void removeAssets(String myAssets)
 //			throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception {
-//		System.err.println("Clearing assets");
+//		com.neuronrobotics.sdk.common.Log.error("Clearing assets");
 //		ScriptingEngine.deleteRepo(myAssets);
 //		AssetFactory.setGitSource((String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 //				StudioBuildInfo.getVersion());
@@ -783,7 +797,7 @@ public class BowlerStudio extends Application {
 			Thread thread = Thread.currentThread();
 			if (thread.getContextClassLoader() == null) {
 				// seriously Apple??
-				System.err.println("ContextClassLoader Is Missing! (OSX) ");
+				com.neuronrobotics.sdk.common.Log.error("ContextClassLoader Is Missing! (OSX) ");
 				thread.setContextClassLoader(getClass().getClassLoader()); // a
 																			// valid
 																			// ClassLoader
@@ -795,8 +809,8 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
-		System.err.println("Class loader: " + Thread.currentThread().getContextClassLoader());
-		new Thread(() -> {
+		com.neuronrobotics.sdk.common.Log.error("Class loader: " + Thread.currentThread().getContextClassLoader());
+		//new Thread(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 			try {
@@ -837,21 +851,22 @@ public class BowlerStudio extends Application {
 				// mainControllerPanel.setClassLoader(BowlerStudioModularFrame.class.getClassLoader());
 				try {
 					renderSplashFrame(96, "Controller load");
-
-					mainControllerPanel.load();
+					BowlerStudio.runLater(() -> {
+						try {
+							mainControllerPanel.load();
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					});
 				} catch (Exception e) {
 					reporter.uncaughtException(Thread.currentThread(), e);
+					System.exit(5);
 
 				}
 				renderSplashFrame(96, "UI Launch...");
 
 				Parent root = mainControllerPanel.getRoot();
-				FontSizeManager.addListener(fontNum->{
-					BowlerStudioController.getBowlerStudio().setFontSize(fontNum);
-					double tmp = FontSizeManager.getImageScale()*9;
 
-					root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-				});
 				
 				double sw = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 						.getDisplayMode().getWidth();
@@ -866,7 +881,7 @@ public class BowlerStudio extends Application {
 					if(newSize<FontSizeManager.systemDefaultFontSize)
 						newSize=FontSizeManager.systemDefaultFontSize;
 					FontSizeManager.setFontSize((int)Math.round(newSize));
-					System.out.println("Screen "+sw+"x"+sh);
+					com.neuronrobotics.sdk.common.Log.error("Screen "+sw+"x"+sh);
 				}
 				sw=primaryScreenBounds.getWidth();
 				sh=primaryScreenBounds.getHeight();
@@ -880,7 +895,7 @@ public class BowlerStudio extends Application {
 				BowlerStudio.runLater(() -> {
 
 					primaryStage.setScene(scene);
-					System.err.println("Showing main applicaiton");
+					com.neuronrobotics.sdk.common.Log.error("Showing main applicaiton");
 					primaryStage.show();
 					// initialize the default styles for the dock pane and
 					// undocked
@@ -895,6 +910,13 @@ public class BowlerStudio extends Application {
 					// this must be called after the primary stage is shown
 					// https://bugs.openjdk.java.net/browse/JDK-8132900
 					DockPane.initializeDefaultUserAgentStylesheet();
+					FontSizeManager.addListener(fontNum->{
+						BowlerStudioController bowlerStudio = BowlerStudioController.getBowlerStudio();
+						bowlerStudio.setFontSize(fontNum);
+						double tmp = FontSizeManager.getImageScale()*9;
+
+						root.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+					});
 				});
 
 				primaryStage.setOnCloseRequest(arg0 -> {
@@ -922,7 +944,7 @@ public class BowlerStudio extends Application {
 
 					@Override
 					public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
-						System.err.println("Device connected: " + arg0);
+						com.neuronrobotics.sdk.common.Log.error("Device connected: " + arg0);
 						BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
 					}
 
@@ -954,7 +976,7 @@ public class BowlerStudio extends Application {
 				reporter.uncaughtException(Thread.currentThread(), e);
 
 			}
-		}).start();
+		//}).start();
 
 	}
 
@@ -971,7 +993,7 @@ public class BowlerStudio extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		
-		System.err.println("Loading CSS from " + nwfile);
+		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
 	}
 	
 	public static void setToRunButton(Button b) {
@@ -1061,7 +1083,7 @@ public class BowlerStudio extends Application {
 				object.run();
 			}catch(Throwable t) {
 				t.printStackTrace();
-				System.err.println("Swing method that failed called from: ");
+				com.neuronrobotics.sdk.common.Log.error("Swing method that failed called from: ");
 				ex.printStackTrace();
 			}
 		});
@@ -1096,5 +1118,54 @@ public class BowlerStudio extends Application {
 	}
 	public static void loadMobilBaseIntoUI(MobileBase base) {
 		BowlerStudioController.getBowlerStudio().onScriptFinished(base, base, null);
+	}
+	public static void showExceptionAlert(Exception ex, String message) {
+	    Alert alert = new Alert(Alert.AlertType.ERROR);
+	    alert.setTitle("Error");
+	    alert.setHeaderText(message);
+	    alert.setContentText(ex.getMessage());
+
+	    StringWriter sw = new StringWriter();
+	    PrintWriter pw = new PrintWriter(sw);
+	    ex.printStackTrace(pw);
+	    String stackTrace = sw.toString();
+
+	    TextArea textArea = new TextArea(stackTrace);
+	    textArea.setEditable(false);
+	    textArea.setWrapText(true);
+
+	    textArea.setMaxWidth(Double.MAX_VALUE);
+	    textArea.setMaxHeight(Double.MAX_VALUE);
+	    GridPane.setVgrow(textArea, Priority.ALWAYS);
+	    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+	    GridPane expContent = new GridPane();
+	    expContent.setMaxWidth(Double.MAX_VALUE);
+	    expContent.add(textArea, 0, 0);
+
+	    alert.getDialogPane().setExpandableContent(expContent);
+
+	    alert.showAndWait();
+	}
+	public static boolean checkValidURL(String url) {
+		try {
+			if(url==null)
+				throw new NullPointerException();
+			if(url.length()<5)
+				throw new NullPointerException();
+			if(url.startsWith("http"))
+				new URL(url);// check that the URL string contains a valid URL
+			else
+				if(url.startsWith("git@")) {
+					// assume this is a URL 
+				}
+		}catch(Exception e) {
+			// not a url
+			//
+			//System.out.println("Invalid URL "+url);
+			//e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

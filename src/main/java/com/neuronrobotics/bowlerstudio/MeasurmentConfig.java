@@ -14,7 +14,7 @@ public class MeasurmentConfig {
 		this.type = type;
 		this.id = id;
 		this.setKey(key);
-		System.out.println("Adding Measurment " + key + " " + getMeasurment());
+		com.neuronrobotics.sdk.common.Log.error("Adding Measurment " + key + " " + getMeasurment());
 		getMeasurment();
 	}
 
@@ -41,7 +41,7 @@ public class MeasurmentConfig {
 	}
 
 	public void setMeasurment(String measurment) {
-		System.out.println("Setting field "+type+", "+ id +", "+ key + " to " + measurment);
+		com.neuronrobotics.sdk.common.Log.error("Setting field "+type+", "+ id +", "+ key + " to " + measurment);
 		Vitamins.putMeasurment(type, id,key, measurment);
 	}
 }

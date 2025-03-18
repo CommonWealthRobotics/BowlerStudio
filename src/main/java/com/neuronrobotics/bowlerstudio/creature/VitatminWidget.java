@@ -153,7 +153,7 @@ public class VitatminWidget implements IOnTransformChange {
 				size.getItems().add(s);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -161,7 +161,7 @@ public class VitatminWidget implements IOnTransformChange {
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
-		//System.out.println("Validating " + nameTmp);
+		//com.neuronrobotics.sdk.common.Log.error("Validating " + nameTmp);
 		if (nameTmp.length() == 0)
 			return;
 		nameTmp=nameTmp.trim();
@@ -173,7 +173,7 @@ public class VitatminWidget implements IOnTransformChange {
 			String name2 = l.getName();
 			if (name2.contentEquals(nameTmp))
 				return;
-			System.out.println(nameTmp + " is not " + name2);
+			com.neuronrobotics.sdk.common.Log.error(nameTmp + " is not " + name2);
 		}
 		add.setDisable(false);
 	}
@@ -252,7 +252,7 @@ public class VitatminWidget implements IOnTransformChange {
 	public void fireVitaminSelectedUpdate() {
 		if(selectedVitamin==null)
 			return;
-		System.out.println("Selected " + selectedVitamin.getName());
+		com.neuronrobotics.sdk.common.Log.error("Selected " + selectedVitamin.getName());
 		name.setText(selectedVitamin.getName());
 		isScript.setSelected(selectedVitamin.isScript());
 		if(selectedVitamin.isScript()) {
@@ -291,7 +291,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 	@Override
 	public void onTransformChaging(TransformNR newTrans) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		selectedVitamin.setLocation(newTrans);
 	}
 

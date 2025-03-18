@@ -120,7 +120,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 
 	@Override
 	public void handle(ActionEvent event) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 
@@ -262,7 +262,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //				String name = "camera"+letter;
 //				addConnection(p,name);
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
+//				// Auto-generated catch block
 //				e.printStackTrace();
 //			}
 //
@@ -312,7 +312,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 				String name = "url";
 				addConnection(p,name);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -484,7 +484,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 //			
 //			@Override
 //			public void onNewDeviceAdded(BowlerAbstractDevice bad) {
-//				// TODO Auto-generated method stub
+//				// Auto-generated method stub
 //				
 //			}
 //			
@@ -525,13 +525,13 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
 	private BowlerStudioController getBowlerStudioController() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return BowlerStudioController.getBowlerStudio();
 	}
 
 
 	private static void disconectAndRemoveDevice(PluginManager mp){
-		System.out.println("CM Disconnecting " + mp.getName());
+		com.neuronrobotics.sdk.common.Log.error("CM Disconnecting " + mp.getName());
 		Log.warning("Disconnecting " + mp.getName());
 		if(mp.getDevice().isAvailable() || NonBowlerDevice.class.isInstance(mp)) {
 			try {

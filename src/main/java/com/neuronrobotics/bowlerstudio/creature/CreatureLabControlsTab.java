@@ -56,7 +56,7 @@ public class CreatureLabControlsTab {
 
 
 	public void setOverlayTop(GridPane radioOptions) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		BowlerStudio.runLater(()->{
 			progressBar.getChildren().clear();
 			progressBar.getChildren().add(radioOptions);
@@ -68,7 +68,7 @@ public class CreatureLabControlsTab {
 	}
 
 	public void setOverlayTopRight(JogMobileBase walkWidget) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		// @JansenSmith - placed contents in llambda runnable - 20220915
 		BowlerStudio.runLater(()->{
 			walkingBox.getChildren().clear();

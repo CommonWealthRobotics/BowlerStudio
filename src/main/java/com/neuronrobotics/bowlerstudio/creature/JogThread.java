@@ -97,14 +97,14 @@ public class JogThread {
 								if (bestTime < getToseconds())
 									bestTime = getToseconds();
 								else {
-									System.out.println(
+									com.neuronrobotics.sdk.common.Log.error(
 											"Jog paused for links to catch up " + bestTime + " vs " + getToseconds());
 								}
 								TickToc.tic("computed best time "+bestTime);
 								kin.setDesiredTaskSpaceTransform(toSet, bestTime);
-								//System.out.println("Joging to "+toSet);
+								//com.neuronrobotics.sdk.common.Log.error("Joging to "+toSet);
 							} catch (Exception e) {
-								System.err.println("Exception in Jog Thread "+e.getMessage());
+								com.neuronrobotics.sdk.common.Log.error("Exception in Jog Thread "+e.getMessage());
 								// BowlerStudioController.highlightException(null, e);
 							}
 						}
@@ -132,7 +132,7 @@ public class JogThread {
 			this.toSet = toSet.copy();
 			if (DHParameterKinematics.class.isInstance(source))
 				if (!((DHParameterKinematics) source).checkTaskSpaceTransform(toSet)) {
-					System.out.println("\n\nERROR Target unreachable " + toSet);
+					com.neuronrobotics.sdk.common.Log.error("\n\nERROR Target unreachable " + toSet);
 					int level = Log.getMinimumPrintLevel();
 					Log.enableErrorPrint();
 					((DHParameterKinematics) source).checkTaskSpaceTransform(toSet);

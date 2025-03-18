@@ -49,19 +49,19 @@ public class BowlerStudioResourceFactory {
 			//githubLogin.setController(new GithubLoginFX());
 			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		} catch (TransportException e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		} catch (GitAPIException e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
 		

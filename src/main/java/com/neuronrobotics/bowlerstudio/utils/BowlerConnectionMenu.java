@@ -86,7 +86,7 @@ public class BowlerConnectionMenu extends Application {
 	@FXML // This method is called by the FXMLLoader when initialization is
 			// complete
 	void initialize() {
-		System.err.println("Initializing conection Dialog");
+		com.neuronrobotics.sdk.common.Log.error("Initializing conection Dialog");
 		assert baudrate != null : "fx:id=\"baudrate\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
 		assert connectNetwork != null : "fx:id=\"connectNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
 		assert connectSerial != null : "fx:id=\"connectSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
@@ -138,14 +138,14 @@ public class BowlerConnectionMenu extends Application {
 					DeviceManager.addConnection(ser);
 					return;
 				} catch (Exception e) {
-					System.out.println("false start " + port + " at baud " + baud + " is not responding");
+					com.neuronrobotics.sdk.common.Log.error("false start " + port + " at baud " + baud + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					e.printStackTrace();
 					if (ser!=null)
 						ser.disconnect();
 				}
 			}
-			System.out.println("Connection failed! " + port + " at baud " + baud + " is not responding");
+			com.neuronrobotics.sdk.common.Log.error("Connection failed! " + port + " at baud " + baud + " is not responding");
 		}).start();
 
 	}
@@ -161,7 +161,7 @@ public class BowlerConnectionMenu extends Application {
 					clnt = new UDPBowlerConnection(InetAddress.getByName(ip), port);
 					DeviceManager.addConnection(clnt);
 				} catch (Exception e) {
-					System.out.println("Connection failed! " + ip + " at port " + ip + " is not responding");
+					com.neuronrobotics.sdk.common.Log.error("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					if (clnt != null)
 						clnt.disconnect();
@@ -174,7 +174,7 @@ public class BowlerConnectionMenu extends Application {
 					tcp = new BowlerTCPClient(ip, port);
 					DeviceManager.addConnection(tcp);
 				} catch (Exception e) {
-					System.out.println("Connection failed! " + ip + " at port " + ip + " is not responding");
+					com.neuronrobotics.sdk.common.Log.error("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					if (tcp != null)
 						tcp.disconnect();
@@ -202,7 +202,7 @@ public class BowlerConnectionMenu extends Application {
 			ipSelector.getItems().clear();
 			BowlerStudio.runLater(() -> ipSelector.getItems().add("127.0.0.1"));
 			new Thread(() -> {
-				// System.out.println("Searching for UDP devices, please
+				// com.neuronrobotics.sdk.common.Log.error("Searching for UDP devices, please
 				// wait...");
 				int prt;
 				try {

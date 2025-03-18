@@ -60,10 +60,10 @@ public class ImageTracer{
 		try{
 
 			if(args.length<1){
-				System.out.println("ERROR: there's no input filename. Basic usage: \r\n\r\njava -jar ImageTracer.jar <filename>"+
+				com.neuronrobotics.sdk.common.Log.error("ERROR: there's no input filename. Basic usage: \r\n\r\njava -jar ImageTracer.jar <filename>"+
 						"\r\n\r\nor\r\n\r\njava -jar ImageTracer.jar help");
 			} else if(arraycontains(args,"help")>-1){
-				System.out.println("Example usage:\r\n\r\njava -jar ImageTracer.jar <filename> outfilename test.svg "+
+				com.neuronrobotics.sdk.common.Log.error("Example usage:\r\n\r\njava -jar ImageTracer.jar <filename> outfilename test.svg "+
 						"ltres 1 qtres 1 pathomit 8 colorsampling 1 numberofcolors 16 mincolorratio 0.02 colorquantcycles 3 "+
 						"scale 1 simplifytolerance 0 roundcoords 1 lcpr 0 qcpr 0 desc 1 viewbox 0 blurradius 0 blurdelta 20 \r\n"+
 						"\r\nOnly <filename> is mandatory, if some of the other optional parameters are missing, they will be set to these defaults. "+

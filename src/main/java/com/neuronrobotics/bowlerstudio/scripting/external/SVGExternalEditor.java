@@ -40,9 +40,9 @@ public class SVGExternalEditor implements IExternalEditor {
 			String filename = file.getAbsolutePath();
 
 			try {
-				Git locateGit = ScriptingEngine.locateGit(file);
-				File dir = locateGit.getRepository().getWorkTree();
-				ScriptingEngine.closeGit(locateGit);
+//				Git locateGit = ScriptingEngine.locateGit(file);
+//				File dir = locateGit.getRepository().getWorkTree();
+//				ScriptingEngine.closeGit(locateGit);
 
 				File exe = DownloadManager.getRunExecutable("inkscape", null);
 
@@ -51,13 +51,13 @@ public class SVGExternalEditor implements IExternalEditor {
 					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), filename);
 					
 				}
-				Thread t=run(this, dir, System.err, asList);
+				Thread t=run(this, file.getParentFile(), System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 			onProcessExit(0) ;
@@ -83,7 +83,7 @@ public class SVGExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-SVG.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

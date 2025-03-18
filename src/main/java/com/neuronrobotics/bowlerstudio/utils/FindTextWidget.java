@@ -51,7 +51,7 @@ public class FindTextWidget extends Application {
 	private int find(double direction) {
 		// BowlerStudio.invokeLater(() -> {
 		try {
-			// System.out.println("Got ctrl f "+
+			// com.neuronrobotics.sdk.common.Log.error("Got ctrl f "+
 			// textArea.getSelectedText());
 			// Get the text to find...convert it to
 			// lower
@@ -118,7 +118,7 @@ public class FindTextWidget extends Application {
 								// the current match
 								pos += findLength * direction;
 							} catch (BadLocationException e) {
-								// TODO Auto-generated catch block
+								// Auto-generated catch block
 								e.printStackTrace();
 							}
 
@@ -234,7 +234,7 @@ public class FindTextWidget extends Application {
 	public void setTextArea(RSyntaxTextArea textArea) {
 		this.textArea = textArea;
 		pos = 0;
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 
 	}
 }

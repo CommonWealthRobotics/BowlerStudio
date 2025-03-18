@@ -54,10 +54,10 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 				Thread t=run(this, dir, System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 			onProcessExit(0) ;
@@ -83,7 +83,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-fxml.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

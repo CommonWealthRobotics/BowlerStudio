@@ -55,7 +55,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		@Override
 		public void uncaughtException(Thread t, Throwable e) {
 			if (reporter.getTitle(e).contains("java.awt.datatransfer.DataFlavor at line 503")) {
-				System.err.println("Known bug in the Swing system, nothing we can do but ignore it");
+				com.neuronrobotics.sdk.common.Log.error("Known bug in the Swing system, nothing we can do but ignore it");
 				e.printStackTrace();
 				return;
 			}
@@ -108,20 +108,20 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		}
 
 		public void componentResized(ComponentEvent e) {
-			System.err.println("componentResized");
+			com.neuronrobotics.sdk.common.Log.error("componentResized");
 
 		}
 
 		public void componentHidden(ComponentEvent e) {
-			System.err.println("componentHidden");
+			com.neuronrobotics.sdk.common.Log.error("componentHidden");
 		}
 
 		public void componentMoved(ComponentEvent e) {
-			System.err.println("componentMoved");
+			com.neuronrobotics.sdk.common.Log.error("componentMoved");
 		}
 
 		public void componentShown(ComponentEvent e) {
-			System.err.println("componentShown");
+			com.neuronrobotics.sdk.common.Log.error("componentShown");
 		}
 
 	}
@@ -182,6 +182,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			break;
 		case "fxml":
 			type = SyntaxConstants.SYNTAX_STYLE_XML;
+			break;
+		case "CaDoodle":
+			type = SyntaxConstants.SYNTAX_STYLE_JSON;
+			break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
@@ -252,7 +256,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					linenum += 1;
 					if (lineSelected != linenum) {
 						lineSelected = linenum;
-						// System.err.println("Select "+lineSelected);
+						// com.neuronrobotics.sdk.common.Log.error("Select "+lineSelected);
 						new Thread(() -> {
 							BowlerStudio.select(file, lineSelected);
 						}).start();
@@ -274,8 +278,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
-				// System.out.println("Number of click: " + e.getClickCount());
-				// System.out.println("Click position (X, Y): " + e.getX() + ",
+				// com.neuronrobotics.sdk.common.Log.error("Number of click: " + e.getClickCount());
+				// com.neuronrobotics.sdk.common.Log.error("Click position (X, Y): " + e.getX() + ",
 				// " + e.getY());
 			}
 		});
@@ -288,7 +292,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		getScripting().setFocusTraversable(false);
 
 		swingNode.setOnMouseEntered(mouseEvent -> {
-			// System.err.println("On mouse entered " + file.getName());
+			// com.neuronrobotics.sdk.common.Log.error("On mouse entered " + file.getName());
 			// resizeEvent();
 			BowlerStudio.invokeLater(() -> {
 				resizeEvent();
@@ -316,7 +320,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					System.out.println("Save " + file + " now.");
+					com.neuronrobotics.sdk.common.Log.error("Save " + file + " now.");
 					getScripting().saveTheFile(file);
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -407,10 +411,10 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	@Override
 	public void onScriptChanged(String previous, String current, File source) {
 		// int place = textArea.getCaretPosition();
-		// System.err.println("Carrot position is= "+place);
+		// com.neuronrobotics.sdk.common.Log.error("Carrot position is= "+place);
 		// codeArea.replaceText(current);
 		// codeArea.setCursor(place);
-		// System.out.println(file.getAbsolutePath()+" changed ");
+		// com.neuronrobotics.sdk.common.Log.error(file.getAbsolutePath()+" changed ");
 		// empty
 		BowlerStudio.invokeLater(() -> {
 			setContent(current);
@@ -431,13 +435,13 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			content = current; // writes
 			long now=System.currentTimeMillis();
 			if(now<(timeSinceLastUpdate+100)) {
-				System.err.println("Ovewrite Protect!");
+				com.neuronrobotics.sdk.common.Log.error("Ovewrite Protect!");
 				return; 
 			}
 			
 			timeSinceLastUpdate=now;
 
-			System.out.println("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
+			com.neuronrobotics.sdk.common.Log.error("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
 //			if (current.length() > MaxTextSize) {
 //				textArea.setText(
 //						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
@@ -454,7 +458,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		BowlerStudio.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("script error");
+				com.neuronrobotics.sdk.common.Log.error("script error");
 				textArea.requestFocusInWindow();
 			}
 		});
@@ -561,7 +565,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public static void setSelectedTab(LocalFileScriptTab selectedTab) {
-		// System.err.println("Currently selected "+selectedTab.file.getAbsolutePath());
+		// com.neuronrobotics.sdk.common.Log.error("Currently selected "+selectedTab.file.getAbsolutePath());
 		LocalFileScriptTab.selectedTab = selectedTab;
 	}
 

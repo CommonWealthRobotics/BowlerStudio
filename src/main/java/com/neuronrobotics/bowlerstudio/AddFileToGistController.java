@@ -127,7 +127,7 @@ public class AddFileToGistController extends Application {
 		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
 		      });
 		} catch (Exception e2) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -137,7 +137,7 @@ public class AddFileToGistController extends Application {
 				String selectedItem = extention.getSelectionModel().getSelectedItem();
 				setSelected(selectedItem);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -199,7 +199,7 @@ public class AddFileToGistController extends Application {
 			if (getGitRepo() == null) {
 				setGitRepo(GistHelper.createNewGist(filename, message, true));
 			}
-			System.out.println("Adding new file" + filename + " to " + getGitRepo());
+			com.neuronrobotics.sdk.common.Log.error("Adding new file" + filename + " to " + getGitRepo());
 			try {
 				ScriptingEngine.pull(getGitRepo());
 				//String defaultContents = 
@@ -241,7 +241,7 @@ public class AddFileToGistController extends Application {
 				AddFileToGistController controller = new AddFileToGistController(url, new MenuRefreshEvent() {
 					@Override
 					public void setToLoggedIn() {
-						// TODO Auto-generated method stub
+						// Auto-generated method stub
 
 					}
 
@@ -301,7 +301,7 @@ public class AddFileToGistController extends Application {
 				});
 
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
@@ -334,7 +334,7 @@ public class AddFileToGistController extends Application {
 				extention.setDisable(true);
 			});
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 

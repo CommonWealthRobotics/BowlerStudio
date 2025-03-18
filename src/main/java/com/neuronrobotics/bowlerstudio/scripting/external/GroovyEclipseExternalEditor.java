@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
+import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
 import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
@@ -131,6 +132,6 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class);
+		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class,CaDoodleLoader.class);
 	}
 }

@@ -46,14 +46,14 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 		
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			//System.out.println("Pos listener");
+			//com.neuronrobotics.sdk.common.Log.error("Pos listener");
 			
 			if(useSlider.isSelected() ){
 				flush();
 				if(!getCb().isPlaying())
 					channel.flush();
 			}else{
-				//System.out.println("Not flushing");
+				//com.neuronrobotics.sdk.common.Log.error("Not flushing");
 			}
 			
 		}
@@ -179,7 +179,7 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 	}
 	
 	public int getChannelNumber() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return getChannel().getChannelNumber();
 	}
 	public void setChannel(ServoOutputScheduleChannel channel) {
@@ -209,12 +209,12 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 	}
 	@Override
 	public void onTimeUpdate(double ms) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 	@Override
@@ -231,7 +231,7 @@ public class ServoOutputScheduleChannelUI extends JPanel implements IServoPositi
 		useSlider.setSelected(false);
 		position.setEnabled(false);
 		getChannel().setRecording(false);
-		//System.out.println("Setting the pause in output UI");
+		//com.neuronrobotics.sdk.common.Log.error("Setting the pause in output UI");
 	}
 	public CoreScheduler getCb() {
 		return cb;

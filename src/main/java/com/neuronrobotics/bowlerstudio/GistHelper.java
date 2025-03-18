@@ -76,7 +76,7 @@ public class GistHelper
             //String gistID = ScriptingEngine.urlToGist(gist.getHtmlUrl());
             
             //BowlerStudio.openUrlInNewTab(new URL(gist.getHtmlUrl()));
-            System.out.println("Creating repo");
+            com.neuronrobotics.sdk.common.Log.error("Creating repo");
             while (true)
             {
                 try
@@ -93,7 +93,7 @@ public class GistHelper
                 //Log.warn(filename + " not built yet");
             }
 
-            System.out.println("Creating gist at " + filename);
+            com.neuronrobotics.sdk.common.Log.error("Creating gist at " + filename);
             ScriptingEngine.getLangaugeByExtention(filename).getDefaultContents(gist.getGitPullUrl(), filename);
             return gist.getGitPullUrl();
         }

@@ -68,7 +68,7 @@ public class JogWidget extends GridPane
 			
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -91,7 +91,7 @@ public class JogWidget extends GridPane
 			
 			@Override
 			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
 				
 			}
 		});
@@ -274,17 +274,22 @@ public class JogWidget extends GridPane
 		double[] joints = c.getCurrentJointSpaceVector();
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			joints[i] = 0;
-			if(c.getFollowerMobileBase(i)!=null) {
-				homeBase(c.getFollowerMobileBase(i));
-			}
 		}
 		try {
 			c.setDesiredJointSpaceVector(joints, c.getBestTime(joints));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		for (int i = 0; i < c.getNumberOfLinks(); i++) {
+			try {
+				if(c.getFollowerMobileBase(i)!=null) {
+					homeBase(c.getFollowerMobileBase(i));
+				}
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -335,12 +340,12 @@ public class JogWidget extends GridPane
 		if (Math.abs(slider) < .01)
 			slider = 0;
 		if (x == 0.0 && y == 0.0 && rz == 0.0 && slider == 0) {
-			// System.out.println("Stoping on="+comp.getName());
+			// com.neuronrobotics.sdk.common.Log.error("Stoping on="+comp.getName());
 			stop = true;
 			try {
 				getKin().setDesiredTaskSpaceTransform(getKin().getCurrentTaskSpaceTransform(), 0);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else
@@ -431,7 +436,7 @@ public class JogWidget extends GridPane
 					
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

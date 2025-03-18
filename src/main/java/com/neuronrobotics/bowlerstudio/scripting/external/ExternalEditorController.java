@@ -29,6 +29,8 @@ public class ExternalEditorController {
 		editors.add(new BlenderExternalEditor());
 		editors.add(new FreeCADExternalEditor());
 		editors.add(new SceneBuilderExternalEditor());
+		editors.add(new OpenSCADExternalEditor());
+		
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
@@ -43,10 +45,10 @@ public class ExternalEditorController {
 			    	  image.setScaleX(FontSizeManager.getImageScale());
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
-				System.err.println("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
+				com.neuronrobotics.sdk.common.Log.error("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
 				break;
 			}else {
-				System.err.println(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
+				com.neuronrobotics.sdk.common.Log.error(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
 			}
 			
 		}
@@ -75,7 +77,7 @@ public class ExternalEditorController {
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

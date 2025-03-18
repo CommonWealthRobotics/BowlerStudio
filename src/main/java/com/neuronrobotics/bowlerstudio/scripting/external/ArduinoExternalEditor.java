@@ -43,7 +43,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 				try {
 					rthread.join();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}catch(Throwable t) {
@@ -58,7 +58,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		try {
 			return AssetFactory.loadAsset("Script-Tab-Arduino.png");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -66,7 +66,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 
 	@Override
 	public String nameOfEditor() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return "Arduino";
 	}
 

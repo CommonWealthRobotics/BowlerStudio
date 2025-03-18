@@ -105,9 +105,9 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 		filesStatic.setOnAction(event->{
 			updateObjects();
 		});
-		String string = ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "").toString();
+		String string = ConfigurationDatabase.getObject("PhysicsWidget", "gitMoving", "https://github.com/madhephaestus/VexHighStakes2024.git").toString();
 		gitMoving.setText( string);
-		String string2 = ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "").toString();
+		String string2 = ConfigurationDatabase.getObject("PhysicsWidget", "gitStatic", "https://github.com/madhephaestus/VexHighStakes2024.git").toString();
 		gitStatic.setText( string2);
 		validateInput();
 		gitMoving.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -166,7 +166,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 							mujoco = new MuJoCoPhysicsManager(base.getScriptingName(),bases,movingObjects,staticObjects,cache);
 							
 						} catch (IOException | JAXBException e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 							return;
 						}
@@ -180,7 +180,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 						try {
 							mujoco.generateNewModel();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace(System.out);
 							close();
 							return;
@@ -203,7 +203,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 										if((now=mujoco.stepAndWait())>(3*mujoco.getTimestepMilliSeconds())) {
 											if(System.currentTimeMillis()-timeSinceLastPrint>500) {
 												timeSinceLastPrint=System.currentTimeMillis();
-												System.out.println("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
+												com.neuronrobotics.sdk.common.Log.error("MuJoCo Real time broken, expected "+mujoco.getTimestepMilliSeconds()+" took: "+now);
 											}
 										}
 									}
@@ -296,7 +296,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			ConfigurationDatabase.setObject("PhysicsWidget","movingObjects" ,selectedItem);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -306,7 +306,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			ConfigurationDatabase.setObject("PhysicsWidget","staticObjects" ,selectedItem);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(movingObjects!=null) {
@@ -384,7 +384,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 	}
 	@Override
 	public void onIMUUpdate(IMUUpdate arg0) {
-//		System.err.println("X = "+arg0.getxAcceleration()+
+//		com.neuronrobotics.sdk.common.Log.error("X = "+arg0.getxAcceleration()+
 //				" Y = "+arg0.getyAcceleration()+
 //				" Z = "+arg0.getzAcceleration()+
 //				" rX = "+arg0.getRotxAcceleration()+

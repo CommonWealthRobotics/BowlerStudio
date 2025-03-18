@@ -120,7 +120,7 @@ public class ParallelWidget extends Group {
 				if (resetting)
 					return;
 				robotToFiducialTransform = newTrans;
-				System.out.println("Tip offset for "+dh.getScriptingName()+" "+newTrans);
+				com.neuronrobotics.sdk.common.Log.error("Tip offset for "+dh.getScriptingName()+" "+newTrans);
 				getGroup().setTipOffset(dh, newTrans);
 				dh.refreshPose();
 				home();
@@ -160,7 +160,7 @@ public class ParallelWidget extends Group {
 		this.base = b;
 		this.dh = dh;
 		this.creatureLab = creatureLab;
-		System.out.println("Configuring arm " + dh.getScriptingName());
+		com.neuronrobotics.sdk.common.Log.error("Configuring arm " + dh.getScriptingName());
 		robotToFiducialTransform = new TransformNR();
 		BowlerStudio.runLater(() -> groupName.setText(""));
 		BowlerStudio.runLater(() -> relativeName.getItems().clear());
@@ -178,7 +178,7 @@ public class ParallelWidget extends Group {
 			BowlerStudio.runLater(() -> groupName.setText(getGroup().getNameOfParallelGroup()));
 			for (DHParameterKinematics l : base.getAllDHChains()) {
 				if (!l.getScriptingName().contentEquals(dh.getScriptingName())) {
-					System.out.println("Adding Option "+l.getScriptingName());
+					com.neuronrobotics.sdk.common.Log.error("Adding Option "+l.getScriptingName());
 					BowlerStudio.runLater(() -> relativeName.getItems().add(l.getScriptingName()));
 				}
 			}

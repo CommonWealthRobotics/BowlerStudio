@@ -96,7 +96,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 		setOnCloseRequest(this);
 		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
 		    if(!(newValue.intValue()<100)){
-		    	//System.err.println("Just finished! "+webEngine.getLocation());
+		    	//com.neuronrobotics.sdk.common.Log.error("Just finished! "+webEngine.getLocation());
 		    	
 	    		new Thread(){
 	    			public void run(){
@@ -111,7 +111,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	    					try {
 	    						getScripting().loadCodeFromGist(Current_URL, webEngine);
 	    					} catch (Exception e) {
-	    						// TODO Auto-generated catch block
+	    						// Auto-generated catch block
 	    						//e.printStackTrace();
 	    					} 
 	    				}
@@ -125,7 +125,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 //		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
 //		            //splash.update();
 //		    	}
-		    	//System.err.println("Not Done Loading to: "+webEngine.getLocation());
+		    	//com.neuronrobotics.sdk.common.Log.error("Not Done Loading to: "+webEngine.getLocation());
 		    }
 		}));
 		urlField = new TextField(Current_URL);
@@ -133,7 +133,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			@Override
 			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
 				
-						//System.out.println("Location Changed: "+newValue);
+						//com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
 						BowlerStudio.runLater(() -> {
 							urlField.setText(newValue);
 						});
@@ -164,15 +164,15 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			goBack();
 		});
 		forwardButton.setOnAction(arg0 -> {
-			// TODO Auto-generated method stub
+			// Auto-generated method stub
 			goForward();
 		});
 		homeButton.setOnAction(arg0 -> {
-			// TODO Auto-generated method stub
+			// Auto-generated method stub
 			try {
 				loadUrl(Tutorial.getHomeUrl());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
@@ -189,7 +189,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			double scale = ((double) fontNum - 10) / 12.0;
 			if (scale < 1)
 				scale = 1;
-			System.out.println("Web scale "+scale);
+			com.neuronrobotics.sdk.common.Log.error("Web scale "+scale);
 			double s=scale;
 			BowlerStudio.runLater(() ->webView.setZoom(s));
 		});
@@ -240,7 +240,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -254,7 +254,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 						getScripting().loadCodeFromGist(Current_URL, webEngine);
 						myTab.setText(getScripting().getFileName());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				}			
@@ -268,7 +268,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	
 	
 	private void finishLoadingComponents(){
-		//System.err.println("Finalizing: "+webEngine.getLocation());
+		//com.neuronrobotics.sdk.common.Log.error("Finalizing: "+webEngine.getLocation());
 		try{
 
 			if(getScripting()!=null){
@@ -314,11 +314,11 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	
 	private void loadCode(){
 		new Thread(()->{
-			System.out.println("Downloading code from "+Current_URL);
+			com.neuronrobotics.sdk.common.Log.error("Downloading code from "+Current_URL);
 			try {
 				getScripting().loadCodeFromGist(Current_URL, webEngine);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			} 
 		}).start();

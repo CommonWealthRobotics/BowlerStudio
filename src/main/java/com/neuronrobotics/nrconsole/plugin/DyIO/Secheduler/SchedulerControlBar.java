@@ -176,7 +176,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	
 
 	private void setCurrentTime(long  val){
-		//System.out.println("Setting current time="+val);
+		//com.neuronrobotics.sdk.common.Log.error("Setting current time="+val);
 		try{
 			slider.setValue((int) (val));
 		}catch(Exception e){
@@ -185,7 +185,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 		double cTime = ((double)val)/1000;
 		time.setText("Seconds: "+new DecimalFormat("000.00").format(cTime));
 
-		//System.out.println("Setting current time="+val+" slider="+slider.getValue());
+		//com.neuronrobotics.sdk.common.Log.error("Setting current time="+val+" slider="+slider.getValue());
 	}
 	private void setBounds(double top){
 		slider.setMaximum(0);
@@ -216,7 +216,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -232,13 +232,13 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 
 	@Override
 	public void onPlay() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 

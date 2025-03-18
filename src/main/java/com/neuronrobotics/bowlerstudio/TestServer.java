@@ -43,7 +43,7 @@ public class TestServer {
 							new IBowlerCommandProcessor() {
 								public Object[] process(Object[] data) {
 									for (int i = 0; i < data.length; i++) {
-										System.out.println("Server Got # " + data[i]);
+										com.neuronrobotics.sdk.common.Log.error("Server Got # " + data[i]);
 									}
 									return new Object[] { 37,42, 999999};
 								}
@@ -54,7 +54,7 @@ public class TestServer {
 					try {
 						startNetworkServer(1865);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}// starts the UDP server
 						// this also starts tcp server on port+1, in this case 1866
@@ -68,7 +68,7 @@ public class TestServer {
 					Object[] args = send("test.thingy.*;0.3;;", BowlerMethod.GET, "test",
 							new Object[] { 36, 83, 13 });// send some numbers
 					for (int i = 0; i < args.length; i++) {
-						System.out.println("Client Received  # " + args[i]);
+						com.neuronrobotics.sdk.common.Log.error("Client Received  # " + args[i]);
 					}
 				}
 
