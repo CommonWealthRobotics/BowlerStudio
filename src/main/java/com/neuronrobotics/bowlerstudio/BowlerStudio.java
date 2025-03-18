@@ -351,7 +351,7 @@ public class BowlerStudio extends Application {
 			}
 			new Thread(() -> {
 				boolean wasState = ScriptingEngine.isPrintProgress();
-				ScriptingEngine.setPrintProgress(false);
+				//ScriptingEngine.setPrintProgress(false);
 				for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
 					String url = iterator.next();
 

@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio;
  * Sample Skeleton for 'newVitaminWizard.fxml' Controller Class
  */
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.kohsuke.github.GHCreateRepositoryBuilder;
+import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
@@ -178,16 +182,23 @@ public class NewVitaminWizardController  extends Application {
 					Vitamins.setIsShaft(typeOfVitaminString);
 				if(isMotor.isSelected())
 					Vitamins.setIsActuator(typeOfVitaminString);
-				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
+				//Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
 				
 				if(newTypeRadio.isSelected()) {
 					callback.addVitaminType(typeOfVitaminString);
 				}else
-					if(!editExisting.isSelected())
+					if(!editExisting.isSelected()) {
 						callback.addSizesToMenu(sizeOfVitaminString, typeOfVitaminString);
+					}
 			} catch (Exception e1) {
 				// Auto-generated catch block
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e1);
+			}
+			try {
+				Vitamins.saveDatabase(typeOfVitaminString);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			try {
 				BowlerStudio.runLater(() -> {
@@ -200,11 +211,47 @@ public class NewVitaminWizardController  extends Application {
 				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
 				
 			}
-			Vitamins.clear();
+			org.kohsuke.github.GitHub github = PasswordManager.getGithub();
+
+			GHRepository repo;
+			try {
+				repo = github.getRepository(Vitamins.getSourcerepo()+ "/Hardware-Dimensions");
+				String head = PasswordManager.getUsername() + ":master";
+				List<GHPullRequest> asList = repo.queryPullRequests().state(GHIssueState.OPEN).head(head).list().asList();
+				if (asList.size() == 0) {
+					com.neuronrobotics.sdk.common.Log.error("Creating PR for " + head);
+					GHPullRequest request = repo.createPullRequest("User Added vitamins to " + typeOfVitaminString, head, "master",
+							"## User added vitamins", true, true);
+					try {
+						BowlerKernel.upenURL(request.getHtmlUrl().toURI());
+					} catch (URISyntaxException e) {
+						// Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}).start();
 
     }
+	private void saveAndFork() {
 
+			try {
+				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString,PasswordManager.getUsername() );
+
+			} catch (Exception e) {
+				// Auto-generated catch block
+				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
+				
+			}
+
+
+	}
     @FXML
     void onConfirmSize(ActionEvent event) {
     	if(!editExisting.isSelected()) {
@@ -318,6 +365,10 @@ public class NewVitaminWizardController  extends Application {
 				) {
 			setUpVitaminDefaults();
 		}
+		BowlerStudio.runLater(()->{
+	    	sizePane.setDisable(true);
+	        typePane.setDisable(true);
+		});
 		//new Thread(() -> {
 			HashMap<String, Object> required = new HashMap<String, Object>();
 			required.put("massKg", 0.001);
@@ -327,10 +378,11 @@ public class NewVitaminWizardController  extends Application {
 			required.put("massCentroidY", 0.0);
 			required.put("massCentroidZ", 0.0);
 			setRequiredFields(required);
+			BowlerStudio.runLater(()->{
+		        measurmentPane.setDisable(false);
+			});
 		//}).start();
-    	sizePane.setDisable(true);
-        measurmentPane.setDisable(false);
-        typePane.setDisable(true);
+       
     }
 
 	private void setUpVitaminDefaults() {
@@ -423,10 +475,10 @@ public class NewVitaminWizardController  extends Application {
     		typeOfVitaminString=slug;
     		sizeComboBox.setDisable(true);
     		editExisting.setDisable(true);
-    		saveAndFork();
+    		sizePane.setDisable(false);//saveAndFork();
     	}else {
     		typeOfVitaminString=typeComboBox.getSelectionModel().getSelectedItem();
-    		saveAndFork();
+    		sizePane.setDisable(false);//saveAndFork();
     		ArrayList<String> sizes = Vitamins.listVitaminSizes(typeOfVitaminString);
 			boolean hasSize=false;
 
@@ -457,19 +509,7 @@ public class NewVitaminWizardController  extends Application {
         
     }
 
-	private void saveAndFork() {
-		new Thread(() -> {
-			try {
-				Vitamins.saveDatabaseForkIfMissing(typeOfVitaminString);
-		    	sizePane.setDisable(false);
-			} catch (Exception e) {
-				// Auto-generated catch block
-				new IssueReportingExceptionHandler().uncaughtException(Thread.currentThread(), e);
-				
-			}
-		}).start();
 
-	}
 
  
 	@FXML
@@ -574,6 +614,7 @@ public class NewVitaminWizardController  extends Application {
 			typeComboBox.getSelectionModel().select(typeOfVitaminString);
 		isShaft.setDisable(false);
 		isMotor.setDisable(false);
+		
     }
     
     public static void launchWizard(INewVitaminCallback callback) throws Exception {
@@ -583,11 +624,14 @@ public class NewVitaminWizardController  extends Application {
 			primaryStage = s;
 			new Thread(() -> {
 				NewVitaminWizardController controller = new NewVitaminWizardController();
-				
 				try {
+					SplashManager.renderSplashFrame(0, "Creating personal Fork Of Vitamins");
+					controller.saveAndFork();
+					SplashManager.closeSplash();
 					controller.start(s);
 				} catch (Exception e) {
 					e.printStackTrace();
+					SplashManager.closeSplash();
 				}
 			}).start();
 		});
