@@ -420,8 +420,8 @@ task ('showAll') {
 }
 eclipse{
 	jdt {
-		sourceCompatibility = 1.8
-		targetCompatibility = 1.8
+//		sourceCompatibility = 1.8
+//		targetCompatibility = 1.8
 		file {
 			withProperties { properties ->
 				properties.setProperty('org.eclipse.jdt.core.compiler.problem.forbiddenReference', 'ignore')
