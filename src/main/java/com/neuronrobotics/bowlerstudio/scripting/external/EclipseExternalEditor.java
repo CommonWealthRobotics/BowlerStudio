@@ -85,6 +85,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 			try {
 				dir=file.getParentFile();
 				name = dir.getName();
+				File project = new File(dir.getAbsolutePath() + delim() + ".project");
 				try {
 					ScriptingEngine.locateGit(file, git -> {
 						Repository repository = git.getRepository();
@@ -95,7 +96,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					String branch = ScriptingEngine.getBranch(remoteURL);
 
 					File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
-					File project = new File(dir.getAbsolutePath() + delim() + ".project");
+					project = new File(dir.getAbsolutePath() + delim() + ".project");
 					
 					if (dir.getAbsolutePath().contains("gist.github.com")) {
 						String name2 = file.getName();
@@ -138,6 +139,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
+					//if(!project.exists() )
+						setUpEclipseProjectFiles(dir, project, name);
 				}
 
 				String ws = getEclipseWorkspace();
