@@ -70,12 +70,17 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 				+ "org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures=warning\n"
 				+ "org.eclipse.jdt.core.compiler.release=disabled\n"
 				+ "org.eclipse.jdt.core.compiler.source=1.8\n"
+				+ "org.eclipse.jdt.core.compiler.problem.incompatibleJDKLevel=ignore\n"
 				+ "\n";
+		String launchPrefs = "eclipse.preferences.version=1\n"
+				+ "org.eclipse.jdt.launching.PREF_COMPILER_COMPLIANCE_DOES_NOT_MATCH_JRE=warning\n"
+				+ "org.eclipse.jdt.launching.PREF_STRICTLY_COMPATIBLE_JRE_NOT_AVAILABLE=warning\n";
 		File file = new File(dir.getAbsolutePath() + delim()+".settings");
 		if(!file.exists())
 			file.mkdirs();
 		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.core.prefs"), java8Prefs.getBytes());
-		
+		Files.write(Paths.get(file.getAbsolutePath()+ delim()+"org.eclipse.jdt.launching.prefs"), launchPrefs.getBytes());
+
 		Files.write(Paths.get(project.getAbsolutePath()), ProjectContent.getBytes());
 		//String latestVersionString = "1.12.0";
 //		InputStream is = new URL(
