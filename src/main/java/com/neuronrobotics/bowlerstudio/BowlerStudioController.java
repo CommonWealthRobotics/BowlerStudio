@@ -32,6 +32,7 @@ import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.transform.Affine;
@@ -171,8 +172,12 @@ public class BowlerStudioController implements IScriptEventListener {
 			}
 
 			fileTab.setContent(t);
+			ImageView icon = AssetFactory.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png");
+			icon.setFitHeight(30);
+			icon.setFitWidth(30);
+			
 			fileTab.setGraphic(
-					AssetFactory.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png"));
+					icon);
 
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
