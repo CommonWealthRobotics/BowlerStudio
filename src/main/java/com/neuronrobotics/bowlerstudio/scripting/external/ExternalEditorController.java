@@ -30,7 +30,7 @@ public class ExternalEditorController {
 		editors.add(new FreeCADExternalEditor());
 		editors.add(new SceneBuilderExternalEditor());
 		editors.add(new OpenSCADExternalEditor());
-		
+		editors.add(new CaDoodleExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
 	public ExternalEditorController(File f, CheckBox autoRun){
@@ -81,6 +81,8 @@ public class ExternalEditorController {
 				e.printStackTrace();
 			}
 		}
+		image.setFitHeight(30);
+		image.setFitWidth(30);
 
 	}
 	

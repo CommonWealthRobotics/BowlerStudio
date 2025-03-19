@@ -153,7 +153,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class,CaDoodleLoader.class);
+		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class);
 	}
 
 
