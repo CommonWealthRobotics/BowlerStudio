@@ -43,7 +43,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 			try {
 				File dir = file.getAbsoluteFile().getParentFile();
 				File scenebuilder = DownloadManager.getRunExecutable("scenebuilder", null);
-				File java = DownloadManager.getRunExecutable("java8", null);
+				File java = DownloadManager.getRunExecutable("java17", null);
 
 				List<String> asList = Arrays.asList(
 						java.getAbsolutePath(),

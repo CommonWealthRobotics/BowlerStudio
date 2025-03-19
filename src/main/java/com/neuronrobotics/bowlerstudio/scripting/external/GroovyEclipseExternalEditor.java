@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
 import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
+import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
 import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
@@ -37,6 +38,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	
+
 	public void onProcessExit(int ev) {
 		advanced.setDisable(false);
 	}
@@ -95,12 +97,8 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 //		}
 		//latestVersionString = BowlerStudio.getBowlerStudioBinaryVersion();
 		
-		String jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ "latest"
-				+delim()+ "BowlerStudio.jar";
-		if(!new File(jar).exists()) {
-			jar = System.getProperty("user.home") + delim()+"bin"+delim()+"BowlerStudioInstall"+ delim()+ BowlerStudio.getBowlerStudioBinaryVersion()
-					+delim()+ "BowlerStudio.jar";
-		}
+		String jar = getApplicationJarPath();
+		
 		String classpathContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"
 				+ "	<classpathentry kind=\"src\" path=\"\"/>\n"
 				+ "	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\">\n"
@@ -111,6 +109,11 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 				+ "	<classpathentry kind=\"output\" path=\"\"/>\n" + "</classpath>";
 		Files.write(Paths.get(classpath.getAbsolutePath()), classpathContent.getBytes());
 		
+	}
+
+
+	public static String getApplicationJarPath() throws FileNotFoundException {
+		return getApplicationBinaryDirectory()+ getSTUDIO_JAR();
 	}
 
 
@@ -134,4 +137,24 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 	public List<Class> getSupportedLangauge() {
 		return Arrays.asList( GroovyHelper.class,BashLoader.class, JsonRunner.class,RobotHelper.class,CaDoodleLoader.class);
 	}
+
+
+	public static String getSTUDIO_JAR() throws FileNotFoundException {
+		File dir = new File(getApplicationBinaryDirectory());
+		for(String s:dir.list()) {
+			if(s.toLowerCase().endsWith(".jar")) {
+				return s;
+			}
+		}
+		throw new RuntimeException("Studio Jar can not be found in "+dir.getAbsolutePath());
+	}
+
+
+	public static String getApplicationBinaryDirectory() throws FileNotFoundException {
+		return System.getProperty("user.home") + delim()+"bin"+delim()+DownloadManager.getSTUDIO_INSTALL()+ delim()+ BowlerStudio.getBowlerStudioBinaryVersion()
+					+delim();
+	}
+
+
+
 }

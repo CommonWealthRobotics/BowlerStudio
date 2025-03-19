@@ -96,8 +96,8 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		 */
 		// File exe = DownloadManager.getRunExecutable("arduino2", null);
 		// File file = new File();
-		String absolutePath = "C:\\Users\\Kevin Bad Name\\bin\\BowlerStudioInstall\\arduino2\\Arduino IDE.exe";// exe.getAbsolutePath();
-		run(null, new File("C:\\Users\\Kevin Bad Name\\bin\\BowlerStudioInstall\\arduino2"), System.err, Arrays.asList(
+		String absolutePath = "C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL() + "\\arduino2\\Arduino IDE.exe";// exe.getAbsolutePath();
+		run(null, new File("C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL() + "\\arduino2"), System.err, Arrays.asList(
 				absolutePath,
 				"C:\\Users\\Kevin Bad Name\\Documents\\bowler-workspace\\gitcache\\github.com\\OperationSmallKat\\LunaMotherboardFirmware\\LunaMotherboardFirmware.ino"));
 

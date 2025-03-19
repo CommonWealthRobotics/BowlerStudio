@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
+import com.neuronrobotics.bowlerstudio.scripting.external.GroovyEclipseExternalEditor;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 //import com.neuronrobotics.imageprovider.OpenCVJNILoader;
@@ -118,6 +119,12 @@ public class BowlerStudio extends Application {
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		String relative = ScriptingEngine.getWorkingDirectory().getAbsolutePath();
+		File file = new File(relative + delim() + "bowler-workspace" + delim());
+		file.mkdirs();
+		ScriptingEngine.setWorkspace(file);
+		DownloadManager.setSTUDIO_INSTALL("BowlerStudioInstall");
+		
 		if (args.length != 0) {
 			//com.neuronrobotics.sdk.common.Log.error("Arguments detected, starting Kernel mode.");
 			//SplashManager.closeSplash();
@@ -648,7 +655,7 @@ public class BowlerStudio extends Application {
 	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
 		String latestVersionString;
 		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim()
-				+ "BowlerStudioInstall" + delim() + "currentversion.txt");
+				+ getInstallDirStub() + delim() + "currentversion.txt");
 		String s = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
 		String line;
@@ -663,7 +670,7 @@ public class BowlerStudio extends Application {
 	}
 	private static void makeSymLinkOfCurrentVersion() throws Exception {
 		String version = getBowlerStudioBinaryVersion();
-		File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ "BowlerStudioInstall" + delim());
+		File installDir = new File(System.getProperty("user.home") + delim() + "bin" + delim()+ getInstallDirStub() + delim());
 		File link = new File(installDir.getAbsolutePath()+delim()+"latest");
 		File latest = new File(installDir.getAbsolutePath()+delim()+version);
 		if(link.exists())
@@ -678,7 +685,8 @@ public class BowlerStudio extends Application {
 			com.neuronrobotics.sdk.common.Log.error("Path created "+ret);
 		}
 	}
-	
+
+
 	public static void ensureUpdated(String ... urls) {
 		for(String s:urls) {
 			if(s==null)
@@ -966,6 +974,16 @@ public class BowlerStudio extends Application {
 					System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
 					System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
 					System.out.println("Welcome to BowlerStudio!");
+					
+					
+					try {
+						File jarFile = new File(GroovyEclipseExternalEditor.getApplicationJarPath());
+						System.out.println("Application at "+jarFile+" is "+(jarFile.exists()?"Found":"Missing!"));
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						
+					}
 
 				});
 				closeSplash();
@@ -1167,5 +1185,12 @@ public class BowlerStudio extends Application {
 			return false;
 		}
 		return true;
+	}
+	public static String getInstallDirStub() {
+		return DownloadManager.getSTUDIO_INSTALL();
+	}
+	
+	public static void setInstallDirStub(String installDirStub) {
+		DownloadManager.setSTUDIO_INSTALL(installDirStub);
 	}
 }
