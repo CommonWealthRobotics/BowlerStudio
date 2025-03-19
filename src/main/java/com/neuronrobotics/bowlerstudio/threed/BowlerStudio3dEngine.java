@@ -101,7 +101,7 @@ import javafx.scene.paint.Color;
 /**
  * MoleculeSampleApp.
  */
-public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI {
+public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 	private boolean focusing = false;
 	private double numberOfInterpolationSteps = 30;
 	private MeshView grid;
@@ -235,15 +235,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 	private Affine gridPlacementAffine = new Affine();
 
 	public BowlerStudio3dEngine addListener(ICameraChangeListener l) {
-		if(!listeners.contains(l))
+		if (!listeners.contains(l))
 			listeners.add(l);
 		return this;
 	}
+
 	public BowlerStudio3dEngine removeListener(ICameraChangeListener l) {
-		if(listeners.contains(l))
+		if (listeners.contains(l))
 			listeners.remove(l);
 		return this;
 	}
+
 	private IControlsMap map = new IControlsMap() {
 		long lastClickedTimeLocal = 0;
 		long offset = 500;
@@ -263,40 +265,43 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 			lastClickedTimeLocal = System.currentTimeMillis();
 			return ret;
 		}
-		
+
 		public boolean isSlowMove(MouseEvent event) {
 			return event.isControlDown();
 		}
+
 		public boolean isRotate(MouseEvent me) {
 			boolean shiftDown = me.isShiftDown();
 			boolean primaryButtonDown = me.isPrimaryButtonDown();
 
-			return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown) ;
+			return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown);
 		}
 
 		public boolean isMove(MouseEvent me) {
 			boolean shiftDown = me.isShiftDown();
 			boolean primaryButtonDown = me.isPrimaryButtonDown();
 			boolean secondaryButtonDown = me.isSecondaryButtonDown();
-			return (secondaryButtonDown || (primaryButtonDown && (shiftDown))) ;
+			return (secondaryButtonDown || (primaryButtonDown && (shiftDown)));
 		}
+
 		public boolean isZoom(javafx.scene.input.ScrollEvent t) {
 			return ScrollEvent.SCROLL == t.getEventType();
 		}
 
 	};
-	private double mouseScale=2.0;
+	private double mouseScale = 2.0;
 	private MeshView handMesh;
 	private ImageView homeIcon;
 	private ImageView generateIcon;
 	private ImageView clearIcon;
-	private boolean move=true;
-	private boolean disabeControl=false;
+	private boolean move = true;
+	private boolean disabeControl = false;
 	private String name;;
 
 	/**
 	 * Instantiates a new jfx3d manager.
-	 * @param string 
+	 * 
+	 * @param string
 	 */
 	public BowlerStudio3dEngine(String name) {
 		this.name = name;
@@ -312,16 +317,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 	public void rebuild(boolean b) {
 		rebuildingUIOnerror = true;
-		com.neuronrobotics.sdk.common.Log.error("Building scene "+name);
+		com.neuronrobotics.sdk.common.Log.error("Building scene " + name);
 		buildScene();
-		com.neuronrobotics.sdk.common.Log.error("Building camera "+name);
+		com.neuronrobotics.sdk.common.Log.error("Building camera " + name);
 
 		buildCamera(b);
-		com.neuronrobotics.sdk.common.Log.error("Building axis "+name);
+		com.neuronrobotics.sdk.common.Log.error("Building axis " + name);
 		buildAxes(b);
-		
+
 		Stop[] stops = null;
-		com.neuronrobotics.sdk.common.Log.error("Building gradiant "+name );
+		com.neuronrobotics.sdk.common.Log.error("Building gradiant " + name);
 
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		group = new Group(getSubScene());
@@ -333,7 +338,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 			getFlyingCamera().setGlobalToFiducialTransform(defautcameraView);
 			// setScene(s);
 			rebuildingUIOnerror = false;
-			getControlsBox(homeIcon,generateIcon,clearIcon);
+			getControlsBox(homeIcon, generateIcon, clearIcon);
 		});
 	}
 
@@ -376,16 +381,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 							e.printStackTrace();
 						}
 					}
-					com.neuronrobotics.sdk.common.Log.error("Autospin Thread clean exit "+name);
+					com.neuronrobotics.sdk.common.Log.error("Autospin Thread clean exit " + name);
 				});
-				autospingThread.setName("UI Autospin Thread "+name);
+				autospingThread.setName("UI Autospin Thread " + name);
 				autospingThread.start();
 			}
 		});
 
 		showRuler.setOnAction((event) -> {
 			boolean selected = showRuler.isSelected();
-			// com.neuronrobotics.sdk.common.Log.error("CheckBox Action (selected: " + selected +
+			// com.neuronrobotics.sdk.common.Log.error("CheckBox Action (selected: " +
+			// selected +
 			// ")");
 			if (selected)
 				showAxis();
@@ -402,17 +408,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		HBox controls = new HBox(10);
 		home = new Button("Home");
 		home.setTooltip(new javafx.scene.control.Tooltip("Home the camera"));
-		if(homeIcon!=null)
-		home.setGraphic(homeIcon);
+		if (homeIcon != null)
+			home.setGraphic(homeIcon);
 		home.setOnAction(event -> {
-			focusOrentation(
-					new TransformNR(0,0,0,new RotationNR(0,45,-45)),
-					new TransformNR(),
+			focusOrentation(new TransformNR(0, 0, 0, new RotationNR(0, 45, -45)), new TransformNR(),
 					getFlyingCamera().getDefaultZoomDepth());
 		});
 		export = new Button("Export");
-		if(generateIcon!=null)
-		export.setGraphic(generateIcon);
+		if (generateIcon != null)
+			export.setGraphic(generateIcon);
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
 				exportAll(false);
@@ -427,8 +431,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		tooltip.setText("\nExport all of the parts on the screen\n" + "to manufacturing. STL and SVG\n");
 		export.setTooltip(tooltip);
 		Button clear = new Button("Clear");
-		if(clearIcon!=null)
-		clear.setGraphic(clearIcon);
+		if (clearIcon != null)
+			clear.setGraphic(clearIcon);
 		clear.setOnAction(event -> {
 			clearUserNode();
 			removeObjects();
@@ -544,7 +548,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 //			sumVert-=(poly.vertices.size());
 //		com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
 
-		// com.neuronrobotics.sdk.common.Log.error(" Removing a CSG from file: "+previousCsg+" from
+		// com.neuronrobotics.sdk.common.Log.error(" Removing a CSG from file:
+		// "+previousCsg+" from
 		// file "+csgSourceFile.get(previousCsg));
 		MeshView previous = getCsgMap().get(previousCsg);
 		if (previous != null) {
@@ -567,7 +572,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				array = (Object[]) currentObjectsToCheck.toArray();
 				// }
 				for (int i = 0; i < currentObjectsToCheck.size(); i++) {
-					com.neuronrobotics.sdk.common.Log.error("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
+					com.neuronrobotics.sdk.common.Log
+							.error("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
 					try {
 						CSG tester = (CSG) array[i];
 						for (String p : tester.getParameters()) {
@@ -617,7 +623,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
-		// com.neuronrobotics.sdk.common.Log.error(" Adding a CSG from file: "+source.getName());
+		// com.neuronrobotics.sdk.common.Log.error(" Adding a CSG from file:
+		// "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
 			return currentCsg.getMesh();
 		getCsgMap().put(currentCsg, currentCsg.getMesh());
@@ -639,7 +646,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 		MeshView current = getCsgMap().get(currentCsg);
 		current.setCullFace(CullFace.BACK);
-		((PhongMaterial)current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
+		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
@@ -671,41 +678,61 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				Parameter param = CSGDatabase.get(key);
 				currentCsg.setParameterIfNull(key);
 				if (LengthParameter.class.isInstance(param)) {
+
 					LengthParameter lp = (LengthParameter) param;
 
-					EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
-							new IOnEngineeringUnitsChange() {
+					String string = null;
+					String string2 = null;
+					if (lp.getOptions().size() > 1)
+						try {
+							string = lp.getOptions().get(1).toString();
+							string2 = lp.getOptions().get(0).toString();
+						} catch (Exception ex) {
+							// some parameters from cadoodle do not work here...
+							ex.printStackTrace();
+						}
+					else {
+						string = lp.getMM()+"";
+						string2 = lp.getMM()+"";
+					}
+					try {
+						EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
+								new IOnEngineeringUnitsChange() {
 
-								@Override
-								public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-									try {
-										currentCsg.setParameterNewValue(key, newAngleDegrees);
+									@Override
+									public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
+										try {
+											currentCsg.setParameterNewValue(key, newAngleDegrees);
 
-									} catch (Exception ex) {
-										BowlerStudioController.highlightException(source, ex);
+										} catch (Exception ex) {
+											BowlerStudioController.highlightException(source, ex);
+										}
+
 									}
 
-								}
+									@Override
+									public void onSliderDoneMoving(EngineeringUnitsSliderWidget s,
+											double newAngleDegrees) {
+										// Get the set of objects to check for
+										// regeneration after the initioal
+										// regeneration cycle.
+										Set<CSG> objects = getCsgMap().keySet();
+										cm.hide();// hide this menue because the new
+													// CSG talks to the new menue
 
-								@Override
-								public void onSliderDoneMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
-									// Get the set of objects to check for
-									// regeneration after the initioal
-									// regeneration cycle.
-									Set<CSG> objects = getCsgMap().keySet();
-									cm.hide();// hide this menue because the new
-												// CSG talks to the new menue
+										fireRegenerate(key, source, objects);
+										resetMouseTime();
 
-									fireRegenerate(key, source, objects);
-									resetMouseTime();
-
-								}
-							}, Double.parseDouble(lp.getOptions().get(1).toString()),
-							Double.parseDouble(lp.getOptions().get(0).toString()), lp.getMM(), 400, key);
-					CustomMenuItem customMenuItem = new CustomMenuItem(widget);
-					customMenuItem.setHideOnClick(false);
-					parameters.getItems().add(customMenuItem);
-					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " + lp.getName());
+									}
+								}, Double.parseDouble(string), Double.parseDouble(string2), lp.getMM(), 400, key);
+						CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+						customMenuItem.setHideOnClick(false);
+						parameters.getItems().add(customMenuItem);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
+					// lp.getName());
 				} else {
 					try {
 						Parameter lp = (Parameter) param;
@@ -718,7 +745,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 								customMenuItem.setMnemonicParsing(false);
 								customMenuItem.setOnAction(event -> {
 									resetMouseTime();
-									com.neuronrobotics.sdk.common.Log.error("Updating " + lp.getName() + " to " + myVal);
+									com.neuronrobotics.sdk.common.Log
+											.error("Updating " + lp.getName() + " to " + myVal);
 									lp.setStrValue(myVal);
 									CSGDatabase.get(lp.getName()).setStrValue(myVal);
 									for (IParameterChanged l : CSGDatabase.getParamListeners(lp.getName())) {
@@ -888,7 +916,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					// duplicate
 				}
 			});
-			if(showRuler!=null) {
+			if (showRuler != null) {
 				Axis axis = new Axis(showRuler.isSelected());
 				BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
 				axisMap.put(current, axis);
@@ -986,13 +1014,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		world.ry.setAngle(180);// arm out towards user
 		BowlerStudio.runLater(() -> getRoot().getChildren().add(world));
 	}
-	
+
 	public void hideHand() {
 		hand.getChildren().remove(handMesh);
 	}
+
 	public void showand() {
 		hand.getChildren().add(handMesh);
 	}
+
 	/**
 	 * Builds the camera.
 	 */
@@ -1005,9 +1035,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		).toCSG().roty(90).setColor(Color.BLACK);
 
 		handMesh = cylinder.getMesh();
-		
+
 		hand = new Group();
-		if(addHand)
+		if (addHand)
 			showand();
 		camera.setNearClip(.1);
 		// camera.setFarClip(1000.0);//this is set in VirtualCameraMobileBase
@@ -1016,7 +1046,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
 		camera.setDepthTest(DepthTest.ENABLE);
-		setVirtualcam(new VirtualCameraMobileBase(camera, hand,this, name));
+		setVirtualcam(new VirtualCameraMobileBase(camera, hand, this, name));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
@@ -1043,7 +1073,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 	/**
 	 * Builds the axes.
-	 * @param b 
+	 * 
+	 * @param b
 	 */
 	private void buildAxes(boolean b) {
 
@@ -1071,15 +1102,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 			public void run() {
 				try {
-					//Image ruler = AssetFactory.loadAsset("ruler.png");
-					//Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
-					//Image groundLocal = AssetFactory.loadAsset("ground.png");
-
+					// Image ruler = AssetFactory.loadAsset("ruler.png");
+					// Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
+					// Image groundLocal = AssetFactory.loadAsset("ground.png");
 
 					Affine zRuler = new Affine();
 					double scale = 1;
 					// zRuler.setTx(-130*scale);
-					//zRuler.setTz(-20 * scale);
+					// zRuler.setTz(-20 * scale);
 					zRuler.appendScale(scale, scale, scale);
 					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
@@ -1087,37 +1117,37 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 
 					Affine yRuler = new Affine();
-					//yRuler.setTx(-130 * scale);
-					//yRuler.setTy(-20 * scale);
+					// yRuler.setTx(-130 * scale);
+					// yRuler.setTy(-20 * scale);
 					yRuler.appendScale(scale, scale, scale);
-					//yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+					// yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
 					yRuler.appendRotation(90, 0, 0, 0, 0, 0, 1);
 
 					Affine xp = new Affine();
 					Affine downset = new Affine();
 					downset.setTz(0.1);
-					//xp.setTx(-20 * scale);
+					// xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
-					grid = createGridMesh(1000,1000,20);
-					
+					grid = createGridMesh(1000, 1000, 20);
+
 					BowlerStudio.runLater(() -> {
-						Node rulerImage =MakeRuler.createRuler(true);// new ImageView(ruler);
-						Node yrulerImage =MakeRuler.createRuler(false);// new ImageView(ruler);
-						Node zrulerImage = MakeRuler.createRuler(true);//new ImageView(ruler);
-						//ImageView groundView = new ImageView(groundLocal);
-						//groundView.getTransforms().addAll(groundMove, downset);
-						//groundView.setOpacity(0.3);
+						Node rulerImage = MakeRuler.createRuler(true);// new ImageView(ruler);
+						Node yrulerImage = MakeRuler.createRuler(false);// new ImageView(ruler);
+						Node zrulerImage = MakeRuler.createRuler(true);// new ImageView(ruler);
+						// ImageView groundView = new ImageView(groundLocal);
+						// groundView.getTransforms().addAll(groundMove, downset);
+						// groundView.setOpacity(0.3);
 						zrulerImage.getTransforms().addAll(zRuler, downset);
 						rulerImage.getTransforms().addAll(xp, downset);
 						yrulerImage.getTransforms().addAll(yRuler, downset);
-						
+
 						ObservableList<Node> children = gridGroup.getChildren();
 						rulerGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage);
-						children.addAll(rulerGroup,getGrid());
-						//children.addAll(grid);
-						
-						//children.addAll(groundView);
+						children.addAll(rulerGroup, getGrid());
+						// children.addAll(grid);
+
+						// children.addAll(groundView);
 
 						Affine groundPlacment = new Affine();
 						groundPlacment.setTz(-1);
@@ -1127,9 +1157,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
 						boolean selected = showRuler != null ? showRuler.isSelected() : true;
-						if(!b)
-							selected=false;
-						if(b) {
+						if (!b)
+							selected = false;
+						if (b) {
 							children.addAll(new Axis(selected), ground);
 							showAxis();
 						}
@@ -1145,16 +1175,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 	}
 
-
 	public MeshView getGrid() {
 		return grid;
 	}
+
 	public MeshView createGridMesh(int width, int height, int cellSize) {
 		Affine groundMove = new Affine();
 		// groundMove.setTz(-3);
 		groundMove.setTx(-width / 2);
-		groundMove.setTy(-height/ 2);
-		
+		groundMove.setTy(-height / 2);
+
 		TriangleMesh mesh = new TriangleMesh();
 
 		// Create points
@@ -1201,13 +1231,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 		// Ensure the mesh is visible
 		meshView.setCullFace(CullFace.NONE);
-		meshView.getTransforms().addAll(gridPlacementAffine,groundMove);
+		meshView.getTransforms().addAll(gridPlacementAffine, groundMove);
 		meshView.setMouseTransparent(true);
 		return meshView;
 	}
+
 	public boolean contains(Node n) {
 		return userGroup.getChildren().contains(n);
 	}
+
 	public void addUserNode(Node n) {
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
@@ -1223,7 +1255,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 	}
 
 	public void clearUserNode() {
-		//new RuntimeException("Clearing all user nodes!");
+		// new RuntimeException("Clearing all user nodes!");
 		BowlerStudio.runLater(() -> userGroup.getChildren().clear());
 	}
 
@@ -1272,21 +1304,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 	 */
 
 	private void handleMouse(SubScene scene) {
-		if(disabeControl) {
-			com.neuronrobotics.sdk.common.Log.error("No mouse control added "+name);
+		if (disabeControl) {
+			com.neuronrobotics.sdk.common.Log.error("No mouse control added " + name);
 			scene.setPickOnBounds(false);
 			return;
 		}
-		com.neuronrobotics.sdk.common.Log.error("Settinng up Mouse Handelers "+name);
+		com.neuronrobotics.sdk.common.Log.error("Settinng up Mouse Handelers " + name);
 		scene.setOnMouseClicked(event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
 		});
-		scene.addEventFilter(MouseEvent.MOUSE_PRESSED,new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				//com.neuronrobotics.sdk.common.Log.error("Bowler 3d start "+name);
+				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start "+name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -1319,7 +1351,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				if (getControlsMap().isRotate(me)) {
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
-									mouseDeltaX * modifierFactor * modifier *mouseScale, 0
+									mouseDeltaX * modifierFactor * modifier * mouseScale, 0
 
 							));
 					moveCamera(trans);
@@ -1328,8 +1360,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 				if (getControlsMap().isMove(me) && move) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
 
-					TransformNR newPose = new TransformNR(mouseDeltaX * modifierFactor * modifier *  (mouseScale/2) / depth,
-							mouseDeltaY * modifierFactor * modifier * (mouseScale/2) / depth, 0, new RotationNR());
+					TransformNR newPose = new TransformNR(
+							mouseDeltaX * modifierFactor * modifier * (mouseScale / 2) / depth,
+							mouseDeltaY * modifierFactor * modifier * (mouseScale / 2) / depth, 0, new RotationNR());
 					moveCamera(newPose);
 				}
 
@@ -1578,9 +1611,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		}
 		resetMouseTime();
 	}
+
 	public void focusTo(TransformNR poseToMove) {
-		focusToAffine(poseToMove,new Affine());
+		focusToAffine(poseToMove, new Affine());
 	}
+
 	public void focusToAffine(TransformNR poseToMove, Affine manipulator2) {
 		if (focusing)
 			return;
@@ -1632,7 +1667,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR,(int) numberOfInterpolationSteps, interpolator);
+			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
 	}
 
@@ -1684,7 +1719,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			focusInterpolate(startSelectNr, targetNR, (int)numberOfInterpolationSteps, interpolator);
+			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
 	}
 
@@ -1693,15 +1728,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		this.lastMosueMovementTime = System.currentTimeMillis();
 
 	}
+
 	public void focusOrentation(TransformNR orent) {
-		focusOrentation(orent,null,getFlyingCamera().getDefaultZoomDepth());
+		focusOrentation(orent, null, getFlyingCamera().getDefaultZoomDepth());
 	}
+
 	public void focusOrentation(TransformNR orent, TransformNR trans, double zoom) {
 		if (focusing)
 			return;
 		focusing = true;
 		new Thread(() -> {
-			runSyncFocus(orent,trans,zoom);
+			runSyncFocus(orent, trans, zoom);
 		}).start();
 	}
 
@@ -1713,38 +1750,44 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		return in;
 	}
 
-	private void runSyncFocus(TransformNR orent,TransformNR trans, double zoom) {
-		double az = orent==null?0:bound(
-				getFlyingCamera().getPanAngle() - 90 + Math.toDegrees(orent.getRotation().getRotationAzimuth()));
-		double el = orent==null?0:bound(
-				getFlyingCamera().getTiltAngle() + 90 + Math.toDegrees(orent.getRotation().getRotationElevation()));
-		//com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:" + el);
-		double x=0;
-		double y=0;
-		double z=0;
-		double zoomDelta = zoom -getFlyingCamera().getZoomDepth();
-		
-		if(trans!=null) {
-			x=trans.getX()-getFlyingCamera().getGlobalX();
-			y=trans.getY()-getFlyingCamera().getGlobalY();
-			z=trans.getZ()-getFlyingCamera().getGlobalZ();
+	private void runSyncFocus(TransformNR orent, TransformNR trans, double zoom) {
+		double az = orent == null ? 0
+				: bound(getFlyingCamera().getPanAngle() - 90
+						+ Math.toDegrees(orent.getRotation().getRotationAzimuth()));
+		double el = orent == null ? 0
+				: bound(getFlyingCamera().getTiltAngle() + 90
+						+ Math.toDegrees(orent.getRotation().getRotationElevation()));
+		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
+		// + el);
+		double x = 0;
+		double y = 0;
+		double z = 0;
+		double zoomDelta = zoom - getFlyingCamera().getZoomDepth();
+
+		if (trans != null) {
+			x = trans.getX() - getFlyingCamera().getGlobalX();
+			y = trans.getY() - getFlyingCamera().getGlobalY();
+			z = trans.getZ() - getFlyingCamera().getGlobalZ();
 		}
 		try {
 			double d = 1.0 / numberOfInterpolationSteps;
 			for (double i = 0; i < 1; i += d) {
-				if(i>1)
-					i=1;
+				if (i > 1)
+					i = 1;
 //				double aztmp = getFlyingCamera().getPanAngle();
 //				double eltmp = getFlyingCamera().getTiltAngle();
-				//com.neuronrobotics.sdk.common.Log.error("\tFocus to \n\t\taz:" + aztmp + " \n\t\tel:" + eltmp);
-				double mx=x/ numberOfInterpolationSteps;
-				double my=y/ numberOfInterpolationSteps;
-				double mz=z/ numberOfInterpolationSteps;
+				// com.neuronrobotics.sdk.common.Log.error("\tFocus to \n\t\taz:" + aztmp + "
+				// \n\t\tel:" + eltmp);
+				double mx = x / numberOfInterpolationSteps;
+				double my = y / numberOfInterpolationSteps;
+				double mz = z / numberOfInterpolationSteps;
 				BowlerStudio.runLater(() -> {
-					moveCamera(new TransformNR(0, 0, 0, new RotationNR(-el / numberOfInterpolationSteps, -az / numberOfInterpolationSteps, 0)));
+					moveCamera(new TransformNR(0, 0, 0,
+							new RotationNR(-el / numberOfInterpolationSteps, -az / numberOfInterpolationSteps, 0)));
 					getFlyingCamera().DrivePositionAbsolute(mx, my, mz);
-					if(!getFlyingCamera().isZoomLocked())
-						getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth()+(zoomDelta/numberOfInterpolationSteps));
+					if (!getFlyingCamera().isZoomLocked())
+						getFlyingCamera().setZoomDepth(
+								getFlyingCamera().getZoomDepth() + (zoomDelta / numberOfInterpolationSteps));
 				});
 				try {
 					Thread.sleep(36);
@@ -1754,17 +1797,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					focusing = false;
 				}
 			}
-			BowlerStudio.runLater(() ->{
+			BowlerStudio.runLater(() -> {
 				getFlyingCamera().SetOrentation(orent);
 				getFlyingCamera().SetPosition(trans);
 			});
-			
+
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		focusing = false;
-		
-			//focusTo(trans);
+
+		// focusTo(trans);
 	}
 
 	private void focusInterpolate(TransformNR start, TransformNR target, int targetDepth, Affine interpolator) {
@@ -1796,7 +1839,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 					interpolator.setTy(yIncrement);
 					interpolator.setTz(zIncrement);
 				});
-				// com.neuronrobotics.sdk.common.Log.error("Interpolation step " + depth + " x " + xIncrement
+				// com.neuronrobotics.sdk.common.Log.error("Interpolation step " + depth + " x "
+				// + xIncrement
 				// + " y " + yIncrement + " z " + zIncrement);
 				if (depth >= targetDepth) {
 					// com.neuronrobotics.sdk.common.Log.error("Camera intrpolation done");
@@ -1941,7 +1985,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 		flyingCamera.setZoomDepth(i);
 	}
 
-	public void setMouseScale(double  mouseScale) {
+	public void setMouseScale(double mouseScale) {
 		this.mouseScale = mouseScale;
 	}
 
@@ -1951,50 +1995,59 @@ public class BowlerStudio3dEngine implements ICameraChangeListener,IMobileBaseUI
 
 	@Override
 	public void onChange(VirtualCameraMobileBase camera) {
-		for(ICameraChangeListener c:listeners) {
+		for (ICameraChangeListener c : listeners) {
 			try {
 				c.onChange(camera);
-			}catch(Throwable t) {
+			} catch (Throwable t) {
 				t.printStackTrace();
 			}
 		}
 	}
+
 	public void lockMove() {
 		move = false;
 		getFlyingCamera().lockMove();
 	}
+
 	public void disableControls() {
 		// Auto-generated method stub
-		disabeControl=true;
+		disabeControl = true;
 	}
+
 	public void placeGrid(TransformNR workplane) {
-		BowlerKernel.runLater(()->{
+		BowlerKernel.runLater(() -> {
 			TransformFactory.nrToAffine(workplane, gridPlacementAffine);
 		});
 	}
+
 	@Override
 	public void setAllCSG(Collection<CSG> toAdd, File source) {
 		clearUserNode();
-		addCSG(toAdd,source);
+		addCSG(toAdd, source);
 	}
+
 	@Override
 	public void addCSG(Collection<CSG> toAdd, File source) {
-		for(CSG c:toAdd)
-			addObject(c, source);	
+		for (CSG c : toAdd)
+			addObject(c, source);
 	}
+
 	@Override
 	public void highlightException(File fileEngineRunByName, Throwable ex) {
-		
+
 	}
+
 	@Override
 	public Set<CSG> getVisibleCSGs() {
 		return getCsgMap().keySet();
 	}
+
 	@Override
 	public void setSelectedCsg(Collection<CSG> selectedCsg) {
-		for(CSG c:selectedCsg)
+		for (CSG c : selectedCsg)
 			selectObjectsSourceFile(c);
 	}
+
 	public Group getRulerGroup() {
 		return rulerGroup;
 	}
