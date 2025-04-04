@@ -434,6 +434,30 @@ public class BowlerStudio extends Application {
 					e.printStackTrace();
 				}
 			}
+
+			@Override
+			public void notifyOfFailure(String name) {
+				BowlerKernel.runLater(() -> {
+					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+					alert.setTitle("Message");
+					alert.setHeaderText("FAILED to install " + name + " plugin" );
+					Node root = alert.getDialogPane();
+					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+					stage.setOnCloseRequest(ev -> alert.hide());
+					FontSizeManager.addListener(fontNum -> {
+						int tmp = fontNum - 10;
+						if (tmp < 12)
+							tmp = 12;
+						root.setStyle("-fx-font-size: " + tmp + "pt");
+						alert.getDialogPane().applyCss();
+						alert.getDialogPane().layout();
+						stage.sizeToScene();
+					});
+					Optional<ButtonType> result = alert.showAndWait();
+					buttonType = result.get();
+					alert.close();
+				});
+			}
 		});
 		renderSplashFrame(92, "Launching UI");
 		launch();
