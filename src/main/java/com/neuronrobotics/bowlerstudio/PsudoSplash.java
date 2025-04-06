@@ -49,12 +49,11 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private static int logX = 15;
 	private static PsudoSplash singelton = null;
 	private static URL resource = PsudoSplash.class.getResource("splash.png");
-	private static URL resource2;
+	private static URL dockIcon;
 	private static Color TextColor = Color.WHITE;
-	
-	
+
 	// Class Variables
-	private long timeOfLastUpdate=0;
+	private long timeOfLastUpdate = 0;
 	private String message = "";
 	private String log = "";
 	private Stage popupStage;
@@ -67,7 +66,6 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private double setWidth;
 	private double scale;
 
-
 	public static boolean isInitialized() {
 		return singelton != null;
 	}
@@ -75,11 +73,11 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public static PsudoSplash get() {
 		if (singelton == null)
 			singelton = new PsudoSplash();
-		if(!singelton.isVisableSplash()) {
+		if (!singelton.isVisableSplash()) {
 			Platform.runLater(() -> {
 				singelton.popupStage.show();
 			});
-			//new Exception("Opening Splash").printStackTrace();
+			// new Exception("Opening Splash").printStackTrace();
 		}
 		return singelton;
 	}
@@ -93,7 +91,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public void onUpdate(String update, Exception e) {
 		// e.printStackTrace(System.err);
 		log = update;
-		if(isVisableSplash())
+		if (isVisableSplash())
 			updateSplash();
 	}
 
@@ -146,11 +144,11 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			imageView = new ImageView(image);
 			double height = image.getHeight();
 			double width = image.getWidth();
-			
+
 			setWidth = 500;
-			
-			scale = setWidth/width;
-			double caclulatedHeight = scale*height;
+
+			scale = setWidth / width;
+			double caclulatedHeight = scale * height;
 			imageView.setFitWidth(setWidth);
 			imageView.setFitHeight(caclulatedHeight);
 
@@ -178,6 +176,17 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				popupStage.setX(event.getScreenX() - xOffset[0]);
 				popupStage.setY(event.getScreenY() - yOffset[0]);
 			});
+			try {
+				// CADoodle-Icon.png
+				if (dockIcon != null) {
+					Image loadAsset = new Image(dockIcon.toString());
+					popupStage.getIcons().add(loadAsset);
+					
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			popupStage.show();
 			updateSplash();
 		});
@@ -187,11 +196,11 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		FontSizeManager.addListener(fontNum->{
-			double tmp =FontSizeManager.getImageScale()*14;
-			mesL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-			logL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
-			verL.setStyle("-fx-font-size: "+((int)tmp)+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			double tmp = FontSizeManager.getImageScale() * 14;
+			mesL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
+			logL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
+			verL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
 		});
 	}
 
@@ -205,33 +214,33 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		Platform.runLater(() -> {
 			popupStage.hide();
 		});
-		//new Exception("Closing Splash").printStackTrace();
+		// new Exception("Closing Splash").printStackTrace();
 	}
 
 	void updateSplash() {
-		if(System.currentTimeMillis()-timeOfLastUpdate<100) {
+		if (System.currentTimeMillis() - timeOfLastUpdate < 100) {
 			return;
 		}
-		timeOfLastUpdate=System.currentTimeMillis();
+		timeOfLastUpdate = System.currentTimeMillis();
 		if (popupScene != null) {
-			//System.out.println("Updating Splash "+imageView.getFitWidth());
+			// System.out.println("Updating Splash "+imageView.getFitWidth());
 			Platform.runLater(() -> {
-				
+
 				popupScene.setFill(null);
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
 				popupRoot.setStyle("-fx-background-color: transparent;");
-				logL.setLayoutX(logX*scale);
-				logL.setLayoutY(logY*scale);
-				mesL.setLayoutX(messageX*scale);
-				mesL.setLayoutY(messageY*scale);
-				verL.setLayoutX(versionX*scale);
-				verL.setLayoutY(versionY*scale);
-				
+				logL.setLayoutX(logX * scale);
+				logL.setLayoutY(logY * scale);
+				mesL.setLayoutX(messageX * scale);
+				mesL.setLayoutY(messageY * scale);
+				verL.setLayoutX(versionX * scale);
+				verL.setLayoutY(versionY * scale);
+
 				logL.setTextFill(TextColor);
 				mesL.setTextFill(TextColor);
 				verL.setTextFill(TextColor);
-				
+
 				logL.setText(log);
 				mesL.setText(message);
 				verL.setText(StudioBuildInfo.getVersion());
@@ -304,7 +313,15 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	}
 
 	public static void setTrayIcon(URL resource2) {
-		PsudoSplash.resource2 = resource2;
+		PsudoSplash.setDockIconResource(resource2);
+	}
+
+	public static URL getDockIconResource() {
+		return dockIcon;
+	}
+
+	public static void setDockIconResource(URL resource2) {
+		PsudoSplash.dockIcon = resource2;
 	}
 
 }
