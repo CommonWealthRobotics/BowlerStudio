@@ -115,6 +115,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/** The root. */
 	private final Group root = new Group();
+	private Affine rulerOffset = new Affine();
+
 
 	/** The axis group. */
 	final Group axisGroup = new Group();
@@ -1125,7 +1127,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 					Affine xp = new Affine();
 					Affine downset = new Affine();
-					downset.setTz(0.1);
+					downset.setTz(0.001);
 					// xp.setTx(-20 * scale);
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
@@ -1138,9 +1140,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						// ImageView groundView = new ImageView(groundLocal);
 						// groundView.getTransforms().addAll(groundMove, downset);
 						// groundView.setOpacity(0.3);
-						zrulerImage.getTransforms().addAll(zRuler, downset);
-						rulerImage.getTransforms().addAll(xp, downset);
-						yrulerImage.getTransforms().addAll(yRuler, downset);
+						zrulerImage.getTransforms().addAll(getRulerOffset(),zRuler, downset);
+						rulerImage.getTransforms().addAll(getRulerOffset(),xp, downset);
+						yrulerImage.getTransforms().addAll(getRulerOffset(),yRuler, downset);
 
 						ObservableList<Node> children = gridGroup.getChildren();
 						rulerGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage);
@@ -2050,5 +2052,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public Group getRulerGroup() {
 		return rulerGroup;
+	}
+
+	public Affine getRulerOffset() {
+		return rulerOffset;
+	}
+
+	public void setRulerOffset(Affine rulerOffset) {
+		this.rulerOffset = rulerOffset;
 	}
 }
