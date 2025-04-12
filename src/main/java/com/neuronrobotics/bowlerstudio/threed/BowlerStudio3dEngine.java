@@ -116,7 +116,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/** The root. */
 	private final Group root = new Group();
 	private Affine rulerOffset = new Affine();
-
+	private Affine rulerInWorkplaneOffset = new Affine();
 
 	/** The axis group. */
 	final Group axisGroup = new Group();
@@ -1140,9 +1140,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						// ImageView groundView = new ImageView(groundLocal);
 						// groundView.getTransforms().addAll(groundMove, downset);
 						// groundView.setOpacity(0.3);
-						zrulerImage.getTransforms().addAll(getRulerOffset(),zRuler, downset);
-						rulerImage.getTransforms().addAll(getRulerOffset(),xp, downset);
-						yrulerImage.getTransforms().addAll(getRulerOffset(),yRuler, downset);
+						zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),zRuler, downset);
+						rulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),xp, downset);
+						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),yRuler, downset);
 
 						ObservableList<Node> children = gridGroup.getChildren();
 						rulerGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage);
@@ -2050,15 +2050,22 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			selectObjectsSourceFile(c);
 	}
 
-	public Group getRulerGroup() {
-		return rulerGroup;
-	}
-
 	public Affine getRulerOffset() {
 		return rulerOffset;
 	}
 
 	public void setRulerOffset(Affine rulerOffset) {
 		this.rulerOffset = rulerOffset;
+	}
+
+	public Affine getRulerInWorkplaneOffset() {
+		return rulerInWorkplaneOffset;
+	}
+
+	public void setRulerInWorkplaneOffset(Affine rulerInWorkplaneOffset) {
+		this.rulerInWorkplaneOffset = rulerInWorkplaneOffset;
+	}
+	public Group getRulerGroup() {
+		return rulerGroup;
 	}
 }
