@@ -191,6 +191,12 @@ repositories {
 //            includeGroup "de.dfki.lt.jtok"
 //        }
     }
+	maven {
+		url "https://repo.spring.io/libs-milestone/"
+		content {
+			includeGroup "de.dfki.mary"
+		}
+	}
 	maven { url 'https://plugins.gradle.org/m2/' }
 	//maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 
