@@ -240,6 +240,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				public void run() {
 					// ConfigurationDatabase.loginEvent(username);
 					// ConfigurationDatabase.getParamMap("workspace");
+					System.out.println("Login Success "+n);
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())
 						return;
