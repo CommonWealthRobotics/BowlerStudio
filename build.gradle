@@ -181,26 +181,23 @@ repositories {
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
 	//
-	maven { 
-		url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' 
-		allowInsecureProtocol = true
-	}
+//	maven { 
+//		url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' 
+//		allowInsecureProtocol = true
+//	}
     maven {
         url "https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main"
-//        content {
-//            includeGroup "de.dfki.lt.jtok"
-//        }
     }
+//	maven {
+//		url "https://repo.spring.io/libs-milestone/"
+//	}
 	maven {
-		url "https://repo.spring.io/libs-milestone/"
-		content {
-			includeGroup "de.dfki.mary"
-		}
+		url "https://maven.cloudsmith.io/marytts/marytts/"
 	}
 	maven { url 'https://plugins.gradle.org/m2/' }
 	//maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 
-	maven { url 'https://repo.spring.io/plugins-release/'  }
+//	maven { url 'https://repo.spring.io/plugins-release/'  }
 
 	maven { url "https://jitpack.io" }
 	maven { url "https://repo.eclipse.org/content/groups/releases/" }
@@ -211,7 +208,7 @@ repositories {
 	maven { url "https://raw.githubusercontent.com/DFKI-MLT/DFKI-LT-MAVEN/master/repository" }
 	
 	maven {
-		url 'https://commonwealthrobotics.com/jcenter-mirror/'
+		url 'https://commonwealthrobotics.com/maven/'
 		allowInsecureProtocol = true
 	}
 }
