@@ -180,7 +180,11 @@ repositories {
 	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
-
+	//
+	maven { 
+		url 'https://jenkinsci.artifactoryonline.com/jenkinsci/public/' 
+		allowInsecureProtocol = true
+	}
     maven {
         url "https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main"
 //        content {
@@ -190,7 +194,7 @@ repositories {
 	maven { url 'https://plugins.gradle.org/m2/' }
 	//maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
 
-	maven { url '	https://repo.spring.io/plugins-release/'  }
+	maven { url 'https://repo.spring.io/plugins-release/'  }
 
 	maven { url "https://jitpack.io" }
 	maven { url "https://repo.eclipse.org/content/groups/releases/" }
