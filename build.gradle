@@ -182,15 +182,15 @@ repositories {
 	maven { url 'https://repo.spring.io/milestone'}
     maven {
         url "https://repo.spring.io/plugins-release/"
-        content {
-            includeGroup "de.dfki.lt.jtok"
-        }
+//        content {
+//            includeGroup "de.dfki.lt.jtok"
+//        }
     }
     maven {
         url "https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main"
-        content {
-            includeGroup "de.dfki.lt.jtok"
-        }
+//        content {
+//            includeGroup "de.dfki.lt.jtok"
+//        }
     }
 	maven { url 'https://plugins.gradle.org/m2/' }
 	//maven { url 'https://dl.bintray.com/clearcontrol/ClearControl' }
