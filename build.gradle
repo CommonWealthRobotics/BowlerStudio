@@ -180,12 +180,7 @@ repositories {
 	maven { url 'https://clojars.org/repo' }
 	maven { url 'https://jline.sourceforge.net/m2repo' }
 	maven { url 'https://repo.spring.io/milestone'}
-    maven {
-        url "https://repo.spring.io/plugins-release/"
-//        content {
-//            includeGroup "de.dfki.lt.jtok"
-//        }
-    }
+
     maven {
         url "https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main"
 //        content {
