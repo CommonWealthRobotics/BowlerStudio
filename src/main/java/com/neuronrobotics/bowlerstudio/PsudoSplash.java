@@ -211,10 +211,27 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	}
 
 	private void closeSplashLocal() {
-		Platform.runLater(() -> {
+		BowlerStudio.runLater(() -> {
 			popupStage.hide();
 		});
-		// new Exception("Closing Splash").printStackTrace();
+		new Thread(()->{
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			BowlerStudio.runLater(() -> {
+				popupStage.hide();
+			});
+		}).start();
+		if(!Platform.isFxApplicationThread())
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	void updateSplash() {
