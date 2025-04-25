@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -56,8 +57,8 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 							openscad.getAbsolutePath(),
 						filename);
 
-				Thread t=run(this, dir, System.err, asList);
-				t.join();
+				DownloadManager.legacySystemRun(new HashMap<String, String>(),dir, System.err, asList);
+
 			} catch (NoWorkTreeException e) {
 				// Auto-generated catch block
 				e.printStackTrace();
