@@ -41,11 +41,16 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 	public void launch(File file, Button advanced) {
 		new Thread(() -> {
 			this.advanced = advanced;
-			String filename = file.getAbsolutePath();
+			String filename = "\""+file.getAbsolutePath()+"\"";
 
 			try {
 				File dir = file.getAbsoluteFile().getParentFile();
-				File openscad = DownloadManager.getRunExecutable("cadoodle", null);
+				File openscad;
+				if(OSUtil.isOSX()) {
+					openscad = DownloadManager.getConfigExecutable("cadoodle", null);
+				}else {
+					openscad = DownloadManager.getRunExecutable("cadoodle", null);
+				}
 
 				List<String> asList = Arrays.asList(
 							openscad.getAbsolutePath(),
