@@ -47,12 +47,6 @@ jobs:
       run:
         export DISPLAY=:99  
 
-    - name: Pull a JavaFX JDK
-      run: wget http://static.azul.com/zulu/bin/zulu8.44.0.13-ca-fx-jdk8.0.242-linux_x64.tar.gz
-
-    - name: After JDK download, list directory contnts
-      run: pwd; ls -la
-
     - name: Build with Gradle 
       run: bash makeJar.sh
       
