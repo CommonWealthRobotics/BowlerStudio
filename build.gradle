@@ -11,9 +11,6 @@ buildscript {
 			}
 		]
 	}
-	dependencies {
-		classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
-	}
 }
 
 boolean is64Bit() {
@@ -74,9 +71,12 @@ plugins {
 	id 'signing'
 	id 'application'
 	id 'eclipse'
+	id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+	id 'org.openjfx.javafxplugin' version '0.0.13'apply false
 }
-apply plugin: 'com.github.johnrengelman.shadow'
 if (project == rootProject) {
+	apply plugin: 'com.github.johnrengelman.shadow'
+	apply plugin: 'org.openjfx.javafxplugin'
 	apply plugin: 'application'
 }else {
 	apply plugin: 'java-library'
@@ -441,17 +441,115 @@ eclipse{
 		}
 	}
 }
-shadowJar {
-	zip64 true
-	mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
-	if (project == rootProject) {
-		baseName = 'BowlerStudio'
-		classifier = ""
-	}else {
-		archiveBaseName.set('BowlerStudio')
-		archiveClassifier.set('')
-		archiveVersion.set('')
+
+// Start cadoodle build transfer
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	sourceCompatibility = 1.8
+	targetCompatibility = 17
+
+	eclipse {
+		classpath {
+			downloadSources = true
+			downloadJavadoc = true
+			file {
+				whenMerged {
+					entries.forEach { entry ->
+						if (entry.kind == 'lib') {
+							entry.entryAttributes['module'] = 'true'
+						}
+					}
+				}
+			}
+		}
+		jdt {
+			sourceCompatibility = 1.8
+			targetCompatibility = 17
+		}
 	}
+
+	tasks.withType(JavaCompile) {
+		options.encoding = 'UTF-8'
+		options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
+	}
+}
+
+subprojects { subproject ->
+	subproject.afterEvaluate {
+		if (subproject.plugins.hasPlugin('com.github.johnrengelman.shadow')) {
+			subproject.tasks.matching { it.name == 'shadowJar' }.all {
+				System.out.println("Disabling Shadowjar for "+it)
+				it.enabled = false
+			}
+		}
+	}
+}
+
+
+javafx {
+	version = '17' // or whichever version you're using
+	modules = [
+		'javafx.controls',
+		'javafx.fxml',
+		'javafx.graphics'] // add other modules as needed
+}
+tasks.withType(Test) {
+	useJUnitPlatform()
+	jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+}
+def javafxOptions = [
+	'--add-exports', 'javafx.graphics/com.sun.javafx.css=ALL-UNNAMED',
+	'--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED',
+	'--add-exports', 'javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED',
+	'--add-exports', 'javafx.base/com.sun.javafx.event=ALL-UNNAMED',
+	'--add-exports', 'javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED',
+	'--add-exports', 'javafx.graphics/com.sun.javafx.util=ALL-UNNAMED',
+	'--add-exports', 'javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED',
+	'--add-opens','javafx.graphics/javafx.scene=ALL-UNNAMED',
+	'--add-opens','java.base/java.io=ALL-UNNAMED',
+	'--add-opens','java.base/java.lang=ALL-UNNAMED'
+]
+run {
+	jvmArgs = javafxOptions
+}
+application {
+	// Define the main class for the application.
+	mainClass = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
+	applicationDefaultJvmArgs =javafxOptions
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs += [
+		'--add-modules', 'ALL-MODULE-PATH',
+		'--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+		'--add-opens', 'java.base/java.io=ALL-UNNAMED'
+	]+javafxOptions
+}
+tasks.named('test') {
+	// Use JUnit Platform for unit tests.
+	useJUnitPlatform()
+}
+
+shadowJar {
+	archiveBaseName.set('BowlerStudio')
+	archiveClassifier.set('')
+	archiveVersion.set('')
+	zip64 true
 	mergeServiceFiles()
 }
+//shadowJar {
+//	zip64 true
+//	mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
+//	if (project == rootProject) {
+//		baseName = 'BowlerStudio'
+//		classifier = ""
+//	}else {
+//		archiveBaseName.set('BowlerStudio')
+//		archiveClassifier.set('')
+//		archiveVersion.set('')
+//	}
+//	mergeServiceFiles()
+//}
 
