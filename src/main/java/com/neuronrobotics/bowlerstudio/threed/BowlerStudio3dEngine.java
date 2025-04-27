@@ -664,7 +664,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
-		current.setViewOrder(viewOrder);
+		if (Runtime.version().feature() >= 17) {
+			current.setViewOrder(viewOrder);
+		}
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
