@@ -609,7 +609,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			}
 		}.start();
 	}
-
 	/**
 	 * Adds the object.
 	 *
@@ -617,6 +616,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * @return the mesh view
 	 */
 	public MeshView addObject(CSG currentCsg, File source) {
+		return addObject(currentCsg, source,-1,0);
+	}
+	/**
+	 * Adds the object.
+	 *
+	 * @param currentCsg the current
+	 * @return the mesh view
+	 */
+	public MeshView addObject(CSG currentCsg, File source,double opacity,double viewOrder) {
 		if (currentCsg == null)
 			return new MeshView();
 //		for(Polygon poly:currentCsg.getPolygons())
@@ -649,6 +657,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		MeshView current = getCsgMap().get(currentCsg);
 		current.setCullFace(CullFace.BACK);
 		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
+		if(opacity>0) {
+			PhongMaterial phongMaterial = (PhongMaterial) current.getMaterial();
+			Color diffuseColor = phongMaterial.getDiffuseColor();
+			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(),
+					opacity);
+			phongMaterial.setDiffuseColor(diffuseColor);
+		}
+		current.setViewOrder(viewOrder);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
@@ -2030,10 +2046,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	@Override
 	public void addCSG(Collection<CSG> toAdd, File source) {
-		for (CSG c : toAdd)
-			addObject(c, source);
+		addCSG(toAdd,source,-1,0);
 	}
-
+	public void addCSG(Collection<CSG> toAdd, File source, double opacity,double viewOrder ) {
+		for (CSG c : toAdd)
+			addObject(c, source,opacity,viewOrder);
+	}
 	@Override
 	public void highlightException(File fileEngineRunByName, Throwable ex) {
 
