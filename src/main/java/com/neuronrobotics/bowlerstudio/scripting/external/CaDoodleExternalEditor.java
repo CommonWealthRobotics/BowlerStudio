@@ -46,15 +46,15 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 
 			try {
 				File dir = file.getAbsoluteFile().getParentFile();
-				File openscad;
+				File exe;
 				if(OSUtil.isOSX()) {
-					openscad = DownloadManager.getConfigExecutable("cadoodle", null);
+					exe = DownloadManager.getConfigExecutable("cadoodle", null);
 				}else {
-					openscad = DownloadManager.getRunExecutable("cadoodle", null);
+					exe = DownloadManager.getRunExecutable("cadoodle", null);
 				}
 
 				List<String> asList = Arrays.asList(
-							openscad.getAbsolutePath(),
+							exe.getAbsolutePath(),
 						filename);
 
 				DownloadManager.legacySystemRun(new HashMap<String, String>(),dir, System.err, asList);
