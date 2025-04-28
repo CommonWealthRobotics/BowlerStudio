@@ -46,6 +46,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.FindTextWidget;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import eu.mihosoft.monacofx.*;
 
 public class LocalFileScriptTab extends VBox implements IScriptEventListener, EventHandler<WindowEvent> {
 	private static final int MaxTextSize = 75000;
@@ -66,16 +67,12 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private ScriptingFileWidget scripting;
 
 	IScriptEventListener l = null;
-
+	private int lineSelected = 0;
 	private SwingNode swingNode;
 	private RTextScrollPane spscrollPane;
-
 	private Highlighter highlighter;
-
 	private HighlightPainter painter;
-	private int lineSelected = 0;
-
-	private MyRSyntaxTextArea textArea = new MyRSyntaxTextArea(200, 300);
+	private RSyntaxTextArea textArea = new RSyntaxTextArea(200, 300);
 
 	private final File file;
 
@@ -91,41 +88,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		BowlerStudio.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
 	}
-
-	public class MyRSyntaxTextArea extends RSyntaxTextArea implements ComponentListener {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public MyRSyntaxTextArea() {
-			this.addComponentListener(this);
-		}
-
-		public MyRSyntaxTextArea(int i, int j) {
-			super(i, j);
-		}
-
-		public void componentResized(ComponentEvent e) {
-			com.neuronrobotics.sdk.common.Log.error("componentResized");
-
-		}
-
-		public void componentHidden(ComponentEvent e) {
-			com.neuronrobotics.sdk.common.Log.error("componentHidden");
-		}
-
-		public void componentMoved(ComponentEvent e) {
-			com.neuronrobotics.sdk.common.Log.error("componentMoved");
-		}
-
-		public void componentShown(ComponentEvent e) {
-			com.neuronrobotics.sdk.common.Log.error("componentShown");
-		}
-
-	}
-
+	MonacoFX text_Area = new MonacoFX();
 	public static void setExtentionSyntaxType(String shellType, String syntax) {
 		langaugeMapping.put(shellType, syntax);
 	}
@@ -269,20 +232,20 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		});
 
-		textArea.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				try {
-					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
-						highlighter.removeAllHighlights();
-					}
-				} catch (Throwable t) {
-					t.printStackTrace();
-				}
-				// com.neuronrobotics.sdk.common.Log.error("Number of click: " + e.getClickCount());
-				// com.neuronrobotics.sdk.common.Log.error("Click position (X, Y): " + e.getX() + ",
-				// " + e.getY());
-			}
-		});
+//		textArea.addMouseListener(new MouseAdapter() {
+//			public void mouseClicked(MouseEvent e) {
+//				try {
+//					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
+//						highlighter.removeAllHighlights();
+//					}
+//				} catch (Throwable t) {
+//					t.printStackTrace();
+//				}
+//				// com.neuronrobotics.sdk.common.Log.error("Number of click: " + e.getClickCount());
+//				// com.neuronrobotics.sdk.common.Log.error("Click position (X, Y): " + e.getX() + ",
+//				// " + e.getY());
+//			}
+//		});
 
 		spscrollPane = new RTextScrollPane(textArea);
 
@@ -291,23 +254,23 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		getScripting().setFocusTraversable(false);
 
-		swingNode.setOnMouseEntered(mouseEvent -> {
-			// com.neuronrobotics.sdk.common.Log.error("On mouse entered " + file.getName());
-			// resizeEvent();
-			BowlerStudio.invokeLater(() -> {
-				resizeEvent();
-				setSelectedTab(this);
-//				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
-//				spscrollPane.invalidate();
-//				spscrollPane.repaint();
-//				textArea.invalidate();
-//				textArea.repaint();
-//				textArea.requestFocusInWindow();
-//				FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
-//					swingNode.requestFocus();
-//				});
-			});
-		});
+//		swingNode.setOnMouseEntered(mouseEvent -> {
+//			// com.neuronrobotics.sdk.common.Log.error("On mouse entered " + file.getName());
+//			// resizeEvent();
+//			BowlerStudio.invokeLater(() -> {
+//				resizeEvent();
+//				//setSelectedTab(this);
+////				spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+////				spscrollPane.invalidate();
+////				spscrollPane.repaint();
+////				textArea.invalidate();
+////				textArea.repaint();
+////				textArea.requestFocusInWindow();
+////				FxTimer.runLater(Duration.ofMillis((int) 16), () -> {
+////					swingNode.requestFocus();
+////				});
+//			});
+//		});
 		// textArea
 		// Set event listener to listen for CTRL+S and save file
 		KeyStroke keystroke_s = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK);
@@ -375,25 +338,25 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void resizeEvent() {
-		if (!((lastRefresh + 60) < System.currentTimeMillis())
-				|| spscrollPane.getVerticalScrollBar().getValueIsAdjusting()
-				|| spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
-			return;
-		}
-		lastRefresh = System.currentTimeMillis();
-		BowlerStudio.invokeLater(() -> {
-			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
-			spscrollPane.invalidate();
-			spscrollPane.repaint();
-			textArea.invalidate();
-			textArea.repaint();
-
-			textArea.requestFocusInWindow();
-			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
-				swingNode.setContent(spscrollPane);
-				swingNode.requestFocus();
-			});
-		});
+//		if (!((lastRefresh + 60) < System.currentTimeMillis())
+//				|| spscrollPane.getVerticalScrollBar().getValueIsAdjusting()
+//				|| spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
+//			return;
+//		}
+//		lastRefresh = System.currentTimeMillis();
+//		BowlerStudio.invokeLater(() -> {
+//			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+//			spscrollPane.invalidate();
+//			spscrollPane.repaint();
+//			textArea.invalidate();
+//			textArea.repaint();
+//
+//			textArea.requestFocusInWindow();
+//			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
+//				swingNode.setContent(spscrollPane);
+//				swingNode.requestFocus();
+//			});
+//		});
 
 	}
 

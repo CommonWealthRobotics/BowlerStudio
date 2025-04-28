@@ -356,6 +356,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
 	implementation group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '3.4.1'
 
+	// https://mvnrepository.com/artifact/eu.mihosoft.monacofx/monacofx
+	implementation("eu.mihosoft.monacofx:monacofx:0.0.8")
+
 	//compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
 	// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen
     implementation group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.17'
