@@ -44,13 +44,13 @@ public class SplashManager {
 		PsudoSplash.get().updateSplash();
 	}
 
-	public static void renderSplashFrame(int frame, String message) {
+	public static void renderSplashFrame(int percent, String message) {
 		if (loadFirst) {
 			
 			initialize();
 		}
-		String string = frame + "% " + message;
-		System.out.println(" Splash Rendering " + frame + " " + message);
+		String string = percent + "% " + message;
+		System.out.println(" Splash Rendering " + percent + " " + message);
 		PsudoSplash.get().setMessage(string);
 		updateSplash();
 
