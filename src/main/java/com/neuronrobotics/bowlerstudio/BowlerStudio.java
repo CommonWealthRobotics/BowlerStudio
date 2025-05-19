@@ -715,8 +715,9 @@ public class BowlerStudio extends Application {
 		for(String s:urls) {
 			if(s==null)
 				continue;
-			ScriptingEngine.cloneRepo(s, null);
 			try {
+				ScriptingEngine.filesInGit(s);
+				System.out.println("Pulling "+s);
 				ScriptingEngine.pull(s);
 			} catch (Throwable e) {
 				// Auto-generated catch block
