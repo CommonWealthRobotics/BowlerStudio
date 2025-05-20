@@ -21,15 +21,14 @@ import javafx.scene.shape.SVGPath;
 
 public class MakeRuler {
 	// SVG paths for numbers 0-9
-	private static HashMap<Integer,CSG> numbers = new HashMap<>();
-
+	private static HashMap<Integer, CSG> numbers = new HashMap<>();
 
 	public static Group createRuler(boolean flipNumber) {
 		int numCentimeters = 30;
 		double width = 0.15;
 		double height = 10;
 		Group ruler = new Group();
-		new Thread(()->{
+		new Thread(() -> {
 			// Create base mesh for the ruler line
 			TriangleMesh baseMesh = createRectangleMesh(width, 1.0f);
 			MeshView baseView = new MeshView(baseMesh);
@@ -42,11 +41,11 @@ public class MakeRuler {
 			Affine baseTransform = new Affine();
 			baseTransform.setTy(height / 2 - 1.0);
 			baseView.getTransforms().add(baseTransform);
-			BowlerKernel.runLater(()->ruler.getChildren().add(baseView));
+			BowlerKernel.runLater(() -> ruler.getChildren().add(baseView));
 
 			// Constants for spacing
 			double mmSpacing = width / (numCentimeters * 10.0);
-			double tickWidth=0.25;
+			double tickWidth = 0.25;
 			// Draw tick marks and labels
 			for (int i = 0; i <= numCentimeters * 10; i++) {
 				double x = i * mmSpacing;
@@ -59,20 +58,21 @@ public class MakeRuler {
 					if (i % 20 == 0) {
 						// Add centimeter number using SVGPath
 						int number = i / 10;
-						if(numbers.get(number)==null) {
-							numbers.put(number,CSG.textToSize(""+i, 4, 6, 0.1).movey(height).moveToCenterX().setColor(Color.BLACK));
+						if (numbers.get(number) == null) {
+							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(height).moveToCenterX()
+									.setColor(Color.BLACK));
 						}
-						CSG movey = numbers.get(number);
-						if(flipNumber) {
-							movey=movey.roty(180);
-						}
-						MeshView numberGroup = movey.newMesh();
-						numberGroup.setMouseTransparent(true);
-						// Scale and position the number
-						Affine numberTransform = new Affine();
-						numberTransform.appendTranslation(i, 0);
-						numberGroup.getTransforms().add(numberTransform);
-						BowlerKernel.runLater(()->ruler.getChildren().add(numberGroup));
+						CSG movey = flipNumber?numbers.get(number): numbers.get(number).roty(180);
+						int index=i;
+						BowlerKernel.runLater(() -> {
+							MeshView numberGroup = movey.newMesh();
+							numberGroup.setMouseTransparent(true);
+							// Scale and position the number
+							Affine numberTransform = new Affine();
+							numberTransform.appendTranslation(index, 0);
+							numberGroup.getTransforms().add(numberTransform);
+							ruler.getChildren().add(numberGroup);
+						});
 					}
 				} else if (i % 5 == 0) {
 					// 5mm marks
@@ -88,13 +88,13 @@ public class MakeRuler {
 				tickView.setMaterial(phongMaterial);
 
 				// Use Affine transform for tick positioning
-				//com.neuronrobotics.sdk.common.Log.error("Tick for " + i);
+				// com.neuronrobotics.sdk.common.Log.error("Tick for " + i);
 				Affine tickTransform = new Affine();
-				tickTransform.setTx(i-tickWidth/2);
+				tickTransform.setTx(i - tickWidth / 2);
 				// tickTransform.setTy((height - tickView.getBoundsInLocal().getHeight()) / 2);
 				tickView.getTransforms().add(tickTransform);
 				tickView.setCullFace(CullFace.NONE);
-				BowlerKernel.runLater(()->ruler.getChildren().add(tickView));
+				BowlerKernel.runLater(() -> ruler.getChildren().add(tickView));
 			}
 		}).start();
 		return ruler;
