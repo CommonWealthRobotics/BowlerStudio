@@ -62,7 +62,7 @@ public class MakeRuler {
 							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(height).moveToCenterX()
 									.setColor(Color.BLACK));
 						}
-						CSG movey = flipNumber?numbers.get(number): numbers.get(number).roty(180);
+						CSG movey = flipNumber?numbers.get(number).roty(180): numbers.get(number);
 						int index=i;
 						BowlerKernel.runLater(() -> {
 							MeshView numberGroup = movey.newMesh();
