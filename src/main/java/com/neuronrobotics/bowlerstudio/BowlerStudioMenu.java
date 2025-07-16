@@ -1624,7 +1624,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				int i = currentIndex + 1;
 
 				double percent = ((double) i) / ((double) finalIndex) * 100;
-				String x = intermediateShape.getName() + " " + type.trim() + " " + String.format("%.1f", percent)
+				String name =intermediateShape==null?"": intermediateShape.getName();
+				String x = name + " " + type.trim() + " " + String.format("%.1f", percent)
 						+ "% finished : " + i + " of " + finalIndex;
 				if (showCSGProgress.isSelected()) {
 					System.out.println(x);

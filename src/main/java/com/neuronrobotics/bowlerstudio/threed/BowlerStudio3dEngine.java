@@ -1141,7 +1141,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					xp.appendScale(scale, scale, scale);
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 					grid = createGridMesh(1000, 1000, 20);
-
+					boolean selected = showRuler != null ? showRuler.isSelected() : true;
+					Axis axis = new Axis(b?selected:false);
 					BowlerStudio.runLater(() -> {
 						Node rulerImage = MakeRuler.createRuler(true);// new ImageView(ruler);
 						Node yrulerImage = MakeRuler.createRuler(false);// new ImageView(ruler);
@@ -1166,12 +1167,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						ground = new Group();
 						ground.getTransforms().add(groundPlacment);
 						focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
-
-						boolean selected = showRuler != null ? showRuler.isSelected() : true;
-						if (!b)
-							selected = false;
 						if (b) {
-							children.addAll(new Axis(selected), ground);
+							children.addAll(axis, ground);
 							showAxis();
 						}
 						axisGroup.getChildren().addAll(focusGroup, userGroup);

@@ -91,16 +91,17 @@ public class Axis extends Group {
 
 		Affine xp = new Affine();
 		xp.setTx(i / 2);
-		Font font = new Font("Arial",  5);
+		
+		Font font = new Font(Font.getDefault().getName(),  5);
 
 		
 
-		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"X",font)).movex(i).moveToCenterY();
+		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).movex(i).moveToCenterY();
 		//xText.getTransforms().add(xp);
 
 		Affine yp = new Affine();
 		yp.setTy(i / 2);
-		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Y",font)).rotz(90).toYMin().movey(i).moveToCenterX();
+		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"y",font)).rotz(90).mirrory().toYMin().movey(i).moveToCenterX();
 		//yText.getTransforms().add(yp);
 
 		// zp.setTz(i/2);
@@ -109,7 +110,7 @@ public class Axis extends Group {
 		zTextAffine.setTx(i / 2);
 		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
 		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zText = CSG.unionAll(TextExtrude.text((double)strokWidth,"Z",font)).rotx(90).rotz(90).movez(i).moveToCenterY();
+		zText = CSG.unionAll(TextExtrude.text((double)strokWidth,"z",font)).rotx(90).rotz(90).mirrory().movez(i).moveToCenterY();
 		//zText.getTransforms().add(zTextAffine);
 		// zText.smoothProperty().set(false);
 		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin();
