@@ -22,6 +22,7 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.CSGtoJavafx;
+import eu.mihosoft.vrl.v3d.ColinearPointsException;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.MeshContainer;
@@ -516,12 +517,17 @@ public class BowlerStudioController implements IScriptEventListener {
 					csg.setIsWireFrame(true);
 					getBowlerStudio().addNode(csg.getMesh());
 				}
-				for(Polygon p:PolygonUtil.concaveToConvex(poly)) {
-					MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
-					javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
-					current.setMaterial(new PhongMaterial(color));
-					current.setCullFace(CullFace.NONE);
-					getBowlerStudio().addNode(current);
+				try {
+					for(Polygon p:PolygonUtil.triangulatePolygon(poly)) {
+						MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
+						javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
+						current.setMaterial(new PhongMaterial(color));
+						current.setCullFace(CullFace.NONE);
+						getBowlerStudio().addNode(current);
+					}
+				} catch (ColinearPointsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			});
 			BowlerStudioController.setSelectedCsg(poly.getVertices().get(0).pos);
