@@ -34,8 +34,11 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
@@ -43,7 +46,7 @@ import javax.swing.text.BadLocationException;
 
 import org.eclipse.jgit.api.Git;
 
-import java.awt.Color;
+//import java.awt.Color;
 //import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -152,7 +155,7 @@ public class BowlerStudioController implements IScriptEventListener {
 						String message = BowlerStudioMenu.gitURLtoMessage(gitRepo);
 						if (gitRepo.length() < 5 || (message == null))
 							message = "Project " + gitRepo;
-						if(BowlerStudio.checkValidURL(gitRepo)) {
+						if (BowlerStudio.checkValidURL(gitRepo)) {
 							BowlerStudioMenuWorkspace.add(gitRepo, message);
 						}
 					}
@@ -160,7 +163,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			}.start();
 
 			String key = t.getScripting().getGitRepo() + ":" + t.getScripting().getGitFile();
-			if(key.length()==1)
+			if (key.length() == 1)
 				throw new RuntimeException("Failed to create a file key");
 			ArrayList<String> files = new ArrayList<>();
 			files.add(t.getScripting().getGitRepo());
@@ -173,19 +176,19 @@ public class BowlerStudioController implements IScriptEventListener {
 			}
 
 			fileTab.setContent(t);
-			ImageView icon = AssetFactory.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png");
+			ImageView icon = AssetFactory
+					.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png");
 			icon.setFitHeight(30);
 			icon.setFitWidth(30);
-			
-			fileTab.setGraphic(
-					icon);
+
+			fileTab.setGraphic(icon);
 
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
 			System.err.println("Open Tab " + file.getAbsolutePath());
 
 			fileTab.setOnCloseRequest(event -> {
-				
+
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
 				ConfigurationDatabase.removeObject("studio-open-git", key);
@@ -220,7 +223,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 	}
 
-	public void setHighlight(File fileEngineRunByName, int lineNumber, Color color) {
+	public void setHighlight(File fileEngineRunByName, int lineNumber, java.awt.Color color) {
 		// com.neuronrobotics.sdk.common.Log.error("Highlighting line "+lineNumber+" in
 		// "+fileEngineRunByName);
 		if (openFiles.get(fileEngineRunByName.getAbsolutePath()) == null) {
@@ -229,7 +232,8 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 
 		// BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(openFiles.get(fileEngineRunByName.getAbsolutePath()));
-		// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+" at line
+		// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+"
+		// at line
 		// "+lineNumber+" to color "+color);
 		try {
 			widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(lineNumber, color);
@@ -271,17 +275,19 @@ public class BowlerStudioController implements IScriptEventListener {
 					} catch (java.lang.NullPointerException e) {
 						return;
 					}
-					// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+" at line
+					// com.neuronrobotics.sdk.common.Log.error("Highlighting "+fileEngineRunByName+"
+					// at line
 					// "+lineNumber+" to color "+color);
 					StackTraceElement[] stackTrace = ex.getStackTrace();
 
 					for (StackTraceElement el : stackTrace) {
 						try {
-							// com.neuronrobotics.sdk.common.Log.error("Compairing "+fileEngineRunByName.getName()+" to
+							// com.neuronrobotics.sdk.common.Log.error("Compairing
+							// "+fileEngineRunByName.getName()+" to
 							// "+el.getFileName());
 							if (el.getFileName().contentEquals(fileEngineRunByName.getName())) {
 								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),
-										Color.CYAN);
+										java.awt.Color.CYAN);
 							}
 						} catch (Exception e) {
 							// StringWriter sw = new StringWriter();
@@ -293,11 +299,12 @@ public class BowlerStudioController implements IScriptEventListener {
 					if (ex.getCause() != null) {
 						for (StackTraceElement el : ex.getCause().getStackTrace()) {
 							try {
-								// com.neuronrobotics.sdk.common.Log.error("Compairing "+fileEngineRunByName.getName()+" to
+								// com.neuronrobotics.sdk.common.Log.error("Compairing
+								// "+fileEngineRunByName.getName()+" to
 								// "+el.getFileName());
 								if (el.getFileName().contentEquals(fileEngineRunByName.getName())) {
 									widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(el.getLineNumber(),
-											Color.CYAN);
+											java.awt.Color.CYAN);
 								}
 							} catch (Exception e) {
 								// StringWriter sw = new StringWriter();
@@ -320,7 +327,7 @@ public class BowlerStudioController implements IScriptEventListener {
 								String[] fileAndNum = fileSub.split(":");
 								String FileNum = fileAndNum[1];
 								int linNum = Integer.parseInt(FileNum.trim());
-								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum, Color.CYAN);
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum, java.awt.Color.CYAN);
 							} catch (Exception e) {
 								StringWriter sw = new StringWriter();
 								PrintWriter pw = new PrintWriter(sw);
@@ -432,27 +439,34 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void setSelectedCsg(CSG obj) {
 		CreatureLab3dController.getEngine().setSelectedCsg(obj);
 	}
+
 	public static void highlightCsg(CSG obj) {
-		CreatureLab3dController.getEngine().setSelectedCsg(obj,true);
+		CreatureLab3dController.getEngine().setSelectedCsg(obj, true);
 	}
+
 	public static void setSelectedCsg(Vector3d v) {
 		Affine manipulator2 = new Affine();
 		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
 	}
+
 	public static void setSelectedCsg(TransformNR poseToMove) {
 		Affine manipulator2 = new Affine();
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
 	}
+
 	public static void setSelectedAffine(TransformNR poseToMove, Affine manipulator2) {
 		CreatureLab3dController.getEngine().focusToAffine(poseToMove, manipulator2);
 	}
+
 	public static void targetAndFollow(TransformNR poseToMove, Affine manipulator2) {
 		CreatureLab3dController.getEngine().targetAndFollow(poseToMove, manipulator2);
 	}
+
 	public static void setSelectedAffine(Affine af) {
 		CreatureLab3dController.getEngine().focusToAffine(af);
 	}
+
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
 			if (toadd != null)
@@ -471,14 +485,17 @@ public class BowlerStudioController implements IScriptEventListener {
 			List<Object> c = (List<Object>) o;
 			for (int i = 0; i < c.size(); i++) {
 				// Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i), source,cache);
+				addObject(c.get(i), source, cache);
 			}
 			return;
 		}
-		if(CaDoodleFile.class.isInstance(o)) {
-			addObject(CaDoodleLoader.process((CaDoodleFile)o), source,cache);
+		if (CaDoodleFile.class.isInstance(o)) {
+			addObject(CaDoodleLoader.process((CaDoodleFile) o), source, cache);
 			return;
 		}
+		javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+				Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
+		double stroke = 0.5;
 		if (CSG.class.isInstance(o)) {
 			CSG csg = (CSG) o;
 			if (cache == null) {
@@ -486,7 +503,7 @@ public class BowlerStudioController implements IScriptEventListener {
 					// new RuntimeException().printStackTrace();
 					CreatureLab3dController.getEngine().addObject(csg, source);
 				});
-			}else {
+			} else {
 				cache.add(csg);
 			}
 
@@ -505,39 +522,46 @@ public class BowlerStudioController implements IScriptEventListener {
 		} else if (Polygon.class.isInstance(o)) {
 			Polygon poly = (Polygon) o;
 			List<Vertex> vertices = poly.getVertices();
-			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
-			double stroke = 0.5;
-			BowlerStudio.runLater(()->{
-				for (int i = 0; i < vertices.size(); i++) {
-					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
-							.move(vertices.get(i))
-							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
-					csg.setIsWireFrame(true);
-					getBowlerStudio().addNode(csg.getMesh());
-				}
-				try {
-					for(Polygon p:PolygonUtil.triangulatePolygon(poly)) {
-						MeshContainer mesh = CSGtoJavafx.meshFromPolygon(p);
-						javafx.scene.shape.MeshView current = mesh.getAsMeshViews().get(0);
-						current.setMaterial(new PhongMaterial(color));
-						current.setCullFace(CullFace.NONE);
-						getBowlerStudio().addNode(current);
-					}
-				} catch (ColinearPointsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+			BowlerStudio.runLater(() -> {
+//				for (int i = 0; i < vertices.size(); i++) {
+//					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
+//							.move(vertices.get(i))
+//							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+//									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
+//					csg.setIsWireFrame(true);
+//					getBowlerStudio().addNode(csg.getMesh());
+//				}
+
+				MeshView current = createPolygonOutlineMesh(vertices);
+				PhongMaterial material = new PhongMaterial(poly.getColor());
+			    // Set diffuse color to black and use self-illumination
+			    material.setDiffuseColor(Color.BLACK);
+			    material.setSelfIlluminationMap(null);  // Reset any existing map
+			    
+			    // Use specular color for the line color (works without lighting)
+			    material.setSpecularColor(poly.getColor());
+			    material.setSpecularPower(1.0);
+				current.setMaterial(material);
+				current.setCullFace(CullFace.NONE);
+				getBowlerStudio().addNode(current);
+
 			});
 			BowlerStudioController.setSelectedCsg(poly.getVertices().get(0).pos);
 			return;
-		}else if (Vector3d.class.isInstance(o)) {
-			Vector3d v=(Vector3d)o;
+		}else if (Vertex.class.isInstance(o)) {
+			Vertex v = (Vertex) o;
+			CSG csg = new Cylinder(0, stroke / 2, stroke, 3).toCSG().move(v)
+					.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5,
+							Math.random() * 0.5 + 0.5, 0.25));
+			getBowlerStudio().addNode(csg.getMesh());
+			return;
+		} else if (Vector3d.class.isInstance(o)) {
+			Vector3d v = (Vector3d) o;
 			BowlerStudioController.setSelectedCsg(v);
 			return;
-		}else if (TransformNR.class.isInstance(o)) {
-			TransformNR v=(TransformNR)o;
+		} else if (TransformNR.class.isInstance(o)) {
+			TransformNR v = (TransformNR) o;
 			BowlerStudioController.setSelectedCsg(v);
 			return;
 		} else if (BowlerAbstractDevice.class.isInstance(o)) {
@@ -558,6 +582,34 @@ public class BowlerStudioController implements IScriptEventListener {
 
 	}
 
+	private static MeshView createPolygonOutlineMesh(List<Vertex> vertices) {
+		TriangleMesh mesh = new TriangleMesh();
+
+		// This is a simplified approach - for true line rendering in 3D,
+		// you might want to use a more sophisticated mesh generation
+		// or consider using external 3D libraries like FXYZ3D
+
+		// Add vertices to mesh (this creates a basic wireframe approximation)
+		for (Vertex v : vertices) {
+			mesh.getPoints().addAll((float) v.getX(), (float) v.getY(), (float) v.getZ());
+		}
+
+		// Add texture coordinates (required but minimal for wireframe)
+		mesh.getTexCoords().addAll(0, 0);
+
+		// Add faces (connecting consecutive vertices)
+		for (int i = 0; i < vertices.size(); i++) {
+			int next = (i + 1) % vertices.size();
+			// Create degenerate triangles for line effect
+			mesh.getFaces().addAll(i, 0, next, 0, i, 0);
+		}
+
+		MeshView meshView = new MeshView(mesh);
+		meshView.setDrawMode(javafx.scene.shape.DrawMode.LINE); // Wireframe mode
+
+		return meshView;
+	}
+
 	public void addNode(Node o) {
 		CreatureLab3dController.getEngine().addUserNode(o);
 	}
@@ -571,18 +623,18 @@ public class BowlerStudioController implements IScriptEventListener {
 		clearObjects(Previous);
 		clearObjects(result);
 		ThreadUtil.wait(40);
-		ArrayList<CSG> cache =  new ArrayList<>();
+		ArrayList<CSG> cache = new ArrayList<>();
 		if (List.class.isInstance(result)) {
 			List<Object> c = (List<Object>) result;
 			for (int i = 0; i < c.size(); i++) {
 				// Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i), source,cache);
+				addObject(c.get(i), source, cache);
 			}
 		} else {
-			addObject(result, source,cache);
+			addObject(result, source, cache);
 		}
-		if(cache.size()>0)
-			addObject(cache, source,null);
+		if (cache.size() > 0)
+			addObject(cache, source, null);
 //		String git;
 //		try {
 //			git = ScriptingEngine.locateGitUrl(source);
@@ -599,8 +651,7 @@ public class BowlerStudioController implements IScriptEventListener {
 //			e.printStackTrace();
 //			addObject(cache, source,null);
 //		}
-		
-	
+
 	}
 
 	private void clearObjects(Object o) {
@@ -657,11 +708,13 @@ public class BowlerStudioController implements IScriptEventListener {
 			CreatureLab3dController.getEngine().removeObjects();
 		});
 	}
+
 	public static void clearUserNodes() {
 		BowlerStudio.runLater(() -> {
 			CreatureLab3dController.getEngine().clearUserNode();
 		});
 	}
+
 	public static void setCsg(CSG legAssembly, File cadScript) {
 		BowlerStudio.runLater(() -> {
 			CreatureLab3dController.getEngine().removeObjects();
@@ -695,9 +748,5 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static IMobileBaseUI getMobileBaseUI() {
 		return mbui;
 	}
-
-	
-
-
 
 }
