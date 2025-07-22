@@ -183,24 +183,8 @@ public class BowlerStudio extends Application {
 			e.printStackTrace();
 
 		}
-		CSG.setDefaultOptType(CSG.OptType.CSG_BOUND);
-		//CSG.setPreventNonManifoldTriangles(true);
-		Plane.setEPSILON(1.0e-9);
-		Vector3d.setEXPORTEPSILON(1.0e-10);
-		
-		Debug3dProvider.setProvider(new IDebug3dProvider() {
+	
 
-			@Override
-			public void clearScreen() {
-				BowlerStudioController.clearCSG();
-				BowlerStudioController.clearUserNodes();
-			}
-
-			@Override
-			public void addObject(Object o) {
-				BowlerStudioController.addObject(o, null);
-			}
-		});
 		StudioBuildInfo.setBaseBuildInfoClass(BowlerStudio.class);
 		Manipulation.setUi(new IInteractiveUIElementProvider() {
 			public void runLater(Runnable r) {
@@ -220,7 +204,7 @@ public class BowlerStudio extends Application {
 		// ScriptingEngine.logout();
 		// switching to Web Flow auth
 		List<String> listOfScopes = Arrays.asList("repo", "gist", "user", "admin:org", "admin:org_hook", "workflow");
-		if (OSUtil.isOSX())
+
 			GitHubWebFlow.setOpen(new IURLOpen() {
 				public void open(URI toOpe) {
 					try {
