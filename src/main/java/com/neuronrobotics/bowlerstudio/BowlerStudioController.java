@@ -536,7 +536,7 @@ public class BowlerStudioController implements IScriptEventListener {
 				MeshView current = createPolygonOutlineMesh(vertices);
 				PhongMaterial material = new PhongMaterial(poly.getColor());
 			    // Set diffuse color to black and use self-illumination
-			    material.setDiffuseColor(Color.BLACK);
+			    material.setDiffuseColor(poly.getColor());
 			    material.setSelfIlluminationMap(null);  // Reset any existing map
 			    
 			    // Use specular color for the line color (works without lighting)
