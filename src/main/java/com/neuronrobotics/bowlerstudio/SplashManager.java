@@ -52,6 +52,17 @@ public class SplashManager {
 		String string = percent + "% " + message;
 		System.out.println(" Splash Rendering " + percent + " " + message);
 		PsudoSplash.get().setMessage(string);
+		waitForUpdate();
+	}
+	public static void onLogUpdate( String message) {
+		if (loadFirst) {
+			
+			initialize();
+		}
+		PsudoSplash.get().onLogUpdate(message,null);
+		waitForUpdate();
+	}
+	private static void waitForUpdate() {
 		updateSplash();
 
 //		if (Platform.isFxApplicationThread())

@@ -88,7 +88,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	}
 
 	@Override
-	public void onUpdate(String update, Exception e) {
+	public void onLogUpdate(String update, Exception e) {
 		// e.printStackTrace(System.err);
 		log = update;
 		if (isVisableSplash())
