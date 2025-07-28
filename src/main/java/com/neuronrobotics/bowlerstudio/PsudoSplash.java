@@ -44,7 +44,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private static int versionX = 65;
 	private static int versionY = 45;
 	private static int messageX = 65;
-	private static int messageY = 280;
+	private static int messageY = 260;
 	private static int logY = 120;
 	private static int logX = 15;
 	private static PsudoSplash singelton = null;

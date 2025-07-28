@@ -96,7 +96,7 @@ public class Axis extends Group {
 
 		
 
-		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).movex(i).moveToCenterY();
+		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).toXMin().movex(i).moveToCenterY();
 		//xText.getTransforms().add(xp);
 
 		Affine yp = new Affine();
