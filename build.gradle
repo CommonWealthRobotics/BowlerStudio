@@ -163,11 +163,6 @@ repositories {
 	
 	maven { url 'https://repo1.maven.org/maven2/'}
 
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
-	//maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'  }
-	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
-	//com.neuronrobotics hosting point
-	maven { url 'https://oss.sonatype.org/content/repositories/staging/' }
 
 //	    maven {
 //	        url "https://repo.myrobotlab.org/artifactory/myrobotlab/"
@@ -201,7 +196,6 @@ repositories {
 
 	maven { url "https://jitpack.io" }
 	maven { url "https://repo.eclipse.org/content/groups/releases/" }
-	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 	maven { url "https://dl.bintray.com/dfki-lt/maven/" }
 	maven { url "https://raw.github.com/marytts/marytts/master/repository/" }
 	maven { url "https://repo.jenkins-ci.org/public/" }
