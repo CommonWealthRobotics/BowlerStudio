@@ -96,6 +96,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		
 		String[] s=update.split("\n");
 		log1=s[0];
+		log2="";
 		if(s.length>1) {
 			for(int i=1;i<s.length;i++) {
 				log2+=s[i]+" ";
@@ -262,8 +263,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				logL1.setLayoutX(logX * scale);
 				logL1.setLayoutY(logY * scale);
 				
-				logL2.setLayoutX(logX * scale);
-				logL2.setLayoutY((logY+10) * scale);
+				logL2.setLayoutX((logX+30) * scale);
+				logL2.setLayoutY((logY+40) * scale);
 				mesL.setLayoutX(messageX * scale);
 				mesL.setLayoutY(messageY * scale);
 				verL.setLayoutX(versionX * scale);
