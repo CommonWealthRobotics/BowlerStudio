@@ -19,6 +19,7 @@ import java.net.URL;
 //import javax.swing.SwingUtilities;
 //import javax.swing.UIManager;
 //import javax.swing.UnsupportedLookAndFeelException;
+import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
@@ -55,13 +56,15 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	// Class Variables
 	private long timeOfLastUpdate = 0;
 	private String message = "";
-	private String log = "";
+	private String log1 = "";
+	private String log2 = "";
 	private Stage popupStage;
 	private ImageView imageView;
 	private Scene popupScene;
 	private AnchorPane popupRoot;
 	private Label verL = new Label();
-	private Label logL = new Label();
+	private Label logL1 = new Label();
+	private Label logL2 = new Label();
 	private Label mesL = new Label();
 	private double setWidth;
 	private double scale;
@@ -89,8 +92,16 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 	@Override
 	public void onLogUpdate(String update, Exception e) {
-		// e.printStackTrace(System.err);
-		log = update;
+
+		
+		String[] s=update.split("\n");
+		log1=s[0];
+		if(s.length>1) {
+			for(int i=1;i<s.length;i++) {
+				log2+=s[i]+" ";
+			}
+		}
+		
 		if (isVisableSplash())
 			updateSplash();
 	}
@@ -156,8 +167,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupRoot.getChildren().add(imageView);
 			popupRoot.getChildren().add(verL);
 			popupRoot.getChildren().add(mesL);
-			popupRoot.getChildren().add(logL);
-
+			popupRoot.getChildren().add(logL1);
+			popupRoot.getChildren().add(logL2);
 			popupScene = new Scene(popupRoot);
 			popupScene.setFill(null); // Make scene background transparent
 
@@ -199,7 +210,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		FontSizeManager.addListener(fontNum -> {
 			double tmp = FontSizeManager.getImageScale() * 14;
 			mesL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
-			logL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
+			logL1.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
+			logL2.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
 			verL.setStyle("-fx-font-size: " + ((int) tmp) + "pt");
 		});
 	}
@@ -247,18 +259,24 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
 				popupRoot.setStyle("-fx-background-color: transparent;");
-				logL.setLayoutX(logX * scale);
-				logL.setLayoutY(logY * scale);
+				logL1.setLayoutX(logX * scale);
+				logL1.setLayoutY(logY * scale);
+				
+				logL2.setLayoutX(logX * scale);
+				logL2.setLayoutY((logY+10) * scale);
 				mesL.setLayoutX(messageX * scale);
 				mesL.setLayoutY(messageY * scale);
 				verL.setLayoutX(versionX * scale);
 				verL.setLayoutY(versionY * scale);
 
-				logL.setTextFill(TextColor);
+				logL1.setTextFill(TextColor);
+				logL2.setTextFill(TextColor);
 				mesL.setTextFill(TextColor);
 				verL.setTextFill(TextColor);
 
-				logL.setText(log);
+				logL1.setText(log1);
+				logL2.setText(log2);
+
 				mesL.setText(message);
 				verL.setText(StudioBuildInfo.getVersion());
 			}); // Make scene background transparent
@@ -278,7 +296,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 		ScriptingEngine.addLogListener(this);
 		DownloadManager.addLogListener(this);
-		log = "";
+		log1 = "";
+		log2 = "";
 	}
 
 	public static URL getResource() {
