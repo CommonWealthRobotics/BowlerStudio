@@ -24,7 +24,7 @@ public class SVGFactory{
 			baseDirForFiles = new File(baseDirForFiles.getAbsolutePath() + ".svg");
 		try {
 			SVGExporter.export(currentCsg, baseDirForFiles);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
