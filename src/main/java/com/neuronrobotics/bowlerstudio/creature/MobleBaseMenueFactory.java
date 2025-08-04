@@ -217,6 +217,7 @@ public class MobleBaseMenueFactory {
 			ArrayList<DHParameterKinematics> paraGroups = device.getAllParallelGroups();
 			TreeItem<String> paralell = loadLimbs(device, view, paraGroups, "Paralell", rootItem,
 					callbackMapForTreeitems, widgetMapForTreeitems, creatureLab, creatureIsOwnedByUser);
+			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
 
 			TreeItem<String> addleg;
 			try {
@@ -224,29 +225,59 @@ public class MobleBaseMenueFactory {
 			} catch (Exception e1) {
 				addleg = new TreeItem<String>("Add Leg");
 			}
-			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
+
+			// Replace the leg addition callback
 			callbackMapForTreeitems.put(addleg, () -> {
-				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Leg");
-				String xmlContent;
-				try {
-					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-							"defaultleg.xml")[0];
-					DHParameterKinematics newLeg = new DHParameterKinematics(null,
-							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					String[] gitCadEngine = device.getGitCadEngine();
-					newLeg.setGitCadEngine(gitCadEngine);
-					com.neuronrobotics.sdk.common.Log.error("Leg has " + newLeg.getNumberOfLinks() + " links");
-					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
-							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-					
 
-				} catch (Exception e) {
-					// Auto-generated catch block
-					e.printStackTrace();
-				}
+				BowlerStudio.runLater(() -> {
+					TextInputDialog alert = new TextInputDialog("leg_" + device.getLegs().size());
+					alert.setTitle("Add a new leg");
+					alert.setHeaderText("Set the scripting name for this leg");
+					alert.setContentText("Please enter the name of the new leg:");
 
+					Optional<String> result = alert.showAndWait();
+					if (result.isPresent()) {
+						new Thread(() -> {
+							try {
+								// Use builder to add leg to existing device
+								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+										.addDefaultLeg(result.get());
+
+								// Rebuild and reload
+								MobileBase updatedDevice = builder.build();
+								reload(updatedDevice);
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}).start();
+					}
+				});
 			});
+//			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
+//			callbackMapForTreeitems.put(addleg, () -> {
+//				// Auto-generated method stub
+//				com.neuronrobotics.sdk.common.Log.error("Adding Leg");
+//				String xmlContent;
+//				try {
+//					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+//							"defaultleg.xml")[0];
+//					DHParameterKinematics newLeg = new DHParameterKinematics(null,
+//							IOUtils.toInputStream(xmlContent, "UTF-8"));
+//					String[] gitCadEngine = device.getGitCadEngine();
+//					newLeg.setGitCadEngine(gitCadEngine);
+//					com.neuronrobotics.sdk.common.Log.error("Leg has " + newLeg.getNumberOfLinks() + " links");
+//					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
+//							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+//					
+//
+//				} catch (Exception e) {
+//					// Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//			});
 //			TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
 //					AssetFactory.loadIcon("Generate-Cad.png"));
 //
@@ -411,104 +442,173 @@ public class MobleBaseMenueFactory {
 				}
 			});
 
+			// Replace the fixed wheel addition callback with options
 			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
-
 			callbackMapForTreeitems.put(addFixed, () -> {
-				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
-				
-				
-					HashMap<String, HashMap<String, Object>> options;
-					try {
-						options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-										"wheelOptions.json");
-					} catch (Exception e) {
-						// Auto-generated catch block
-						e.printStackTrace();
-						return;
-					}
+
+				try {
+					@SuppressWarnings("unchecked")
+					HashMap<String, HashMap<String, Object>> options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+							.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+									"wheelOptions.json");
+
 					Set<String> optionsKeys = options.keySet();
 					BowlerStudio.runLater(() -> {
-						ChoiceDialog<String> alert = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
-						Node r = alert.getDialogPane();
-						Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-						stage.setOnCloseRequest(ev -> alert.hide());
-						FontSizeManager.addListener(fontNum -> {
-							int tmp = fontNum - 10;
-							if (tmp < 12)
-								tmp = 12;
-							r.setStyle("-fx-font-size: " + tmp + "pt");
-							alert.getDialogPane().applyCss();
-							alert.getDialogPane().layout();
-							stage.sizeToScene();
-						});
-						Optional<String> result = alert.showAndWait();
-						if (result.isPresent())
-							new Thread(() -> {
-								String back = result.get();
-								HashMap<String,Object> values = options.get(back);
-								if (back.toLowerCase().contains("fixed")) {
-									try {
-										
-										String xmlContent = ScriptingEngine.codeFromGit(
-												values.get("scriptGit").toString(),
-												values.get("scriptFile").toString())[0];
-										DHParameterKinematics newArm = new DHParameterKinematics(null,
-												IOUtils.toInputStream(xmlContent, "UTF-8"));
-										newArm.setGitCadEngine(device.getGitCadEngine());
-	
-										com.neuronrobotics.sdk.common.Log.error("Wheel has " + newArm.getNumberOfLinks() + " links");
-										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
-												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-												creatureIsOwnedByUserTmp);
-									} catch (Exception e) {
-										// Auto-generated catch block
-										e.printStackTrace();
-									}
+						ChoiceDialog<String> alert = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(),
+								optionsKeys);
+						alert.setTitle("Select Wheel Type");
+						alert.setHeaderText("Choose the type of wheel to add");
 
-								}else {
-									try {
-										MobileBase base = (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(), values.get("scriptFile").toString());
-										DHParameterKinematics newArm = base.getDrivable().get(0);
-										newArm.setGitCadEngine(device.getGitCadEngine());
-										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
-												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-												creatureIsOwnedByUserTmp);
-									} catch (Exception e) {
-										// Auto-generated catch block
-										e.printStackTrace();
-										return;
-									}
+						Optional<String> result = alert.showAndWait();
+						if (result.isPresent()) {
+							new Thread(() -> {
+								try {
+									MobileBaseBuilder builder = new MobileBaseBuilder(device)
+											.addFixedWheelFromOptions(result.get());
+
+									MobileBase updatedDevice = builder.build();
+									reload(updatedDevice);
+
+								} catch (Exception e) {
+									e.printStackTrace();
 								}
 							}).start();
+						}
 					});
-
-			
-			});
-			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
-					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
-
-			callbackMapForTreeitems.put(addsteerable, () -> {
-				// Auto-generated method stub
-				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
-				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-							"defaultSteerable.xml")[0];
-					DHParameterKinematics newArm = new DHParameterKinematics(null,
-							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					newArm.setGitCadEngine(device.getGitCadEngine());
-
-					com.neuronrobotics.sdk.common.Log.error("Steerable has " + newArm.getNumberOfLinks() + " links");
-					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
-							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-					
 				} catch (Exception e) {
-					// Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			});
+//			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
+//
+//			callbackMapForTreeitems.put(addFixed, () -> {
+//				// Auto-generated method stub
+//				com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
+//				
+//				
+//					HashMap<String, HashMap<String, Object>> options;
+//					try {
+//						options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+//								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+//										"wheelOptions.json");
+//					} catch (Exception e) {
+//						// Auto-generated catch block
+//						e.printStackTrace();
+//						return;
+//					}
+//					Set<String> optionsKeys = options.keySet();
+//					BowlerStudio.runLater(() -> {
+//						ChoiceDialog<String> alert = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
+//						Node r = alert.getDialogPane();
+//						Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+//						stage.setOnCloseRequest(ev -> alert.hide());
+//						FontSizeManager.addListener(fontNum -> {
+//							int tmp = fontNum - 10;
+//							if (tmp < 12)
+//								tmp = 12;
+//							r.setStyle("-fx-font-size: " + tmp + "pt");
+//							alert.getDialogPane().applyCss();
+//							alert.getDialogPane().layout();
+//							stage.sizeToScene();
+//						});
+//						Optional<String> result = alert.showAndWait();
+//						if (result.isPresent())
+//							new Thread(() -> {
+//								String back = result.get();
+//								HashMap<String,Object> values = options.get(back);
+//								if (back.toLowerCase().contains("fixed")) {
+//									try {
+//										
+//										String xmlContent = ScriptingEngine.codeFromGit(
+//												values.get("scriptGit").toString(),
+//												values.get("scriptFile").toString())[0];
+//										DHParameterKinematics newArm = new DHParameterKinematics(null,
+//												IOUtils.toInputStream(xmlContent, "UTF-8"));
+//										newArm.setGitCadEngine(device.getGitCadEngine());
+//	
+//										com.neuronrobotics.sdk.common.Log.error("Wheel has " + newArm.getNumberOfLinks() + " links");
+//										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+//												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+//												creatureIsOwnedByUserTmp);
+//									} catch (Exception e) {
+//										// Auto-generated catch block
+//										e.printStackTrace();
+//									}
+//
+//								}else {
+//									try {
+//										MobileBase base = (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(), values.get("scriptFile").toString());
+//										DHParameterKinematics newArm = base.getDrivable().get(0);
+//										newArm.setGitCadEngine(device.getGitCadEngine());
+//										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+//												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+//												creatureIsOwnedByUserTmp);
+//									} catch (Exception e) {
+//										// Auto-generated catch block
+//										e.printStackTrace();
+//										return;
+//									}
+//								}
+//							}).start();
+//					});
+//
+//			
+//			});
+			
+			// Replace the steerable wheel addition callback
+			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
+					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
+			callbackMapForTreeitems.put(addsteerable, () -> {
+				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
+
+				BowlerStudio.runLater(() -> {
+					TextInputDialog alert = new TextInputDialog("steerable_" + device.getSteerable().size());
+					alert.setTitle("Add a new steerable wheel");
+					alert.setHeaderText("Set the scripting name for this wheel");
+					alert.setContentText("Please enter the name of the new steerable wheel:");
+
+					Optional<String> result = alert.showAndWait();
+					if (result.isPresent()) {
+						new Thread(() -> {
+							try {
+								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+										.addDefaultSteerableWheel(result.get());
+
+								MobileBase updatedDevice = builder.build();
+								reload(updatedDevice);
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}).start();
+					}
+				});
+			});
+
+//			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
+//					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
+//
+//			callbackMapForTreeitems.put(addsteerable, () -> {
+//				// Auto-generated method stub
+//				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
+//				try {
+//					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+//							"defaultSteerable.xml")[0];
+//					DHParameterKinematics newArm = new DHParameterKinematics(null,
+//							IOUtils.toInputStream(xmlContent, "UTF-8"));
+//					newArm.setGitCadEngine(device.getGitCadEngine());
+//
+//					com.neuronrobotics.sdk.common.Log.error("Steerable has " + newArm.getNumberOfLinks() + " links");
+//					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
+//							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+//					
+//				} catch (Exception e) {
+//					// Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//			});
 			TreeItem<String> imuCenter = new TreeItem<>("Imu center",
 					AssetFactory.loadIcon("Advanced-Configuration.png"));
 
@@ -545,26 +645,35 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
+
+
+			// Replace the arm addition callback
 			TreeItem<String> addArm = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
-
 			callbackMapForTreeitems.put(addArm, () -> {
-				// Auto-generated method stub
 				com.neuronrobotics.sdk.common.Log.error("Adding Arm");
-				try {
-					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-							"defaultarm.xml")[0];
-					DHParameterKinematics newArm = new DHParameterKinematics(null,
-							IOUtils.toInputStream(xmlContent, "UTF-8"));
-					newArm.setGitCadEngine(device.getGitCadEngine());
-					com.neuronrobotics.sdk.common.Log.error("Arm has " + newArm.getNumberOfLinks() + " links");
-					addAppendage(device, view, device.getAppendages(), newArm, arms, rootItem, callbackMapForTreeitems,
-							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
 
-				} catch (Exception e) {
-					new IssueReportingExceptionHandler().except(e);
+				BowlerStudio.runLater(() -> {
+					TextInputDialog alert = new TextInputDialog("arm_" + device.getAppendages().size());
+					alert.setTitle("Add a new arm");
+					alert.setHeaderText("Set the scripting name for this arm");
+					alert.setContentText("Please enter the name of the new arm:");
 
-				}
+					Optional<String> result = alert.showAndWait();
+					if (result.isPresent()) {
+						new Thread(() -> {
+							try {
+								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+										.addDefaultArm(result.get());
 
+								MobileBase updatedDevice = builder.build();
+								reload(updatedDevice);
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}).start();
+					}
+				});
 			});
 			TreeItem<String> PlaceLimb = new TreeItem<>("Move MobileBase ",
 					AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
@@ -649,92 +758,148 @@ public class MobleBaseMenueFactory {
 	
 	
 
+	// Replace the makeACopyOfACreature method
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
-		return new Thread() {
-			public void run() {
-
-				device.setScriptingName(newName);
-				String filename = newName + ".xml";
-				GitHub github = PasswordManager.getGithub();
-
-				GHCreateRepositoryBuilder builder = github.createRepository(newName);
-				try {
-					builder.description(newName + " copy of " + oldname);
-				} catch (Exception e1) {
-					// Auto-generated catch block
-					e1.printStackTrace();
-				}
-				GHRepository gist = null;
-				try {
-					try {
-						gist = builder.create();
-					} catch (org.kohsuke.github.HttpException ex) {
-						if (ex.getMessage().contains("name already exists on this account")) {
-							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
-						}
-					}
-					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
-
-					com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
-					while (true) {
-						ThreadUtil.wait(500);
-						Log.warning(gist + " not built yet");
-						try {
-							ScriptingEngine.fileFromGit(gitURL, filename);
-							break;
-						} catch (Exception e) {
-							
-							System.out.println("Waiting for repo "+e.getMessage());
-							e.printStackTrace();
-						}
-		
-					}
-					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
-					com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);
-
-					com.neuronrobotics.sdk.common.Log.error("copy Cad engine ");
-					device.setGitCadEngine(
-							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-					com.neuronrobotics.sdk.common.Log.error("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
-							+ device.getGitWalkingEngine()[1]);
-					device.setGitWalkingEngine(
-							copyGitFile(device.getGitWalkingEngine()[0], gitURL, device.getGitWalkingEngine()[1]));
-					// com.neuronrobotics.sdk.common.Log.error("is now "+device.getGitWalkingEngine());
-					for (DHParameterKinematics dh : device.getAllDHChains()) {
-						// com.neuronrobotics.sdk.common.Log.error("copy Leg Cad engine "+dh.getGitCadEngine());
-						dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
-
-						// com.neuronrobotics.sdk.common.Log.error("copy Leg Dh engine ");
-						dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
-					}
-					device.setScriptingName(newName);
-					String xml = device.getXml();
-
-					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, xml,
-							"new Robot content");
-					// Shut down the old robot
-					ConnectionManager.disconnectAll();
-
-					ThreadUtil.wait(3000);
-					// add new robot to the workspace
-					BowlerStudioMenuWorkspace.add(gitURL);
-					ThreadUtil.wait(1000);
-					MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
-					ThreadUtil.wait(1000);
-					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
-					ThreadUtil.wait(1000);
-					ConnectionManager.addConnection(mb, mb.getScriptingName());
-
-				} catch (Exception e) {
-					// Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				// DeviceManager.addConnection(newDevice,
-				// newDevice.getScriptingName());
-			}
-		};
+	    return new Thread() {
+	        public void run() {
+	            try {
+	                // Create GitHub repository
+	                GitHub github = PasswordManager.getGithub();
+	                GHCreateRepositoryBuilder builder = github.createRepository(newName);
+	                builder.description(newName + " copy of " + oldname);
+	                
+	                GHRepository gist = null;
+	                try {
+	                    gist = builder.create();
+	                } catch (org.kohsuke.github.HttpException ex) {
+	                    if (ex.getMessage().contains("name already exists on this account")) {
+	                        gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
+	                    }
+	                }
+	                
+	                String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
+	                
+	                // Wait for repo to be ready
+	                String filename = newName + ".xml";
+	                while (true) {
+	                    ThreadUtil.wait(500);
+	                    try {
+	                        ScriptingEngine.fileFromGit(gitURL, filename);
+	                        break;
+	                    } catch (Exception e) {
+	                        System.out.println("Waiting for repo " + e.getMessage());
+	                    }
+	                }
+	                
+	                // Use builder to create copy
+	                MobileBase newDevice = new MobileBaseBuilder(gitURL, newName)
+	                    .copyFrom(device, newName)
+	                    .build();
+	                
+	                // Shut down old robot and add new one
+	                ConnectionManager.disconnectAll();
+	                ThreadUtil.wait(3000);
+	                BowlerStudioMenuWorkspace.add(gitURL);
+	                ThreadUtil.wait(1000);
+	                
+	                MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
+	                ThreadUtil.wait(1000);
+	                BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+	                ThreadUtil.wait(1000);
+	                ConnectionManager.addConnection(mb, mb.getScriptingName());
+	                
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    };
 	}
+//	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
+//		return new Thread() {
+//			public void run() {
+//
+//				device.setScriptingName(newName);
+//				String filename = newName + ".xml";
+//				GitHub github = PasswordManager.getGithub();
+//
+//				GHCreateRepositoryBuilder builder = github.createRepository(newName);
+//				try {
+//					builder.description(newName + " copy of " + oldname);
+//				} catch (Exception e1) {
+//					// Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				GHRepository gist = null;
+//				try {
+//					try {
+//						gist = builder.create();
+//					} catch (org.kohsuke.github.HttpException ex) {
+//						if (ex.getMessage().contains("name already exists on this account")) {
+//							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
+//						}
+//					}
+//					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
+//
+//					com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
+//					while (true) {
+//						ThreadUtil.wait(500);
+//						Log.warning(gist + " not built yet");
+//						try {
+//							ScriptingEngine.fileFromGit(gitURL, filename);
+//							break;
+//						} catch (Exception e) {
+//							
+//							System.out.println("Waiting for repo "+e.getMessage());
+//							e.printStackTrace();
+//						}
+//		
+//					}
+//					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
+//					com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);
+//
+//					com.neuronrobotics.sdk.common.Log.error("copy Cad engine ");
+//					device.setGitCadEngine(
+//							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
+//					com.neuronrobotics.sdk.common.Log.error("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
+//							+ device.getGitWalkingEngine()[1]);
+//					device.setGitWalkingEngine(
+//							copyGitFile(device.getGitWalkingEngine()[0], gitURL, device.getGitWalkingEngine()[1]));
+//					// com.neuronrobotics.sdk.common.Log.error("is now "+device.getGitWalkingEngine());
+//					for (DHParameterKinematics dh : device.getAllDHChains()) {
+//						// com.neuronrobotics.sdk.common.Log.error("copy Leg Cad engine "+dh.getGitCadEngine());
+//						dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+//
+//						// com.neuronrobotics.sdk.common.Log.error("copy Leg Dh engine ");
+//						dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+//					}
+//					device.setScriptingName(newName);
+//					String xml = device.getXml();
+//
+//					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, xml,
+//							"new Robot content");
+//					// Shut down the old robot
+//					ConnectionManager.disconnectAll();
+//
+//					ThreadUtil.wait(3000);
+//					// add new robot to the workspace
+//					BowlerStudioMenuWorkspace.add(gitURL);
+//					ThreadUtil.wait(1000);
+//					MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
+//					ThreadUtil.wait(1000);
+//					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+//					ThreadUtil.wait(1000);
+//					ConnectionManager.addConnection(mb, mb.getScriptingName());
+//
+//				} catch (Exception e) {
+//					// Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//				// DeviceManager.addConnection(newDevice,
+//				// newDevice.getScriptingName());
+//			}
+//		};
+//	}
 
 	private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
 		HashMap<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
