@@ -490,7 +490,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			return;
 		}
 		if (CaDoodleFile.class.isInstance(o)) {
-			addObject(CaDoodleLoader.process((CaDoodleFile) o), source, cache);
+			addObject(CaDoodleLoader.process((CaDoodleFile) o,true), source, cache);
 			return;
 		}
 		javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
