@@ -13,7 +13,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
 
 public class VirtualCameraMobileBase {
-	private static final TransformNR CameraGlobalOffset = new TransformNR(0, 0, 0, new RotationNR(180, 0, 0));
+	public static final TransformNR CameraGlobalOffset = new TransformNR(0, 0, 0, new RotationNR(180, 0, 0));
 	private TransformNR myGlobal = new TransformNR();
 //	double azOffset = 0;
 //	double elOffset = 0;
