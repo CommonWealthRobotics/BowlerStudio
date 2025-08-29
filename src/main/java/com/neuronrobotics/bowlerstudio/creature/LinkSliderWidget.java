@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.time.Duration;
-
+import java.util.Locale;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
@@ -132,7 +132,7 @@ public class LinkSliderWidget extends Group
 					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
 				BowlerStudio.runLater(() -> engineeringUpper
-						.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits())));
+						.setText(String.format(Locale.US,"%.2f", getAbstractLink().getMaxEngineeringUnits())));
 			}
 		});
 		engineeringLower.setOnAction(event -> {
