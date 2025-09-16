@@ -29,7 +29,7 @@ import com.neuronrobotics.video.OSUtil;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class SVGExternalEditor extends IExternalEditor {
+public class SVGExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 

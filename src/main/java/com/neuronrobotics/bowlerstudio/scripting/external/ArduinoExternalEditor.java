@@ -24,7 +24,7 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class ArduinoExternalEditor extends IExternalEditor {
+public class ArduinoExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 

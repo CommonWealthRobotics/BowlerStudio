@@ -15,7 +15,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class FreeCADExternalEditor extends IExternalEditor {
+public class FreeCADExternalEditor implements IExternalEditor {
 	private Button advanced;
 
 	@Override

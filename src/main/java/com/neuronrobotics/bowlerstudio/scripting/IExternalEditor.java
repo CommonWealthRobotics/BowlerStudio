@@ -19,12 +19,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public abstract class IExternalEditor {
+public interface IExternalEditor {
 
 	
 	public  abstract List<Class> getSupportedLangauge();
 	
-	public  boolean isSupportedByExtention(File file) {
+	default  boolean isSupportedByExtention(File file) {
 		if(getSupportedLangauge()!=null)
 			for(Class c:getSupportedLangauge())
 			if (c.isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {

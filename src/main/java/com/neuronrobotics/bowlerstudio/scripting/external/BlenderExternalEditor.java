@@ -33,7 +33,7 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class BlenderExternalEditor extends IExternalEditor {
+public class BlenderExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 

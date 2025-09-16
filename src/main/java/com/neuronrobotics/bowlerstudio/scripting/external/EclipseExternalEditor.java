@@ -34,7 +34,7 @@ import com.neuronrobotics.video.OSUtil;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public abstract class EclipseExternalEditor extends IExternalEditor {
+public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	protected Button advanced;
 	private File dir;

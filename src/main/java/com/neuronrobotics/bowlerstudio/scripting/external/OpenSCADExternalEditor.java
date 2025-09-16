@@ -32,7 +32,7 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class OpenSCADExternalEditor extends IExternalEditor {
+public class OpenSCADExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 

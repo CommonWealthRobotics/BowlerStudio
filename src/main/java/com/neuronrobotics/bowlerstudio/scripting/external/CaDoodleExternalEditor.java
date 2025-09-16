@@ -34,7 +34,7 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class CaDoodleExternalEditor extends IExternalEditor {
+public class CaDoodleExternalEditor implements IExternalEditor {
 
 	private Button advanced;
 
