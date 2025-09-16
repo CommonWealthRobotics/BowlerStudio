@@ -3,24 +3,15 @@ package com.neuronrobotics.bowlerstudio.scripting.external;
 import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
-
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
-import com.neuronrobotics.video.OSUtil;
-
-import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
