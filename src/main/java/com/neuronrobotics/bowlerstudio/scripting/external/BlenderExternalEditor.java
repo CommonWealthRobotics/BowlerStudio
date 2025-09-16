@@ -33,12 +33,12 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class BlenderExternalEditor implements IExternalEditor {
+public class BlenderExternalEditor extends IExternalEditor {
 
 	private Button advanced;
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = file.getAbsolutePath();
@@ -112,7 +112,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit("https://github.com/NeuronRobotics/NASACurisoity.git",
 				"STL/upper-arm.STL");
 
-		new BlenderExternalEditor().launch(f, new Button());
+		new BlenderExternalEditor().launch(f, new Button(),()->{});
 	}
 
 	@Override

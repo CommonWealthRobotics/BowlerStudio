@@ -32,12 +32,12 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class OpenSCADExternalEditor implements IExternalEditor {
+public class OpenSCADExternalEditor extends IExternalEditor {
 
 	private Button advanced;
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = file.getAbsolutePath();
@@ -96,7 +96,7 @@ public class OpenSCADExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit(url,
 				"test.scad");
 
-		new OpenSCADExternalEditor().launch(f, new Button());
+		new OpenSCADExternalEditor().launch(f, new Button(),()->{});
 	}
 
 	@Override

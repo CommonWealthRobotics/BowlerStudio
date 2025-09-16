@@ -19,12 +19,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public interface IExternalEditor {
+public abstract class IExternalEditor {
+
 	
+	public  abstract List<Class> getSupportedLangauge();
 	
-	List<Class> getSupportedLangauge();
-	
-	default boolean isSupportedByExtention(File file) {
+	public  boolean isSupportedByExtention(File file) {
 		if(getSupportedLangauge()!=null)
 			for(Class c:getSupportedLangauge())
 			if (c.isInstance(ScriptingEngine.getLangaugeByExtention(file.getAbsolutePath()))) {
@@ -33,18 +33,18 @@ public interface IExternalEditor {
 		return false;
 	}
 	
-	void launch(File file, Button advanced);
+	public  abstract void launch(File file, Button advanced,Runnable onExit);
 	
-	String nameOfEditor();
+	public  abstract String nameOfEditor();
 	
-	URL getInstallURL() throws MalformedURLException;
+	public  abstract URL getInstallURL() throws MalformedURLException;
 	
-	void onProcessExit(int ev);
+	public  abstract void onProcessExit(int ev);
 	
-	Image getImage();
+	public abstract Image getImage();
 	
 
-	
+
 
 
 }

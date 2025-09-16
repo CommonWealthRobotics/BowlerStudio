@@ -15,7 +15,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class FreeCADExternalEditor implements IExternalEditor {
+public class FreeCADExternalEditor extends IExternalEditor {
 	private Button advanced;
 
 	@Override
@@ -24,7 +24,7 @@ public class FreeCADExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file, Button button) {
+	public void launch(File file, Button button, Runnable OnComplete) {
 		advanced=button;
 		new Thread(()->{
 			try {

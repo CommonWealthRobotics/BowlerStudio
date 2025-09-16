@@ -29,12 +29,12 @@ import com.neuronrobotics.video.OSUtil;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class SVGExternalEditor implements IExternalEditor {
+public class SVGExternalEditor extends IExternalEditor {
 
 	private Button advanced;
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = file.getAbsolutePath();
@@ -94,7 +94,7 @@ public class SVGExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit("https://github.com/Technocopia/Graphics.git",
 				"Graphics/SimplifiedLogo/simplified logo.svg");
 
-		new SVGExternalEditor().launch(f, new Button());
+		new SVGExternalEditor().launch(f, new Button(),()->{});
 	}
 
 	@Override

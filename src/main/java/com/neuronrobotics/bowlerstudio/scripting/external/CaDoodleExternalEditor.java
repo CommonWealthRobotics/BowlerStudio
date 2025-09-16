@@ -34,12 +34,12 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class CaDoodleExternalEditor implements IExternalEditor {
+public class CaDoodleExternalEditor extends IExternalEditor {
 
 	private Button advanced;
 
-	@Override
-	public void launch(File file, Button advanced) {
+	
+	public void launch(File file, Button advanced,Runnable onExit) {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = "\""+file.getAbsolutePath()+"\"";
@@ -67,20 +67,22 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 				e.printStackTrace();
 			}
 			onProcessExit(0) ;
+			onExit.run();
 
 		}).start();
 	}
 
 	public void onProcessExit(int ev) {
 		advanced.setDisable(false);
+
 	}
 
-	@Override
+	
 	public URL getInstallURL() throws MalformedURLException {
 		return new URL("https://github.com/CommonWealthRobotics/CaDoodle/blob/main/README.md");
 	}
 
-	@Override
+	
 	public String nameOfEditor() {
 		return "CaDoodle";
 	}
@@ -105,11 +107,13 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit(url,
 				"Doodle1/TestRepo.doodle");
 
-		new CaDoodleExternalEditor().launch(f, new Button());
+		new CaDoodleExternalEditor().launch(f, new Button(),()->{});
 	}
 
-	@Override
+	
 	public List<Class> getSupportedLangauge() {
 		return Arrays.asList( CaDoodleLoader.class);
 	}
+
+
 }

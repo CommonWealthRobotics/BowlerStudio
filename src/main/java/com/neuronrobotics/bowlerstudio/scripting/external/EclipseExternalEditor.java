@@ -34,7 +34,7 @@ import com.neuronrobotics.video.OSUtil;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public abstract class EclipseExternalEditor implements IExternalEditor {
+public abstract class EclipseExternalEditor extends IExternalEditor {
 
 	protected Button advanced;
 	private File dir;
@@ -75,7 +75,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		this.advanced = advanced;
 		EclipseExternalEditor ee = this;
 		new Thread(() -> {

@@ -24,12 +24,12 @@ import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
-public class ArduinoExternalEditor implements IExternalEditor {
+public class ArduinoExternalEditor extends IExternalEditor {
 
 	private Button advanced;
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		this.advanced = advanced;
 		new Thread(() -> {
 			try {
