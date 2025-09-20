@@ -240,7 +240,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				public void run() {
 					// ConfigurationDatabase.loginEvent(username);
 					// ConfigurationDatabase.getParamMap("workspace");
-					System.out.println("Login Success "+n);
+					com.neuronrobotics.sdk.common.Log.debug("Login Success "+n);
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())
 						return;
@@ -1628,7 +1628,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				String x = name + " " + type.trim() + " " + String.format("%.1f", percent)
 						+ "% finished : " + i + " of " + finalIndex;
 				if (showCSGProgress.isSelected()) {
-					System.out.println(x);
+					com.neuronrobotics.sdk.common.Log.debug(x);
 					if (finalIndex > 50) {
 						if (percent > 90) {
 							SplashManager.closeSplash();

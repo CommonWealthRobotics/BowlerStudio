@@ -703,7 +703,7 @@ public class BowlerStudio extends Application {
 				continue;
 			try {
 				ScriptingEngine.filesInGit(s);
-				System.out.println("Pulling "+s);
+				com.neuronrobotics.sdk.common.Log.debug("Pulling "+s);
 				ScriptingEngine.pull(s);
 			} catch (Throwable e) {
 				// Auto-generated catch block
@@ -978,18 +978,18 @@ public class BowlerStudio extends Application {
 				BowlerStudio.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
 					String javaVersion = System.getProperty("java.version");
 					String javafxVersion = System.getProperty("javafx.version");
-					System.out.println("Java Version : " + javaVersion);
-					System.out.println("JavaFX Version : " + javafxVersion);
-					System.out.println("BowlerStudio First Version: " + firstVer);
-					System.out.println("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-					System.out.println("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-					System.out.println("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-					System.out.println("Welcome to BowlerStudio!");
+					com.neuronrobotics.sdk.common.Log.debug("Java Version : " + javaVersion);
+					com.neuronrobotics.sdk.common.Log.debug("JavaFX Version : " + javafxVersion);
+					com.neuronrobotics.sdk.common.Log.debug("BowlerStudio First Version: " + firstVer);
+					com.neuronrobotics.sdk.common.Log.debug("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+					com.neuronrobotics.sdk.common.Log.debug("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+					com.neuronrobotics.sdk.common.Log.debug("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+					com.neuronrobotics.sdk.common.Log.debug("Welcome to BowlerStudio!");
 					
 					
 					try {
 						File jarFile = new File(GroovyEclipseExternalEditor.getApplicationJarPath());
-						System.out.println("Application at "+jarFile+" is "+(jarFile.exists()?"Found":"Missing!"));
+						com.neuronrobotics.sdk.common.Log.debug("Application at "+jarFile+" is "+(jarFile.exists()?"Found":"Missing!"));
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1191,7 +1191,7 @@ public class BowlerStudio extends Application {
 		}catch(Exception e) {
 			// not a url
 			//
-			//System.out.println("Invalid URL "+url);
+			//com.neuronrobotics.sdk.common.Log.debug("Invalid URL "+url);
 			//e.printStackTrace();
 			return false;
 		}

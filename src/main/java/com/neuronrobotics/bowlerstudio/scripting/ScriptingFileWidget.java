@@ -620,7 +620,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
 					BowlerStudioController.highlightException(currentFile, d);
 				} catch (Throwable ex) {
-					System.out.println("Script exception of type= " + ex.getClass().getName());
+					com.neuronrobotics.sdk.common.Log.debug("Script exception of type= " + ex.getClass().getName());
 
 					try {
 						if (ex.getMessage().contains("sleep interrupted")) {

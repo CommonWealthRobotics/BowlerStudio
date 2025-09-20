@@ -787,7 +787,7 @@ public class MobleBaseMenueFactory {
 	                        ScriptingEngine.fileFromGit(gitURL, filename);
 	                        break;
 	                    } catch (Exception e) {
-	                        System.out.println("Waiting for repo " + e.getMessage());
+	                        com.neuronrobotics.sdk.common.Log.debug("Waiting for repo " + e.getMessage());
 	                    }
 	                }
 	                
@@ -849,7 +849,7 @@ public class MobleBaseMenueFactory {
 //							break;
 //						} catch (Exception e) {
 //							
-//							System.out.println("Waiting for repo "+e.getMessage());
+//							com.neuronrobotics.sdk.common.Log.debug("Waiting for repo "+e.getMessage());
 //							e.printStackTrace();
 //						}
 //		

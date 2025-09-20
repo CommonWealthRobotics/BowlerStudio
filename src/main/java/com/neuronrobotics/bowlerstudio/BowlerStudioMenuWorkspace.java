@@ -131,7 +131,7 @@ public class BowlerStudioMenuWorkspace {
 		for (ArrayList<String> entry : wp) {
 			String o = entry.get(0);
 			if (o.contentEquals(url)) {
-				System.out.println("Already in menu " + url);
+				com.neuronrobotics.sdk.common.Log.debug("Already in menu " + url);
 				return;
 			}
 		}

@@ -50,7 +50,7 @@ public class SplashManager {
 			initialize();
 		}
 		String string = percent + "% " + message;
-		System.out.println(" Splash Rendering " + percent + " " + message);
+		com.neuronrobotics.sdk.common.Log.debug(" Splash Rendering " + percent + " " + message);
 		PsudoSplash.get().setMessage(string);
 		waitForUpdate();
 	}
@@ -69,7 +69,7 @@ public class SplashManager {
 //			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
 		int index=0;
 		while(!SplashManager.isVisableSplash()) {
-			System.out.println("Waiting for splash to open before moving on");
+			com.neuronrobotics.sdk.common.Log.debug("Waiting for splash to open before moving on");
 			try {
 				Thread.sleep(100);
 				index++;

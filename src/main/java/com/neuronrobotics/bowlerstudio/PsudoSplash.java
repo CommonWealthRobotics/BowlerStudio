@@ -151,7 +151,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				close();
 				return;
 			}
-			System.out.println("Loading splash image: " + path);
+			com.neuronrobotics.sdk.common.Log.debug("Loading splash image: " + path);
 			Image image = new Image(path);
 			imageView = new ImageView(image);
 			double height = image.getHeight();
@@ -253,7 +253,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		}
 		timeOfLastUpdate = System.currentTimeMillis();
 		if (popupScene != null) {
-			// System.out.println("Updating Splash "+imageView.getFitWidth());
+			// com.neuronrobotics.sdk.common.Log.debug("Updating Splash "+imageView.getFitWidth());
 			Platform.runLater(() -> {
 
 				popupScene.setFill(null);
