@@ -656,7 +656,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
-		current.setCullFace(CullFace.BACK);
+		//current.setCullFace(CullFace.BACK);// backs are tranparent
+		current.setCullFace(CullFace.NONE);// backs are black
 		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
 		// mesh.vertexFormatProperty()

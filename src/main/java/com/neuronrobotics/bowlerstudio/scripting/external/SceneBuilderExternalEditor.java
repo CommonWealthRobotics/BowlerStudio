@@ -35,7 +35,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 	private Button advanced;
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		new Thread(() -> {
 			this.advanced = advanced;
 			String filename = file.getAbsolutePath();
@@ -94,7 +94,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit("https://github.com/madhephaestus/HortonsLinkages.git",
 				"main.fxml");
 
-		new SceneBuilderExternalEditor().launch(f, new Button());
+		new SceneBuilderExternalEditor().launch(f, new Button(),()->{});
 	}
 
 	@Override

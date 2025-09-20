@@ -33,7 +33,7 @@ public class ExternalEditorController {
 		editors.add(new CaDoodleExternalEditor());
 	}
 	private IExternalEditor myEditor=null;
-	public ExternalEditorController(File f, CheckBox autoRun){
+	public ExternalEditorController(File f, CheckBox autoRun, Runnable OnComplete){
 		loadEditors();
 		this.currentFile = f;
 		for(IExternalEditor e:editors) {
@@ -61,7 +61,7 @@ public class ExternalEditorController {
 			advanced.setTextOverrun(javafx.scene.control.OverrunStyle.CLIP);
 			advanced.setOnAction(event -> {
 				advanced.setDisable(true);
-				myEditor.launch(currentFile,advanced);
+				myEditor.launch(currentFile,advanced,OnComplete);
 				//autoRun.setSelected(true);
 			});
 //			FontSizeManager.addListener(fontNum->{

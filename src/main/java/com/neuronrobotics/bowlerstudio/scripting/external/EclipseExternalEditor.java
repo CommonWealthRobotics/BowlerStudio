@@ -75,7 +75,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file, Button advanced) {
+	public void launch(File file, Button advanced, Runnable OnComplete) {
 		this.advanced = advanced;
 		EclipseExternalEditor ee = this;
 		new Thread(() -> {

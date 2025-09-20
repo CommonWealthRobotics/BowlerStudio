@@ -204,7 +204,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		// com.neuronrobotics.sdk.common.Log.error("\n\n\nScriptingFileWidget loading
 		// the editor loader:\n\n\n");
 		try {
-			externalEditorController = new ExternalEditorController(currentFile, autoRun);
+			externalEditorController = new ExternalEditorController(currentFile, autoRun, ()->{});
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

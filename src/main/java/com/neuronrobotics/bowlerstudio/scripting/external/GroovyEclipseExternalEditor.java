@@ -140,7 +140,7 @@ public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 		JavaFXInitializer.go();
 		File f = ScriptingEngine.fileFromGit("https://gist.github.com/e4b0d8e95d6b3dc83c334a9950753a53.git", "jabber.groovy");
 
-		new GroovyEclipseExternalEditor().launch(f, new javafx.scene.control.Button());
+		new GroovyEclipseExternalEditor().launch(f, new javafx.scene.control.Button(),()->{});
 	}
 
 

@@ -24,7 +24,7 @@ public class FreeCADExternalEditor implements IExternalEditor {
 	}
 
 	@Override
-	public void launch(File file, Button button) {
+	public void launch(File file, Button button, Runnable OnComplete) {
 		advanced=button;
 		new Thread(()->{
 			try {
