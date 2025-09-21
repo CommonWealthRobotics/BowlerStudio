@@ -92,7 +92,7 @@ public class MobleBaseMenueFactory {
 					widget.put(w, tw);
 				} catch (Exception e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			}
 			VitatminWidget tw = widget.get(widgetMapForTreeitems.get(vitaminsMenu));
@@ -120,7 +120,7 @@ public class MobleBaseMenueFactory {
 				BowlerStudio.createFileTab(code);
 			} catch (Exception e) {
 				// Auto-generated catch block
-				e.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(e);
 			}
 		});
 		TreeItem<String> physics = new TreeItem<String>("Physics Simulation",
@@ -143,7 +143,7 @@ public class MobleBaseMenueFactory {
 				});
 			} catch (Exception e) {
 				Log.error(device.getGitSelfSource()[0] + " " + device.getGitSelfSource()[1] + " failed to load");
-				e.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(e);
 			}
 		}
 		TreeItem<String> publish;
@@ -160,7 +160,7 @@ public class MobleBaseMenueFactory {
 				});
 			} catch (Exception e) {
 				Log.error(device.getGitSelfSource()[0] + " " + device.getGitSelfSource()[1] + " failed to load");
-				e.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(e);
 			}
 		}
 		rootItem.getChildren().addAll(save);
@@ -249,7 +249,7 @@ public class MobleBaseMenueFactory {
 								reload(updatedDevice);
 
 							} catch (Exception e) {
-								e.printStackTrace();
+								com.neuronrobotics.sdk.common.Log.error(e);
 							}
 						}).start();
 					}
@@ -274,7 +274,7 @@ public class MobleBaseMenueFactory {
 //
 //				} catch (Exception e) {
 //					// Auto-generated catch block
-//					e.printStackTrace();
+//					com.neuronrobotics.sdk.common.Log.error(e);
 //				}
 //
 //			});
@@ -398,7 +398,7 @@ public class MobleBaseMenueFactory {
 						BowlerStudio.createFileTab(code);
 					} catch (Exception e) {
 						// Auto-generated catch block
-						e.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(e);
 					}
 				});
 			});
@@ -410,7 +410,7 @@ public class MobleBaseMenueFactory {
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
 			TreeItem<String> resetWalking = new TreeItem<>("Set Walking Engine...",
@@ -425,7 +425,7 @@ public class MobleBaseMenueFactory {
 								BowlerStudio.createFileTab(code);
 							} catch (Exception e) {
 								// Auto-generated catch block
-								e.printStackTrace();
+								com.neuronrobotics.sdk.common.Log.error(e);
 							}
 						});
 			});
@@ -438,7 +438,7 @@ public class MobleBaseMenueFactory {
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
 
@@ -471,13 +471,13 @@ public class MobleBaseMenueFactory {
 									reload(updatedDevice);
 
 								} catch (Exception e) {
-									e.printStackTrace();
+									com.neuronrobotics.sdk.common.Log.error(e);
 								}
 							}).start();
 						}
 					});
 				} catch (Exception e) {
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
 //			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
@@ -494,7 +494,7 @@ public class MobleBaseMenueFactory {
 //										"wheelOptions.json");
 //					} catch (Exception e) {
 //						// Auto-generated catch block
-//						e.printStackTrace();
+//						com.neuronrobotics.sdk.common.Log.error(e);
 //						return;
 //					}
 //					Set<String> optionsKeys = options.keySet();
@@ -533,7 +533,7 @@ public class MobleBaseMenueFactory {
 //												creatureIsOwnedByUserTmp);
 //									} catch (Exception e) {
 //										// Auto-generated catch block
-//										e.printStackTrace();
+//										com.neuronrobotics.sdk.common.Log.error(e);
 //									}
 //
 //								}else {
@@ -546,7 +546,7 @@ public class MobleBaseMenueFactory {
 //												creatureIsOwnedByUserTmp);
 //									} catch (Exception e) {
 //										// Auto-generated catch block
-//										e.printStackTrace();
+//										com.neuronrobotics.sdk.common.Log.error(e);
 //										return;
 //									}
 //								}
@@ -579,7 +579,7 @@ public class MobleBaseMenueFactory {
 								reload(updatedDevice);
 
 							} catch (Exception e) {
-								e.printStackTrace();
+								com.neuronrobotics.sdk.common.Log.error(e);
 							}
 						}).start();
 					}
@@ -605,7 +605,7 @@ public class MobleBaseMenueFactory {
 //					
 //				} catch (Exception e) {
 //					// Auto-generated catch block
-//					e.printStackTrace();
+//					com.neuronrobotics.sdk.common.Log.error(e);
 //				}
 //
 //			});
@@ -669,7 +669,7 @@ public class MobleBaseMenueFactory {
 								reload(updatedDevice);
 
 							} catch (Exception e) {
-								e.printStackTrace();
+								com.neuronrobotics.sdk.common.Log.error(e);
 							}
 						}).start();
 					}
@@ -731,7 +731,7 @@ public class MobleBaseMenueFactory {
 			BowlerStudio.loadMobilBaseIntoUI(reloaded);
 		} catch (Exception e) {
 			// Auto-generated catch block
-			e.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e);
 		}
 		
 	}
@@ -746,7 +746,7 @@ public class MobleBaseMenueFactory {
 			out.close(); // don't swallow close Exception if copy completes
 			// normally
 		} catch(Throwable t){
-			t.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(t);
 		}finally {
 			try {
 				out.close();
@@ -809,7 +809,7 @@ public class MobleBaseMenueFactory {
 	                ConnectionManager.addConnection(mb, mb.getScriptingName());
 	                
 	            } catch (Exception e) {
-	                e.printStackTrace();
+	                com.neuronrobotics.sdk.common.Log.error(e);
 	            }
 	        }
 	    };
@@ -850,7 +850,7 @@ public class MobleBaseMenueFactory {
 //						} catch (Exception e) {
 //							
 //							com.neuronrobotics.sdk.common.Log.debug("Waiting for repo "+e.getMessage());
-//							e.printStackTrace();
+//							com.neuronrobotics.sdk.common.Log.error(e);
 //						}
 //		
 //					}
@@ -892,7 +892,7 @@ public class MobleBaseMenueFactory {
 //
 //				} catch (Exception e) {
 //					// Auto-generated catch block
-//					e.printStackTrace();
+//					com.neuronrobotics.sdk.common.Log.error(e);
 //				}
 //
 //				// DeviceManager.addConnection(newDevice,
@@ -1247,7 +1247,7 @@ public class MobleBaseMenueFactory {
 										widgetMapForTreeitems);
 							} catch (Exception e) {
 								// Auto-generated catch block
-								e.printStackTrace();
+								com.neuronrobotics.sdk.common.Log.error(e);
 							}
 						}
 					}.start();
@@ -1533,7 +1533,7 @@ public class MobleBaseMenueFactory {
 										dh.setDesiredJointSpaceVector(dh.getCurrentJointSpaceTarget(), 0);
 									} catch (Exception e) {
 										// Auto-generated catch block
-										e.printStackTrace();
+										com.neuronrobotics.sdk.common.Log.error(e);
 									}
 								}
 								
@@ -1545,7 +1545,7 @@ public class MobleBaseMenueFactory {
 									MobileBaseCadManager.get(base).generateCad();
 								} catch (Exception e) {
 									// Auto-generated catch block
-									e.printStackTrace();
+									com.neuronrobotics.sdk.common.Log.error(e);
 								}
 								creatureLab.generateCad();
 							}
@@ -1556,7 +1556,7 @@ public class MobleBaseMenueFactory {
 			dhItem.getChildren().addAll(addLink, remove);
 
 		} catch (Throwable T) {
-			T.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(T);
 		}
 		TreeItem<String> parallel = new TreeItem<>("Parallel Settings",
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
@@ -1636,7 +1636,7 @@ public class MobleBaseMenueFactory {
 
 					} catch (Exception e) {
 						// Auto-generated catch block
-						e.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(e);
 					}
 				});
 			});
@@ -1647,7 +1647,7 @@ public class MobleBaseMenueFactory {
 					openCadTab(creatureLab, dh.getGitCadEngine()[0], dh.getGitCadEngine()[1]);
 				} catch (Exception e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
 			TreeItem<String> resetWalking = new TreeItem<>("Set Dh Kinematics Engine...",
@@ -1661,7 +1661,7 @@ public class MobleBaseMenueFactory {
 						BowlerStudio.createFileTab(code);
 					} catch (Exception e) {
 						// Auto-generated catch block
-						e.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(e);
 					}
 				});
 			});
@@ -1673,7 +1673,7 @@ public class MobleBaseMenueFactory {
 					BowlerStudio.createFileTab(code);
 				} catch (Exception e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
 			dhItem.getChildren().addAll(editWalking, editCAD, resetWalking, setCAD);
@@ -1688,7 +1688,7 @@ public class MobleBaseMenueFactory {
 			dh.setDesiredJointSpaceVector(vect, 1);
 		} catch (Exception e) {
 			// Auto-generated catch block
-			e.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e);
 		}
 		dh.updateCadLocations();
 

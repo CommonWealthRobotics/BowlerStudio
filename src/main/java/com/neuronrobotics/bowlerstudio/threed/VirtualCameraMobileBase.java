@@ -73,7 +73,7 @@ public class VirtualCameraMobileBase {
 			try {
 				c.onChange(this);
 			}catch(Throwable t) {
-				t.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(t);
 			}
 		}
 	}

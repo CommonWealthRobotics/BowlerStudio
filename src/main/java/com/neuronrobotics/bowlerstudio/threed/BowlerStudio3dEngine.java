@@ -380,7 +380,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							Thread.sleep(30);
 						} catch (InterruptedException e) {
 							// Auto-generated catch block
-							e.printStackTrace();
+							com.neuronrobotics.sdk.common.Log.error(e);
 						}
 					}
 					com.neuronrobotics.sdk.common.Log.error("Autospin Thread clean exit " + name);
@@ -701,7 +701,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							ex.printStackTrace();
+							com.neuronrobotics.sdk.common.Log.error(ex);;
 						}
 					else {
 						string = lp.getMM()+"";
@@ -741,7 +741,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -781,7 +781,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 				}
 			}
@@ -1013,7 +1013,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		try {
 			ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(ex);;
 			Log.error(ex.getMessage());
 		}
 	}
@@ -1176,7 +1176,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						world.getChildren().addAll(lookGroup, axisGroup);
 					});
 				} catch (Exception e) {
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			}
 
@@ -1301,7 +1301,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 				}
 		} catch (Exception | Error e) {
-			// e.printStackTrace();
+			// com.neuronrobotics.sdk.common.Log.error(e);
 		}
 
 	}
@@ -1629,7 +1629,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		if (focusing)
 			return;
 		if (manipulator2 == null) {
-			new RuntimeException("Can not focus on null affine").printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(new RuntimeException("Can not focus on null affine"));
 			return;
 		}
 		focusing = true;
@@ -1674,7 +1674,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// });
 			} catch (Exception ex) {
 
-				ex.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(ex);;
 			}
 			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
@@ -1685,7 +1685,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		if (focusing)
 			return;
 		if (manipulator2 == null) {
-			new RuntimeException("Can not focus on null affine").printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(new RuntimeException("Can not focus on null affine"));
 			return;
 		}
 		focusing = true;
@@ -1726,7 +1726,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				focusGroup.getTransforms().add(correction);
 				focusGroup.getTransforms().add(correction2);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(ex);;
 			}
 			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
@@ -1802,7 +1802,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					Thread.sleep(36);
 				} catch (InterruptedException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 					focusing = false;
 				}
 			}
@@ -1812,7 +1812,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			});
 
 		} catch (Throwable t) {
-			t.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(t);
 		}
 		focusing = false;
 
@@ -1828,7 +1828,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					Thread.sleep(16);
 				} catch (InterruptedException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 					focusing = false;
 				}
 				double depthScale = 1 - (double) depth / (double) targetDepth;
@@ -1896,7 +1896,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							objsFromScriptLine.add(checker);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						com.neuronrobotics.sdk.common.Log.error(e);
 					}
 				}
 			}
@@ -2008,7 +2008,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			try {
 				c.onChange(camera);
 			} catch (Throwable t) {
-				t.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(t);
 			}
 		}
 	}

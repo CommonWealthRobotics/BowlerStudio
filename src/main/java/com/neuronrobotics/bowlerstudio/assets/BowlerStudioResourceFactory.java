@@ -50,19 +50,19 @@ public class BowlerStudioResourceFactory {
 			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e1);
 		} catch (TransportException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e1);
 		} catch (GitAPIException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e1);
 		} catch (IOException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e1);
 		} catch (Exception e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e1);
 		}
 		
 

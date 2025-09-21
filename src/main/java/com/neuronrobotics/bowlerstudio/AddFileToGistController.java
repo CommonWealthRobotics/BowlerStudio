@@ -161,7 +161,7 @@ public class AddFileToGistController extends Application {
 		langaugeIcon.setImage(loadAsset);
 		
 		}catch(Throwable t) {
-			t.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(t);
 		}
 		String key = selectedItem;
 		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
@@ -251,7 +251,7 @@ public class AddFileToGistController extends Application {
 					controller.start(s);
 					// setToLoggedIn("");
 				} catch (Exception e) {
-					e.printStackTrace();
+					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			}).start();
 		});
@@ -302,7 +302,7 @@ public class AddFileToGistController extends Application {
 
 			} catch (Throwable e) {
 				// Auto-generated catch block
-				e.printStackTrace();
+				com.neuronrobotics.sdk.common.Log.error(e);
 			}
 		}).start();
 
@@ -335,7 +335,7 @@ public class AddFileToGistController extends Application {
 			});
 		} catch (Exception e) {
 			// Auto-generated catch block
-			e.printStackTrace();
+			com.neuronrobotics.sdk.common.Log.error(e);
 		}
 
 	}
