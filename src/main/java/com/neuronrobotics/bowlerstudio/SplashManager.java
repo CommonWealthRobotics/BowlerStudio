@@ -50,7 +50,7 @@ public class SplashManager {
 			initialize();
 		}
 		String string = percent + "% " + message;
-		com.neuronrobotics.sdk.common.Log.debug(" Splash Rendering " + percent + " " + message);
+		//com.neuronrobotics.sdk.common.Log.debug(" Splash Rendering " + percent + " " + message);
 		PsudoSplash.get().setMessage(string);
 		waitForUpdate();
 	}

@@ -260,7 +260,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// reset only if an object is not being selected
 				if (lastClickedDifference < offset) {
 
-					com.neuronrobotics.sdk.common.Log.error("Cancel event detected");
+					com.neuronrobotics.sdk.common.Log.debug("Cancel event detected");
 					ret = true;
 				}
 			}
@@ -310,7 +310,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 		});
-		com.neuronrobotics.sdk.common.Log.error("Setting Scene ");
+		com.neuronrobotics.sdk.common.Log.debug("Setting Scene ");
 		setSubScene(new SubScene(getRoot(), 10, 10, true, SceneAntialiasing.BALANCED));
 
 		// Set up the Ui THread explosion handler
@@ -319,16 +319,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public void rebuild(boolean b) {
 		rebuildingUIOnerror = true;
-		com.neuronrobotics.sdk.common.Log.error("Building scene " + name);
+		com.neuronrobotics.sdk.common.Log.info("Building scene " + name);
 		buildScene();
-		com.neuronrobotics.sdk.common.Log.error("Building camera " + name);
+		com.neuronrobotics.sdk.common.Log.info("Building camera " + name);
 
 		buildCamera(b);
-		com.neuronrobotics.sdk.common.Log.error("Building axis " + name);
+		com.neuronrobotics.sdk.common.Log.info("Building axis " + name);
 		buildAxes(b);
 
 		Stop[] stops = null;
-		com.neuronrobotics.sdk.common.Log.error("Building gradiant " + name);
+		com.neuronrobotics.sdk.common.Log.info("Building gradiant " + name);
 
 		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
 		group = new Group(getSubScene());
@@ -383,7 +383,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							com.neuronrobotics.sdk.common.Log.error(e);
 						}
 					}
-					com.neuronrobotics.sdk.common.Log.error("Autospin Thread clean exit " + name);
+					com.neuronrobotics.sdk.common.Log.debug("Autospin Thread clean exit " + name);
 				});
 				autospingThread.setName("UI Autospin Thread " + name);
 				autospingThread.start();
@@ -426,7 +426,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					export.setDisable(true);
 				});
 			} else {
-				com.neuronrobotics.sdk.common.Log.error("Nothing to export!");
+				com.neuronrobotics.sdk.common.Log.debug("Nothing to export!");
 			}
 		});
 		final Tooltip tooltip = new Tooltip();
@@ -458,16 +458,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				if (makePrintBed) {
 
 				}
-				com.neuronrobotics.sdk.common.Log.error("Exporting " + csgs.size() + " parts");
+				com.neuronrobotics.sdk.common.Log.debug("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
 					ArrayList<File> files = new CadFileExporter(BowlerStudioController.getMobileBaseUI())
 							.generateManufacturingParts(csgs, baseDirForFiles);
 					for (File f : files) {
-						com.neuronrobotics.sdk.common.Log.error("Exported " + f.getAbsolutePath());
+						com.neuronrobotics.sdk.common.Log.debug("Exported " + f.getAbsolutePath());
 
 					}
-					com.neuronrobotics.sdk.common.Log.error("Success! " + files.size() + " parts exported");
+					com.neuronrobotics.sdk.common.Log.debug("Success! " + files.size() + " parts exported");
 
 				} catch (Exception e) {
 					// Auto-generated catch block
@@ -575,12 +575,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// }
 				for (int i = 0; i < currentObjectsToCheck.size(); i++) {
 					com.neuronrobotics.sdk.common.Log
-							.error("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
+							.debug("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
 					try {
 						CSG tester = (CSG) array[i];
 						for (String p : tester.getParameters()) {
 							if (p.contentEquals(key) && !toRemove.contains(tester)) {
-								com.neuronrobotics.sdk.common.Log.error("Regenerating " + i + " on key " + p);
+								com.neuronrobotics.sdk.common.Log.debug("Regenerating " + i + " on key " + p);
 								try {
 									CSG ret = tester.regenerate();
 									toRemove.add(tester);
@@ -758,7 +758,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 								customMenuItem.setOnAction(event -> {
 									resetMouseTime();
 									com.neuronrobotics.sdk.common.Log
-											.error("Updating " + lp.getName() + " to " + myVal);
+											.debug("Updating " + lp.getName() + " to " + myVal);
 									lp.setStrValue(myVal);
 									CSGDatabase.get(lp.getName()).setStrValue(myVal);
 									for (IParameterChanged l : CSGDatabase.getParamListeners(lp.getName())) {
@@ -1014,7 +1014,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
 		} catch (IOException ex) {
 			com.neuronrobotics.sdk.common.Log.error(ex);;
-			Log.error(ex.getMessage());
 		}
 	}
 
@@ -1318,7 +1317,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			scene.setPickOnBounds(false);
 			return;
 		}
-		com.neuronrobotics.sdk.common.Log.error("Settinng up Mouse Handelers " + name);
+		com.neuronrobotics.sdk.common.Log.debug("Settinng up Mouse Handelers " + name);
 		scene.setOnMouseClicked(event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
@@ -1466,7 +1465,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * @param scene the new sub scene
 	 */
 	public void setSubScene(SubScene scene) {
-		com.neuronrobotics.sdk.common.Log.error("Setting UI scene");
+		com.neuronrobotics.sdk.common.Log.debug("Setting UI scene");
 		this.scene = scene;
 
 	}
