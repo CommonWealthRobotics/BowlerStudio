@@ -44,6 +44,7 @@ import eu.mihosoft.vrl.v3d.IDebug3dProvider;
 import eu.mihosoft.vrl.v3d.Plane;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -300,7 +301,8 @@ public class BowlerStudio extends Application {
 		ScriptingEngine.cloneRepo("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git", null);
 		ScriptingEngine.pull("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git");
 		renderSplashFrame(81, "CSG database");
-		CSGDatabase.setDbFile(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json"));
+		
+		CSGDatabase.setInstance(new CSGDatabaseInstance(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json")));
 
 		// com.neuronrobotics.sdk.common.Log.error("Loading assets ");
 
