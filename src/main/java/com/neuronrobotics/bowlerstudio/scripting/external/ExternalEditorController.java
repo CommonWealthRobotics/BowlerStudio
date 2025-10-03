@@ -45,10 +45,10 @@ public class ExternalEditorController {
 			    	  image.setScaleX(FontSizeManager.getImageScale());
 			    	  image.setScaleY(FontSizeManager.getImageScale());
 			      });
-				com.neuronrobotics.sdk.common.Log.error("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
+				com.neuronrobotics.sdk.common.Log.debug("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
 				break;
 			}else {
-				com.neuronrobotics.sdk.common.Log.error(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
+				//com.neuronrobotics.sdk.common.Log.debug(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
 			}
 			
 		}
