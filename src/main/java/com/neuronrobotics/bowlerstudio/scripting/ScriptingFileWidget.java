@@ -544,24 +544,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	private void start() {
-		try {
-			if (!currentFile.getName().contentEquals("csgDatabase.json")) {
-				String[] gitID = ScriptingEngine.findGitTagFromFile(currentFile);
-				String remoteURI = gitID[0];
-				ArrayList<String> f = ScriptingEngine.filesInGit(remoteURI);
-				for (String s : f) {
-					if (s.contentEquals("csgDatabase.json")) {
-						File dbFile = ScriptingEngine.fileFromGit(gitID[0], s);
-						if (!CSGDatabase.getDbFile().equals(dbFile))
-							CSGDatabase.setDbFile(dbFile);
-						CSGDatabase.saveDatabase();
-					}
-				}
-			}
-		} catch (Exception e) {
-			// ignore CSG database
-			// e.printStackTrace();
-		}
+
 		BowlerStudio.clearConsole();
 		BowlerStudioController.clearHighlight();
 
