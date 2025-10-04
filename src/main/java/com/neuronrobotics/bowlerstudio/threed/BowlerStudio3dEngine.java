@@ -606,7 +606,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				});
 
 				com.neuronrobotics.sdk.common.Log.error("Saving CSG database");
-				CSGDatabase.saveDatabase();
+				CSGDatabase.getInstance().saveDatabase();
 			}
 		}.start();
 	}
@@ -688,7 +688,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			Menu parameters = new Menu("Parameters...");
 			parameters.setMnemonicParsing(false);
 			for (String key : params) {
-				Parameter param = CSGDatabase.get(key);
+				Parameter param = CSGDatabase.getInstance().get(key);
 				currentCsg.setParameterIfNull(CSGDatabase.getInstance(),key);
 				if (LengthParameter.class.isInstance(param)) {
 
@@ -761,8 +761,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									com.neuronrobotics.sdk.common.Log
 											.debug("Updating " + lp.getName() + " to " + myVal);
 									lp.setStrValue(myVal);
-									CSGDatabase.get(lp.getName()).setStrValue(myVal);
-									for (IParameterChanged l : CSGDatabase.getParamListeners(lp.getName())) {
+									CSGDatabase.getInstance().get(lp.getName()).setStrValue(myVal);
+									for (IParameterChanged l : CSGDatabase.getInstance().getParamListeners(lp.getName())) {
 										l.parameterChanged(lp.getName(), lp);
 									}
 
