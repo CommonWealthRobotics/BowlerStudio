@@ -57,6 +57,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
@@ -578,7 +579,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							.debug("Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
 					try {
 						CSG tester = (CSG) array[i];
-						for (String p : tester.getParameters()) {
+						for (String p : tester.getParameters(CSGDatabase.getInstance())) {
 							if (p.contentEquals(key) && !toRemove.contains(tester)) {
 								com.neuronrobotics.sdk.common.Log.debug("Regenerating " + i + " on key " + p);
 								try {
@@ -681,14 +682,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		cm.getItems().add(infomenu);
 
-		Set<String> params = currentCsg.getParameters();
+		Set<String> params = currentCsg.getParameters(CSGDatabase.getInstance());
 
 		if (params != null) {
 			Menu parameters = new Menu("Parameters...");
 			parameters.setMnemonicParsing(false);
 			for (String key : params) {
 				Parameter param = CSGDatabase.get(key);
-				currentCsg.setParameterIfNull(key);
+				currentCsg.setParameterIfNull(CSGDatabase.getInstance(),key);
 				if (LengthParameter.class.isInstance(param)) {
 
 					LengthParameter lp = (LengthParameter) param;
@@ -714,7 +715,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									@Override
 									public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 										try {
-											currentCsg.setParameterNewValue(key, newAngleDegrees);
+											currentCsg.setParameterNewValue(CSGDatabase.getInstance(),key, newAngleDegrees);
 
 										} catch (Exception ex) {
 											BowlerStudioController.highlightException(source, ex);
