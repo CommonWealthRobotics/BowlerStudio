@@ -332,9 +332,9 @@ public class BowlerStudio extends Application {
 					"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
 					"https://github.com/CommonWealthRobotics/freecad-bowler-cli.git",
 					"https://github.com/CommonWealthRobotics/blender-bowler-cli.git");
-			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
+			ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"hotfix.groovy", null);
-			ScriptingEngine.gitScriptRun("https://github.com/CommonWealthRobotics/DeviceProviders.git",
+			ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 					"loadAll.groovy", null);
 			renderSplashFrame(92, "Vitamin Scripts...");
 			HashSet<String> urls = new HashSet<>();

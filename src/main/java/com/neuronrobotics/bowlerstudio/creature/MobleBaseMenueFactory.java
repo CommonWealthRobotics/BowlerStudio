@@ -22,6 +22,8 @@ import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -450,7 +452,7 @@ public class MobleBaseMenueFactory {
 				try {
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-							.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+							.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 									"wheelOptions.json");
 
 					Set<String> optionsKeys = options.keySet();

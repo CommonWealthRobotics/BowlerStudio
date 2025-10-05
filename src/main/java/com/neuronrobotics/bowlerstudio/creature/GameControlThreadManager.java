@@ -13,6 +13,8 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+
 public class GameControlThreadManager {
 	private static Thread scriptRunner=null;
 	private static IAmControlled currentController=null;
@@ -90,7 +92,7 @@ public class GameControlThreadManager {
 			public void run() {
 				try {
 					
-					ScriptingEngine.inlineFileScriptRun(currentFile, currentController.getArguments());
+					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, currentController.getArguments());
 					reset();
 
 				} catch (Throwable ex) {

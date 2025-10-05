@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -67,7 +68,7 @@ public class VitaminWidgetTest extends Application {
 			new Thread(() -> {
 				try {
 					MobileBase mb = (MobileBase) ScriptingEngine
-							.gitScriptRun("https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
+							.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
 					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),selected->{
 						 return mb.forwardOffset(new TransformNR()); 
 					});
