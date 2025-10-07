@@ -605,8 +605,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					});
 				});
 
-				com.neuronrobotics.sdk.common.Log.error("Saving CSG database");
-				CSGDatabase.getInstance().saveDatabase();
+				com.neuronrobotics.sdk.common.Log.debug("Saving CSG database");
+				try {
+					CSGDatabase.getInstance().saveDatabase();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}.start();
 	}
