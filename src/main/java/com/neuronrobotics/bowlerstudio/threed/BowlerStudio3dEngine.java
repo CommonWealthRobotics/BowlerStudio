@@ -617,10 +617,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * @param currentCsg the current
 	 * @return the mesh view
 	 */
+	@Deprecated
 	public MeshView addObject(CSG currentCsg, File source) {
-		return addObject(currentCsg, source, -1);
+		Log.error(new Exception("Depricated API used here!"));
+		return addObject(currentCsg, source, -1,CSGDatabase.getInstance());
 	}
-	public MeshView addObject(CSG currentCsg, File source, double opacity) {
+	public MeshView addObject(CSG currentCsg, File source, double opacity, CSGDatabaseInstance instance) {
 		if (currentCsg == null)
 			return new MeshView();
 //		for(Polygon poly:currentCsg.getPolygons())
@@ -682,14 +684,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		cm.getItems().add(infomenu);
 
-		Set<String> params = currentCsg.getParameters(CSGDatabase.getInstance());
+		Set<String> params = currentCsg.getParameters(instance);
 
 		if (params != null) {
 			Menu parameters = new Menu("Parameters...");
 			parameters.setMnemonicParsing(false);
 			for (String key : params) {
-				Parameter param = CSGDatabase.getInstance().get(key);
-				currentCsg.setParameterIfNull(CSGDatabase.getInstance(),key);
+				Parameter param = instance.get(key);
+				currentCsg.setParameterIfNull(instance,key);
 				if (LengthParameter.class.isInstance(param)) {
 
 					LengthParameter lp = (LengthParameter) param;
@@ -715,7 +717,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									@Override
 									public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 										try {
-											currentCsg.setParameterNewValue(CSGDatabase.getInstance(),key, newAngleDegrees);
+											currentCsg.setParameterNewValue(instance,key, newAngleDegrees);
 
 										} catch (Exception ex) {
 											BowlerStudioController.highlightException(source, ex);
@@ -761,8 +763,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									com.neuronrobotics.sdk.common.Log
 											.debug("Updating " + lp.getName() + " to " + myVal);
 									lp.setStrValue(myVal);
-									CSGDatabase.getInstance().get(lp.getName()).setStrValue(myVal);
-									for (IParameterChanged l : CSGDatabase.getInstance().getParamListeners(lp.getName())) {
+									instance.get(lp.getName()).setStrValue(myVal);
+									for (IParameterChanged l :instance.getParamListeners(lp.getName())) {
 										l.parameterChanged(lp.getName(), lp);
 									}
 
