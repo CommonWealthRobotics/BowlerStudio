@@ -23,6 +23,7 @@ import com.neuronrobotics.sdk.addons.kinematics.VitaminLocation;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -93,13 +94,13 @@ public class VitatminWidget implements IOnTransformChange {
 		CSG newDisplay=null;
 		switch(newVit.getFrame()) {
 		case DefaultFrame:
-			newDisplay = manager.getVitaminDisplay(newVit, manipulator, new TransformNR());
+			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, manipulator, new TransformNR());
 			break;
 		case LinkOrigin:
-			newDisplay = manager.getVitaminDisplay(newVit, manipulator, offset);
+			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, manipulator, offset);
 			break;
 		case previousLinkTip:
-			newDisplay = manager.getVitaminDisplay(newVit, lastLinkAffine,  new TransformNR());
+			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, lastLinkAffine,  new TransformNR());
 			break;
 		}
 		return newDisplay;
@@ -271,7 +272,7 @@ public class VitatminWidget implements IOnTransformChange {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			TransformNR poseToMove = currentTipProvider.get(selectedVitamin).copy();
 			//poseToMove.setRotation(new RotationNR());
-			CSG current = manager.getVitaminDisplay(selectedVitamin, af, poseToMove);
+			CSG current = manager.getVitaminDisplay(CSGDatabase.getInstance(),selectedVitamin, af, poseToMove);
 			BowlerStudioController.highlightCsg(current);
 			BowlerStudioController.targetAndFollow(poseToMove,af);
 		} catch (Exception e) {

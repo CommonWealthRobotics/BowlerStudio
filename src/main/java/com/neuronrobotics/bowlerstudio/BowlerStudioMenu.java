@@ -26,6 +26,7 @@ import com.neuronrobotics.sdk.pid.VirtualGenericPIDDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -194,7 +195,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				MobileBase mb;
 				ScriptingEngine.pull(id);
 
-				mb = (MobileBase) ScriptingEngine.gitScriptRun(id, file, null);
+				mb = (MobileBase) ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),id, file, null);
 
 				if (mb != null)
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
@@ -1533,7 +1534,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					});
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-							.inlineFileScriptRun(f, null);
+							.inlineFileScriptRun(CSGDatabase.getInstance(),f, null);
 
 					List<String> entrySet = asSortedList(map.keySet());
 

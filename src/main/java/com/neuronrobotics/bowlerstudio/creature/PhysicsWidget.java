@@ -19,6 +19,7 @@ import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -326,7 +327,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 			return ret;
 		ScriptingEngine.cloneRepo(url, null);
 		ScriptingEngine.pull(url);
-		Object o=ScriptingEngine.gitScriptRun(url, selectedItem);
+		Object o=ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),url, selectedItem);
 		load(o,ret);
 		return ret;
 	}

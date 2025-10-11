@@ -22,6 +22,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -356,7 +357,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
 				}
 				if (fileType.toLowerCase().contains("blend")) {
-					BlenderLoader.toBlenderFile(c, newFile);
+					BlenderLoader.toBlenderFile(CSGDatabase.getInstance(),c, newFile);
 					com.neuronrobotics.sdk.common.Log.error("Added mesh to " + newFile);
 				}
 				if (fileType.toLowerCase().contains("fcstd")) {

@@ -30,6 +30,7 @@ import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 
@@ -50,7 +51,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 				if(AskToDeleteWidget.askToDeleteFile(blenderfile.getName())) {
 					blenderfile.delete();
 				}
-				BlenderLoader.toBlenderFile(file, blenderfile);
+				BlenderLoader.toBlenderFile(CSGDatabase.getInstance(),file, blenderfile);
 				filename=blenderfile.getAbsolutePath();
 				try {
 					BowlerStudio.createFileTab(blenderfile);

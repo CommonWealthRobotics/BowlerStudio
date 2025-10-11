@@ -10,6 +10,8 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -180,7 +182,7 @@ public class Terminal {
 			public void run() {
 
 				try {
-					ScriptingEngine.inlineScriptStringRun(code, null,
+					ScriptingEngine.inlineScriptStringRun(CSGDatabase.getInstance(),code, null,
 							langauges.getSelectionModel().getSelectedItem());
 					reset();
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {

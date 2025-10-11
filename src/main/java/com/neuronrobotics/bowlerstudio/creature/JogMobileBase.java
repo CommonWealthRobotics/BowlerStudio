@@ -319,7 +319,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 
 			public void run() {
 				try {
-					ScriptingEngine.inlineFileScriptRun(currentFile, null);
+					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, null);
 					reset();
 
 				} 
