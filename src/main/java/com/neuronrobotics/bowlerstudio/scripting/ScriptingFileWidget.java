@@ -564,7 +564,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 //					name="";
 //				}
 				try {
-					Object obj = ScriptingEngine.inlineFileScriptRun(currentFile, null);
+					Object obj = ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, null);
 					ArrayList<CSG> cache = new ArrayList<>();
 					addObject(obj, cache);
 					String git;
@@ -604,6 +604,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {
 					BowlerStudioController.highlightException(currentFile, d);
 				} catch (Throwable ex) {
+					Log.error(ex);
 					com.neuronrobotics.sdk.common.Log.debug("Script exception of type= " + ex.getClass().getName());
 
 					try {
@@ -623,6 +624,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 						try {
 							l.onScriptError(new Exception(ex), currentFile);
 						} catch (Throwable e) {
+							Log.error(e);
 						}
 					}
 				}

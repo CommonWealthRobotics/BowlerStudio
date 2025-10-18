@@ -86,6 +86,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -117,6 +118,7 @@ public class BowlerStudio extends Application {
 	private static boolean deleteFlag = false;
 	private static IssueReportingExceptionHandler reporter = new IssueReportingExceptionHandler();
 	// private static String lastVersion;
+	private static UncaughtExceptionHandler hand;
 
 	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
@@ -124,7 +126,26 @@ public class BowlerStudio extends Application {
 		File file = new File(relative + delim() + "bowler-workspace" + delim());
 		file.mkdirs();
 		ScriptingEngine.setWorkspace(file);
+		File logfile = new File(file.getAbsolutePath()+delim()+"bowlerStudioLog.txt");
+		if(logfile.exists())
+			logfile.delete();
+		try {
+			logfile.createNewFile();
+			Log.enableDebugPrint(true);
+			Log.enableDebugPrint();
+			Log.setFile(logfile);
+			com.neuronrobotics.sdk.common.Log.debug("Log file set to "+logfile.getAbsolutePath());
+			Log.warning("BowlerStudio Version "+StudioBuildInfo.getVersion());
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				Log.flush();
+			}));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			com.neuronrobotics.sdk.common.Log.error(e);
+		}
+		
 		DownloadManager.setSTUDIO_INSTALL("BowlerStudioInstall");
+		
 		
 		if (args.length != 0) {
 			//com.neuronrobotics.sdk.common.Log.error("Arguments detected, starting Kernel mode.");
@@ -138,7 +159,6 @@ public class BowlerStudio extends Application {
 			//t.printStackTrace();
 			com.neuronrobotics.sdk.common.Log.error("Symlink not creaded");
 		}
-		System.setOut(System.err);// send all prints to err until replaced with the terminal
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
@@ -514,14 +534,11 @@ public class BowlerStudio extends Application {
 					});
 				}
 			}
-			System.err.print(valueOf);
+			//System.err.print(valueOf);
 		}
 
 		public void write(int b) throws IOException {
 			incoming.add(b);
-			// appendText(String.valueOf((char)b));
-			// if(b=='[')
-			// new RuntimeException().printStackTrace();
 		}
 	}
 	public static void runLater(long delay, Runnable action) {
@@ -848,7 +865,7 @@ public class BowlerStudio extends Application {
 			// These must be changed before anything starts
 			PrintStream ps = new PrintStream(getOut());
 			// System.setErr(ps);
-			System.setOut(ps);
+			Log.setMirrorStream(ps);
 			renderSplashFrame(93, "Loading resources");
 			try {
 				BowlerStudioResourceFactory.load();
