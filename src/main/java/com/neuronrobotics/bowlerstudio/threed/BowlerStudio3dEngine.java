@@ -78,6 +78,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
@@ -105,7 +106,7 @@ import javafx.scene.paint.Color;
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 	private boolean focusing = false;
 	private double numberOfInterpolationSteps = 30;
-	private MeshView grid;
+	private Group grid;
 
 	/**
 	 * 
@@ -625,8 +626,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	@Deprecated
 	public MeshView addObject(CSG currentCsg, File source) {
 		Log.error(new Exception("Depricated API used here!"));
-		return addObject(currentCsg, source, -1,CSGDatabase.getInstance());
+		return addObject(currentCsg, source, -1, CSGDatabase.getInstance());
 	}
+
 	public MeshView addObject(CSG currentCsg, File source, double opacity, CSGDatabaseInstance instance) {
 		if (currentCsg == null)
 			return new MeshView();
@@ -657,14 +659,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			eventForManipulation = null;
 		}
 		MeshView current = getCsgMap().get(currentCsg);
-		if(opacity>0) {
+		if (opacity > 0) {
 			PhongMaterial phongMaterial = (PhongMaterial) current.getMaterial();
 			Color diffuseColor = phongMaterial.getDiffuseColor();
-			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(),
-					opacity);
+			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(), opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
-		//current.setCullFace(CullFace.BACK);// backs are tranparent
+		// current.setCullFace(CullFace.BACK);// backs are tranparent
 		current.setCullFace(CullFace.NONE);// backs are black
 		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
 		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
@@ -696,7 +697,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			parameters.setMnemonicParsing(false);
 			for (String key : params) {
 				Parameter param = instance.get(key);
-				currentCsg.setParameterIfNull(instance,key);
+				currentCsg.setParameterIfNull(instance, key);
 				if (LengthParameter.class.isInstance(param)) {
 
 					LengthParameter lp = (LengthParameter) param;
@@ -709,11 +710,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
-						string = lp.getMM()+"";
-						string2 = lp.getMM()+"";
+						string = lp.getMM() + "";
+						string2 = lp.getMM() + "";
 					}
 					try {
 						EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
@@ -722,7 +724,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									@Override
 									public void onSliderMoving(EngineeringUnitsSliderWidget s, double newAngleDegrees) {
 										try {
-											currentCsg.setParameterNewValue(instance,key, newAngleDegrees);
+											currentCsg.setParameterNewValue(instance, key, newAngleDegrees);
 
 										} catch (Exception ex) {
 											BowlerStudioController.highlightException(source, ex);
@@ -749,7 +751,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -769,7 +772,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 											.debug("Updating " + lp.getName() + " to " + myVal);
 									lp.setStrValue(myVal);
 									instance.get(lp.getName()).setStrValue(myVal);
-									for (IParameterChanged l :instance.getParamListeners(lp.getName())) {
+									for (IParameterChanged l : instance.getParamListeners(lp.getName())) {
 										l.parameterChanged(lp.getName(), lp);
 									}
 
@@ -789,7 +792,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1021,7 +1025,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		try {
 			ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
 		} catch (IOException ex) {
-			com.neuronrobotics.sdk.common.Log.error(ex);;
+			com.neuronrobotics.sdk.common.Log.error(ex);
+			;
 		}
 	}
 
@@ -1150,7 +1155,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 					grid = createGridMesh(1000, 1000, 20);
 					boolean selected = showRuler != null ? showRuler.isSelected() : true;
-					Axis axis = new Axis(b?selected:false);
+					Axis axis = new Axis(b ? selected : false);
 					BowlerStudio.runLater(() -> {
 						Node rulerImage = MakeRuler.createRuler(true);// new ImageView(ruler);
 						Node yrulerImage = MakeRuler.createRuler(false);// new ImageView(ruler);
@@ -1158,9 +1163,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						// ImageView groundView = new ImageView(groundLocal);
 						// groundView.getTransforms().addAll(groundMove, downset);
 						// groundView.setOpacity(0.3);
-						zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),zRuler, downset);
-						rulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),xp, downset);
-						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(),getRulerOffset(),yRuler, downset);
+						zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), zRuler,
+								downset);
+						rulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xp, downset);
+						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), yRuler,
+								downset);
 
 						ObservableList<Node> children = gridGroup.getChildren();
 						rulerGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage);
@@ -1191,65 +1198,55 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	}
 
-	public MeshView getGrid() {
+	public Group getGrid() {
 		return grid;
 	}
 
-	public MeshView createGridMesh(int width, int height, int cellSize) {
+	public Group createGridMesh(int width, int height, int cellSize) {
+		return createGridMesh(width, height, cellSize, 0.1);
+	}
+
+	public Group createGridMesh(int width, int height, int cellSize, double lineThickness) {
 		Affine groundMove = new Affine();
-		// groundMove.setTz(-3);
-		groundMove.setTx(-width / 2);
-		groundMove.setTy(-height / 2);
+		groundMove.setTx(-width / 2.0);
+		groundMove.setTy(-height / 2.0);
 
-		TriangleMesh mesh = new TriangleMesh();
+		Group gridGroup = new Group();
 
-		// Create points
-		for (int y = 0; y <= height; y += cellSize) {
-			for (int x = 0; x <= width; x += cellSize) {
-				mesh.getPoints().addAll(x, y, 0);
-			}
-		}
+		// Create material for lines
+		PhongMaterial material = new PhongMaterial();
+		material.setDiffuseColor(Color.BLACK);
 
-		// Create lines (faces in TriangleMesh terms)
 		int numXLines = (width / cellSize) + 1;
 		int numYLines = (height / cellSize) + 1;
 
-		// Horizontal lines
+		// Create horizontal lines
 		for (int y = 0; y < numYLines; y++) {
-			for (int x = 0; x < numXLines - 1; x++) {
-				int p1 = y * numXLines + x;
-				int p2 = y * numXLines + x + 1;
-				mesh.getFaces().addAll(p1, 0, p2, 0, p1, 0);
-			}
+			double yPos = y * cellSize;
+			Box horizontalLine = new Box(width, lineThickness, lineThickness);
+			horizontalLine.setMaterial(material);
+			horizontalLine.setTranslateX(width / 2.0);
+			horizontalLine.setTranslateY(yPos);
+			horizontalLine.setTranslateZ(0);
+			horizontalLine.setMouseTransparent(true);
+			gridGroup.getChildren().add(horizontalLine);
 		}
 
-		// Vertical lines
+		// Create vertical lines
 		for (int x = 0; x < numXLines; x++) {
-			for (int y = 0; y < numYLines - 1; y++) {
-				int p1 = y * numXLines + x;
-				int p2 = (y + 1) * numXLines + x;
-				mesh.getFaces().addAll(p1, 0, p2, 0, p1, 0);
-			}
+			double xPos = x * cellSize;
+			Box verticalLine = new Box(lineThickness, height, lineThickness);
+			verticalLine.setMaterial(material);
+			verticalLine.setTranslateX(xPos);
+			verticalLine.setTranslateY(height / 2.0);
+			verticalLine.setTranslateZ(0);
+			verticalLine.setMouseTransparent(true);
+			gridGroup.getChildren().add(verticalLine);
 		}
 
-		// Dummy texture coordinates (required by TriangleMesh)
-		mesh.getTexCoords().addAll(0, 0);
+		gridGroup.getTransforms().addAll(gridPlacementAffine, groundMove);
 
-		MeshView meshView = new MeshView(mesh);
-
-		// Set material properties for thin lines
-		PhongMaterial material = new PhongMaterial();
-		material.setDiffuseColor(Color.LIGHTBLUE);
-		meshView.setMaterial(material);
-
-		// Make lines appear thin
-		meshView.setDrawMode(DrawMode.LINE);
-
-		// Ensure the mesh is visible
-		meshView.setCullFace(CullFace.NONE);
-		meshView.getTransforms().addAll(gridPlacementAffine, groundMove);
-		meshView.setMouseTransparent(true);
-		return meshView;
+		return gridGroup;
 	}
 
 	public boolean contains(Node n) {
@@ -1681,7 +1678,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// });
 			} catch (Exception ex) {
 
-				com.neuronrobotics.sdk.common.Log.error(ex);;
+				com.neuronrobotics.sdk.common.Log.error(ex);
+				;
 			}
 			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
@@ -1733,7 +1731,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				focusGroup.getTransforms().add(correction);
 				focusGroup.getTransforms().add(correction2);
 			} catch (Exception ex) {
-				com.neuronrobotics.sdk.common.Log.error(ex);;
+				com.neuronrobotics.sdk.common.Log.error(ex);
+				;
 			}
 			focusInterpolate(startSelectNr, targetNR, (int) numberOfInterpolationSteps, interpolator);
 		});
@@ -2079,6 +2078,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void setRulerInWorkplaneOffset(Affine rulerInWorkplaneOffset) {
 		this.rulerInWorkplaneOffset = rulerInWorkplaneOffset;
 	}
+
 	public Group getRulerGroup() {
 		return rulerGroup;
 	}
