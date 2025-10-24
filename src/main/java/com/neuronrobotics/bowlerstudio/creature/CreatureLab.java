@@ -14,6 +14,8 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -135,7 +137,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		timeSinceLastUpdate = System.currentTimeMillis();
 		BowlerStudio.runLater(() -> {
 			if (autoRegen.isSelected()) {
-				generateCad();
+				generateCad(CSGDatabase.getInstance());
 			}
 		});
 	}
@@ -194,7 +196,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 
 			rootItemFinal.setExpanded(true);
-			MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
+			MobileBaseCadManager.get(CSGDatabase.getInstance(),device, BowlerStudioController.getMobileBaseUI());
 			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems,
 					this, true, creatureIsOwnedByUser);
 			//tree.setPrefWidth(325);
@@ -257,7 +259,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		radioOptions.add(rb2, 1, 2);
 
 		pi = new ProgressIndicator(0);
-		baseManager = MobileBaseCadManager.get(device, BowlerStudioController.getMobileBaseUI());
+		baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device, BowlerStudioController.getMobileBaseUI());
 		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
 
 		radioOptions.add(pi, 1, 0);
@@ -335,12 +337,12 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	}
 
-	public void generateCad() {
+	public void generateCad(CSGDatabaseInstance db) {
 		//new RuntimeException().printStackTrace();
 		if(!enabled)
 			return;
 		disable();
-		baseManager.generateCadWithEnd(()->{
+		baseManager.generateCadWithEnd(db,()->{
 				enable();
 				autoRegen.setSelected(stateOfAutoWhenForced );
 		});
@@ -351,7 +353,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		baseManager.run();
 		try {
 			if (autoRegen.isSelected())
-				generateCad();
+				generateCad(CSGDatabase.getInstance());
 		} catch (Exception ex) {
 
 		}
@@ -370,7 +372,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	@Override
 	public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		if (autoRegen.isSelected())
-			generateCad();
+			generateCad(CSGDatabase.getInstance());
 	}
 
 	public BowlerJInputDevice getController() {

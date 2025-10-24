@@ -284,7 +284,7 @@ public class MobleBaseMenueFactory {
 //					AssetFactory.loadIcon("Generate-Cad.png"));
 //
 //			callbackMapForTreeitems.put(regnerate, () -> {
-//				creatureLab.generateCad();
+//				creatureLab.generateCad(CSGDatabase.getInstance());
 //
 //			});
 			TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",
@@ -626,7 +626,7 @@ public class MobleBaseMenueFactory {
 							public void onTransformFinished(TransformNR newTrans) {
 								MobileBaseCadManager manager = MobileBaseCadManager.get(device);
 								if (manager != null)
-									manager.generateCad();
+									manager.generateCad(CSGDatabase.getInstance());
 								device.setIMUFromCentroid(newTrans);
 							}
 
@@ -1302,7 +1302,7 @@ public class MobleBaseMenueFactory {
 					// once the new link configuration is set up, re add the
 					// listener
 					factory.addLinkListener(dh);
-					creatureLab.generateCad();
+					creatureLab.generateCad(CSGDatabase.getInstance());
 				}
 			});
 
@@ -1468,7 +1468,7 @@ public class MobleBaseMenueFactory {
 					}
 					if(base.getParallelGroup(dh)!=null)
 						base.getParallelGroup(dh).removeLimb(dh);
-					creatureLab.generateCad();
+					creatureLab.generateCad(CSGDatabase.getInstance());
 				}
 			});
 
@@ -1544,12 +1544,12 @@ public class MobleBaseMenueFactory {
 									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
 											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 											creatureIsOwnedByUser);
-									MobileBaseCadManager.get(base).generateCad();
+									MobileBaseCadManager.get(base).generateCad(CSGDatabase.getInstance());
 								} catch (Exception e) {
 									// Auto-generated catch block
 									com.neuronrobotics.sdk.common.Log.error(e);
 								}
-								creatureLab.generateCad();
+								creatureLab.generateCad(CSGDatabase.getInstance());
 							}
 						}.start();
 					}

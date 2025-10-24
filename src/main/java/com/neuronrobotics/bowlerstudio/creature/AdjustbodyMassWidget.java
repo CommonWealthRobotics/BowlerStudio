@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.scene.Group;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -30,7 +31,7 @@ public class AdjustbodyMassWidget extends Group {
 		TextField mass = new TextField(CreatureLab.getFormatted(device.getMassKg()));
 		mass.setOnAction(event -> {
 			device.setMassKg(textToNum(mass));
-			if(manager!=null)manager.generateCad();
+			if(manager!=null)manager.generateCad(CSGDatabase.getInstance());
 		});
 		TransformNR currentCentroid = device.getCenterOfMassFromCentroid();
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
@@ -38,7 +39,7 @@ public class AdjustbodyMassWidget extends Group {
 			currentCentroid.setX(textToNum(massx));
 			device.setCenterOfMassFromCentroid(currentCentroid);
 			;
-			if(manager!=null)manager.generateCad();
+			if(manager!=null)manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -47,7 +48,7 @@ public class AdjustbodyMassWidget extends Group {
 			currentCentroid.setY(textToNum(massy));
 			device.setCenterOfMassFromCentroid(currentCentroid);
 			;
-			if(manager!=null)manager.generateCad();
+			if(manager!=null)manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -56,7 +57,7 @@ public class AdjustbodyMassWidget extends Group {
 			currentCentroid.setZ(textToNum(massz));
 			device.setCenterOfMassFromCentroid(currentCentroid);
 			;
-			if(manager!=null)manager.generateCad();
+			if(manager!=null)manager.generateCad(CSGDatabase.getInstance());
 
 		});
 		

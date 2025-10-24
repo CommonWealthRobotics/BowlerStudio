@@ -164,7 +164,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 						bases.add(base);
 						File cache = new File(ScriptingEngine.getWorkspace().getAbsolutePath()+"/physics-"+base.getScriptingName());
 						try {
-							mujoco = new MuJoCoPhysicsManager(base.getScriptingName(),bases,movingObjects,staticObjects,cache);
+							mujoco = new MuJoCoPhysicsManager(CSGDatabase.getInstance(),base.getScriptingName(),bases,movingObjects,staticObjects,cache);
 							
 						} catch (IOException | JAXBException e) {
 							// Auto-generated catch block
@@ -179,7 +179,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 						mujoco.setIntegratorType(IntegratorType.IMPLICIT);
 						mujoco.setCondim(4);
 						try {
-							mujoco.generateNewModel();
+							mujoco.generateNewModel(CSGDatabase.getInstance());
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace(System.out);

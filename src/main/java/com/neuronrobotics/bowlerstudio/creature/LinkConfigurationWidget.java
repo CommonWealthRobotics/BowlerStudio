@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -63,7 +64,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 		});
 		TransformNR currentCentroid = conf.getCenterOfMassFromCentroid();
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
@@ -74,7 +75,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -86,7 +87,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -98,7 +99,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -108,7 +109,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -126,7 +127,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			conf.setShaftType(motortype);
 			setShaftSize( motorsize);
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 		shaftSize.getSelectionModel().select(conf.getShaftSize());
@@ -185,7 +186,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				conf.setShaftSize(shaftsize);
 				conf.setShaftType(shafttype);
 				if (manager != null)
-					manager.generateCad();
+					manager.generateCad(CSGDatabase.getInstance());
 
 			}
 		});
@@ -219,7 +220,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			activLink = factory.getLink(conf);
 			com.neuronrobotics.sdk.common.Log.error("Link device to " + conf.getDeviceScriptingName());
 			if (manager != null)
-				manager.generateCad();
+				manager.generateCad(CSGDatabase.getInstance());
 
 		});
 
@@ -248,7 +249,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					activLink.flush(0);
 					activLink.setUseLimits(true);
 					if (manager != null)
-						manager.generateCad();
+						manager.generateCad(CSGDatabase.getInstance());
 					zero.setLowerBound(newAngleDegrees);
 
 				} catch (Exception ex) {
@@ -280,7 +281,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				activLink.setUseLimits(true);
 				zero.setUpperBound(newAngleDegrees);
 				if (manager != null)
-					manager.generateCad();
+					manager.generateCad(CSGDatabase.getInstance());
 
 			}
 		}, (int)conf.getStaticOffset(), (int)max, (int)conf.getUpperLimit(), 150,
@@ -304,7 +305,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					return;
 				updateZeroValue(newAngleDegrees);
 				if (manager != null)
-					manager.generateCad();
+					manager.generateCad(CSGDatabase.getInstance());
 
 			}
 		}, (int)conf.getLowerLimit(), (int)conf.getUpperLimit(), (int)conf.getStaticOffset(), 150, "device units", true);
@@ -326,7 +327,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				activLink.flush(0);
 				com.neuronrobotics.sdk.common.Log.error("Link channel to " + conf.getTypeString());
 				if (manager != null)
-					manager.generateCad();
+					manager.generateCad(CSGDatabase.getInstance());
 
 			}
 		});
@@ -345,7 +346,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				conf.setTypeString(comboBox.getSelectionModel().getSelectedItem());
 				com.neuronrobotics.sdk.common.Log.error("Link type changed to " + conf.getTypeString());
 				if (manager != null)
-					manager.generateCad();
+					manager.generateCad(CSGDatabase.getInstance());
 
 			}
 		});
