@@ -156,7 +156,7 @@ public class PhysicsWidget extends GridPane  implements IMUUpdateListener {
 					
 
 					public void run(){
-						while(MobileBaseCadManager.get( base).getProcesIndictor().get()<1){
+						while(MobileBaseCadManager.get(CSGDatabase.getInstance(), base).getProcesIndictor().get()<1){
 							ThreadUtil.wait(100);
 						}
 						base.DriveArc(new TransformNR(.01,0,0,new RotationNR()), 0);

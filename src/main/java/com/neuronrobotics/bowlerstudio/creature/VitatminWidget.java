@@ -90,7 +90,7 @@ public class VitatminWidget implements IOnTransformChange {
 	}
 
 	private CSG getCSG(VitaminLocation newVit) {
-		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
+		MobileBaseCadManager manager = MobileBaseCadManager.searchForCadManager(holder);
 		CSG newDisplay=null;
 		switch(newVit.getFrame()) {
 		case DefaultFrame:
@@ -267,7 +267,7 @@ public class VitatminWidget implements IOnTransformChange {
 		transformPanel.setDisable(false);
 		frameType.setDisable(false);
 		frameType.getSelectionModel().select(selectedVitamin.getFrame());
-		MobileBaseCadManager manager = MobileBaseCadManager.get(holder);
+		MobileBaseCadManager manager = MobileBaseCadManager.searchForCadManager(holder);
 		try {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			TransformNR poseToMove = currentTipProvider.get(selectedVitamin).copy();

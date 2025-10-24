@@ -25,7 +25,7 @@ public class AdjustbodyMassWidget extends Group {
 
 	public AdjustbodyMassWidget(MobileBase device) {
 		this.device = device;
-		manager = MobileBaseCadManager.get(device);
+		manager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
 		GridPane pane = new GridPane();
 		
 		TextField mass = new TextField(CreatureLab.getFormatted(device.getMassKg()));

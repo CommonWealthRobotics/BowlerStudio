@@ -603,7 +603,7 @@ public class BowlerStudio extends Application {
 
 	public static void select(MobileBase base) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByMobileBase(base);
+			MobileBaseCadManager.get(CSGDatabase.getInstance(),base).selectCsgByMobileBase(base);
 		}
 		/*
 		 * try {
@@ -619,7 +619,7 @@ public class BowlerStudio extends Application {
 
 	public static void select(MobileBase base, DHParameterKinematics limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByLimb(base, limb);
+			MobileBaseCadManager.get(CSGDatabase.getInstance(),base).selectCsgByLimb(base, limb);
 		}
 		/*
 		 * try {
@@ -653,7 +653,7 @@ public class BowlerStudio extends Application {
 	}
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
-			MobileBaseCadManager.get(base).selectCsgByLink(base, limb);
+			MobileBaseCadManager.get(CSGDatabase.getInstance(),base).selectCsgByLink(base, limb);
 		}
 		/*
 		 * try {

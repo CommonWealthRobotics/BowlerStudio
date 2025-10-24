@@ -24,6 +24,8 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -78,7 +80,7 @@ public class LinkSliderWidget extends Group
 		this.device = d;
 		this.conf = d.getLinkConfiguration(linkIndex);
 		this.theWidget = new LinkConfigurationWidget(conf, d.getFactory(),
-				MobileBaseCadManager.get(base));
+				MobileBaseCadManager.get(CSGDatabase.getInstance(),base));
 		setTrimController(this.theWidget);
 		conf.addChangeListener(this);
 		if (DHParameterKinematics.class.isInstance(device)) {

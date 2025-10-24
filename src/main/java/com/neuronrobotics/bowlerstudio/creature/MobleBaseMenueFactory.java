@@ -243,7 +243,7 @@ public class MobleBaseMenueFactory {
 						new Thread(() -> {
 							try {
 								// Use builder to add leg to existing device
-								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 										.addDefaultLeg(result.get());
 
 								// Rebuild and reload
@@ -304,8 +304,8 @@ public class MobleBaseMenueFactory {
 					new Thread() {
 
 						public void run() {
-							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
-							if (baseDirForFiles == null) {
+							MobileBaseCadManager baseManager =MobileBaseCadManager.searchForCadManager(device) ;
+							if (null==baseManager) {
 								return;
 							}
 							ArrayList<File> files;
@@ -336,7 +336,7 @@ public class MobleBaseMenueFactory {
 				BowlerStudio.runLater(() -> {
 					new Thread() {
 						public void run() {
-							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
 							try {
 								
 								PrintBedManager manager=new PrintBedManager(device.getGitSelfSource()[0],baseManager.getAllCad());
@@ -364,7 +364,7 @@ public class MobleBaseMenueFactory {
 					new Thread() {
 
 						public void run() {
-							MobileBaseCadManager baseManager = MobileBaseCadManager.get(device);
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
 							if (getBaseDirForFiles() == null) {
 								return;
 							}
@@ -466,7 +466,7 @@ public class MobleBaseMenueFactory {
 						if (result.isPresent()) {
 							new Thread(() -> {
 								try {
-									MobileBaseBuilder builder = new MobileBaseBuilder(device)
+									MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 											.addFixedWheelFromOptions(result.get());
 
 									MobileBase updatedDevice = builder.build();
@@ -574,7 +574,7 @@ public class MobleBaseMenueFactory {
 					if (result.isPresent()) {
 						new Thread(() -> {
 							try {
-								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 										.addDefaultSteerableWheel(result.get());
 
 								MobileBase updatedDevice = builder.build();
@@ -624,7 +624,7 @@ public class MobleBaseMenueFactory {
 
 							@Override
 							public void onTransformFinished(TransformNR newTrans) {
-								MobileBaseCadManager manager = MobileBaseCadManager.get(device);
+								MobileBaseCadManager manager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
 								if (manager != null)
 									manager.generateCad(CSGDatabase.getInstance());
 								device.setIMUFromCentroid(newTrans);
@@ -664,7 +664,7 @@ public class MobleBaseMenueFactory {
 					if (result.isPresent()) {
 						new Thread(() -> {
 							try {
-								MobileBaseBuilder builder = new MobileBaseBuilder(device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 										.addDefaultArm(result.get());
 
 								MobileBase updatedDevice = builder.build();
@@ -1044,7 +1044,7 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 		LinkConfigurationWidget theWidget = new LinkConfigurationWidget(MyConf, myLinkFactory,
-				MobileBaseCadManager.get(myBase));
+				MobileBaseCadManager.get(CSGDatabase.getInstance(),myBase));
 		callbackMapForTreeitems1.put(hwConf, () -> {
 			if (widgetMapForTreeitems1.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
@@ -1544,7 +1544,7 @@ public class MobleBaseMenueFactory {
 									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
 											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 											creatureIsOwnedByUser);
-									MobileBaseCadManager.get(base).generateCad(CSGDatabase.getInstance());
+									MobileBaseCadManager.get(CSGDatabase.getInstance(),base).generateCad(CSGDatabase.getInstance());
 								} catch (Exception e) {
 									// Auto-generated catch block
 									com.neuronrobotics.sdk.common.Log.error(e);
