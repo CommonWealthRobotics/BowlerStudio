@@ -247,7 +247,7 @@ public class MobleBaseMenueFactory {
 										.addDefaultLeg(result.get());
 
 								// Rebuild and reload
-								MobileBase updatedDevice = builder.build();
+								MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
 								reload(updatedDevice);
 
 							} catch (Exception e) {
@@ -467,9 +467,9 @@ public class MobleBaseMenueFactory {
 							new Thread(() -> {
 								try {
 									MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
-											.addFixedWheelFromOptions(result.get());
+											.addFixedWheelFromOptions(CSGDatabase.getInstance(),result.get());
 
-									MobileBase updatedDevice = builder.build();
+									MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
 									reload(updatedDevice);
 
 								} catch (Exception e) {
@@ -577,7 +577,7 @@ public class MobleBaseMenueFactory {
 								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 										.addDefaultSteerableWheel(result.get());
 
-								MobileBase updatedDevice = builder.build();
+								MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
 								reload(updatedDevice);
 
 							} catch (Exception e) {
@@ -667,7 +667,7 @@ public class MobleBaseMenueFactory {
 								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
 										.addDefaultArm(result.get());
 
-								MobileBase updatedDevice = builder.build();
+								MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
 								reload(updatedDevice);
 
 							} catch (Exception e) {
@@ -729,7 +729,7 @@ public class MobleBaseMenueFactory {
 		String[]source=device.getGitSelfSource();
 		device.disconnect();
 		try {
-			MobileBase reloaded=MobileBaseLoader.fromGit(source[0], source[1]);
+			MobileBase reloaded=MobileBaseLoader.fromGit(CSGDatabase.getInstance(),source[0], source[1]);
 			BowlerStudio.loadMobilBaseIntoUI(reloaded);
 		} catch (Exception e) {
 			// Auto-generated catch block
@@ -796,7 +796,7 @@ public class MobleBaseMenueFactory {
 	                // Use builder to create copy
 	                MobileBase newDevice = new MobileBaseBuilder(gitURL, newName)
 	                    .copyFrom(device, newName)
-	                    .build();
+	                    .build(CSGDatabase.getInstance());
 	                
 	                // Shut down old robot and add new one
 	                ConnectionManager.disconnectAll();
@@ -804,7 +804,7 @@ public class MobleBaseMenueFactory {
 	                BowlerStudioMenuWorkspace.add(gitURL);
 	                ThreadUtil.wait(1000);
 	                
-	                MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
+	                MobileBase mb = MobileBaseLoader.fromGit(CSGDatabase.getInstance(),gitURL, newName + ".xml");
 	                ThreadUtil.wait(1000);
 	                BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
 	                ThreadUtil.wait(1000);

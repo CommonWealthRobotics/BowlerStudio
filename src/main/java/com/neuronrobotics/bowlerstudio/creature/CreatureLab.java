@@ -389,7 +389,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void setGitDhEngine(String gitsId, String file, DHParameterKinematics dh) {
-		MobileBaseLoader.get(baseManager.getMobileBase()).setDefaultDhParameterKinematics(dh);
+		MobileBaseLoader.get(CSGDatabase.getInstance(),baseManager.getMobileBase()).setDefaultDhParameterKinematics(dh);
 
 	}
 
@@ -405,7 +405,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	public void setGitWalkingEngine(String git, String file, MobileBase device) {
 
-		MobileBaseLoader.get(baseManager.getMobileBase()).setGitWalkingEngine(git, file, device);
+		MobileBaseLoader.get(CSGDatabase.getInstance(),baseManager.getMobileBase()).setGitWalkingEngine(git, file, device);
 	}
 
 }

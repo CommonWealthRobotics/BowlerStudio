@@ -598,7 +598,7 @@ public class BowlerStudio extends Application {
 	}
 
 	public static MobileBase loadMobileBaseFromGit(String id, String file) throws Exception {
-		return MobileBaseLoader.fromGit(id, file);
+		return MobileBaseLoader.fromGit(CSGDatabase.getInstance(),id, file);
 	}
 
 	public static void select(MobileBase base) {
