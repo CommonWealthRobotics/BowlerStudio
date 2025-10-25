@@ -794,7 +794,7 @@ public class MobleBaseMenueFactory {
 	                }
 	                
 	                // Use builder to create copy
-	                MobileBase newDevice = new MobileBaseBuilder(gitURL, newName)
+	                MobileBase newDevice = new MobileBaseBuilder(CSGDatabase.getInstance(),gitURL, newName)
 	                    .copyFrom(device, newName)
 	                    .build(CSGDatabase.getInstance());
 	                
