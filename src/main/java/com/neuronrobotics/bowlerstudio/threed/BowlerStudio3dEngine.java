@@ -1215,7 +1215,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Create material for lines
 		PhongMaterial material = new PhongMaterial();
-		material.setDiffuseColor(Color.BLACK);
+		material.setDiffuseColor(Color.LIGHTBLUE);
 
 		int numXLines = (width / cellSize) + 1;
 		int numYLines = (height / cellSize) + 1;
@@ -1229,6 +1229,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			horizontalLine.setTranslateY(yPos);
 			horizontalLine.setTranslateZ(0);
 			horizontalLine.setMouseTransparent(true);
+			horizontalLine.setCullFace(CullFace.NONE);// backs are black
 			gridGroup.getChildren().add(horizontalLine);
 		}
 
@@ -1241,6 +1242,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			verticalLine.setTranslateY(height / 2.0);
 			verticalLine.setTranslateZ(0);
 			verticalLine.setMouseTransparent(true);
+			verticalLine.setCullFace(CullFace.NONE);// backs are black
 			gridGroup.getChildren().add(verticalLine);
 		}
 
