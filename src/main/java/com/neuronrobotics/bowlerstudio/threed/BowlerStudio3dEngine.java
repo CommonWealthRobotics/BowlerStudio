@@ -162,6 +162,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/** The mouse old x. */
 	double mouseOldX;
+	private boolean aboveSplit=false;
 
 	/** The mouse old y. */
 	double mouseOldY;
@@ -1344,21 +1345,26 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					captureMouse = false;
 				resetMouseTime();
 
+
 			}
 		});
 		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
 			@Override
 			public void handle(MouseEvent me) {
-				Node node = (Node) me.getSource();
-				double nodeHeight = node.getBoundsInLocal().getHeight();
 				resetMouseTime();
+				
+				Node node = (Node) me.getSource();
+				double mouseY = me.getY(); // Y position relative to the node itself
+				double nodeHeight = node.getBoundsInLocal().getHeight();
+				aboveSplit = mouseY < (nodeHeight / 2);
+
 				mouseOldX = mousePosX;
 				mouseOldY = mousePosY;
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseDeltaX = (mousePosX - mouseOldX);
 				mouseDeltaY = (mousePosY - mouseOldY);
-				double mouseY = me.getY(); // Y position relative to the node itself
 				double modifier = 1.0;
 				double modifierFactor = 0.1;
 
@@ -1368,12 +1374,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				if (getControlsMap().isRotate(me)) {
 					double el = getVirtualcam().getTiltAngle();
 					boolean above =  !(el < -90 || el > 90) ;
-					if( mouseY < (nodeHeight / 2)){
+					if( aboveSplit){
 						above=!above;
 					}
+					System.out.println("Above = "+above);
+					double i = 1;//above?1:-1;
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
-									(above?1:-1)*mouseDeltaX * modifierFactor * modifier * mouseScale, 0
+									i*mouseDeltaX * modifierFactor * modifier * mouseScale, 0
 
 							));
 					moveCamera(trans);
