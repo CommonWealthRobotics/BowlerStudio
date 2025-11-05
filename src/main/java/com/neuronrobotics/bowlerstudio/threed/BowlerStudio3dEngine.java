@@ -1377,7 +1377,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 //					if( aboveSplit){
 //						above=!above;
 //					}
-					System.out.println("Above = "+el);
+					//System.out.println("Above = "+el);
 					double i = above?-1:1;
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
