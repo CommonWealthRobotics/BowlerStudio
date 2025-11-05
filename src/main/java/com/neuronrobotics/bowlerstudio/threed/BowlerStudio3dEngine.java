@@ -1349,6 +1349,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
+				Node node = (Node) me.getSource();
+				double nodeHeight = node.getBoundsInLocal().getHeight();
 				resetMouseTime();
 				mouseOldX = mousePosX;
 				mouseOldY = mousePosY;
@@ -1356,7 +1358,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				mousePosY = me.getSceneY();
 				mouseDeltaX = (mousePosX - mouseOldX);
 				mouseDeltaY = (mousePosY - mouseOldY);
-
+				double mouseY = me.getY(); // Y position relative to the node itself
 				double modifier = 1.0;
 				double modifierFactor = 0.1;
 
@@ -1364,9 +1366,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					modifier = 0.1;
 				}
 				if (getControlsMap().isRotate(me)) {
+					double el = getVirtualcam().getTiltAngle();
+					boolean above =  !(el < -90 || el > 90) ;
+					if( mouseY < (nodeHeight / 2)){
+						above=!above;
+					}
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
-									mouseDeltaX * modifierFactor * modifier * mouseScale, 0
+									(above?1:-1)*mouseDeltaX * modifierFactor * modifier * mouseScale, 0
 
 							));
 					moveCamera(trans);
@@ -1375,6 +1382,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				if (getControlsMap().isMove(me) && move) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
 
+					
 					TransformNR newPose = new TransformNR(
 							mouseDeltaX * modifierFactor * modifier * (mouseScale / 2) / depth,
 							mouseDeltaY * modifierFactor * modifier * (mouseScale / 2) / depth, 0, new RotationNR());
