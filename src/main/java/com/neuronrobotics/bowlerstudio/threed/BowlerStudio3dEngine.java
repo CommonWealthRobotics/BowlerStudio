@@ -1373,12 +1373,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				}
 				if (getControlsMap().isRotate(me)) {
 					double el = getVirtualcam().getTiltAngle();
-					boolean above =  !(el < -90 || el > 90) ;
-					if( aboveSplit){
-						above=!above;
-					}
-					System.out.println("Above = "+above);
-					double i = 1;//above?1:-1;
+					boolean above =  (el >0) ;
+//					if( aboveSplit){
+//						above=!above;
+//					}
+					System.out.println("Above = "+el);
+					double i = above?-1:1;
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
 									i*mouseDeltaX * modifierFactor * modifier * mouseScale, 0
