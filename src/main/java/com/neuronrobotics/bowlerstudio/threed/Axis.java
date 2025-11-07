@@ -96,12 +96,12 @@ public class Axis extends Group {
 
 		
 
-		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).toXMin().movex(i).moveToCenterY();
+		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).toXMin().movex(i).moveToCenterY().toZMax();
 		//xText.getTransforms().add(xp);
 
 		Affine yp = new Affine();
 		yp.setTy(i / 2);
-		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"y",font)).rotz(90).mirrory().toYMin().movey(i).moveToCenterX();
+		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"y",font)).rotz(90).mirrory().toYMin().movey(i).moveToCenterX().toZMax();
 		//yText.getTransforms().add(yp);
 
 		// zp.setTz(i/2);
@@ -113,8 +113,8 @@ public class Axis extends Group {
 		zText = CSG.unionAll(TextExtrude.text((double)strokWidth,"z",font)).rotx(90).rotz(90).mirrory().movez(i).moveToCenterY();
 		//zText.getTransforms().add(zTextAffine);
 		// zText.smoothProperty().set(false);
-		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin();
-		yAxis = new Cube( strokWidth,i, strokWidth).toCSG().toYMin();
+		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin().toZMax();
+		yAxis = new Cube( strokWidth,i, strokWidth).toCSG().toYMin().toZMax();
 		zAxis = new Cube( strokWidth, strokWidth,i).toCSG().toZMin();
 		xText.setColor(Color.RED);
 

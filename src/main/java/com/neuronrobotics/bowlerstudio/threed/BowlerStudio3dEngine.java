@@ -1204,7 +1204,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public Group createGridMesh(int width, int height, int cellSize) {
-		return createGridMesh(width, height, cellSize, 0.1);
+		return createGridMesh(width, height, cellSize, 0.05);
 	}
 
 	public Group createGridMesh(int width, int height, int cellSize, double lineThickness) {
@@ -1228,7 +1228,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			horizontalLine.setMaterial(material);
 			horizontalLine.setTranslateX(width / 2.0);
 			horizontalLine.setTranslateY(yPos);
-			horizontalLine.setTranslateZ(0);
+			horizontalLine.setTranslateZ(-lineThickness);
 			horizontalLine.setMouseTransparent(true);
 			horizontalLine.setCullFace(CullFace.NONE);// backs are black
 			gridGroup.getChildren().add(horizontalLine);
@@ -1241,7 +1241,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			verticalLine.setMaterial(material);
 			verticalLine.setTranslateX(xPos);
 			verticalLine.setTranslateY(height / 2.0);
-			verticalLine.setTranslateZ(0);
+			verticalLine.setTranslateZ(-lineThickness);
 			verticalLine.setMouseTransparent(true);
 			verticalLine.setCullFace(CullFace.NONE);// backs are black
 			gridGroup.getChildren().add(verticalLine);
