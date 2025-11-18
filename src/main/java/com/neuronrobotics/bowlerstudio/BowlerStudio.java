@@ -345,7 +345,7 @@ public class BowlerStudio extends Application {
 		// ThreadUtil.wait(100);
 
 		try {
-			ensureUpdated("https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
+			ensureUpdated(false,"https://github.com/CommonWealthRobotics/DHParametersCadDisplay.git",
 					"https://github.com/CommonWealthRobotics/HotfixBowlerStudio.git",
 					"https://github.com/CommonWealthRobotics/DeviceProviders.git",
 					"https://github.com/OperationSmallKat/Katapult.git",
@@ -368,7 +368,7 @@ public class BowlerStudio extends Application {
 				for (Iterator<String> iterator = urls.iterator(); iterator.hasNext();) {
 					String url = iterator.next();
 
-					ensureUpdated(url);
+					ensureUpdated(false,url);
 
 				}
 				ScriptingEngine.setPrintProgress(wasState);
@@ -716,11 +716,14 @@ public class BowlerStudio extends Application {
 	}
 
 
-	public static void ensureUpdated(String ... urls) {
+	public static void ensureUpdated(boolean check,String ... urls) {
 		for(String s:urls) {
 			if(s==null)
 				continue;
 			try {
+				File wd = ScriptingEngine.cloneRepo(s, null);
+				if(check && wd.exists())
+					continue;
 				ScriptingEngine.filesInGit(s);
 				com.neuronrobotics.sdk.common.Log.debug("Pulling "+s);
 				ScriptingEngine.pull(s);
