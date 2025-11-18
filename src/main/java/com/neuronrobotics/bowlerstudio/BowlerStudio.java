@@ -718,6 +718,7 @@ public class BowlerStudio extends Application {
 
 	public static void ensureUpdated(boolean check,String ... urls) {
 		for(String s:urls) {
+			Log.debug("Updating "+s);
 			if(s==null)
 				continue;
 			try {
