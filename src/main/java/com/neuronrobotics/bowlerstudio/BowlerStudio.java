@@ -718,15 +718,17 @@ public class BowlerStudio extends Application {
 
 	public static void ensureUpdated(boolean check,String ... urls) {
 		for(String s:urls) {
-			Log.debug("Updating "+s);
+			
 			if(s==null)
 				continue;
 			try {
-				File wd = ScriptingEngine.cloneRepo(s, null);
-				if(check && wd.exists())
+				File wd = ScriptingEngine.getRepositoryCloneDirectory(s);
+				if(check && wd.exists()) {
+					Log.error("Skipping update, clone exists "+s);
 					continue;
-				ScriptingEngine.filesInGit(s);
-				com.neuronrobotics.sdk.common.Log.debug("Pulling "+s);
+				}
+				Log.debug("Pulling "+s);
+				ScriptingEngine.cloneRepo(s, null);
 				ScriptingEngine.pull(s);
 			} catch (Throwable e) {
 				// Auto-generated catch block
