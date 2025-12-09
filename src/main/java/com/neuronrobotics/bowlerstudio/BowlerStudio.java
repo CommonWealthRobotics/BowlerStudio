@@ -717,26 +717,7 @@ public class BowlerStudio extends Application {
 
 
 	public static void ensureUpdated(boolean check,String ... urls) {
-		for(String s:urls) {
-			
-			if(s==null)
-				continue;
-			try {
-				File wd = ScriptingEngine.getRepositoryCloneDirectory(s);
-				if(check && wd.exists()) {
-					Log.error("Skipping update, clone exists "+s);
-					continue;
-				}
-				Log.debug("Pulling "+s);
-				ScriptingEngine.cloneRepo(s, null);
-				ScriptingEngine.pull(s);
-			} catch (Throwable e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-				//ScriptingEngine.deleteRepo(s);
-				//ScriptingEngine.cloneRepo(s, null);
-			}
-		}
+		BowlerKernel.ensureUpdated(check, urls);
 	}
 
 //	private static void removeAssets(String myAssets)
