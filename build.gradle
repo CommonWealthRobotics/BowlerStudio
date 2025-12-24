@@ -12,7 +12,7 @@ buildscript {
 		]
 	}
 	dependencies {
-		classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+		classpath 'com.gradleup.shadow:shadow-gradle-plugin:8.3.9'
 	}
 }
 
@@ -75,7 +75,7 @@ plugins {
 	id 'application'
 	id 'eclipse'
 }
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.gradleup.shadow'
 if (project == rootProject) {
 	apply plugin: 'application'
 }else {
