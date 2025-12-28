@@ -3,7 +3,7 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"tar.gz",
-			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-linux_x64",
+			  "name":"zulu21.46.19-ca-fx-jdk21.0.9-linux_x64",
 			  "jvmargs":["-Dprism.forceGPU=true","-XX:MaxRAMPercentage=90.0",	"--add-exports",
 	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
 	"--add-exports",
@@ -47,7 +47,7 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-win_x64",
+			  "name":"zulu21.46.19-ca-fx-jdk21.0.9-win_x64",
 			  "jvmargs":["-XX:MaxRAMPercentage=90.0",	"--add-exports",
 	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
 	"--add-exports",
@@ -69,7 +69,7 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-macosx_x64",
+			  "name":"zulu21.46.19-ca-fx-jdk21.0.9-macosx_x64",
 			  "jvmargs":["-Dprism.forceGPU=true","-XX:MaxRAMPercentage=90.0",	"--add-exports",
 	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
 	"--add-exports",
@@ -91,7 +91,7 @@
 				"url":"https://cdn.azul.com/zulu/bin/"
 			  ,
 			  "type":"zip",
-			  "name":"zulu17.50.19-ca-fx-jdk17.0.11-macosx_aarch64",
+			  "name":"zulu21.46.19-ca-fx-jdk21.0.9-macosx_aarch64",
 			  "jvmargs":["-Dprism.forceGPU=true","-XX:MaxRAMPercentage=90.0",	"--add-exports",
 	"javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
 	"--add-exports",
