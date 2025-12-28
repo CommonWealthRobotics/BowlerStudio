@@ -363,7 +363,6 @@ dependencies {
 	implementation project('libraries:bowler-script-kernel')
 	//compile project(':libraries:bowler-script-kernel:JCSG')
 	
-	implementation project('libraries:dockfx')
 	implementation project('libraries:bowler-script-kernel:GithubPasswordManager:GithubPasswordManager')
 	//compile project(':kinematics-chef')
 	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
