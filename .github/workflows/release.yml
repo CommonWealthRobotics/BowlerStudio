@@ -42,7 +42,6 @@ jobs:
     - name: start xvfb
       run:
         Xvfb :99 &
-
     - name: initialize the X11 DISPLAY variable
       run:
         export DISPLAY=:99  
