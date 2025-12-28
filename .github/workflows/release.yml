@@ -17,14 +17,7 @@ jobs:
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
-            
-    - name: Configure GIt
-      run: |
-         git config --global user.email "mad.hephaestus@gmail.com"
-         git config --global user.name "Kevin Harrington"
-         git config --global pull.rebase false
-         git config --global core.mergeoptions --no-edit
-         git fetch --depth=1
+
          
          
     - name: Set Release Number Studio
