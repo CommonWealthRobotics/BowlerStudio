@@ -75,9 +75,9 @@ plugins {
 	id 'application'
 	id 'eclipse'
 }
-apply plugin: 'com.gradleup.shadow'
 if (project == rootProject) {
 	apply plugin: 'application'
+	apply plugin: 'com.gradleup.shadow'
 }else {
 	apply plugin: 'java-library'
 }
