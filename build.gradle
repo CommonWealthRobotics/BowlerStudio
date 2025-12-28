@@ -12,7 +12,7 @@ buildscript {
 		]
 	}
 	dependencies {
-		classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+		classpath 'com.gradleup.shadow:shadow-gradle-plugin:8.3.9'
 	}
 }
 
@@ -75,9 +75,9 @@ plugins {
 	id 'application'
 	id 'eclipse'
 }
-apply plugin: 'com.github.johnrengelman.shadow'
 if (project == rootProject) {
 	apply plugin: 'application'
+	apply plugin: 'com.gradleup.shadow'
 }else {
 	apply plugin: 'java-library'
 }
@@ -436,17 +436,21 @@ eclipse{
 		}
 	}
 }
+if (project == rootProject) {
 shadowJar {
-	zip64 true
-	mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
-	if (project == rootProject) {
-		baseName = 'BowlerStudio'
-		classifier = ""
-	}else {
-		archiveBaseName.set('BowlerStudio')
-		archiveClassifier.set('')
-		archiveVersion.set('')
-	}
-	mergeServiceFiles()
-}
+    zip64 true
+    mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
 
+    if (project == rootProject) {
+        archiveBaseName.set('BowlerStudio')
+        archiveClassifier.set('')
+        archiveVersion.set('')
+    } else {
+        archiveBaseName.set('BowlerStudio')
+        archiveClassifier.set('')
+        archiveVersion.set('')
+    }
+
+    mergeServiceFiles()
+}
+}
