@@ -22,7 +22,6 @@ import com.neuronrobotics.bowlerstudio.scripting.IURLOpen;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.scripting.external.GroovyEclipseExternalEditor;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
@@ -33,16 +32,14 @@ import com.neuronrobotics.sdk.addons.kinematics.FirmataLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.*;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.ByteList;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.common.IDeviceAddedListener;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import com.neuronrobotics.video.OSUtil;
-
 import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.Debug3dProvider;
-import eu.mihosoft.vrl.v3d.IDebug3dProvider;
-import eu.mihosoft.vrl.v3d.Plane;
-import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Application;
@@ -60,16 +57,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-
-import org.dockfx.DockNode;
-import org.dockfx.DockPane;
-import org.dockfx.IStageModifyer;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
-import org.eclipse.jgit.api.errors.TransportException;
 
 import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.delim;
 
@@ -109,7 +96,7 @@ public class BowlerStudio extends Application {
 	final static SplashScreen splash = null;// = SplashScreen.getSplashScreen();
 	private static Scene scene;
 	private static boolean hasnetwork;
-	private static Console out;
+	private static _Console out;
 	private static TextArea logViewRefStatic = null;
 	private static String firstVer = "";
 
@@ -134,21 +121,21 @@ public class BowlerStudio extends Application {
 			Log.enableDebugPrint(true);
 			Log.enableDebugPrint();
 			Log.setFile(logfile);
-			com.neuronrobotics.sdk.common.Log.debug("Log file set to "+logfile.getAbsolutePath());
+			Log.debug("Log file set to "+logfile.getAbsolutePath());
 			Log.warning("BowlerStudio Version "+StudioBuildInfo.getVersion());
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 				Log.flush();
 			}));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			com.neuronrobotics.sdk.common.Log.error(e);
+			Log.error(e);
 		}
 		
 		DownloadManager.setSTUDIO_INSTALL("BowlerStudioInstall");
 		
 		
 		if (args.length != 0) {
-			//com.neuronrobotics.sdk.common.Log.error("Arguments detected, starting Kernel mode.");
+			//Log.error("Arguments detected, starting Kernel mode.");
 			//SplashManager.closeSplash();
 			BowlerKernel.runArgumentsAfterStartup(args, System.currentTimeMillis());
 			return;
@@ -157,7 +144,7 @@ public class BowlerStudio extends Application {
 			makeSymLinkOfCurrentVersion();
 		}catch(Throwable t) {
 			//t.printStackTrace();
-			com.neuronrobotics.sdk.common.Log.error("Symlink not creaded");
+			Log.error("Symlink not creaded");
 		}
 		net.java.games.input.ControllerEnvironment.getDefaultEnvironment();
 
@@ -186,7 +173,6 @@ public class BowlerStudio extends Application {
 				System.exit(1);
 			});
 		}
-		Log.enableWarningPrint();
 
 		renderSplashFrame(2, "Testing Internet");
 
@@ -247,7 +233,7 @@ public class BowlerStudio extends Application {
 		GitHubWebFlow.setName(mykey);
 		String myAssets = AssetFactory.getGitSource();
 		if (PasswordManager.hasNetwork()) {
-			com.neuronrobotics.sdk.common.Log.error("Attempt to log in with disk credentials");
+			Log.error("Attempt to log in with disk credentials");
 			ScriptingEngine.waitForLogin();
 			if (ScriptingEngine.isLoginSuccess()) {
 
@@ -260,7 +246,7 @@ public class BowlerStudio extends Application {
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
 				} catch (Throwable t) {
-					com.neuronrobotics.sdk.common.Log.error("Resetting the configs repo...");
+					Log.error("Resetting the configs repo...");
 					// clear the configs repo
 					firstVer = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "firstVersion",
 							StudioBuildInfo.getVersion());
@@ -270,13 +256,13 @@ public class BowlerStudio extends Application {
 //					myAssets = (String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "assetRepo",
 //							myAssets);
 				renderSplashFrame(20, "DL'ing Image Assets");
-				com.neuronrobotics.sdk.common.Log.error("Asset Repo " + myAssets);
+				Log.error("Asset Repo " + myAssets);
 
-				com.neuronrobotics.sdk.common.Log.error("Asset intended ver " + StudioBuildInfo.getVersion());
+				Log.error("Asset intended ver " + StudioBuildInfo.getVersion());
 				ScriptingEngine.cloneRepo(myAssets, null);
 				try {
 					ScriptingEngine.pull(myAssets, "main");
-					com.neuronrobotics.sdk.common.Log.error("Studio version is the same");
+					Log.error("Studio version is the same");
 				} catch (Exception e) {
 					e.printStackTrace();
 					ScriptingEngine.deleteRepo(myAssets);
@@ -285,7 +271,7 @@ public class BowlerStudio extends Application {
 
 				if (ScriptingEngine.checkOwner(myAssets)) {
 					if (!ScriptingEngine.tagExists(myAssets, StudioBuildInfo.getVersion())) {
-						com.neuronrobotics.sdk.common.Log.error("Tagging Assets at " + StudioBuildInfo.getVersion());
+						Log.error("Tagging Assets at " + StudioBuildInfo.getVersion());
 						ScriptingEngine.tagRepo(myAssets, StudioBuildInfo.getVersion());
 					}
 				}
@@ -324,9 +310,9 @@ public class BowlerStudio extends Application {
 		
 		CSGDatabase.setInstance(new CSGDatabaseInstance(new File(ScriptingEngine.getWorkspace().getAbsoluteFile() + "/csgDatabase.json")));
 
-		// com.neuronrobotics.sdk.common.Log.error("Loading assets ");
+		// Log.error("Loading assets ");
 
-		// com.neuronrobotics.sdk.common.Log.error("Loading Main.fxml");
+		// Log.error("Loading Main.fxml");
 		renderSplashFrame(82, "Set up UI");
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -472,7 +458,7 @@ public class BowlerStudio extends Application {
 	}
 
 
-	private static class Console extends OutputStream {
+	private static class _Console extends OutputStream {
 		private static final int LengthOfOutputLog = 5000;
 		ByteList incoming = new ByteList();
 		Thread update = new Thread() {
@@ -495,7 +481,7 @@ public class BowlerStudio extends Application {
 			}
 		};
 
-		public Console() {
+		public _Console() {
 			update.start();
 		}
 
@@ -505,15 +491,7 @@ public class BowlerStudio extends Application {
 				v=v.substring(v.length()-LengthOfOutputLog, v.length());
 			}
 			String valueOf=v;
-			if (BowlerStudioModularFrame.getBowlerStudioModularFrame() == null) {
-				return;
-			}
-			try {
-				BowlerStudioModularFrame.getBowlerStudioModularFrame().showTerminal();
-			} catch (Exception ex) {
-				// frame not open yet
-				ex.printStackTrace();
-			}
+
 			if (getLogViewRefStatic() != null) {
 				String text = getLogViewRefStatic().getText();
 				if (text.length() > LengthOfOutputLog) {
@@ -593,7 +571,7 @@ public class BowlerStudio extends Application {
 
 	public static OutputStream getOut() {
 		if (out == null)
-			out = new Console();
+			out = new _Console();
 		return out;
 	}
 
@@ -612,7 +590,7 @@ public class BowlerStudio extends Application {
 		 * MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg.get(0));
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(csg); } catch (Exception
-		 * ex) { com.neuronrobotics.sdk.common.Log.error("Base not loaded yet"); }
+		 * ex) { Log.error("Base not loaded yet"); }
 		 */
 
 	}
@@ -629,7 +607,7 @@ public class BowlerStudio extends Application {
 		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
 		 * - 1)); } catch (Exception ex) { // initialization has no csgs yet }
 		 * CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet"); }
+		 * (Exception ex) { Log.error("Limb not loaded yet"); }
 		 */
 	}
 	/**
@@ -662,7 +640,7 @@ public class BowlerStudio extends Application {
 		 * MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
 		 * CreatureLab3dController.getEngine() .setSelectedCsg(limCad.get(limCad.size()
 		 * - 1)); CreatureLab3dController.getEngine(). setSelectedCsg(limCad); } catch
-		 * (Exception ex) { com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet"); }
+		 * (Exception ex) { Log.error("Limb not loaded yet"); }
 		 */
 	}
 
@@ -671,7 +649,7 @@ public class BowlerStudio extends Application {
 			try {
 				CreatureLab3dController.getEngine().setSelectedCsg(script, lineNumber);
 			} catch (Exception ex) {
-				com.neuronrobotics.sdk.common.Log.error("File not found");
+				Log.error("File not found");
 			}
 	}
 
@@ -711,7 +689,7 @@ public class BowlerStudio extends Application {
 			//t.printStackTrace();
 			//link = new File("\""+link.getAbsolutePath()+"\"");
 			Path ret = Files.createSymbolicLink( link.toPath(), Paths.get(".", version));
-			com.neuronrobotics.sdk.common.Log.error("Path created "+ret);
+			Log.error("Path created "+ret);
 		}
 	}
 
@@ -722,7 +700,7 @@ public class BowlerStudio extends Application {
 
 //	private static void removeAssets(String myAssets)
 //			throws InvalidRemoteException, TransportException, GitAPIException, IOException, Exception {
-//		com.neuronrobotics.sdk.common.Log.error("Clearing assets");
+//		Log.error("Clearing assets");
 //		ScriptingEngine.deleteRepo(myAssets);
 //		AssetFactory.setGitSource((String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "skinRepo", myAssets),
 //				StudioBuildInfo.getVersion());
@@ -822,7 +800,7 @@ public class BowlerStudio extends Application {
 			Thread thread = Thread.currentThread();
 			if (thread.getContextClassLoader() == null) {
 				// seriously Apple??
-				com.neuronrobotics.sdk.common.Log.error("ContextClassLoader Is Missing! (OSX) ");
+				Log.error("ContextClassLoader Is Missing! (OSX) ");
 				thread.setContextClassLoader(getClass().getClassLoader()); // a
 																			// valid
 																			// ClassLoader
@@ -834,7 +812,7 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
-		com.neuronrobotics.sdk.common.Log.error("Class loader: " + Thread.currentThread().getContextClassLoader());
+		Log.error("Class loader: " + Thread.currentThread().getContextClassLoader());
 		//new Thread(() -> {
 			Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
@@ -851,7 +829,7 @@ public class BowlerStudio extends Application {
 			}
 			// These must be changed before anything starts
 			PrintStream ps = new PrintStream(getOut());
-			// System.setErr(ps);
+			System.setErr(ps);
 			Log.setMirrorStream(ps);
 			renderSplashFrame(93, "Loading resources");
 			try {
@@ -906,7 +884,7 @@ public class BowlerStudio extends Application {
 					if(newSize<FontSizeManager.systemDefaultFontSize)
 						newSize=FontSizeManager.systemDefaultFontSize;
 					FontSizeManager.setFontSize((int)Math.round(newSize));
-					com.neuronrobotics.sdk.common.Log.error("Screen "+sw+"x"+sh);
+					Log.error("Screen "+sw+"x"+sh);
 				}
 				sw=primaryScreenBounds.getWidth();
 				sh=primaryScreenBounds.getHeight();
@@ -920,7 +898,7 @@ public class BowlerStudio extends Application {
 				BowlerStudio.runLater(() -> {
 
 					primaryStage.setScene(scene);
-					com.neuronrobotics.sdk.common.Log.error("Showing main applicaiton");
+					Log.error("Showing main applicaiton");
 					primaryStage.show();
 					// initialize the default styles for the dock pane and
 					// undocked
@@ -934,7 +912,7 @@ public class BowlerStudio extends Application {
 					// controls
 					// this must be called after the primary stage is shown
 					// https://bugs.openjdk.java.net/browse/JDK-8132900
-					DockPane.initializeDefaultUserAgentStylesheet();
+					
 					FontSizeManager.addListener(fontNum->{
 						BowlerStudioController bowlerStudio = BowlerStudioController.getBowlerStudio();
 						bowlerStudio.setFontSize(fontNum);
@@ -965,11 +943,11 @@ public class BowlerStudio extends Application {
 
 				primaryStage.setResizable(true);
 
-				DeviceManager.addDeviceAddedListener(new IDeviceAddedListener() {
+				DeviceManager.addDeviceAddedListener(new IDeviceAddedListener(){
 
 					@Override
 					public void onNewDeviceAdded(BowlerAbstractDevice arg0) {
-						com.neuronrobotics.sdk.common.Log.error("Device connected: " + arg0);
+						Log.error("Device connected: " + arg0);
 						BowlerStudioModularFrame.getBowlerStudioModularFrame().showConectionManager();
 					}
 
@@ -977,25 +955,21 @@ public class BowlerStudio extends Application {
 					public void onDeviceRemoved(BowlerAbstractDevice arg0) {
 					}
 				});
-				Log.enableDebugPrint(false);
-				// Log.enableWarningPrint();
-				// Log.enableDebugPrint();
-				// Log.enableErrorPrint();
 				BowlerStudio.runLater(java.time.Duration.ofMillis((int) 2000), () -> {
 					String javaVersion = System.getProperty("java.version");
 					String javafxVersion = System.getProperty("javafx.version");
-					com.neuronrobotics.sdk.common.Log.debug("Java Version : " + javaVersion);
-					com.neuronrobotics.sdk.common.Log.debug("JavaFX Version : " + javafxVersion);
-					com.neuronrobotics.sdk.common.Log.debug("BowlerStudio First Version: " + firstVer);
-					com.neuronrobotics.sdk.common.Log.debug("Java-Bowler Version: " + SDKBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.debug("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.debug("JavaCad Version: " + JavaCadBuildInfo.getVersion());
-					com.neuronrobotics.sdk.common.Log.debug("Welcome to BowlerStudio!");
+					Log.debug("Java Version : " + javaVersion);
+					Log.debug("JavaFX Version : " + javafxVersion);
+					Log.debug("BowlerStudio First Version: " + firstVer);
+					Log.debug("Java-Bowler Version: " + SDKBuildInfo.getVersion());
+					Log.debug("Bowler-Scripting-Kernel Version: " + BowlerKernelBuildInfo.getVersion());
+					Log.debug("JavaCad Version: " + JavaCadBuildInfo.getVersion());
+					Log.debug("Welcome to BowlerStudio!");
 					
 					
 					try {
 						File jarFile = new File(GroovyEclipseExternalEditor.getApplicationJarPath());
-						com.neuronrobotics.sdk.common.Log.debug("Application at "+jarFile+" is "+(jarFile.exists()?"Found":"Missing!"));
+						Log.debug("Application at "+jarFile+" is "+(jarFile.exists()?"Found":"Missing!"));
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1028,7 +1002,7 @@ public class BowlerStudio extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		
-		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
+		Log.error("Loading CSS from " + nwfile);
 	}
 	
 	public static void setToRunButton(Button b) {
@@ -1118,7 +1092,7 @@ public class BowlerStudio extends Application {
 				object.run();
 			}catch(Throwable t) {
 				t.printStackTrace();
-				com.neuronrobotics.sdk.common.Log.error("Swing method that failed called from: ");
+				Log.error("Swing method that failed called from: ");
 				ex.printStackTrace();
 			}
 		});
@@ -1197,7 +1171,7 @@ public class BowlerStudio extends Application {
 		}catch(Exception e) {
 			// not a url
 			//
-			//com.neuronrobotics.sdk.common.Log.debug("Invalid URL "+url);
+			//Log.debug("Invalid URL "+url);
 			//e.printStackTrace();
 			return false;
 		}

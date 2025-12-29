@@ -54,7 +54,6 @@ public class JogThread {
     	//new Exception(s.getClass().getName()+"\n"+provider.getClass().getName()).printStackTrace();
 
 		if (thread == null) {
-			Log.enableSystemPrint(true);
 			thread = new jogThread();
 			thread.start();
 		}
