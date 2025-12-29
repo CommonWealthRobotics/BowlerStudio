@@ -129,9 +129,11 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //	}
 	public void requestTextAreaFocus() {
 		Log.debug("Focus requested");
-	    BowlerStudio.invokeLater(() -> {
-	        textArea.requestFocusInWindow();
-	    });
+		BowlerStudio.runLater(Duration.ofMillis(200), (Runnable) () -> {
+			BowlerStudio.invokeLater(() -> {
+				resizeEvent();
+			});
+		});
 	}
 	public static void setExtentionSyntaxType(String shellType, String syntax) {
 		langaugeMapping.put(shellType, syntax);
@@ -382,28 +384,28 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //		textArea.setEnabled(true);
 	}
 
-//	private void resizeEvent() {
-//		if (!((lastRefresh + 60) < System.currentTimeMillis())
-//				|| spscrollPane.getVerticalScrollBar().getValueIsAdjusting()
-//				|| spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
-//			return;
-//		}
-//		lastRefresh = System.currentTimeMillis();
-//		BowlerStudio.invokeLater(() -> {
-//			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
-//			spscrollPane.invalidate();
-//			spscrollPane.repaint();
-//			textArea.invalidate();
-//			textArea.repaint();
-//
-//			textArea.requestFocusInWindow();
-//			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
-//				swingNode.setContent(spscrollPane);
-//				swingNode.requestFocus();
-//			});
-//		});
-//
-//	}
+	private void resizeEvent() {
+		if (!((lastRefresh + 60) < System.currentTimeMillis())
+				|| spscrollPane.getVerticalScrollBar().getValueIsAdjusting()
+				|| spscrollPane.getHorizontalScrollBar().getValueIsAdjusting()) {
+			return;
+		}
+		lastRefresh = System.currentTimeMillis();
+		BowlerStudio.invokeLater(() -> {
+			spscrollPane.setSize((int) spscrollPane.getWidth(), (int) spscrollPane.getHeight());
+			spscrollPane.invalidate();
+			spscrollPane.repaint();
+			textArea.invalidate();
+			textArea.repaint();
+
+			textArea.requestFocusInWindow();
+			BowlerStudio.runLater(Duration.ofMillis((int) 16), () -> {
+				swingNode.setContent(spscrollPane);
+				swingNode.requestFocus();
+			});
+		});
+
+	}
 
 	@Override
 	public void onScriptFinished(Object result, Object previous, File source) {
@@ -551,19 +553,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	private void setFontLoop() {
-		BowlerStudio.runLater(Duration.ofMillis(200), new Runnable() {
-			@Override
-			public void run() {
-				Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
-				BowlerStudio.invokeLater(() -> {
-					try {
-						textArea.setFont(myFont);
-					} catch (Throwable ex) {
-						Log.error(ex);
-						setFontLoop();
-					}
-				});
-			}
+		BowlerStudio.runLater(Duration.ofMillis(200), (Runnable) () -> {
+			Thread.setDefaultUncaughtExceptionHandler(ISSUE_REPORTING_EXCEPTION_HANDLER);
+			BowlerStudio.invokeLater(() -> {
+				try {
+					textArea.setFont(myFont);
+				} catch (Throwable ex) {
+					Log.error(ex);
+					setFontLoop();
+				}
+			});
 		});
 	}
 
