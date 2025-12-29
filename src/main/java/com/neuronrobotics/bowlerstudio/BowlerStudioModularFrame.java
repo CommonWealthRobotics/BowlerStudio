@@ -111,14 +111,19 @@ public class BowlerStudioModularFrame {
 		controller = new BowlerStudioController();
 		WebTab.setBSController(controller);
 
-		 
+		dockPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		webtab = new WebTab("Documentation", homeURL, true);
 		addTab(webtab, false);
 
 
 		
 		Node content = ConnectionManager.getConnectionManager().getContent();
+		
 		connectionsTabAnchor.getChildren().add(content);
+		AnchorPane.setTopAnchor(content, 0.0);
+		AnchorPane.setRightAnchor(content, 0.0);
+		AnchorPane.setBottomAnchor(content, 0.0);
+		AnchorPane.setLeftAnchor(content, 0.0);
 		
 
 		// Initial docked setup
@@ -158,6 +163,10 @@ public class BowlerStudioModularFrame {
 		BorderPane threed = (BorderPane) WindowLoader3d.getRoot();
 		VBox cmd = (VBox) commandLine.getRoot();
 		threeDarea.getChildren().add(threed);
+		AnchorPane.setTopAnchor(threed, 0.0);
+		AnchorPane.setRightAnchor(threed, 0.0);
+		AnchorPane.setBottomAnchor(threed, 0.0);
+		AnchorPane.setLeftAnchor(threed, 0.0);
 //		do {
 //			try {
 //				creatureLab3dDockNode = new DockNode(threed, "Creature Lab", AssetFactory.loadIcon("CreatureLab-Tab.png"));
@@ -170,6 +179,10 @@ public class BowlerStudioModularFrame {
 		
 
 		terminalTabAnchor.getChildren().add(cmd);
+		AnchorPane.setTopAnchor(cmd, 0.0);
+		AnchorPane.setRightAnchor(cmd, 0.0);
+		AnchorPane.setBottomAnchor(cmd, 0.0);
+		AnchorPane.setLeftAnchor(cmd, 0.0);
 //		terminalDockNode = new DockNode(cmd, "Terminal", AssetFactory.loadIcon("Command-Line.png"));
 //		terminalDockNode.setPrefSize(400, 400);
 
@@ -363,11 +376,13 @@ public class BowlerStudioModularFrame {
 	}
 	
 	public void closeTab(Tab newTab) {
+		
 		dockPane.getTabs().remove(newTab);
 	}
 
 	public void addTab(Tab newTab, boolean b) {
 		com.neuronrobotics.sdk.common.Log.error("Loading a new tab: " + newTab.getText());
+		newTab.setClosable(b); 
 		dockPane.getTabs().add(newTab);
 	}
 
@@ -377,7 +392,7 @@ public class BowlerStudioModularFrame {
 
 
 	public void setSelectedTab(Tab tab) {
-	
+		com.neuronrobotics.sdk.common.Log.error("Selecting a new tab: " + tab.getText());
 		BowlerStudio.runLater(() -> {
 			dockPane.getSelectionModel().select(tab);
 		});
