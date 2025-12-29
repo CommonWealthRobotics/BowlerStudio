@@ -145,7 +145,6 @@ public class BowlerStudioController implements IScriptEventListener {
 		openFiles.put(file.getAbsolutePath(), fileTab);
 
 		try {
-			com.neuronrobotics.sdk.common.Log.error("Loading local file from: " + file.getAbsolutePath());
 			LocalFileScriptTab t = new LocalFileScriptTab(file);
 
 			new Thread() {
@@ -162,15 +161,24 @@ public class BowlerStudioController implements IScriptEventListener {
 				}
 			}.start();
 
-			String key = t.getScripting().getGitRepo() + ":" + t.getScripting().getGitFile();
+			String gitRepoStr = t.getScripting().getGitRepo();
+			String[] split = gitRepoStr.split("\\.");
+			String string = split[split.length-2];
+			String[] url=string.split("/");
+			String slug = url[url.length-2]+"/"+url[url.length-1];
+			String key = slug+":" + t.getScripting().getGitFile();
+			com.neuronrobotics.sdk.common.Log.debug("Loading local file from: " + file.getAbsolutePath()+"\n"+key);
+
 			if (key.length() == 1)
 				throw new RuntimeException("Failed to create a file key");
 			ArrayList<String> files = new ArrayList<>();
-			files.add(t.getScripting().getGitRepo());
+			files.add(gitRepoStr);
 			files.add(t.getScripting().getGitFile());
 			try {
-				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0)// catch degenerates
-					ConfigurationDatabase.setObject("studio-open-git", key, files);
+				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0){// catch degenerates
+					ConfigurationDatabase.setObject("studio-open-file", key, files);
+					ConfigurationDatabase.save();
+				}
 			} catch (java.lang.NullPointerException ex) {
 				// file can not be opened
 			}
@@ -192,13 +200,12 @@ public class BowlerStudioController implements IScriptEventListener {
 			System.err.println("Open Tab " + file.getAbsolutePath());
 
 			fileTab.setOnCloseRequest(event -> {
-
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
-				ConfigurationDatabase.removeObject("studio-open-git", key);
+				ConfigurationDatabase.removeObject("studio-open-file", key);
 				ConfigurationDatabase.save();
 				t.getScripting().close();
-				System.err.println("Closing Tab Here " + file.getAbsolutePath());
+				Log.debug("Closing Tab Here " + file.getAbsolutePath());
 			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
