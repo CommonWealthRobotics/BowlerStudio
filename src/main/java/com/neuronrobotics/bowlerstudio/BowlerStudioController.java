@@ -182,7 +182,11 @@ public class BowlerStudioController implements IScriptEventListener {
 			icon.setFitWidth(30);
 
 			fileTab.setGraphic(icon);
-
+			fileTab.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+			    if (isSelected) {
+			        t.requestTextAreaFocus();
+			    }
+			});
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
 			System.err.println("Open Tab " + file.getAbsolutePath());
@@ -192,8 +196,9 @@ public class BowlerStudioController implements IScriptEventListener {
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
 				ConfigurationDatabase.removeObject("studio-open-git", key);
+				ConfigurationDatabase.save();
 				t.getScripting().close();
-				System.err.println("Closing " + file.getAbsolutePath());
+				System.err.println("Closing Tab Here " + file.getAbsolutePath());
 			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
