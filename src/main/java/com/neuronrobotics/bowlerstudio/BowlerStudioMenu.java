@@ -268,10 +268,10 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	}
 
 	private void openFilesInUI() {
-		String key = "studio-open-git";
+		String key = "studio-open-file";
 		// HashMap<String, Object> openGits =
-		// ConfigurationDatabase.getParamMap("studio-open-git");
-		Object[] set = ConfigurationDatabase.keySet("studio-open-git").toArray();
+		// ConfigurationDatabase.getParamMap("studio-open-file");
+		Object[] set = ConfigurationDatabase.keySet("studio-open-file").toArray();
 		for (int i = 0; i < set.length; i++) {
 			try {
 				Thread.sleep(300);
