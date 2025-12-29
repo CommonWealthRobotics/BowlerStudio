@@ -89,6 +89,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static LocalFileScriptTab selectedTab = null;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 	private long timeSinceLastUpdate = 0;
+	private boolean refreshArmed=false;
 	static {
 		BowlerStudio.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
@@ -128,7 +129,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 //
 //	}
 	public void requestTextAreaFocus() {
-		Log.debug("Focus requested");
+		refreshArmed=false;
+		//Log.debug("Focus requested");
 		BowlerStudio.runLater(Duration.ofMillis(200), (Runnable) () -> {
 			BowlerStudio.invokeLater(() -> {
 				resizeEvent();
@@ -285,6 +287,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
 						highlighter.removeAllHighlights();
 					}
+					if(e.getClickCount()==1 && refreshArmed) {
+						requestTextAreaFocus();
+					}
 //					else {
 //						swingNode.setOnMouseClicked(event -> {
 //						    SwingUtilities.invokeLater(() -> {
@@ -346,6 +351,9 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
 
 		highlighter.removeAllHighlights();
+		swingNode.setOnMouseExited(mouseEvent -> {
+			refreshArmed=true;
+		});
 
 //		widthProperty().addListener((w, o, n) -> {
 //			resizeEvent();
