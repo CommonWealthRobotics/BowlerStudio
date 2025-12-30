@@ -30,6 +30,7 @@ import eu.mihosoft.vrl.v3d.Polygon;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
 import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
@@ -417,7 +418,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			if (toadd != null)
 				for (CSG c : toadd) {
 					if (c != null)
-						BowlerStudio.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source));
+						BowlerStudio.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source,c.getColor().getOpacity(), CSGDatabase.getInstance()));
 				}
 		});
 	}
