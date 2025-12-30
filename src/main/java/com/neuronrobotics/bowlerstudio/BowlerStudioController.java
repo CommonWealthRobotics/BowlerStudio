@@ -514,7 +514,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			if (cache == null) {
 				BowlerStudio.runLater(() -> {
 					// new RuntimeException().printStackTrace();
-					CreatureLab3dController.getEngine().addObject(csg, source);
+					CreatureLab3dController.getEngine().addObject(csg, source, csg.getColor().getOpacity(),CSGDatabase.getInstance());
 				});
 			} else {
 				cache.add(csg);
