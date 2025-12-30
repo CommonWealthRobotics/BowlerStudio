@@ -291,6 +291,9 @@ public class BowlerStudio extends Application {
 			ScriptingEngine.cloneRepo(myAssets, null);
 			layoutFile = AssetFactory.loadFile("layout/default.css");
 		}
+		if((Boolean)ConfigurationDatabase.get("BowlerStudioUI", "DarkMode",true)) {
+			layoutFile = AssetFactory.loadFile("layout/darkmode.css");
+		}
 		// SplashManager.setIcon(AssetFactory.loadAsset("BowlerStudioTrayIcon.png"));
 		renderSplashFrame(50, "DL'ing Tutorials...");
 		// load tutorials repo

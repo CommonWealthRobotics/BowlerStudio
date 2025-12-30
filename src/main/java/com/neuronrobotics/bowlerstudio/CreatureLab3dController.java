@@ -172,10 +172,11 @@ public class CreatureLab3dController {
 			getEngine() .getSubScene().heightProperty().bind(viewContainer.heightProperty());
 		});
 		BowlerStudio.runLater(() -> {
-			jfx3dControls.getChildren().add(getEngine().getControlsBox(AssetFactory.loadIcon("Home-Camera.png"),
+			Group controlsBox = getEngine().getControlsBox(AssetFactory.loadIcon("Home-Camera.png"),
 					AssetFactory.loadIcon("Generate-Cad.png"),
 					AssetFactory.loadIcon("Clear-Screen.png")
-					));
+					);
+			jfx3dControls.getChildren().add(controlsBox);
 			viewContainer.getChildren().add(getEngine() .getSubScene());
 			AnchorPane.setTopAnchor(getEngine() .getSubScene(), 0.0);
 			AnchorPane.setRightAnchor(getEngine() .getSubScene(), 0.0);
