@@ -23,7 +23,9 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
@@ -384,6 +386,22 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			        return button;
 			    }
 			});
+			// Set the corners where scrollbars meet
+			JPanel lowerRight = new JPanel();
+			lowerRight.setBackground(new Color(0x5a6ec4)); // even lighter blue
+			spscrollPane.setCorner(JScrollPane.LOWER_RIGHT_CORNER, lowerRight);
+
+			JPanel lowerLeft = new JPanel();
+			lowerLeft.setBackground(new Color(0x5a6ec4));
+			spscrollPane.setCorner(JScrollPane.LOWER_LEFT_CORNER, lowerLeft);
+
+			JPanel upperRight = new JPanel();
+			upperRight.setBackground(new Color(0x5a6ec4));
+			spscrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, upperRight);
+
+			JPanel upperLeft = new JPanel();
+			upperLeft.setBackground(new Color(0x5a6ec4));
+			spscrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, upperLeft);
 		}
 		swingNode = new javafx.embed.swing.SwingNode();
 
