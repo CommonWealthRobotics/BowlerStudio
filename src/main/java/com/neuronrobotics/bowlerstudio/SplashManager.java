@@ -16,7 +16,7 @@ public class SplashManager {
 	private static boolean loadFirst = true;
 	private static BooleanSupplier closePreventer = () -> false;
 	public static void closeSplash() {
-		if (isVisableSplash())
+		if (isVisibleSplash())
 			closeSplashLocal();
 
 	}
@@ -32,12 +32,12 @@ public class SplashManager {
 		PsudoSplash.close();
 	}
 
-	public static boolean isVisableSplash() {
+	public static boolean isVisibleSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();
 		if(!PsudoSplash.isInitialized())
 			return false;
-		return PsudoSplash.isVisableSplash();
+		return PsudoSplash.isVisibleSplash();
 	}
 
 	private static void updateSplash() {
@@ -68,7 +68,7 @@ public class SplashManager {
 //		if (Platform.isFxApplicationThread())
 //			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
 		int index=0;
-		while(!SplashManager.isVisableSplash()) {
+		while(!SplashManager.isVisibleSplash()) {
 			com.neuronrobotics.sdk.common.Log.debug("Waiting for splash to open before moving on");
 			try {
 				Thread.sleep(100);
