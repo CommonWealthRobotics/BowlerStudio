@@ -18,15 +18,19 @@ import java.util.HashMap;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -40,6 +44,7 @@ import javafx.scene.layout.VBox;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
+import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
@@ -201,6 +206,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
 
+
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -307,7 +313,78 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		});
 
 		spscrollPane = new RTextScrollPane(textArea);
+		Boolean dark = (Boolean)ConfigurationDatabase.get("BowlerStudioUI", "DarkMode",true);
+		if (dark) {
+			// Apply a dark theme
+			try {
+				Theme theme = Theme
+						.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+				theme.apply(textArea);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
 
+			// Set the viewport background (content area)
+			spscrollPane.getViewport().setBackground(new Color(0x5a6ec4)); // even lighter blue
+
+
+			// Set viewport background
+			spscrollPane.getViewport().setBackground(new Color(0x5a6ec4)); // even lighter blue
+
+			// Style vertical scrollbar
+			JScrollBar vertical = spscrollPane.getVerticalScrollBar();
+			vertical.setUI(new BasicScrollBarUI() {
+			    @Override
+			    protected void configureScrollBarColors() {
+			        this.trackColor = new Color(0x5a6ec4);        // even lighter blue
+			        this.thumbColor = new Color(0x263d8c);        // logo blue
+			        this.thumbDarkShadowColor = new Color(0x263d8c);
+			        this.thumbHighlightColor = new Color(0x263d8c);
+			        this.thumbLightShadowColor = new Color(0x263d8c);
+			    }
+			    
+			    @Override
+			    protected JButton createDecreaseButton(int orientation) {
+			        JButton button = super.createDecreaseButton(orientation);
+			        button.setBackground(new Color(0xf2c83d));    // yellow
+			        return button;
+			    }
+			    
+			    @Override
+			    protected JButton createIncreaseButton(int orientation) {
+			        JButton button = super.createIncreaseButton(orientation);
+			        button.setBackground(new Color(0xf2c83d));    // yellow
+			        return button;
+			    }
+			});
+
+			// Style horizontal scrollbar similarly
+			JScrollBar horizontal = spscrollPane.getHorizontalScrollBar();
+			horizontal.setUI(new BasicScrollBarUI() {
+			    @Override
+			    protected void configureScrollBarColors() {
+			        this.trackColor = new Color(0x5a6ec4);
+			        this.thumbColor = new Color(0x263d8c);
+			        this.thumbDarkShadowColor = new Color(0x263d8c);
+			        this.thumbHighlightColor = new Color(0x263d8c);
+			        this.thumbLightShadowColor = new Color(0x263d8c);
+			    }
+			    
+			    @Override
+			    protected JButton createDecreaseButton(int orientation) {
+			        JButton button = super.createDecreaseButton(orientation);
+			        button.setBackground(new Color(0xf2c83d));
+			        return button;
+			    }
+			    
+			    @Override
+			    protected JButton createIncreaseButton(int orientation) {
+			        JButton button = super.createIncreaseButton(orientation);
+			        button.setBackground(new Color(0xf2c83d));
+			        return button;
+			    }
+			});
+		}
 		swingNode = new javafx.embed.swing.SwingNode();
 
 		KeyStroke keystroke_s = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
