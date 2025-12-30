@@ -76,7 +76,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public static PsudoSplash get() {
 		if (singelton == null)
 			singelton = new PsudoSplash();
-		if (!singelton.isVisableSplash()) {
+		if (!singelton.isVisibleSplash()) {
 			Platform.runLater(() -> {
 				singelton.popupStage.show();
 			});
@@ -103,7 +103,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			}
 		}
 		
-		if (isVisableSplash())
+		if (isVisibleSplash())
 			updateSplash();
 	}
 
@@ -160,9 +160,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			setWidth = 500;
 
 			scale = setWidth / width;
-			double caclulatedHeight = scale * height;
+			double calculatedHeight = scale * height;
 			imageView.setFitWidth(setWidth);
-			imageView.setFitHeight(caclulatedHeight);
+			imageView.setFitHeight(calculatedHeight);
 
 			// Add the image to the popup root
 			popupRoot.getChildren().add(imageView);
@@ -217,7 +217,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		});
 	}
 
-	public static boolean isVisableSplash() {
+	public static boolean isVisibleSplash() {
 		if (singelton.popupStage == null)
 			return false;
 		return singelton.popupStage.isShowing();
