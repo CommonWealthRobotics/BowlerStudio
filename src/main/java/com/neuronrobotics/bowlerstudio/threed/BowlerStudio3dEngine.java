@@ -626,8 +626,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 */
 	@Deprecated
 	public MeshView addObject(CSG currentCsg, File source) {
-		Log.error(new Exception("Depricated API used here!"));
-		return addObject(currentCsg, source, -1, CSGDatabase.getInstance());
+		
+		return addObject(currentCsg, source, currentCsg.getColor().getOpacity(), CSGDatabase.getInstance());
 	}
 
 	public MeshView addObject(CSG currentCsg, File source, double opacity, CSGDatabaseInstance instance) {
