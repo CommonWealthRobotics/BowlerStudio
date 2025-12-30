@@ -483,7 +483,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
 			if (toadd != null)
-				CreatureLab3dController.getEngine().addObject(toadd, source);
+				CreatureLab3dController.getEngine().addObject(toadd, source, toadd.getColor().getOpacity(),CSGDatabase.getInstance());
 
 		});
 	}
