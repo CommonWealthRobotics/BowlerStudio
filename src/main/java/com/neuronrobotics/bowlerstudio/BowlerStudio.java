@@ -905,7 +905,7 @@ public class BowlerStudio extends Application {
 					primaryStage.show();
 					// initialize the default styles for the dock pane and
 					// undocked
-					// nodes using the DockFX
+					// nodes using the 
 					// library's internal Default.css stylesheet
 					// unlike other custom control libraries this allows the
 					// user to

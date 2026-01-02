@@ -29,7 +29,6 @@
    commons-net-3.3.jar
    controlsfx-8.0.6.jar
    de.huxhorn.sulky.3rdparty.jlayer-1.0.jar
-   dockfx.jar
    easybind-1.0.4-SNAPSHOT.jar
    emotionml-checker-java-1.1.jar
    ezmorph-1.0.6.jar

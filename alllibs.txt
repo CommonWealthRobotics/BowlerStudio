@@ -85,7 +85,7 @@ BowlerStudio:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -259,7 +259,7 @@ BowlerStudio:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
@@ -435,7 +435,7 @@ libraries:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -609,7 +609,7 @@ libraries:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
@@ -785,7 +785,7 @@ bowler-script-kernel:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -959,7 +959,7 @@ bowler-script-kernel:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
@@ -1051,7 +1051,7 @@ bowler-script-kernel:
    jackson-core-2.10.1.jar
    jakarta.activation-api-1.2.1.jar
    jwnl-1.3.3.jar
-dockfx:
+
 -compile:
    bowler-kernel.jar
    mbrola.jar
@@ -1135,7 +1135,7 @@ dockfx:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -1309,7 +1309,7 @@ dockfx:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
@@ -1485,7 +1485,7 @@ java-bowler:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -1659,7 +1659,7 @@ java-bowler:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
@@ -1835,7 +1835,7 @@ JCSG:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    protobuf-java-3.8.0.jar
    wellbehavedfx-0.1.1.jar
@@ -2009,7 +2009,7 @@ JCSG:
    rsyntaxtextarea-2.6.0.jar
    batik-svggen-1.7.jar
    svg-dom-java-1.1.jar
-   dockfx.jar
+   
    Medusa-7.1.jar
    xmlrpc-common-3.1.3.jar
    ws-commons-util-1.0.2.jar
