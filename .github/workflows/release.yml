@@ -44,7 +44,7 @@ jobs:
 
     - name: Build with Gradle 
       run: bash makeJar.sh
-     - name: Set Java
+    - name: Set Java
       uses: actions/setup-java@v1
       with:
         java-version: 21
