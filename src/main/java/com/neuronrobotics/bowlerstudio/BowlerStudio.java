@@ -48,6 +48,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -204,6 +205,11 @@ public class BowlerStudio extends Application {
 
 			public double getCamerDepth() {
 				return BowlerStudio.getCamerDepth();
+			}
+
+			@Override
+			public PerspectiveCamera getCamera() {
+				return CreatureLab3dController.getEngine().getFlyingCamera().getCamera();
 			}
 		});
 
@@ -905,7 +911,7 @@ public class BowlerStudio extends Application {
 					primaryStage.show();
 					// initialize the default styles for the dock pane and
 					// undocked
-					// nodes using the DockFX
+					// nodes using the 
 					// library's internal Default.css stylesheet
 					// unlike other custom control libraries this allows the
 					// user to
