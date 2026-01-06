@@ -943,7 +943,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			});
 			if (showRuler != null) {
 				Axis axis = new Axis(showRuler.isSelected());
-				BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
+				if(currentCsg.hasManipulator())
+					BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
 				axisMap.put(current, axis);
 				BowlerStudio.runLater(() -> lookGroup.getChildren().add(axis));
 			}
@@ -1636,7 +1637,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				poseToMove.translateZ(zcenter);
 			}
 
-			Affine manipulator2 = selectedCsg.getManipulator();
+			Affine manipulator2 = selectedCsg.hasManipulator()? selectedCsg.getManipulator():new Affine();
 
 			focusToAffine(poseToMove, manipulator2);
 		}
