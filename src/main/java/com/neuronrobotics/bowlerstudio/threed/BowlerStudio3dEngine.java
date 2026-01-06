@@ -56,6 +56,7 @@ import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
+import eu.mihosoft.vrl.v3d.MissingManipulatorException;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
@@ -944,7 +945,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			if (showRuler != null) {
 				Axis axis = new Axis(showRuler.isSelected());
 				if(currentCsg.hasManipulator())
-					BowlerStudio.runLater(() -> axis.getTransforms().add(currentCsg.getManipulator()));
+					BowlerStudio.runLater(() -> {
+						try {
+							axis.getTransforms().add(currentCsg.getManipulator());
+						} catch (MissingManipulatorException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
 				axisMap.put(current, axis);
 				BowlerStudio.runLater(() -> lookGroup.getChildren().add(axis));
 			}
@@ -1637,9 +1645,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				poseToMove.translateZ(zcenter);
 			}
 
-			Affine manipulator2 = selectedCsg.hasManipulator()? selectedCsg.getManipulator():new Affine();
+			Affine manipulator2;
+			try {
+				manipulator2 = selectedCsg.hasManipulator()? selectedCsg.getManipulator():new Affine();
+				focusToAffine(poseToMove, manipulator2);
+			} catch (MissingManipulatorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			focusToAffine(poseToMove, manipulator2);
 		}
 		resetMouseTime();
 	}
