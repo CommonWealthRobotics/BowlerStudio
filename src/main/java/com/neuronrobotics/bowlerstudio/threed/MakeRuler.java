@@ -62,7 +62,7 @@ public class MakeRuler {
 					if ((i % 20 == 0) || (i == (int)(rulerLengthCM * 10))) {
 						// Add centimeter number using SVGPath
 						int number = i / 10;
-						// Prevent doulbe "0" at origin "(flipNumber || (i != 0))"
+						// Prevent double "0" at origin "(flipNumber || (i != 0))"
 						if ((numbers.get(number) == null) && (flipNumber || (i != 0))) {
 							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5).moveToCenterX()
 									.setColor(Color.BLACK));
