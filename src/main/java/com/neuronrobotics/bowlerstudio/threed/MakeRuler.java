@@ -29,7 +29,7 @@ public class MakeRuler {
 
 	public static Group createRuler(boolean flipNumber, int rulerLengthCM) {
 		double baseWidth = 0.15; // The width of the ruler base in mm
-		double tickLength = 8;   // The length of a tick in mm
+		double tickLength = 8; // The length of a tick in mm
 		double tickWidth = 0.25; // The width of a tick in mm
 		Group ruler = new Group();
 
@@ -59,25 +59,26 @@ public class MakeRuler {
 					// Centimeter tick marks
 					tickMesh = createRectangleMesh(tickWidth, tickLength);
 					// Always draw a number at the end of the ruler
-					if ((i % 20 == 0) || (i == (int)(rulerLengthCM * 10))) {
+					if ((i % 20 == 0) || (i == (int) (rulerLengthCM * 10))) {
 						// Add centimeter number using SVGPath
 						int number = i / 10;
 						// Prevent double "0" at origin "(flipNumber || (i != 0))"
 						if ((numbers.get(number) == null) && (flipNumber || (i != 0))) {
-							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5).moveToCenterX()
-									.setColor(Color.BLACK));
+							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5)
+									.moveToCenterX().setColor(Color.BLACK));
 						}
 						CSG movey = flipNumber ? numbers.get(number).roty(180) : numbers.get(number);
-						int index=i;
-						BowlerKernel.runLater(() -> {
-							MeshView numberGroup = movey.newMesh();
-							numberGroup.setMouseTransparent(true);
-							// Scale and position the number
-							Affine numberTransform = new Affine();
-							numberTransform.appendTranslation(index, 0);
-							numberGroup.getTransforms().add(numberTransform);
-							ruler.getChildren().add(numberGroup);
-						});
+						int index = i;
+						if (movey != null)
+							BowlerKernel.runLater(() -> {
+								MeshView numberGroup = movey.newMesh();
+								numberGroup.setMouseTransparent(true);
+								// Scale and position the number
+								Affine numberTransform = new Affine();
+								numberTransform.appendTranslation(index, 0);
+								numberGroup.getTransforms().add(numberTransform);
+								ruler.getChildren().add(numberGroup);
+							});
 					}
 				} else if (i % 5 == 0) {
 					// 5mm tick marks
