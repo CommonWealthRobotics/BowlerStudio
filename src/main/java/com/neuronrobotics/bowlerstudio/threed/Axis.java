@@ -9,6 +9,7 @@ import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.TextExtrude;
 import javafx.application.Platform;
 import javafx.scene.text.Font;
+
 /*
  *      Axis.java 1.0 98/11/25
  *
@@ -71,62 +72,47 @@ public class Axis extends Group {
 	private CSG zText;
 
 	/**
-	 * Instantiates a new axis.
+	 * Instantiates a new XYZ-axis.
 	 */
-	public Axis(boolean isVis) {
-		this(50,isVis);
+	public Axis(boolean visible) {
+		this(50, visible);
 	}
 
 	// //////////////////////////////////////////
 	//
-	// create axis visual object
+	// Create XYZ-axis visual object
 	/**
 	 * Instantiates a new axis.
 	 *
-	 * @param i the i
+	 * @param length the axis length
 	 */
 	//
-	public Axis(int i,boolean isVis) {
-		double strokWidth = 0.5;
-
-		Affine xp = new Affine();
-		xp.setTx(i / 2);
+	public Axis(int length, boolean visible) {
+		double strokeWidth = 0.5;
 		
-		Font font = new Font(Font.getDefault().getName(),  5);
+		Font font = new Font(Font.getDefault().getName(), 5);
 
-		
-
-		xText = CSG.unionAll(TextExtrude.text((double)strokWidth,"x",font)).rotz(90).toXMin().movex(i).moveToCenterY().toZMax();
-		//xText.getTransforms().add(xp);
-
-		Affine yp = new Affine();
-		yp.setTy(i / 2);
-		yText = CSG.unionAll(TextExtrude.text((double)strokWidth,"y",font)).rotz(90).mirrory().toYMin().movey(i).moveToCenterX().toZMax();
-		//yText.getTransforms().add(yp);
-
-		// zp.setTz(i/2);
-		Affine zTextAffine = new Affine();
-		zTextAffine.setTz(i / 2);
-		zTextAffine.setTx(i / 2);
-		zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
-		zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
-		zText = CSG.unionAll(TextExtrude.text((double)strokWidth,"z",font)).rotx(90).rotz(90).mirrory().movez(i).moveToCenterY();
-		//zText.getTransforms().add(zTextAffine);
-		// zText.smoothProperty().set(false);
-		xAxis = new Cube(i, strokWidth, strokWidth).toCSG().toXMin().toZMax();
-		yAxis = new Cube( strokWidth,i, strokWidth).toCSG().toYMin().toZMax();
-		zAxis = new Cube( strokWidth, strokWidth,i).toCSG().toZMin();
+		xText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "x", font)).rotz(90).toXMin().movex(length).moveToCenterY().toZMax();
+		xAxis = new Cube(length, strokeWidth, strokeWidth).toCSG().toXMin().toZMax().movex(strokeWidth / 2);
+		xAxis.setColor(Color.RED);
 		xText.setColor(Color.RED);
 
+		yText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "y", font)).rotz(90).mirrory().toYMin().movey(length).moveToCenterX().toZMax();
+		yAxis = new Cube( strokeWidth, length, strokeWidth).toCSG().toYMin().toZMax().movey(strokeWidth / 2);
 		yText.setColor(Color.GREEN);
-
-		zText.setColor(Color.BLUE);
-		xAxis.setColor(Color.RED);
-
 		yAxis.setColor(Color.GREEN);
 
+		Affine zTextAffine = new Affine();
+		zTextAffine.setTx(length / 2);
+		zTextAffine.setTz(length / 2);
+		zTextAffine.appendRotation( 90, 0, 0, 0, 1, 0, 1);
+		zText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "z", font)).rotx(90).rotz(90).mirrory().movez(length).moveToCenterY();
+
+		zAxis = new Cube( strokeWidth, strokeWidth, length).toCSG().toZMin().movez(-strokeWidth);
+		zText.setColor(Color.BLUE);
 		zAxis.setColor(Color.BLUE);
-		if(isVis)
+
+		if (visible)
 			show();
 		else
 			hide();
@@ -146,7 +132,7 @@ public class Axis extends Group {
 				} catch (Exception e) {
 				}
 			}
-		}catch(Exception ex) {
+		} catch(Exception ex) {
 			// no exception on exit
 		}
 	}
