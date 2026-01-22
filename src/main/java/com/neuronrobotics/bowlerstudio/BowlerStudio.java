@@ -75,10 +75,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -178,7 +179,7 @@ public class BowlerStudio extends Application {
 		renderSplashFrame(2, "Testing Internet");
 
 		try {
-			final URL url = new URL("http://github.com");
+			final URL url = new URI("http://github.com").toURL();
 			final URLConnection conn = url.openConnection();
 			conn.connect();
 			conn.getInputStream();
@@ -429,8 +430,12 @@ public class BowlerStudio extends Application {
 			@Override
 			public void onInstallFail(String url) {
 				try {
-					BowlerStudio.openExternalWebpage(new URL(url));
+					URL urlObject = new URI(url).toURL();
+                    BowlerStudio.openExternalWebpage(urlObject);
 				} catch (MalformedURLException e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				} catch (URISyntaxException  e) {
 					// Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -1165,27 +1170,32 @@ public class BowlerStudio extends Application {
 
 	    alert.showAndWait();
 	}
+
 	public static boolean checkValidURL(String url) {
 		try {
-			if(url==null)
+			if ((url == null) || (url.length() < 5))
 				throw new NullPointerException();
-			if(url.length()<5)
-				throw new NullPointerException();
-			if(url.startsWith("http"))
-				new URL(url);// check that the URL string contains a valid URL
+
+			if (url.startsWith("http"))
+				new URI(url).toURL();// check that the URL string contains a valid URL
 			else
-				if(url.startsWith("git@")) {
+				if (url.startsWith("git@")) {
 					// assume this is a URL 
 				}
-		}catch(Exception e) {
+		} catch(MalformedURLException e) {
 			// not a url
-			//
+			//Log.debug("Invalid URL "+url);
+			//e.printStackTrace();
+			return false;
+		} catch(URISyntaxException e) {
+			// not a url
 			//Log.debug("Invalid URL "+url);
 			//e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
+
 	public static String getInstallDirStub() {
 		return DownloadManager.getSTUDIO_INSTALL();
 	}
