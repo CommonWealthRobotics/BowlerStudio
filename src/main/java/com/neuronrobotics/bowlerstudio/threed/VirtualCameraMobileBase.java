@@ -137,7 +137,7 @@ public class VirtualCameraMobileBase {
 			return;
 		setGlobalToFiducialTransform(newPose.copy().setRotation(getFiducialToGlobalTransform().getRotation()));
 	}
-	public void SetOrentation(TransformNR newPose) {
+	public void SetOrientation(TransformNR newPose) {
 		if(newPose==null)
 			return;
 		//newPose=CameraGlobalOffset.times(newPose);
