@@ -63,13 +63,13 @@ public class VirtualCameraMobileBase {
 		return this;
 	}
 	public VirtualCameraMobileBase removeListener(ICameraChangeListener l) {
-		if(listeners.contains(l))
+		if (listeners.contains(l))
 			listeners.remove(l);
 		return this;
 	}
 	public void fireUpdate() {
 		synchronizePositionWithOtherFlyingCamera(myGlobal);
-		for(ICameraChangeListener c:listeners) {
+		for (ICameraChangeListener c:listeners) {
 			try {
 				c.onChange(this);
 			}catch(Throwable t) {
@@ -86,30 +86,29 @@ public class VirtualCameraMobileBase {
 
 	public void updatePositions() {
 		
-		if(System.currentTimeMillis()-timeSinceLastUpdate>16) {
-			timeSinceLastUpdate=System.currentTimeMillis();
-			error=false;
+		if (System.currentTimeMillis() - timeSinceLastUpdate > 16) {
+			timeSinceLastUpdate = System.currentTimeMillis();
+			error = false;
 			TransformFactory.nrToAffine(myGlobal, camerUserPerspective);
 		}else {
 			// too soon
-			error=true;
+			error = true;
 		}
 	}
 
 	public TransformNR getFiducialToGlobalTransform() {
 		return myGlobal;
 	}
+
 	public void DrivePositionAbsolute(double x, double y, double z) {
 		TransformNR global = getFiducialToGlobalTransform().copy()
-				.translateX(x)
-				.translateY(y)
-				.translateZ(z);
+			.translateX(x).translateY(y).translateZ(z);
 		setGlobalToFiducialTransform(global);
-		
 	}
+
 	public void DriveArc(TransformNR newPose) {
 		TransformNR pureTrans = new TransformNR();
-		if(move) {
+		if (move) {
 			pureTrans.setX(newPose.getX());
 			pureTrans.setY(newPose.getY());
 			pureTrans.setZ(newPose.getZ());
@@ -121,26 +120,25 @@ public class VirtualCameraMobileBase {
 		double rotationElevationRadians = newPose.getRotation().getRotationElevationRadians();
 
 		global.setRotation(new RotationNR(
-				  (Math.toDegrees(
-						rotationTiltRadians + global.getRotation().getRotationTiltRadians()) % 360),
-			(Math.toDegrees(
-						rotationAzimuthRadians + global.getRotation().getRotationAzimuthRadians()) % 360),
-				 Math.toDegrees(
-						rotationElevationRadians + global.getRotation().getRotationElevationRadians())));
+			(Math.toDegrees(rotationTiltRadians + global.getRotation().getRotationTiltRadians()) % 360),
+			(Math.toDegrees(rotationAzimuthRadians + global.getRotation().getRotationAzimuthRadians()) % 360),
+			Math.toDegrees(rotationElevationRadians + global.getRotation().getRotationElevationRadians())));
+
 //		 global.getRotation().setStorage(nr);
 		//com.neuronrobotics.sdk.common.Log.error("Camera tilt="+global);
 		// New target calculated appliaed to global offset
 		setGlobalToFiducialTransform(global);
 	}
+
 	public void SetPosition(TransformNR newPose) {
-		if(newPose==null || !move)
+		if ((newPose == null) || !move)
 			return;
 		setGlobalToFiducialTransform(newPose.copy().setRotation(getFiducialToGlobalTransform().getRotation()));
 	}
-	public void SetOrentation(TransformNR newPose) {
-		if(newPose==null)
+	public void SetOrientation(TransformNR newPose) {
+		if (newPose == null)
 			return;
-		//newPose=CameraGlobalOffset.times(newPose);
+		//newPose = CameraGlobalOffset.times(newPose);
 //		TransformNR pureTrans = new TransformNR();
 //
 //		// Auto-generated method stub
@@ -150,8 +148,8 @@ public class VirtualCameraMobileBase {
 
 		TransformNR global = getFiducialToGlobalTransform().copy();
 		// use the camera global fraame elevation
-		double rotationElevationDegrees = -newPose.getRotation().getRotationElevationDegrees()-90;
-		double azimuth = 90-Math.toDegrees(
+		double rotationElevationDegrees = -newPose.getRotation().getRotationElevationDegrees() - 90;
+		double azimuth = 90 - Math.toDegrees(
 				newPose.getRotation().getRotationAzimuthRadians() );
 		// Apply globals to the internal camer frame
 		global.setRotation(new RotationNR(
@@ -172,12 +170,15 @@ public class VirtualCameraMobileBase {
 	public double getGlobalX() {
 		return getFiducialToGlobalTransform().getX();
 	}
+
 	public double getGlobalY() {
 		return getFiducialToGlobalTransform().getY();
 	}
+
 	public double getGlobalZ() {
 		return getFiducialToGlobalTransform().getZ();
 	}
+
 	public TransformNR getCamerFrame() {
 		TransformNR offset = TransformFactory.affineToNr(getOffset());
 		TransformNR fiducialToGlobalTransform = getFiducialToGlobalTransform();
@@ -205,19 +206,20 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void setZoomDepth(double zoomDepth) {
-		if(zoomlock)
+		if (zoomlock)
 			throw new RuntimeException("Zoom can not be set when locked");
-		if (zoomDepth > 2)
-			zoomDepth = 2;
-		if (zoomDepth < -9000)
-			zoomDepth = -9000;
+
+		// Clamp zoomDepth between -9000 and -2
+        zoomDepth = Math.max(-9000, Math.min(-2, zoomDepth));
+
 		this.zoomDepth = zoomDepth;
-		if(zoomDepth<-5000)
-			camera.setFarClip(-zoomDepth*2);
-		else
-			camera.setFarClip(10000);
-		zoomAffine.setTz(getZoomDepth());
-		fireUpdate();
+
+		// Dynamically adjust setFarClip to reduce Z-fighting
+        camera.setFarClip(Math.max(1500, -zoomDepth * 2));
+
+		zoomAffine.setTz(zoomDepth);
+
+        fireUpdate();
 	}
 
 	public static int getDefaultZoomDepth() {
@@ -229,20 +231,21 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void bind(VirtualCameraMobileBase f) {
-		if(flyingCamera.contains(f)) {
+		if (flyingCamera.contains(f)) {
 			return;
 		}
 		this.flyingCamera .add(f);
 	}
+
 	private void synchronizePositionWithOtherFlyingCamera(TransformNR n) {
 
-		for(VirtualCameraMobileBase cam:flyingCamera) {
+		for (VirtualCameraMobileBase cam:flyingCamera) {
 			RotationNR rotation = getFiducialToGlobalTransform().getRotation();
-			if (!zoomlock && !cam.zoomlock && ((int)cam.getZoomDepth())!=((int)getZoomDepth())) {
+			if (!zoomlock && !cam.zoomlock && ((int)cam.getZoomDepth()) != ((int)getZoomDepth())) {
 				//com.neuronrobotics.sdk.common.Log.error(name+" Sync zoom to "+cam.name);
 				cam.setZoomDepth(zoomDepth);
 			}
-			if(rotation==cam.myGlobal.getRotation())
+			if (rotation == cam.myGlobal.getRotation())
 				continue;
 			//com.neuronrobotics.sdk.common.Log.error(name+" pusing update to "+cam.name);
 			if(!cam.move || !move) {
@@ -269,6 +272,5 @@ public class VirtualCameraMobileBase {
 		// Auto-generated method stub
 		move = false;
 	}
-
 
 }
