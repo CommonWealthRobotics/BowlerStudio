@@ -245,11 +245,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private long timeForAutospin = 5000;
 
 	// private CheckBox spin;
-	// private CheckBox autoHighilight;
+	// private CheckBox autoHighlight;
 
 	private boolean rebuildingUIOnerror = false;
-	private static int sumVert = 0;
-	private CheckMenuItem autoHighilight;
+//	private static int sumVert = 0;
+	private CheckMenuItem autoHighlight;
 	private CheckMenuItem spin;
 	private HBox controlsChecks;
 	private Thread autospingThread = null;
@@ -393,7 +393,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		this.showRuler = showRuler;
 		rebuild(true);
 		this.spin = idlespin;
-		this.autoHighilight = autohighlight;
+		this.autoHighlight = autohighlight;
 		idlespin.setOnAction((event) -> {
 			resetMouseTime();
 			if (spin.isSelected()) {
@@ -519,8 +519,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public boolean isAutoHightlight() {
-		if (autoHighilight != null)
-			return autoHighilight.isSelected();
+		if (autoHighlight != null)
+			return autoHighlight.isSelected();
 		return false;
 	}
 
@@ -1145,7 +1145,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int b =  wpColor		   & 0xFF;
 		for (int i = 0; i < src.length; i++) {		
 			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
-			src[i] = 0xFF000000 | 
+			src[i] = 0xFF000000 |
 					 (Math.min(255, (r * n) / 100) << 16) |
 					 (Math.min(255, (g * n) / 100) <<  8) |
 					 (Math.min(255, (b * n) / 100));
@@ -1446,7 +1446,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					yRulerZoffset.setTz(0.01); // Raise yRuler up a bit
 
 					Affine zRuler = new Affine();
-                    zRuler.appendScale(scale, scale, scale);
+					zRuler.appendScale(scale, scale, scale);
 					//zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					//zRuler.appendRotation( -90, 0, 0, 0, 0, 0, 1);
 					//zRuler.appendRotation(  90, 0, 0, 0, 0, 1, 0);
@@ -1455,7 +1455,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 					// Create the workplane
 					//workplaneGroup = createGridMesh(1000, 1000, 20);
-					workplaneGroup = createTexturedWorkplane(196, 208);
+					workplaneGroup = createTexturedWorkplane(1000, 1000);
 
 					boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
 
@@ -1740,38 +1740,38 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 /* DEVELOPMENT
-    --add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
-    --add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
-    --add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
-    --add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
-    public double objectDistance() {
+--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
+--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
+--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
+--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
+		public double objectDistance() {
 
-        Point3D p = camera.localToScene(0, 0, 0);
-        Vec3d camPos = new Vec3d(-p.getX(), p.getY(), -p.getZ());
+		Point3D p = camera.localToScene(0, 0, 0);
+		Vec3d camPos = new Vec3d(-p.getX(), p.getY(), -p.getZ());
 
-        Point3D dir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0, 0)).normalize();
-        Vec3d camDir = new Vec3d(dir.getX(), -dir.getY(), dir.getZ());
+		Point3D dir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0, 0)).normalize();
+		Vec3d camDir = new Vec3d(dir.getX(), -dir.getY(), dir.getZ());
 
-        //System.out.println("\nCamera position : " + camPos);
-        //System.out.println(  "Camera direction: " + camDir);
+		//System.out.println("\nCamera position : " + camPos);
+		//System.out.println(  "Camera direction: " + camDir);
 
-        PickRay ray = new PickRay(camPos, camDir, 0.1, 499);
+		PickRay ray = new PickRay(camPos, camDir, 0.1, 499);
 
-        PickResultChooser chooser = new PickResultChooser();   
-        NodeHelper.pickNode(userGroup, ray, chooser);
-        
-        PickResult pr = chooser.toPickResult();
+		PickResultChooser chooser = new PickResultChooser();
+		NodeHelper.pickNode(userGroup, ray, chooser);
 
-        if ((pr != null) && (pr.getIntersectedNode() != null)) {
-            double dist = pr.getIntersectedDistance();
+		PickResult pr = chooser.toPickResult();
 
-            //System.out.println(">>> HIT POINT: " + pr.getIntersectedPoint() + " Distance: " + (int)dist);
+		if ((pr != null) && (pr.getIntersectedNode() != null)) {
+			double dist = pr.getIntersectedDistance();
 
-            return dist;
-        }
+			//System.out.println(">>> HIT POINT: " + pr.getIntersectedPoint() + " Distance: " + (int)dist);
 
-        return Double.POSITIVE_INFINITY;
-    }
+			return dist;
+		}
+
+		return Double.POSITIVE_INFINITY;
+	}
 */
 
 	public void zoomIncrement(double deltaY) {
@@ -1784,7 +1784,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 
-        // In addition to the zoom also move a bit closer, gives unlimited zoom
+		// In addition to the zoom also move a bit closer, gives unlimited zoom
 		double moveCloser = (deltaY > 0) ? 0.1 : -0.1;
 		TransformNR zoomMove = new TransformNR();
 		zoomMove.translateZ(moveCloser);
@@ -2240,7 +2240,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				});
 
 				// Wait for 36ms including the processing of the update
-                while (waitingForCompletion || ((System.currentTimeMillis() - startTime) < 36) && !abortFocus) {
+				while (waitingForCompletion || ((System.currentTimeMillis() - startTime) < 36) && !abortFocus) {
 					try {
 						Thread.sleep(6);
 					} catch (InterruptedException e) {
