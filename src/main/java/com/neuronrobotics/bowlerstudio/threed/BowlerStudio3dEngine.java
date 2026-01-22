@@ -1094,7 +1094,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public Group createTexturedWorkplane(double xSizeMM, double ySizeMM) {
 
 		// Build square textured tile in MM
-		final float TILE_SIZE_MM	   = 10.0f;
+		final float TILE_SIZE_MM	 = 10.0f;
 		final int TILE_BIG_GRID_PX   = 200;
 		final int TILE_SMALL_GRID_PX =  20;
 
@@ -1124,9 +1124,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int grid1Color  = webColorToArgb(Color.web("#202060"));
 		int grid10Color = webColorToArgb(Color.web("#0000FF"));
 
+		float workplaneX = (float)xSizeMM;
+		float workplaneY = (float)ySizeMM;
+
 		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
-		float workPlaneX = (float)xSizeMM;
-		float workPlaneY = (float)ySizeMM;
 
 		// Calculate texture offsets. Note X and Y are swapped in the 3D view
 		float xTextureOffset = (float)((int)(ySizeMM / (TILE_SIZE_MM * 2)) - ySizeMM / (TILE_SIZE_MM * 2));
@@ -1214,20 +1215,20 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		material2.setSpecularColor(Color.BLACK); // No shiny spots
 //		material2.setSelfIlluminationMap(selfIlluminationImage);
 
-		// Create the work plane mesh
+		// Create the work plane mesh, draw at slight offset to align pixel to line centre
 		TriangleMesh topMesh = new TriangleMesh();
 		topMesh.getPoints().setAll(
-		  	0f,	0f, 0f,
-  			workPlaneX, 0f, 0f,
-  			workPlaneX, workPlaneY, 0f,
-		  	0f, workPlaneY, 0f);
+		  	-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+  			 workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+  			 workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+		  	-workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
 
 		// Map texture to mesh
 		topMesh.getTexCoords().setAll(
-			xTextureOffset						  , yTextureOffset,						   // bottom-left
-			xTextureOffset						  , yTextureOffset + workPlaneX/TILE_SIZE_MM, // top-left
-			xTextureOffset + workPlaneY/TILE_SIZE_MM, yTextureOffset + workPlaneX/TILE_SIZE_MM, // top-right
-			xTextureOffset + workPlaneY/TILE_SIZE_MM, yTextureOffset);						  // bottom-right
+			xTextureOffset							, yTextureOffset,							// bottom-left
+			xTextureOffset							, yTextureOffset + workplaneX/TILE_SIZE_MM, // top-left
+			xTextureOffset + workplaneY/TILE_SIZE_MM, yTextureOffset + workplaneX/TILE_SIZE_MM, // top-right
+			xTextureOffset + workplaneY/TILE_SIZE_MM, yTextureOffset);							// bottom-right
 
 		topMesh.getFaces().setAll(0,0, 1,1, 2,2, 0,0, 2,2, 3,3);
 
@@ -1240,44 +1241,38 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Create the work plane outline mesh
 		final float OUT = 2.0f; // outwards mm
 		final float IN  = 0.0f; // inwards mm
-		float[] vert = {
-						 IN,			   IN,  0f, // 0 Inside
-	 		workPlaneX - IN,			   IN,  0f, // 1
-	 		workPlaneX - IN,  workPlaneY - IN,  0f, // 2
-						 IN,  workPlaneY - IN,  0f, // 3
-					  - OUT,			 - OUT, 0f, // 4 Outside
-			workPlaneX + OUT,			 - OUT, 0f, // 5
-			workPlaneX + OUT, workPlaneY + OUT, 0f, // 6
-					   - OUT, workPlaneY + OUT, 0f  // 7
-		};
 
-		TriangleMesh outline = new TriangleMesh();
-		outline.getPoints().setAll(vert);
+		TriangleMesh outlineMesh = new TriangleMesh();
+		outlineMesh.getPoints().setAll(
+		// inside
+			 IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,   IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+			-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,   IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+			-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+			 IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+		// outside
+		   -OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+			OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+			OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+		   -OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
 
-		outline.getTexCoords().setAll(
+		outlineMesh.getTexCoords().setAll(
 			0,0,  1,0,  1,1,  0,1,   // inside
 			0,0,  1,0,  1,1,  0,1);  // outide
 
 		// 8 triangles (4 quads)
-		outline.getFaces().setAll(
+		outlineMesh.getFaces().setAll(
 			0,0, 4,4, 5,5,	0,0, 5,5, 1,1,   // bottom
 			1,1, 5,5, 6,6,	1,1, 6,6, 2,2,   // right
 			2,2, 6,6, 7,7,	2,2, 7,7, 3,3,   // top
 			3,3, 7,7, 4,4,	3,3, 4,4, 0,0 ); // left
 
-		MeshView outlineView = new MeshView(outline);
+		MeshView outlineView = new MeshView(outlineMesh);
 		outlineView.setMaterial(material2);
 		outlineView.setBlendMode(BlendMode.SRC_OVER);
 		outlineView.setCullFace(CullFace.NONE);
 
-		// Create illumination for the work plane
-		//AmbientLight ambientLight = new AmbientLight(Color.color(1.0, 1.0, 1.0, 0));
-		//ambientLight.setLightOn(true);
-
 		Group wp = new Group(topView, outlineView);
 
-		// Center workplane, add a half pixel offset to align with bitmap
-		wp.getTransforms().add(new Translate(-workPlaneX / 2 - TILE_HALF_PIXEL_SIZE, -workPlaneY / 2 - TILE_HALF_PIXEL_SIZE, 0));
 		wp.setMouseTransparent(true);
 
 		return wp;
