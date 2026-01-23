@@ -1846,7 +1846,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				}
 			}
 			BowlerStudio.runLater(() -> {
-				getFlyingCamera().SetOrentation(orent);
+				getFlyingCamera().SetOrientation(orent);
 				getFlyingCamera().SetPosition(trans);
 			});
 
