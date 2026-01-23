@@ -85,12 +85,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	private void startStopAction() {
-		runfx.setDisable(true);
+		BowlerStudio.runLater(()-> runfx.setDisable(true));
 		if (running)
 			stop();
 		else
 			start();
-		runfx.setDisable(false);
+		BowlerStudio.runLater(()-> runfx.setDisable(false));
 	}
 
 	public ScriptingWebWidget(ScriptingWidgetType type) {
