@@ -846,11 +846,11 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	}
 
 	public void setCode(String string) {
-		String pervious = codeText;
+		String previous = codeText;
 		codeText = string;
 		// com.neuronrobotics.sdk.common.Log.error(codeText);
 		for (int i = 0; i < listeners.size(); i++) {
-			listeners.get(i).onScriptChanged(pervious, string, currentFile);
+			listeners.get(i).onScriptChanged(previous, string, currentFile);
 		}
 	}
 
