@@ -376,11 +376,11 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	public void setCode(String string) {
-		String pervious = codeText;
+		String previous = codeText;
 		codeText = string;
 		// com.neuronrobotics.sdk.common.Log.error(codeText);
 		for (IScriptEventListener l : listeners) {
-			l.onScriptChanged(pervious, string, currentFile);
+			l.onScriptChanged(previous, string, currentFile);
 		}
 	}
 
