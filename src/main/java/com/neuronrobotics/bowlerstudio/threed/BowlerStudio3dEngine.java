@@ -339,9 +339,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		com.neuronrobotics.sdk.common.Log.debug("Setting Scene " + name);
 		setSubScene(new SubScene(getRoot(), 10, 10, true, SceneAntialiasing.BALANCED));
 
-	// Show JavaFX diagnostics info
-	ModuleLayer.boot().modules().stream().filter(m -> m.getName().startsWith("javafx"))
-		.forEach(m -> System.out.println(m.getName() + " : " + m.getDescriptor().version()));
+		// Show JavaFX diagnostics info
+		ModuleLayer.boot().modules().stream().filter(m -> m.getName().startsWith("javafx"))
+			.forEach(m -> com.neuronrobotics.sdk.common.Log.info(m.getName() + ": " + m.getDescriptor().version()));
 	}
 
 	public void rebuild(boolean b) {
