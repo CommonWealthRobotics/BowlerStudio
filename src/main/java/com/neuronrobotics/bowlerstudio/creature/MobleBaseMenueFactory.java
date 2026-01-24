@@ -920,7 +920,7 @@ public class MobleBaseMenueFactory {
 			}
 		}
 
-		throw new RuntimeException("No channels are availible on given devices");
+		throw new RuntimeException("No channels are available on given devices");
 	}
 
 	private static void searchForAllLinks(MobileBase base, HashMap<String, HashMap<Integer, Boolean>> deviceMap) {

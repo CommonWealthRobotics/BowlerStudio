@@ -37,7 +37,7 @@ public class SchedulerGui extends JPanel{
 	//private DyIO d = new DyIO();
 	private static final long serialVersionUID = -2532174391435417313L;
 	JPanel channelBar = new JPanel(new MigLayout());
-	private IntegerComboBox availibleChans = new IntegerComboBox();
+	private IntegerComboBox availableChans = new IntegerComboBox();
 	private IntegerComboBox usedChans = new IntegerComboBox();
 	private ArrayList< ServoOutputScheduleChannelUI> outputs = new ArrayList<>();
 	private File configFile=null;
@@ -72,7 +72,7 @@ public class SchedulerGui extends JPanel{
 		outputs.remove(s);
 		channelBar.remove(s);
 		usedChans.removeInteger(num);
-		availibleChans.addInteger(num);
+		availableChans.addInteger(num);
 	}
 	private void addServoChannel( ServoOutputScheduleChannel chan){
 		int selected = chan.getChannelNumber();
@@ -80,7 +80,7 @@ public class SchedulerGui extends JPanel{
 		cs.addISchedulerListener(sosc);
 		outputs.add(sosc);
 		channelBar.add(sosc,"wrap");
-		availibleChans.removeInteger(selected);
+		availableChans.removeInteger(selected);
 		usedChans.addInteger(selected);
 	}
 	
@@ -135,7 +135,7 @@ public class SchedulerGui extends JPanel{
 		addChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try{
-					int selected = availibleChans.getSelectedInteger();
+					int selected = availableChans.getSelectedInteger();
 					addServoChannel(cs.addServoChannel(selected));
 
 				}catch (Exception ex){
@@ -144,10 +144,10 @@ public class SchedulerGui extends JPanel{
 			}
 		});
 		for(int i=0;i<24;i++){
-			availibleChans.addInteger(i);
+			availableChans.addInteger(i);
 		}
 		addBar.add(addChannel);
-		addBar.add(availibleChans);
+		addBar.add(availableChans);
 		
 		JButton removeChannel = new JButton("Remove channel");
 		removeChannel.addActionListener(new ActionListener() {
