@@ -169,7 +169,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener ,Even
 			}
 		}else{
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Device not availible");
+			alert.setTitle("Device not available");
 			alert.setHeaderText("Connect a "+class1.getSimpleName());
 			alert.setContentText("A device of type "+class1.getSimpleName()+" is needed");
 			alert .initModality(Modality.APPLICATION_MODAL);

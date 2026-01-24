@@ -82,7 +82,7 @@ public class SplashManager {
 	}
 
 	private static void initialize() {
-		com.neuronrobotics.sdk.common.Log.error("No splash screen availible!");
+		com.neuronrobotics.sdk.common.Log.error("No splash screen available!");
 
 		loadFirst = false;
 	}

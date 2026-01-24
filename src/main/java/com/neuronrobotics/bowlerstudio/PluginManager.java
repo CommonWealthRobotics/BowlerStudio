@@ -74,7 +74,7 @@ public class PluginManager {
 	public PluginManager(BowlerAbstractDevice dev){
 		this.dev = dev;
 		if(!dev.isAvailable())
-			throw new RuntimeException("Device is not reporting availible "+dev.getClass().getSimpleName());
+			throw new RuntimeException("Device is not reporting available "+dev.getClass().getSimpleName());
 	}
 	
 	public static void addPlugin(DeviceSupportPluginMap newMap){
