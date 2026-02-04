@@ -12,6 +12,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.FreecadLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
+import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -22,17 +23,19 @@ public class FreeCADExternalEditor implements IExternalEditor {
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( FreecadLoader.class);
+		return Arrays.asList(FreecadLoader.class);
 	}
 
 	@Override
 	public void launch(File file, Button button, Runnable OnComplete) {
-		advanced=button;
-		new Thread(()->{
+		advanced = button;
+		new Thread(() -> {
 			try {
 				FreecadLoader.open(file);
-			}catch(Throwable t) {
-				t.printStackTrace();
+			} catch (Throwable t) {
+				Log.error(t);
+				onProcessExit(-1);
+				return;
 			}
 			onProcessExit(0);
 		}).start();
@@ -47,15 +50,15 @@ public class FreeCADExternalEditor implements IExternalEditor {
 	public URL getInstallURL() throws MalformedURLException {
 		try {
 			return new URI("https://github.com/FreeCAD/FreeCAD-Bundle/releases").toURL();
-		} catch ( URISyntaxException e) {
+		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
 	}
 
 	@Override
 	public void onProcessExit(int ev) {
-		if(advanced!=null)
-		Platform.runLater(()->advanced.setDisable(false));
+		if (advanced != null)
+			Platform.runLater(() -> advanced.setDisable(false));
 	}
 
 	@Override
@@ -65,7 +68,8 @@ public class FreeCADExternalEditor implements IExternalEditor {
 		} catch (Exception e) {
 			// Auto-generated catch block
 			e.printStackTrace();
-		}		return null;
+		}
+		return null;
 	}
 
 }
