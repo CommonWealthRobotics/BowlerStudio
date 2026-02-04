@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +45,11 @@ public class FreeCADExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://github.com/FreeCAD/FreeCAD-Bundle/releases");
+		try {
+			return new URI("https://github.com/FreeCAD/FreeCAD-Bundle/releases").toURL();
+		} catch ( URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	@Override
