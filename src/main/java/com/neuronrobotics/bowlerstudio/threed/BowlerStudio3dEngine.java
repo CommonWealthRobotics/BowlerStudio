@@ -1494,9 +1494,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						if (showAxes) {
 							gridGroup.getChildren().addAll(axes, groundGroup);
 							showAxis();
+							customWorkplaneGroup.getChildren().add(workplaneGroup);
 						}
 
-						customWorkplaneGroup.getChildren().add(workplaneGroup);
 						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup, controlHandleGroup, ambientLight);
 
 						// Use ambient illumination for workplane and axes, ruler is black so no need to illuminate
