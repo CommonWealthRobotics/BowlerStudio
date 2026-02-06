@@ -1603,7 +1603,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
-
 		if (Platform.isFxApplicationThread())
 			customWorkplaneGroup.getChildren().add(n);
 		else
