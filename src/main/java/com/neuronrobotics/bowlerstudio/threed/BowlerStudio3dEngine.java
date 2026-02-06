@@ -134,6 +134,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/** The workplane group. */
 	private Group workplaneGroup;
 
+	/** The custom workplane group. */
+	private Group customWorkplaneGroup = new Group();
+
 	/** The axis group. */
 	final Group axisGroup = new Group();
 
@@ -317,6 +320,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 	};
+
 	private double mouseScale = 2.0;
 	private MeshView handMesh;
 	private ImageView homeIcon;
@@ -771,7 +775,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 									public void onSliderDoneMoving(EngineeringUnitsSliderWidget s,
 											double newAngleDegrees) {
 										// Get the set of objects to check for
-										// regeneration after the initioal
+										// regeneration after the initial
 										// regeneration cycle.
 										Set<CSG> objects = getCsgMap().keySet();
 										cm.hide();// hide this menu because the new
@@ -1086,7 +1090,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static Color argbToColor(int argb) {
 	return Color.color(((argb >> 16) & 0xFF) / 255.0,
 					   ((argb >>  8) & 0xFF) / 255.0,
-					   ( argb		& 0xFF) / 255.0,
+					   ( argb		 & 0xFF) / 255.0,
 					   ((argb >> 24) & 0xFF) / 255.0);
 	}
 
@@ -1486,17 +1490,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						groundGroup.getTransforms().add(groundPlacement);
 
 						cameraGroup.getChildren().add(getVirtualcam().getCameraFrame());
-				
+
 						if (showAxes) {
 							gridGroup.getChildren().addAll(axes, groundGroup);
 							showAxis();
 						}
 
-						gridGroup.getChildren().add(workplaneGroup);
-						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, controlHandleGroup, ambientLight);
-						// Use ambient illumination for workplane and axes, ruler is black so no need to illuminate
+						customWorkplaneGroup.getChildren().add(workplaneGroup);
+						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup, controlHandleGroup, ambientLight);
 
-						ambientLight.getScope().addAll(workplaneGroup, axisGroup);
+						// Use ambient illumination for workplane and axes, ruler is black so no need to illuminate
+						ambientLight.getScope().addAll(customWorkplaneGroup, axisGroup);
 					});
 
 				} catch (Exception e) {
@@ -1593,6 +1597,19 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		else
 			BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
 	}
+
+	// Add nodes to the customWorkplaneGroup
+	public void addCustomWorkplaneNode(Node n) {
+		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
+		if (bowlerStudioModularFrame != null)
+			bowlerStudioModularFrame.showCreatureLab();
+
+		if (Platform.isFxApplicationThread())
+			customWorkplaneGroup.getChildren().add(n);
+		else
+			BowlerStudio.runLater(() -> customWorkplaneGroup.getChildren().add(n));
+	}
+
 
 	// Remove nodes from the userGroup
 	public void removeUserNode(Node n) {
