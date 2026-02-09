@@ -63,22 +63,26 @@ public class MakeRuler {
 						// Add centimeter number using SVGPath
 						int number = i / 10;
 						// Prevent double "0" at origin "(flipNumber || (i != 0))"
-						if ((numbers.get(number) == null) && (flipNumber || (i != 0))) {
+						
+						if ((numbers.get(number) == null) || (flipNumber || (i != 0))) {
 							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5)
 									.moveToCenterX().setColor(Color.BLACK));
 						}
-						CSG movey = flipNumber ? numbers.get(number).roty(180) : numbers.get(number);
-						int index = i;
-						if (movey != null)
-							BowlerKernel.runLater(() -> {
-								MeshView numberGroup = movey.newMesh();
-								numberGroup.setMouseTransparent(true);
-								// Scale and position the number
-								Affine numberTransform = new Affine();
-								numberTransform.appendTranslation(index, 0);
-								numberGroup.getTransforms().add(numberTransform);
-								ruler.getChildren().add(numberGroup);
-							});
+						CSG csg = numbers.get(number);
+						if (csg != null) {
+							CSG movey = flipNumber ? csg.roty(180) : csg;
+							int index = i;
+							if (movey != null)
+								BowlerKernel.runLater(() -> {
+									MeshView numberGroup = movey.newMesh();
+									numberGroup.setMouseTransparent(true);
+									// Scale and position the number
+									Affine numberTransform = new Affine();
+									numberTransform.appendTranslation(index, 0);
+									numberGroup.getTransforms().add(numberTransform);
+									ruler.getChildren().add(numberGroup);
+								});
+						}
 					}
 				} else if (i % 5 == 0) {
 					// 5mm tick marks
