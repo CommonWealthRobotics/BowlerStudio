@@ -117,6 +117,7 @@ import java.util.*;
  * MoleculeSampleApp.
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
+
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
@@ -363,7 +364,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 //		Stop[] stops = null;
 //		com.neuronrobotics.sdk.common.Log.info("Rebuilding gradient " + name);
 //		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-		
+
 		group = new Group(getSubScene());
 		Scene s = new Scene(group);
 		// handleKeyboard(s);
@@ -461,12 +462,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		export.setOnAction(event -> {
 			if (!getCsgMap().isEmpty()) {
 				exportAll(false);
+
 				BowlerStudio.runLater(() -> {
 					export.setDisable(true);
 				});
-			} else {
+			} else
 				com.neuronrobotics.sdk.common.Log.debug("Nothing to export!");
-			}
+
 		});
 
 		final Tooltip tooltip = new Tooltip();
@@ -496,9 +498,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			public void run() {
 				setName("Exporting the CAD objects");
 				ArrayList<CSG> csgs = new ArrayList<CSG>(getCsgMap().keySet());
-				if (makePrintBed) {
+//				if (makePrintBed) {
+//				}
 
-				}
 				com.neuronrobotics.sdk.common.Log.debug("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
 				try {
@@ -663,7 +665,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 */
 	@Deprecated
 	public MeshView addObject(CSG currentCsg, File source) {
-		
 		return addObject(currentCsg, source, currentCsg.getColor().getOpacity(), CSGDatabase.getInstance());
 	}
 
@@ -711,21 +712,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// mesh.vertexFormatProperty()
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
-		infomenu.getItems().add(new MenuItem("Name= " + currentCsg.getName()));
+		infomenu.getItems().add(new MenuItem("Name = " + currentCsg.getName()));
 		infomenu.getItems().add(new MenuItem("Mass = " + (currentCsg.getMassKG(0.001) * 1000) + " grams "));
-		infomenu.getItems().add(new MenuItem("Total X= " + currentCsg.getTotalX()));
-		infomenu.getItems().add(new MenuItem("Total Y= " + currentCsg.getTotalY()));
-		infomenu.getItems().add(new MenuItem("Total Z= " + currentCsg.getTotalZ()));
+		infomenu.getItems().add(new MenuItem("Total X = " + currentCsg.getTotalX()));
+		infomenu.getItems().add(new MenuItem("Total Y = " + currentCsg.getTotalY()));
+		infomenu.getItems().add(new MenuItem("Total Z = " + currentCsg.getTotalZ()));
 
 		infomenu.getItems().add(new MenuItem("Maximums: "));
-		infomenu.getItems().add(new MenuItem("Max X= " + currentCsg.getMaxX()));
-		infomenu.getItems().add(new MenuItem("Max Y= " + currentCsg.getMaxY()));
-		infomenu.getItems().add(new MenuItem("Max Z= " + currentCsg.getMaxZ()));
+		infomenu.getItems().add(new MenuItem("Max X = " + currentCsg.getMaxX()));
+		infomenu.getItems().add(new MenuItem("Max Y = " + currentCsg.getMaxY()));
+		infomenu.getItems().add(new MenuItem("Max Z = " + currentCsg.getMaxZ()));
 
-		infomenu.getItems().add(new MenuItem("Minums: "));
-		infomenu.getItems().add(new MenuItem("Min X= " + currentCsg.getMinX()));
-		infomenu.getItems().add(new MenuItem("Min Y= " + currentCsg.getMinY()));
-		infomenu.getItems().add(new MenuItem("Min Z= " + currentCsg.getMinZ()));
+		infomenu.getItems().add(new MenuItem("Minimums: "));
+		infomenu.getItems().add(new MenuItem("Min X = " + currentCsg.getMinX()));
+		infomenu.getItems().add(new MenuItem("Min Y = " + currentCsg.getMinY()));
+		infomenu.getItems().add(new MenuItem("Min Z = " + currentCsg.getMinZ()));
 
 		cm.getItems().add(infomenu);
 
@@ -1111,7 +1112,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		//final float TILE_SIZE_MM	   = 25.4f;
 		//final int TILE_BIG_GRID_PX   = 256;
 		//final int TILE_SMALL_GRID_PX =  16; // 1/16th inch
-		
+
 		// Build square textured tile in half inche
 		//final float TILE_SIZE_MM	   = 12.7f;
 		//final int TILE_BIG_GRID_PX   = 254;
@@ -1119,7 +1120,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Upscale work plane texture
 		final int wpUpscale = 4;
-		
+
 		// Work plane noise in percentage [0-100%]
 		int wpNoise = 25;
 
@@ -1147,7 +1148,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int r = (wpColor >> 16) & 0xFF;
 		int g = (wpColor >>  8) & 0xFF;
 		int b =  wpColor		   & 0xFF;
-		for (int i = 0; i < src.length; i++) {		
+		for (int i = 0; i < src.length; i++) {
 			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
 			src[i] = 0xFF000000 |
 					 (Math.min(255, (r * n) / 100) << 16) |
@@ -1200,7 +1201,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Set work plane texture
 		material.setDiffuseMap(tile);
-		
+
 		// Control work plane transparency
 		Color transWhite = new Color(1, 1, 1, 0.35);
 		material.setDiffuseColor(transWhite); // Work plane color
@@ -1374,7 +1375,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Flip the camera upside down
 		camera.setRotationAxis(Rotate.Z_AXIS);
 		camera.setRotate(180);
-		
+
 		camera.setDepthTest(DepthTest.ENABLE);
 		setVirtualcam(new VirtualCameraMobileBase(camera, handGroup, this, name));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
@@ -1446,7 +1447,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					Affine yRuler = new Affine();
 					yRuler.appendScale(scale, scale, scale);
 					yRuler.appendRotation(90, 0, 0, 0, 0, 0, 1);
-					Affine yRulerZoffset = new Affine();					
+					Affine yRulerZoffset = new Affine();
 					yRulerZoffset.setTz(0.01); // Raise yRuler up a bit
 
 					Affine zRuler = new Affine();
@@ -1499,7 +1500,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup, controlHandleGroup, ambientLight);
 
-						// Use ambient illumination for workplane and axes, ruler is black so no need to illuminate
+						// Use ambient illumination for workplanes and axes, ruler is black so no need to illuminate
 						ambientLight.getScope().addAll(customWorkplaneGroup, axisGroup);
 					});
 
@@ -1700,7 +1701,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			@Override
 			public void handle(MouseEvent me) {
 				resetMouseTime();
-				
+
 				Node node = (Node) me.getSource();
 				double mouseY = me.getY(); // Y position relative to the node itself
 				double nodeHeight = node.getBoundsInLocal().getHeight();
@@ -2186,10 +2187,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			// Wait until possible previous focus aborts
 			new Thread(() -> {
 				while (focusing) {
-				   try {
+					try {
 						Thread.sleep(8);
 					} catch (InterruptedException e) {
-					   focusing = false;
+						focusing = false;
 					}
 				}
 
@@ -2231,7 +2232,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		interpolationSteps = Math.min(interpolationSteps, NUMBER_OF_INTERPOLATION_STEPS);
 		final int steps = interpolationSteps;
-		
+
 		try {
 			for (int i = 0; (i < steps) && !abortFocus; i++) {
 				// com.neuronrobotics.sdk.common.Log.error("\tFocus to \n\t\taz:" + aztmp + "
