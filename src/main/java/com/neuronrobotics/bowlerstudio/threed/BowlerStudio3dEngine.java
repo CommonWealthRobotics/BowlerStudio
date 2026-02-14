@@ -271,6 +271,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private AmbientLight ambientLight = new AmbientLight(Color.color(1.0, 1.0, 1.0, 0));
 	private volatile boolean waitingForCompletion;
 
+	private Pane overlayPane = null;
+	public void setOverlayPane(Pane overlayP) {
+		this.overlayPane = overlayP;
+	}
+
+	public Pane getOverlayPane() {
+		return overlayPane;
+	}
+ 
 	public double cameraDistanceToPixelPerMM() {
 		double fovRad = Math.toRadians(camera.getFieldOfView());
 		// 500mm projection plane
