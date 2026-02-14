@@ -100,6 +100,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.geometry.Bounds;
 
 // Development, for objectDistance methode
 //import com.sun.javafx.geom.PickRay;
