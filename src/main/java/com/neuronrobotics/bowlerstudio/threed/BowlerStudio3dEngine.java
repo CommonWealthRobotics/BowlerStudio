@@ -54,6 +54,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.MissingManipulatorException;
@@ -68,6 +69,7 @@ import javafx.collections.ObservableList;
 //import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -84,6 +86,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.*;
@@ -99,6 +102,8 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.geometry.Bounds;
 
 // Development, for objectDistance methode
 //import com.sun.javafx.geom.PickRay;
@@ -206,7 +211,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/** The user group for the user defined objects and the navigation cube */
 	private final Group userGroup = new Group();
-
+	// Skip first userGroup nodes, which are not user objects
+	private static int SKIP_USERGROUP_NODES = 0;
+	
 	/** The scene. */
 	private SubScene scene;
 
@@ -265,6 +272,135 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private Group controlHandleGroup = new Group();
 	private AmbientLight ambientLight = new AmbientLight(Color.color(1.0, 1.0, 1.0, 0));
 	private volatile boolean waitingForCompletion;
+
+	private Pane overlayPane = null;
+	public void setOverlayPane(Pane overlayP) {
+		this.overlayPane = overlayP;
+	}
+
+	public Pane getOverlayPane() {
+		return overlayPane;
+	}
+ 
+	public double cameraDistanceToPixelPerMM() {
+		double fovRad = Math.toRadians(camera.getFieldOfView());
+		// 500mm projection plane
+		return getSubScene().getHeight() / (1000.0 * Math.tan(fovRad / 2.0));
+	}
+
+	// Converts a 3D world point to a 2D point in the scene/screen (default workplane only)
+	public Point2D worldToScene(Point3D world3D) {
+		Point2D screenPt = controlHandleGroup.getChildren().get(1).localToScreen(world3D);
+		return scene.screenToLocal(screenPt);
+	}
+
+	// Find the 3D world Z-point for a given 3D world X, Y point and the 2D scene/screen point
+	public double sceneToWorldFixedXY_WP(Point2D scenePixel, double fixedX, double fixedY) {
+		Transform wp = gridPlacementAffine;
+
+		VirtualCameraMobileBase cam = getVirtualcam();
+		TransformNR c2w = cam.getCamerFrame().times(new TransformNR(0, 0, cam.getZoomDepth()));
+		Vector3d origin = new Vector3d(c2w.getX(), c2w.getY(), c2w.getZ());
+
+		double ppm = cameraDistanceToPixelPerMM();
+		double cx = overlayPane.getWidth() / 2.0;
+		double cy = overlayPane.getHeight() / 2.0;
+		double camX = -(scenePixel.getX() - cx) / ppm;
+		double camY = -(scenePixel.getY() - cy) / ppm;
+
+		Vector3d target = new Vector3d(camX, camY, 500.0).transform(TransformFactory.nrToCSG(c2w));
+		Vector3d dir = target.minus(origin);
+		dir.normalize();
+
+		try {
+			Transform inv = wp.createInverse();
+			Point3D localOrigin = inv.transform(new Point3D(origin.x, origin.y, origin.z));
+			Point3D localDirPt = inv.deltaTransform(new Point3D(dir.x, dir.y, dir.z));
+			Vector3d localDir = new Vector3d(localDirPt.getX(), localDirPt.getY(), localDirPt.getZ());
+
+			double ox = localOrigin.getX();
+			double oy = localOrigin.getY();
+			double dx = localDir.x;
+			double dy = localDir.y;
+
+			// Minimize distance squared to line
+			double denom = dx*dx + dy*dy;
+			double t;
+			if (denom < 1e-9)
+				t = 0; // Parallel, use origin
+			else
+				t = ((fixedX - ox)*dx + (fixedY - oy)*dy) / denom;
+
+			return localOrigin.getZ() + t * localDir.z;
+
+		} catch (NonInvertibleTransformException e) {
+			return 0;
+		}
+	}
+
+	// Find the 3D world X,Y-point for a given 3D world Z point and the 2D scene/screen point
+	public Point3D sceneToWorldFixedZ_WP(Point2D scenePixel, double fixedZ) {
+		Transform wp = gridPlacementAffine;
+
+		// Get camera ray in world space
+		VirtualCameraMobileBase cam = getVirtualcam();
+		TransformNR c2w = cam.getCamerFrame().times(new TransformNR(0, 0, cam.getZoomDepth()));
+		Vector3d origin = new Vector3d(c2w.getX(), c2w.getY(), c2w.getZ());
+
+		double ppm = cameraDistanceToPixelPerMM();
+		double cx = overlayPane.getWidth() / 2.0;
+		double cy = overlayPane.getHeight() / 2.0;
+		double camX = -(scenePixel.getX() - cx) / ppm;
+		double camY = -(scenePixel.getY() - cy) / ppm;
+
+		Vector3d target = new Vector3d(camX, camY, 500.0).transform(TransformFactory.nrToCSG(c2w));
+		Vector3d dir = target.minus(origin);
+		dir.normalize();
+
+		try {
+			Transform inv = wp.createInverse();
+			Point3D localOrigin = inv.transform(new Point3D(origin.x, origin.y, origin.z));
+			Point3D localDirPt = inv.deltaTransform(new Point3D(dir.x, dir.y, dir.z));
+			Vector3d localDir = new Vector3d(localDirPt.getX(), localDirPt.getY(), localDirPt.getZ());
+
+			double localZDir = localDir.z;
+			if (Math.abs(localZDir) < 1e-9)
+				// Ray is parallel to the Z plane, use origin's XY at fixedZ
+				return new Point3D(localOrigin.getX(), localOrigin.getY(), fixedZ);
+
+			double t = (fixedZ - localOrigin.getZ()) / localZDir;
+
+			double localX = localOrigin.getX() + t * localDir.x;
+			double localY = localOrigin.getY() + t * localDir.y;
+
+			return new Point3D(localX, localY, fixedZ);
+
+		} catch (NonInvertibleTransformException e) {
+			return new Point3D(0, 0, fixedZ);
+		}
+	}
+
+	// Gives the scale factor for a 1MM object to produce 1 pixel on screen
+	public double screenToSceneMMscale(Point3D scenePosition) {
+
+		VirtualCameraMobileBase vcam = getVirtualcam();
+		TransformNR c2w = vcam.getCamerFrame().times(new TransformNR(0, 0, vcam.getZoomDepth()));
+
+		// Camera to object vector
+		double dx = scenePosition.getX() - c2w.getX();
+		double dy = scenePosition.getY() - c2w.getY();
+		double dz = scenePosition.getZ() - c2w.getZ();
+
+		// Camera rotation matrix  
+		double fwdX = c2w.getRotation().getRotationMatrix()[0][2];
+		double fwdY = c2w.getRotation().getRotationMatrix()[1][2];
+		double fwdZ = c2w.getRotation().getRotationMatrix()[2][2];
+		// Project position vector onto camera forward axis, 0.1mm minimum distance
+		double minDistance = Math.max(0.1, dx * fwdX + dy * fwdY + dz * fwdZ);
+
+		return (2.0 * minDistance * Math.tan(Math.toRadians(camera.getFieldOfView()) / 2.0)) / getSubScene().getHeight();
+
+	}
 
 	public BowlerStudio3dEngine addListener(ICameraChangeListener listener) {
 		if (!listeners.contains(listener))
@@ -1498,6 +1634,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							customWorkplaneGroup.getChildren().add(workplaneGroup);
 						}
 
+						// Count how many nodes are already present in the userGroup, they are not user objects
+						if (showAxes) 
+							SKIP_USERGROUP_NODES = userGroup.getChildren().size();
+
+						// Create the world group
 						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup, controlHandleGroup, ambientLight);
 
 						// Use ambient illumination for workplanes and axes, ruler is black so no need to illuminate
@@ -1791,9 +1932,83 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 */
 
+	public double getCamDistanceToClosestObject() {
+
+		Point3D camPos = camera.localToScene(0, 0, 0);
+
+		// Adjust for camera rotation
+		camPos = new Point3D(-camPos.getX(), camPos.getY(), -camPos.getZ());
+		Point3D camDir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0, 0)).normalize();
+		camDir = new Point3D(camDir.getX(), -camDir.getY(), camDir.getZ());
+
+		int counter = 0;
+		double minDist = Double.MAX_VALUE;
+		Point3D closestPoint = new Point3D(0, 0, 0);
+	   
+		List<Node> children = userGroup.getChildren();
+		for (int i = SKIP_USERGROUP_NODES; i < children.size(); i++) {
+
+			Node node = children.get(i);
+			
+			// Find closest point to camera on bounding box
+			Bounds b = node.getBoundsInParent();
+			double closestX = Math.max(b.getMinX(), Math.min(camPos.getX(), b.getMaxX()));
+			double closestY = Math.max(b.getMinY(), Math.min(camPos.getY(), b.getMaxY()));
+			double closestZ = Math.max(b.getMinZ(), Math.min(camPos.getZ(), b.getMaxZ()));
+			
+			Point3D boxPoint = new Point3D(closestX, closestY, closestZ);
+			
+			// Direction from camera to closest point on box
+			Point3D toObject = boxPoint.subtract(camPos);
+			double distToPoint = toObject.magnitude();
+
+			// Inside object - skip FOV check
+			if (distToPoint < 0.001) {
+				if (distToPoint < minDist) {
+					minDist = 0;
+					closestPoint = boxPoint;
+				}
+				continue;
+			}
+
+			// Skip objects behind the camera (negative dot product)
+			double dot = camDir.dotProduct(toObject);
+			if (dot <= 0)
+				continue;
+
+			// Check FOV with dot product, 60dg FOV, cos(30)
+			double cosAngle = dot / toObject.magnitude();
+			if (cosAngle < Math.cos(Math.toRadians(30))) 
+				continue;
+		   
+			if (distToPoint < minDist) {
+				minDist = distToPoint;
+				closestPoint = boxPoint;
+			}
+		}
+	 
+		return Math.max(2, minDist);
+	}
+
 	public void zoomIncrement(double deltaY) {
 		double zoomFactor = -deltaY * getVirtualcam().getZoomDepth() / 500;
-		//
+
+/* EXPERIMENTAL FEATURE, SLOW DOWN ZOOM WHEN CLOSE TO OBJECT
+
+		double distance =  getCamDistanceToClosestObject();
+
+		// Parameters to control zoom in behavior
+		final double ZOOM_IN_START_DISTANCE = 5;
+		final double ZOOM_IN_STEP_REDUCTION = 2;
+		if (ZOOM_IN_START_DISTANCE * zoomFactor > distance)
+			zoomFactor = distance / (ZOOM_IN_START_DISTANCE * ZOOM_IN_STEP_REDUCTION);
+
+		// Parameters to control zoom out behavior
+		final double ZOOM_OUT_START_DISTANCE = 3;
+		final double ZOOM_OUT_STEP_REDUCTION = 2;
+		if (-ZOOM_OUT_START_DISTANCE * zoomFactor > distance)
+			zoomFactor = -distance / (ZOOM_OUT_START_DISTANCE * ZOOM_OUT_STEP_REDUCTION);
+*/
 		// double z = camera.getTranslateY();
 		// double newZ = z + zoomFactor;
 		// camera.setTranslateY(newZ);
