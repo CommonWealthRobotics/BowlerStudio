@@ -27,6 +27,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
 import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
+import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
@@ -46,30 +47,32 @@ public class BlenderExternalEditor implements IExternalEditor {
 			File dir = new File(filename).getParentFile();
 			File exe = DownloadManager.getRunExecutable("blender", null);
 
-			if(filename.toLowerCase().endsWith(".stl")) {
-				File blenderfile = new File(dir.getAbsolutePath()+delim()+file.getName()+".blend");
-				if(AskToDeleteWidget.askToDeleteFile(blenderfile.getName())) {
-					blenderfile.delete();
-				}
-				BlenderLoader.toBlenderFile(CSGDatabase.getInstance(),file, blenderfile);
-				filename=blenderfile.getAbsolutePath();
+			if (filename.toLowerCase().endsWith(".stl")) {
+
+				File blenderfile = new File(dir.getAbsolutePath() + delim() + file.getName() + ".blend");
+				if(blenderfile.exists())
+					if (AskToDeleteWidget.askToDeleteFile(blenderfile.getName())) {
+						blenderfile.delete();
+					}
+				BlenderLoader.toBlenderFile(CSGDatabase.getInstance(), file, blenderfile);
+				filename = blenderfile.getAbsolutePath();
 				try {
 					BowlerStudio.createFileTab(blenderfile);
-				}catch(Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			if(filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
+			if (filename.toLowerCase().endsWith(".stl") || !new File(filename).exists()) {
 				com.neuronrobotics.sdk.common.Log.error("ERROR blender conversion failed!");
 				return;
 			}
 			try {
 				List<String> asList = Arrays.asList(exe.getAbsolutePath(), filename);
-				if(isMac()) {
-					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), filename);
-					
+				if (isMac()) {
+					asList = Arrays.asList("open", "-a", exe.getAbsolutePath(), filename);
+
 				}
-				Thread t=run(this, dir, System.out, asList);
+				Thread t = run(this, dir, System.out, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
 				// Auto-generated catch block
@@ -78,7 +81,12 @@ public class BlenderExternalEditor implements IExternalEditor {
 				// Auto-generated catch block
 				e.printStackTrace();
 			}
-			onProcessExit(0) ;
+			onProcessExit(0);
+			try {
+				OnComplete.run();
+			} catch (Throwable t) {
+				Log.error(t);
+			}
 
 		}).start();
 	}
@@ -113,12 +121,13 @@ public class BlenderExternalEditor implements IExternalEditor {
 		File f = ScriptingEngine.fileFromGit("https://github.com/NeuronRobotics/NASACurisoity.git",
 				"STL/upper-arm.STL");
 
-		new BlenderExternalEditor().launch(f, new Button(),()->{});
+		new BlenderExternalEditor().launch(f, new Button(), () -> {
+		});
 	}
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( StlLoader.class,BlenderLoader.class);
+		return Arrays.asList(StlLoader.class, BlenderLoader.class);
 	}
 
 }
