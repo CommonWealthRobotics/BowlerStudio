@@ -215,7 +215,7 @@ public class VirtualCameraMobileBase {
 		this.zoomDepth = zoomDepth;
 
 		// Dynamically adjust setFarClip to reduce Z-fighting
-        camera.setFarClip(Math.max(1500, -zoomDepth * 2));
+        camera.setFarClip(Math.max(6000, -zoomDepth * 2));
 
 		zoomAffine.setTz(zoomDepth);
 
