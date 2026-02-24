@@ -493,109 +493,12 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void addObject(Object o, File source, ArrayList<CSG> cache) {
-
-		if (List.class.isInstance(o)) {
-			List<Object> c = (List<Object>) o;
-			for (int i = 0; i < c.size(); i++) {
-				// Log.warning("Loading array Lists with removals " + c.get(i));
-				addObject(c.get(i), source, cache);
-			}
-			return;
-		}
-		if (CaDoodleFile.class.isInstance(o)) {
-			addObject(CaDoodleLoader.process((CaDoodleFile) o,true), source, cache);
-			return;
-		}
-		javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-				Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
-		double stroke = 0.5;
-		if (CSG.class.isInstance(o)) {
-			CSG csg = (CSG) o;
-			if (cache == null) {
-				BowlerStudio.runLater(() -> {
-					// new RuntimeException().printStackTrace();
-					CreatureLab3dController.getEngine().addObject(csg, source, csg.getColor().getOpacity(),CSGDatabase.getInstance());
-				});
-			} else {
-				cache.add(csg);
-			}
-
-			return;
-
-		} else if (Tab.class.isInstance(o)) {
-
-			getBowlerStudio().addTab((Tab) o, true);
-			return;
-
-		} else if (Node.class.isInstance(o)) {
-
-			getBowlerStudio().addNode((Node) o);
-			return;
-
-		} else if (Polygon.class.isInstance(o)) {
-			Polygon poly = (Polygon) o;
-			List<Vertex> vertices = poly.getVertices();
-
-			BowlerStudio.runLater(() -> {
-//				for (int i = 0; i < vertices.size(); i++) {
-//					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
-//							.move(vertices.get(i))
-//							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-//									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
-//					csg.setIsWireFrame(true);
-//					getBowlerStudio().addNode(csg.getMesh());
-//				}
-
-				MeshView current = createPolygonOutlineMesh(vertices);
-				PhongMaterial material = new PhongMaterial(poly.getColor());
-			    // Set diffuse color to black and use self-illumination
-			    material.setDiffuseColor(poly.getColor());
-			    material.setSelfIlluminationMap(null);  // Reset any existing map
-			    
-			    // Use specular color for the line color (works without lighting)
-			    material.setSpecularColor(poly.getColor());
-			    material.setSpecularPower(1.0);
-				current.setMaterial(material);
-				current.setCullFace(CullFace.NONE);
-				getBowlerStudio().addNode(current);
-
-			});
-			BowlerStudioController.setSelectedCsg(poly.getVertices().get(0).pos);
-			return;
-		}else if (Vertex.class.isInstance(o)) {
-			Vertex v = (Vertex) o;
-			CSG csg = new Cylinder(0, stroke / 2, stroke, 3).toCSG().move(v)
-					.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5,
-							Math.random() * 0.5 + 0.5, 0.25));
-			getBowlerStudio().addNode(csg.getMesh());
-			return;
-		} else if (Vector3d.class.isInstance(o)) {
-			Vector3d v = (Vector3d) o;
-			BowlerStudioController.setSelectedCsg(v);
-			return;
-		} else if (TransformNR.class.isInstance(o)) {
-			TransformNR v = (TransformNR) o;
-			BowlerStudioController.setSelectedCsg(v);
-			return;
-		} else if (BowlerAbstractDevice.class.isInstance(o)) {
-			BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
-			ConnectionManager.addConnection((BowlerAbstractDevice) o, bad.getScriptingName());
-			return;
-		} else if (DMDevice.wrappable(o)) {
-			BowlerAbstractDevice bad;
-			try {
-				bad = new DMDevice(o);
-				ConnectionManager.addConnection(bad, bad.getScriptingName());
-			} catch (Exception e) {
-				// Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
+		
+		CreatureLab3dController.getEngine().addObject(o, source, cache);
 
 	}
 
-	private static MeshView createPolygonOutlineMesh(List<Vertex> vertices) {
+	public static MeshView createPolygonOutlineMesh(List<Vertex> vertices) {
 		TriangleMesh mesh = new TriangleMesh();
 
 		// This is a simplified approach - for true line rendering in 3D,

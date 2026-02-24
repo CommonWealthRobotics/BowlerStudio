@@ -37,6 +37,9 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
+import com.neuronrobotics.bowlerstudio.ConnectionManager;
+import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
+//import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 //import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
@@ -44,7 +47,9 @@ import com.neuronrobotics.bowlerstudio.creature.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
 import com.neuronrobotics.bowlerstudio.creature.IOnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
+import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.scripting.cadoodle.CaDoodleFile;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -52,12 +57,16 @@ import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 //import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
+import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Vector3d;
+import eu.mihosoft.vrl.v3d.Vertex;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.MissingManipulatorException;
+import eu.mihosoft.vrl.v3d.Polygon;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
@@ -74,9 +83,6 @@ import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.AmbientLight;
-import javafx.scene.DirectionalLight;
-import javafx.scene.PointLight;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -213,7 +219,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private final Group userGroup = new Group();
 	// Skip first userGroup nodes, which are not user objects
 	private static int SKIP_USERGROUP_NODES = 0;
-	
+
 	/** The scene. */
 	private SubScene scene;
 
@@ -274,6 +280,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private volatile boolean waitingForCompletion;
 
 	private Pane overlayPane = null;
+
 	public void setOverlayPane(Pane overlayP) {
 		this.overlayPane = overlayP;
 	}
@@ -281,20 +288,22 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public Pane getOverlayPane() {
 		return overlayPane;
 	}
- 
+
 	public double cameraDistanceToPixelPerMM() {
 		double fovRad = Math.toRadians(camera.getFieldOfView());
 		// 500mm projection plane
 		return getSubScene().getHeight() / (1000.0 * Math.tan(fovRad / 2.0));
 	}
 
-	// Converts a 3D world point to a 2D point in the scene/screen (default workplane only)
+	// Converts a 3D world point to a 2D point in the scene/screen (default
+	// workplane only)
 	public Point2D worldToScene(Point3D world3D) {
 		Point2D screenPt = controlHandleGroup.getChildren().get(1).localToScreen(world3D);
 		return scene.screenToLocal(screenPt);
 	}
 
-	// Find the 3D world Z-point for a given 3D world X, Y point and the 2D scene/screen point
+	// Find the 3D world Z-point for a given 3D world X, Y point and the 2D
+	// scene/screen point
 	public double sceneToWorldFixedXY_WP(Point2D scenePixel, double fixedX, double fixedY) {
 		Transform wp = gridPlacementAffine;
 
@@ -324,12 +333,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			double dy = localDir.y;
 
 			// Minimize distance squared to line
-			double denom = dx*dx + dy*dy;
+			double denom = dx * dx + dy * dy;
 			double t;
 			if (denom < 1e-9)
 				t = 0; // Parallel, use origin
 			else
-				t = ((fixedX - ox)*dx + (fixedY - oy)*dy) / denom;
+				t = ((fixedX - ox) * dx + (fixedY - oy) * dy) / denom;
 
 			return localOrigin.getZ() + t * localDir.z;
 
@@ -338,7 +347,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 	}
 
-	// Find the 3D world X,Y-point for a given 3D world Z point and the 2D scene/screen point
+	// Find the 3D world X,Y-point for a given 3D world Z point and the 2D
+	// scene/screen point
 	public Point3D sceneToWorldFixedZ_WP(Point2D scenePixel, double fixedZ) {
 		Transform wp = gridPlacementAffine;
 
@@ -391,14 +401,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		double dy = scenePosition.getY() - c2w.getY();
 		double dz = scenePosition.getZ() - c2w.getZ();
 
-		// Camera rotation matrix  
+		// Camera rotation matrix
 		double fwdX = c2w.getRotation().getRotationMatrix()[0][2];
 		double fwdY = c2w.getRotation().getRotationMatrix()[1][2];
 		double fwdZ = c2w.getRotation().getRotationMatrix()[2][2];
 		// Project position vector onto camera forward axis, 0.1mm minimum distance
 		double minDistance = Math.max(0.1, dx * fwdX + dy * fwdY + dz * fwdZ);
 
-		return (2.0 * minDistance * Math.tan(Math.toRadians(camera.getFieldOfView()) / 2.0)) / getSubScene().getHeight();
+		return (2.0 * minDistance * Math.tan(Math.toRadians(camera.getFieldOfView()) / 2.0))
+				/ getSubScene().getHeight();
 
 	}
 
@@ -482,9 +493,123 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Show JavaFX diagnostics info
 		ModuleLayer.boot().modules().stream().filter(m -> m.getName().startsWith("javafx"))
-			.forEach(m -> com.neuronrobotics.sdk.common.Log.info(m.getName() + ": " + m.getDescriptor().version()));
+				.forEach(m -> com.neuronrobotics.sdk.common.Log.info(m.getName() + ": " + m.getDescriptor().version()));
 	}
+	public void addObject(Object o, File source) {
+		addObject(o, source, null);
+	}
+	public void addObject(Object o, File source, ArrayList<CSG> cache) {
+		try {
+			if (List.class.isInstance(o)) {
+				List<Object> c = (List<Object>) o;
+				for (int i = 0; i < c.size(); i++) {
+					// Log.warning("Loading array Lists with removals " + c.get(i));
+					addObject(c.get(i), source, cache);
+				}
+				return;
+			}
+			if (CaDoodleFile.class.isInstance(o)) {
+				addObject(CaDoodleLoader.process((CaDoodleFile) o, true), source, cache);
+				return;
+			}
+			javafx.scene.paint.Color color = new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+					Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1);
+			double stroke = 0.5;
+			if (CSG.class.isInstance(o)) {
+				CSG csg = (CSG) o;
+				if (cache == null) {
+					BowlerStudio.runLater(() -> {
+						// new RuntimeException().printStackTrace();
+						addObject(csg, source, csg.getColor().getOpacity(), CSGDatabase.getInstance());
+					});
+				} else {
+					cache.add(csg);
+				}
 
+				return;
+
+			} else if (Tab.class.isInstance(o)) {
+
+				BowlerStudioController.getBowlerStudio().addTab((Tab) o, true);
+
+				return;
+
+			} else if (Node.class.isInstance(o)) {
+
+				addUserNode((Node) o);
+				return;
+
+			} else if (Polygon.class.isInstance(o)) {
+				Polygon poly = (Polygon) o;
+				List<Vertex> vertices = poly.getVertices();
+
+				BowlerStudio.runLater(() -> {
+//				for (int i = 0; i < vertices.size(); i++) {
+//					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
+//							.move(vertices.get(i))
+//							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+//									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
+//					csg.setIsWireFrame(true);
+//					getBowlerStudio().addNode(csg.getMesh());
+//				}
+
+					MeshView current = BowlerStudioController.createPolygonOutlineMesh(vertices);
+					PhongMaterial material = new PhongMaterial(poly.getColor());
+					// Set diffuse color to black and use self-illumination
+					material.setDiffuseColor(poly.getColor());
+					material.setSelfIlluminationMap(null); // Reset any existing map
+
+					// Use specular color for the line color (works without lighting)
+					material.setSpecularColor(poly.getColor());
+					material.setSpecularPower(1.0);
+					current.setMaterial(material);
+					current.setCullFace(CullFace.NONE);
+					addUserNode(current);
+
+				});
+				setSelectedCsg(poly.getVertices().get(0).pos);
+				return;
+			} else if (Vertex.class.isInstance(o)) {
+				Vertex v = (Vertex) o;
+				CSG csg = new Cylinder(0, stroke / 2, stroke, 3).toCSG().move(v).setColor(new javafx.scene.paint.Color(
+						Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 0.25));
+				addUserNode(csg.getMesh());
+				return;
+			} else if (Vector3d.class.isInstance(o)) {
+				Vector3d v = (Vector3d) o;
+				setSelectedCsg(v);
+				return;
+			} else if (TransformNR.class.isInstance(o)) {
+				TransformNR v = (TransformNR) o;
+				setSelectedCsg(v);
+				return;
+			} else if (BowlerAbstractDevice.class.isInstance(o)) {
+				BowlerAbstractDevice bad = (BowlerAbstractDevice) o;
+				ConnectionManager.addConnection((BowlerAbstractDevice) o, bad.getScriptingName());
+				return;
+			} else if (DMDevice.wrappable(o)) {
+				BowlerAbstractDevice bad;
+				try {
+					bad = new DMDevice(o);
+					ConnectionManager.addConnection(bad, bad.getScriptingName());
+				} catch (Exception e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		} catch (Throwable t) {
+			Log.error(t);
+		}
+	}
+	public void setSelectedCsg(Vector3d v) {
+		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
+		setSelectedCsg(poseToMove);
+	}
+	public void setSelectedCsg(TransformNR poseToMove) {
+		Affine manipulator2 = new Affine();
+		focusToAffine(poseToMove, manipulator2);
+	}
 	public void rebuild(boolean b) {
 		rebuildingUIOnerror = true;
 
@@ -1218,41 +1343,37 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private static int webColorToArgb(Color color) {
-		return (int) (color.getOpacity() * 255) << 24 |
-			   (int) (color.getRed()	 * 255) << 16 |
-			   (int) (color.getGreen()	 * 255) <<  8 |
-			   (int) (color.getBlue()	 * 255);
+		return (int) (color.getOpacity() * 255) << 24 | (int) (color.getRed() * 255) << 16
+				| (int) (color.getGreen() * 255) << 8 | (int) (color.getBlue() * 255);
 	}
 
 	private static Color argbToColor(int argb) {
-	return Color.color(((argb >> 16) & 0xFF) / 255.0,
-					   ((argb >>  8) & 0xFF) / 255.0,
-					   ( argb		 & 0xFF) / 255.0,
-					   ((argb >> 24) & 0xFF) / 255.0);
+		return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) / 255.0, (argb & 0xFF) / 255.0,
+				((argb >> 24) & 0xFF) / 255.0);
 	}
 
 	// Create textured work-plane based on tiles of custom size
 	public Group createTexturedWorkplane(double xSizeMM, double ySizeMM) {
 
 		// Build square textured tile in MM
-		final float TILE_SIZE_MM	 = 10.0f;
-		final int TILE_BIG_GRID_PX   = 200;
-		final int TILE_SMALL_GRID_PX =  20;
+		final float TILE_SIZE_MM = 10.0f;
+		final int TILE_BIG_GRID_PX = 200;
+		final int TILE_SMALL_GRID_PX = 20;
 
 		// Build square textured tile in inches
-		//final float TILE_SIZE_MM	   = 25.4f;
-		//final int TILE_BIG_GRID_PX   = 200;
-		//final int TILE_SMALL_GRID_PX =  20; // 1/10th inch
+		// final float TILE_SIZE_MM = 25.4f;
+		// final int TILE_BIG_GRID_PX = 200;
+		// final int TILE_SMALL_GRID_PX = 20; // 1/10th inch
 
 		// Build square textured tile in inches
-		//final float TILE_SIZE_MM	   = 25.4f;
-		//final int TILE_BIG_GRID_PX   = 256;
-		//final int TILE_SMALL_GRID_PX =  16; // 1/16th inch
+		// final float TILE_SIZE_MM = 25.4f;
+		// final int TILE_BIG_GRID_PX = 256;
+		// final int TILE_SMALL_GRID_PX = 16; // 1/16th inch
 
 		// Build square textured tile in half inche
-		//final float TILE_SIZE_MM	   = 12.7f;
-		//final int TILE_BIG_GRID_PX   = 254;
-		//final int TILE_SMALL_GRID_PX = 127;
+		// final float TILE_SIZE_MM = 12.7f;
+		// final int TILE_BIG_GRID_PX = 254;
+		// final int TILE_SMALL_GRID_PX = 127;
 
 		// Upscale work plane texture
 		final int wpUpscale = 4;
@@ -1261,52 +1382,50 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int wpNoise = 25;
 
 		// Work plane texture colors
-		int wpColor	 = webColorToArgb(Color.web("#3838A8")); // Higher is lighter color
-		int grid1Color  = webColorToArgb(Color.web("#202060"));
+		int wpColor = webColorToArgb(Color.web("#3838A8")); // Higher is lighter color
+		int grid1Color = webColorToArgb(Color.web("#202060"));
 		int grid10Color = webColorToArgb(Color.web("#0000FF"));
 
-		float workplaneX = (float)xSizeMM;
-		float workplaneY = (float)ySizeMM;
+		float workplaneX = (float) xSizeMM;
+		float workplaneY = (float) ySizeMM;
 
 		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
 
 		// Calculate texture offsets. Note X and Y are swapped in the 3D view
-		float xTextureOffset = (float)((int)(ySizeMM / (TILE_SIZE_MM * 2)) - ySizeMM / (TILE_SIZE_MM * 2));
-		float yTextureOffset = (float)((int)(xSizeMM / (TILE_SIZE_MM * 2)) - xSizeMM / (TILE_SIZE_MM * 2));
+		float xTextureOffset = (float) ((int) (ySizeMM / (TILE_SIZE_MM * 2)) - ySizeMM / (TILE_SIZE_MM * 2));
+		float yTextureOffset = (float) ((int) (xSizeMM / (TILE_SIZE_MM * 2)) - xSizeMM / (TILE_SIZE_MM * 2));
 
 		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
 
 		// Set work plane background (done when adding noise)
-		//Arrays.fill(src, wpColor);
+		// Arrays.fill(src, wpColor);
 
 		// Add some noise to make the work plane look real
 		Random rnd = new Random();
 		int r = (wpColor >> 16) & 0xFF;
-		int g = (wpColor >>  8) & 0xFF;
-		int b =  wpColor		   & 0xFF;
+		int g = (wpColor >> 8) & 0xFF;
+		int b = wpColor & 0xFF;
 		for (int i = 0; i < src.length; i++) {
 			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
-			src[i] = 0xFF000000 |
-					 (Math.min(255, (r * n) / 100) << 16) |
-					 (Math.min(255, (g * n) / 100) <<  8) |
-					 (Math.min(255, (b * n) / 100));
+			src[i] = 0xFF000000 | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
+					| (Math.min(255, (b * n) / 100));
 		}
 
 		// Draw small grid, 1 line
 		for (int x1 = 0; x1 < TILE_BIG_GRID_PX; x1 += TILE_SMALL_GRID_PX) {
 			for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-			src[y * TILE_BIG_GRID_PX + x1] = grid1Color;
-			src[x1 * TILE_BIG_GRID_PX + y] = grid1Color;
+				src[y * TILE_BIG_GRID_PX + x1] = grid1Color;
+				src[x1 * TILE_BIG_GRID_PX + y] = grid1Color;
 			}
 		}
 
 		// Draw big grid, 3 lines
 		int last = TILE_BIG_GRID_PX - 1;
 		for (int i = 0; i < TILE_BIG_GRID_PX; i++) {
-			src[i + TILE_BIG_GRID_PX	] = grid10Color;
+			src[i + TILE_BIG_GRID_PX] = grid10Color;
 			src[i * TILE_BIG_GRID_PX + 1] = grid10Color;
 
-			src[i					] = grid10Color;
+			src[i] = grid10Color;
 			src[i * TILE_BIG_GRID_PX] = grid10Color;
 
 			src[i * TILE_BIG_GRID_PX + last] = grid10Color;
@@ -1356,56 +1475,53 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		material2.setSpecularColor(Color.BLACK); // No shiny spots
 //		material2.setSelfIlluminationMap(selfIlluminationImage);
 
-		// Create the work plane mesh, draw at slight offset to align pixel to line centre
+		// Create the work plane mesh, draw at slight offset to align pixel to line
+		// centre
 		TriangleMesh topMesh = new TriangleMesh();
-		topMesh.getPoints().setAll(
-		  	-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-  			 workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-  			 workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-		  	-workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
 
 		// Map texture to mesh
-		topMesh.getTexCoords().setAll(
-			xTextureOffset							, yTextureOffset,							// bottom-left
-			xTextureOffset							, yTextureOffset + workplaneX/TILE_SIZE_MM, // top-left
-			xTextureOffset + workplaneY/TILE_SIZE_MM, yTextureOffset + workplaneX/TILE_SIZE_MM, // top-right
-			xTextureOffset + workplaneY/TILE_SIZE_MM, yTextureOffset);							// bottom-right
+		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
+				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
 
-		topMesh.getFaces().setAll(0,0, 1,1, 2,2, 0,0, 2,2, 3,3);
+		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
 
 		MeshView topView = new MeshView(topMesh);
 		topView.setMaterial(material);
 		topView.setBlendMode(BlendMode.SRC_OVER);
 		topView.setCullFace(CullFace.NONE);
-		//topView.setCache(false); // keeps JavaFX from scaling the image
+		// topView.setCache(false); // keeps JavaFX from scaling the image
 
 		// Create the work plane outline mesh
 		final float OUT = 2.0f; // outwards mm
-		final float IN  = 0.0f; // inwards mm
+		final float IN = 0.0f; // inwards mm
 
 		TriangleMesh outlineMesh = new TriangleMesh();
 		outlineMesh.getPoints().setAll(
-		// inside
-			 IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,   IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-			-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,   IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-			-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-			 IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-		// outside
-		   -OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-			OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-			OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-		   -OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE,  OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+				// inside
+				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				// outside
+				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
 
-		outlineMesh.getTexCoords().setAll(
-			0,0,  1,0,  1,1,  0,1,   // inside
-			0,0,  1,0,  1,1,  0,1);  // outide
+		outlineMesh.getTexCoords().setAll(0, 0, 1, 0, 1, 1, 0, 1, // inside
+				0, 0, 1, 0, 1, 1, 0, 1); // outide
 
 		// 8 triangles (4 quads)
-		outlineMesh.getFaces().setAll(
-			0,0, 4,4, 5,5,	0,0, 5,5, 1,1,   // bottom
-			1,1, 5,5, 6,6,	1,1, 6,6, 2,2,   // right
-			2,2, 6,6, 7,7,	2,2, 7,7, 3,3,   // top
-			3,3, 7,7, 4,4,	3,3, 4,4, 0,0 ); // left
+		outlineMesh.getFaces().setAll(0, 0, 4, 4, 5, 5, 0, 0, 5, 5, 1, 1, // bottom
+				1, 1, 5, 5, 6, 6, 1, 1, 6, 6, 2, 2, // right
+				2, 2, 6, 6, 7, 7, 2, 2, 7, 7, 3, 3, // top
+				3, 3, 7, 7, 4, 4, 3, 3, 4, 4, 0, 0); // left
 
 		MeshView outlineView = new MeshView(outlineMesh);
 		outlineView.setMaterial(material2);
@@ -1445,36 +1561,30 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		cameraGroup.getChildren().setAll(camera);
 
 		/*
-		// Fixed directional light from the top
-		DirectionalLight sunLight1 = new DirectionalLight();
-		sunLight1.setColor(Color.color(0.3, 0.3, 0.3));
-		sunLight1.setDirection(new Point3D(0, 0, -1));
-		sunLight1.setLightOn(false);
-		cameraGroup.getChildren().add(sunLight1);
-
-		// Point light sun high above the work plane
-		PointLight sunLight2 = new PointLight(Color.color(0.2, 0.2, 0.2));
-		sunLight2.setConstantAttenuation(1);
-		sunLight2.setLinearAttenuation(0);
-		sunLight2.setQuadraticAttenuation(0);
-		sunLight2.getTransforms().add(new Translate(0, 0, 10000));
-		sunLight2.setLightOn(false);
-		cameraGroup.getChildren().add(sunLight2);
-
-		// Ambient lighting
-		AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
-		ambientLight.setLightOn(false);
-		cameraGroup.getChildren().add(ambientLight);
-
-		// Directional light follows the camera view angle
-		DirectionalLight directionalCameraLight = new DirectionalLight(Color.color(1.0, 1.0, 1.0));
-		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
-			Point3D d = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0, 0)).normalize();
-			directionalCameraLight.setDirection(new Point3D(d.getX(), -d.getY(), d.getZ()));   // Y inverted
-		});
-		directionalCameraLight.setLightOn(false);
-		cameraGroup.getChildren().add(directionalCameraLight);
-		*/
+		 * // Fixed directional light from the top DirectionalLight sunLight1 = new
+		 * DirectionalLight(); sunLight1.setColor(Color.color(0.3, 0.3, 0.3));
+		 * sunLight1.setDirection(new Point3D(0, 0, -1)); sunLight1.setLightOn(false);
+		 * cameraGroup.getChildren().add(sunLight1);
+		 * 
+		 * // Point light sun high above the work plane PointLight sunLight2 = new
+		 * PointLight(Color.color(0.2, 0.2, 0.2)); sunLight2.setConstantAttenuation(1);
+		 * sunLight2.setLinearAttenuation(0); sunLight2.setQuadraticAttenuation(0);
+		 * sunLight2.getTransforms().add(new Translate(0, 0, 10000));
+		 * sunLight2.setLightOn(false); cameraGroup.getChildren().add(sunLight2);
+		 * 
+		 * // Ambient lighting AmbientLight ambientLight = new
+		 * AmbientLight(Color.color(0.1, 0.1, 0.1)); ambientLight.setLightOn(false);
+		 * cameraGroup.getChildren().add(ambientLight);
+		 * 
+		 * // Directional light follows the camera view angle DirectionalLight
+		 * directionalCameraLight = new DirectionalLight(Color.color(1.0, 1.0, 1.0));
+		 * camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
+		 * Point3D d = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0,
+		 * 0)).normalize(); directionalCameraLight.setDirection(new Point3D(d.getX(),
+		 * -d.getY(), d.getZ())); // Y inverted });
+		 * directionalCameraLight.setLightOn(false);
+		 * cameraGroup.getChildren().add(directionalCameraLight);
+		 */
 
 		// Point light behind camera, similar to default JavaFX light
 		PointLight cameraLight = new PointLight(Color.color(1.0, 1.0, 1.0));
@@ -1488,7 +1598,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			final float distanceBehindCamera = 10000;
 			Point3D p = camera.localToScene(1000, 1000, -distanceBehindCamera);
 			cameraLight.setTranslateX(-p.getX());
-			cameraLight.setTranslateY( p.getY());
+			cameraLight.setTranslateY(p.getY());
 			cameraLight.setTranslateZ(-p.getZ());
 		});
 
@@ -1496,7 +1606,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		cameraLight.getScope().addAll(userGroup, controlHandleGroup);
 
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
-			.toCSG().roty(90).setColor(Color.BLACK);
+				.toCSG().roty(90).setColor(Color.BLACK);
 
 		handMesh = cylinder.getMesh();
 
@@ -1588,14 +1698,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 					Affine zRuler = new Affine();
 					zRuler.appendScale(scale, scale, scale);
-					//zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
-					//zRuler.appendRotation( -90, 0, 0, 0, 0, 0, 1);
-					//zRuler.appendRotation(  90, 0, 0, 0, 0, 1, 0);
-					//zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+					// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+					// zRuler.appendRotation( -90, 0, 0, 0, 0, 0, 1);
+					// zRuler.appendRotation( 90, 0, 0, 0, 0, 1, 0);
+					// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 					zRuler.appendRotation(120, 0, 0, 0, 1, -1, 1);
 
 					// Create the workplane
-					//workplaneGroup = createGridMesh(1000, 1000, 20);
+					// workplaneGroup = createGridMesh(1000, 1000, 20);
 					workplaneGroup = createTexturedWorkplane(1000, 1000);
 
 					boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
@@ -1613,8 +1723,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						Node yrulerImage = MakeRuler.createRuler(false);
 						Node zrulerImage = MakeRuler.createRuler(true);
 
-						xrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xRuler, xRulerZoffset);
-						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), yRuler, yRulerZoffset);
+						xrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xRuler,
+								xRulerZoffset);
+						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), yRuler,
+								yRulerZoffset);
 						zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), zRuler);
 
 						rulerGroup.getChildren().addAll(xrulerImage, yrulerImage, zrulerImage);
@@ -1634,14 +1746,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							customWorkplaneGroup.getChildren().add(workplaneGroup);
 						}
 
-						// Count how many nodes are already present in the userGroup, they are not user objects
-						if (showAxes) 
+						// Count how many nodes are already present in the userGroup, they are not user
+						// objects
+						if (showAxes)
 							SKIP_USERGROUP_NODES = userGroup.getChildren().size();
 
 						// Create the world group
-						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup, controlHandleGroup, ambientLight);
+						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup,
+								controlHandleGroup, ambientLight);
 
-						// Use ambient illumination for workplanes and axes, ruler is black so no need to illuminate
+						// Use ambient illumination for workplanes and axes, ruler is black so no need
+						// to illuminate
 						ambientLight.getScope().addAll(customWorkplaneGroup, axisGroup);
 					});
 
@@ -1707,7 +1822,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return gridMeshGroup;
 	}
 
-	// Add the control nodes (handles/edit boxes) at the end so they are always visible
+	// Add the control nodes (handles/edit boxes) at the end so they are always
+	// visible
 	public void addControlNode(Node n) {
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
@@ -1750,7 +1866,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		else
 			BowlerStudio.runLater(() -> customWorkplaneGroup.getChildren().add(n));
 	}
-
 
 	// Remove nodes from the userGroup
 	public void removeUserNode(Node n) {
@@ -1866,7 +1981,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 //					if (aboveSplit) {
 //						above=!above;
 //					}
-					//System.out.println("Above = "+el);
+					// System.out.println("Above = "+el);
 					double i = above ? -1 : 1;
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
@@ -1897,40 +2012,40 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	}
 
-/* DEVELOPMENT
---add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
---add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
---add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED
---add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED
-		public double objectDistance() {
-
-		Point3D p = camera.localToScene(0, 0, 0);
-		Vec3d camPos = new Vec3d(-p.getX(), p.getY(), -p.getZ());
-
-		Point3D dir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0, 0)).normalize();
-		Vec3d camDir = new Vec3d(dir.getX(), -dir.getY(), dir.getZ());
-
-		//System.out.println("\nCamera position : " + camPos);
-		//System.out.println(  "Camera direction: " + camDir);
-
-		PickRay ray = new PickRay(camPos, camDir, 0.1, 499);
-
-		PickResultChooser chooser = new PickResultChooser();
-		NodeHelper.pickNode(userGroup, ray, chooser);
-
-		PickResult pr = chooser.toPickResult();
-
-		if ((pr != null) && (pr.getIntersectedNode() != null)) {
-			double dist = pr.getIntersectedDistance();
-
-			//System.out.println(">>> HIT POINT: " + pr.getIntersectedPoint() + " Distance: " + (int)dist);
-
-			return dist;
-		}
-
-		return Double.POSITIVE_INFINITY;
-	}
-*/
+	/*
+	 * DEVELOPMENT --add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
+	 * --add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED --add-exports
+	 * javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports
+	 * javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED public double
+	 * objectDistance() {
+	 * 
+	 * Point3D p = camera.localToScene(0, 0, 0); Vec3d camPos = new Vec3d(-p.getX(),
+	 * p.getY(), -p.getZ());
+	 * 
+	 * Point3D dir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0,
+	 * 0, 0)).normalize(); Vec3d camDir = new Vec3d(dir.getX(), -dir.getY(),
+	 * dir.getZ());
+	 * 
+	 * //System.out.println("\nCamera position : " + camPos); //System.out.println(
+	 * "Camera direction: " + camDir);
+	 * 
+	 * PickRay ray = new PickRay(camPos, camDir, 0.1, 499);
+	 * 
+	 * PickResultChooser chooser = new PickResultChooser();
+	 * NodeHelper.pickNode(userGroup, ray, chooser);
+	 * 
+	 * PickResult pr = chooser.toPickResult();
+	 * 
+	 * if ((pr != null) && (pr.getIntersectedNode() != null)) { double dist =
+	 * pr.getIntersectedDistance();
+	 * 
+	 * //System.out.println(">>> HIT POINT: " + pr.getIntersectedPoint() +
+	 * " Distance: " + (int)dist);
+	 * 
+	 * return dist; }
+	 * 
+	 * return Double.POSITIVE_INFINITY; }
+	 */
 
 	public double getCamDistanceToClosestObject() {
 
@@ -1944,20 +2059,20 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int counter = 0;
 		double minDist = Double.MAX_VALUE;
 		Point3D closestPoint = new Point3D(0, 0, 0);
-	   
+
 		List<Node> children = userGroup.getChildren();
 		for (int i = SKIP_USERGROUP_NODES; i < children.size(); i++) {
 
 			Node node = children.get(i);
-			
+
 			// Find closest point to camera on bounding box
 			Bounds b = node.getBoundsInParent();
 			double closestX = Math.max(b.getMinX(), Math.min(camPos.getX(), b.getMaxX()));
 			double closestY = Math.max(b.getMinY(), Math.min(camPos.getY(), b.getMaxY()));
 			double closestZ = Math.max(b.getMinZ(), Math.min(camPos.getZ(), b.getMaxZ()));
-			
+
 			Point3D boxPoint = new Point3D(closestX, closestY, closestZ);
-			
+
 			// Direction from camera to closest point on box
 			Point3D toObject = boxPoint.subtract(camPos);
 			double distToPoint = toObject.magnitude();
@@ -1978,37 +2093,36 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 			// Check FOV with dot product, 60dg FOV, cos(30)
 			double cosAngle = dot / toObject.magnitude();
-			if (cosAngle < Math.cos(Math.toRadians(30))) 
+			if (cosAngle < Math.cos(Math.toRadians(30)))
 				continue;
-		   
+
 			if (distToPoint < minDist) {
 				minDist = distToPoint;
 				closestPoint = boxPoint;
 			}
 		}
-	 
+
 		return Math.max(2, minDist);
 	}
 
 	public void zoomIncrement(double deltaY) {
 		double zoomFactor = -deltaY * getVirtualcam().getZoomDepth() / 500;
 
-/* EXPERIMENTAL FEATURE, SLOW DOWN ZOOM WHEN CLOSE TO OBJECT
-
-		double distance =  getCamDistanceToClosestObject();
-
-		// Parameters to control zoom in behavior
-		final double ZOOM_IN_START_DISTANCE = 5;
-		final double ZOOM_IN_STEP_REDUCTION = 2;
-		if (ZOOM_IN_START_DISTANCE * zoomFactor > distance)
-			zoomFactor = distance / (ZOOM_IN_START_DISTANCE * ZOOM_IN_STEP_REDUCTION);
-
-		// Parameters to control zoom out behavior
-		final double ZOOM_OUT_START_DISTANCE = 3;
-		final double ZOOM_OUT_STEP_REDUCTION = 2;
-		if (-ZOOM_OUT_START_DISTANCE * zoomFactor > distance)
-			zoomFactor = -distance / (ZOOM_OUT_START_DISTANCE * ZOOM_OUT_STEP_REDUCTION);
-*/
+		/*
+		 * EXPERIMENTAL FEATURE, SLOW DOWN ZOOM WHEN CLOSE TO OBJECT
+		 * 
+		 * double distance = getCamDistanceToClosestObject();
+		 * 
+		 * // Parameters to control zoom in behavior final double ZOOM_IN_START_DISTANCE
+		 * = 5; final double ZOOM_IN_STEP_REDUCTION = 2; if (ZOOM_IN_START_DISTANCE *
+		 * zoomFactor > distance) zoomFactor = distance / (ZOOM_IN_START_DISTANCE *
+		 * ZOOM_IN_STEP_REDUCTION);
+		 * 
+		 * // Parameters to control zoom out behavior final double
+		 * ZOOM_OUT_START_DISTANCE = 3; final double ZOOM_OUT_STEP_REDUCTION = 2; if
+		 * (-ZOOM_OUT_START_DISTANCE * zoomFactor > distance) zoomFactor = -distance /
+		 * (ZOOM_OUT_START_DISTANCE * ZOOM_OUT_STEP_REDUCTION);
+		 */
 		// double z = camera.getTranslateY();
 		// double newZ = z + zoomFactor;
 		// camera.setTranslateY(newZ);
@@ -2303,7 +2417,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			cameraGroup.getTransforms().add(interpolator);
 			try {
 				if ((Math.abs(manipulator2.getTx()) > 0.1) || (Math.abs(manipulator2.getTy()) > 0.1)
-				 || (Math.abs(manipulator2.getTz()) > 0.1)) {
+						|| (Math.abs(manipulator2.getTz()) > 0.1)) {
 					// BowlerStudio.runLater(() -> {
 					cameraGroup.getTransforms().add(manipulator2);
 					cameraGroup.getTransforms().add(correction);
@@ -2438,12 +2552,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			z = trans.getZ() - getFlyingCamera().getGlobalZ();
 		}
 
-		int interpolationSteps = Math.max((int)(Math.abs(x) / 6), (int)(Math.abs(y) / 6));
-		interpolationSteps = Math.max((int)(Math.abs(z) / 6), interpolationSteps);
-		interpolationSteps = Math.max((int)(Math.abs(el) / 5), interpolationSteps);
-		interpolationSteps = Math.max((int)(Math.abs(az) / 5), interpolationSteps);
+		int interpolationSteps = Math.max((int) (Math.abs(x) / 6), (int) (Math.abs(y) / 6));
+		interpolationSteps = Math.max((int) (Math.abs(z) / 6), interpolationSteps);
+		interpolationSteps = Math.max((int) (Math.abs(el) / 5), interpolationSteps);
+		interpolationSteps = Math.max((int) (Math.abs(az) / 5), interpolationSteps);
 		if (!getFlyingCamera().isZoomLocked())
-			interpolationSteps = Math.max((int)(Math.abs(zoomDelta) / 10), interpolationSteps);
+			interpolationSteps = Math.max((int) (Math.abs(zoomDelta) / 10), interpolationSteps);
 
 		interpolationSteps = Math.min(interpolationSteps, NUMBER_OF_INTERPOLATION_STEPS);
 		final int steps = interpolationSteps;
@@ -2460,14 +2574,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				long startTime = System.currentTimeMillis();
 
 				BowlerStudio.runLater(() -> {
-					moveCamera(new TransformNR(0, 0, 0,
-							new RotationNR(-el / steps, -az / steps, 0)));
+					moveCamera(new TransformNR(0, 0, 0, new RotationNR(-el / steps, -az / steps, 0)));
 
 					getFlyingCamera().DrivePositionAbsolute(mx, my, mz);
 
 					if (!getFlyingCamera().isZoomLocked())
-						getFlyingCamera().setZoomDepth(
-								getFlyingCamera().getZoomDepth() + (zoomDelta / steps));
+						getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth() + (zoomDelta / steps));
 					waitingForCompletion = false;
 				});
 
@@ -2478,7 +2590,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					} catch (InterruptedException e) {
 						abortFocus = true;
 					}
-			  }
+				}
 
 			}
 
