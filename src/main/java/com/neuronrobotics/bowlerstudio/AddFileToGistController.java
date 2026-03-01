@@ -167,7 +167,7 @@ public class AddFileToGistController extends Application {
 		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
 		
 		if (l != null) {
-			extentionStr = l.getFileExtenetion().get(0);
+			extentionStr = l.getFileExtension().get(0);
 		} else
 			extentionStr = ".groovy";
 		if(!extentionStr.startsWith(".")) {
