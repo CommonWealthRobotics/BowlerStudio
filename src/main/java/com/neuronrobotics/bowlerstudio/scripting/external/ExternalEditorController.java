@@ -37,7 +37,7 @@ public class ExternalEditorController {
 		loadEditors();
 		this.currentFile = f;
 		for(IExternalEditor e:editors) {
-			if(e.isSupportedByExtention(f)) {
+			if(e.isSupportedByExtension(f)) {
 				hasEditor=true;
 				myEditor=e;
 				image.setImage(e.getImage());

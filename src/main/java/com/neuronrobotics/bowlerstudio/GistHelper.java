@@ -94,7 +94,7 @@ public class GistHelper
             }
 
             com.neuronrobotics.sdk.common.Log.error("Creating gist at " + filename);
-            ScriptingEngine.getLangaugeByExtention(filename).getDefaultContents(gist.getGitPullUrl(), filename);
+            ScriptingEngine.getLangaugeByExtension(filename).getDefaultContents(gist.getGitPullUrl(), filename);
             return gist.getGitPullUrl();
         }
         catch (IOException e)

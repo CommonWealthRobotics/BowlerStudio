@@ -53,10 +53,10 @@ public class AddFileToGistController extends Application {
 	@FXML
 	public Button addFileButton, cancelButton;
 	@FXML
-	private ComboBox<String> extention;
+	private ComboBox<String> extension;
 	@FXML // fx:id="langaugeIcon"
 	private ImageView langaugeIcon; // Value injected by FXMLLoader
-	private String extentionStr = ".groovy";
+	private String extensionStr = ".groovy";
 	private String gitRepo;
 	@FXML
 	private TextArea description;
@@ -102,7 +102,7 @@ public class AddFileToGistController extends Application {
 				tmp=12;
 			root.setStyle("-fx-font-size: "+tmp+"pt");
 		});
-		extention.getItems().clear();
+		extension.getItems().clear();
 		if (getGitRepo() != null) {
 			newProject.getChildren().clear();
 		} else {
@@ -112,11 +112,11 @@ public class AddFileToGistController extends Application {
 		ObservableList<String> options = FXCollections.observableArrayList(langs);
 		//
 		for (String s : options) {
-			extention.getItems().add(s);
+			extension.getItems().add(s);
 		}
-		extention.getSelectionModel().select("Groovy");
+		extension.getSelectionModel().select("Groovy");
 		Image icon;
-		String asset = "Script-Tab-" + extention.getSelectionModel().getSelectedItem() + ".png";
+		String asset = "Script-Tab-" + extension.getSelectionModel().getSelectedItem() + ".png";
 
 		try {
 
@@ -131,10 +131,10 @@ public class AddFileToGistController extends Application {
 			e2.printStackTrace();
 		}
 
-		extention.setOnAction(event -> {
+		extension.setOnAction(event -> {
 			try {
 
-				String selectedItem = extention.getSelectionModel().getSelectedItem();
+				String selectedItem = extension.getSelectionModel().getSelectedItem();
 				setSelected(selectedItem);
 			} catch (Exception e1) {
 				// Auto-generated catch block
@@ -167,11 +167,11 @@ public class AddFileToGistController extends Application {
 		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
 		
 		if (l != null) {
-			extentionStr = l.getFileExtension().get(0);
+			extensionStr = l.getFileExtension().get(0);
 		} else
-			extentionStr = ".groovy";
-		if(!extentionStr.startsWith(".")) {
-			extentionStr="."+extentionStr;
+			extensionStr = ".groovy";
+		if(!extensionStr.startsWith(".")) {
+			extensionStr="."+extensionStr;
 		}
 		isArduino = ArduinoLoader.class.isInstance(l);
 
@@ -187,10 +187,10 @@ public class AddFileToGistController extends Application {
 			});
 			String filename = filenameField.getText();
 
-			if (!filename.endsWith(extentionStr)) {
-				filename = filename + extentionStr;
+			if (!filename.endsWith(extensionStr)) {
+				filename = filename + extensionStr;
 			}
-			String fileSlug = filename.replace(extentionStr, "");
+			String fileSlug = filename.replace(extensionStr, "");
 			String message = description.getText();
 			if (message == null || message.length() == 0) {
 				message = filename;
@@ -206,7 +206,7 @@ public class AddFileToGistController extends Application {
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
-				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), filename );
+				ScriptingEngine.getLangaugeByExtension(extensionStr).getDefaultContents(getGitRepo(), filename );
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 				try {
@@ -330,8 +330,8 @@ public class AddFileToGistController extends Application {
 		try {
 			setSelected(string);
 			BowlerStudio.runLater(() -> {
-				extention.setValue(string);
-				extention.setDisable(true);
+				extension.setValue(string);
+				extension.setDisable(true);
 			});
 		} catch (Exception e) {
 			// Auto-generated catch block
