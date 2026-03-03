@@ -167,7 +167,7 @@ public class AddFileToGistController extends Application {
 		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
 		
 		if (l != null) {
-			extentionStr = l.getFileExtenetion().get(0);
+			extentionStr = l.getFileExtension().get(0);
 		} else
 			extentionStr = ".groovy";
 		if(!extentionStr.startsWith(".")) {
@@ -206,7 +206,7 @@ public class AddFileToGistController extends Application {
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
-				ScriptingEngine.getLangaugeByExtention(extentionStr).getDefaultContents(getGitRepo(), filename );
+				ScriptingEngine.getLangaugeByExtension(extentionStr).getDefaultContents(getGitRepo(), filename );
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 				try {
