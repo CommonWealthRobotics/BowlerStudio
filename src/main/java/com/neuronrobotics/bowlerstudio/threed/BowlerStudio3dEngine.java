@@ -340,7 +340,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			else
 				t = ((fixedX - ox) * dx + (fixedY - oy) * dy) / denom;
 
-			return localOrigin.getZ() + t * localDir.z;
+			// Limit range to within -1200 and +1200mm
+			return Math.max(-1200, Math.min(localOrigin.getZ() + t * localDir.z, 1200));
 
 		} catch (NonInvertibleTransformException e) {
 			return 0;
