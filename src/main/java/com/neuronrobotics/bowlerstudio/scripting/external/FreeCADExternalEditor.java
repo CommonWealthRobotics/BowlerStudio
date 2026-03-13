@@ -11,7 +11,6 @@ import java.util.List;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.FreecadLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
-import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.sdk.common.Log;
 
 import javafx.application.Platform;

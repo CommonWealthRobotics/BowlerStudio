@@ -32,23 +32,23 @@ class GraphingPanel extends JPanel implements ChangeListener {
 	private DefaultValueDataset dataset1;
 	private DefaultValueDataset dataset2;
 	private JSlider setpointSlider;
-	//private JButton settingBtn = new JButton("Settings");
-	//private JButton showDataBtn = new JButton("Data");
+	// private JButton settingBtn = new JButton("Settings");
+	// private JButton showDataBtn = new JButton("Data");
 	private boolean ignoreUpdate = false;
 	private SettingsDialog settingsDialog;
 	private PIDSim sim;
 	private DataPanel dataFrame;
 	private PIDConstantsDialog constants;
-	
+
 	public GraphingPanel(PIDSim sim, PIDConstantsDialog constants, String title) {
 		this.sim = sim;
 		this.constants = constants;
-		
-    	dataFrame = new DataPanel("Live Data");
-    	//dataFrame.pack();
-    	
-		settingsDialog = new SettingsDialog(sim,constants);
-		
+
+		dataFrame = new DataPanel("Live Data");
+		// dataFrame.pack();
+
+		settingsDialog = new SettingsDialog(sim, constants);
+
 		dataset1 = new DefaultValueDataset(0.0);
 		dataset2 = new DefaultValueDataset(0.0);
 
@@ -61,7 +61,8 @@ class GraphingPanel extends JPanel implements ChangeListener {
 		dialFrame.setForegroundPaint(Color.darkGray);
 		plot.setDialFrame(dialFrame);
 
-		GradientPaint gp = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), new Color(170, 170, 220));
+		GradientPaint gp = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(),
+				new Color(170, 170, 220));
 		DialBackground db = new DialBackground(gp);
 		db.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
 		plot.setBackground(db);
@@ -100,7 +101,7 @@ class GraphingPanel extends JPanel implements ChangeListener {
 		scale2.setMinorTickPaint(Color.red);
 		plot.addScale(1, scale2);
 		plot.mapDatasetToScale(1, 1);
-		
+
 		DialPointer needle2 = new DialPointer.Pin(1);
 		needle2.setRadius(0.55);
 		plot.addPointer(needle2);
@@ -122,59 +123,59 @@ class GraphingPanel extends JPanel implements ChangeListener {
 		setpointSlider.setPaintTicks(true);
 		setpointSlider.setValue(1800);
 		setpointSlider.addChangeListener(this);
-		
-//		settingBtn.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				settingsDialog.setVisible(true);
-//			}
-//		});
-		
-//		showDataBtn.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				dataFrame.setVisible(true);
-//			}
-//		});
+
+		// settingBtn.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// settingsDialog.setVisible(true);
+		// }
+		// });
+
+		// showDataBtn.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// dataFrame.setVisible(true);
+		// }
+		// });
 
 		JPanel settingsPanel = new JPanel(new MigLayout());
 		settingsPanel.add(settingsDialog, "cell 0 0");
 		settingsPanel.add(setpointSlider, "cell 1 0");
 		settingsPanel.add(dataFrame, "cell 2 0");
-		
-		JPanel panel = new JPanel(new MigLayout());
-		panel.add(cp1,"wrap");
-		panel.add(settingsPanel,"wrap");
 
-        //setTitle(title);        
-        add(panel);
+		JPanel panel = new JPanel(new MigLayout());
+		panel.add(cp1, "wrap");
+		panel.add(settingsPanel, "wrap");
+
+		// setTitle(title);
+		add(panel);
 	}
 
 	/**
 	 * Handle a change in the slider by updating the dataset value. This
 	 * automatically triggers a chart repaint.
-	 * 
+	 *
 	 * @param e
 	 *            the event.
 	 */
 	public void stateChanged(ChangeEvent e) {
-		if( ignoreUpdate ) {
+		if (ignoreUpdate) {
 			return;
 		}
-		
-		double value = (double) (1800-setpointSlider.getValue())/10;
+
+		double value = (double) (1800 - setpointSlider.getValue()) / 10;
 		setSetPoint(value);
 		sim.setSetPoint(value);
 	}
-	
-	public void setPosition(double value) {		
-		if(value > 180) {
+
+	public void setPosition(double value) {
+		if (value > 180) {
 			value = 180;
 		}
-		
-		if(value < 0) {
+
+		if (value < 0) {
 			value = 0;
 		}
 		dataset1.setValue(new Double(value));
@@ -182,14 +183,14 @@ class GraphingPanel extends JPanel implements ChangeListener {
 	}
 
 	public void setSetPoint(double value) {
-		if(value > 180) {
+		if (value > 180) {
 			value = 180;
 		}
-		
-		if(value < 0) {
+
+		if (value < 0) {
 			value = 0;
 		}
-		
+
 		ignoreUpdate = true;
 		dataset2.setValue(new Double(value));
 		setpointSlider.setValue(1800 - (int) value * 10);

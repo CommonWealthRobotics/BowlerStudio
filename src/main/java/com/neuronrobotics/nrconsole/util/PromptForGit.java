@@ -8,7 +8,6 @@ import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.creature.IGistPromptCompletionListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
@@ -18,7 +17,7 @@ public class PromptForGit {
 	private PromptForGit() {
 	}
 
-	public static void prompt(String purpose, String defaultID, IGistPromptCompletionListener listener){
+	public static void prompt(String purpose, String defaultID, IGistPromptCompletionListener listener) {
 		BowlerStudio.runLater(() -> {
 			TextInputDialog alert = new TextInputDialog(defaultID);
 			alert.setTitle(purpose);
@@ -40,30 +39,30 @@ public class PromptForGit {
 			});
 			// Traditional way to get the response value.
 			Optional<String> result = alert.showAndWait();
-			if (result.isPresent()){
-			   
-			    String gistcode=null;
-			    if(result.get().endsWith(".git"))
-			    	gistcode=result.get();
-			    else
-			    	gistcode= "https://gist.github.com/"+ScriptingEngine.urlToGist(result.get())+".git";
-			    com.neuronrobotics.sdk.common.Log.error("Creature Git " + gistcode);
-			    ArrayList<String> choices;
-			    String suggestedChoice="";
-			    int numXml=0;
+			if (result.isPresent()) {
+
+				String gistcode = null;
+				if (result.get().endsWith(".git"))
+					gistcode = result.get();
+				else
+					gistcode = "https://gist.github.com/" + ScriptingEngine.urlToGist(result.get()) + ".git";
+				com.neuronrobotics.sdk.common.Log.error("Creature Git " + gistcode);
+				ArrayList<String> choices;
+				String suggestedChoice = "";
+				int numXml = 0;
 				try {
 					choices = ScriptingEngine.filesInGit(gistcode);
-				    for(int i=0;i<choices.size();i++){
-				    	String s = choices.get(i);
-			    		suggestedChoice=s;
-			    		numXml++;
-				    	
-				    }
-				    ChoiceDialog<String> d = new ChoiceDialog<>(suggestedChoice, choices);
-				    d.setTitle("Choose a file in the git");
-				    d.setHeaderText("Select from the files in the git to pick the Creature File");
-				    d.setContentText("Choose A Creature:");
-				    Node root = d.getDialogPane();
+					for (int i = 0; i < choices.size(); i++) {
+						String s = choices.get(i);
+						suggestedChoice = s;
+						numXml++;
+
+					}
+					ChoiceDialog<String> d = new ChoiceDialog<>(suggestedChoice, choices);
+					d.setTitle("Choose a file in the git");
+					d.setHeaderText("Select from the files in the git to pick the Creature File");
+					d.setContentText("Choose A Creature:");
+					Node root = d.getDialogPane();
 					Stage stage = (Stage) d.getDialogPane().getScene().getWindow();
 					stage.setOnCloseRequest(ev -> d.hide());
 					FontSizeManager.addListener(fontNum -> {
@@ -75,26 +74,27 @@ public class PromptForGit {
 						d.getDialogPane().layout();
 						stage.sizeToScene();
 					});
-				    // Traditional way to get the response value.
-				    Optional<String> r = d.showAndWait();
-				    if (r.isPresent()){
-				        com.neuronrobotics.sdk.common.Log.error("Your choice: " + r.get());
-				        listener.done(gistcode,r.get());
-				    }
+					// Traditional way to get the response value.
+					Optional<String> r = d.showAndWait();
+					if (r.isPresent()) {
+						com.neuronrobotics.sdk.common.Log.error("Your choice: " + r.get());
+						listener.done(gistcode, r.get());
+					}
 				} catch (Exception e) {
 					// Auto-generated catch block
 					e.printStackTrace();
 				}
-			    if(numXml ==1){
-			    	//com.neuronrobotics.sdk.common.Log.error("Found just one file at  " + suggestedChoice);
-			    	//loadMobilebaseFromGist(gistcode,suggestedChoice);
-			    	//return;
-			    	
-			    }
+				if (numXml == 1) {
+					// com.neuronrobotics.sdk.common.Log.error("Found just one file at " +
+					// suggestedChoice);
+					// loadMobilebaseFromGist(gistcode,suggestedChoice);
+					// return;
+
+				}
 
 			}
-			
+
 		});
 	}
-	
+
 }

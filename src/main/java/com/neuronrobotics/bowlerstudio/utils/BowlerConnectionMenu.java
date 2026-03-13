@@ -11,7 +11,6 @@ import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,8 +25,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
- * Sample Skeleton for "BowlerConnectionMenue.fxml" Controller Class
- * You can copy and paste this code into your favorite IDE
+ * Sample Skeleton for "BowlerConnectionMenue.fxml" Controller Class You can
+ * copy and paste this code into your favorite IDE
  **/
 
 public class BowlerConnectionMenu extends Application {
@@ -87,18 +86,30 @@ public class BowlerConnectionMenu extends Application {
 			// complete
 	void initialize() {
 		com.neuronrobotics.sdk.common.Log.error("Initializing conection Dialog");
-		assert baudrate != null : "fx:id=\"baudrate\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert connectNetwork != null : "fx:id=\"connectNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert connectSerial != null : "fx:id=\"connectSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert portOptions != null : "fx:id=\"portOptions\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert portType != null : "fx:id=\"portType\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert searchNetwork != null : "fx:id=\"searchNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert searchSerial != null : "fx:id=\"searchSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert tcpPort != null : "fx:id=\"tcpPort\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert tcpSelect != null : "fx:id=\"tcpSelect\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert udpPort != null : "fx:id=\"udpPort\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert udpSelect != null : "fx:id=\"udpSelect\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
-		assert ipSelector != null : "fx:id=\"ipSelector\" was not injected: check your FXML file 'BowlerConnectionMenu.fxml'.";
+		assert baudrate != null
+				: "fx:id=\"baudrate\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert connectNetwork != null
+				: "fx:id=\"connectNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert connectSerial != null
+				: "fx:id=\"connectSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert portOptions != null
+				: "fx:id=\"portOptions\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert portType != null
+				: "fx:id=\"portType\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert searchNetwork != null
+				: "fx:id=\"searchNetwork\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert searchSerial != null
+				: "fx:id=\"searchSerial\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert tcpPort != null
+				: "fx:id=\"tcpPort\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert tcpSelect != null
+				: "fx:id=\"tcpSelect\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert udpPort != null
+				: "fx:id=\"udpPort\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert udpSelect != null
+				: "fx:id=\"udpSelect\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
+		assert ipSelector != null
+				: "fx:id=\"ipSelector\" was not injected: check your FXML file 'BowlerConnectionMenu.fxml'.";
 		runsearchSerial();
 		runsearchNetwork();
 
@@ -123,7 +134,7 @@ public class BowlerConnectionMenu extends Application {
 	private void runconnectSerial() {
 		new Thread(() -> {
 			for (int i = 0; i < 3; i++) {
-				SerialConnection ser=null;
+				SerialConnection ser = null;
 				try {
 					BowlerDatagram.setUseBowlerV4(true);
 					baud = Integer.parseInt(baudrate.getText());
@@ -132,20 +143,22 @@ public class BowlerConnectionMenu extends Application {
 					}
 					port = portOptions.getSelectionModel().getSelectedItem().toString();
 					int level = Log.getMinimumPrintLevel();
-					//Log.enableInfoPrint();
-					 ser = new SerialConnection(port, baud);
-					
+					// Log.enableInfoPrint();
+					ser = new SerialConnection(port, baud);
+
 					DeviceManager.addConnection(ser);
 					return;
 				} catch (Exception e) {
-					com.neuronrobotics.sdk.common.Log.error("false start " + port + " at baud " + baud + " is not responding");
+					com.neuronrobotics.sdk.common.Log
+							.error("false start " + port + " at baud " + baud + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					e.printStackTrace();
-					if (ser!=null)
+					if (ser != null)
 						ser.disconnect();
 				}
 			}
-			com.neuronrobotics.sdk.common.Log.error("Connection failed! " + port + " at baud " + baud + " is not responding");
+			com.neuronrobotics.sdk.common.Log
+					.error("Connection failed! " + port + " at baud " + baud + " is not responding");
 		}).start();
 
 	}
@@ -161,7 +174,8 @@ public class BowlerConnectionMenu extends Application {
 					clnt = new UDPBowlerConnection(InetAddress.getByName(ip), port);
 					DeviceManager.addConnection(clnt);
 				} catch (Exception e) {
-					com.neuronrobotics.sdk.common.Log.error("Connection failed! " + ip + " at port " + ip + " is not responding");
+					com.neuronrobotics.sdk.common.Log
+							.error("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					if (clnt != null)
 						clnt.disconnect();
@@ -174,7 +188,8 @@ public class BowlerConnectionMenu extends Application {
 					tcp = new BowlerTCPClient(ip, port);
 					DeviceManager.addConnection(tcp);
 				} catch (Exception e) {
-					com.neuronrobotics.sdk.common.Log.error("Connection failed! " + ip + " at port " + ip + " is not responding");
+					com.neuronrobotics.sdk.common.Log
+							.error("Connection failed! " + ip + " at port " + ip + " is not responding");
 					BowlerStudioController.highlightException(null, e);
 					if (tcp != null)
 						tcp.disconnect();
@@ -232,11 +247,11 @@ public class BowlerConnectionMenu extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			root.setStyle("-fx-font-size: "+tmp+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Bowler Device Connection");

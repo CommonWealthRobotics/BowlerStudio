@@ -1,29 +1,21 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
-import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IGameControlEvent;
-import com.neuronrobotics.sdk.addons.gamepad.JogTrainerWidget;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
@@ -33,25 +25,18 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
-public class JogMobileBase extends GridPane implements IGameControlEvent,IJogProvider {
+public class JogMobileBase extends GridPane implements IGameControlEvent, IJogProvider {
 	double defauletSpeed = 0.3;
 	private MobileBase mobilebase = null;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
@@ -71,7 +56,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 	private GridPane buttons;
 	private static ArrayList<JogMobileBase> allWidgets = new ArrayList<JogMobileBase>();
 	private boolean running = false;
-	private Thread scriptRunner=null;
+	private Thread scriptRunner = null;
 	private File currentFile = null;
 	public JogMobileBase(MobileBase kinimatics) {
 		allWidgets.add(this);
@@ -181,23 +166,23 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		});
 		game.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		game.setOnAction(event -> {
-			new Thread(){
-	    		public void run(){
-	    			pushThisMobileBaseAsKatapult();
-	    			startStopAction();
-	    		}
-	    	}.start();
-			
+			new Thread() {
+				public void run() {
+					pushThisMobileBaseAsKatapult();
+					startStopAction();
+				}
+			}.start();
+
 		});
 		conf.setOnAction(event -> {
-			new Thread(){
-	    		public void run(){
-	    			pushThisMobileBaseAsKatapult();
-	    			ConfigurationDatabase.save();
-	    		}
-	    	}.start();
+			new Thread() {
+				public void run() {
+					pushThisMobileBaseAsKatapult();
+					ConfigurationDatabase.save();
+				}
+			}.start();
 		});
-		
+
 		game.setTooltip(new Tooltip("Connect game controllers and use them to control your robot"));
 		conf.setTooltip(new Tooltip("Save this robot to be used in Katapult plauncher"));
 
@@ -222,7 +207,6 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		buttons.add(new Label("m/s"), 1, 3);
 		buttons.add(game, 0, 4);
 		buttons.add(conf, 1, 4);
-		
 
 		buttons.add(sec, 2, 3);
 		buttons.add(new Label("sec"), 3, 3);
@@ -230,28 +214,29 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		add(buttons, 0, 0);
 
 		try {
-			
-			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "launch.groovy");
+
+			currentFile = ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git",
+					"launch.groovy");
 		} catch (GitAPIException | IOException e) {
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		mobilebase.addConnectionEventListener(new IDeviceConnectionEventListener() {
-			
+
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				stop();
 			}
-			
+
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
 				// Auto-generated method stub
-				
+
 			}
 		});
 	}
 
-	private void startStopAction(){
+	private void startStopAction() {
 		game.setDisable(true);
 		if (running)
 			stop();
@@ -263,24 +248,23 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		ConfigurationDatabase.setObject("katapult", "robotName", mobilebase.getScriptingName());
 		ConfigurationDatabase.setObject("katapult", "robotGit", mobilebase.getGitSelfSource()[0]);
 		ConfigurationDatabase.setObject("katapult", "robotGitFile", mobilebase.getGitSelfSource()[1]);
-		ConfigurationDatabase.setObject("katapult", "linkDeviceName", mobilebase.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName());
-	    @SuppressWarnings("unchecked")
-		List<String> asList = (List<String>) ConfigurationDatabase.getObject("katapult", "gameControllerNames", 
-				Arrays.asList("Dragon","X-Box","Game","Play"));
-		
+		ConfigurationDatabase.setObject("katapult", "linkDeviceName",
+				mobilebase.getAllDHChains().get(0).getLinkConfiguration(0).getDeviceScriptingName());
+		@SuppressWarnings("unchecked")
+		List<String> asList = (List<String>) ConfigurationDatabase.getObject("katapult", "gameControllerNames",
+				Arrays.asList("Dragon", "X-Box", "Game", "Play"));
+
 		ArrayList<String> fromLookup = BowlerJInputDevice.getControllers();
 		fromLookup.addAll(asList);
 		Set<String> uniques = new HashSet<String>(asList);
-		
-		ConfigurationDatabase.setObject("katapult", "gameControllerNames", 
-				Arrays.asList(uniques.toArray())
-				);
+
+		ConfigurationDatabase.setObject("katapult", "gameControllerNames", Arrays.asList(uniques.toArray()));
 	}
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
 			game.setText("Run Game Controller");
-			BowlerStudio.setToRunButton(game);	
+			BowlerStudio.setToRunButton(game);
 			game.setGraphic(AssetFactory.loadIcon("Add-Game-Controller.png"));
 		});
 
@@ -302,28 +286,26 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 					e.printStackTrace();
 				}
 			}
-		
-		scriptRunner=null;
+
+		scriptRunner = null;
 	}
-	
+
 	private void start() {
 
-
 		running = true;
-		BowlerStudio.runLater(()->{
+		BowlerStudio.runLater(() -> {
 			game.setText("Stop Game Controller");
-			//game.setGraphic(AssetFactory.loadIcon("Stop.png"));
+			// game.setGraphic(AssetFactory.loadIcon("Stop.png"));
 			BowlerStudio.setToStopButton(game);
 		});
 		scriptRunner = new Thread() {
 
 			public void run() {
 				try {
-					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, null);
+					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(), currentFile, null);
 					reset();
 
-				} 
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 
 					reset();
 				}
@@ -346,13 +328,13 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		if (!button.isPressed()) {
 			// button released
 			// Log.info(button.getText()+" Button released ");
-//			try {
-//				TransformNR t = getKin().getCurrentTaskSpaceTransform();
-//				if(getKin().checkTaskSpaceTransform(t))
-//					getKin().setDesiredTaskSpaceTransform(t,  0);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
+			// try {
+			// TransformNR t = getKin().getCurrentTaskSpaceTransform();
+			// if(getKin().checkTaskSpaceTransform(t))
+			// getKin().setDesiredTaskSpaceTransform(t, 0);
+			// } catch (Exception e) {
+			// e.printStackTrace();
+			// }
 			if (button == px) {
 				x = 0;
 			}
@@ -423,10 +405,10 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 	public void home() {
 
 		getMobilebase().setGlobalToFiducialTransform(new TransformNR());
-		homeBase( getMobilebase());
+		homeBase(getMobilebase());
 
 	}
-	
+
 	private void homeBase(MobileBase mb) {
 		for (DHParameterKinematics c : mb.getAllDHChains()) {
 			homeLimb(c);
@@ -437,12 +419,12 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		double[] joints = c.getCurrentJointSpaceVector();
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			joints[i] = 0;
-			if(c.getFollowerMobileBase(i)!=null) {
+			if (c.getFollowerMobileBase(i) != null) {
 				homeBase(c.getFollowerMobileBase(i));
 			}
 		}
 		try {
-			double time =c.getBestTime(joints);
+			double time = c.getBestTime(joints);
 			c.setDesiredJointSpaceVector(joints, time);
 		} catch (Exception e) {
 			// Auto-generated catch block
@@ -451,18 +433,14 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 
 	}
 
-
 	@Override
 	public void onEvent(String name, float value) {
 		JogThread.setProvider(this, mobilebase);
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
 			x = value;
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
 			y = value;
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
 			rz = -value;
 		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
@@ -522,7 +500,5 @@ public class JogMobileBase extends GridPane implements IGameControlEvent,IJogPro
 		}
 		return null;
 	}
-
-
 
 }

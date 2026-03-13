@@ -1,8 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 
 public class MeasurmentConfig {
@@ -25,14 +22,13 @@ public class MeasurmentConfig {
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
 
 	public String getMeasurment() {
-//		if(configs.get(key)==null)
-//			configs.put(key, "");
+		// if(configs.get(key)==null)
+		// configs.put(key, "");
 
 		try {
-			return Vitamins.getMeasurement(type, id,key).toString();
+			return Vitamins.getMeasurement(type, id, key).toString();
 		} catch (Exception ex) {
 			System.out.print("\n\tGetting measurement of " + key);
 			ex.printStackTrace(System.out);
@@ -41,7 +37,7 @@ public class MeasurmentConfig {
 	}
 
 	public void setMeasurment(String measurment) {
-		com.neuronrobotics.sdk.common.Log.error("Setting field "+type+", "+ id +", "+ key + " to " + measurment);
-		Vitamins.putMeasurment(type, id,key, measurment);
+		com.neuronrobotics.sdk.common.Log.error("Setting field " + type + ", " + id + ", " + key + " to " + measurment);
+		Vitamins.putMeasurment(type, id, key, measurment);
 	}
 }

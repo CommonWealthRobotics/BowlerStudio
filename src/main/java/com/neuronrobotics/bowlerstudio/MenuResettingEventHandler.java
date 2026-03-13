@@ -7,13 +7,13 @@ public abstract class MenuResettingEventHandler implements EventHandler<Event> {
 	private Runnable menuReset = null;
 
 	public Runnable getMenuReset() {
-		if(menuReset==null)
-			menuReset=new Runnable() {
-				
+		if (menuReset == null)
+			menuReset = new Runnable() {
+
 				@Override
 				public void run() {
 					// Auto-generated method stub
-					
+
 				}
 			};
 		return menuReset;
@@ -22,5 +22,5 @@ public abstract class MenuResettingEventHandler implements EventHandler<Event> {
 	public void setMenuReset(Runnable menuReset) {
 		this.menuReset = menuReset;
 	}
-	
+
 }

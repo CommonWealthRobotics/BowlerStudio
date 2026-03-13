@@ -19,10 +19,10 @@ public class ExternalEditorController {
 	private File currentFile;
 	boolean hasEditor = false;
 	private Button advanced = new Button();
-	private ImageView image=new ImageView();
-	private  ArrayList<IExternalEditor> editors=new ArrayList<IExternalEditor>();
+	private ImageView image = new ImageView();
+	private ArrayList<IExternalEditor> editors = new ArrayList<IExternalEditor>();
 
-	private  void loadEditors() {
+	private void loadEditors() {
 		editors.add(new SVGExternalEditor());
 		editors.add(new GroovyEclipseExternalEditor());
 		editors.add(new ArduinoExternalEditor());
@@ -32,50 +32,54 @@ public class ExternalEditorController {
 		editors.add(new OpenSCADExternalEditor());
 		editors.add(new CaDoodleExternalEditor());
 	}
-	private IExternalEditor myEditor=null;
-	public ExternalEditorController(File f, CheckBox autoRun, Runnable OnComplete){
+	private IExternalEditor myEditor = null;
+	public ExternalEditorController(File f, CheckBox autoRun, Runnable OnComplete) {
 		loadEditors();
 		this.currentFile = f;
-		for(IExternalEditor e:editors) {
-			if(e.isSupportedByExtension(f)) {
-				hasEditor=true;
-				myEditor=e;
+		for (IExternalEditor e : editors) {
+			if (e.isSupportedByExtension(f)) {
+				hasEditor = true;
+				myEditor = e;
 				image.setImage(e.getImage());
-				FontSizeManager.addListener(fontNum->{
-			    	  image.setScaleX(FontSizeManager.getImageScale());
-			    	  image.setScaleY(FontSizeManager.getImageScale());
-			      });
-				com.neuronrobotics.sdk.common.Log.debug("ExternalEditorController: FOUND "+f.getName()+" is supported by "+e.getClass());
+				FontSizeManager.addListener(fontNum -> {
+					image.setScaleX(FontSizeManager.getImageScale());
+					image.setScaleY(FontSizeManager.getImageScale());
+				});
+				com.neuronrobotics.sdk.common.Log
+						.debug("ExternalEditorController: FOUND " + f.getName() + " is supported by " + e.getClass());
 				break;
-			}else {
-				//com.neuronrobotics.sdk.common.Log.debug(":ExternalEditorController:  "+f.getName()+" is not supported by "+e.getClass());
+			} else {
+				// com.neuronrobotics.sdk.common.Log.debug(":ExternalEditorController:
+				// "+f.getName()+" is not supported by "+e.getClass());
 			}
-			
+
 		}
-		if(hasEditor) {
-			
+		if (hasEditor) {
+
 			advanced.setGraphic(image);
-			advanced.setTooltip(new Tooltip("Click here to launch "+myEditor.nameOfEditor()+" the advanced editor for this file"));
+			advanced.setTooltip(new Tooltip(
+					"Click here to launch " + myEditor.nameOfEditor() + " the advanced editor for this file"));
 			advanced.setText(myEditor.nameOfEditor());
 			advanced.setMinWidth(100);
 			advanced.setTextOverrun(javafx.scene.control.OverrunStyle.CLIP);
 			advanced.setOnAction(event -> {
 				advanced.setDisable(true);
-				myEditor.launch(currentFile,advanced,OnComplete);
-				//autoRun.setSelected(true);
+				myEditor.launch(currentFile, advanced, OnComplete);
+				// autoRun.setSelected(true);
 			});
-//			FontSizeManager.addListener(fontNum->{
-//		    	  advanced.setScaleX(FontSizeManager.getImageScale());
-//		    	  advanced.setScaleY(FontSizeManager.getImageScale());
-//		      });
-		}else {
+			// FontSizeManager.addListener(fontNum->{
+			// advanced.setScaleX(FontSizeManager.getImageScale());
+			// advanced.setScaleY(FontSizeManager.getImageScale());
+			// });
+		} else {
 			try {
-				Image loadAsset = AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png");
+				Image loadAsset = AssetFactory
+						.loadAsset("Script-Tab-" + ScriptingEngine.getShellType(currentFile.getName()) + ".png");
 				image.setImage(loadAsset);
-				FontSizeManager.addListener(fontNum->{
-			    	  image.setScaleX(FontSizeManager.getImageScale());
-			    	  image.setScaleY(FontSizeManager.getImageScale());
-			      });
+				FontSizeManager.addListener(fontNum -> {
+					image.setScaleX(FontSizeManager.getImageScale());
+					image.setScaleY(FontSizeManager.getImageScale());
+				});
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
@@ -85,12 +89,12 @@ public class ExternalEditorController {
 		image.setFitWidth(30);
 
 	}
-	
+
 	public Node getControl() {
-		if(hasEditor)
+		if (hasEditor)
 			return advanced;
 		else
 			return image;
 	}
-	
+
 }

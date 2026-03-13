@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerstudio.tabs;
 
 import javax.swing.JFrame;
 
-import org.firmata4j.IODevice;
 import org.firmata4j.firmata.FirmataDevice;
 import org.firmata4j.ui.JPinboard;
 
@@ -28,22 +27,22 @@ public class FirmataTab extends AbstractBowlerStudioTab {
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
-		FirmataDevice device  =( (FirmataBowler) pm).getFirmataDevice();
+		FirmataDevice device = ((FirmataBowler) pm).getFirmataDevice();
 		// Auto-generated method stub
 		JFrame frame = new JFrame("Pinboard Example");
-		frame.add(new JPinboard(device  ));
+		frame.add(new JPinboard(device));
 		frame.pack();
 		frame.setVisible(true);
-		
-		JPinboard pinboard = new JPinboard(device  );
+
+		JPinboard pinboard = new JPinboard(device);
 		pinboard.setVisible(true);
 		SwingNode sn = new SwingNode();
-        sn.setContent(pinboard);
-        ScrollPane s1 = new ScrollPane();
-       
-        s1.setContent(sn);
-        setContent(s1);
-        setText("Firmata Pinpoard");
+		sn.setContent(pinboard);
+		ScrollPane s1 = new ScrollPane();
+
+		s1.setContent(sn);
+		setContent(s1);
+		setText("Firmata Pinpoard");
 		onTabReOpening();
 	}
 

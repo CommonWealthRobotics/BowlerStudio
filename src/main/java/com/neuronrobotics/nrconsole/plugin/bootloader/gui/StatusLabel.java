@@ -9,35 +9,34 @@ public class StatusLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 	public static final int OK = 1;
 	public static final int ERROR = 2;
-	
-	
+
 	public StatusLabel() {
 		setStatus(0);
 	}
-	
+
 	public void setStatus(int status) {
 		switch (status) {
-		case OK:
-			setIcon(createImageIcon("dyio/ok.png"));
-			break;
-		case ERROR:
-			setIcon(createImageIcon("dyio/error.png"));
-			break;
-		default:
-			setIcon(createImageIcon("dyio/blank.png"));
-			break;
+			case OK :
+				setIcon(createImageIcon("dyio/ok.png"));
+				break;
+			case ERROR :
+				setIcon(createImageIcon("dyio/error.png"));
+				break;
+			default :
+				setIcon(createImageIcon("dyio/blank.png"));
+				break;
 		}
-		
+
 		invalidate();
-		//repaint();
+		// repaint();
 	}
-	
+
 	protected ImageIcon createImageIcon(String path) {
-	    java.net.URL imgURL;
+		java.net.URL imgURL;
 		try {
 			imgURL = AssetFactory.loadFile(path).toURI().toURL();
-		    if (imgURL != null) 
-		        return new ImageIcon(imgURL);
+			if (imgURL != null)
+				return new ImageIcon(imgURL);
 		} catch (MalformedURLException e) {
 			// Auto-generated catch block
 			e.printStackTrace();
@@ -46,9 +45,8 @@ public class StatusLabel extends JLabel {
 			e.printStackTrace();
 		}
 
-
-        com.neuronrobotics.sdk.common.Log.error("Couldn't find file: " + path);
-        return null;
+		com.neuronrobotics.sdk.common.Log.error("Couldn't find file: " + path);
+		return null;
 
 	}
 }

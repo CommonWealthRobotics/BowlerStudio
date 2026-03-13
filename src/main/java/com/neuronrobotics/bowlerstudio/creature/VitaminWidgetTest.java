@@ -3,7 +3,6 @@ package com.neuronrobotics.bowlerstudio.creature;
 import java.io.File;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -26,7 +25,7 @@ public class VitaminWidgetTest extends Application {
 		FXMLLoader loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml");
 		loader.setClassLoader(VitatminWidget.class.getClassLoader());
 		Parent w = loader.load();
-		
+
 		tw = loader.getController();
 
 		File layoutFile = AssetFactory.loadFile("layout/default.css");
@@ -36,12 +35,12 @@ public class VitaminWidgetTest extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			com.neuronrobotics.sdk.common.Log.error("Setting font size to "+fontNum);
-			w.setStyle("-fx-font-size: "+tmp+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			com.neuronrobotics.sdk.common.Log.error("Setting font size to " + fontNum);
+			w.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		primaryStage.setOnCloseRequest(arg0 -> {
 			System.exit(0);
@@ -67,10 +66,10 @@ public class VitaminWidgetTest extends Application {
 			VitatminWidget tw = controller.getTw();
 			new Thread(() -> {
 				try {
-					MobileBase mb = (MobileBase) ScriptingEngine
-							.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
-					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0),selected->{
-						 return mb.forwardOffset(new TransformNR()); 
+					MobileBase mb = (MobileBase) ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),
+							"https://github.com/NeuronRobotics/NASACurisoity.git", "NASA_Curiosity.xml");
+					tw.setVitaminProvider(mb.getAllDHChains().get(0).getLinkConfiguration(0), selected -> {
+						return mb.forwardOffset(new TransformNR());
 					});
 				} catch (Exception e) {
 					// Auto-generated catch block
@@ -88,7 +87,8 @@ public class VitaminWidgetTest extends Application {
 	}
 
 	/**
-	 * @param tw the tw to set
+	 * @param tw
+	 *            the tw to set
 	 */
 	public void setTw(VitatminWidget tw) {
 		if (tw == null)

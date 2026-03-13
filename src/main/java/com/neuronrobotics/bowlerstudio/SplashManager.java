@@ -1,14 +1,7 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.function.BooleanSupplier;
-
-import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
-
-import javafx.application.Platform;
-import javafx.scene.image.Image;
 
 public class SplashManager {
 	private static Graphics2D splashGraphics;
@@ -27,7 +20,7 @@ public class SplashManager {
 			splashGraphics = null;
 			return;
 		}
-		if(closePreventer.getAsBoolean())
+		if (closePreventer.getAsBoolean())
 			return;
 		PsudoSplash.close();
 	}
@@ -35,7 +28,7 @@ public class SplashManager {
 	public static boolean isVisibleSplash() {
 		if (BowlerStudio.splash != null)
 			return BowlerStudio.splash.isVisible();
-		if(!PsudoSplash.isInitialized())
+		if (!PsudoSplash.isInitialized())
 			return false;
 		return PsudoSplash.isVisibleSplash();
 	}
@@ -46,29 +39,31 @@ public class SplashManager {
 
 	public static void renderSplashFrame(int percent, String message) {
 		if (loadFirst) {
-			
+
 			initialize();
 		}
 		String string = percent + "% " + message;
-		//com.neuronrobotics.sdk.common.Log.debug(" Splash Rendering " + percent + " " + message);
+		// com.neuronrobotics.sdk.common.Log.debug(" Splash Rendering " + percent + " "
+		// + message);
 		PsudoSplash.get().setMessage(string);
 		waitForUpdate();
 	}
-	public static void onLogUpdate( String message) {
+	public static void onLogUpdate(String message) {
 		if (loadFirst) {
-			
+
 			initialize();
 		}
-		PsudoSplash.get().onLogUpdate(message,null);
+		PsudoSplash.get().onLogUpdate(message, null);
 		waitForUpdate();
 	}
 	private static void waitForUpdate() {
 		updateSplash();
 
-//		if (Platform.isFxApplicationThread())
-//			throw new RuntimeException("Splash manager can not be opened from a javafx thread!");
-		int index=0;
-		while(!SplashManager.isVisibleSplash()) {
+		// if (Platform.isFxApplicationThread())
+		// throw new RuntimeException("Splash manager can not be opened from a javafx
+		// thread!");
+		int index = 0;
+		while (!SplashManager.isVisibleSplash()) {
 			com.neuronrobotics.sdk.common.Log.debug("Waiting for splash to open before moving on");
 			try {
 				Thread.sleep(100);
@@ -76,7 +71,7 @@ public class SplashManager {
 			} catch (InterruptedException e) {
 				return;
 			}
-			if(index>10)
+			if (index > 10)
 				return;
 		}
 	}
@@ -94,6 +89,5 @@ public class SplashManager {
 	public static void setClosePreventer(BooleanSupplier cp) {
 		closePreventer = cp;
 	}
-
 
 }

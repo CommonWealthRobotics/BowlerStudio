@@ -7,9 +7,6 @@ import com.neuronrobotics.bowlerstudio.BowlerKernel;
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.scene.Group;
 import javafx.scene.shape.CullFace;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
-import javafx.scene.text.Font;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.MeshView;
@@ -17,7 +14,6 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import javafx.scene.shape.SVGPath;
 
 public class MakeRuler {
 	// SVG paths for numbers 0-9
@@ -63,7 +59,7 @@ public class MakeRuler {
 						// Add centimeter number using SVGPath
 						int number = i / 10;
 						// Prevent double "0" at origin "(flipNumber || (i != 0))"
-						
+
 						if ((numbers.get(number) == null) || (flipNumber || (i != 0))) {
 							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5)
 									.moveToCenterX().setColor(Color.BLACK));
@@ -110,15 +106,15 @@ public class MakeRuler {
 	}
 
 	private static TriangleMesh createRectangleMesh(double width, double tickLength) {
-		float[] points = { 0, 0, 0, // point 0
+		float[] points = {0, 0, 0, // point 0
 				(float) width, 0, 0, // point 1
 				(float) width, (float) tickLength, 0, // point 2
 				0, (float) tickLength, 0 // point 3
 		};
 
-		float[] texCoords = { 0, 0, 1, 0, 1, 1, 0, 1 };
+		float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
 
-		int[] faces = { 0, 0, 1, 1, 2, 2, // First triangle
+		int[] faces = {0, 0, 1, 1, 2, 2, // First triangle
 				0, 0, 2, 2, 3, 3 // Second triangle
 		};
 

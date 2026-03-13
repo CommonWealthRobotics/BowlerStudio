@@ -12,13 +12,10 @@ import com.neuronrobotics.sdk.addons.kinematics.IJointSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.ITaskSpaceUpdateListenerNR;
 import com.neuronrobotics.sdk.addons.kinematics.JointLimit;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.IDeviceConnectionEventListener;
-import com.neuronrobotics.sdk.common.Log;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -27,12 +24,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class JogWidget extends GridPane
-		implements ITaskSpaceUpdateListenerNR, IOnTransformChange, IGameControlEvent,EventHandler<MouseEvent>,IJogProvider {
+		implements
+			ITaskSpaceUpdateListenerNR,
+			IOnTransformChange,
+			IGameControlEvent,
+			EventHandler<MouseEvent>,
+			IJogProvider {
 	double defauletSpeed = 0.2;
 	private DHParameterKinematics kinematics;
 	Button px = new Button("", AssetFactory.loadIcon("Plus-X.png"));
@@ -58,18 +58,18 @@ public class JogWidget extends GridPane
 	public JogWidget(DHParameterKinematics k, MobileBase source) {
 		this.source = source;
 		allWidgets.add(this);
-		JogWidget w=this;
+		JogWidget w = this;
 		source.addConnectionEventListener(new IDeviceConnectionEventListener() {
-			
+
 			@Override
 			public void onDisconnect(BowlerAbstractDevice source) {
 				allWidgets.remove(w);
 			}
-			
+
 			@Override
 			public void onConnect(BowlerAbstractDevice source) {
 				// Auto-generated method stub
-				
+
 			}
 		});
 		this.setKin(k);
@@ -78,21 +78,21 @@ public class JogWidget extends GridPane
 		// just a limb listener. if is not paralell group will not add internally
 		k.addPoseUpdateListener(this);
 		k.addJointSpaceListener(new IJointSpaceUpdateListenerNR() {
-			
+
 			@Override
 			public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-				
+
 			}
-			
+
 			@Override
 			public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
 				updatePose(joints);
 			}
-			
+
 			@Override
 			public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
 				// Auto-generated method stub
-				
+
 			}
 		});
 
@@ -163,7 +163,7 @@ public class JogWidget extends GridPane
 		advancedPanel.getPanes().add(new TitledPane("Current Pose", transformCurrent));
 		advancedPanel.getPanes().add(new TitledPane("Current Target", transformTarget));
 		add(advancedPanel, 0, 1);
-		tmpSet=getKin().getCurrentTaskSpaceTransform();
+		tmpSet = getKin().getCurrentTaskSpaceTransform();
 		handleButton(home);
 
 	}
@@ -175,13 +175,13 @@ public class JogWidget extends GridPane
 
 	private void setNewTarget(TransformNR newTrans) {
 		JogThread.setProvider(this, getKin());
-		if(getKin().checkTaskSpaceTransform(newTrans))
-			tmpSet=newTrans;
+		if (getKin().checkTaskSpaceTransform(newTrans))
+			tmpSet = newTrans;
 	}
 
 	@Override
 	public void onTransformFinished(TransformNR newTrans) {
-		if(getKin().checkTaskSpaceTransform(newTrans))
+		if (getKin().checkTaskSpaceTransform(newTrans))
 			setNewTarget(newTrans);
 		else
 			transformTarget.updatePose(getKin().getCurrentPoseTarget());
@@ -190,7 +190,7 @@ public class JogWidget extends GridPane
 	public void setCurrent(TransformNR currentPoseTarget) {
 		setNewTarget(currentPoseTarget);
 	}
-	
+
 	public DHParameterKinematics getKin() {
 		if (source.getParallelGroup(kinematics) != null) {
 			return source.getParallelGroup(kinematics);
@@ -230,7 +230,7 @@ public class JogWidget extends GridPane
 			}
 			stop = true;
 			return;
-		} 
+		}
 		if (button == px) {
 			x = 1;
 		}
@@ -283,10 +283,10 @@ public class JogWidget extends GridPane
 		}
 		for (int i = 0; i < c.getNumberOfLinks(); i++) {
 			try {
-				if(c.getFollowerMobileBase(i)!=null) {
+				if (c.getFollowerMobileBase(i) != null) {
 					homeBase(c.getFollowerMobileBase(i));
 				}
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -302,7 +302,7 @@ public class JogWidget extends GridPane
 		if (joints != null && transformCurrent != null)
 			MobileBaseCadManager.runLater(new Runnable() {
 				@Override
-				public void run() {	
+				public void run() {
 					transformCurrent.updatePose(currentTaskSpaceTransform);
 				}
 			});
@@ -310,23 +310,18 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void onTargetTaskSpaceUpdate(AbstractKinematicsNR source, TransformNR pose) {
-		if ( transformTarget != null && pose!=null)
+		if (transformTarget != null && pose != null)
 			transformTarget.updatePose(pose);
 	}
-
-
 
 	@Override
 	public void onEvent(String name, float value) {
 		JogThread.setProvider(this, getKin());
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKiny", "y")))
 			x = value;
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinz", "rz")))
 			y = value;
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinx", "x")))
 			rz = -value;
 		if (name.toLowerCase()
 				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogKinslider", "slider")))
@@ -365,12 +360,12 @@ public class JogWidget extends GridPane
 			game.setText("Remove Game Controller");
 
 			paramsKey = gameController.getControllerName();
-			//HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
+			// HashMap<String, Object> map = ConfigurationDatabase.getParamMap(paramsKey);
 			boolean hasmap = false;
-			if (ConfigurationDatabase.containsKey(paramsKey,"jogKinx") && 
-					ConfigurationDatabase.containsKey(paramsKey,"jogKiny") && 
-					ConfigurationDatabase.containsKey(paramsKey,"jogKinz")
-					&& ConfigurationDatabase.containsKey(paramsKey,"jogKinslider")) {
+			if (ConfigurationDatabase.containsKey(paramsKey, "jogKinx")
+					&& ConfigurationDatabase.containsKey(paramsKey, "jogKiny")
+					&& ConfigurationDatabase.containsKey(paramsKey, "jogKinz")
+					&& ConfigurationDatabase.containsKey(paramsKey, "jogKinslider")) {
 				hasmap = true;
 			}
 
@@ -402,7 +397,7 @@ public class JogWidget extends GridPane
 
 	@Override
 	public void handle(MouseEvent event) {
-		
+
 		try {
 			handleButton((Button) event.getSource());
 		} catch (Throwable T) {
@@ -412,16 +407,16 @@ public class JogWidget extends GridPane
 
 	@Override
 	public TransformNR getJogIncrement() {
-		if(tmpSet!=null) {
-			TransformNR ret=tmpSet;
-			tmpSet=null;
+		if (tmpSet != null) {
+			TransformNR ret = tmpSet;
+			tmpSet = null;
 			return ret;
 		}
 		if (!stop) {
 			TransformNR current = getKin().getCurrentPoseTarget().copy();
 
 			try {
-				double mmPerSecond = Double.parseDouble(increment.getText())*1000;
+				double mmPerSecond = Double.parseDouble(increment.getText()) * 1000;
 				double translationx = JogThread.getToseconds() * x * mmPerSecond;
 				double translationy = JogThread.getToseconds() * y * mmPerSecond;
 				double translationz = JogThread.getToseconds() * slider * mmPerSecond;
@@ -433,7 +428,6 @@ public class JogWidget extends GridPane
 				if (((DHParameterKinematics) getKin()).checkTaskSpaceTransform(current)) {
 					return current;
 				}
-					
 
 			} catch (Exception e) {
 				// Auto-generated catch block
@@ -442,6 +436,5 @@ public class JogWidget extends GridPane
 		}
 		return null;
 	}
-
 
 }

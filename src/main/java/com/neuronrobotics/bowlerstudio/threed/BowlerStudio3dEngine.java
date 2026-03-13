@@ -38,7 +38,6 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 //import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 //import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -83,15 +82,12 @@ import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.transform.Translate;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -120,8 +116,6 @@ import javafx.geometry.Bounds;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -134,7 +128,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 6744581340628622682L;
 
@@ -265,7 +259,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	// private CheckBox autoHighlight;
 
 	private boolean rebuildingUIOnerror = false;
-//	private static int sumVert = 0;
+	// private static int sumVert = 0;
 	private CheckMenuItem autoHighlight;
 	private CheckMenuItem spin;
 	private HBox controlsChecks;
@@ -481,7 +475,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/**
 	 * Instantiates a new jfx3d manager.
-	 * 
+	 *
 	 * @param string
 	 */
 	public BowlerStudio3dEngine(String name) {
@@ -545,14 +539,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				List<Vertex> vertices = poly.getVertices();
 
 				BowlerStudio.runLater(() -> {
-//				for (int i = 0; i < vertices.size(); i++) {
-//					CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
-//							.move(vertices.get(i))
-//							.setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
-//									Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
-//					csg.setIsWireFrame(true);
-//					getBowlerStudio().addNode(csg.getMesh());
-//				}
+					// for (int i = 0; i < vertices.size(); i++) {
+					// CSG csg= new Cylinder(0,stroke/2,stroke,3).toCSG()
+					// .move(vertices.get(i))
+					// .setColor(new javafx.scene.paint.Color(Math.random() * 0.5 + 0.5,
+					// Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5, 1));
+					// csg.setIsWireFrame(true);
+					// getBowlerStudio().addNode(csg.getMesh());
+					// }
 
 					MeshView current = BowlerStudioController.createPolygonOutlineMesh(vertices);
 					PhongMaterial material = new PhongMaterial(poly.getColor());
@@ -623,9 +617,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		com.neuronrobotics.sdk.common.Log.info("Rebuilding axis " + name);
 		buildAxes(b);
 
-//		Stop[] stops = null;
-//		com.neuronrobotics.sdk.common.Log.info("Rebuilding gradient " + name);
-//		getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
+		// Stop[] stops = null;
+		// com.neuronrobotics.sdk.common.Log.info("Rebuilding gradient " + name);
+		// getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false,
+		// CycleMethod.NO_CYCLE, stops));
 
 		group = new Group(getSubScene());
 		Scene s = new Scene(group);
@@ -760,8 +755,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			public void run() {
 				setName("Exporting the CAD objects");
 				ArrayList<CSG> csgs = new ArrayList<CSG>(getCsgMap().keySet());
-//				if (makePrintBed) {
-//				}
+				// if (makePrintBed) {
+				// }
 
 				com.neuronrobotics.sdk.common.Log.debug("Exporting " + csgs.size() + " parts");
 				File baseDirForFiles = FileSelectionFactory.GetDirectory(getDefaultStlDir());
@@ -833,10 +828,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * Removes the objects.
 	 */
 	public void removeObjects() {
-//		for (CSG previousCsg:getCsgMap().keySet())
-//			for (Polygon poly:previousCsg.getPolygons())
-//				sumVert-=(poly.vertices.size());
-//		com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
+		// for (CSG previousCsg:getCsgMap().keySet())
+		// for (Polygon poly:previousCsg.getPolygons())
+		// sumVert-=(poly.vertices.size());
+		// com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
 
 		lookGroup.getChildren().clear();
 		getCsgMap().clear();
@@ -847,12 +842,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Removes the object.
 	 *
-	 * @param previousCsg the previous
+	 * @param previousCsg
+	 *            the previous
 	 */
 	public void removeObject(CSG previousCsg) {
-//		for (Polygon poly:previousCsg.getPolygons())
-//			sumVert-=(poly.vertices.size());
-//		com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
+		// for (Polygon poly:previousCsg.getPolygons())
+		// sumVert-=(poly.vertices.size());
+		// com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
 
 		// com.neuronrobotics.sdk.common.Log.error(" Removing a CSG from file:
 		// "+previousCsg+" from
@@ -922,7 +918,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Adds the object.
 	 *
-	 * @param currentCsg the current
+	 * @param currentCsg
+	 *            the current
 	 * @return the mesh view
 	 */
 	@Deprecated
@@ -933,9 +930,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public MeshView addObject(CSG currentCsg, File source, double opacity, CSGDatabaseInstance instance) {
 		if (currentCsg == null)
 			return new MeshView();
-//		for (Polygon poly:currentCsg.getPolygons())
-//			sumVert+=(poly.vertices.size());
-//		com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
+		// for (Polygon poly:currentCsg.getPolygons())
+		// sumVert+=(poly.vertices.size());
+		// com.neuronrobotics.sdk.common.Log.error("Total Verts = "+sumVert);
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
@@ -1012,8 +1009,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);
-							;
+							com.neuronrobotics.sdk.common.Log.error(ex);;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1053,8 +1049,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1094,8 +1089,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 				}
 			}
@@ -1303,7 +1297,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Save to png.
 	 *
-	 * @param f the f
+	 * @param f
+	 *            the f
 	 */
 	public void saveToPng(File f) {
 		String fName = f.getAbsolutePath();
@@ -1449,11 +1444,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Create the work plane material
 		PhongMaterial material = new PhongMaterial();
-// Sharp edges, edges with aliasing
-//		material.setDiffuseMap(tile);
-//		material.setDiffuseColor(new Color(1, 1, 0, 0.33));
-//		material.setSpecularColor(Color.BLACK);
-//		material.setSelfIlluminationMap(tile);
+		// Sharp edges, edges with aliasing
+		// material.setDiffuseMap(tile);
+		// material.setDiffuseColor(new Color(1, 1, 0, 0.33));
+		// material.setSpecularColor(Color.BLACK);
+		// material.setSelfIlluminationMap(tile);
 
 		// Set work plane texture
 		material.setDiffuseMap(tile);
@@ -1463,9 +1458,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		material.setDiffuseColor(transWhite); // Work plane color
 		material.setSpecularColor(Color.BLACK); // No shiny spots
 
-//		WritableImage selfIlluminationImage = new WritableImage(1, 1);
-//		selfIlluminationImage.getPixelWriter().setColor(0, 0, Color.color(0.1, 0.1, 0.1, 1.0)); // RGBA
-//		material.setSelfIlluminationMap(selfIlluminationImage);
+		// WritableImage selfIlluminationImage = new WritableImage(1, 1);
+		// selfIlluminationImage.getPixelWriter().setColor(0, 0, Color.color(0.1, 0.1,
+		// 0.1, 1.0)); // RGBA
+		// material.setSelfIlluminationMap(selfIlluminationImage);
 
 		// Create the work plane outline material
 		PhongMaterial material2 = new PhongMaterial();
@@ -1474,7 +1470,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		material2.setDiffuseMap(outlineImage);
 		material2.setDiffuseColor(transWhite); // Work plane color
 		material2.setSpecularColor(Color.BLACK); // No shiny spots
-//		material2.setSelfIlluminationMap(selfIlluminationImage);
+		// material2.setSelfIlluminationMap(selfIlluminationImage);
 
 		// Create the work plane mesh, draw at slight offset to align pixel to line
 		// centre
@@ -1566,17 +1562,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 * DirectionalLight(); sunLight1.setColor(Color.color(0.3, 0.3, 0.3));
 		 * sunLight1.setDirection(new Point3D(0, 0, -1)); sunLight1.setLightOn(false);
 		 * cameraGroup.getChildren().add(sunLight1);
-		 * 
+		 *
 		 * // Point light sun high above the work plane PointLight sunLight2 = new
 		 * PointLight(Color.color(0.2, 0.2, 0.2)); sunLight2.setConstantAttenuation(1);
 		 * sunLight2.setLinearAttenuation(0); sunLight2.setQuadraticAttenuation(0);
 		 * sunLight2.getTransforms().add(new Translate(0, 0, 10000));
 		 * sunLight2.setLightOn(false); cameraGroup.getChildren().add(sunLight2);
-		 * 
+		 *
 		 * // Ambient lighting AmbientLight ambientLight = new
 		 * AmbientLight(Color.color(0.1, 0.1, 0.1)); ambientLight.setLightOn(false);
 		 * cameraGroup.getChildren().add(ambientLight);
-		 * 
+		 *
 		 * // Directional light follows the camera view angle DirectionalLight
 		 * directionalCameraLight = new DirectionalLight(Color.color(1.0, 1.0, 1.0));
 		 * camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
@@ -1650,7 +1646,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/**
 	 * Builds the axes.
-	 * 
+	 *
 	 * @param showAxes
 	 */
 	private void buildAxes(boolean showAxes) {
@@ -1920,7 +1916,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Handle mouse.
 	 *
-	 * @param scene the scene
+	 * @param scene
+	 *            the scene
 	 */
 
 	private void handleMouse(SubScene scene) {
@@ -1979,9 +1976,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				if (getControlsMap().isRotate(me)) {
 					double el = getVirtualcam().getTiltAngle();
 					boolean above = (el > 0);
-//					if (aboveSplit) {
-//						above=!above;
-//					}
+					// if (aboveSplit) {
+					// above=!above;
+					// }
 					// System.out.println("Above = "+el);
 					double i = above ? -1 : 1;
 					TransformNR trans = new TransformNR(0, 0, 0,
@@ -2019,32 +2016,32 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED --add-exports
 	 * javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED public double
 	 * objectDistance() {
-	 * 
+	 *
 	 * Point3D p = camera.localToScene(0, 0, 0); Vec3d camPos = new Vec3d(-p.getX(),
 	 * p.getY(), -p.getZ());
-	 * 
+	 *
 	 * Point3D dir = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0,
 	 * 0, 0)).normalize(); Vec3d camDir = new Vec3d(dir.getX(), -dir.getY(),
 	 * dir.getZ());
-	 * 
+	 *
 	 * //System.out.println("\nCamera position : " + camPos); //System.out.println(
 	 * "Camera direction: " + camDir);
-	 * 
+	 *
 	 * PickRay ray = new PickRay(camPos, camDir, 0.1, 499);
-	 * 
+	 *
 	 * PickResultChooser chooser = new PickResultChooser();
 	 * NodeHelper.pickNode(userGroup, ray, chooser);
-	 * 
+	 *
 	 * PickResult pr = chooser.toPickResult();
-	 * 
+	 *
 	 * if ((pr != null) && (pr.getIntersectedNode() != null)) { double dist =
 	 * pr.getIntersectedDistance();
-	 * 
+	 *
 	 * //System.out.println(">>> HIT POINT: " + pr.getIntersectedPoint() +
 	 * " Distance: " + (int)dist);
-	 * 
+	 *
 	 * return dist; }
-	 * 
+	 *
 	 * return Double.POSITIVE_INFINITY; }
 	 */
 
@@ -2111,14 +2108,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		/*
 		 * EXPERIMENTAL FEATURE, SLOW DOWN ZOOM WHEN CLOSE TO OBJECT
-		 * 
+		 *
 		 * double distance = getCamDistanceToClosestObject();
-		 * 
+		 *
 		 * // Parameters to control zoom in behavior final double ZOOM_IN_START_DISTANCE
 		 * = 5; final double ZOOM_IN_STEP_REDUCTION = 2; if (ZOOM_IN_START_DISTANCE *
 		 * zoomFactor > distance) zoomFactor = distance / (ZOOM_IN_START_DISTANCE *
 		 * ZOOM_IN_STEP_REDUCTION);
-		 * 
+		 *
 		 * // Parameters to control zoom out behavior final double
 		 * ZOOM_OUT_START_DISTANCE = 3; final double ZOOM_OUT_STEP_REDUCTION = 2; if
 		 * (-ZOOM_OUT_START_DISTANCE * zoomFactor > distance) zoomFactor = -distance /
@@ -2204,7 +2201,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Sets the sub scene.
 	 *
-	 * @param scene the new sub scene
+	 * @param scene
+	 *            the new sub scene
 	 */
 	public void setSubScene(SubScene scene) {
 		com.neuronrobotics.sdk.common.Log.debug("Setting UI scene");
@@ -2265,9 +2263,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/**
 	 * Select a provided affine that is in a given global pose
-	 * 
-	 * @param startingLocation the starting pose
-	 * @param rootListener     what affine to attach to
+	 *
+	 * @param startingLocation
+	 *            the starting pose
+	 * @param rootListener
+	 *            what affine to attach to
 	 */
 	public void setSelected(TransformNR startingLocation, Affine rootListener) {
 		focusToAffine(startingLocation, rootListener);
@@ -2275,9 +2275,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/**
 	 * Select a provided affine that is in a given global pose
-	 * 
-	 * @param startingLocation the starting pose
-	 * @param rootListener     what affine to attach to
+	 *
+	 * @param startingLocation
+	 *            the starting pose
+	 * @param rootListener
+	 *            what affine to attach to
 	 */
 	public void setSelected(Affine rootListener) {
 		focusToAffine(new TransformNR(), rootListener);
@@ -2533,11 +2535,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null) ? 0
+		double az = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuth()));
 
-		double el = (orient == null) ? 0
+		double el = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevation()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
@@ -2716,7 +2720,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	/**
-	 * @param defaultStlDir the defaultStlDir to set
+	 * @param defaultStlDir
+	 *            the defaultStlDir to set
 	 */
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
@@ -2737,7 +2742,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
 	 * main().
 	 *
-	 * @param args the command line arguments
+	 * @param args
+	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
 		JavaFXInitializer.go();

@@ -1,7 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-
 /**
  * Sample Skeleton for "CreatureLab.fxml" Controller Class
  * You can copy and paste this code into your favorite IDE
@@ -13,56 +11,51 @@ import java.util.ResourceBundle;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.threed.BowlerStudio3dEngine;
 
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.SubScene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-
 public class CreatureLab3dController {
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
 
-    @FXML // fx:id="CadControlsAnchor"
-    private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="CadControlsAnchor"
+	private AnchorPane CadControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="DriveControlsAnchor"
-    private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="DriveControlsAnchor"
+	private AnchorPane DriveControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="TempControlsAnchor"
-    private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
+	@FXML // fx:id="TempControlsAnchor"
+	private AnchorPane TempControlsAnchor; // Value injected by FXMLLoader
 
-    @FXML // fx:id="jfx3dControls"
-    private AnchorPane jfx3dControls; // Value injected by FXMLLoader
+	@FXML // fx:id="jfx3dControls"
+	private AnchorPane jfx3dControls; // Value injected by FXMLLoader
 
-    @FXML // fx:id="overlayScrollPanel"
-    private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
+	@FXML // fx:id="overlayScrollPanel"
+	private ScrollPane overlayScrollPanel; // Value injected by FXMLLoader
 
-    @FXML // fx:id="viewContainer"
-    private AnchorPane viewContainer; // Value injected by FXMLLoader
-    //private SubScene subScene;
+	@FXML // fx:id="viewContainer"
+	private AnchorPane viewContainer; // Value injected by FXMLLoader
+	// private SubScene subScene;
 	protected EventHandler<? super KeyEvent> normalKeyPessHandle = null;
-	
+
 	private static BowlerStudio3dEngine engine;
-	
-    public  CreatureLab3dController (){
-    
-    	setEngine(new BowlerStudio3dEngine("BowlerStudio3d"));
-    }
-    
+
+	public CreatureLab3dController() {
+
+		setEngine(new BowlerStudio3dEngine("BowlerStudio3d"));
+	}
+
 	public void setOverlayLeft(Node content) {
 		BowlerStudio.runLater(() -> {
 
@@ -71,16 +64,16 @@ public class CreatureLab3dController {
 			content.setOpacity(1);
 			overlayScrollPanel.viewportBoundsProperty()
 					.addListener((ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) -> {
-				// Node content = overlayScrollPanel.getContent();
-				//
-				// com.neuronrobotics.sdk.common.Log.error("Resizing " + arg2);
-				BowlerStudio.runLater(() -> {
-					overlayScrollPanel.setFitToHeight(true);
-					/// content.seth
-					overlayScrollPanel.setContent(content);
+						// Node content = overlayScrollPanel.getContent();
+						//
+						// com.neuronrobotics.sdk.common.Log.error("Resizing " + arg2);
+						BowlerStudio.runLater(() -> {
+							overlayScrollPanel.setFitToHeight(true);
+							/// content.seth
+							overlayScrollPanel.setContent(content);
 
-				});
-			});
+						});
+					});
 			overlayScrollPanel.setVisible(true);
 		});
 	}
@@ -150,38 +143,41 @@ public class CreatureLab3dController {
 		});
 	}
 
-
-    @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
-        assert CadControlsAnchor != null : "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        assert DriveControlsAnchor != null : "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        assert TempControlsAnchor != null : "fx:id=\"TempControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        assert jfx3dControls != null : "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        assert overlayScrollPanel != null : "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        assert viewContainer != null : "fx:id=\"viewContainer\" was not injected: check your FXML file 'CreatureLab.fxml'.";
-        clearOverlayLeft();
-        // Initialize your logic here: all @FXML variables will have been injected
+	@FXML // This method is called by the FXMLLoader when initialization is complete
+	void initialize() {
+		assert CadControlsAnchor != null
+				: "fx:id=\"CadControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		assert DriveControlsAnchor != null
+				: "fx:id=\"DriveControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		assert TempControlsAnchor != null
+				: "fx:id=\"TempControlsAnchor\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		assert jfx3dControls != null
+				: "fx:id=\"jfx3dControls\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		assert overlayScrollPanel != null
+				: "fx:id=\"overlayScrollPanel\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		assert viewContainer != null
+				: "fx:id=\"viewContainer\" was not injected: check your FXML file 'CreatureLab.fxml'.";
+		clearOverlayLeft();
+		// Initialize your logic here: all @FXML variables will have been injected
 		setupUi();
-		
-    }
+
+	}
 
 	private void setupUi() {
 		BowlerStudio.runLater(() -> {
-			getEngine() .getSubScene().setFocusTraversable(false);
-			getEngine() .getSubScene().widthProperty().bind(viewContainer.widthProperty());
-			getEngine() .getSubScene().heightProperty().bind(viewContainer.heightProperty());
+			getEngine().getSubScene().setFocusTraversable(false);
+			getEngine().getSubScene().widthProperty().bind(viewContainer.widthProperty());
+			getEngine().getSubScene().heightProperty().bind(viewContainer.heightProperty());
 		});
 		BowlerStudio.runLater(() -> {
 			Group controlsBox = getEngine().getControlsBox(AssetFactory.loadIcon("Home-Camera.png"),
-					AssetFactory.loadIcon("Generate-Cad.png"),
-					AssetFactory.loadIcon("Clear-Screen.png")
-					);
+					AssetFactory.loadIcon("Generate-Cad.png"), AssetFactory.loadIcon("Clear-Screen.png"));
 			jfx3dControls.getChildren().add(controlsBox);
-			viewContainer.getChildren().add(getEngine() .getSubScene());
-			AnchorPane.setTopAnchor(getEngine() .getSubScene(), 0.0);
-			AnchorPane.setRightAnchor(getEngine() .getSubScene(), 0.0);
-			AnchorPane.setLeftAnchor(getEngine() .getSubScene(), 0.0);
-			AnchorPane.setBottomAnchor(getEngine() .getSubScene(), 0.0);
+			viewContainer.getChildren().add(getEngine().getSubScene());
+			AnchorPane.setTopAnchor(getEngine().getSubScene(), 0.0);
+			AnchorPane.setRightAnchor(getEngine().getSubScene(), 0.0);
+			AnchorPane.setLeftAnchor(getEngine().getSubScene(), 0.0);
+			AnchorPane.setBottomAnchor(getEngine().getSubScene(), 0.0);
 		});
 	}
 

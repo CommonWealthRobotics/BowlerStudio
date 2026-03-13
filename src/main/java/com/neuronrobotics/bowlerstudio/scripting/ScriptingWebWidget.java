@@ -2,43 +2,33 @@ package com.neuronrobotics.bowlerstudio.scripting;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 //import com.neuronrobotics.imageprovider.OpenCVImageProvider;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-@SuppressWarnings({ "unused", "restriction" })
+@SuppressWarnings({"unused", "restriction"})
 public class ScriptingWebWidget extends BorderPane implements ChangeListener<Object> {
 
 	private boolean running = false;
@@ -65,7 +55,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 
 	private HBox controlPane;
 	private String currentGit;
-	//private String currentGist;
+	// private String currentGist;
 	private boolean isOwnedByLoggedInUser;
 	private ImageView image = new ImageView();
 
@@ -85,12 +75,12 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 	}
 
 	private void startStopAction() {
-		BowlerStudio.runLater(()-> runfx.setDisable(true));
+		BowlerStudio.runLater(() -> runfx.setDisable(true));
 		if (running)
 			stop();
 		else
 			start();
-		BowlerStudio.runLater(()-> runfx.setDisable(false));
+		BowlerStudio.runLater(() -> runfx.setDisable(false));
 	}
 
 	public ScriptingWebWidget(ScriptingWidgetType type) {
@@ -109,7 +99,6 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 				public void run() {
 					doFork();
 				}
-
 
 			}.start();
 
@@ -136,7 +125,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			BowlerStudio.createFileTab(currentFile);
 		else {
 			com.neuronrobotics.sdk.common.Log.error("Making Fork...");
-			String reponame = currentFile.getName().split("\\.")[0]+"_"+PasswordManager.getLoginID();
+			String reponame = currentFile.getName().split("\\.")[0] + "_" + PasswordManager.getLoginID();
 			try {
 				String newGit = ScriptingEngine.fork(currentGit, reponame, "Making fork from web gist");
 				File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
@@ -146,7 +135,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			}
 		}
 	}
-	
+
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {
@@ -216,10 +205,10 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			try {
 				image.setImage(AssetFactory
 						.loadAsset("Script-Tab-" + ScriptingEngine.getShellType(currentFile.getName()) + ".png"));
-				FontSizeManager.addListener(fontNum->{
-			    	  image.setScaleX(FontSizeManager.getImageScale());
-			    	  image.setScaleY(FontSizeManager.getImageScale());
-			      });
+				FontSizeManager.addListener(fontNum -> {
+					image.setScaleX(FontSizeManager.getImageScale());
+					image.setScaleY(FontSizeManager.getImageScale());
+				});
 			} catch (Exception e2) {
 				// Auto-generated catch block
 				e2.printStackTrace();
@@ -272,7 +261,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		BowlerStudio.runLater(() -> {
 			ArrayList<String> fileListToDisplay = new ArrayList<>();
 			for (String s : fileList) {
-				if(!s.startsWith(".")) {
+				if (!s.startsWith(".")) {
 					fileListBox.getItems().add(s);
 					fileListToDisplay.add(s);
 				}
@@ -280,7 +269,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 			if (!fileListToDisplay.isEmpty()) {
 				fileListBox.setValue(fileListToDisplay.get(0));
 				try {
-					currentFile=ScriptingEngine.fileFromGit(currentGit, fileListToDisplay.get(0));
+					currentFile = ScriptingEngine.fileFromGit(currentGit, fileListToDisplay.get(0));
 				} catch (InvalidRemoteException e1) {
 					// Auto-generated catch block
 					e1.printStackTrace();
@@ -335,7 +324,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 							if (ex.getMessage().contains("sleep interrupted")) {
 								append("\n" + currentFile + " Interupted\n");
 							} else {
-								BowlerStudio.printStackTrace(ex,currentFile);
+								BowlerStudio.printStackTrace(ex, currentFile);
 							}
 						} catch (Throwable e) {
 							StringWriter sw = new StringWriter();
@@ -349,7 +338,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 					for (IScriptEventListener l : listeners) {
 						l.onScriptError(ex, currentFile);
 					}
-					BowlerStudio.printStackTrace(ex,currentFile);
+					BowlerStudio.printStackTrace(ex, currentFile);
 				}
 
 			}
@@ -396,7 +385,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		loadGitLocal(currentGit, (String) newValue);
 	}
 
-	public static void main(String [] args) {
+	public static void main(String[] args) {
 		new ScriptingWebWidget(ScriptingWidgetType.WEB).doFork();
 	}
 }

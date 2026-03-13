@@ -39,54 +39,55 @@ public class DataPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private XYPlot plot;
-	
-    private XYSeries positionSer;
-    private Marker setpoint = new ValueMarker(0);
-    private JButton exportXlsBtn = new JButton("Export Excel");
-    private JButton exportCsvBtn = new JButton("Export CSV");
-    
-    /**
-     * Creates a new self-contained demo panel.
-     */
-    public DataPanel(String title) {
-        //setTitle(title);
-        setLayout(new BorderLayout());
-        
-        positionSer = new XYSeries("True Position");
-        
-        XYSeriesCollection dataset1 = new XYSeriesCollection(positionSer);
-        
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Position", "Time (seconds)", "Angle (degrees)", dataset1,true, true, false);
 
-        plot = (XYPlot) chart.getPlot();
-        plot.setRenderer(1, new DefaultXYItemRenderer());
-        plot.mapDatasetToRangeAxis(1, 1);
-        
-        ValueAxis axis = plot.getDomainAxis();
-        axis.setAutoRange(true);
-        axis.setFixedAutoRange(20000.0);  // 20 seconds
-        
-        ChartUtilities.applyCurrentTheme(chart);
+	private XYSeries positionSer;
+	private Marker setpoint = new ValueMarker(0);
+	private JButton exportXlsBtn = new JButton("Export Excel");
+	private JButton exportCsvBtn = new JButton("Export CSV");
 
-        ChartPanel chartPanel = new ChartPanel(chart);        
-        chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-        
-        exportXlsBtn.setActionCommand("EXPORT_XLS");
-        exportCsvBtn.setActionCommand("EXPORT_CSV");
-        
-        exportXlsBtn.addActionListener(this);
-        exportCsvBtn.addActionListener(this);
-        
-        JPanel exportPanel = new JPanel();
-        exportPanel.add(exportXlsBtn);
-        exportPanel.add(exportCsvBtn);
-        
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(chartPanel);
-        mainPanel.add(exportPanel, BorderLayout.SOUTH);
-        
-        add(mainPanel);
-   }
+	/**
+	 * Creates a new self-contained demo panel.
+	 */
+	public DataPanel(String title) {
+		// setTitle(title);
+		setLayout(new BorderLayout());
+
+		positionSer = new XYSeries("True Position");
+
+		XYSeriesCollection dataset1 = new XYSeriesCollection(positionSer);
+
+		JFreeChart chart = ChartFactory.createTimeSeriesChart("Position", "Time (seconds)", "Angle (degrees)", dataset1,
+				true, true, false);
+
+		plot = (XYPlot) chart.getPlot();
+		plot.setRenderer(1, new DefaultXYItemRenderer());
+		plot.mapDatasetToRangeAxis(1, 1);
+
+		ValueAxis axis = plot.getDomainAxis();
+		axis.setAutoRange(true);
+		axis.setFixedAutoRange(20000.0); // 20 seconds
+
+		ChartUtilities.applyCurrentTheme(chart);
+
+		ChartPanel chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+
+		exportXlsBtn.setActionCommand("EXPORT_XLS");
+		exportCsvBtn.setActionCommand("EXPORT_CSV");
+
+		exportXlsBtn.addActionListener(this);
+		exportCsvBtn.addActionListener(this);
+
+		JPanel exportPanel = new JPanel();
+		exportPanel.add(exportXlsBtn);
+		exportPanel.add(exportCsvBtn);
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel.add(chartPanel);
+		mainPanel.add(exportPanel, BorderLayout.SOUTH);
+
+		add(mainPanel);
+	}
 
 	public void addPosition(double position, long time) {
 		positionSer.add(time, position);
@@ -103,34 +104,34 @@ public class DataPanel extends JPanel implements ActionListener {
 		setpoint.setLabelPaint(Color.red);
 		setpoint.setLabelAnchor(RectangleAnchor.TOP_LEFT);
 		setpoint.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
-        plot.addRangeMarker(setpoint);
+		plot.addRangeMarker(setpoint);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fc = new JFileChooser();
 		int fcRtn = fc.showSaveDialog(this);
-		
-		if(fcRtn != JFileChooser.APPROVE_OPTION) {
+
+		if (fcRtn != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
-		
+
 		File f = fc.getSelectedFile();
-		
-		if(e.getActionCommand().equalsIgnoreCase("EXPORT_XLS")) {
+
+		if (e.getActionCommand().equalsIgnoreCase("EXPORT_XLS")) {
 			ExcelWriter ew = new ExcelWriter();
 			ew.setFile(f);
 			ew.addData(positionSer);
 			ew.cleanup();
 		} else {
-			if (!f.getName().endsWith(".csv")){
-			    f = new File(f.getAbsolutePath()+".csv");
+			if (!f.getName().endsWith(".csv")) {
+				f = new File(f.getAbsolutePath() + ".csv");
 			}
 			CSVWriter cw = new CSVWriter();
 			cw.setFile(f);
 			cw.addData(positionSer);
 			cw.cleanup();
 		}
-		
+
 	}
 }

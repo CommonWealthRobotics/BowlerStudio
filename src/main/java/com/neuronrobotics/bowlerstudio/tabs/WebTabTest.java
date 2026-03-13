@@ -1,23 +1,16 @@
 package com.neuronrobotics.bowlerstudio.tabs;
 
 import java.io.File;
-import java.time.Duration;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
-import com.neuronrobotics.bowlerstudio.creature.VitaminWidgetTest;
-import com.neuronrobotics.bowlerstudio.creature.VitatminWidget;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 
 public class WebTabTest extends Application {
@@ -38,19 +31,18 @@ public class WebTabTest extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
-		
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			com.neuronrobotics.sdk.common.Log.error("Setting font size to "+fontNum);
-			w.setStyle("-fx-font-size: "+tmp+"pt");
+
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			com.neuronrobotics.sdk.common.Log.error("Setting font size to " + fontNum);
+			w.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		primaryStage.setOnCloseRequest(arg0 -> {
 			System.exit(0);
 		});
-		
-		
+
 		primaryStage.setScene(scene);
 		primaryStage.setWidth(600);
 		primaryStage.setHeight(777);
@@ -85,6 +77,5 @@ public class WebTabTest extends Application {
 	public WebTabController getTw() {
 		return tw;
 	}
-
 
 }

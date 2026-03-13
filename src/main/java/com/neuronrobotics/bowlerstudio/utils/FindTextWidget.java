@@ -8,7 +8,6 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -142,32 +141,31 @@ public class FindTextWidget extends Application {
 		new Thread(() -> {
 			String find = findBox.getText();
 			String replace = replaceBox.getText();
-			if(replace==null)
-				replace="";
+			if (replace == null)
+				replace = "";
 			String current = textArea.getText();
 			int intLengthOfRemove = find.length();
 
-			if(pos>=intLengthOfRemove){
-				String firstHalf = current.substring(0,pos-intLengthOfRemove);
-				String secondtHalf = current.substring(pos );
-				if(direction>0) {
-					if(secondtHalf.length()<=intLengthOfRemove) {
-						//bail
+			if (pos >= intLengthOfRemove) {
+				String firstHalf = current.substring(0, pos - intLengthOfRemove);
+				String secondtHalf = current.substring(pos);
+				if (direction > 0) {
+					if (secondtHalf.length() <= intLengthOfRemove) {
+						// bail
 						return;
 					}
-				}
-				else {
-					if(firstHalf.length()<=intLengthOfRemove) {
-						//bail
+				} else {
+					if (firstHalf.length() <= intLengthOfRemove) {
+						// bail
 						return;
 					}
 				}
 				String newContent = firstHalf + replace + secondtHalf;
-				BowlerStudio.invokeLater(() ->{
+				BowlerStudio.invokeLater(() -> {
 					textArea.setText(newContent);
 					find(direction);
 				});
-			}else{
+			} else {
 				find(direction);
 			}
 		}).start();
@@ -215,11 +213,11 @@ public class FindTextWidget extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			root.setStyle("-fx-font-size: "+tmp+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Find/Replace");

@@ -15,7 +15,6 @@ import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
 import eu.hansolo.medusa.Gauge.KnobType;
 import eu.hansolo.medusa.Gauge.NeedleShape;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
@@ -27,52 +26,38 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 	private Section boundsPossible;
 	private LinkConfiguration conf;
 	private AbstractLink link;
-	private boolean isNowVis=false;
+	private boolean isNowVis = false;
 	public Gauge getGauge() {
 		if (gauge == null) {
 			double spread = 60;
 			bounds = new Section(0, 0, Color.rgb(60, 130, 145, 0.7));
 			boundsPossible = new Section(0, 0, Color.ORANGE);
-			
-			gauge = GaugeBuilder
-					.create()
-					.decimals(2)
-					.foregroundBaseColor(Color.BLACK)
-					.prefSize(getSIZE(), getSIZE())
-					.startAngle(360 - (spread / 2))
-					.angleRange(360 - spread)
-					.minValue(-180 + (spread / 2))
-					.maxValue(180 - (spread / 2))
-					.tickLabelLocation(TickLabelLocation.OUTSIDE)
-					.tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
-					.minorTickMarksVisible(false)
-					//.tickLabelsVisible(false)
-					.majorTickMarkType(TickMarkType.BOX)
-					.valueVisible(true)
-					.knobType(KnobType.FLAT)
-					.needleShape(NeedleShape.FLAT)
-					.needleColor(Color.RED)
-					.tickLabelsVisible(true)
-					.sectionsVisible(true)
-					.sections(boundsPossible, bounds)
-					.build();
+
+			gauge = GaugeBuilder.create().decimals(2).foregroundBaseColor(Color.BLACK).prefSize(getSIZE(), getSIZE())
+					.startAngle(360 - (spread / 2)).angleRange(360 - spread).minValue(-180 + (spread / 2))
+					.maxValue(180 - (spread / 2)).tickLabelLocation(TickLabelLocation.OUTSIDE)
+					.tickLabelOrientation(TickLabelOrientation.ORTHOGONAL).minorTickMarksVisible(false)
+					// .tickLabelsVisible(false)
+					.majorTickMarkType(TickMarkType.BOX).valueVisible(true).knobType(KnobType.FLAT)
+					.needleShape(NeedleShape.FLAT).needleColor(Color.RED).tickLabelsVisible(true).sectionsVisible(true)
+					.sections(boundsPossible, bounds).build();
 			BowlerStudio.runLater(() -> {
 				gauge.setInteractive(false);
 				gauge.setTitle("");
 				turnOffPickOnBoundsFor(gauge);
 			});
-			gauge.parentProperty().addListener((observable, oldValue, newValue) ->        {
-				BowlerStudio.runLater(()->{
-				    isNowVis=newValue!=null;
-				    if(isNowVis) {
-				    	event(conf);
-				    	if(gauge!=null && link!=null)
-				    		gauge.setValue(link.getCurrentEngineeringUnits());
-				    }
+			gauge.parentProperty().addListener((observable, oldValue, newValue) -> {
+				BowlerStudio.runLater(() -> {
+					isNowVis = newValue != null;
+					if (isNowVis) {
+						event(conf);
+						if (gauge != null && link != null)
+							gauge.setValue(link.getCurrentEngineeringUnits());
+					}
 				});
 
 			});
-			
+
 		}
 		return gauge;
 	}
@@ -109,7 +94,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void event(LinkConfiguration newConf) {
-		if(!isNowVis||getAbstractLink()==null)
+		if (!isNowVis || getAbstractLink() == null)
 			return;
 		BowlerStudio.runLater(() -> {
 			bounds.setStart(getAbstractLink().getMinEngineeringUnits());
@@ -122,7 +107,7 @@ public class LinkGaugeController implements ILinkListener, ILinkConfigurationCha
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink source, double engineeringUnitsValue) {
-		if(!isNowVis)
+		if (!isNowVis)
 			return;
 		BowlerStudio.runLater(() -> gauge.setValue(engineeringUnitsValue));
 	}

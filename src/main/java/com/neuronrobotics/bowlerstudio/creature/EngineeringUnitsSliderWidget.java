@@ -3,7 +3,6 @@ package com.neuronrobotics.bowlerstudio.creature;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
@@ -40,19 +39,19 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public EngineeringUnitsSliderWidget(IOnEngineeringUnitsChange listener, double current, double width,
 			String units) {
 		this(listener, -Float.MAX_VALUE, Float.MAX_VALUE, current, width, units);
-		
+
 	}
 
 	private void onSliderMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		editing = true;
-		//com.neuronrobotics.sdk.common.Log.error("Slider moving ");
+		// com.neuronrobotics.sdk.common.Log.error("Slider moving ");
 		getListener().onSliderMoving(this, newAngleDegrees);
 	}
 
 	private void onSliderDoneMovingInternal(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 		editing = false;
-		instantValueStore=(newAngleDegrees);
-		//com.neuronrobotics.sdk.common.Log.error("Slider done");
+		instantValueStore = (newAngleDegrees);
+		// com.neuronrobotics.sdk.common.Log.error("Slider done");
 		getListener().onSliderDoneMoving(this, newAngleDegrees);
 	}
 
@@ -63,7 +62,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		this.units = units;
 		this.setListener(listener);
 		setpoint = new Slider();
-		increment = new Label(jogIncrement+"");
+		increment = new Label(jogIncrement + "");
 		instantValueStore = current;
 		if (min > max) {
 			double minStart = min;
@@ -95,16 +94,16 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue,
 					Boolean newPropertyValue) {
 				if (newPropertyValue) {
-					//com.neuronrobotics.sdk.common.Log.error("Textfield on focus");
+					// com.neuronrobotics.sdk.common.Log.error("Textfield on focus");
 					editing = true;
 				} else {
-					//com.neuronrobotics.sdk.common.Log.error("Textfield out focus");
+					// com.neuronrobotics.sdk.common.Log.error("Textfield out focus");
 					editing = false;
 				}
 			}
 		});
 		spv.setOnAction(event -> {
-			try {				
+			try {
 				localSetValue(Double.parseDouble(spv.getText()));
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -115,7 +114,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.setMaxWidth(width);
 		setpoint.valueChangingProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			try {
-				//com.neuronrobotics.sdk.common.Log.error("Slider moving = "+newValue);
+				// com.neuronrobotics.sdk.common.Log.error("Slider moving = "+newValue);
 				if (!newValue)
 					onSliderDoneMovingInternal(this, setpoint.getValue());
 			} catch (java.lang.NumberFormatException ex) {
@@ -128,12 +127,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		setpoint.valueProperty().addListener(this);
 
 		String unitsString = "(" + units + ")";
-		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
-		getColumnConstraints().add(new ColumnConstraints(30*scale)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(40*scale)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(30*scale)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(100*scale)); // column 2 is 100 wide
-		getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7*scale)); // column 2 is 100 wide
+		double scale = (double) (FontSizeManager.getDefaultSize()) / 12.0;
+		getColumnConstraints().add(new ColumnConstraints(30 * scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(40 * scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(30 * scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(100 * scale)); // column 2 is 100 wide
+		getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7 * scale)); // column 2 is 100 wide
 
 		add(setpoint, 3, 1);
 		add(jogplus, 2, 0);
@@ -191,7 +190,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	@Override
 	public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 		updateValue();
-		//com.neuronrobotics.sdk.common.Log.error("Updating value to "+newValue);
+		// com.neuronrobotics.sdk.common.Log.error("Updating value to "+newValue);
 	}
 
 	private void updateValue() {
@@ -219,7 +218,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 		}
 		instantValueStore = val;
 		double toSet = val;
-		
+
 		BowlerStudio.runLater(() -> {
 			setValueLocal(toSet);
 		});
@@ -295,13 +294,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	}
 
 	/**
-	 * @param jogIncrement the jogIncrement to set
+	 * @param jogIncrement
+	 *            the jogIncrement to set
 	 */
 	public void setJogIncrement(double j) {
-		//com.neuronrobotics.sdk.common.Log.error("Increment set to "+j+" "+units);
-		jogIncrement=Math.abs(j);
-		BowlerStudio.runLater(()->{
-			increment.setText(""+jogIncrement);
+		// com.neuronrobotics.sdk.common.Log.error("Increment set to "+j+" "+units);
+		jogIncrement = Math.abs(j);
+		BowlerStudio.runLater(() -> {
+			increment.setText("" + jogIncrement);
 		});
 	}
 }

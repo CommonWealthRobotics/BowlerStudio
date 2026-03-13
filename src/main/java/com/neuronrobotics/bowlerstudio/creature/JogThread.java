@@ -2,8 +2,6 @@ package com.neuronrobotics.bowlerstudio.creature;
 
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
@@ -13,7 +11,6 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.common.TickToc;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-import javafx.application.Platform;
 public class JogThread {
 	private static jogThread thread = null;
 	private static Thread timer = null;
@@ -24,17 +21,18 @@ public class JogThread {
 	private static AbstractKinematicsNR source;
 	private static IJogProvider provider = null;
 	private static final double toSeconds = .032;
-//	public static boolean setTarget(AbstractKinematicsNR source, TransformNR toSet, double toSeconds) {
-//		JogThread.source = source;
-//		if (thread == null) {
-//			Log.enableSystemPrint(true);
-//			thread = new jogThread();
-//			thread.start();
-//		}
-//
-//		return thread.setTarget(toSet, toSeconds);
-//
-//	}
+	// public static boolean setTarget(AbstractKinematicsNR source, TransformNR
+	// toSet, double toSeconds) {
+	// JogThread.source = source;
+	// if (thread == null) {
+	// Log.enableSystemPrint(true);
+	// thread = new jogThread();
+	// thread.start();
+	// }
+	//
+	// return thread.setTarget(toSet, toSeconds);
+	//
+	// }
 
 	public static boolean isControlThreadRunning() {
 		return controlThreadRunning;
@@ -51,7 +49,8 @@ public class JogThread {
 	public static void setProvider(IJogProvider provider, AbstractKinematicsNR s) {
 		JogThread.provider = provider;
 		source = s;
-    	//new Exception(s.getClass().getName()+"\n"+provider.getClass().getName()).printStackTrace();
+		// new
+		// Exception(s.getClass().getName()+"\n"+provider.getClass().getName()).printStackTrace();
 
 		if (thread == null) {
 			thread = new jogThread();
@@ -72,14 +71,14 @@ public class JogThread {
 		public void run() {
 			setName(" Jog Widget thread");
 			long threadStart = System.currentTimeMillis();
-			//long index = 0;
+			// long index = 0;
 			while (source.isAvailable()) {
 				threadStart = System.currentTimeMillis();
 				TransformNR tr = provider.getJogIncrement();
 				if (setTarget(tr)) {
 					double bestTime = getToseconds();
 					if (isControlThreadRunning()) {
-						//TickToc.setEnabled(true);
+						// TickToc.setEnabled(true);
 						if (MobileBase.class.isInstance(source)) {
 							try {
 								((MobileBase) source).DriveArc(toSet, bestTime);
@@ -99,11 +98,11 @@ public class JogThread {
 									com.neuronrobotics.sdk.common.Log.error(
 											"Jog paused for links to catch up " + bestTime + " vs " + getToseconds());
 								}
-								TickToc.tic("computed best time "+bestTime);
+								TickToc.tic("computed best time " + bestTime);
 								kin.setDesiredTaskSpaceTransform(toSet, bestTime);
-								//com.neuronrobotics.sdk.common.Log.error("Joging to "+toSet);
+								// com.neuronrobotics.sdk.common.Log.error("Joging to "+toSet);
 							} catch (Exception e) {
-								com.neuronrobotics.sdk.common.Log.error("Exception in Jog Thread "+e.getMessage());
+								com.neuronrobotics.sdk.common.Log.error("Exception in Jog Thread " + e.getMessage());
 								// BowlerStudioController.highlightException(null, e);
 							}
 						}
@@ -113,12 +112,12 @@ public class JogThread {
 						TickToc.setEnabled(false);
 
 					double ms = bestTime * 1000.0;
-					long gate = ((long)  ms) + threadStart-System.currentTimeMillis();
+					long gate = ((long) ms) + threadStart - System.currentTimeMillis();
 					TickToc.tic("Jog Thread set Done " + System.currentTimeMillis() + " waiting for " + gate);
-					if(gate>0)
-						ThreadUtil.wait((int)gate);
+					if (gate > 0)
+						ThreadUtil.wait((int) gate);
 					TickToc.toc();
-				}else {
+				} else {
 					ThreadUtil.wait(1);
 				}
 			}

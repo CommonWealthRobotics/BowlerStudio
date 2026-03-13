@@ -3,8 +3,6 @@ package com.neuronrobotics.bowlerstudio.scripting;
 import javafx.scene.Node;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.ConnectionManager;
-import com.neuronrobotics.bowlerstudio.CreatureLab3dController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.creature.CadFileExporter;
@@ -22,24 +20,16 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.FileUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser.ExtensionFilter;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import javafx.stage.Stage;
@@ -49,10 +39,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javafx.scene.control.Tooltip;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -93,7 +81,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 	private String currentGist;
 	private boolean updateneeded = false;
 	private IScriptingLanguage langaugeType;
-//	private ImageView image=new ImageView();
+	// private ImageView image=new ImageView();
 	private boolean isOwnedByLoggedInUser = false;
 	private String remote;
 	private boolean isArrange = false;
@@ -151,8 +139,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		autoRun.setTooltip(new Tooltip("Check to auto-run files on file change"));
 
-//		arrange.setMinWidth(80);
-//		publish.setMinWidth(80);
+		// arrange.setMinWidth(80);
+		// publish.setMinWidth(80);
 
 		// Set up the run controls and the code area
 		// The BorderPane has the same areas laid out as the
@@ -169,43 +157,52 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		HBox.setHgrow(gitField, Priority.ALWAYS);
 		gitField.setMaxWidth(Double.MAX_VALUE);
 
-//		fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
-//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-//			// first
-//			// time and so on
-//			BowlerStudio.runLater(() -> {
-//				Text text = new Text(currText);
-//				text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the same
-//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-//						+ fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() // Add the padding of
-//																									// the TextField
-//						+ lengthScalar; // Add some spacing
-//				fileNameBox.setPrefWidth(width); // Set the width
-//				fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove this line, it flashes a
-//																			// little bit
-//			});
-//		});
-//		fileListBox.textProperty().addListener((ov, prevText, currText) -> {
-//			// Do this in a BowlerStudio.runLater because of Textfield has no padding at
-//			// first
-//			// time and so on
-//			BowlerStudio.runLater(() -> {
-//				Text text = new Text(currText);
-//				text.setFont(fileListBox.getFont()); // Set the same font, so the size is the same
-//				double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
-//						+ fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() // Add the padding of
-//																									// the TextField
-//						+ lengthScalar; // Add some spacing
-//				fileListBox.setPrefWidth(width); // Set the width
-//				fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove this line, it flashes a
-//																			// little bit
-//			});
-//		});
+		// fileNameBox.textProperty().addListener((ov, prevText, currText) -> {
+		// // Do this in a BowlerStudio.runLater because of Textfield has no padding at
+		// // first
+		// // time and so on
+		// BowlerStudio.runLater(() -> {
+		// Text text = new Text(currText);
+		// text.setFont(fileNameBox.getFont()); // Set the same font, so the size is the
+		// same
+		// double width = text.getLayoutBounds().getWidth() // This big is the Text in
+		// the TextField
+		// + fileNameBox.getPadding().getLeft() + fileNameBox.getPadding().getRight() //
+		// Add the padding of
+		// // the TextField
+		// + lengthScalar; // Add some spacing
+		// fileNameBox.setPrefWidth(width); // Set the width
+		// fileNameBox.positionCaret(fileNameBox.getCaretPosition()); // If you remove
+		// this line, it flashes a
+		// // little bit
+		// });
+		// });
+		// fileListBox.textProperty().addListener((ov, prevText, currText) -> {
+		// // Do this in a BowlerStudio.runLater because of Textfield has no padding at
+		// // first
+		// // time and so on
+		// BowlerStudio.runLater(() -> {
+		// Text text = new Text(currText);
+		// text.setFont(fileListBox.getFont()); // Set the same font, so the size is the
+		// same
+		// double width = text.getLayoutBounds().getWidth() // This big is the Text in
+		// the TextField
+		// + fileListBox.getPadding().getLeft() + fileListBox.getPadding().getRight() //
+		// Add the padding of
+		// // the TextField
+		// + lengthScalar; // Add some spacing
+		// fileListBox.setPrefWidth(width); // Set the width
+		// fileListBox.positionCaret(fileListBox.getCaretPosition()); // If you remove
+		// this line, it flashes a
+		// // little bit
+		// });
+		// });
 
 		// com.neuronrobotics.sdk.common.Log.error("\n\n\nScriptingFileWidget loading
 		// the editor loader:\n\n\n");
 		try {
-			externalEditorController = new ExternalEditorController(currentFile, autoRun, ()->{});
+			externalEditorController = new ExternalEditorController(currentFile, autoRun, () -> {
+			});
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -357,7 +354,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
 				}
 				if (fileType.toLowerCase().contains("blend")) {
-					BlenderLoader.toBlenderFile(CSGDatabase.getInstance(),c, newFile);
+					BlenderLoader.toBlenderFile(CSGDatabase.getInstance(), c, newFile);
 					com.neuronrobotics.sdk.common.Log.error("Added mesh to " + newFile);
 				}
 				if (fileType.toLowerCase().contains("fcstd")) {
@@ -482,7 +479,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 					newGit = ScriptingEngine.fork(remote, reponame, "Making fork from git: " + remote);
 					ScriptingEngine.pushCodeToGit(newGit, null, currentFile.getName(), content, "Tmp save during fork");
 					File file = ScriptingEngine.fileFromGit(newGit, currentFile.getName());
-					//ScriptingEngine.deleteRepo(remote);
+					// ScriptingEngine.deleteRepo(remote);
 					Thread.sleep(500);
 					BowlerStudio.createFileTab(file);
 				} catch (Exception e1) {
@@ -557,14 +554,14 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		scriptRunner = new Thread() {
 
 			public void run() {
-//				String name;
-//				try{
-//					name = currentFile.getName();
-//				}catch (NullPointerException e){
-//					name="";
-//				}
+				// String name;
+				// try{
+				// name = currentFile.getName();
+				// }catch (NullPointerException e){
+				// name="";
+				// }
 				try {
-					Object obj = ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, null);
+					Object obj = ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(), currentFile, null);
 					ArrayList<CSG> cache = new ArrayList<>();
 					addObject(obj, cache);
 					String git;
@@ -680,12 +677,12 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 			e2.printStackTrace();
 		}
 		String langType = ScriptingEngine.getShellType(currentFile.getName());
-//		try {
-//			image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
-//		} catch (Exception e2) {
-//			// Auto-generated catch block
-//			e2.printStackTrace();
-//		}
+		// try {
+		// image.setImage(AssetFactory.loadAsset("Script-Tab-"+ScriptingEngine.getShellType(currentFile.getName())+".png"));
+		// } catch (Exception e2) {
+		// // Auto-generated catch block
+		// e2.printStackTrace();
+		// }
 		langaugeType = ScriptingEngine.getLangaugesMap().get(langType);
 		// ScriptingEngine.setLastFile(f);
 
@@ -748,7 +745,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 
 		File last = FileSelectionFactory
 				.GetFile(
-						currentFile == null ? ScriptingEngine.getWorkspace()
+						currentFile == null
+								? ScriptingEngine.getWorkspace()
 								: new File(
 										ScriptingEngine.getWorkspace().getAbsolutePath() + "/" + currentFile.getName()),
 						true, new ExtensionFilter("Save Script", "*"));
@@ -796,9 +794,9 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 		updateneeded = true;
 		try {
 			watch.removeIFileChangeListener(this);
-//			BowlerStudio.runLater( new Runnable() {
-//				@Override
-//				public void run() {
+			// BowlerStudio.runLater( new Runnable() {
+			// @Override
+			// public void run() {
 			// updateneeded = false;
 			// Auto-generated method stub
 			String absolutePath = fileThatChanged.getAbsolutePath();
@@ -831,8 +829,8 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				// changed");
 				watch.addIFileChangeListener(this);
 			}
-//				}
-//			});
+			// }
+			// });
 		} catch (Throwable e) {
 			// Auto-generated catch block
 			e.printStackTrace();

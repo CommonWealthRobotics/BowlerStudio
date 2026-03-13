@@ -74,6 +74,17 @@ plugins {
 	id 'signing'
 	id 'application'
 	id 'eclipse'
+	id 'com.diffplug.spotless' version '6.25.0'
+}
+spotless {
+	java {
+		// Eclipse formatter with your config file
+        eclipse()  // Uses Eclipse's built-in default profile — no XML needed!		
+		// Optional but recommended additions:
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }
 if (project == rootProject) {
 	apply plugin: 'application'
@@ -436,6 +447,7 @@ eclipse{
 }
 if (project == rootProject) {
 shadowJar {
+	dependsOn 'spotlessCheck'
     zip64 true
     mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
 

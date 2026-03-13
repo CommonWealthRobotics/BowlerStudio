@@ -7,41 +7,41 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.bowlercam.device.BowlerCamDevice;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
-public class BowlerCamController extends AbstractBowlerStudioTab{
+public class BowlerCamController extends AbstractBowlerStudioTab {
 
 	private BowlerCamPanel bcp = new BowlerCamPanel();
 
 	@Override
 	public void onTabClosing() {
 		// Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String[] getMyNameSpaces() {
 		// Auto-generated method stub
-		return new String[] {"neuronrobotics.bowlercam.*"};
+		return new String[]{"neuronrobotics.bowlercam.*"};
 	}
 
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 
-		bcp.setConnection((BowlerCamDevice)pm);
-		
+		bcp.setConnection((BowlerCamDevice) pm);
+
 		SwingNode sn = new SwingNode();
-        sn.setContent(bcp);
-        ScrollPane s1 = new ScrollPane();
-       
-        s1.setContent(sn);
-        setContent(s1);
-        setText("BowlerCam Control");
+		sn.setContent(bcp);
+		ScrollPane s1 = new ScrollPane();
+
+		s1.setContent(sn);
+		setContent(s1);
+		setText("BowlerCam Control");
 		onTabReOpening();
 	}
 
 	@Override
 	public void onTabReOpening() {
 		// Auto-generated method stub
-		
+
 	}
 
 }

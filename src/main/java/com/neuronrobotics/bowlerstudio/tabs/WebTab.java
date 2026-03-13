@@ -6,10 +6,8 @@ import com.neuronrobotics.bowlerstudio.Tutorial;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingWebWidget;
 import com.neuronrobotics.sdk.common.Log;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -33,13 +31,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 
-public class WebTab extends Tab implements EventHandler<Event>{
-	
+public class WebTab extends Tab implements EventHandler<Event> {
+
 	private String Current_URL = "http://gist.github.com/";
 
 	private WebTab myTab;
-	boolean loaded=false;
-	boolean initialized=false;
+	boolean loaded = false;
+	boolean initialized = false;
 	private WebView webView;
 	private WebEngine webEngine;
 	private VBox vBox;
@@ -47,119 +45,118 @@ public class WebTab extends Tab implements EventHandler<Event>{
 	private Button homeButton = new Button("");
 	private Button backButton = new Button("");
 	private Button forwardButton = new Button("");
-	
-	private TextField urlField;
-	//private String currentAddress;
-	private ScriptingWebWidget scripting;
-    private Graphics2D splashGraphics;
-    private static boolean firstBoot=true;
 
-	private boolean isTutorialTab =false;
+	private TextField urlField;
+	// private String currentAddress;
+	private ScriptingWebWidget scripting;
+	private Graphics2D splashGraphics;
+	private static boolean firstBoot = true;
+
+	private boolean isTutorialTab = false;
 
 	private boolean finishedLoadingScriptingWidget;
 
 	private static BowlerStudioController controller;
 
-	public WebTab(String title, String Url) throws IOException, InterruptedException{
-		this(title,Url,false);
+	public WebTab(String title, String Url) throws IOException, InterruptedException {
+		this(title, Url, false);
 	}
-	
-	@SuppressWarnings("restriction")
-	public WebTab(String title, String Url,boolean isTutorialTab) throws IOException, InterruptedException{
 
-		if(isTutorialTab){
+	@SuppressWarnings("restriction")
+	public WebTab(String title, String Url, boolean isTutorialTab) throws IOException, InterruptedException {
+
+		if (isTutorialTab) {
 			setGraphic(AssetFactory.loadIcon("Tutorial-Tab.png"));
-		}else
+		} else
 			setGraphic(AssetFactory.loadIcon("Web-Tab.png"));
 		goButton.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
 		homeButton.setGraphic(AssetFactory.loadIcon("Home.png"));
 		backButton.setGraphic(AssetFactory.loadIcon("Back-Button.png"));
 		forwardButton.setGraphic(AssetFactory.loadIcon("Forward-Button.png"));
-		
+
 		this.isTutorialTab = isTutorialTab;
 		myTab = this;
 
-		if(title==null)
+		if (title == null)
 			myTab.setText("               ");
 		else
 			myTab.setText(title);
-		Log.debug("Loading Gist Tab: "+Url);
+		Log.debug("Loading Gist Tab: " + Url);
 		webView = new WebView();
 		webEngine = webView.getEngine();
-		//webEngine.setUserAgent("bowlerstudio");
-		if(Url!=null)
-			Current_URL=Url;
+		// webEngine.setUserAgent("bowlerstudio");
+		if (Url != null)
+			Current_URL = Url;
 
-	    
-		
-		loaded=false;
+		loaded = false;
 		setOnCloseRequest(this);
-		webEngine.getLoadWorker().workDoneProperty().addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
-		    if(!(newValue.intValue()<100)){
-		    	//com.neuronrobotics.sdk.common.Log.error("Just finished! "+webEngine.getLocation());
-		    	
-	    		new Thread(){
-	    			public void run(){
-	    				if(!initialized){
-	    		    		initialized=true;
-	    		    		loaded=true;
-							setName("Start finalizing components");
-		    				finishLoadingComponents();
-	    				}
-	    				
-	    				else{
-	    					try {
-	    						getScripting().loadCodeFromGist(Current_URL, webEngine);
-	    					} catch (Exception e) {
-	    						// Auto-generated catch block
-	    						//e.printStackTrace();
-	    					} 
-	    				}
-	    			}
-    			}.start();
-		    	
-    			
-		    }else{
-		    	loaded=false;
-//		    	if(splashGraphics!=null && splash.isVisible()){
-//		    		//BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
-//		            //splash.update();
-//		    	}
-		    	//com.neuronrobotics.sdk.common.Log.error("Not Done Loading to: "+webEngine.getLocation());
-		    }
-		}));
+		webEngine.getLoadWorker().workDoneProperty().addListener(
+				(ChangeListener<Number>) (observableValue, oldValue, newValue) -> BowlerStudio.runLater(() -> {
+					if (!(newValue.intValue() < 100)) {
+						// com.neuronrobotics.sdk.common.Log.error("Just finished!
+						// "+webEngine.getLocation());
+
+						new Thread() {
+							public void run() {
+								if (!initialized) {
+									initialized = true;
+									loaded = true;
+									setName("Start finalizing components");
+									finishLoadingComponents();
+								}
+
+				else {
+									try {
+										getScripting().loadCodeFromGist(Current_URL, webEngine);
+									} catch (Exception e) {
+										// Auto-generated catch block
+										// e.printStackTrace();
+									}
+								}
+							}
+						}.start();
+
+					} else {
+						loaded = false;
+						// if(splashGraphics!=null && splash.isVisible()){
+						// //BowlerStudio.renderSplashFrame(splashGraphics, newValue.intValue());
+						// //splash.update();
+						// }
+						// com.neuronrobotics.sdk.common.Log.error("Not Done Loading to:
+						// "+webEngine.getLocation());
+					}
+				}));
 		urlField = new TextField(Current_URL);
 		webEngine.locationProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
-				
-						//com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
-						BowlerStudio.runLater(() -> {
-							urlField.setText(newValue);
-						});
+			public void changed(ObservableValue<? extends String> observable1, String oldValue, String newValue) {
+
+				// com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
+				BowlerStudio.runLater(() -> {
+					urlField.setText(newValue);
+				});
 			}
 		});
-		
-		//goButton.setDefaultButton(true);
-	
-		webEngine.getLoadWorker().stateProperty().addListener(
-				new ChangeListener<Object>() {
-					public void changed(ObservableValue<?> observable,
-							Object oldValue, Object newValue) {
-						if (State.SUCCEEDED == newValue) {
-							Current_URL = urlField.getText().startsWith("http://")|| urlField.getText().startsWith("https://")|| urlField.getText().startsWith("file:")
-									? urlField.getText() 
+
+		// goButton.setDefaultButton(true);
+
+		webEngine.getLoadWorker().stateProperty().addListener(new ChangeListener<Object>() {
+			public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+				if (State.SUCCEEDED == newValue) {
+					Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
+							|| urlField.getText().startsWith("file:")
+									? urlField.getText()
 									: "http://" + urlField.getText();
-									
-							Log.debug("Load Worker State Changed "+Current_URL);	
-							if( !processNewTab(urlField.getText())){
-								goBack();
-							}
-						}else{
-							//Log.error("State load fault: "+newValue+" object:" +observable);
-						}
+
+					Log.debug("Load Worker State Changed " + Current_URL);
+					if (!processNewTab(urlField.getText())) {
+						goBack();
 					}
-				});
+				} else {
+					// Log.error("State load fault: "+newValue+" object:" +observable);
+				}
+			}
+		});
 		backButton.setOnAction(arg0 -> {
 			goBack();
 		});
@@ -179,7 +176,7 @@ public class WebTab extends Tab implements EventHandler<Event>{
 
 		// Layout logic
 		HBox hBox = new HBox(5);
-		hBox.getChildren().setAll(backButton,forwardButton,homeButton,goButton,urlField);
+		hBox.getChildren().setAll(backButton, forwardButton, homeButton, goButton, urlField);
 		HBox.setHgrow(urlField, Priority.ALWAYS);
 
 		vBox = new VBox(5);
@@ -189,54 +186,50 @@ public class WebTab extends Tab implements EventHandler<Event>{
 			double scale = ((double) fontNum - 10) / 12.0;
 			if (scale < 1)
 				scale = 1;
-			com.neuronrobotics.sdk.common.Log.error("Web scale "+scale);
-			double s=scale;
-			BowlerStudio.runLater(() ->webView.setZoom(s));
+			com.neuronrobotics.sdk.common.Log.error("Web scale " + scale);
+			double s = scale;
+			BowlerStudio.runLater(() -> webView.setZoom(s));
 		});
 		myTab.setContent(vBox);
-		//Action definition for the Button Go.
+		// Action definition for the Button Go.
 		EventHandler<ActionEvent> goAction = event -> {
 			Log.debug("Hitting load");
-			if(processNewTab(urlField.getText())){
-				Log.debug("Loading "+Current_URL);
-				loadUrl(	Current_URL);
+			if (processNewTab(urlField.getText())) {
+				Log.debug("Loading " + Current_URL);
+				loadUrl(Current_URL);
 			}
 		};
 		urlField.setOnAction(goAction);
 		goButton.setOnAction(goAction);
-		//Once all components are loaded, load URL
-		BowlerStudio.runLater(
-				Duration.ofMillis(200) ,new Runnable() {
-					@Override
-					public void run() { goAction.handle(null);}
-				});
-		
-		
-		
+		// Once all components are loaded, load URL
+		BowlerStudio.runLater(Duration.ofMillis(200), new Runnable() {
+			@Override
+			public void run() {
+				goAction.handle(null);
+			}
+		});
+
 	}
-	
-	
-	public void loadUrl(String url){
-		
-		if(processNewTab(Current_URL)){
+
+	public void loadUrl(String url) {
+
+		if (processNewTab(Current_URL)) {
 			BowlerStudio.runLater(() -> {
 				webEngine.load(url);
 			});
 		}
 	}
 
-	
-	private boolean processNewTab(String url){
-		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://") || urlField.getText().startsWith("file:")
-				? urlField.getText() 
-				: "http://" + urlField.getText();
-		if(isTutorialTab ){
-			if(		!((Current_URL.toLowerCase().contains("commonwealthrobotics.com") ||
-					Current_URL.contains("gist.github.com/"+PasswordManager.getUsername() )||
-					Current_URL.contains("localhost") ))){
+	private boolean processNewTab(String url) {
+		Current_URL = urlField.getText().startsWith("http://") || urlField.getText().startsWith("https://")
+				|| urlField.getText().startsWith("file:") ? urlField.getText() : "http://" + urlField.getText();
+		if (isTutorialTab) {
+			if (!((Current_URL.toLowerCase().contains("commonwealthrobotics.com")
+					|| Current_URL.contains("gist.github.com/" + PasswordManager.getUsername())
+					|| Current_URL.contains("localhost")))) {
 				try {
-					
-					Log.error("Non demo page found, opening new tab "+Current_URL);
+
+					Log.error("Non demo page found, opening new tab " + Current_URL);
 					BowlerStudioController.getBowlerStudio().addTab(new WebTab(null, Current_URL), true);
 					return false;
 				} catch (Exception e) {
@@ -244,12 +237,12 @@ public class WebTab extends Tab implements EventHandler<Event>{
 					e.printStackTrace();
 				}
 			}
-		}else{
+		} else {
 			Log.debug("no load new tab");
-			if(getScripting()!=null){
-				try{
+			if (getScripting() != null) {
+				try {
 					myTab.setText(getScripting().getFileName());
-				}catch(java.lang.NullPointerException ex){
+				} catch (java.lang.NullPointerException ex) {
 					try {
 						getScripting().loadCodeFromGist(Current_URL, webEngine);
 						myTab.setText(getScripting().getFileName());
@@ -257,119 +250,112 @@ public class WebTab extends Tab implements EventHandler<Event>{
 						// Auto-generated catch block
 						e.printStackTrace();
 					}
-				}			
+				}
 			}
 		}
 		return true;
 	}
-	
-	
-	
-	
-	
-	private void finishLoadingComponents(){
-		//com.neuronrobotics.sdk.common.Log.error("Finalizing: "+webEngine.getLocation());
-		try{
 
-			if(getScripting()!=null){
-				//when navagating to a new file, stop the script that is running
+	private void finishLoadingComponents() {
+		// com.neuronrobotics.sdk.common.Log.error("Finalizing:
+		// "+webEngine.getLocation());
+		try {
+
+			if (getScripting() != null) {
+				// when navagating to a new file, stop the script that is running
 				getScripting().stop();
 			}
-		}catch(Exception E){
+		} catch (Exception E) {
 			E.printStackTrace();
 		}
 		new Thread() {
 			public void run() {
-				finishedLoadingScriptingWidget=false;
-				try{
-					setScripting(new ScriptingWebWidget( null ,Current_URL, webEngine));
+				finishedLoadingScriptingWidget = false;
+				try {
+					setScripting(new ScriptingWebWidget(null, Current_URL, webEngine));
 					BowlerStudio.runLater(() -> {
 						vBox.getChildren().add(getScripting());
-						if(!isTutorialTab){
-							BowlerStudio.runLater(()->{
-								try{
-									
+						if (!isTutorialTab) {
+							BowlerStudio.runLater(() -> {
+								try {
+
 									myTab.setText(getScripting().getFileName());
-								}catch(java.lang.NullPointerException ex){
+								} catch (java.lang.NullPointerException ex) {
 									// web page contains no gist
 									ex.printStackTrace();
 									myTab.setText("Web");
 								}
 								loadCode();
-								
+
 							});
-						}
-						else
-							finishedLoadingScriptingWidget=true;
+						} else
+							finishedLoadingScriptingWidget = true;
 					});
-					
-				}catch(Exception ex){
+
+				} catch (Exception ex) {
 					ex.printStackTrace();
-					finishedLoadingScriptingWidget=true;
+					finishedLoadingScriptingWidget = true;
 				}
-				
+
 			}
 		}.start();
 	}
-	
-	private void loadCode(){
-		new Thread(()->{
-			com.neuronrobotics.sdk.common.Log.error("Downloading code from "+Current_URL);
+
+	private void loadCode() {
+		new Thread(() -> {
+			com.neuronrobotics.sdk.common.Log.error("Downloading code from " + Current_URL);
 			try {
 				getScripting().loadCodeFromGist(Current_URL, webEngine);
 			} catch (Exception e) {
 				// Auto-generated catch block
 				e.printStackTrace();
-			} 
+			}
 		}).start();
 	}
-	
-    public String goBack()
-    {    
-    	//new Exception().printStackTrace(System.err);
-      final WebHistory history=webEngine.getHistory();
-      ObservableList<WebHistory.Entry> entryList=history.getEntries();
-      int currentIndex=history.getCurrentIndex();
-//      Out("currentIndex = "+currentIndex);
-//      Out(entryList.toString().replace("],","]\n"));
 
-      BowlerStudio.runLater(() ->{
-    	  try{
-    		  history.go(-1);
-    	  }catch(Exception e){
-    		 // e.printStackTrace();
-    	  }
-      });
-      return entryList.get(currentIndex>0?currentIndex-1:currentIndex).getUrl();
-    }
+	public String goBack() {
+		// new Exception().printStackTrace(System.err);
+		final WebHistory history = webEngine.getHistory();
+		ObservableList<WebHistory.Entry> entryList = history.getEntries();
+		int currentIndex = history.getCurrentIndex();
+		// Out("currentIndex = "+currentIndex);
+		// Out(entryList.toString().replace("],","]\n"));
 
-    public String goForward()
-    {    
-      final WebHistory history=webEngine.getHistory();
-      ObservableList<WebHistory.Entry> entryList=history.getEntries();
-      int currentIndex=history.getCurrentIndex();
-//      Out("currentIndex = "+currentIndex);
-//      Out(entryList.toString().replace("],","]\n"));
-    
+		BowlerStudio.runLater(() -> {
+			try {
+				history.go(-1);
+			} catch (Exception e) {
+				// e.printStackTrace();
+			}
+		});
+		return entryList.get(currentIndex > 0 ? currentIndex - 1 : currentIndex).getUrl();
+	}
+
+	public String goForward() {
+		final WebHistory history = webEngine.getHistory();
+		ObservableList<WebHistory.Entry> entryList = history.getEntries();
+		int currentIndex = history.getCurrentIndex();
+		// Out("currentIndex = "+currentIndex);
+		// Out(entryList.toString().replace("],","]\n"));
+
 		BowlerStudio.runLater(() -> {
 			try {
 				history.go(1);
 			} catch (IndexOutOfBoundsException ex) {
 			}
 		});
-      return entryList.get(currentIndex<entryList.size()-1?currentIndex+1:currentIndex).getUrl();
-    }
-	
+		return entryList.get(currentIndex < entryList.size() - 1 ? currentIndex + 1 : currentIndex).getUrl();
+	}
 
 	public static String getDomainName(String url) throws URISyntaxException {
-	    URI uri = new URI(url);
-	    String domain = uri.getHost();
-	    return domain.startsWith("www.") ? domain.substring(4) : domain;
+		URI uri = new URI(url);
+		String domain = uri.getHost();
+		return domain.startsWith("www.") ? domain.substring(4) : domain;
 	}
 
 	@Override
 	public void handle(Event event) {
-		if(getScripting()!=null)
+		if (getScripting() != null)
 			getScripting().stop();
 	}
 
@@ -379,14 +365,13 @@ public class WebTab extends Tab implements EventHandler<Event>{
 
 	public void setScripting(ScriptingWebWidget scripting) {
 		this.scripting = scripting;
-		
+
 		scripting.addIScriptEventListener(controller);
 	}
 
 	public static void setBSController(BowlerStudioController controller) {
 		WebTab.controller = controller;
-		
+
 	}
 
-	
 }

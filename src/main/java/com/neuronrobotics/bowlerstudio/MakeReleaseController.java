@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-import org.kohsuke.github.GHRepository;
 //import org.kohsuke.github.GHWorkflow;
 
 import javafx.event.ActionEvent;
@@ -18,12 +17,10 @@ import javafx.scene.control.TextField;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
-import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -39,7 +36,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.collections.*;
 import javafx.stage.Stage;
 
@@ -83,7 +79,7 @@ public class MakeReleaseController extends Application {
 			File workflows = new File(dir.getAbsolutePath() + delim() + ".github" + delim() + "workflows");
 			boolean hasWorkflow = false;
 
-			if(workflows.exists())
+			if (workflows.exists())
 				hasWorkflow = true;
 
 			Object st[];
@@ -133,9 +129,10 @@ public class MakeReleaseController extends Application {
 				com.neuronrobotics.sdk.common.Log.error(selectedItem + " selected");
 				String fileContents;
 				try {
-					fileContents = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/Bowler-Script-Release-CI.git", "TEMPLATE.job")[0];
-					fileContents=fileContents.replaceAll("FILENAME_REPLACE", selectedItem);
-					fileContents=fileContents.replaceAll("JOBNAME_REPLACE", filename);
+					fileContents = ScriptingEngine.codeFromGit(
+							"https://github.com/CommonWealthRobotics/Bowler-Script-Release-CI.git", "TEMPLATE.job")[0];
+					fileContents = fileContents.replaceAll("FILENAME_REPLACE", selectedItem);
+					fileContents = fileContents.replaceAll("JOBNAME_REPLACE", filename);
 					try {
 						createWorkflow(event, fileContents);
 						ThreadUtil.wait(1000);
@@ -149,7 +146,7 @@ public class MakeReleaseController extends Application {
 					// Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 			}).start();
 		});
 	}
@@ -157,21 +154,22 @@ public class MakeReleaseController extends Application {
 	private void createWorkflow(ActionEvent event, String fileContents) throws Exception, IOException {
 
 		ScriptingEngine.pushCodeToGit(gitRepo, null, ".github/workflows/bowler.yml", fileContents, "Creating workflow");
-		//GHWorkflow wf = getWorkflow(gitRepo);
+		// GHWorkflow wf = getWorkflow(gitRepo);
 		makeRelease(event);
 	}
 
-//	private GHWorkflow getWorkflow(String repoURL) throws IOException {
-//		File repoDir = ScriptingEngine.getRepositoryCloneDirectory(repoURL);
-//		String Project = repoDir.getParentFile().getName();
-//		String Repo = repoDir.getName();
-//		GHRepository repo = PasswordManager.getGithub().getRepository(Project + "/" + Repo);
-//		GHWorkflow workflow = repo.getWorkflow("bowler.yml");
-//		if (!workflow.getState().equals("active")) {
-//			workflow.enable();
-//		}
-//		return workflow;
-//	}
+	// private GHWorkflow getWorkflow(String repoURL) throws IOException {
+	// File repoDir = ScriptingEngine.getRepositoryCloneDirectory(repoURL);
+	// String Project = repoDir.getParentFile().getName();
+	// String Repo = repoDir.getName();
+	// GHRepository repo = PasswordManager.getGithub().getRepository(Project + "/" +
+	// Repo);
+	// GHWorkflow workflow = repo.getWorkflow("bowler.yml");
+	// if (!workflow.getState().equals("active")) {
+	// workflow.enable();
+	// }
+	// return workflow;
+	// }
 
 	private String delim() {
 		return System.getProperty("file.separator");
@@ -248,11 +246,11 @@ public class MakeReleaseController extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			root.setStyle("-fx-font-size: "+tmp+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		tags = ScriptingEngine.getAllTags(gitRepo);
 		for (String s : tags) {

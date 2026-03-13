@@ -1,19 +1,13 @@
 package com.neuronrobotics.bowlerstudio.utils;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.Polygon;
-import eu.mihosoft.vrl.v3d.Slice;
-import eu.mihosoft.vrl.v3d.Transform;
 import eu.mihosoft.vrl.v3d.svg.SVGExporter;
 
 @SuppressWarnings("restriction")
-public class SVGFactory{
-
+public class SVGFactory {
 
 	public static File exportSVG(CSG currentCsg, File defaultDir) {
 		com.neuronrobotics.sdk.common.Log.error("Starting SVG ...");
@@ -28,7 +22,7 @@ public class SVGFactory{
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		com.neuronrobotics.sdk.common.Log.error("SVG at "+baseDirForFiles);
+		com.neuronrobotics.sdk.common.Log.error("SVG at " + baseDirForFiles);
 		return baseDirForFiles.getParentFile();
 
 	}

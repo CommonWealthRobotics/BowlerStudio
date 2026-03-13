@@ -9,23 +9,16 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.scripting.BashLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.FXMLBowlerLoader;
-import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
-import com.neuronrobotics.bowlerstudio.scripting.JsonRunner;
-import com.neuronrobotics.bowlerstudio.scripting.RobotHelper;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
-import com.neuronrobotics.video.OSUtil;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -45,13 +38,10 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 				File scenebuilder = DownloadManager.getRunExecutable("scenebuilder", null);
 				File java = DownloadManager.getRunExecutable("java17", null);
 
-				List<String> asList = Arrays.asList(
-						java.getAbsolutePath(),
-						"-jar",
-						scenebuilder.getAbsolutePath(),
+				List<String> asList = Arrays.asList(java.getAbsolutePath(), "-jar", scenebuilder.getAbsolutePath(),
 						filename);
 
-				Thread t=run(this, dir, System.err, asList);
+				Thread t = run(this, dir, System.err, asList);
 				t.join();
 			} catch (NoWorkTreeException e) {
 				// Auto-generated catch block
@@ -60,7 +50,7 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 				// Auto-generated catch block
 				e.printStackTrace();
 			}
-			onProcessExit(0) ;
+			onProcessExit(0);
 
 		}).start();
 	}
@@ -91,14 +81,14 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 
 	public static void main(String[] args)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		File f = ScriptingEngine.fileFromGit("https://github.com/madhephaestus/HortonsLinkages.git",
-				"main.fxml");
+		File f = ScriptingEngine.fileFromGit("https://github.com/madhephaestus/HortonsLinkages.git", "main.fxml");
 
-		new SceneBuilderExternalEditor().launch(f, new Button(),()->{});
+		new SceneBuilderExternalEditor().launch(f, new Button(), () -> {
+		});
 	}
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( FXMLBowlerLoader.class);
+		return Arrays.asList(FXMLBowlerLoader.class);
 	}
 }

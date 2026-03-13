@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
-import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
@@ -26,7 +25,6 @@ import com.neuronrobotics.sdk.pid.PIDLimitEvent;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -42,7 +40,12 @@ import javafx.scene.transform.Affine;
 
 @SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group
-		implements IGameControlEvent, IOnEngineeringUnitsChange, ILinkListener, ILinkConfigurationChangeListener, IJointSpaceUpdateListenerNR {
+		implements
+			IGameControlEvent,
+			IOnEngineeringUnitsChange,
+			ILinkListener,
+			ILinkConfigurationChangeListener,
+			IJointSpaceUpdateListenerNR {
 	private AbstractKinematicsNR device;
 	private DHParameterKinematics dhdevice;
 
@@ -72,15 +75,16 @@ public class LinkSliderWidget extends Group
 	private static LinkGaugeController linkGaugeController3d = null;// = new LinkGaugeController();
 	private static Affine offsetGauge = null;
 	private static Affine offsetGaugeTranslate = null;
-	private boolean isNowVis=false;
+	private boolean isNowVis = false;
 	private TransformWidget poseOfLink;
-	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, MobileBase base,boolean addLimits, boolean displayLinkCOnfiguration) {
+	public LinkSliderWidget(int linkIndex, DHParameterKinematics d, MobileBase base, boolean addLimits,
+			boolean displayLinkCOnfiguration) {
 
 		this.linkIndex = linkIndex;
 		this.device = d;
 		this.conf = d.getLinkConfiguration(linkIndex);
 		this.theWidget = new LinkConfigurationWidget(conf, d.getFactory(),
-				MobileBaseCadManager.get(CSGDatabase.getInstance(),base));
+				MobileBaseCadManager.get(CSGDatabase.getInstance(), base));
 		setTrimController(this.theWidget);
 		conf.addChangeListener(this);
 		if (DHParameterKinematics.class.isInstance(device)) {
@@ -111,10 +115,12 @@ public class LinkSliderWidget extends Group
 																		// 300
 																		// wide
 		jogminus.setOnAction(event -> {
-			if(theWidget!=null)getTrimController().trimMinus();
+			if (theWidget != null)
+				getTrimController().trimMinus();
 		});
 		jogplus.setOnAction(event -> {
-			if(theWidget!=null)getTrimController().trimPlus();
+			if (theWidget != null)
+				getTrimController().trimPlus();
 		});
 
 		LinkGaugeController linkGaugeController = new LinkGaugeController();
@@ -129,12 +135,13 @@ public class LinkSliderWidget extends Group
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
 				if (conf.getScale() > 0)
-					if(theWidget!=null)theWidget.setUpperBound(linkUnits);
-				else
-					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
+					if (theWidget != null)
+						theWidget.setUpperBound(linkUnits);
+					else if (theWidget != null)
+						theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
 				BowlerStudio.runLater(() -> engineeringUpper
-						.setText(String.format(Locale.US,"%.2f", getAbstractLink().getMaxEngineeringUnits())));
+						.setText(String.format(Locale.US, "%.2f", getAbstractLink().getMaxEngineeringUnits())));
 			}
 		});
 		engineeringLower.setOnAction(event -> {
@@ -145,15 +152,16 @@ public class LinkSliderWidget extends Group
 				}
 				double linkUnits = getAbstractLink().toLinkUnits(num);
 				if (conf.getScale() < 0)
-					if(theWidget!=null)theWidget.setUpperBound(linkUnits);
-				else
-					if(theWidget!=null)theWidget.setLowerBound(linkUnits);
+					if (theWidget != null)
+						theWidget.setUpperBound(linkUnits);
+					else if (theWidget != null)
+						theWidget.setLowerBound(linkUnits);
 			} catch (Exception e) {
 				BowlerStudio.runLater(() -> engineeringLower
 						.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits())));
 			}
 		});
-		
+
 		engineeringVelUpper.setOnAction(event -> {
 			try {
 				double num = Double.parseDouble(engineeringVelUpper.getText());
@@ -171,7 +179,7 @@ public class LinkSliderWidget extends Group
 		engineeringLower.setPrefWidth(80);
 		upperLimBox1.getChildren().addAll(new Label("Upper: "), engineeringUpperPossible);
 		lowerLimBox1.getChildren().addAll(new Label("Lower: "), engineeringLowerPossible);
-		limits1.getChildren().addAll(new Label("Possible Range"), upperLimBox1, lowerLimBox1,engineeringTotalPossible);
+		limits1.getChildren().addAll(new Label("Possible Range"), upperLimBox1, lowerLimBox1, engineeringTotalPossible);
 
 		HBox trimBox = new HBox();
 		HBox upperLimBox = new HBox();
@@ -181,7 +189,7 @@ public class LinkSliderWidget extends Group
 		engineeringLower.setPrefWidth(80);
 		upperLimBox.getChildren().addAll(new Label("Upper: "), engineeringUpper);
 		lowerLimBox.getChildren().addAll(new Label("Lower: "), engineeringLower);
-		limits.getChildren().addAll(new Label("Desired Limits"), upperLimBox, lowerLimBox,engineeringTotalLimited);
+		limits.getChildren().addAll(new Label("Desired Limits"), upperLimBox, lowerLimBox, engineeringTotalLimited);
 
 		trimBox.getChildren().add(new Label("Trim"));
 		trimBox.getChildren().add(jogminus);
@@ -200,37 +208,41 @@ public class LinkSliderWidget extends Group
 		calibration.getColumnConstraints().add(new ColumnConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(120));
 		calibration.getRowConstraints().add(new RowConstraints(60));
-		if(displayLinkCOnfiguration)calibration.getRowConstraints().add(new RowConstraints(150));
-		
+		if (displayLinkCOnfiguration)
+			calibration.getRowConstraints().add(new RowConstraints(150));
+
 		HBox velocityLim = new HBox();
 		VBox velocitylimits = new VBox();
 		velocityLim.getChildren().add(new Label("Velocity Limit"));
-		velocitylimits.getChildren().addAll( engineeringVelUpper,new Label("deg/sec"));
+		velocitylimits.getChildren().addAll(engineeringVelUpper, new Label("deg/sec"));
 		velocityLim.getChildren().add(velocitylimits);
 
-		
 		calibration.add(limits, 0, 0);
 		calibration.add(limits1, 1, 0);
 		calibration.add(velocityLim, 0, 1);
-		if(displayLinkCOnfiguration)calibration.add(trimBox, 1, 2);
-		if(displayLinkCOnfiguration)calibration.add(gauge, 0, 2);
+		if (displayLinkCOnfiguration)
+			calibration.add(trimBox, 1, 2);
+		if (displayLinkCOnfiguration)
+			calibration.add(gauge, 0, 2);
 
 		VBox allParts = new VBox();
 		allParts.getChildren().addAll(panel);
-		if(addLimits)allParts.getChildren().addAll(calibration);
-		if(displayLinkCOnfiguration)allParts.getChildren().addAll(theWidget);
+		if (addLimits)
+			allParts.getChildren().addAll(calibration);
+		if (displayLinkCOnfiguration)
+			allParts.getChildren().addAll(theWidget);
 		poseOfLink = new TransformWidget("Link Tip Pose", new TransformNR(), new IOnTransformChange() {
-			
+
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
 				// Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
 				// Auto-generated method stub
-				
+
 			}
 		});
 		parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -251,35 +263,34 @@ public class LinkSliderWidget extends Group
 		});
 		d.addJointSpaceListener(this);
 		poseOfLink.setDisable(true);
-		if(displayLinkCOnfiguration)allParts.getChildren().addAll(poseOfLink);
+		if (displayLinkCOnfiguration)
+			allParts.getChildren().addAll(poseOfLink);
 		getChildren().add(allParts);
 		getAbstractLink().addLinkListener(this);
 		// device.addJointSpaceListener(this);
 		event(conf);
 	}
-	
-		
+
 	@Override
 	public void onJointSpaceUpdate(AbstractKinematicsNR source, double[] joints) {
-		if(!isNowVis)
+		if (!isNowVis)
 			return;
 		updateLinkPose(linkIndex, dhdevice, poseOfLink, joints);
 	}
-	
+
 	@Override
 	public void onJointSpaceTargetUpdate(AbstractKinematicsNR source, double[] joints) {
-		
+
 	}
-	
+
 	@Override
 	public void onJointSpaceLimit(AbstractKinematicsNR source, int axis, JointLimit event) {
 		// Auto-generated method stub
-		
+
 	}
-	
-	private void updateLinkPose(int linkIndex, DHParameterKinematics d, TransformWidget poseOfLink,
-			double[] joints) {
-		if (linkIndex>=joints.length) {
+
+	private void updateLinkPose(int linkIndex, DHParameterKinematics d, TransformWidget poseOfLink, double[] joints) {
+		if (linkIndex >= joints.length) {
 			d.removeJointSpaceUpdateListener(this);
 			return;
 		}
@@ -287,14 +298,14 @@ public class LinkSliderWidget extends Group
 			TransformNR linkTip;
 			try {
 				linkTip = d.getLinkTip(linkIndex);
-				if(linkTip==null)
+				if (linkTip == null)
 					throw new RuntimeException();
-			}catch(Exception e) {
-				linkTip=d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
+			} catch (Exception e) {
+				linkTip = d.getChain().getChain(d.getCurrentJointSpaceVector()).get(linkIndex);
 			}
-			if(poseOfLink!=null && linkTip!=null)
+			if (poseOfLink != null && linkTip != null)
 				poseOfLink.updatePose(linkTip);
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 	}
@@ -305,8 +316,7 @@ public class LinkSliderWidget extends Group
 		double theoreticalRange = getAbstractLink().getDeviceMaxEngineeringUnits()
 				- getAbstractLink().getDeviceMinEngineeringUnits();
 		BowlerStudio.runLater(() -> {
-			engineeringTotalPossible.setText("Possible Range "
-					+ String.format("%.2f", theoreticalRange));
+			engineeringTotalPossible.setText("Possible Range " + String.format("%.2f", theoreticalRange));
 			engineeringTotalLimited.setText("Link Range " + String.format("%.2f", rANGE));
 			engineeringUpper.setText(String.format("%.2f", getAbstractLink().getMaxEngineeringUnits()));
 			engineeringLower.setText(String.format("%.2f", getAbstractLink().getMinEngineeringUnits()));
@@ -401,8 +411,7 @@ public class LinkSliderWidget extends Group
 	@Override
 	public void onEvent(String name, float value) {
 
-		if (name.toLowerCase()
-				.contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x")))
+		if (name.toLowerCase().contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x")))
 			slider = -value;
 
 		if (Math.abs(slider) < .01)
@@ -429,8 +438,7 @@ public class LinkSliderWidget extends Group
 		} catch (Exception e) {
 			// Auto-generated catch block
 			// e.printStackTrace();
-		}
-		;
+		} ;
 
 	}
 
@@ -447,9 +455,9 @@ public class LinkSliderWidget extends Group
 
 	@Override
 	public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
-		if(!isNowVis)
+		if (!isNowVis)
 			return;
-		if(getSetpoint().isEditing())
+		if (getSetpoint().isEditing())
 			return;
 		// Auto-generated method stub
 		try {
@@ -488,11 +496,9 @@ public class LinkSliderWidget extends Group
 			offsetGaugeTranslate = new Affine();
 			linkGaugeController3d.setSIZE(60);
 		}
-		
+
 		double d = (((double) linkGaugeController3d.getSIZE())) / 2.0;
-		TransformNR offsetter2 = new TransformNR()
-				.translateX(-d )
-				.translateY(-d );
+		TransformNR offsetter2 = new TransformNR().translateX(-d).translateY(-d);
 		BowlerStudio.runLater(() -> TransformFactory.nrToAffine(offsetter2, offsetGaugeTranslate));
 
 		TransformNR offsetter = new TransformNR();
@@ -508,8 +514,8 @@ public class LinkSliderWidget extends Group
 			linkGaugeController3d.getGauge().getTransforms().add((Affine) device.getRootListener());
 		else
 			linkGaugeController3d.getGauge().getTransforms()
-					.add((Affine)device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
-		
+					.add((Affine) device.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+
 		linkGaugeController3d.getGauge().getTransforms().add(offsetGauge);
 		linkGaugeController3d.getGauge().getTransforms().add(offsetGaugeTranslate);
 	}

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
@@ -69,21 +68,22 @@ public class VitatminWidget implements IOnTransformChange {
 	private VitaminLocation selectedVitamin;
 	private ITransformProvider currentTipProvider;
 	private Affine lastLinkAffine = null;
-	private Affine manipulator=null;
-	private TransformNR offset= new TransformNR();
-	
+	private Affine manipulator = null;
+	private TransformNR offset = new TransformNR();
+
 	@FXML
 	void onAdd(ActionEvent event) {
-		VitaminLocation newVit = new VitaminLocation(isScript.isSelected(),name.getText(), selectedType, sizeSelected, tf.getCurrent());
+		VitaminLocation newVit = new VitaminLocation(isScript.isSelected(), name.getText(), selectedType, sizeSelected,
+				tf.getCurrent());
 		VitaminFrame value = frameType.getValue();
-		if(value==null)
-			value=VitaminFrame.DefaultFrame;
+		if (value == null)
+			value = VitaminFrame.DefaultFrame;
 		newVit.setFrame(value);
 		holder.addVitamin(newVit);
 		add(newVit);
 		validateInput();
 		CSG newDisplay = getCSG(newVit);
-		if(newDisplay!=null) {
+		if (newDisplay != null) {
 			BowlerStudioController.addCsg(newDisplay);
 		}
 
@@ -91,31 +91,33 @@ public class VitatminWidget implements IOnTransformChange {
 
 	private CSG getCSG(VitaminLocation newVit) {
 		MobileBaseCadManager manager = MobileBaseCadManager.searchForCadManager(holder);
-		CSG newDisplay=null;
-		switch(newVit.getFrame()) {
-		case DefaultFrame:
-			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, manipulator, new TransformNR());
-			break;
-		case LinkOrigin:
-			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, manipulator, offset);
-			break;
-		case previousLinkTip:
-			newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(),newVit, lastLinkAffine,  new TransformNR());
-			break;
+		CSG newDisplay = null;
+		switch (newVit.getFrame()) {
+			case DefaultFrame :
+				newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(), newVit, manipulator,
+						new TransformNR());
+				break;
+			case LinkOrigin :
+				newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(), newVit, manipulator, offset);
+				break;
+			case previousLinkTip :
+				newDisplay = manager.getVitaminDisplay(CSGDatabase.getInstance(), newVit, lastLinkAffine,
+						new TransformNR());
+				break;
 		}
 		return newDisplay;
 	}
 
 	private void add(VitaminLocation newVit) {
 		GridPane box = new GridPane();
-		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+		double scale = (double) (FontSizeManager.getDefaultSize()) / 12.0;
 
-		box.getColumnConstraints().add(new ColumnConstraints(25*scale)); // translate text
-		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // translate values
-		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // units
-		box.getColumnConstraints().add(new ColumnConstraints(170*scale)); // rotate text
-		box.setHgap(20*scale);// gab between elements
-		box.setVgap(10*scale);// gab between elements
+		box.getColumnConstraints().add(new ColumnConstraints(25 * scale)); // translate text
+		box.getColumnConstraints().add(new ColumnConstraints(170 * scale)); // translate values
+		box.getColumnConstraints().add(new ColumnConstraints(170 * scale)); // units
+		box.getColumnConstraints().add(new ColumnConstraints(170 * scale)); // rotate text
+		box.setHgap(20 * scale);// gab between elements
+		box.setVgap(10 * scale);// gab between elements
 		locationMap.put(box, newVit);
 		Button remove = new Button();
 		remove.setGraphic(AssetFactory.loadIcon("Clear-Screen.png"));
@@ -127,8 +129,8 @@ public class VitatminWidget implements IOnTransformChange {
 			holder.removeVitamin(newVit);
 			validateInput();
 			locationMap.remove(box);
-			CSG part = getCSG( newVit);
-			if(part!=null)
+			CSG part = getCSG(newVit);
+			if (part != null)
 				BowlerStudioController.removeObject(part);
 		});
 		box.add(remove, 0, 0);
@@ -140,32 +142,32 @@ public class VitatminWidget implements IOnTransformChange {
 	}
 	void validateURL() {
 		size.setDisable(true);
-		String text2= scriptSource.getText();
-		if(!Vitamins.isGitURL(text2)) {
+		String text2 = scriptSource.getText();
+		if (!Vitamins.isGitURL(text2)) {
 			return;
 		}
 		size.setDisable(false);
 		size.getItems().clear();
-		sizeSelected=null;
-		selectedType=text2;
+		sizeSelected = null;
+		selectedType = text2;
 		try {
 			ArrayList<String> files = ScriptingEngine.filesInGit(selectedType);
-			for(String s:files) {
+			for (String s : files) {
 				size.getItems().add(s);
 			}
 		} catch (Exception e) {
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();
-		//com.neuronrobotics.sdk.common.Log.error("Validating " + nameTmp);
+		// com.neuronrobotics.sdk.common.Log.error("Validating " + nameTmp);
 		if (nameTmp.length() == 0)
 			return;
-		nameTmp=nameTmp.trim();
+		nameTmp = nameTmp.trim();
 		if (selectedType == null)
 			return;
 		if (sizeSelected == null)
@@ -214,17 +216,17 @@ public class VitatminWidget implements IOnTransformChange {
 		transformPanel.getChildren().add(tf);
 		transformPanel.setDisable(true);
 		frameType.setDisable(true);
-		frameType.setOnAction(event->{
-			if(frameType.getValue()!=selectedVitamin.getFrame())
+		frameType.setOnAction(event -> {
+			if (frameType.getValue() != selectedVitamin.getFrame())
 				selectedVitamin.setFrame(frameType.getValue());
 		});
-		for(VitaminFrame vf:VitaminFrame.values()) {
+		for (VitaminFrame vf : VitaminFrame.values()) {
 			frameType.getItems().add(vf);
 		}
-		isScript.setOnAction( action ->{
-			if(isScript.isSelected()) {
+		isScript.setOnAction(action -> {
+			if (isScript.isSelected()) {
 				setScriptMode();
-			}else {
+			} else {
 				populateType();
 			}
 		});
@@ -251,18 +253,18 @@ public class VitatminWidget implements IOnTransformChange {
 	}
 
 	public void fireVitaminSelectedUpdate() {
-		if(selectedVitamin==null)
+		if (selectedVitamin == null)
 			return;
 		com.neuronrobotics.sdk.common.Log.error("Selected " + selectedVitamin.getName());
 		name.setText(selectedVitamin.getName());
 		isScript.setSelected(selectedVitamin.isScript());
-		if(selectedVitamin.isScript()) {
+		if (selectedVitamin.isScript()) {
 			scriptSource.setText(selectedVitamin.getType());
-		}else {
+		} else {
 			type.getSelectionModel().select(selectedVitamin.getType());
 		}
 		size.getSelectionModel().select(selectedVitamin.getSize());
-		
+
 		tf.updatePose(selectedVitamin.getLocation());
 		transformPanel.setDisable(false);
 		frameType.setDisable(false);
@@ -271,18 +273,18 @@ public class VitatminWidget implements IOnTransformChange {
 		try {
 			Affine af = manager.getVitaminAffine(selectedVitamin);
 			TransformNR poseToMove = currentTipProvider.get(selectedVitamin).copy();
-			//poseToMove.setRotation(new RotationNR());
-			CSG current = manager.getVitaminDisplay(CSGDatabase.getInstance(),selectedVitamin, af, poseToMove);
+			// poseToMove.setRotation(new RotationNR());
+			CSG current = manager.getVitaminDisplay(CSGDatabase.getInstance(), selectedVitamin, af, poseToMove);
 			BowlerStudioController.highlightCsg(current);
-			BowlerStudioController.targetAndFollow(poseToMove,af);
+			BowlerStudioController.targetAndFollow(poseToMove, af);
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		GameControlThreadManager.setCurrentController(tf);
 
 	}
 
-	public void setVitaminProvider(IVitaminHolder h,ITransformProvider currentTipProvider) {
+	public void setVitaminProvider(IVitaminHolder h, ITransformProvider currentTipProvider) {
 		this.holder = h;
 		this.currentTipProvider = currentTipProvider;
 		for (VitaminLocation l : h.getVitamins()) {

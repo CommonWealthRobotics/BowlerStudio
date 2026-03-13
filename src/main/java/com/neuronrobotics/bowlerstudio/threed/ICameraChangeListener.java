@@ -1,5 +1,5 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
 public interface ICameraChangeListener {
-	void onChange( VirtualCameraMobileBase camera);
+	void onChange(VirtualCameraMobileBase camera);
 }

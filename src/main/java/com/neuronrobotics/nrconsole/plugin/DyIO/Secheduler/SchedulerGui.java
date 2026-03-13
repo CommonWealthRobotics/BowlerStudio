@@ -1,6 +1,5 @@
 package com.neuronrobotics.nrconsole.plugin.DyIO.Secheduler;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -12,7 +11,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -21,51 +19,48 @@ import net.miginfocom.swing.MigLayout;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.IntegerComboBox;
-import com.neuronrobotics.nrconsole.util.XmlFilter;
-import com.neuronrobotics.sdk.common.BowlerAbstractConnection;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.dyio.DyIO;
 import com.neuronrobotics.sdk.dyio.sequencer.CoreScheduler;
 import com.neuronrobotics.sdk.dyio.sequencer.ServoOutputScheduleChannel;
-import com.neuronrobotics.sdk.serial.SerialConnection;
 
-public class SchedulerGui extends JPanel{
+public class SchedulerGui extends JPanel {
 
 	/**
-	 * 
+	 *
 	 */
-	//private DyIO d = new DyIO();
+	// private DyIO d = new DyIO();
 	private static final long serialVersionUID = -2532174391435417313L;
 	JPanel channelBar = new JPanel(new MigLayout());
 	private IntegerComboBox availableChans = new IntegerComboBox();
 	private IntegerComboBox usedChans = new IntegerComboBox();
-	private ArrayList< ServoOutputScheduleChannelUI> outputs = new ArrayList<>();
-	private File configFile=null;
+	private ArrayList<ServoOutputScheduleChannelUI> outputs = new ArrayList<>();
+	private File configFile = null;
 	CoreScheduler cs;
 	SchedulerControlBar cb;
-	private int loopTime =50;
+	private int loopTime = 50;
 	private DyIO dyio;
-	public SchedulerGui(){
+	public SchedulerGui() {
 
 	}
 	private void rmAllChannels() {
-		int [] chans = new int[outputs.size()];
-		for(int i=0;i<chans.length;i++) {
-			chans[i]=outputs.get(i).getChannelNumber();
+		int[] chans = new int[outputs.size()];
+		for (int i = 0; i < chans.length; i++) {
+			chans[i] = outputs.get(i).getChannelNumber();
 		}
-		for(int i=0;i<chans.length;i++) {
+		for (int i = 0; i < chans.length; i++) {
 			rmChannel(chans[i]);
 		}
 	}
 	private void rmChannel(int num) {
-		
-		ServoOutputScheduleChannelUI s=null;
-		
-		for(ServoOutputScheduleChannelUI so:outputs) {
-			if(so.getChannelNumber() == num)
-				s=so;
+
+		ServoOutputScheduleChannelUI s = null;
+
+		for (ServoOutputScheduleChannelUI so : outputs) {
+			if (so.getChannelNumber() == num)
+				s = so;
 		}
-		if(s==null)
+		if (s == null)
 			return;
 		cs.removeServoOutputScheduleChannel(s.getChannel());
 		cs.removeISchedulerListener(s);
@@ -74,107 +69,109 @@ public class SchedulerGui extends JPanel{
 		usedChans.removeInteger(num);
 		availableChans.addInteger(num);
 	}
-	private void addServoChannel( ServoOutputScheduleChannel chan){
+	private void addServoChannel(ServoOutputScheduleChannel chan) {
 		int selected = chan.getChannelNumber();
-		ServoOutputScheduleChannelUI sosc= 	new ServoOutputScheduleChannelUI(chan,cs);
+		ServoOutputScheduleChannelUI sosc = new ServoOutputScheduleChannelUI(chan, cs);
 		cs.addISchedulerListener(sosc);
 		outputs.add(sosc);
-		channelBar.add(sosc,"wrap");
+		channelBar.add(sosc, "wrap");
 		availableChans.removeInteger(selected);
 		usedChans.addInteger(selected);
 	}
-	
+
 	protected void importfromFile() {
-		if(configFile==null)
+		if (configFile == null)
 			return;
 		cs.loadFromFile(configFile);
 		cb.setAudioFile(cs.getAudioFile());
-		ArrayList< ServoOutputScheduleChannel> outs = cs.getOutputs();
-		for(ServoOutputScheduleChannel so:outs){
+		ArrayList<ServoOutputScheduleChannel> outs = cs.getOutputs();
+		for (ServoOutputScheduleChannel so : outs) {
 			addServoChannel(so);
 		}
-		for(int i=0;i< get().getChannels().size();i++){
-			 get().getValue(i);
+		for (int i = 0; i < get().getChannels().size(); i++) {
+			get().getValue(i);
 		}
 	}
 
 	protected void exportToFile() {
 		String s = cs.getXml();
-		try{
-			  // Create file 
-			  FileWriter fstream = new FileWriter(configFile.getAbsolutePath());
-			  BufferedWriter out = new BufferedWriter(fstream);
-			  out.write(s);
-			  //Close the output stream
-			  out.close();
-		}catch (Exception e){//Catch exception if any
-			  com.neuronrobotics.sdk.common.Log.error("Error: " + e.getMessage());
+		try {
+			// Create file
+			FileWriter fstream = new FileWriter(configFile.getAbsolutePath());
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(s);
+			// Close the output stream
+			out.close();
+		} catch (Exception e) {// Catch exception if any
+			com.neuronrobotics.sdk.common.Log.error("Error: " + e.getMessage());
 		}
-		  
+
 	}
 
 	private void getFile() {
-		if(configFile==null)
-			configFile=ScriptingEngine.getWorkspace();
-		configFile=FileSelectionFactory.GetFile(configFile, new ExtensionFilter("Sequence XML","*.xml","*.XML"));
+		if (configFile == null)
+			configFile = ScriptingEngine.getWorkspace();
+		configFile = FileSelectionFactory.GetFile(configFile, new ExtensionFilter("Sequence XML", "*.xml", "*.XML"));
 	}
-	
-	private DyIO get(){
+
+	private DyIO get() {
 		return dyio;
 	}
 
 	public boolean setConnection(BowlerAbstractDevice connection) {
-		dyio = (DyIO)connection;
+		dyio = (DyIO) connection;
 		setLayout(new MigLayout());
 		setBorder(BorderFactory.createLoweredBevelBorder());
-		cs = new CoreScheduler( get(), loopTime,6000);
+		cs = new CoreScheduler(get(), loopTime, 6000);
 		cb = new SchedulerControlBar(cs);
-		
+
 		JPanel addBar = new JPanel(new MigLayout());
 		JButton addChannel = new JButton("Add new channel");
 		addChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try{
+				try {
 					int selected = availableChans.getSelectedInteger();
 					addServoChannel(cs.addServoChannel(selected));
 
-				}catch (Exception ex){
-					JOptionPane.showMessageDialog(null, "Failed to select channel, "+ex.getMessage(), "Bowler ERROR", JOptionPane.ERROR_MESSAGE);
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Failed to select channel, " + ex.getMessage(), "Bowler ERROR",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
-		for(int i=0;i<24;i++){
+		for (int i = 0; i < 24; i++) {
 			availableChans.addInteger(i);
 		}
 		addBar.add(addChannel);
 		addBar.add(availableChans);
-		
+
 		JButton removeChannel = new JButton("Remove channel");
 		removeChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-	
-				try{
+
+				try {
 					int selected = usedChans.getSelectedInteger();
-					for(int i=0;i<outputs.size();i++){
+					for (int i = 0; i < outputs.size(); i++) {
 						ServoOutputScheduleChannelUI s = outputs.get(i);
-						if(s.getChannelNumber()==selected){
+						if (s.getChannelNumber() == selected) {
 							rmChannel(selected);
 							return;
 						}
 					}
-					
-				}catch (Exception ex){
-					JOptionPane.showMessageDialog(null, "Failed to select channel, "+ex.getMessage(), "Bowler ERROR", JOptionPane.ERROR_MESSAGE);
+
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Failed to select channel, " + ex.getMessage(), "Bowler ERROR",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
 		});
 		addBar.add(removeChannel);
 		addBar.add(usedChans);
-		
+
 		JButton saveConfiguration = new JButton("Save Configuration");
 		saveConfiguration.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				getFile();
@@ -183,37 +180,35 @@ public class SchedulerGui extends JPanel{
 		});
 		JButton loadConfiguration = new JButton("Load Configuration");
 		loadConfiguration.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				rmAllChannels();
-				
+
 				getFile();
 				importfromFile();
 			}
 		});
-		addBar.add(saveConfiguration );
+		addBar.add(saveConfiguration);
 		addBar.add(loadConfiguration);
 		channelBar.setBorder(BorderFactory.createRaisedBevelBorder());
-		
-		add(cb,"wrap");
-		add(addBar,"wrap");
-		add(channelBar,"wrap");
-		
-		return  get().ping();
+
+		add(cb, "wrap");
+		add(addBar, "wrap");
+		add(channelBar, "wrap");
+
+		return get().ping();
 	}
-	
-	
-	
-//	public static void main(String[] args) {
-//		 JFrame frame = new JFrame();
-//		 SchedulerGui sg =new SchedulerGui();
-//		 //sg.setConnection(new SerialConnection("COM48"));
-//		 sg.setConnection(new SerialConnection("/dev/DyIO0"));
-//		 //sg.setConnection(ConnectionDialog.promptConnection());
-//		 frame .add(sg);
-//		 frame.setSize(new Dimension(1024,768));
-//		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		 frame.setVisible(true);
-//	}
+
+	// public static void main(String[] args) {
+	// JFrame frame = new JFrame();
+	// SchedulerGui sg =new SchedulerGui();
+	// //sg.setConnection(new SerialConnection("COM48"));
+	// sg.setConnection(new SerialConnection("/dev/DyIO0"));
+	// //sg.setConnection(ConnectionDialog.promptConnection());
+	// frame .add(sg);
+	// frame.setSize(new Dimension(1024,768));
+	// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	// frame.setVisible(true);
+	// }
 }

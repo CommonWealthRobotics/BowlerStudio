@@ -22,13 +22,11 @@ import net.miginfocom.swing.MigLayout;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
-import com.neuronrobotics.nrconsole.util.GroovyFilter;
-import com.neuronrobotics.nrconsole.util.Mp3Filter;
 import com.neuronrobotics.sdk.dyio.sequencer.CoreScheduler;
 import com.neuronrobotics.sdk.dyio.sequencer.ISchedulerListener;
 
 public class SchedulerControlBar extends JPanel implements ISchedulerListener {
-	
+
 	private JSlider slider = new JSlider();
 	private JButton play = new JButton("Play ");
 	private JButton step = new JButton("Step ");
@@ -39,38 +37,37 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	private JButton selectSong = new JButton("Select Audio Track");
 	private JLabel trackName = new JLabel("none");
 	private CoreScheduler cs;
-	private File mp3File=null;
+	private File mp3File = null;
 	private ChangeListener sliderListener;
-	private ArrayList<ActionListener> pauseListeners = new ArrayList<> ();
-	private ArrayList<ActionListener> playListeners = new ArrayList<> ();
+	private ArrayList<ActionListener> pauseListeners = new ArrayList<>();
+	private ArrayList<ActionListener> playListeners = new ArrayList<>();
 	/**
-	 * long 
+	 * long
 	 */
 	private static final long serialVersionUID = -5636481366169943501L;
 	public SchedulerControlBar(CoreScheduler core) {
 		core.addISchedulerListener(this);
 		setLayout(new MigLayout());
 		setBorder(BorderFactory.createLoweredBevelBorder());
-		
-		
+
 		slider.setMajorTickSpacing(1000);
 		slider.setPaintTicks(true);
 		setTrackLegnth(60000);
 		setCurrentTime(0);
-		cs =core;
+		cs = core;
 		sliderListener = new ChangeListener() {
 			private boolean wasAdjusting = false;
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				slider.removeChangeListener(sliderListener);
-				if(slider.getValueIsAdjusting()) {
-					if(cs.isPlaying()) {
-						wasAdjusting=true;
+				if (slider.getValueIsAdjusting()) {
+					if (cs.isPlaying()) {
+						wasAdjusting = true;
 						pause();
 					}
-				}else {
+				} else {
 					setCurrentTime(slider.getValue());
-					if(wasAdjusting) {
+					if (wasAdjusting) {
 						wasAdjusting = false;
 						play();
 					}
@@ -79,129 +76,128 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 			}
 		};
 		slider.addChangeListener(sliderListener);
-		
-		play.addActionListener(new ActionListener(){
-			
+
+		play.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
-				if(!cs.isPlaying()){
+				if (!cs.isPlaying()) {
 					play();
-				}else{
+				} else {
 
 					pause();
 				}
 			}
-			
+
 		});
-		
+
 		step.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSequenceParams();
 				cs.playStep();
 			}
 		});
-		
+
 		selectSong.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getFile();
 			}
 		});
-		
+
 		loop.setSelected(false);
 		loop.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cs.setLooping(loop.isSelected());
 			}
 		});
-		
+
 		JPanel mp3Bar = new JPanel(new MigLayout());
 		mp3Bar.add(selectSong);
 		mp3Bar.add(new JLabel("Current Track:"));
 		mp3Bar.add(trackName);
-		
+
 		JPanel trackBar = new JPanel(new MigLayout());
 		trackBar.add(length);
 		trackBar.add(time);
-		trackBar.add (slider);
+		trackBar.add(slider);
 		trackBar.add(step);
 		trackBar.add(play);
 		trackBar.add(loop);
-		
 
 		setBorder(BorderFactory.createRaisedBevelBorder());
-		add(mp3Bar,"wrap");
-		add(trackBar,"wrap");
+		add(mp3Bar, "wrap");
+		add(trackBar, "wrap");
 	}
-	
-	private void setSequenceParams(){
-		int start =slider.getValue(); 
+
+	private void setSequenceParams() {
+		int start = slider.getValue();
 
 		int setpoint;
-		try{
-			setpoint = (int)(1000*Double.parseDouble(length.getText()));
-		}catch (NumberFormatException n){
-			setpoint=1000;
+		try {
+			setpoint = (int) (1000 * Double.parseDouble(length.getText()));
+		} catch (NumberFormatException n) {
+			setpoint = 1000;
 		}
 		setTrackLegnth(setpoint);
 		cs.setSequenceParams(setpoint, start);
 	}
-	
+
 	private void play() {
 		setSequenceParams();
 		cs.play();
 		play.setText("Pause");
 		step.setEnabled(false);
-		for(ActionListener a:playListeners)
+		for (ActionListener a : playListeners)
 			a.actionPerformed(null);
 	}
 	private void pause() {
-		if(cs != null)
+		if (cs != null)
 			cs.pause();
 		play.setText("Play ");
 		step.setEnabled(true);
-		for(ActionListener a:pauseListeners)
+		for (ActionListener a : pauseListeners)
 			a.actionPerformed(null);
-		
+
 	}
-	
-	private void setTrackLegnth(int ms){
-		length.setText(Double.toString(((double)ms)/1000.0));
+
+	private void setTrackLegnth(int ms) {
+		length.setText(Double.toString(((double) ms) / 1000.0));
 		setBounds(ms);
 	}
-	
 
-	private void setCurrentTime(long  val){
-		//com.neuronrobotics.sdk.common.Log.error("Setting current time="+val);
-		try{
+	private void setCurrentTime(long val) {
+		// com.neuronrobotics.sdk.common.Log.error("Setting current time="+val);
+		try {
 			slider.setValue((int) (val));
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		double cTime = ((double)val)/1000;
-		time.setText("Seconds: "+new DecimalFormat("000.00").format(cTime));
+		double cTime = ((double) val) / 1000;
+		time.setText("Seconds: " + new DecimalFormat("000.00").format(cTime));
 
-		//com.neuronrobotics.sdk.common.Log.error("Setting current time="+val+" slider="+slider.getValue());
+		// com.neuronrobotics.sdk.common.Log.error("Setting current time="+val+"
+		// slider="+slider.getValue());
 	}
-	private void setBounds(double top){
+	private void setBounds(double top) {
 		slider.setMaximum(0);
 		slider.setMaximum((int) (top));
 	}
 
-	
 	private void getFile() {
-        setAudioFile(FileSelectionFactory.GetFile(mp3File==null?ScriptingEngine.getWorkspace():mp3File, new ExtensionFilter("WAV file","*.wav","*.WAV")));
+		setAudioFile(FileSelectionFactory.GetFile(mp3File == null ? ScriptingEngine.getWorkspace() : mp3File,
+				new ExtensionFilter("WAV file", "*.wav", "*.WAV")));
 	}
 	public void setAudioFile(File f) {
 		cs.setAudioFile(f);
-    	setTrackLegnth(cs.getTrackLength());
-    	trackName.setText(f.getName());
-    	length.setEditable(false);
-    	setCurrentTime(0);
+		setTrackLegnth(cs.getTrackLength());
+		trackName.setText(f.getName());
+		length.setEditable(false);
+		setCurrentTime(0);
 	}
 
 	@Override
@@ -217,29 +213,29 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
 		// Auto-generated method stub
-		
+
 	}
 
 	public void addPauseListener(ActionListener actionListener) {
-		if(!pauseListeners.contains(actionListener))
+		if (!pauseListeners.contains(actionListener))
 			pauseListeners.add(actionListener);
 	}
 
 	public void addPlayListener(ActionListener actionListener) {
-		if(!playListeners.contains(actionListener))
+		if (!playListeners.contains(actionListener))
 			playListeners.add(actionListener);
 	}
 
 	@Override
 	public void onPlay() {
 		// Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onPause() {
 		// Auto-generated method stub
-		
+
 	}
 
 }

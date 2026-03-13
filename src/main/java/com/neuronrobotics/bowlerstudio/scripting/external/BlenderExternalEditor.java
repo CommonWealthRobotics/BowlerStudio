@@ -6,29 +6,23 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.AskToDeleteWidget;
 import com.neuronrobotics.bowlerstudio.scripting.BlenderLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.scripting.StlLoader;
-import com.neuronrobotics.bowlerstudio.scripting.SvgLoader;
 import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.video.OSUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -50,7 +44,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 			if (filename.toLowerCase().endsWith(".stl")) {
 
 				File blenderfile = new File(dir.getAbsolutePath() + delim() + file.getName() + ".blend");
-				if(blenderfile.exists())
+				if (blenderfile.exists())
 					if (AskToDeleteWidget.askToDeleteFile(blenderfile.getName())) {
 						blenderfile.delete();
 					}

@@ -14,16 +14,16 @@ public class TransformWidgetTest extends Application {
 	private TransformWidget w;
 
 	public TransformWidgetTest() {
-		this.w = new TransformWidget("Test Widget", new TransformNR(1,2,3), new IOnTransformChange() {
-			
+		this.w = new TransformWidget("Test Widget", new TransformNR(1, 2, 3), new IOnTransformChange() {
+
 			@Override
 			public void onTransformFinished(TransformNR newTrans) {
-				com.neuronrobotics.sdk.common.Log.error("Finished "+newTrans.toSimpleString() );
+				com.neuronrobotics.sdk.common.Log.error("Finished " + newTrans.toSimpleString());
 			}
-			
+
 			@Override
 			public void onTransformChaging(TransformNR newTrans) {
-				com.neuronrobotics.sdk.common.Log.error("Changing "+newTrans.toSimpleString() );
+				com.neuronrobotics.sdk.common.Log.error("Changing " + newTrans.toSimpleString());
 			}
 		});
 
@@ -38,14 +38,13 @@ public class TransformWidgetTest extends Application {
 		scene.getStylesheets().clear();
 		scene.getStylesheets().add(nwfile);
 		com.neuronrobotics.sdk.common.Log.error("Loading CSS from " + nwfile);
-		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+		double scale = (double) (FontSizeManager.getDefaultSize()) / 12.0;
 
 		primaryStage.setScene(scene);
-        //primaryStage.setWidth(668*scale);
-        //primaryStage.setHeight(664*scale);
-        primaryStage.setTitle("Test Application");
-        primaryStage.show();
+		// primaryStage.setWidth(668*scale);
+		// primaryStage.setHeight(664*scale);
+		primaryStage.setTitle("Test Application");
+		primaryStage.show();
 	}
-
 
 }

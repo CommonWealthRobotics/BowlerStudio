@@ -8,7 +8,6 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,14 +28,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.github.GHRepository;
 
 /**
@@ -70,7 +66,7 @@ public class AddFileToGistController extends Application {
 	private boolean isArduino;
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-	private String forcedType=null;
+	private String forcedType = null;
 	public static String toSlug(String input) {
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
 		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
@@ -96,11 +92,11 @@ public class AddFileToGistController extends Application {
 		// This is needed when loading on MAC
 		loader.setClassLoader(getClass().getClassLoader());
 		root = loader.load();
-		FontSizeManager.addListener(fontNum->{
-			int tmp = fontNum-10;
-			if(tmp<12)
-				tmp=12;
-			root.setStyle("-fx-font-size: "+tmp+"pt");
+		FontSizeManager.addListener(fontNum -> {
+			int tmp = fontNum - 10;
+			if (tmp < 12)
+				tmp = 12;
+			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
 		extension.getItems().clear();
 		if (getGitRepo() != null) {
@@ -122,10 +118,10 @@ public class AddFileToGistController extends Application {
 
 			icon = AssetFactory.loadAsset(asset);
 			langaugeIcon.setImage(icon);
-			FontSizeManager.addListener(fontNum->{
-		    	  langaugeIcon.setScaleX(FontSizeManager.getImageScale());
-		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
-		      });
+			FontSizeManager.addListener(fontNum -> {
+				langaugeIcon.setScaleX(FontSizeManager.getImageScale());
+				langaugeIcon.setScaleY(FontSizeManager.getImageScale());
+			});
 		} catch (Exception e2) {
 			// Auto-generated catch block
 			e2.printStackTrace();
@@ -158,20 +154,20 @@ public class AddFileToGistController extends Application {
 		String file = "Script-Tab-" + selectedItem + ".png";
 		Image loadAsset = AssetFactory.loadAsset(file);
 		try {
-		langaugeIcon.setImage(loadAsset);
-		
-		}catch(Throwable t) {
+			langaugeIcon.setImage(loadAsset);
+
+		} catch (Throwable t) {
 			com.neuronrobotics.sdk.common.Log.error(t);
 		}
 		String key = selectedItem;
 		IScriptingLanguage l = ScriptingEngine.getLangaugesMap().get(key);
-		
+
 		if (l != null) {
 			extensionStr = l.getFileExtension().get(0);
 		} else
 			extensionStr = ".groovy";
-		if(!extensionStr.startsWith(".")) {
-			extensionStr="."+extensionStr;
+		if (!extensionStr.startsWith(".")) {
+			extensionStr = "." + extensionStr;
 		}
 		isArduino = ArduinoLoader.class.isInstance(l);
 
@@ -202,16 +198,16 @@ public class AddFileToGistController extends Application {
 			com.neuronrobotics.sdk.common.Log.error("Adding new file" + filename + " to " + getGitRepo());
 			try {
 				ScriptingEngine.pull(getGitRepo());
-				//String defaultContents = 
+				// String defaultContents =
 				String fullBranch = ScriptingEngine.getFullBranch(getGitRepo());
 				if (fullBranch == null)
 					fullBranch = ScriptingEngine.newBranch(getGitRepo(), "main");
-				ScriptingEngine.getLangaugeByExtension(extensionStr).getDefaultContents(getGitRepo(), filename );
+				ScriptingEngine.getLangaugeByExtension(extensionStr).getDefaultContents(getGitRepo(), filename);
 				ScriptingEngine.pushCodeToGit(getGitRepo(), fullBranch, filename, null, message);
 				File nf = ScriptingEngine.fileFromGit(getGitRepo(), filename);
 				try {
 					BowlerStudio.createFileTab(nf);
-				}catch(Exception ex) {
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 				refreshevent.setToLoggedIn();
@@ -342,7 +338,7 @@ public class AddFileToGistController extends Application {
 
 	public void start(Stage s, IScriptingLanguage iScriptingLanguage) throws Exception {
 		start(s);
-		BowlerStudio.runLater(()->{
+		BowlerStudio.runLater(() -> {
 			setFileExtensionType(iScriptingLanguage);
 		});
 	}

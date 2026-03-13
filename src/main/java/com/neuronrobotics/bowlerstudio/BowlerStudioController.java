@@ -4,48 +4,29 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
-import com.neuronrobotics.bowlerstudio.printbed.PrintBedManager;
-import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
-import com.neuronrobotics.bowlerstudio.scripting.cadoodle.CaDoodleFile;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.util.FileChangeWatcher;
 import com.neuronrobotics.bowlerstudio.util.IFileChangeListener;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
-import com.neuronrobotics.sdk.common.DMDevice;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
-import eu.mihosoft.vrl.v3d.CSGtoJavafx;
-import eu.mihosoft.vrl.v3d.ColinearPointsException;
-import eu.mihosoft.vrl.v3d.Cube;
-import eu.mihosoft.vrl.v3d.Cylinder;
-import eu.mihosoft.vrl.v3d.MeshContainer;
 import eu.mihosoft.vrl.v3d.Polygon;
 import eu.mihosoft.vrl.v3d.Vector3d;
 import eu.mihosoft.vrl.v3d.Vertex;
-import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
-
-import javax.swing.text.BadLocationException;
-
-import org.eclipse.jgit.api.Git;
 
 //import java.awt.Color;
 //import java.awt.*;
@@ -53,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +46,7 @@ import java.util.Set;
 public class BowlerStudioController implements IScriptEventListener {
 
 	/**
-	 * 
+	 *
 	 */
 	private ConnectionManager connectionManager;
 	private AbstractImageProvider vrCamera;
@@ -164,11 +144,11 @@ public class BowlerStudioController implements IScriptEventListener {
 
 			String gitRepoStr = t.getScripting().getGitRepo();
 			String[] split = gitRepoStr.split("\\.");
-			String string = split[split.length-2];
-			String[] url=string.split("/");
-			String slug = url[url.length-2]+"/"+url[url.length-1];
-			String key = slug+":" + t.getScripting().getGitFile();
-			com.neuronrobotics.sdk.common.Log.debug("Loading local file from: " + file.getAbsolutePath()+"\n"+key);
+			String string = split[split.length - 2];
+			String[] url = string.split("/");
+			String slug = url[url.length - 2] + "/" + url[url.length - 1];
+			String key = slug + ":" + t.getScripting().getGitFile();
+			com.neuronrobotics.sdk.common.Log.debug("Loading local file from: " + file.getAbsolutePath() + "\n" + key);
 
 			if (key.length() == 1)
 				throw new RuntimeException("Failed to create a file key");
@@ -176,7 +156,7 @@ public class BowlerStudioController implements IScriptEventListener {
 			files.add(gitRepoStr);
 			files.add(t.getScripting().getGitFile());
 			try {
-				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0){// catch degenerates
+				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0) {// catch degenerates
 					ConfigurationDatabase.setObject("studio-open-file", key, files);
 					ConfigurationDatabase.save();
 				}
@@ -192,9 +172,9 @@ public class BowlerStudioController implements IScriptEventListener {
 
 			fileTab.setGraphic(icon);
 			fileTab.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-			    if (isSelected) {
-			        t.requestTextAreaFocus();
-			    }
+				if (isSelected) {
+					t.requestTextAreaFocus();
+				}
 			});
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
@@ -340,7 +320,8 @@ public class BowlerStudioController implements IScriptEventListener {
 								String[] fileAndNum = fileSub.split(":");
 								String FileNum = fileAndNum[1];
 								int linNum = Integer.parseInt(FileNum.trim());
-								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum, java.awt.Color.CYAN);
+								widgets.get(fileEngineRunByName.getAbsolutePath()).setHighlight(linNum,
+										java.awt.Color.CYAN);
 							} catch (Exception e) {
 								StringWriter sw = new StringWriter();
 								PrintWriter pw = new PrintWriter(sw);
@@ -400,17 +381,18 @@ public class BowlerStudioController implements IScriptEventListener {
 		return false;
 	}
 
-//	private boolean removeObject(Object p) {
-//		if (CSG.class.isInstance(p) || Node.class.isInstance(p) || Polygon.class.isInstance(p)) {
-//			BowlerStudio.runLater(() -> {
-//				CreatureLab3dController.getEngine().removeObjects();
-//				CreatureLab3dController.getEngine().clearUserNode();
-//			});
-//			return true;
-//		}
-//		// ThreadUtil.wait(20);
-//		return false;
-//	}
+	// private boolean removeObject(Object p) {
+	// if (CSG.class.isInstance(p) || Node.class.isInstance(p) ||
+	// Polygon.class.isInstance(p)) {
+	// BowlerStudio.runLater(() -> {
+	// CreatureLab3dController.getEngine().removeObjects();
+	// CreatureLab3dController.getEngine().clearUserNode();
+	// });
+	// return true;
+	// }
+	// // ThreadUtil.wait(20);
+	// return false;
+	// }
 
 	public static void setCsg(List<CSG> toadd, File source) {
 		BowlerStudio.runLater(() -> {
@@ -418,7 +400,8 @@ public class BowlerStudioController implements IScriptEventListener {
 			if (toadd != null)
 				for (CSG c : toadd) {
 					if (c != null)
-						BowlerStudio.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source,c.getColor().getOpacity(), CSGDatabase.getInstance()));
+						BowlerStudio.runLater(() -> CreatureLab3dController.getEngine().addObject(c, source,
+								c.getColor().getOpacity(), CSGDatabase.getInstance()));
 				}
 		});
 	}
@@ -483,7 +466,8 @@ public class BowlerStudioController implements IScriptEventListener {
 	public static void addCsg(CSG toadd, File source) {
 		BowlerStudio.runLater(() -> {
 			if (toadd != null)
-				CreatureLab3dController.getEngine().addObject(toadd, source, toadd.getColor().getOpacity(),CSGDatabase.getInstance());
+				CreatureLab3dController.getEngine().addObject(toadd, source, toadd.getColor().getOpacity(),
+						CSGDatabase.getInstance());
 
 		});
 	}
@@ -493,7 +477,7 @@ public class BowlerStudioController implements IScriptEventListener {
 	}
 
 	public static void addObject(Object o, File source, ArrayList<CSG> cache) {
-		
+
 		CreatureLab3dController.getEngine().addObject(o, source, cache);
 
 	}
@@ -530,7 +514,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		CreatureLab3dController.getEngine().addUserNode(o);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public void onScriptFinished(Object result, Object Previous, File source) {
 		Log.warning("Loading script results " + result + " previous " + Previous);
@@ -551,22 +535,22 @@ public class BowlerStudioController implements IScriptEventListener {
 		}
 		if (cache.size() > 0)
 			addObject(cache, source, null);
-//		String git;
-//		try {
-//			git = ScriptingEngine.locateGitUrl(source);
-//			if(cache.size()>0) {
-//				if(git!=null) {
-//					PrintBedManager manager=new PrintBedManager(git,cache);
-//					addObject(manager.get(), source);
-//				}else {
-//					addObject(cache, source,null);
-//				}
-//			}
-//		} catch (Exception e) {
-//			// Auto-generated catch block
-//			e.printStackTrace();
-//			addObject(cache, source,null);
-//		}
+		// String git;
+		// try {
+		// git = ScriptingEngine.locateGitUrl(source);
+		// if(cache.size()>0) {
+		// if(git!=null) {
+		// PrintBedManager manager=new PrintBedManager(git,cache);
+		// addObject(manager.get(), source);
+		// }else {
+		// addObject(cache, source,null);
+		// }
+		// }
+		// } catch (Exception e) {
+		// // Auto-generated catch block
+		// e.printStackTrace();
+		// addObject(cache, source,null);
+		// }
 
 	}
 

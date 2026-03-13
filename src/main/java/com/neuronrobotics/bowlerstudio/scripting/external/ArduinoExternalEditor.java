@@ -26,9 +26,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 			try {
 				File exe = DownloadManager.getRunExecutable("arduino2", null);
 				List<String> asList = Arrays.asList(exe.getAbsolutePath(), file.getAbsolutePath());
-				if(isMac()) {
-					asList = Arrays.asList("open","-a",exe.getAbsolutePath(), file.getAbsolutePath());
-						
+				if (isMac()) {
+					asList = Arrays.asList("open", "-a", exe.getAbsolutePath(), file.getAbsolutePath());
+
 				}
 				Thread rthread = run(this, file.getParentFile(), System.err, asList);
 				try {
@@ -37,10 +37,10 @@ public class ArduinoExternalEditor implements IExternalEditor {
 					// Auto-generated catch block
 					e.printStackTrace();
 				}
-			}catch(Throwable t) {
+			} catch (Throwable t) {
 				t.printStackTrace();
 			}
-			if(advanced!=null)
+			if (advanced != null)
 				onProcessExit(0);
 		}).start();
 	}
@@ -73,7 +73,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 
 	@Override
 	public List<Class> getSupportedLangauge() {
-		return Arrays.asList( ArduinoLoader.class);
+		return Arrays.asList(ArduinoLoader.class);
 	}
 	public static void main(String[] args) throws Exception {
 		/*
@@ -82,15 +82,16 @@ public class ArduinoExternalEditor implements IExternalEditor {
 		 * ScriptingEngine.fileFromGit(
 		 * "https://github.com/OperationSmallKat/LunaMotherboardFirmware.git",
 		 * "LunaMotherboardFirmware.ino");
-		 * 
+		 *
 		 * new ArduinoExternalEditor().launch(f, new javafx.scene.control.Button());
 		 */
 		// File exe = DownloadManager.getRunExecutable("arduino2", null);
 		// File file = new File();
-		String absolutePath = "C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL() + "\\arduino2\\Arduino IDE.exe";// exe.getAbsolutePath();
-		run(null, new File("C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL() + "\\arduino2"), System.err, Arrays.asList(
-				absolutePath,
-				"C:\\Users\\Kevin Bad Name\\Documents\\bowler-workspace\\gitcache\\github.com\\OperationSmallKat\\LunaMotherboardFirmware\\LunaMotherboardFirmware.ino"));
+		String absolutePath = "C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL()
+				+ "\\arduino2\\Arduino IDE.exe";// exe.getAbsolutePath();
+		run(null, new File("C:\\Users\\Kevin Bad Name\\bin\\" + DownloadManager.getSTUDIO_INSTALL() + "\\arduino2"),
+				System.err, Arrays.asList(absolutePath,
+						"C:\\Users\\Kevin Bad Name\\Documents\\bowler-workspace\\gitcache\\github.com\\OperationSmallKat\\LunaMotherboardFirmware\\LunaMotherboardFirmware.ino"));
 
 	}
 

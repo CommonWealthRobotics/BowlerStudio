@@ -7,7 +7,6 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import eu.mihosoft.vrl.v3d.TextExtrude;
-import javafx.application.Platform;
 import javafx.scene.text.Font;
 
 /*
@@ -54,7 +53,6 @@ import javafx.scene.text.Font;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
@@ -84,31 +82,35 @@ public class Axis extends Group {
 	/**
 	 * Instantiates a new axis.
 	 *
-	 * @param length the axis length
+	 * @param length
+	 *            the axis length
 	 */
 	//
 	public Axis(int length, boolean visible) {
 		double strokeWidth = 0.5;
-		
+
 		Font font = new Font(Font.getDefault().getName(), 5);
 
-		xText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "x", font)).rotz(90).toXMin().movex(length).moveToCenterY().toZMax();
+		xText = CSG.unionAll(TextExtrude.text((double) strokeWidth, "x", font)).rotz(90).toXMin().movex(length)
+				.moveToCenterY().toZMax();
 		xAxis = new Cube(length, strokeWidth, strokeWidth).toCSG().toXMin().toZMax().movex(strokeWidth / 2);
 		xAxis.setColor(Color.RED);
 		xText.setColor(Color.RED);
 
-		yText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "y", font)).rotz(90).mirrory().toYMin().movey(length).moveToCenterX().toZMax();
-		yAxis = new Cube( strokeWidth, length, strokeWidth).toCSG().toYMin().toZMax().movey(strokeWidth / 2);
+		yText = CSG.unionAll(TextExtrude.text((double) strokeWidth, "y", font)).rotz(90).mirrory().toYMin()
+				.movey(length).moveToCenterX().toZMax();
+		yAxis = new Cube(strokeWidth, length, strokeWidth).toCSG().toYMin().toZMax().movey(strokeWidth / 2);
 		yText.setColor(Color.GREEN);
 		yAxis.setColor(Color.GREEN);
 
 		Affine zTextAffine = new Affine();
 		zTextAffine.setTx(length / 2);
 		zTextAffine.setTz(length / 2);
-		zTextAffine.appendRotation( 90, 0, 0, 0, 1, 0, 1);
-		zText = CSG.unionAll(TextExtrude.text((double)strokeWidth, "z", font)).rotx(90).rotz(90).mirrory().movez(length).moveToCenterY();
+		zTextAffine.appendRotation(90, 0, 0, 0, 1, 0, 1);
+		zText = CSG.unionAll(TextExtrude.text((double) strokeWidth, "z", font)).rotx(90).rotz(90).mirrory()
+				.movez(length).moveToCenterY();
 
-		zAxis = new Cube( strokeWidth, strokeWidth, length).toCSG().toZMin().movez(-strokeWidth);
+		zAxis = new Cube(strokeWidth, strokeWidth, length).toCSG().toZMin().movez(-strokeWidth);
 		zText.setColor(Color.BLUE);
 		zAxis.setColor(Color.BLUE);
 
@@ -124,7 +126,8 @@ public class Axis extends Group {
 
 	private void showAll() {
 		try {
-			for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText.getMesh(), yText.getMesh(), zText.getMesh())) {
+			for (Node n : Arrays.asList(xAxis.getMesh(), yAxis.getMesh(), zAxis.getMesh(), xText.getMesh(),
+					yText.getMesh(), zText.getMesh())) {
 				try {
 					n.setPickOnBounds(false);
 					n.setMouseTransparent(true);
@@ -132,7 +135,7 @@ public class Axis extends Group {
 				} catch (Exception e) {
 				}
 			}
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			// no exception on exit
 		}
 	}

@@ -19,12 +19,10 @@ import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.kinematics.*;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.addons.kinematics.parallel.ParallelGroup;
-import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -44,15 +42,12 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 //import org.jfree.util.Log;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +57,7 @@ import java.util.Set;
 
 public class MobleBaseMenueFactory {
 
-	private static File baseDirForFiles=null;
+	private static File baseDirForFiles = null;
 
 	private MobleBaseMenueFactory() {
 	}
@@ -70,26 +65,27 @@ public class MobleBaseMenueFactory {
 	public static String[] copyGitFile(String sourceGit, String targetGit, String filename) {
 		return ScriptingEngine.copyGitFile(sourceGit, targetGit, filename);
 	}
-	
-	public static void addVitamins(IVitaminHolder vitamins,  TreeItem<String> rootItem,
+
+	public static void addVitamins(IVitaminHolder vitamins, TreeItem<String> rootItem,
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
-			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems,ITransformProvider tfp,Affine manipulator, Affine lastLink, TransformNR offset) {
+			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, ITransformProvider tfp, Affine manipulator,
+			Affine lastLink, TransformNR offset) {
 		TreeItem<String> vitaminsMenu = new TreeItem<String>("Vitamins Add/Remove",
 				AssetFactory.loadIcon("Vitamins.png"));
-		HashMap<Parent,VitatminWidget> widget = new HashMap<>();
+		HashMap<Parent, VitatminWidget> widget = new HashMap<>();
 		callbackMapForTreeitems.put(vitaminsMenu, () -> {
 			if (widgetMapForTreeitems.get(vitaminsMenu) == null) {
 				FXMLLoader loader;
 				try {
-					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml",true);
-					//loader.setClassLoader(VitatminWidget.class.getClassLoader());
+					loader = AssetFactory.loadLayout("layout/AddRemoveVitamins.fxml", true);
+					// loader.setClassLoader(VitatminWidget.class.getClassLoader());
 					Parent w = loader.load();
 					VitatminWidget tw = loader.getController();
-					tw.setVitaminProvider(vitamins,tfp);
+					tw.setVitaminProvider(vitamins, tfp);
 					tw.setManipulator(manipulator);
 					tw.setLastLinkAffine(lastLink);
 					tw.setOffset(offset);
-					//Group value = new Group(w);
+					// Group value = new Group(w);
 					widgetMapForTreeitems.put(vitaminsMenu, w);
 					widget.put(w, tw);
 				} catch (Exception e) {
@@ -98,7 +94,7 @@ public class MobleBaseMenueFactory {
 				}
 			}
 			VitatminWidget tw = widget.get(widgetMapForTreeitems.get(vitaminsMenu));
-			if(tw!=null)
+			if (tw != null)
 				tw.fireVitaminSelectedUpdate();
 		});
 		rootItem.getChildren().add(vitaminsMenu);
@@ -156,7 +152,7 @@ public class MobleBaseMenueFactory {
 				File source = ScriptingEngine.fileFromGit(device.getGitSelfSource()[0], device.getGitSelfSource()[1]);
 
 				callbackMapForTreeitems.put(publish, () -> {
-					
+
 					CommitWidget.commit(source, device.getXml());
 
 				});
@@ -243,7 +239,7 @@ public class MobleBaseMenueFactory {
 						new Thread(() -> {
 							try {
 								// Use builder to add leg to existing device
-								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(), device)
 										.addDefaultLeg(result.get());
 
 								// Rebuild and reload
@@ -257,36 +253,39 @@ public class MobleBaseMenueFactory {
 					}
 				});
 			});
-//			boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
-//			callbackMapForTreeitems.put(addleg, () -> {
-//				// Auto-generated method stub
-//				com.neuronrobotics.sdk.common.Log.error("Adding Leg");
-//				String xmlContent;
-//				try {
-//					xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-//							"defaultleg.xml")[0];
-//					DHParameterKinematics newLeg = new DHParameterKinematics(null,
-//							IOUtils.toInputStream(xmlContent, "UTF-8"));
-//					String[] gitCadEngine = device.getGitCadEngine();
-//					newLeg.setGitCadEngine(gitCadEngine);
-//					com.neuronrobotics.sdk.common.Log.error("Leg has " + newLeg.getNumberOfLinks() + " links");
-//					addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem, callbackMapForTreeitems,
-//							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-//					
-//
-//				} catch (Exception e) {
-//					// Auto-generated catch block
-//					com.neuronrobotics.sdk.common.Log.error(e);
-//				}
-//
-//			});
-//			TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
-//					AssetFactory.loadIcon("Generate-Cad.png"));
-//
-//			callbackMapForTreeitems.put(regnerate, () -> {
-//				creatureLab.generateCad(CSGDatabase.getInstance());
-//
-//			});
+			// boolean creatureIsOwnedByUserTmp = creatureIsOwnedByUser;
+			// callbackMapForTreeitems.put(addleg, () -> {
+			// // Auto-generated method stub
+			// com.neuronrobotics.sdk.common.Log.error("Adding Leg");
+			// String xmlContent;
+			// try {
+			// xmlContent =
+			// ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+			// "defaultleg.xml")[0];
+			// DHParameterKinematics newLeg = new DHParameterKinematics(null,
+			// IOUtils.toInputStream(xmlContent, "UTF-8"));
+			// String[] gitCadEngine = device.getGitCadEngine();
+			// newLeg.setGitCadEngine(gitCadEngine);
+			// com.neuronrobotics.sdk.common.Log.error("Leg has " +
+			// newLeg.getNumberOfLinks() + " links");
+			// addAppendage(device, view, device.getLegs(), newLeg, legs, rootItem,
+			// callbackMapForTreeitems,
+			// widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+			//
+			//
+			// } catch (Exception e) {
+			// // Auto-generated catch block
+			// com.neuronrobotics.sdk.common.Log.error(e);
+			// }
+			//
+			// });
+			// TreeItem<String> regnerate = new TreeItem<String>("Generate Cad",
+			// AssetFactory.loadIcon("Generate-Cad.png"));
+			//
+			// callbackMapForTreeitems.put(regnerate, () -> {
+			// creatureLab.generateCad(CSGDatabase.getInstance());
+			//
+			// });
 			TreeItem<String> kinematics = new TreeItem<String>("Kinematic STL",
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
@@ -304,8 +303,8 @@ public class MobleBaseMenueFactory {
 					new Thread() {
 
 						public void run() {
-							MobileBaseCadManager baseManager =MobileBaseCadManager.searchForCadManager(device) ;
-							if (null==baseManager) {
+							MobileBaseCadManager baseManager = MobileBaseCadManager.searchForCadManager(device);
+							if (null == baseManager) {
 								return;
 							}
 							ArrayList<File> files;
@@ -322,7 +321,8 @@ public class MobleBaseMenueFactory {
 									alert.show();
 								});
 							} catch (Exception e) {
-								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
+								BowlerStudioController.highlightException(
+										baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
 
 						}
@@ -336,13 +336,16 @@ public class MobleBaseMenueFactory {
 				BowlerStudio.runLater(() -> {
 					new Thread() {
 						public void run() {
-							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),
+									device);
 							try {
-								
-								PrintBedManager manager=new PrintBedManager(device.getGitSelfSource()[0],baseManager.getAllCad());
+
+								PrintBedManager manager = new PrintBedManager(device.getGitSelfSource()[0],
+										baseManager.getAllCad());
 								BowlerStudioController.setCsg(manager.get());
 							} catch (Exception e) {
-								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
+								BowlerStudioController.highlightException(
+										baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
 						}
 					}.start();
@@ -352,8 +355,8 @@ public class MobleBaseMenueFactory {
 					AssetFactory.loadIcon("Printable-Cad.png"));
 
 			callbackMapForTreeitems.put(printable, () -> {
-				File defaultStlDir =getBaseDirForFiles();
-				
+				File defaultStlDir = getBaseDirForFiles();
+
 				File dir = defaultStlDir;
 				BowlerStudio.runLater(() -> {
 					DirectoryChooser chooser = new DirectoryChooser();
@@ -364,7 +367,8 @@ public class MobleBaseMenueFactory {
 					new Thread() {
 
 						public void run() {
-							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
+							MobileBaseCadManager baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),
+									device);
 							if (getBaseDirForFiles() == null) {
 								return;
 							}
@@ -382,7 +386,8 @@ public class MobleBaseMenueFactory {
 									alert.show();
 								});
 							} catch (Exception e) {
-								BowlerStudioController.highlightException(baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
+								BowlerStudioController.highlightException(
+										baseManager.getCadScriptFromMobileBase((MobileBase) device), e);
 							}
 
 						}
@@ -452,7 +457,8 @@ public class MobleBaseMenueFactory {
 				try {
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-							.gitScriptRun(CSGDatabase.getInstance(),"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+							.gitScriptRun(CSGDatabase.getInstance(),
+									"https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
 									"wheelOptions.json");
 
 					Set<String> optionsKeys = options.keySet();
@@ -466,8 +472,8 @@ public class MobleBaseMenueFactory {
 						if (result.isPresent()) {
 							new Thread(() -> {
 								try {
-									MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
-											.addFixedWheelFromOptions(CSGDatabase.getInstance(),result.get());
+									MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(), device)
+											.addFixedWheelFromOptions(CSGDatabase.getInstance(), result.get());
 
 									MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
 									reload(updatedDevice);
@@ -482,82 +488,87 @@ public class MobleBaseMenueFactory {
 					com.neuronrobotics.sdk.common.Log.error(e);
 				}
 			});
-//			TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel", AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
-//
-//			callbackMapForTreeitems.put(addFixed, () -> {
-//				// Auto-generated method stub
-//				com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
-//				
-//				
-//					HashMap<String, HashMap<String, Object>> options;
-//					try {
-//						options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-//								.gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-//										"wheelOptions.json");
-//					} catch (Exception e) {
-//						// Auto-generated catch block
-//						com.neuronrobotics.sdk.common.Log.error(e);
-//						return;
-//					}
-//					Set<String> optionsKeys = options.keySet();
-//					BowlerStudio.runLater(() -> {
-//						ChoiceDialog<String> alert = new ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
-//						Node r = alert.getDialogPane();
-//						Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-//						stage.setOnCloseRequest(ev -> alert.hide());
-//						FontSizeManager.addListener(fontNum -> {
-//							int tmp = fontNum - 10;
-//							if (tmp < 12)
-//								tmp = 12;
-//							r.setStyle("-fx-font-size: " + tmp + "pt");
-//							alert.getDialogPane().applyCss();
-//							alert.getDialogPane().layout();
-//							stage.sizeToScene();
-//						});
-//						Optional<String> result = alert.showAndWait();
-//						if (result.isPresent())
-//							new Thread(() -> {
-//								String back = result.get();
-//								HashMap<String,Object> values = options.get(back);
-//								if (back.toLowerCase().contains("fixed")) {
-//									try {
-//										
-//										String xmlContent = ScriptingEngine.codeFromGit(
-//												values.get("scriptGit").toString(),
-//												values.get("scriptFile").toString())[0];
-//										DHParameterKinematics newArm = new DHParameterKinematics(null,
-//												IOUtils.toInputStream(xmlContent, "UTF-8"));
-//										newArm.setGitCadEngine(device.getGitCadEngine());
-//	
-//										com.neuronrobotics.sdk.common.Log.error("Wheel has " + newArm.getNumberOfLinks() + " links");
-//										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
-//												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-//												creatureIsOwnedByUserTmp);
-//									} catch (Exception e) {
-//										// Auto-generated catch block
-//										com.neuronrobotics.sdk.common.Log.error(e);
-//									}
-//
-//								}else {
-//									try {
-//										MobileBase base = (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(), values.get("scriptFile").toString());
-//										DHParameterKinematics newArm = base.getDrivable().get(0);
-//										newArm.setGitCadEngine(device.getGitCadEngine());
-//										addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
-//												callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-//												creatureIsOwnedByUserTmp);
-//									} catch (Exception e) {
-//										// Auto-generated catch block
-//										com.neuronrobotics.sdk.common.Log.error(e);
-//										return;
-//									}
-//								}
-//							}).start();
-//					});
-//
-//			
-//			});
-			
+			// TreeItem<String> addFixed = new TreeItem<>("Add Fixed Wheel",
+			// AssetFactory.loadIcon("Add-Fixed-Wheel.png"));
+			//
+			// callbackMapForTreeitems.put(addFixed, () -> {
+			// // Auto-generated method stub
+			// com.neuronrobotics.sdk.common.Log.error("Adding Wheel");
+			//
+			//
+			// HashMap<String, HashMap<String, Object>> options;
+			// try {
+			// options = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
+			// .gitScriptRun("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+			// "wheelOptions.json");
+			// } catch (Exception e) {
+			// // Auto-generated catch block
+			// com.neuronrobotics.sdk.common.Log.error(e);
+			// return;
+			// }
+			// Set<String> optionsKeys = options.keySet();
+			// BowlerStudio.runLater(() -> {
+			// ChoiceDialog<String> alert = new
+			// ChoiceDialog<String>(optionsKeys.toArray()[0].toString(), optionsKeys);
+			// Node r = alert.getDialogPane();
+			// Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			// stage.setOnCloseRequest(ev -> alert.hide());
+			// FontSizeManager.addListener(fontNum -> {
+			// int tmp = fontNum - 10;
+			// if (tmp < 12)
+			// tmp = 12;
+			// r.setStyle("-fx-font-size: " + tmp + "pt");
+			// alert.getDialogPane().applyCss();
+			// alert.getDialogPane().layout();
+			// stage.sizeToScene();
+			// });
+			// Optional<String> result = alert.showAndWait();
+			// if (result.isPresent())
+			// new Thread(() -> {
+			// String back = result.get();
+			// HashMap<String,Object> values = options.get(back);
+			// if (back.toLowerCase().contains("fixed")) {
+			// try {
+			//
+			// String xmlContent = ScriptingEngine.codeFromGit(
+			// values.get("scriptGit").toString(),
+			// values.get("scriptFile").toString())[0];
+			// DHParameterKinematics newArm = new DHParameterKinematics(null,
+			// IOUtils.toInputStream(xmlContent, "UTF-8"));
+			// newArm.setGitCadEngine(device.getGitCadEngine());
+			//
+			// com.neuronrobotics.sdk.common.Log.error("Wheel has " +
+			// newArm.getNumberOfLinks() + " links");
+			// addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+			// callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+			// creatureIsOwnedByUserTmp);
+			// } catch (Exception e) {
+			// // Auto-generated catch block
+			// com.neuronrobotics.sdk.common.Log.error(e);
+			// }
+			//
+			// }else {
+			// try {
+			// MobileBase base =
+			// (MobileBase)ScriptingEngine.gitScriptRun(values.get("scriptGit").toString(),
+			// values.get("scriptFile").toString());
+			// DHParameterKinematics newArm = base.getDrivable().get(0);
+			// newArm.setGitCadEngine(device.getGitCadEngine());
+			// addAppendage(device, view, device.getDrivable(), newArm, drive, rootItem,
+			// callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
+			// creatureIsOwnedByUserTmp);
+			// } catch (Exception e) {
+			// // Auto-generated catch block
+			// com.neuronrobotics.sdk.common.Log.error(e);
+			// return;
+			// }
+			// }
+			// }).start();
+			// });
+			//
+			//
+			// });
+
 			// Replace the steerable wheel addition callback
 			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
 					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
@@ -574,7 +585,7 @@ public class MobleBaseMenueFactory {
 					if (result.isPresent()) {
 						new Thread(() -> {
 							try {
-								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(), device)
 										.addDefaultSteerableWheel(result.get());
 
 								MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
@@ -588,29 +599,32 @@ public class MobleBaseMenueFactory {
 				});
 			});
 
-//			TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
-//					AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
-//
-//			callbackMapForTreeitems.put(addsteerable, () -> {
-//				// Auto-generated method stub
-//				com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
-//				try {
-//					String xmlContent = ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
-//							"defaultSteerable.xml")[0];
-//					DHParameterKinematics newArm = new DHParameterKinematics(null,
-//							IOUtils.toInputStream(xmlContent, "UTF-8"));
-//					newArm.setGitCadEngine(device.getGitCadEngine());
-//
-//					com.neuronrobotics.sdk.common.Log.error("Steerable has " + newArm.getNumberOfLinks() + " links");
-//					addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem, callbackMapForTreeitems,
-//							widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
-//					
-//				} catch (Exception e) {
-//					// Auto-generated catch block
-//					com.neuronrobotics.sdk.common.Log.error(e);
-//				}
-//
-//			});
+			// TreeItem<String> addsteerable = new TreeItem<>("Add Steerable Wheel",
+			// AssetFactory.loadIcon("Add-Steerable-Wheel.png"));
+			//
+			// callbackMapForTreeitems.put(addsteerable, () -> {
+			// // Auto-generated method stub
+			// com.neuronrobotics.sdk.common.Log.error("Adding Steerable Wheel");
+			// try {
+			// String xmlContent =
+			// ScriptingEngine.codeFromGit("https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
+			// "defaultSteerable.xml")[0];
+			// DHParameterKinematics newArm = new DHParameterKinematics(null,
+			// IOUtils.toInputStream(xmlContent, "UTF-8"));
+			// newArm.setGitCadEngine(device.getGitCadEngine());
+			//
+			// com.neuronrobotics.sdk.common.Log.error("Steerable has " +
+			// newArm.getNumberOfLinks() + " links");
+			// addAppendage(device, view, device.getSteerable(), newArm, steer, rootItem,
+			// callbackMapForTreeitems,
+			// widgetMapForTreeitems, creatureLab, creatureIsOwnedByUserTmp);
+			//
+			// } catch (Exception e) {
+			// // Auto-generated catch block
+			// com.neuronrobotics.sdk.common.Log.error(e);
+			// }
+			//
+			// });
 			TreeItem<String> imuCenter = new TreeItem<>("Imu center",
 					AssetFactory.loadIcon("Advanced-Configuration.png"));
 
@@ -624,7 +638,8 @@ public class MobleBaseMenueFactory {
 
 							@Override
 							public void onTransformFinished(TransformNR newTrans) {
-								MobileBaseCadManager manager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device);
+								MobileBaseCadManager manager = MobileBaseCadManager.get(CSGDatabase.getInstance(),
+										device);
 								if (manager != null)
 									manager.generateCad(CSGDatabase.getInstance());
 								device.setIMUFromCentroid(newTrans);
@@ -648,7 +663,6 @@ public class MobleBaseMenueFactory {
 
 			});
 
-
 			// Replace the arm addition callback
 			TreeItem<String> addArm = new TreeItem<>("Add Arm", AssetFactory.loadIcon("Add-Arm.png"));
 			callbackMapForTreeitems.put(addArm, () -> {
@@ -664,7 +678,7 @@ public class MobleBaseMenueFactory {
 					if (result.isPresent()) {
 						new Thread(() -> {
 							try {
-								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(),device)
+								MobileBaseBuilder builder = new MobileBaseBuilder(CSGDatabase.getInstance(), device)
 										.addDefaultArm(result.get());
 
 								MobileBase updatedDevice = builder.build(CSGDatabase.getInstance());
@@ -691,7 +705,8 @@ public class MobleBaseMenueFactory {
 
 											@Override
 											public void onTransformFinished(TransformNR newTrans) {
-												com.neuronrobotics.sdk.common.Log.error("Limb to base" + newTrans.toString());
+												com.neuronrobotics.sdk.common.Log
+														.error("Limb to base" + newTrans.toString());
 												device.setRobotToFiducialTransform(newTrans);
 											}
 
@@ -706,13 +721,13 @@ public class MobleBaseMenueFactory {
 				}
 
 			});
-			
-			rootItem.getChildren().addAll(bodymass, imuCenter,PlaceLimb);
-			addVitamins( device,   rootItem, callbackMapForTreeitems, widgetMapForTreeitems, selected->{
-				 return device.forwardOffset(new TransformNR()); 
-			},(Affine)device.getRootListener(),(Affine)device.getRootListener(),new TransformNR());
+
+			rootItem.getChildren().addAll(bodymass, imuCenter, PlaceLimb);
+			addVitamins(device, rootItem, callbackMapForTreeitems, widgetMapForTreeitems, selected -> {
+				return device.forwardOffset(new TransformNR());
+			}, (Affine) device.getRootListener(), (Affine) device.getRootListener(), new TransformNR());
 			if (root)
-				rootItem.getChildren().addAll(  printable,arrangeBed, kinematics);
+				rootItem.getChildren().addAll(printable, arrangeBed, kinematics);
 			rootItem.getChildren().addAll(addArm, addleg, addFixed, addsteerable);
 			if (creatureIsOwnedByUser) {
 				if (root)
@@ -723,19 +738,19 @@ public class MobleBaseMenueFactory {
 			new IssueReportingExceptionHandler().except(e);
 		}
 	}
-	
+
 	private static void reload(MobileBase device) {
 		saveToXML(device);
-		String[]source=device.getGitSelfSource();
+		String[] source = device.getGitSelfSource();
 		device.disconnect();
 		try {
-			MobileBase reloaded=MobileBaseLoader.fromGit(CSGDatabase.getInstance(),source[0], source[1]);
+			MobileBase reloaded = MobileBaseLoader.fromGit(CSGDatabase.getInstance(), source[0], source[1]);
 			BowlerStudio.loadMobilBaseIntoUI(reloaded);
 		} catch (Exception e) {
 			// Auto-generated catch block
 			com.neuronrobotics.sdk.common.Log.error(e);
 		}
-		
+
 	}
 
 	public static void saveToXML(MobileBase device) {
@@ -747,161 +762,168 @@ public class MobleBaseMenueFactory {
 			IOUtils.write(device.getXml(), out, Charset.defaultCharset());
 			out.close(); // don't swallow close Exception if copy completes
 			// normally
-		} catch(Throwable t){
+		} catch (Throwable t) {
 			com.neuronrobotics.sdk.common.Log.error(t);
-		}finally {
+		} finally {
 			try {
 				out.close();
 			} catch (Exception e) {
-				
+
 			}
 		}
 	}
-	
-	
 
 	// Replace the makeACopyOfACreature method
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
-	    return new Thread() {
-	        public void run() {
-	            try {
-	                // Create GitHub repository
-	                GitHub github = PasswordManager.getGithub();
-	                GHCreateRepositoryBuilder builder = github.createRepository(newName);
-	                builder.description(newName + " copy of " + oldname);
-	                
-	                GHRepository gist = null;
-	                try {
-	                    gist = builder.create();
-	                } catch (org.kohsuke.github.HttpException ex) {
-	                    if (ex.getMessage().contains("name already exists on this account")) {
-	                        gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
-	                    }
-	                }
-	                
-	                String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
-	                
-	                // Wait for repo to be ready
-	                String filename = newName + ".xml";
-	                while (true) {
-	                    ThreadUtil.wait(500);
-	                    try {
-	                        ScriptingEngine.fileFromGit(gitURL, filename);
-	                        break;
-	                    } catch (Exception e) {
-	                        com.neuronrobotics.sdk.common.Log.debug("Waiting for repo " + e.getMessage());
-	                    }
-	                }
-	                
-	                // Use builder to create copy
-	                MobileBase newDevice = new MobileBaseBuilder(CSGDatabase.getInstance(),gitURL, newName)
-	                    .copyFrom(device, newName)
-	                    .build(CSGDatabase.getInstance());
-	                
-	                // Shut down old robot and add new one
-	                ConnectionManager.disconnectAll();
-	                ThreadUtil.wait(3000);
-	                BowlerStudioMenuWorkspace.add(gitURL);
-	                ThreadUtil.wait(1000);
-	                
-	                MobileBase mb = MobileBaseLoader.fromGit(CSGDatabase.getInstance(),gitURL, newName + ".xml");
-	                ThreadUtil.wait(1000);
-	                BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
-	                ThreadUtil.wait(1000);
-	                ConnectionManager.addConnection(mb, mb.getScriptingName());
-	                
-	            } catch (Exception e) {
-	                com.neuronrobotics.sdk.common.Log.error(e);
-	            }
-	        }
-	    };
+		return new Thread() {
+			public void run() {
+				try {
+					// Create GitHub repository
+					GitHub github = PasswordManager.getGithub();
+					GHCreateRepositoryBuilder builder = github.createRepository(newName);
+					builder.description(newName + " copy of " + oldname);
+
+					GHRepository gist = null;
+					try {
+						gist = builder.create();
+					} catch (org.kohsuke.github.HttpException ex) {
+						if (ex.getMessage().contains("name already exists on this account")) {
+							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
+						}
+					}
+
+					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
+
+					// Wait for repo to be ready
+					String filename = newName + ".xml";
+					while (true) {
+						ThreadUtil.wait(500);
+						try {
+							ScriptingEngine.fileFromGit(gitURL, filename);
+							break;
+						} catch (Exception e) {
+							com.neuronrobotics.sdk.common.Log.debug("Waiting for repo " + e.getMessage());
+						}
+					}
+
+					// Use builder to create copy
+					MobileBase newDevice = new MobileBaseBuilder(CSGDatabase.getInstance(), gitURL, newName)
+							.copyFrom(device, newName).build(CSGDatabase.getInstance());
+
+					// Shut down old robot and add new one
+					ConnectionManager.disconnectAll();
+					ThreadUtil.wait(3000);
+					BowlerStudioMenuWorkspace.add(gitURL);
+					ThreadUtil.wait(1000);
+
+					MobileBase mb = MobileBaseLoader.fromGit(CSGDatabase.getInstance(), gitURL, newName + ".xml");
+					ThreadUtil.wait(1000);
+					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+					ThreadUtil.wait(1000);
+					ConnectionManager.addConnection(mb, mb.getScriptingName());
+
+				} catch (Exception e) {
+					com.neuronrobotics.sdk.common.Log.error(e);
+				}
+			}
+		};
 	}
-//	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
-//		return new Thread() {
-//			public void run() {
-//
-//				device.setScriptingName(newName);
-//				String filename = newName + ".xml";
-//				GitHub github = PasswordManager.getGithub();
-//
-//				GHCreateRepositoryBuilder builder = github.createRepository(newName);
-//				try {
-//					builder.description(newName + " copy of " + oldname);
-//				} catch (Exception e1) {
-//					// Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				GHRepository gist = null;
-//				try {
-//					try {
-//						gist = builder.create();
-//					} catch (org.kohsuke.github.HttpException ex) {
-//						if (ex.getMessage().contains("name already exists on this account")) {
-//							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
-//						}
-//					}
-//					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
-//
-//					com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
-//					while (true) {
-//						ThreadUtil.wait(500);
-//						Log.warning(gist + " not built yet");
-//						try {
-//							ScriptingEngine.fileFromGit(gitURL, filename);
-//							break;
-//						} catch (Exception e) {
-//							
-//							com.neuronrobotics.sdk.common.Log.debug("Waiting for repo "+e.getMessage());
-//							com.neuronrobotics.sdk.common.Log.error(e);
-//						}
-//		
-//					}
-//					// BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
-//					com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);
-//
-//					com.neuronrobotics.sdk.common.Log.error("copy Cad engine ");
-//					device.setGitCadEngine(
-//							copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
-//					com.neuronrobotics.sdk.common.Log.error("copy walking engine Was: " + device.getGitWalkingEngine()[0] + " "
-//							+ device.getGitWalkingEngine()[1]);
-//					device.setGitWalkingEngine(
-//							copyGitFile(device.getGitWalkingEngine()[0], gitURL, device.getGitWalkingEngine()[1]));
-//					// com.neuronrobotics.sdk.common.Log.error("is now "+device.getGitWalkingEngine());
-//					for (DHParameterKinematics dh : device.getAllDHChains()) {
-//						// com.neuronrobotics.sdk.common.Log.error("copy Leg Cad engine "+dh.getGitCadEngine());
-//						dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
-//
-//						// com.neuronrobotics.sdk.common.Log.error("copy Leg Dh engine ");
-//						dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
-//					}
-//					device.setScriptingName(newName);
-//					String xml = device.getXml();
-//
-//					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, xml,
-//							"new Robot content");
-//					// Shut down the old robot
-//					ConnectionManager.disconnectAll();
-//
-//					ThreadUtil.wait(3000);
-//					// add new robot to the workspace
-//					BowlerStudioMenuWorkspace.add(gitURL);
-//					ThreadUtil.wait(1000);
-//					MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
-//					ThreadUtil.wait(1000);
-//					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
-//					ThreadUtil.wait(1000);
-//					ConnectionManager.addConnection(mb, mb.getScriptingName());
-//
-//				} catch (Exception e) {
-//					// Auto-generated catch block
-//					com.neuronrobotics.sdk.common.Log.error(e);
-//				}
-//
-//				// DeviceManager.addConnection(newDevice,
-//				// newDevice.getScriptingName());
-//			}
-//		};
-//	}
+	// private static Thread makeACopyOfACreature(MobileBase device, String oldname,
+	// String newName) {
+	// return new Thread() {
+	// public void run() {
+	//
+	// device.setScriptingName(newName);
+	// String filename = newName + ".xml";
+	// GitHub github = PasswordManager.getGithub();
+	//
+	// GHCreateRepositoryBuilder builder = github.createRepository(newName);
+	// try {
+	// builder.description(newName + " copy of " + oldname);
+	// } catch (Exception e1) {
+	// // Auto-generated catch block
+	// e1.printStackTrace();
+	// }
+	// GHRepository gist = null;
+	// try {
+	// try {
+	// gist = builder.create();
+	// } catch (org.kohsuke.github.HttpException ex) {
+	// if (ex.getMessage().contains("name already exists on this account")) {
+	// gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
+	// }
+	// }
+	// String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
+	//
+	// com.neuronrobotics.sdk.common.Log.error("Creating new Robot repo");
+	// while (true) {
+	// ThreadUtil.wait(500);
+	// Log.warning(gist + " not built yet");
+	// try {
+	// ScriptingEngine.fileFromGit(gitURL, filename);
+	// break;
+	// } catch (Exception e) {
+	//
+	// com.neuronrobotics.sdk.common.Log.debug("Waiting for repo "+e.getMessage());
+	// com.neuronrobotics.sdk.common.Log.error(e);
+	// }
+	//
+	// }
+	// // BowlerStudio.openUrlInNewTab(gist.getHtmlUrl());
+	// com.neuronrobotics.sdk.common.Log.error("Creating gist at: " + gitURL);
+	//
+	// com.neuronrobotics.sdk.common.Log.error("copy Cad engine ");
+	// device.setGitCadEngine(
+	// copyGitFile(device.getGitCadEngine()[0], gitURL,
+	// device.getGitCadEngine()[1]));
+	// com.neuronrobotics.sdk.common.Log.error("copy walking engine Was: " +
+	// device.getGitWalkingEngine()[0] + " "
+	// + device.getGitWalkingEngine()[1]);
+	// device.setGitWalkingEngine(
+	// copyGitFile(device.getGitWalkingEngine()[0], gitURL,
+	// device.getGitWalkingEngine()[1]));
+	// // com.neuronrobotics.sdk.common.Log.error("is now
+	// "+device.getGitWalkingEngine());
+	// for (DHParameterKinematics dh : device.getAllDHChains()) {
+	// // com.neuronrobotics.sdk.common.Log.error("copy Leg Cad engine
+	// "+dh.getGitCadEngine());
+	// dh.setGitCadEngine(copyGitFile(dh.getGitCadEngine()[0], gitURL,
+	// dh.getGitCadEngine()[1]));
+	//
+	// // com.neuronrobotics.sdk.common.Log.error("copy Leg Dh engine ");
+	// dh.setGitDhEngine(copyGitFile(dh.getGitDhEngine()[0], gitURL,
+	// dh.getGitDhEngine()[1]));
+	// }
+	// device.setScriptingName(newName);
+	// String xml = device.getXml();
+	//
+	// ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL),
+	// filename, xml,
+	// "new Robot content");
+	// // Shut down the old robot
+	// ConnectionManager.disconnectAll();
+	//
+	// ThreadUtil.wait(3000);
+	// // add new robot to the workspace
+	// BowlerStudioMenuWorkspace.add(gitURL);
+	// ThreadUtil.wait(1000);
+	// MobileBase mb = MobileBaseLoader.fromGit(gitURL, newName + ".xml");
+	// ThreadUtil.wait(1000);
+	// BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName +
+	// ".xml"));
+	// ThreadUtil.wait(1000);
+	// ConnectionManager.addConnection(mb, mb.getScriptingName());
+	//
+	// } catch (Exception e) {
+	// // Auto-generated catch block
+	// com.neuronrobotics.sdk.common.Log.error(e);
+	// }
+	//
+	// // DeviceManager.addConnection(newDevice,
+	// // newDevice.getScriptingName());
+	// }
+	// };
+	// }
 
 	private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
 		HashMap<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
@@ -940,8 +962,8 @@ public class MobleBaseMenueFactory {
 					slavechannelMap = deviceMap.get(sl.getDeviceScriptingName());
 					slavechannelMap.put(sl.getHardwareIndex(), true);
 				}
-				if(dh.getFollowerMobileBase(conf)!=null) {
-					searchForAllLinks(dh.getFollowerMobileBase(conf),deviceMap);
+				if (dh.getFollowerMobileBase(conf) != null) {
+					searchForAllLinks(dh.getFollowerMobileBase(conf), deviceMap);
 				}
 			}
 		}
@@ -985,7 +1007,8 @@ public class MobleBaseMenueFactory {
 								getNextChannel(base, conf);
 							} catch (RuntimeException exc) {
 								String newname = conf.getDeviceScriptingName() + "_new";
-								com.neuronrobotics.sdk.common.Log.error("Adding new device to provide new channels: " + newname);
+								com.neuronrobotics.sdk.common.Log
+										.error("Adding new device to provide new channels: " + newname);
 								conf.setDeviceScriptingName(newname);
 								getNextChannel(base, conf);
 							}
@@ -998,14 +1021,14 @@ public class MobleBaseMenueFactory {
 
 					private void setDeviceName(DHParameterKinematics newDevice, String name) {
 						newDevice.setScriptingName(name);
-						for(int i=0;i<newDevice.getNumberOfLinks();i++) {
+						for (int i = 0; i < newDevice.getNumberOfLinks(); i++) {
 							LinkConfiguration conf = newDevice.getLinkConfiguration(i);
-							conf.setName(result.get()+"_"+conf.getName());
-							MobileBase base  =newDevice.getFollowerMobileBase(i);
-							if(base!=null) {
-								base.setScriptingName(name+"_"+base.getScriptingName());
-								for(DHParameterKinematics kin:base.getAllDHChains()) {
-									setDeviceName(kin,name+"_"+kin.getScriptingName());
+							conf.setName(result.get() + "_" + conf.getName());
+							MobileBase base = newDevice.getFollowerMobileBase(i);
+							if (base != null) {
+								base.setScriptingName(name + "_" + base.getScriptingName());
+								for (DHParameterKinematics kin : base.getAllDHChains()) {
+									setDeviceName(kin, name + "_" + kin.getScriptingName());
 								}
 							}
 						}
@@ -1044,7 +1067,7 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + MyConf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 		LinkConfigurationWidget theWidget = new LinkConfigurationWidget(MyConf, myLinkFactory,
-				MobileBaseCadManager.get(CSGDatabase.getInstance(),myBase));
+				MobileBaseCadManager.get(CSGDatabase.getInstance(), myBase));
 		callbackMapForTreeitems1.put(hwConf, () -> {
 			if (widgetMapForTreeitems1.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
@@ -1066,22 +1089,17 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> link = new TreeItem<>(conf.getName(), AssetFactory.loadIcon("Move-Single-Motor.png"));
 		DHLink dhLink;
 		try {
-		 dhLink = dh.getChain().getLinks().get(linkIndex);
-		}catch(java.lang.IndexOutOfBoundsException ex) {
+			dhLink = dh.getChain().getLinks().get(linkIndex);
+		} catch (java.lang.IndexOutOfBoundsException ex) {
 			return;
 		}
 
-		String linkName =dh.getLinkConfiguration(linkIndex).getName();
-		
-		
+		String linkName = dh.getLinkConfiguration(linkIndex).getName();
 
-		
 		// LinkConfigurationWidget confWidget =setHardwareConfig(base, conf,
 		// dh.getFactory(), link, callbackMapForTreeitems, widgetMapForTreeitems);
 		// lsw.setTrimController(confWidget);
 
-		
-		
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 
@@ -1091,23 +1109,24 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh,base, true,true);
+				LinkSliderWidget lsw = new LinkSliderWidget(linkIndex, dh, base, true, true);
 				widgetMapForTreeitems.put(hwConf, lsw);
 				lsw.enable();
 			}
 			BowlerJInputDevice controller = creatureLab.getController();
 			if (controller != null) {
-				((LinkSliderWidget)widgetMapForTreeitems.get(hwConf)).setGameController(controller);
+				((LinkSliderWidget) widgetMapForTreeitems.get(hwConf)).setGameController(controller);
 			}
 			try {
 				if (linkIndex == 0)
 					BowlerStudio.select(base, dh);
 				else
-					BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+					BowlerStudio.select((javafx.scene.transform.Affine) dh.getAbstractLink(linkIndex - 1)
+							.getGlobalPositionListener());
 			} catch (Exception ex) {
 				com.neuronrobotics.sdk.common.Log.error("Limb not loaded yet");
 			}
-			((LinkSliderWidget)widgetMapForTreeitems.get(hwConf)).enable();
+			((LinkSliderWidget) widgetMapForTreeitems.get(hwConf)).enable();
 			// select( base, dh);
 			// activate controller
 		});
@@ -1120,15 +1139,12 @@ public class MobleBaseMenueFactory {
 			setHardwareConfig(base, co, slaveFactory, slaves, callbackMapForTreeitems, widgetMapForTreeitems);
 		}
 
-		
 		TreeItem<String> removeMobileBase = new TreeItem<>("Remove " + conf.getName(),
 				AssetFactory.loadIcon("creature.png"));
 		TreeItem<String> addMobileBase = new TreeItem<>("Add MobileBase to " + conf.getName(),
 				AssetFactory.loadIcon("creature.png"));
 		TreeItem<String> addSlaves = new TreeItem<>("Add following Link to " + conf.getName(),
 				AssetFactory.loadIcon("Add-Slave-Links.png"));
-		
-
 
 		callbackMapForTreeitems.put(removeMobileBase, () -> {
 			BowlerStudio.runLater(() -> {
@@ -1158,17 +1174,16 @@ public class MobleBaseMenueFactory {
 						}
 					}.start();
 					slaves.getChildren().clear();
-					slaves.getChildren().add( addSlaves);
-					slaves.getChildren().add( addMobileBase);
+					slaves.getChildren().add(addSlaves);
+					slaves.getChildren().add(addMobileBase);
 				}
 			});
 		});
-		
-
 
 		callbackMapForTreeitems.put(addMobileBase, () -> {
 			BowlerStudio.runLater(() -> {
-				TextInputDialog alert = new TextInputDialog(conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
+				TextInputDialog alert = new TextInputDialog(
+						conf.getName() + "_MobileBase_" + conf.getSlaveLinks().size());
 				alert.setTitle("Add a new Follower mobilebase of");
 				alert.setHeaderText("Set the scripting name for this Follower link");
 				alert.setContentText("Please the name of the new Follower link:");
@@ -1194,18 +1209,17 @@ public class MobleBaseMenueFactory {
 							String scriptingName = result.get();
 							embedableXml.setScriptingName(scriptingName);
 							dhLink.setMobileBaseXml(embedableXml);
-							removeMobileBase.setValue("Remove "+scriptingName);
-							slaves.getChildren().add(0,setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-									isOwner, dhLink));
+							removeMobileBase.setValue("Remove " + scriptingName);
+							slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems,
+									widgetMapForTreeitems, creatureLab, isOwner, dhLink));
 						}
 					}.start();
-					slaves.getChildren().remove( addMobileBase);
-					slaves.getChildren().add( removeMobileBase);
+					slaves.getChildren().remove(addMobileBase);
+					slaves.getChildren().add(removeMobileBase);
 				}
 			});
 		});
-		
-		
+
 		callbackMapForTreeitems.put(addSlaves, () -> {
 			// if(widgetMapForTreeitems.get(advanced)==null){
 			// //create the widget for the leg when looking at it for the first
@@ -1214,7 +1228,8 @@ public class MobleBaseMenueFactory {
 			// creatureLab));
 			// }
 			BowlerStudio.runLater(() -> {
-				TextInputDialog alert = new TextInputDialog(conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
+				TextInputDialog alert = new TextInputDialog(
+						conf.getName() + "_Follower_" + conf.getSlaveLinks().size());
 				alert.setTitle("Add a new Follower link of");
 				alert.setHeaderText("Set the scripting name for this Follower link");
 				alert.setContentText("Please the name of the new Follower link:");
@@ -1238,7 +1253,7 @@ public class MobleBaseMenueFactory {
 						public void run() {
 							com.neuronrobotics.sdk.common.Log.error("Your new link: " + result.get());
 							LinkConfiguration newLink = new LinkConfiguration();
-							//newLink.setType(conf.getTypeEnum());
+							// newLink.setType(conf.getTypeEnum());
 							newLink.setTypeString(conf.getTypeString());
 							getNextChannel(base, newLink);
 							newLink.setName(result.get());
@@ -1256,16 +1271,16 @@ public class MobleBaseMenueFactory {
 				}
 			});
 		});
-		
-		if(dhLink.getSlaveMobileBase()!=null) {
-			removeMobileBase.setValue("Remove "+dhLink.getSlaveMobileBase().getScriptingName());
-			slaves.getChildren().add(0,setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
-					isOwner, dhLink));
-			slaves.getChildren().add( removeMobileBase);
-		}else {
-			slaves.getChildren().add( addMobileBase);
+
+		if (dhLink.getSlaveMobileBase() != null) {
+			removeMobileBase.setValue("Remove " + dhLink.getSlaveMobileBase().getScriptingName());
+			slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems,
+					creatureLab, isOwner, dhLink));
+			slaves.getChildren().add(removeMobileBase);
+		} else {
+			slaves.getChildren().add(addMobileBase);
 		}
-		slaves.getChildren().add( addSlaves);
+		slaves.getChildren().add(addSlaves);
 		TreeItem<String> remove = new TreeItem<>("Remove " + conf.getName(), AssetFactory.loadIcon("Remove-Link.png"));
 		callbackMapForTreeitems.put(remove, () -> {
 			BowlerStudio.runLater(() -> {
@@ -1311,10 +1326,10 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> design = new TreeItem<>("Design Parameters " + conf.getName(),
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 		conf.addChangeListener(new ILinkConfigurationChangeListener() {
-			
+
 			@Override
 			public void event(LinkConfiguration newConf) {
-				BowlerStudio.runLater(()->{
+				BowlerStudio.runLater(() -> {
 
 					hwConf.setValue("Hardware Config " + newConf.getName());
 					link.setValue(newConf.getName());
@@ -1325,8 +1340,7 @@ public class MobleBaseMenueFactory {
 					design.setValue("Design Parameters " + newConf.getName());
 					remove.setValue("Remove " + newConf.getName());
 				});
-				
-				
+
 			}
 		});
 		callbackMapForTreeitems.put(design, () -> {
@@ -1350,38 +1364,36 @@ public class MobleBaseMenueFactory {
 			if (linkIndex == 0)
 				BowlerStudio.select(base, dh);
 			else
-				BowlerStudio.select((javafx.scene.transform.Affine)dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
+				BowlerStudio.select(
+						(javafx.scene.transform.Affine) dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
-		
-
-		
 
 		link.getChildren().addAll(design);
 		Affine manipulator = (Affine) dh.getListener(linkIndex);
 		TransformNR offset = dh.getDHStep(linkIndex).inverse();
-		Affine lastLinkAffine = linkIndex==0? (Affine) dh.getRootListener() :(Affine) dh.getListener(linkIndex-1);
+		Affine lastLinkAffine = linkIndex == 0 ? (Affine) dh.getRootListener() : (Affine) dh.getListener(linkIndex - 1);
 
-		addVitamins( dh.getLinkConfiguration(linkIndex),   link, callbackMapForTreeitems, widgetMapForTreeitems,selected->{
-			Affine linkObjectManipulator = (Affine) dh.getLinkObjectManipulator(linkIndex);
-			TransformNR pose = TransformFactory.affineToNr(linkObjectManipulator);
-			if(selected.getFrame()==VitaminFrame.LinkOrigin) {
-				TransformNR step = dh.getDHStep(linkIndex).inverse();
-				pose=pose.times(step);
-			}
-			if(selected.getFrame()==VitaminFrame.previousLinkTip) {
-				Affine ll;
-				if(linkIndex==0) {
-					ll=(Affine) dh.getRootListener();
-				}else
-					ll = (Affine) dh.getLinkObjectManipulator(linkIndex-1);
-				pose = TransformFactory.affineToNr(ll);
-			}
-			return pose; 
-		},manipulator,lastLinkAffine,offset);
-
+		addVitamins(dh.getLinkConfiguration(linkIndex), link, callbackMapForTreeitems, widgetMapForTreeitems,
+				selected -> {
+					Affine linkObjectManipulator = (Affine) dh.getLinkObjectManipulator(linkIndex);
+					TransformNR pose = TransformFactory.affineToNr(linkObjectManipulator);
+					if (selected.getFrame() == VitaminFrame.LinkOrigin) {
+						TransformNR step = dh.getDHStep(linkIndex).inverse();
+						pose = pose.times(step);
+					}
+					if (selected.getFrame() == VitaminFrame.previousLinkTip) {
+						Affine ll;
+						if (linkIndex == 0) {
+							ll = (Affine) dh.getRootListener();
+						} else
+							ll = (Affine) dh.getLinkObjectManipulator(linkIndex - 1);
+						pose = TransformFactory.affineToNr(ll);
+					}
+					return pose;
+				}, manipulator, lastLinkAffine, offset);
 
 		link.getChildren().addAll(slaves, remove);
-		
+
 		rootItem.getChildren().add(0, link);
 
 	}
@@ -1390,9 +1402,10 @@ public class MobleBaseMenueFactory {
 			HashMap<TreeItem<String>, Runnable> callbackMapForTreeitems,
 			HashMap<TreeItem<String>, Parent> widgetMapForTreeitems, CreatureLab creatureLab, boolean isOwner,
 			DHLink dhLink) {
-		TreeItem<String> mobile = new TreeItem<>( dhLink.getSlaveMobileBase().getScriptingName(),
+		TreeItem<String> mobile = new TreeItem<>(dhLink.getSlaveMobileBase().getScriptingName(),
 				AssetFactory.loadIcon("creature.png"));
-		MobleBaseMenueFactory.load(dhLink.getSlaveMobileBase(), view, mobile, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,false,isOwner);
+		MobleBaseMenueFactory.load(dhLink.getSlaveMobileBase(), view, mobile, callbackMapForTreeitems,
+				widgetMapForTreeitems, creatureLab, false, isOwner);
 		return mobile;
 	}
 
@@ -1403,7 +1416,7 @@ public class MobleBaseMenueFactory {
 			boolean creatureIsOwnedByUser) throws Exception {
 
 		TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(), AssetFactory.loadIcon("Move-Limb.png"));
-		JogWidget widget = new JogWidget(dh,base);
+		JogWidget widget = new JogWidget(dh, base);
 		callbackMapForTreeitems.put(dhItem, () -> {
 
 			if (widgetMapForTreeitems.get(dhItem) == null) {
@@ -1420,7 +1433,7 @@ public class MobleBaseMenueFactory {
 				widget.setGameController(controller);
 			}
 			ParallelGroup parallel = base.getParallelGroup(dh);
-			if(parallel==null)
+			if (parallel == null)
 				widget.setCurrent(dh.getCurrentTaskSpaceTransform());
 			else
 				widget.setCurrent(parallel.getCurrentPoseTarget());
@@ -1466,7 +1479,7 @@ public class MobleBaseMenueFactory {
 					if (base.getDrivable().contains(dh)) {
 						base.getDrivable().remove(dh);
 					}
-					if(base.getParallelGroup(dh)!=null)
+					if (base.getParallelGroup(dh) != null)
 						base.getParallelGroup(dh).removeLimb(dh);
 					creatureLab.generateCad(CSGDatabase.getInstance());
 				}
@@ -1516,17 +1529,18 @@ public class MobleBaseMenueFactory {
 						new Thread() {
 							public void run() {
 								com.neuronrobotics.sdk.common.Log.error("Your new link: " + result.get());
-								LinkConfiguration newLink = new LinkConfiguration( dh.getLinkConfigurations().get(size-1));
-								newLink.setLinkIndex(newLink.getLinkIndex()+1);
+								LinkConfiguration newLink = new LinkConfiguration(
+										dh.getLinkConfigurations().get(size - 1));
+								newLink.setLinkIndex(newLink.getLinkIndex() + 1);
 								ArrayList<LinkConfiguration> linkConfigurations = dh.getFactory()
 										.getLinkConfigurations();
 
 								int numOfLinks = linkConfigurations.size();
 
-								//newLink.setType(typeOfLink);
+								// newLink.setType(typeOfLink);
 								getNextChannel(base, newLink);
 								newLink.setName(result.get());
-								DHLink dhl = dh.getDhLink(numOfLinks-1);
+								DHLink dhl = dh.getDhLink(numOfLinks - 1);
 								if (dh != null) {
 									DHLink dhLink = new DHLink(dhl);
 									dhLink.setListener(new Affine());
@@ -1538,13 +1552,13 @@ public class MobleBaseMenueFactory {
 										com.neuronrobotics.sdk.common.Log.error(e);
 									}
 								}
-								
-								
+
 								try {
 									loadSingleLink(dh.getLinkConfigurations().size() - 1, base, view, newLink, dh,
 											dhItem, callbackMapForTreeitems, widgetMapForTreeitems, creatureLab,
 											creatureIsOwnedByUser);
-									MobileBaseCadManager.get(CSGDatabase.getInstance(),base).generateCad(CSGDatabase.getInstance());
+									MobileBaseCadManager.get(CSGDatabase.getInstance(), base)
+											.generateCad(CSGDatabase.getInstance());
 								} catch (Exception e) {
 									// Auto-generated catch block
 									com.neuronrobotics.sdk.common.Log.error(e);
@@ -1567,16 +1581,16 @@ public class MobleBaseMenueFactory {
 			if (widgetMapForTreeitems.get(parallel) == null) {
 				// create the widget for the leg when looking at it for the
 				// first time
-				try {					
-					widgetMapForTreeitems.put(parallel,new ParallelWidget( base,dh,creatureLab));
+				try {
+					widgetMapForTreeitems.put(parallel, new ParallelWidget(base, dh, creatureLab));
 				} catch (Exception ex) {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-			((ParallelWidget)widgetMapForTreeitems.get(parallel)).configure(base, dh, creatureLab);
+			((ParallelWidget) widgetMapForTreeitems.get(parallel)).configure(base, dh, creatureLab);
 		});
 		dhItem.getChildren().addAll(parallel);
-		
+
 		TreeItem<String> PlaceLimb = new TreeItem<>("Move Root Of Limb",
 				AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
 
@@ -1610,21 +1624,21 @@ public class MobleBaseMenueFactory {
 		});
 		dhItem.getChildren().addAll(PlaceLimb);
 
-//		TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",
-//				AssetFactory.loadIcon("Advanced-Configuration.png"));
-//
-//		callbackMapForTreeitems.put(advanced, () -> {
-//			if (widgetMapForTreeitems.get(advanced) == null) {
-//				// create the widget for the leg when looking at it for the
-//				// first time
-//				try {
-//					widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
-//				} catch (Exception ex) {
-//					BowlerStudio.printStackTrace(ex);
-//				}
-//			}
-//
-//		});
+		// TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",
+		// AssetFactory.loadIcon("Advanced-Configuration.png"));
+		//
+		// callbackMapForTreeitems.put(advanced, () -> {
+		// if (widgetMapForTreeitems.get(advanced) == null) {
+		// // create the widget for the leg when looking at it for the
+		// // first time
+		// try {
+		// widgetMapForTreeitems.put(advanced, new DhChainWidget(dh, creatureLab));
+		// } catch (Exception ex) {
+		// BowlerStudio.printStackTrace(ex);
+		// }
+		// }
+		//
+		// });
 		if (creatureIsOwnedByUser) {
 			// TreeItem<String> owner = new
 			// TreeItem<>("Scripts",AssetFactory.loadIcon("Owner.png"));
@@ -1707,8 +1721,8 @@ public class MobleBaseMenueFactory {
 	 * @return the baseDirForFiles
 	 */
 	public static File getBaseDirForFiles() {
-		if(baseDirForFiles==null)
-			baseDirForFiles=new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+		if (baseDirForFiles == null)
+			baseDirForFiles = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
 		if (!baseDirForFiles.exists()) {
 			baseDirForFiles.mkdirs();
 		}
@@ -1716,7 +1730,8 @@ public class MobleBaseMenueFactory {
 	}
 
 	/**
-	 * @param baseDirForFiles the baseDirForFiles to set
+	 * @param baseDirForFiles
+	 *            the baseDirForFiles to set
 	 */
 	public static void setBaseDirForFiles(File baseDirForFiles) {
 		MobleBaseMenueFactory.baseDirForFiles = baseDirForFiles;

@@ -2,14 +2,13 @@ package com.neuronrobotics.nrconsole.plugin.bootloader.gui;
 
 import com.neuronrobotics.sdk.bootloader.NRBootCoreType;
 
-
 public class BootloaderParams {
 	private int core;
 	private String hexFilePath;
 	private NRBootCoreType type;
-	public String toString(){
+	public String toString() {
 		String s;
-		s="Core #"+getCore()+" of type:"+getType().getReadableName()+" Using file:"+getHexFilePath();
+		s = "Core #" + getCore() + " of type:" + getType().getReadableName() + " Using file:" + getHexFilePath();
 		return s;
 	}
 	public void setCore(int core) {

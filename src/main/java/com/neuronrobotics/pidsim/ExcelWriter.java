@@ -21,28 +21,28 @@ public class ExcelWriter {
 	private WritableWorkbook workbook;
 	private WritableSheet excelSheet;
 	private int lineOffset = 0;
-	
+
 	public ExcelWriter() {
 		wbSettings.setLocale(new Locale("en", "EN"));
 	}
-	
+
 	private void addNumber(int column, int row, double d) throws WriteException, RowsExceededException {
 		Number number;
 		number = new Number(column, row, d);
 		excelSheet.addCell(number);
 	}
-	
+
 	private void addLabel(int column, int row, String s) throws WriteException, RowsExceededException {
 		Label label;
 		label = new Label(column, row, s);
 		excelSheet.addCell(label);
 	}
-	
+
 	public void setFile(File f) {
-		if (!f.getName().endsWith(".xls")){
-		    f = new File(f.getAbsolutePath()+".xls");
+		if (!f.getName().endsWith(".xls")) {
+			f = new File(f.getAbsolutePath() + ".xls");
 		}
-		
+
 		try {
 			workbook = Workbook.createWorkbook(f, wbSettings);
 			workbook.createSheet("Data", 0);
@@ -52,12 +52,12 @@ public class ExcelWriter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void addData(XYSeries data) {
 		try {
 			int col = 1;
 			addLabel(lineOffset, 0, "Time (s)");
-			addLabel(lineOffset+1, 0, "Position (degrees)");
+			addLabel(lineOffset + 1, 0, "Position (degrees)");
 
 			XYSeries cache;
 			try {
@@ -67,11 +67,11 @@ public class ExcelWriter {
 				e.printStackTrace();
 				return;
 			}
-			
-			for(Object o : cache.getItems()) {
-				XYDataItem i = (XYDataItem) o;	
+
+			for (Object o : cache.getItems()) {
+				XYDataItem i = (XYDataItem) o;
 				addNumber(lineOffset, col, i.getXValue());
-				addNumber(lineOffset+1, col, i.getYValue());
+				addNumber(lineOffset + 1, col, i.getYValue());
 				col++;
 			}
 		} catch (RowsExceededException e) {
@@ -81,7 +81,7 @@ public class ExcelWriter {
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		lineOffset+=2;
+		lineOffset += 2;
 	}
 
 	public void cleanup() {
@@ -95,4 +95,3 @@ public class ExcelWriter {
 	}
 
 }
-

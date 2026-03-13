@@ -7,19 +7,18 @@ import com.neuronrobotics.bowlerstudio.tabs.AbstractBowlerStudioTab;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 
 public class AnamationSequencer extends AbstractBowlerStudioTab {
-	public static final String[] myNames ={"neuronrobotics.dyio.*"};
-	private SchedulerGui gui=new SchedulerGui();;
-
+	public static final String[] myNames = {"neuronrobotics.dyio.*"};
+	private SchedulerGui gui = new SchedulerGui();;
 
 	@Override
 	public void onTabClosing() {
 		// Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String[] getMyNameSpaces() {
-		return new String[] {"neuronrobotics.dyio.*"};
+		return new String[]{"neuronrobotics.dyio.*"};
 	}
 
 	@Override
@@ -27,19 +26,19 @@ public class AnamationSequencer extends AbstractBowlerStudioTab {
 		// Auto-generated method stub
 		gui.setConnection(pm);
 		SwingNode sn = new SwingNode();
-        sn.setContent(gui);
-        ScrollPane s1 = new ScrollPane();
-       
-        s1.setContent(sn);
-        setContent(s1);
-        setText("Anamation Sequencer");
+		sn.setContent(gui);
+		ScrollPane s1 = new ScrollPane();
+
+		s1.setContent(sn);
+		setContent(s1);
+		setText("Anamation Sequencer");
 		onTabReOpening();
 	}
 
 	@Override
 	public void onTabReOpening() {
 		// Auto-generated method stub
-		
+
 	}
 
 }

@@ -12,5 +12,5 @@ package com.neuronrobotics.bowlerstudio;
  */
 @FunctionalInterface
 public interface OutputFilter {
-    public boolean onMatch(String s);
+	public boolean onMatch(String s);
 }

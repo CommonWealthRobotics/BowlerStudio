@@ -19,7 +19,6 @@ import java.net.URL;
 //import javax.swing.SwingUtilities;
 //import javax.swing.UIManager;
 //import javax.swing.UnsupportedLookAndFeelException;
-import java.util.ArrayList;
 
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.assets.StudioBuildInfo;
@@ -93,16 +92,15 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	@Override
 	public void onLogUpdate(String update, Exception e) {
 
-		
-		String[] s=update.split("\n");
-		log1=s[0];
-		log2="";
-		if(s.length>1) {
-			for(int i=1;i<s.length;i++) {
-				log2+=s[i]+" ";
+		String[] s = update.split("\n");
+		log1 = s[0];
+		log2 = "";
+		if (s.length > 1) {
+			for (int i = 1; i < s.length; i++) {
+				log2 += s[i] + " ";
 			}
 		}
-		
+
 		if (isVisibleSplash())
 			updateSplash();
 	}
@@ -176,8 +174,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupStage.setScene(popupScene);
 
 			// Optional: Allow the popup to be dragged
-			final double[] xOffset = { 0 };
-			final double[] yOffset = { 0 };
+			final double[] xOffset = {0};
+			final double[] yOffset = {0};
 
 			popupRoot.setOnMousePressed(event -> {
 				xOffset[0] = event.getSceneX();
@@ -193,7 +191,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				if (dockIcon != null) {
 					Image loadAsset = new Image(dockIcon.toString());
 					popupStage.getIcons().add(loadAsset);
-					
+
 				}
 
 			} catch (Exception e) {
@@ -227,7 +225,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		BowlerStudio.runLater(() -> {
 			popupStage.hide();
 		});
-		new Thread(()->{
+		new Thread(() -> {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -238,7 +236,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				popupStage.hide();
 			});
 		}).start();
-		if(!Platform.isFxApplicationThread())
+		if (!Platform.isFxApplicationThread())
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -253,7 +251,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		}
 		timeOfLastUpdate = System.currentTimeMillis();
 		if (popupScene != null) {
-			// com.neuronrobotics.sdk.common.Log.debug("Updating Splash "+imageView.getFitWidth());
+			// com.neuronrobotics.sdk.common.Log.debug("Updating Splash
+			// "+imageView.getFitWidth());
 			Platform.runLater(() -> {
 
 				popupScene.setFill(null);
@@ -262,9 +261,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				popupRoot.setStyle("-fx-background-color: transparent;");
 				logL1.setLayoutX(logX * scale);
 				logL1.setLayoutY(logY * scale);
-				
-				logL2.setLayoutX((logX+30) * scale);
-				logL2.setLayoutY((logY+40) * scale);
+
+				logL2.setLayoutX((logX + 30) * scale);
+				logL2.setLayoutY((logY + 40) * scale);
 				mesL.setLayoutX(messageX * scale);
 				mesL.setLayoutY(messageY * scale);
 				verL.setLayoutX(versionX * scale);

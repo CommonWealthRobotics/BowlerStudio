@@ -11,10 +11,10 @@ import org.jfree.data.xy.XYSeries;
 public class CSVWriter {
 
 	private BufferedWriter writer;
-	
+
 	public void setFile(File f) {
-		if (!f.getName().endsWith(".csv")){
-		    f = new File(f.getAbsolutePath()+".csv");
+		if (!f.getName().endsWith(".csv")) {
+			f = new File(f.getAbsolutePath() + ".csv");
 		}
 
 		FileWriter fstream;
@@ -25,12 +25,12 @@ public class CSVWriter {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		writer = new BufferedWriter(fstream);
 	}
 
 	public void addData(XYSeries data) {
-		
+
 		XYSeries cache;
 		try {
 			cache = data.createCopy(0, data.getItemCount() - 1);
@@ -39,10 +39,10 @@ public class CSVWriter {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		try {
 			writer.write("Time (s),Position (degrees)\n");
-			for(Object o : cache.getItems()) {
+			for (Object o : cache.getItems()) {
 				XYDataItem i = (XYDataItem) o;
 				writer.write(i.getXValue() + "," + i.getYValue() + "\n");
 			}

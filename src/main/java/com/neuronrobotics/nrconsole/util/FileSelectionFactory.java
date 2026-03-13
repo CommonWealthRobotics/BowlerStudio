@@ -2,7 +2,6 @@ package com.neuronrobotics.nrconsole.util;
 
 import java.io.File;
 
-import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;

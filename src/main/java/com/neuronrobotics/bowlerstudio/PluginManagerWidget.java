@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.Log;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -18,26 +17,26 @@ public class PluginManagerWidget extends TitledPane {
 	private PluginManager manager;
 	private TextField deviceName = new TextField();
 	private Button disconnectTHis;
-	final Accordion accordion = new Accordion (); 
+	final Accordion accordion = new Accordion();
 
-	public PluginManagerWidget(PluginManager m, Node graphic){
+	public PluginManagerWidget(PluginManager m, Node graphic) {
 		HBox content = new HBox(20);
 
-		content.setPadding(new Insets(0, 20, 10, 20)); 
+		content.setPadding(new Insets(0, 20, 10, 20));
 		this.manager = m;
 		ArrayList<TitledPane> plugins = manager.getPlugins();
 		accordion.getPanes().addAll(plugins);
-		disconnectTHis = new Button("Disconnect "+manager.getName(), AssetFactory.loadIcon("Disconnect-Device.png"));
+		disconnectTHis = new Button("Disconnect " + manager.getName(), AssetFactory.loadIcon("Disconnect-Device.png"));
 
-		disconnectTHis.setOnMousePressed(	event -> {
-			new Thread(){
-				public void run(){
+		disconnectTHis.setOnMousePressed(event -> {
+			new Thread() {
+				public void run() {
 					Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 
 					setName("disconnect plugins");
-				    	Log.warning("Disconnect button for "+manager.getName()+" pressed");
-				    	getManager().getDevice().disconnect();
-			    	
+					Log.warning("Disconnect button for " + manager.getName() + " pressed");
+					getManager().getDevice().disconnect();
+
 				}
 			}.start();
 
@@ -46,11 +45,11 @@ public class PluginManagerWidget extends TitledPane {
 		deviceName.setOnAction(event -> {
 			getManager().setName(deviceName.getText());
 			setText(manager.getName());
-			disconnectTHis.setText("Disconnect "+manager.getName());
+			disconnectTHis.setText("Disconnect " + manager.getName());
 		});
-		BowlerStudio.runLater(()->deviceName.setText(manager.getName()));
+		BowlerStudio.runLater(() -> deviceName.setText(manager.getName()));
 		content.setHgrow(accordion, Priority.ALWAYS);
-		content.getChildren().addAll(graphic,disconnectTHis,deviceName,accordion);
+		content.getChildren().addAll(graphic, disconnectTHis, deviceName, accordion);
 		setContent(content);
 		setText(manager.getName());
 	}

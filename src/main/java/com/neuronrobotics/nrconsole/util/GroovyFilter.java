@@ -9,7 +9,7 @@ public class GroovyFilter extends FileFilter {
 	public String getDescription() {
 		return "Script (.groovy .java)";
 	}
-	
+
 	public boolean accept(File f) {
 		return true;
 	}

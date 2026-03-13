@@ -20,13 +20,13 @@ class SettingsDialog extends JPanel implements ActionListener {
 	private JTextField dyFricTxt = new JTextField(5);
 	private JButton saveBtn = new JButton("Save");
 	private PIDConstantsDialog constants;
-	
+
 	public SettingsDialog(PIDSim sim, PIDConstantsDialog constants) {
 		this.sim = sim;
 		this.constants = constants;
-		
+
 		saveBtn.addActionListener(this);
-				
+
 		JPanel p = new JPanel(new MigLayout());
 		p.add(new JLabel("Mass (Kg):"), "cell 0 0");
 		p.add(massTxt, " cell 1 0");
@@ -39,17 +39,17 @@ class SettingsDialog extends JPanel implements ActionListener {
 		p.add(saveBtn, "cell 0 4, spanx");
 		p.add(constants, "cell 0 5, spanx");
 		refreshValues();
-		
+
 		add(p);
 	}
-	
+
 	public void refreshValues() {
 		massTxt.setText(Double.toString(sim.getMass()));
 		lenTxt.setText(Double.toString(sim.getLength()));
 		stFricTxt.setText(Double.toString(sim.getStaticFriction()));
 		dyFricTxt.setText(Double.toString(sim.getDynamicFriction()));
 	}
-	
+
 	private double cleanOrZero(String txt) {
 		double d;
 		try {
@@ -57,7 +57,7 @@ class SettingsDialog extends JPanel implements ActionListener {
 		} catch (Exception e) {
 			d = 0;
 		}
-		
+
 		return d;
 	}
 

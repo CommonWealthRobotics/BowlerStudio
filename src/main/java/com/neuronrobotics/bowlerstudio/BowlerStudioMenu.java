@@ -9,14 +9,11 @@ import com.google.common.collect.Lists;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
-import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.IGithubLoginListener;
 import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.tabs.LocalFileScriptTab;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
-import com.neuronrobotics.nrconsole.util.CommitWidget;
 //import com.neuronrobotics.imageprovider.CHDKImageProvider;
 import com.neuronrobotics.nrconsole.util.FileSelectionFactory;
 import com.neuronrobotics.nrconsole.util.PromptForGit;
@@ -27,7 +24,6 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -38,8 +34,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -61,9 +55,7 @@ import java.net.URL;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -195,7 +187,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				MobileBase mb;
 				ScriptingEngine.pull(id);
 
-				mb = (MobileBase) ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(),id, file, null);
+				mb = (MobileBase) ScriptingEngine.gitScriptRun(CSGDatabase.getInstance(), id, file, null);
 
 				if (mb != null)
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
@@ -241,7 +233,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				public void run() {
 					// ConfigurationDatabase.loginEvent(username);
 					// ConfigurationDatabase.getParamMap("workspace");
-					com.neuronrobotics.sdk.common.Log.debug("Login Success "+n);
+					com.neuronrobotics.sdk.common.Log.debug("Login Success " + n);
 					BowlerStudioMenuWorkspace.loginEvent();
 					if (!PasswordManager.hasNetwork())
 						return;
@@ -498,8 +490,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					@Override
 					public void run() {
 						try {
-//							System.err.println("\n\nCommit event Detected " + url + " on branch "
-//									+ ScriptingEngine.getBranch(url));
+							// System.err.println("\n\nCommit event Detected " + url + " on branch "
+							// + ScriptingEngine.getBranch(url));
 							// new RuntimeException().printStackTrace();
 							BowlerStudio.runLater(() -> resetMenueForLoadingFiles("Files:", orgFiles, loadFilesEvent));
 							BowlerStudio.runLater(
@@ -826,8 +818,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				} catch (Exception e1) {
 					exp.uncaughtException(Thread.currentThread(), e1);
 					return;
-				}
-				;
+				} ;
 				new Thread(() -> {
 					BowlerStudio.runLater(() -> {
 						// removing this listener
@@ -1039,11 +1030,11 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 							e1.printStackTrace();
 							return;
 						}
-//						if (orgFiles.getItems().size() != 1) {
-//							Log.warning("Bailing out of loading thread");
-//							return;// menue populated by
-//									// another thread
-//						}
+						// if (orgFiles.getItems().size() != 1) {
+						// Log.warning("Bailing out of loading thread");
+						// return;// menue populated by
+						// // another thread
+						// }
 						BowlerStudio.runLater(() -> {
 							// removing this listener
 							// after menue is activated
@@ -1111,13 +1102,13 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 	@FXML
 	public void onConnectCHDKCamera(ActionEvent event) {
-//		BowlerStudio.runLater(() -> {
-//			try {
-//				ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
-//			} catch (Exception e) {
-//				exp.uncaughtException(Thread.currentThread(), e);
-//			}
-//		});
+		// BowlerStudio.runLater(() -> {
+		// try {
+		// ConnectionManager.addConnection(new CHDKImageProvider(), "cameraCHDK");
+		// } catch (Exception e) {
+		// exp.uncaughtException(Thread.currentThread(), e);
+		// }
+		// });
 	}
 
 	@FXML
@@ -1415,9 +1406,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
 				// set the text of the label
 				String s = td.getEditor().getText();
-				
+
 				if (s == null || s.length() < 4) {
-					System.err.println ("Cancle detected");
+					System.err.println("Cancle detected");
 					return;
 				}
 				if (s.endsWith(".git")) {
@@ -1502,8 +1493,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			bowlerStudioModularFrame.showConectionManager();
 		});
 		showCreatureLab.setOnAction(event -> {
-			bowlerStudioModularFrame.showCreatureLab();
-			;
+			bowlerStudioModularFrame.showCreatureLab();;
 		});
 		showTerminal.setOnAction(event -> {
 			bowlerStudioModularFrame.showTerminal();
@@ -1534,7 +1524,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					});
 					@SuppressWarnings("unchecked")
 					HashMap<String, HashMap<String, Object>> map = (HashMap<String, HashMap<String, Object>>) ScriptingEngine
-							.inlineFileScriptRun(CSGDatabase.getInstance(),f, null);
+							.inlineFileScriptRun(CSGDatabase.getInstance(), f, null);
 
 					List<String> entrySet = asSortedList(map.keySet());
 
@@ -1581,7 +1571,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			setToLoggedOut();
 		}
 
-// WindowMenu
+		// WindowMenu
 		int[] fonts = FontSizeManager.getFontOptions();
 		Menu fontSelect = new Menu("Font Size");
 		ToggleGroup toggleGroup = new ToggleGroup();
@@ -1625,9 +1615,9 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 				int i = currentIndex + 1;
 
 				double percent = ((double) i) / ((double) finalIndex) * 100;
-				String name =intermediateShape==null?"": intermediateShape.getName();
-				String x = name + " " + type.trim() + " " + String.format("%.1f", percent)
-						+ "% finished : " + i + " of " + finalIndex;
+				String name = intermediateShape == null ? "" : intermediateShape.getName();
+				String x = name + " " + type.trim() + " " + String.format("%.1f", percent) + "% finished : " + i
+						+ " of " + finalIndex;
 				if (showCSGProgress.isSelected()) {
 					com.neuronrobotics.sdk.common.Log.debug(x);
 					if (finalIndex > 50) {
@@ -1654,12 +1644,12 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			ConfigurationDatabase.setObject("MenueSettings", "printCSG", showCSGProgress.isSelected());
 		});
 		eu.mihosoft.vrl.v3d.svg.SVGLoad.getProgressDefault();
-//		eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
-//			@Override
-//			public void onShape(CSG newShape) {
-//				BowlerStudioController.addCsg(newShape);
-//			}
-//		});
+		// eu.mihosoft.vrl.v3d.svg.SVGLoad.setProgressDefault(new ISVGLoadProgress() {
+		// @Override
+		// public void onShape(CSG newShape) {
+		// BowlerStudioController.addCsg(newShape);
+		// }
+		// });
 		Runnable r = () -> {
 			boolean parseBoolean = Boolean.parseBoolean(ConfigurationDatabase
 					.getObject("MenueSettings", "CSG_Advanced_STL", CSG.isPreventNonManifoldTriangles()).toString());

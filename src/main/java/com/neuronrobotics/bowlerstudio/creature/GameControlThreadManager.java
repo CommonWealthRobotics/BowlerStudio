@@ -1,42 +1,35 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 
 public class GameControlThreadManager {
-	private static Thread scriptRunner=null;
-	private static IAmControlled currentController=null;
+	private static Thread scriptRunner = null;
+	private static IAmControlled currentController = null;
 	private static boolean running = false;
 	public static void stop() {
-		if(!isRunning())
+		if (!isRunning())
 			return;
-		//new RuntimeException().printStackTrace();
+		// new RuntimeException().printStackTrace();
 
 		reset();
 		Thread tmp = scriptRunner;
 		if (tmp != null)
 			while (tmp.isAlive()) {
 
-				com.neuronrobotics.sdk.common.Log.error("Interrupting "+currentController.getName());
+				com.neuronrobotics.sdk.common.Log.error("Interrupting " + currentController.getName());
 				ThreadUtil.wait(10);
 				try {
 					tmp.interrupt();
 					tmp.join();
 				} catch (InterruptedException e) {
 					// Auto-generated catch block
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
 
@@ -49,23 +42,24 @@ public class GameControlThreadManager {
 		return currentController;
 	}
 	/**
-	 * @param currentController the currentController to set
+	 * @param currentController
+	 *            the currentController to set
 	 */
 	public static void setCurrentController(IAmControlled c) {
-		boolean was=isRunning();
-		boolean b =false;
-		if(currentController!=null) {
-			b = c!=currentController;
-			if(b)
+		boolean was = isRunning();
+		boolean b = false;
+		if (currentController != null) {
+			b = c != currentController;
+			if (b)
 				stop();
 		}
 		currentController = c;
-		if(was && b) {
+		if (was && b) {
 			start();
 		}
 	}
 	public static void startStopAction() {
-		//new RuntimeException().printStackTrace();
+		// new RuntimeException().printStackTrace();
 		currentController.getRunStopButton().setDisable(true);
 		if (isRunning())
 			stop();
@@ -78,21 +72,21 @@ public class GameControlThreadManager {
 			}
 		currentController.getRunStopButton().setDisable(false);
 	}
-	public static void start()  {
+	public static void start() {
 		File currentFile = currentController.getScriptFile();
-		
 
 		setRunning(true);
 		BowlerStudio.runLater(() -> {
 			BowlerStudio.setToStopButton(currentController.getRunStopButton());
 		});
-		//new RuntimeException().printStackTrace();
+		// new RuntimeException().printStackTrace();
 		scriptRunner = new Thread() {
 
 			public void run() {
 				try {
-					
-					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(),currentFile, currentController.getArguments());
+
+					ScriptingEngine.inlineFileScriptRun(CSGDatabase.getInstance(), currentFile,
+							currentController.getArguments());
 					reset();
 
 				} catch (Throwable ex) {
@@ -118,8 +112,8 @@ public class GameControlThreadManager {
 		BowlerStudio.runLater(() -> {
 			currentController.getRunStopButton().setText(currentController.getButtonRunText());
 			// game.setGraphic(AssetFactory.loadIcon("Run.png"));
-			for(String classes : currentController.getRunStopButton().getStyleClass()) {
-				//com.neuronrobotics.sdk.common.Log.error("Clearing "+classes);
+			for (String classes : currentController.getRunStopButton().getStyleClass()) {
+				// com.neuronrobotics.sdk.common.Log.error("Clearing "+classes);
 			}
 			BowlerStudio.setToRunButton(currentController.getRunStopButton());
 			currentController.getRunStopButton().setGraphic(currentController.getRunAsset());
@@ -133,7 +127,8 @@ public class GameControlThreadManager {
 		return running;
 	}
 	/**
-	 * @param running the running to set
+	 * @param running
+	 *            the running to set
 	 */
 	private static void setRunning(boolean running) {
 		GameControlThreadManager.running = running;

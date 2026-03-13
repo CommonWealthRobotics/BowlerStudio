@@ -15,8 +15,6 @@ import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.JavaFXInitializer;
 import javafx.event.ActionEvent;
@@ -30,7 +28,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
-public class TransformWidget extends GridPane implements IOnEngineeringUnitsChange, EventHandler<ActionEvent>, IAmControlled {
+public class TransformWidget extends GridPane
+		implements
+			IOnEngineeringUnitsChange,
+			EventHandler<ActionEvent>,
+			IAmControlled {
 
 	public IOnTransformChange onChange;
 	// EngineeringUnitsSliderWidget rw;
@@ -40,9 +42,9 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public EngineeringUnitsSliderWidget tx;
 	public EngineeringUnitsSliderWidget ty;
 	public EngineeringUnitsSliderWidget tz;
-//	public TextField tx;
-//	public TextField ty;
-//	public TextField tz;
+	// public TextField tx;
+	// public TextField ty;
+	// public TextField tz;
 	public TransformNR initialState;
 	public RotationNR storeRotation;
 	public double linearIncrement = 1;
@@ -51,25 +53,25 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public Thread scriptRunner = null;
 	private String title;
 	private TransformWidget self;
-	private Label mode= new Label("");
+	private Label mode = new Label("");
 	private TextField lin;
 	private TextField rot;
 
 	public TransformWidget(String title, TransformNR is, IOnTransformChange onChange) {
 		TransformWidget c = this;
 		c.title = title;
-		self=c;
+		self = c;
 		initialState = is.copy();
-		c.onChange=(onChange);
-//		tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
-//		ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
-//		tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
-//		tx.setOnAction(this);
-//		ty.setOnAction(this);
-//		tz.setOnAction(this);
-		double scale = (double)(FontSizeManager.getDefaultSize())/12.0;
+		c.onChange = (onChange);
+		// tx = new TextField(CreatureLab.getFormatted(initialState.getX()));
+		// ty = new TextField(CreatureLab.getFormatted(initialState.getY()));
+		// tz = new TextField(CreatureLab.getFormatted(initialState.getZ()));
+		// tx.setOnAction(this);
+		// ty.setOnAction(this);
+		// tz.setOnAction(this);
+		double scale = (double) (FontSizeManager.getDefaultSize()) / 12.0;
 
-		double width = 200*scale;
+		double width = 200 * scale;
 		tx = new EngineeringUnitsSliderWidget(c, initialState.getX(), width, "mm");
 		ty = new EngineeringUnitsSliderWidget(c, initialState.getY(), width, "mm");
 		tz = new EngineeringUnitsSliderWidget(c, initialState.getZ(), width, "mm");
@@ -139,10 +141,10 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		tilt.setAllowResize(false);
 		elevation.setAllowResize(false);
 		azimuth.setAllowResize(false);
-		getColumnConstraints().add(new ColumnConstraints(60*scale)); // translate text
+		getColumnConstraints().add(new ColumnConstraints(60 * scale)); // translate text
 		getColumnConstraints().add(new ColumnConstraints(width)); // translate values
-		getColumnConstraints().add(new ColumnConstraints(60*scale)); // units
-		getColumnConstraints().add(new ColumnConstraints(60*scale)); // rotate text
+		getColumnConstraints().add(new ColumnConstraints(60 * scale)); // units
+		getColumnConstraints().add(new ColumnConstraints(60 * scale)); // rotate text
 		setHgap(20);// gab between elements
 
 		tx.showSlider(false);
@@ -152,14 +154,15 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		GameControlThreadManager.reset();
 		game.setOnAction(event -> {
 			new Thread() {
-				public void run() {	
+				public void run() {
 					GameControlThreadManager.setCurrentController(c);
 					GameControlThreadManager.startStopAction();
 				}
 			}.start();
 
 		});
-		game.setTooltip(new Tooltip("Connect game controllers and use them jog the item around. Use the joysticks to move. \nPress X to Translate. \nPress Y to rotate. \nPress A to exit"));
+		game.setTooltip(new Tooltip(
+				"Connect game controllers and use them jog the item around. Use the joysticks to move. \nPress X to Translate. \nPress Y to rotate. \nPress A to exit"));
 
 		add(new Label(title), 1, 0);
 		add(mode, 1, 1);
@@ -179,8 +182,8 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			try {
 				linearIncrement = Double.parseDouble(lin.getText());
 				setIncrements();
-			}catch(NumberFormatException ex) {
-				
+			} catch (NumberFormatException ex) {
+
 			}
 		});
 		rot.setOnAction(ac -> {
@@ -192,12 +195,12 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 			}
 		});
 
-		add(new Label("Linear "), 0, startIndex-1);
+		add(new Label("Linear "), 0, startIndex - 1);
 		add(new Label("Rotation "), 0, startIndex);
 
-		add(lin, 1, startIndex-1);
+		add(lin, 1, startIndex - 1);
 		add(rot, 1, startIndex);
-		add(new Label("(mm)"), 2, startIndex-1);
+		add(new Label("(mm)"), 2, startIndex - 1);
 		add(new Label("(degrees)"), 2, startIndex);
 
 		add(new Label("X"), 0, 1 + startIndex);
@@ -219,42 +222,30 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 		add(new Label("Azimuth"), 0, 6 + startIndex);
 		add(azimuth, 1, 6 + startIndex);
 		// game
-		
 
 		updatePose(is);
 	}
 
 	private void setDefaultValues() {
-		linearIncrement= Double.parseDouble(
-				ConfigurationDatabase.getObject(
-						"TransformWidget", 
-						"linear", 
-						linearIncrement).toString());
-		rotationIncrement=Double.parseDouble(
-				ConfigurationDatabase.getObject(
-						"TransformWidget", 
-						"rot",
-						rotationIncrement).toString());
-		BowlerStudio.runLater(()->{
-			lin.setText(linearIncrement+"");
+		linearIncrement = Double
+				.parseDouble(ConfigurationDatabase.getObject("TransformWidget", "linear", linearIncrement).toString());
+		rotationIncrement = Double
+				.parseDouble(ConfigurationDatabase.getObject("TransformWidget", "rot", rotationIncrement).toString());
+		BowlerStudio.runLater(() -> {
+			lin.setText(linearIncrement + "");
 			rot.setText(rotationIncrement + "");
 		});
 	}
-	
-	public String toString() {
-		return title+" "+initialState.toSimpleString();
-	}
 
+	public String toString() {
+		return title + " " + initialState.toSimpleString();
+	}
 
 	public void setMode(String m) {
-		BowlerStudio.runLater(()->{
-			mode.setText(m+" Mode");
+		BowlerStudio.runLater(() -> {
+			mode.setText(m + " Mode");
 		});
 	}
-
-
-
-
 
 	public void setIncrements() {
 		ConfigurationDatabase.setObject("TransformWidget", "linear", linearIncrement);
@@ -351,7 +342,8 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	}
 
 	/**
-	 * @param onChange the onChange to set
+	 * @param onChange
+	 *            the onChange to set
 	 */
 	public void setOnChange(IOnTransformChange onChange, TransformNR initial) {
 		this.onChange = onChange;
@@ -363,8 +355,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public File getScriptFile() {
 		// Auto-generated method stub
 		try {
-			return ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git",
-					"jogWidget.groovy");
+			return ScriptingEngine.fileFromGit("https://github.com/OperationSmallKat/Katapult.git", "jogWidget.groovy");
 		} catch (InvalidRemoteException e) {
 			// Auto-generated catch block
 			e.printStackTrace();
@@ -402,7 +393,7 @@ public class TransformWidget extends GridPane implements IOnEngineeringUnitsChan
 	public String getButtonRunText() {
 		return "Run Game Controller";
 	}
-	
+
 	public String getName() {
 		return title;
 	}

@@ -8,15 +8,16 @@ import org.firmata4j.PinEventListener;
 
 import com.neuronrobotics.sdk.common.DeviceManager;
 
-public class FirmataLink extends AbstractLink implements  PinEventListener{
+public class FirmataLink extends AbstractLink implements PinEventListener {
 
 	private Pin pin;
 
-	public FirmataLink(LinkConfiguration arg0,FirmataBowler device) throws InterruptedException, IllegalArgumentException, IOException {
+	public FirmataLink(LinkConfiguration arg0, FirmataBowler device)
+			throws InterruptedException, IllegalArgumentException, IOException {
 		super(arg0);
-		
+
 		pin = device.getFirmataDevice().getPin(arg0.getHardwareIndex());
-		pin.setMode(Pin.Mode.SERVO); 
+		pin.setMode(Pin.Mode.SERVO);
 		// our listeners will get event about this change
 		pin.addEventListener(this);
 	}
@@ -24,7 +25,7 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 	@Override
 	public void cacheTargetValueDevice() {
 		// Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -54,19 +55,16 @@ public class FirmataLink extends AbstractLink implements  PinEventListener{
 	@Override
 	public void onValueChange(IOEvent event) {
 		fireLinkListener(getCurrentPosition());
-		
+
 	}
-	
-	public static void addLinkFactory(){
+
+	public static void addLinkFactory() {
 		INewLinkProvider lp = new INewLinkProvider() {
 			@Override
 			public AbstractLink generate(LinkConfiguration config) {
-				FirmataBowler dev = (FirmataBowler)DeviceManager
-						.getSpecificDevice(
-								FirmataBowler.class, 
-								config.getDeviceScriptingName()
-								);
-				if(dev!= null)
+				FirmataBowler dev = (FirmataBowler) DeviceManager.getSpecificDevice(FirmataBowler.class,
+						config.getDeviceScriptingName());
+				if (dev != null)
 					try {
 						return new FirmataLink(config, dev);
 					} catch (IllegalArgumentException e) {

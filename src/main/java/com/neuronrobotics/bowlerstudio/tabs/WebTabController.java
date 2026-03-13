@@ -9,11 +9,8 @@ import java.time.Duration;
 import java.util.ResourceBundle;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
-import com.neuronrobotics.bowlerstudio.BowlerStudioController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
-import com.neuronrobotics.bowlerstudio.scripting.PasswordManager;
-import com.neuronrobotics.sdk.common.Log;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -108,22 +105,23 @@ public class WebTabController {
 		assert iconHolder != null : "fx:id=\"iconHolder\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		assert copy != null : "fx:id=\"copy\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		assert fileCHoice != null : "fx:id=\"fileCHoice\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
-		//assert scrollpane != null : "fx:id=\"scrollpane\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
+		// assert scrollpane != null : "fx:id=\"scrollpane\" was not injected: check
+		// your FXML file 'WebTabLayout.fxml'.";
 		assert webview != null : "fx:id=\"webview\" was not injected: check your FXML file 'WebTabLayout.fxml'.";
 		webEngine = webview.getEngine();
 		FontSizeManager.addListener(fontNum -> {
 			double scale = ((double) fontNum - 10) / 12.0;
 			if (scale < 1)
 				scale = 1;
-			com.neuronrobotics.sdk.common.Log.error("Web scale "+scale);
-//			webview.setScaleX(scale);
-//			webview.setScaleY(scale);
-			double s=scale;
-			BowlerStudio.runLater(() ->webview.setZoom(s));
+			com.neuronrobotics.sdk.common.Log.error("Web scale " + scale);
+			// webview.setScaleX(scale);
+			// webview.setScaleY(scale);
+			double s = scale;
+			BowlerStudio.runLater(() -> webview.setZoom(s));
 		});
 		scrollpane.setFitToHeight(true);
 		scrollpane.setFitToWidth(true);
-		
+
 		refresh.setGraphic(AssetFactory.loadIcon("Go-Refresh.png"));
 		home.setGraphic(AssetFactory.loadIcon("Home.png"));
 		back.setGraphic(AssetFactory.loadIcon("Back-Button.png"));
@@ -131,26 +129,26 @@ public class WebTabController {
 		BowlerStudio.setToRunButton(run);
 		webEngine.locationProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> observable1,String oldValue, String newValue) {
-				
-						//com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
-						BowlerStudio.runLater(() -> {
-							urlField.setText(newValue);
-						});
+			public void changed(ObservableValue<? extends String> observable1, String oldValue, String newValue) {
+
+				// com.neuronrobotics.sdk.common.Log.error("Location Changed: "+newValue);
+				BowlerStudio.runLater(() -> {
+					urlField.setText(newValue);
+				});
 			}
 		});
-		
+
 		setInitialized(true);
-		BowlerStudio.runLater(
-				Duration.ofMillis(200) ,()->{
-					loadUrl("https://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
-				});
+		BowlerStudio.runLater(Duration.ofMillis(200), () -> {
+			loadUrl("https://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+		});
 	}
 
 	public void loadUrl(String url) {
 		BowlerStudio.runLater(() -> {
-			Current_URL = url.startsWith("http://") ||url.startsWith("https://")
-					|| url.startsWith("file:") ? url : "http://" + url;
+			Current_URL = url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file:")
+					? url
+					: "http://" + url;
 			webEngine.load(Current_URL);
 			com.neuronrobotics.sdk.common.Log.error("Go TO URL " + url);
 		});
@@ -164,7 +162,8 @@ public class WebTabController {
 	}
 
 	/**
-	 * @param initialized the initialized to set
+	 * @param initialized
+	 *            the initialized to set
 	 */
 	private void setInitialized(boolean initialized) {
 		this.initialized = initialized;

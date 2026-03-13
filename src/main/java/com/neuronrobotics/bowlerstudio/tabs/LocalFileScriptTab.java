@@ -3,8 +3,6 @@ package com.neuronrobotics.bowlerstudio.tabs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
@@ -38,7 +35,6 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
-import javafx.application.Platform;
 //import javafx.embed.swing.MySwingNode;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
@@ -64,7 +60,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		@Override
 		public void uncaughtException(Thread t, Throwable e) {
 			if (reporter.getTitle(e).contains("java.awt.datatransfer.DataFlavor at line 503")) {
-				com.neuronrobotics.sdk.common.Log.error("Known bug in the Swing system, nothing we can do but ignore it");
+				com.neuronrobotics.sdk.common.Log
+						.error("Known bug in the Swing system, nothing we can do but ignore it");
 				e.printStackTrace();
 				return;
 			}
@@ -96,48 +93,49 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private static LocalFileScriptTab selectedTab = null;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 	private long timeSinceLastUpdate = 0;
-	private boolean refreshArmed=false;
+	private boolean refreshArmed = false;
 	static {
 		BowlerStudio.invokeLater(() -> Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler()));
 
 	}
 
-//	public class MyRSyntaxTextArea extends RSyntaxTextArea implements ComponentListener {
-//
-//		/**
-//		 * 
-//		 */
-//		private static final long serialVersionUID = 1L;
-//
-//		public MyRSyntaxTextArea() {
-//			this.addComponentListener(this);
-//		}
-//
-//		public MyRSyntaxTextArea(int i, int j) {
-//			super(i, j);
-//		}
-//
-//		public void componentResized(ComponentEvent e) {
-//			com.neuronrobotics.sdk.common.Log.error("componentResized");
-//
-//		}
-//
-//		public void componentHidden(ComponentEvent e) {
-//			com.neuronrobotics.sdk.common.Log.error("componentHidden");
-//		}
-//
-//		public void componentMoved(ComponentEvent e) {
-//			com.neuronrobotics.sdk.common.Log.error("componentMoved");
-//		}
-//
-//		public void componentShown(ComponentEvent e) {
-//			com.neuronrobotics.sdk.common.Log.error("componentShown");
-//		}
-//
-//	}
+	// public class MyRSyntaxTextArea extends RSyntaxTextArea implements
+	// ComponentListener {
+	//
+	// /**
+	// *
+	// */
+	// private static final long serialVersionUID = 1L;
+	//
+	// public MyRSyntaxTextArea() {
+	// this.addComponentListener(this);
+	// }
+	//
+	// public MyRSyntaxTextArea(int i, int j) {
+	// super(i, j);
+	// }
+	//
+	// public void componentResized(ComponentEvent e) {
+	// com.neuronrobotics.sdk.common.Log.error("componentResized");
+	//
+	// }
+	//
+	// public void componentHidden(ComponentEvent e) {
+	// com.neuronrobotics.sdk.common.Log.error("componentHidden");
+	// }
+	//
+	// public void componentMoved(ComponentEvent e) {
+	// com.neuronrobotics.sdk.common.Log.error("componentMoved");
+	// }
+	//
+	// public void componentShown(ComponentEvent e) {
+	// com.neuronrobotics.sdk.common.Log.error("componentShown");
+	// }
+	//
+	// }
 	public void requestTextAreaFocus() {
-		refreshArmed=false;
-		//Log.debug("Focus requested");
+		refreshArmed = false;
+		// Log.debug("Focus requested");
 		BowlerStudio.runLater(Duration.ofMillis(200), (Runnable) () -> {
 			BowlerStudio.invokeLater(() -> {
 				resizeEvent();
@@ -160,54 +158,53 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		String shellType = ScriptingEngine.getShellType(file.getName());
 		switch (shellType) {
-		case "Clojure":
-			type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
-			break;
-		default:
-			type = langaugeMapping.get(shellType);
-			if (type == null) {
-				type = SyntaxConstants.SYNTAX_STYLE_NONE;
-				if (shellType.toLowerCase().contains("arduino")) {
-					type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
+			case "Clojure" :
+				type = SyntaxConstants.SYNTAX_STYLE_CLOJURE;
+				break;
+			default :
+				type = langaugeMapping.get(shellType);
+				if (type == null) {
+					type = SyntaxConstants.SYNTAX_STYLE_NONE;
+					if (shellType.toLowerCase().contains("arduino")) {
+						type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
+					}
 				}
-			}
-		case "JSON":
-			type = SyntaxConstants.SYNTAX_STYLE_JSON;
-			break;
-		case "ArduingScriptingLangauge":
-			type = SyntaxConstants.SYNTAX_STYLE_LISP;
-			break;
-		case "Arduino":
-			type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
-			break;
-		case "Groovy":
-			type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
-			break;
-		case "Jython":
-			type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
-			break;
-		case "MobilBaseXML":
-			type = SyntaxConstants.SYNTAX_STYLE_XML;
-			break;
-		case "Kotlin":
-			type = SyntaxConstants.SYNTAX_STYLE_JAVA;
-			break;
-		case "SVG":
-			type = SyntaxConstants.SYNTAX_STYLE_XML;
-			break;
-		case "Bash":
-			type = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
-			break;
-		case "fxml":
-			type = SyntaxConstants.SYNTAX_STYLE_XML;
-			break;
-		case "CaDoodle":
-			type = SyntaxConstants.SYNTAX_STYLE_JSON;
-			break;
+			case "JSON" :
+				type = SyntaxConstants.SYNTAX_STYLE_JSON;
+				break;
+			case "ArduingScriptingLangauge" :
+				type = SyntaxConstants.SYNTAX_STYLE_LISP;
+				break;
+			case "Arduino" :
+				type = SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS;
+				break;
+			case "Groovy" :
+				type = SyntaxConstants.SYNTAX_STYLE_GROOVY;
+				break;
+			case "Jython" :
+				type = SyntaxConstants.SYNTAX_STYLE_PYTHON;
+				break;
+			case "MobilBaseXML" :
+				type = SyntaxConstants.SYNTAX_STYLE_XML;
+				break;
+			case "Kotlin" :
+				type = SyntaxConstants.SYNTAX_STYLE_JAVA;
+				break;
+			case "SVG" :
+				type = SyntaxConstants.SYNTAX_STYLE_XML;
+				break;
+			case "Bash" :
+				type = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
+				break;
+			case "fxml" :
+				type = SyntaxConstants.SYNTAX_STYLE_XML;
+				break;
+			case "CaDoodle" :
+				type = SyntaxConstants.SYNTAX_STYLE_JSON;
+				break;
 		}
 		textArea.setSyntaxEditingStyle(type);
 		textArea.setCodeFoldingEnabled(true);
-
 
 		textArea.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -223,23 +220,23 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
-//				new Thread() {
-//					public void run() {
-						try {
-							timeSinceLastUpdate=System.currentTimeMillis();
-							if (textArea.isEnabled())
-								setContent(textArea.getText());
-							getScripting().removeIScriptEventListener(l);
-							getScripting().setCode(content);
-							getScripting().addIScriptEventListener(l);
-						} catch (Throwable t) {
-							t.printStackTrace();
-						}
-//					}
-//				}.start();
+				// new Thread() {
+				// public void run() {
+				try {
+					timeSinceLastUpdate = System.currentTimeMillis();
+					if (textArea.isEnabled())
+						setContent(textArea.getText());
+					getScripting().removeIScriptEventListener(l);
+					getScripting().setCode(content);
+					getScripting().addIScriptEventListener(l);
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
+				// }
+				// }.start();
 			}
-		});//		
-		
+		});//
+
 		textArea.addCaretListener(new CaretListener() {
 
 			@Override
@@ -276,7 +273,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					linenum += 1;
 					if (lineSelected != linenum) {
 						lineSelected = linenum;
-						com.neuronrobotics.sdk.common.Log.debug("Select "+lineSelected);
+						com.neuronrobotics.sdk.common.Log.debug("Select " + lineSelected);
 						new Thread(() -> {
 							BowlerStudio.select(file, lineSelected);
 						}).start();
@@ -295,27 +292,28 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 2) {
 						highlighter.removeAllHighlights();
 					}
-					if(e.getClickCount()==1 && refreshArmed) {
+					if (e.getClickCount() == 1 && refreshArmed) {
 						requestTextAreaFocus();
 					}
-//					else {
-//						swingNode.setOnMouseClicked(event -> {
-//						    SwingUtilities.invokeLater(() -> {
-//						        textArea.requestFocusInWindow();
-//						    });
-//						});
-//					}
+					// else {
+					// swingNode.setOnMouseClicked(event -> {
+					// SwingUtilities.invokeLater(() -> {
+					// textArea.requestFocusInWindow();
+					// });
+					// });
+					// }
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
 				com.neuronrobotics.sdk.common.Log.debug("Number of click: " + e.getClickCount());
-				// com.neuronrobotics.sdk.common.Log.error("Click position (X, Y): " + e.getX() + ",
+				// com.neuronrobotics.sdk.common.Log.error("Click position (X, Y): " + e.getX()
+				// + ",
 				// " + e.getY());
 			}
 		});
 
 		spscrollPane = new RTextScrollPane(textArea);
-		Boolean dark = (Boolean)ConfigurationDatabase.get("BowlerStudioUI", "DarkMode",true);
+		Boolean dark = (Boolean) ConfigurationDatabase.get("BowlerStudioUI", "DarkMode", true);
 		if (dark) {
 			// Apply a dark theme
 			try {
@@ -329,62 +327,61 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			// Set the viewport background (content area)
 			spscrollPane.getViewport().setBackground(new Color(0x5a6ec4)); // even lighter blue
 
-
 			// Set viewport background
 			spscrollPane.getViewport().setBackground(new Color(0x5a6ec4)); // even lighter blue
 
 			// Style vertical scrollbar
 			JScrollBar vertical = spscrollPane.getVerticalScrollBar();
 			vertical.setUI(new BasicScrollBarUI() {
-			    @Override
-			    protected void configureScrollBarColors() {
-			        this.trackColor = new Color(0x5a6ec4);        // even lighter blue
-			        this.thumbColor = new Color(0x263d8c);        // logo blue
-			        this.thumbDarkShadowColor = new Color(0x263d8c);
-			        this.thumbHighlightColor = new Color(0x263d8c);
-			        this.thumbLightShadowColor = new Color(0x263d8c);
-			    }
-			    
-			    @Override
-			    protected JButton createDecreaseButton(int orientation) {
-			        JButton button = super.createDecreaseButton(orientation);
-			        button.setBackground(new Color(0xf2c83d));    // yellow
-			        return button;
-			    }
-			    
-			    @Override
-			    protected JButton createIncreaseButton(int orientation) {
-			        JButton button = super.createIncreaseButton(orientation);
-			        button.setBackground(new Color(0xf2c83d));    // yellow
-			        return button;
-			    }
+				@Override
+				protected void configureScrollBarColors() {
+					this.trackColor = new Color(0x5a6ec4); // even lighter blue
+					this.thumbColor = new Color(0x263d8c); // logo blue
+					this.thumbDarkShadowColor = new Color(0x263d8c);
+					this.thumbHighlightColor = new Color(0x263d8c);
+					this.thumbLightShadowColor = new Color(0x263d8c);
+				}
+
+				@Override
+				protected JButton createDecreaseButton(int orientation) {
+					JButton button = super.createDecreaseButton(orientation);
+					button.setBackground(new Color(0xf2c83d)); // yellow
+					return button;
+				}
+
+				@Override
+				protected JButton createIncreaseButton(int orientation) {
+					JButton button = super.createIncreaseButton(orientation);
+					button.setBackground(new Color(0xf2c83d)); // yellow
+					return button;
+				}
 			});
 
 			// Style horizontal scrollbar similarly
 			JScrollBar horizontal = spscrollPane.getHorizontalScrollBar();
 			horizontal.setUI(new BasicScrollBarUI() {
-			    @Override
-			    protected void configureScrollBarColors() {
-			        this.trackColor = new Color(0x5a6ec4);
-			        this.thumbColor = new Color(0x263d8c);
-			        this.thumbDarkShadowColor = new Color(0x263d8c);
-			        this.thumbHighlightColor = new Color(0x263d8c);
-			        this.thumbLightShadowColor = new Color(0x263d8c);
-			    }
-			    
-			    @Override
-			    protected JButton createDecreaseButton(int orientation) {
-			        JButton button = super.createDecreaseButton(orientation);
-			        button.setBackground(new Color(0xf2c83d));
-			        return button;
-			    }
-			    
-			    @Override
-			    protected JButton createIncreaseButton(int orientation) {
-			        JButton button = super.createIncreaseButton(orientation);
-			        button.setBackground(new Color(0xf2c83d));
-			        return button;
-			    }
+				@Override
+				protected void configureScrollBarColors() {
+					this.trackColor = new Color(0x5a6ec4);
+					this.thumbColor = new Color(0x263d8c);
+					this.thumbDarkShadowColor = new Color(0x263d8c);
+					this.thumbHighlightColor = new Color(0x263d8c);
+					this.thumbLightShadowColor = new Color(0x263d8c);
+				}
+
+				@Override
+				protected JButton createDecreaseButton(int orientation) {
+					JButton button = super.createDecreaseButton(orientation);
+					button.setBackground(new Color(0xf2c83d));
+					return button;
+				}
+
+				@Override
+				protected JButton createIncreaseButton(int orientation) {
+					JButton button = super.createIncreaseButton(orientation);
+					button.setBackground(new Color(0xf2c83d));
+					return button;
+				}
 			});
 			// Set the corners where scrollbars meet
 			JPanel lowerRight = new JPanel();
@@ -409,7 +406,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		textArea.getInputMap().put(keystroke_s, "s");
 		textArea.getActionMap().put("s", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = -3361326129563407389L;
 
@@ -428,7 +425,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 		textArea.getInputMap().put(keystroke, "f");
 		textArea.getActionMap().put("f", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = -4698223073831405851L;
 
@@ -447,16 +444,16 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 
 		highlighter.removeAllHighlights();
 		swingNode.setOnMouseExited(mouseEvent -> {
-			refreshArmed=true;
+			refreshArmed = true;
 		});
 
-//		widthProperty().addListener((w, o, n) -> {
-//			resizeEvent();
-//
-//		});
-//		heightProperty().addListener((w, o, n) -> {
-//			resizeEvent();
-//		});
+		// widthProperty().addListener((w, o, n) -> {
+		// resizeEvent();
+		//
+		// });
+		// heightProperty().addListener((w, o, n) -> {
+		// resizeEvent();
+		// });
 		BowlerStudio.invokeLater(() -> {
 			try {
 				if (getScripting() != null && getScripting().getCode() != null) {
@@ -467,24 +464,24 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			}
 		});
 		BowlerStudio.invokeLater(() -> swingNode.setContent(spscrollPane));
-		BowlerStudio.runLater(()->{
+		BowlerStudio.runLater(() -> {
 			getChildren().setAll(swingNode, getScripting());
 		});
-		
-//		swingNode.setOnMouseClicked(event -> {
-//		    SwingUtilities.invokeLater(() -> {
-//		        textArea.requestFocusInWindow();
-//		    });
-//		});
-//		
-//		BowlerStudio.invokeLater(() -> {
-//		    textArea.setFocusable(true);
-//		    textArea.setRequestFocusEnabled(true);
-//		    swingNode.setContent(spscrollPane);
-//		    textArea.requestFocusInWindow();
-//		});
-//		textArea.setEditable(true);
-//		textArea.setEnabled(true);
+
+		// swingNode.setOnMouseClicked(event -> {
+		// SwingUtilities.invokeLater(() -> {
+		// textArea.requestFocusInWindow();
+		// });
+		// });
+		//
+		// BowlerStudio.invokeLater(() -> {
+		// textArea.setFocusable(true);
+		// textArea.setRequestFocusEnabled(true);
+		// swingNode.setContent(spscrollPane);
+		// textArea.requestFocusInWindow();
+		// });
+		// textArea.setEditable(true);
+		// textArea.setEnabled(true);
 	}
 
 	private void resizeEvent() {
@@ -546,23 +543,25 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	private void setContent(String current) {
 		if (current.length() > 3 && !content.contentEquals(current)) {
 			content = current; // writes
-			long now=System.currentTimeMillis();
-			if(now<(timeSinceLastUpdate+100)) {
+			long now = System.currentTimeMillis();
+			if (now < (timeSinceLastUpdate + 100)) {
 				com.neuronrobotics.sdk.common.Log.error("Ovewrite Protect!");
-				return; 
+				return;
 			}
-			
-			timeSinceLastUpdate=now;
 
-			com.neuronrobotics.sdk.common.Log.error("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
-//			if (current.length() > MaxTextSize) {
-//				textArea.setText(
-//						"File too big for this text editor: " + current.length() + " larger than " + MaxTextSize);
-//				textArea.setEnabled(false);
-//			} else {
-				if (!textArea.getText().contentEquals(content))
-					textArea.setText(current);
-			//}
+			timeSinceLastUpdate = now;
+
+			com.neuronrobotics.sdk.common.Log
+					.error("External change of " + file.getName() + " on " + dateFormat.format(new Date()));
+			// if (current.length() > MaxTextSize) {
+			// textArea.setText(
+			// "File too big for this text editor: " + current.length() + " larger than " +
+			// MaxTextSize);
+			// textArea.setEnabled(false);
+			// } else {
+			if (!textArea.getText().contentEquals(content))
+				textArea.setText(current);
+			// }
 		}
 	}
 
@@ -628,7 +627,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				try {
 					textArea.getHighlighter().addHighlight(startIndex, endIndex, painter);
 				} catch (BadLocationException e) {
-					//ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(), e);
+					// ISSUE_REPORTING_EXCEPTION_HANDLER.uncaughtException(Thread.currentThread(),
+					// e);
 
 				}
 			});
@@ -674,7 +674,8 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 	}
 
 	public static void setSelectedTab(LocalFileScriptTab selectedTab) {
-		// com.neuronrobotics.sdk.common.Log.error("Currently selected "+selectedTab.file.getAbsolutePath());
+		// com.neuronrobotics.sdk.common.Log.error("Currently selected
+		// "+selectedTab.file.getAbsolutePath());
 		LocalFileScriptTab.selectedTab = selectedTab;
 	}
 

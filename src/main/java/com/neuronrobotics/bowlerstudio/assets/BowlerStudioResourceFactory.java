@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerstudio.assets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,7 +27,7 @@ public class BowlerStudioResourceFactory {
 	private static final ArrayList<FXMLLoader> fxmlLoaders = new ArrayList<>();
 	private static FXMLLoader githubLogin;
 	private static FXMLLoader mainControllerPanel;
-	private static boolean loaded=false;
+	private static boolean loaded = false;
 	private BowlerStudioResourceFactory() {
 	}
 
@@ -38,15 +37,15 @@ public class BowlerStudioResourceFactory {
 
 	@SuppressWarnings("restriction")
 	public static void load() throws Exception {
-		if(loaded)
+		if (loaded)
 			return;
-		loaded=true;
+		loaded = true;
 		try {
-			//mainPanel.setController(new DyIOPanel());
-			BowlerStudio.renderSplashFrame( 95,"Loading GitHub");
+			// mainPanel.setController(new DyIOPanel());
+			BowlerStudio.renderSplashFrame(95, "Loading GitHub");
 
 			githubLogin = AssetFactory.loadLayout("layout/githublogin.fxml");
-			//githubLogin.setController(new GithubLoginFX());
+			// githubLogin.setController(new GithubLoginFX());
 			githubLogin.setClassLoader(GithubLoginFX.class.getClassLoader());
 		} catch (InvalidRemoteException e1) {
 			// Auto-generated catch block
@@ -64,18 +63,15 @@ public class BowlerStudioResourceFactory {
 			// Auto-generated catch block
 			com.neuronrobotics.sdk.common.Log.error(e1);
 		}
-		
-
-
 
 		try {
 			githubLogin.load();
 			javafx.scene.Parent root = githubLogin.getRoot();
-			FontSizeManager.addListener(fontNum->{
-				int tmp = fontNum-10;
-				if(tmp<12)
-					tmp=12;
-				root.setStyle("-fx-font-size: "+tmp+"pt");
+			FontSizeManager.addListener(fontNum -> {
+				int tmp = fontNum - 10;
+				if (tmp < 12)
+					tmp = 12;
+				root.setStyle("-fx-font-size: " + tmp + "pt");
 			});
 		} catch (IOException e) {
 			Logger.getLogger(BowlerStudio.class.getName()).log(Level.SEVERE, null, e);
@@ -110,7 +106,6 @@ public class BowlerStudioResourceFactory {
 	public static void setChanDefault(Image chanDefault) {
 		BowlerStudioResourceFactory.chanDefault = chanDefault;
 	}
-
 
 	public static FXMLLoader getGithubLogin() {
 		return githubLogin;

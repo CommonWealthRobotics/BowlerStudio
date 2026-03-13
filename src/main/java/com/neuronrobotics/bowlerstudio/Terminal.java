@@ -12,12 +12,9 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -86,8 +83,8 @@ public class Terminal {
 		executionBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 			// BowlerStudio.runLater(() -> {
 			if ((event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN)) {
-				com.neuronrobotics.sdk.common.Log.error("Key pressed " + event.getCode() + " history index = " + historyIndex
-						+ " history size= " + history.size());
+				com.neuronrobotics.sdk.common.Log.error("Key pressed " + event.getCode() + " history index = "
+						+ historyIndex + " history size= " + history.size());
 				if (historyIndex == 0) {
 					String text = executionBox.getText();
 					if (text.length() > 0) {
@@ -124,7 +121,7 @@ public class Terminal {
 			history = BowlerKernel.loadHistory();
 		} catch (IOException e1) {
 			// Auto-generated catch block
-			//e1.printStackTrace();
+			// e1.printStackTrace();
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -136,7 +133,7 @@ public class Terminal {
 		List<String> langs = ScriptingEngine.getAllLangauges();
 		ObservableList<String> options = FXCollections.observableArrayList(langs);
 		//
-		for(String s:options){
+		for (String s : options) {
 			langauges.getItems().add(s);
 		}
 		langauges.getSelectionModel().select("Groovy");
@@ -144,10 +141,10 @@ public class Terminal {
 		try {
 			icon = AssetFactory.loadAsset("Script-Tab-" + langauges.getSelectionModel().getSelectedItem() + ".png");
 			langaugeIcon.setImage(icon);
-			FontSizeManager.addListener(fontNum->{
-		    	  langaugeIcon.setScaleX(FontSizeManager.getImageScale());
-		    	  langaugeIcon.setScaleY(FontSizeManager.getImageScale());
-		      });
+			FontSizeManager.addListener(fontNum -> {
+				langaugeIcon.setScaleX(FontSizeManager.getImageScale());
+				langaugeIcon.setScaleY(FontSizeManager.getImageScale());
+			});
 		} catch (Exception e2) {
 			// Auto-generated catch block
 			e2.printStackTrace();
@@ -182,7 +179,7 @@ public class Terminal {
 			public void run() {
 
 				try {
-					ScriptingEngine.inlineScriptStringRun(CSGDatabase.getInstance(),code, null,
+					ScriptingEngine.inlineScriptStringRun(CSGDatabase.getInstance(), code, null,
 							langauges.getSelectionModel().getSelectedItem());
 					reset();
 				} catch (groovy.lang.MissingPropertyException | org.python.core.PyException d) {

@@ -24,20 +24,19 @@ public class ExcelWriter implements DataWriter {
 	public ExcelWriter() {
 		wbSettings.setLocale(new Locale("en", "EN"));
 	}
-	
+
 	private void addNumber(int column, int row, double d) throws WriteException, RowsExceededException {
 		Number number;
 		number = new Number(column, row, d);
 		excelSheet.addCell(number);
 	}
-	
+
 	private void addLabel(int column, int row, String s) throws WriteException, RowsExceededException {
 		Label label;
 		label = new Label(column, row, s);
 		excelSheet.addCell(label);
 	}
-	
-	
+
 	public void setFile(File f) {
 		try {
 			workbook = Workbook.createWorkbook(f, wbSettings);
@@ -48,18 +47,17 @@ public class ExcelWriter implements DataWriter {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	public void addData(DataChannel c) {
 		try {
 			int col = 1;
 			addLabel(lineOffset, 0, c.toString() + " Time (ms)");
-			addLabel(lineOffset+1, 0, c.toString() + " Value");
-			
-			for(Object o : c.getSeries().getItems()) {
-				XYDataItem i = (XYDataItem) o;	
+			addLabel(lineOffset + 1, 0, c.toString() + " Value");
+
+			for (Object o : c.getSeries().getItems()) {
+				XYDataItem i = (XYDataItem) o;
 				addNumber(lineOffset, col, i.getXValue());
-				addNumber(lineOffset+1, col, i.getYValue());
+				addNumber(lineOffset + 1, col, i.getYValue());
 				col++;
 			}
 		} catch (RowsExceededException e) {
@@ -69,10 +67,9 @@ public class ExcelWriter implements DataWriter {
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		lineOffset+=2;
+		lineOffset += 2;
 	}
 
-	
 	public void cleanup() {
 		try {
 			workbook.write();
@@ -84,4 +81,3 @@ public class ExcelWriter implements DataWriter {
 	}
 
 }
-

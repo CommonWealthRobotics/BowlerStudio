@@ -8,20 +8,20 @@ import javafx.stage.Stage;
 public class NewCreatureWizard {
 
 	public static void run() {
-		BowlerStudio.runLater(()->{
+		BowlerStudio.runLater(() -> {
 			Stage s = new Stage();
-			new Thread(()->{
+			new Thread(() -> {
 				Thread.setDefaultUncaughtExceptionHandler(new IssueReportingExceptionHandler());
 				AddFileToGistController controller = new AddFileToGistController(null, BowlerStudioMenu.getSelfRef());
 				try {
-					controller.start(s,(IScriptingLanguage)new RobotHelper());
+					controller.start(s, (IScriptingLanguage) new RobotHelper());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-			}).start();			
+			}).start();
 		});
 
 	}
-	
+
 }

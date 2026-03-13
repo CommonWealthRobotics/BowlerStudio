@@ -19,8 +19,7 @@ import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos; 
-import javafx.scene.Group;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -36,7 +35,7 @@ import java.util.HashMap;
 public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeringUnitsChange {
 
 	private BowlerAbstractDevice pm;
-	private boolean enabled=true;
+	private boolean enabled = true;
 
 	private IDriveEngine defaultDriveEngine;
 	// private DhInverseSolver defaultDHSolver;
@@ -45,7 +44,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private MobileBaseCadManager baseManager;
 	private CheckBox autoRegen = new CheckBox("Auto");
-	private Button regen=new Button("Generate Vitamins Now");
+	private Button regen = new Button("Generate Vitamins Now");
 	Parent root;
 	private BowlerJInputDevice gameController = null;
 	CreatureLabControlsTab tab = new CreatureLabControlsTab();
@@ -53,7 +52,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	private long timeSinceLastUpdate = 0;
 
 	private GridPane radioOptions;
-	private long timeOfLastDisable=0;
+	private long timeOfLastDisable = 0;
 
 	@Override
 	public void onTabClosing() {
@@ -66,7 +65,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		return new String[0];
 	}
 
-	@SuppressWarnings({ "restriction", "restriction" })
+	@SuppressWarnings({"restriction", "restriction"})
 	@Override
 	public void initializeUI(BowlerAbstractDevice pm) {
 		setGraphic(AssetFactory.loadIcon("CreatureLab-Tab.png"));
@@ -76,22 +75,21 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		autoRegen.setOnAction(event -> {
 			stateOfAutoWhenForced = autoRegen.isSelected();
 			baseManager.setAutoRegen(autoRegen.isSelected());
-			//BowlerStudio.runLater(() -> {
-				regenFromUiEvent();
-			//});
+			// BowlerStudio.runLater(() -> {
+			regenFromUiEvent();
+			// });
 		});
 		regen.setOnAction(event -> {
 			stateOfAutoWhenForced = autoRegen.isSelected();
 			autoRegen.setSelected(true);
 			baseManager.setAutoRegen(true);
-			//BowlerStudio.runLater(()->{
-				regenFromUiEvent();
-			//});
+			// BowlerStudio.runLater(()->{
+			regenFromUiEvent();
+			// });
 		});
 		regen.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
 		// Auto-generated method stub
 		setText(pm.getScriptingName());
-
 
 		MobileBase device = (MobileBase) pm;
 
@@ -133,7 +131,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		if (System.currentTimeMillis() - timeSinceLastUpdate < 500) {
 			return;
 		}
-		com.neuronrobotics.sdk.common.Log.error("Regenerating robot "+System.currentTimeMillis());
+		com.neuronrobotics.sdk.common.Log.error("Regenerating robot " + System.currentTimeMillis());
 		timeSinceLastUpdate = System.currentTimeMillis();
 		BowlerStudio.runLater(() -> {
 			if (autoRegen.isSelected()) {
@@ -141,8 +139,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 		});
 	}
-
-
 
 	private void finishLoading(MobileBase device) {
 
@@ -174,10 +170,10 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		// @JansenSmith - placed contents in llambda runnable - 20220915
 		BowlerStudio.runLater(() -> {
 			TreeView<String> tree = new TreeView<>(rootItemFinal);
-			
+
 			treebox1.getChildren().clear();
 			treebox1.getChildren().add(tree);
-			
+
 			AnchorPane.setTopAnchor(tree, 0.0);
 			AnchorPane.setLeftAnchor(tree, 0.0);
 			AnchorPane.setRightAnchor(tree, 0.0);
@@ -196,28 +192,29 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			}
 
 			rootItemFinal.setExpanded(true);
-			MobileBaseCadManager.get(CSGDatabase.getInstance(),device, BowlerStudioController.getMobileBaseUI());
+			MobileBaseCadManager.get(CSGDatabase.getInstance(), device, BowlerStudioController.getMobileBaseUI());
 			MobleBaseMenueFactory.load(device, tree, mainBaseFinal, callbackMapForTreeitems, widgetMapForTreeitems,
 					this, true, creatureIsOwnedByUser);
-			//tree.setPrefWidth(325);
+			// tree.setPrefWidth(325);
 			treebox1.widthProperty().addListener((obs, oldVal, newVal) -> {
-				//com.neuronrobotics.sdk.common.Log.error("Creature lab width "+newVal);
-				tree.setPrefWidth((double)newVal);
+				// com.neuronrobotics.sdk.common.Log.error("Creature lab width "+newVal);
+				tree.setPrefWidth((double) newVal);
 			});
 			tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			JogMobileBase walkWidget = new JogMobileBase(device);
-			tree.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Object>) (observable, oldValue, newValue) -> {
-				tree.autosize();
-				@SuppressWarnings("unchecked")
-				TreeItem<String> treeItem = (TreeItem<String>) newValue;
-				mainWidget(device, callbackMapForTreeitems, widgetMapForTreeitems, walkWidget, treeItem);
+			tree.getSelectionModel().selectedItemProperty()
+					.addListener((ChangeListener<Object>) (observable, oldValue, newValue) -> {
+						tree.autosize();
+						@SuppressWarnings("unchecked")
+						TreeItem<String> treeItem = (TreeItem<String>) newValue;
+						mainWidget(device, callbackMapForTreeitems, widgetMapForTreeitems, walkWidget, treeItem);
 
-			});
+					});
 			if (hasWalking(device)) {
 				tab.setOverlayTopRight(walkWidget);
 			}
 		});
-		//VBox progress = new VBox(10);
+		// VBox progress = new VBox(10);
 
 		final ToggleGroup group = new ToggleGroup();
 
@@ -225,11 +222,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb1.setToggleGroup(group);
 		rb1.setSelected(true);
 		rb1.setOnAction(event -> {
-				//disable();
-			//autoRegen.setText("Auto-Generate CAD");
+			// disable();
+			// autoRegen.setText("Auto-Generate CAD");
 			regen.setText("Generate CAD Now");
-			
-			BowlerStudio.runLater(() ->setCadMode(false));
+
+			BowlerStudio.runLater(() -> setCadMode(false));
 		});
 		regen.setMinWidth(120);
 
@@ -237,11 +234,11 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		rb2.setToggleGroup(group);
 		rb2.fire();
 		rb2.setOnAction(event -> {
-				//disable();
-		
-			//autoRegen.setText("Auto-Generate Vitamins");
+			// disable();
+
+			// autoRegen.setText("Auto-Generate Vitamins");
 			regen.setText("Generate Vitamins Now");
-			BowlerStudio.runLater(() ->setCadMode(true));
+			BowlerStudio.runLater(() -> setCadMode(true));
 		});
 
 		radioOptions = new GridPane();
@@ -254,18 +251,18 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		radioOptions.add(new Label("Select Display Mode:"), 0, 0);
 		radioOptions.add(new Label("Cad Generation"), 0, 1);
 		radioOptions.add(rb1, 1, 1);
-		
+
 		radioOptions.add(new Label("Vitamins View"), 0, 2);
 		radioOptions.add(rb2, 1, 2);
 
 		pi = new ProgressIndicator(0);
-		baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(),device, BowlerStudioController.getMobileBaseUI());
+		baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(), device,
+				BowlerStudioController.getMobileBaseUI());
 		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
 
 		radioOptions.add(pi, 1, 0);
 		radioOptions.add(autoRegen, 1, 3);
-		radioOptions.add(regen,0,3);
-		
+		radioOptions.add(regen, 0, 3);
 
 		tab.setOverlayTop(radioOptions);
 
@@ -308,7 +305,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		}.start();
 	}
 	private void disable() {
-		enabled=false;
+		enabled = false;
 		BowlerStudio.runLater(() -> {
 			autoRegen.setDisable(true);
 			if (radioOptions != null)
@@ -317,7 +314,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		});
 	}
 	private void enable() {
-		enabled=true;
+		enabled = true;
 		BowlerStudio.runLater(() -> {
 			autoRegen.setDisable(false);
 			if (radioOptions != null)
@@ -338,13 +335,13 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void generateCad(CSGDatabaseInstance db) {
-		//new RuntimeException().printStackTrace();
-		if(!enabled)
+		// new RuntimeException().printStackTrace();
+		if (!enabled)
 			return;
 		disable();
-		baseManager.generateCadWithEnd(db,()->{
-				enable();
-				autoRegen.setSelected(stateOfAutoWhenForced );
+		baseManager.generateCadWithEnd(db, () -> {
+			enable();
+			autoRegen.setSelected(stateOfAutoWhenForced);
 		});
 	}
 
@@ -389,7 +386,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 	}
 
 	public void setGitDhEngine(String gitsId, String file, DHParameterKinematics dh) {
-		MobileBaseLoader.setDefaultDhParameterKinematics(CSGDatabase.getInstance(),dh);
+		MobileBaseLoader.setDefaultDhParameterKinematics(CSGDatabase.getInstance(), dh);
 
 	}
 
@@ -405,7 +402,8 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	public void setGitWalkingEngine(String git, String file, MobileBase device) {
 
-		MobileBaseLoader.get(CSGDatabase.getInstance(),baseManager.getMobileBase()).setGitWalkingEngine(git, file, device);
+		MobileBaseLoader.get(CSGDatabase.getInstance(), baseManager.getMobileBase()).setGitWalkingEngine(git, file,
+				device);
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerstudio.creature;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
@@ -12,7 +11,6 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
@@ -33,9 +31,9 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 	private EngineeringUnitsSliderWidget upperBound;
 	private AbstractLink activLink;
 	private MobileBaseCadManager manager;
-	//private EngineeringUnitsSliderWidget setpointSLider;
-	
-	private double zeroValue =0;
+	// private EngineeringUnitsSliderWidget setpointSLider;
+
+	private double zeroValue = 0;
 
 	double textToNum(TextField mass) {
 		try {
@@ -50,7 +48,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		// this.index = index;
 		// this.congiuration = congiuration;
 		conf = congiuration;
-		//this.setpointSLider = slide;
+		// this.setpointSLider = slide;
 		this.manager = manager;
 		activLink = factory.getLink(conf);
 		getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
@@ -70,8 +68,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		TextField massx = new TextField(CreatureLab.getFormatted(currentCentroid.getX()));
 		massx.setOnAction(event -> {
 			currentCentroid.setX(textToNum(massx));
-			conf.setCenterOfMassFromCentroid(currentCentroid);
-			;
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
@@ -82,8 +79,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		TextField massy = new TextField(CreatureLab.getFormatted(currentCentroid.getY()));
 		massy.setOnAction(event -> {
 			currentCentroid.setY(textToNum(massy));
-			conf.setCenterOfMassFromCentroid(currentCentroid);
-			;
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
@@ -94,8 +90,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		TextField massz = new TextField(CreatureLab.getFormatted(currentCentroid.getZ()));
 		massz.setOnAction(event -> {
 			currentCentroid.setZ(textToNum(massz));
-			conf.setCenterOfMassFromCentroid(currentCentroid);
-			;
+			conf.setCenterOfMassFromCentroid(currentCentroid);;
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
 			if (manager != null)
@@ -125,7 +120,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 				return;
 			conf.setShaftSize(motorsize);
 			conf.setShaftType(motortype);
-			setShaftSize( motorsize);
+			setShaftSize(motorsize);
 			if (manager != null)
 				manager.generateCad(CSGDatabase.getInstance());
 
@@ -140,7 +135,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 		shaftType.setOnAction(event -> {
 			String selectedItem = shaftType.getSelectionModel().getSelectedItem();
-			setShaftType( shaftSize, selectedItem);
+			setShaftType(shaftSize, selectedItem);
 		});
 		shaftType.getSelectionModel().select(conf.getShaftType());
 		final ComboBox<String> emHardwareType = new ComboBox<>();
@@ -157,25 +152,27 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					return;
 				conf.setElectroMechanicalType(motortype);
 				conf.setElectroMechanicalSize(motorsize);
-				//newHardware.setText("New " + conf.getElectroMechanicalType());
-				//editHardware.setText("Edit " + conf.getElectroMechanicalSize());
-//				Map<String, Object> vitaminData = Vitamins.getConfiguration(conf.getElectroMechanicalType(),
-//						conf.getElectroMechanicalSize());
-//				com.neuronrobotics.sdk.common.Log.error("New size " + vitaminData);
+				// newHardware.setText("New " + conf.getElectroMechanicalType());
+				// editHardware.setText("Edit " + conf.getElectroMechanicalSize());
+				// Map<String, Object> vitaminData =
+				// Vitamins.getConfiguration(conf.getElectroMechanicalType(),
+				// conf.getElectroMechanicalSize());
+				// com.neuronrobotics.sdk.common.Log.error("New size " + vitaminData);
 				String shafttype = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
-						conf.getElectroMechanicalSize(),"shaftType");
+						conf.getElectroMechanicalSize(), "shaftType");
 				String shaftsize = (String) Vitamins.getMeasurement(conf.getElectroMechanicalType(),
-						conf.getElectroMechanicalSize(),"shaftSize");
+						conf.getElectroMechanicalSize(), "shaftSize");
 
 				BowlerStudio.runLater(() -> {
-					setShaftType( shaftSize, shafttype);
+					setShaftType(shaftSize, shafttype);
 					BowlerStudio.runLater(Duration.ofMillis(20), () -> {
-						setShaftSize( shaftsize);
+						setShaftSize(shaftsize);
 						BowlerStudio.runLater(Duration.ofMillis(200), new Runnable() {
 							@Override
 							public void run() {
 
-								com.neuronrobotics.sdk.common.Log.error("Settting shaft size: " + shaftsize + " of " + shafttype);
+								com.neuronrobotics.sdk.common.Log
+										.error("Settting shaft size: " + shaftsize + " of " + shafttype);
 
 								BowlerStudio.runLater(() -> shaftType.getSelectionModel().select(shafttype));
 								BowlerStudio.runLater(() -> shaftSize.getSelectionModel().select(shaftsize));
@@ -207,11 +204,10 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			for (String s : Vitamins.listVitaminSizes(selectedItem)) {
 				emHardwareSize.getItems().add(s);
 			}
-			//newHardware.setText("New " + conf.getElectroMechanicalType());
+			// newHardware.setText("New " + conf.getElectroMechanicalType());
 
 		});
 		emHardwareType.getSelectionModel().select(conf.getElectroMechanicalType());
-
 
 		TextField deviceName = new TextField(congiuration.getDeviceScriptingName());
 		deviceName.setOnAction(event -> {
@@ -227,18 +223,17 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		add(new Text("Scale To Degrees "), 0, 0);
 		add(scale, 1, 0);
 		add(new Text("(unitless)"), 2, 0);
-	
-		
+
 		double min = activLink.getDeviceMinimumValue();
 		lowerBound = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-					double eng = setLowerBound(newAngleDegrees);
-					activLink.setUseLimits(false);
-					activLink.setTargetEngineeringUnits(eng);
-					activLink.flush(0);
-					activLink.setUseLimits(true);
+				double eng = setLowerBound(newAngleDegrees);
+				activLink.setUseLimits(false);
+				activLink.setTargetEngineeringUnits(eng);
+				activLink.flush(0);
+				activLink.setUseLimits(true);
 			}
 
 			@Override
@@ -256,9 +251,9 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					BowlerStudio.printStackTrace(ex);
 				}
 			}
-		}, (int)min, // min
-				(int)conf.getStaticOffset(), // max
-				(int)conf.getLowerLimit(), // current
+		}, (int) min, // min
+				(int) conf.getStaticOffset(), // max
+				(int) conf.getLowerLimit(), // current
 				150, "device units", true);
 
 		double max = activLink.getDeviceMaximumValue();
@@ -266,7 +261,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				double eng = setUpperBound(newAngleDegrees );
+				double eng = setUpperBound(newAngleDegrees);
 				activLink.setUseLimits(false);
 				activLink.setTargetEngineeringUnits(eng);
 				activLink.flush(0);
@@ -276,7 +271,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
 				activLink.setUseLimits(false);
-				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees) );
+				activLink.setTargetEngineeringUnits(setUpperBound(newAngleDegrees));
 				activLink.flush(0);
 				activLink.setUseLimits(true);
 				zero.setUpperBound(newAngleDegrees);
@@ -284,16 +279,15 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 					manager.generateCad(CSGDatabase.getInstance());
 
 			}
-		}, (int)conf.getStaticOffset(), (int)max, (int)conf.getUpperLimit(), 150,
-				"device units", true);
-		
+		}, (int) conf.getStaticOffset(), (int) max, (int) conf.getUpperLimit(), 150, "device units", true);
+
 		zeroValue = conf.getStaticOffset();
-		
+
 		zero = new EngineeringUnitsSliderWidget(new IOnEngineeringUnitsChange() {
 
 			@Override
 			public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				if(newAngleDegrees<conf.getLowerLimit() || newAngleDegrees>conf.getUpperLimit())
+				if (newAngleDegrees < conf.getLowerLimit() || newAngleDegrees > conf.getUpperLimit())
 					return;
 				conf.setStaticOffset(newAngleDegrees);
 				updateZeroValue(newAngleDegrees);
@@ -301,14 +295,15 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 
 			@Override
 			public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-				if(newAngleDegrees<conf.getLowerLimit() || newAngleDegrees>conf.getUpperLimit())
+				if (newAngleDegrees < conf.getLowerLimit() || newAngleDegrees > conf.getUpperLimit())
 					return;
 				updateZeroValue(newAngleDegrees);
 				if (manager != null)
 					manager.generateCad(CSGDatabase.getInstance());
 
 			}
-		}, (int)conf.getLowerLimit(), (int)conf.getUpperLimit(), (int)conf.getStaticOffset(), 150, "device units", true);
+		}, (int) conf.getLowerLimit(), (int) conf.getUpperLimit(), (int) conf.getStaticOffset(), 150, "device units",
+				true);
 		zero.setAllowResize(false);
 		zero.showSlider(false);
 		upperBound.setAllowResize(false);
@@ -384,92 +379,96 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		add(emHardwareType, 1, 11);
 		add(new Text("Hardware Size"), 0, 12);
 		add(emHardwareSize, 1, 12);
-		//add(newHardware, 1, 13);
+		// add(newHardware, 1, 13);
 
 		// link shaft
 		add(new Text("Shaft Type"), 0, 14);
 		add(shaftType, 1, 14);
 		add(new Text("Shaft Size"), 0, 15);
 		add(shaftSize, 1, 15);
-//		add(newShaft, 1, 16);
-		CheckBox isPassive =new CheckBox();
+		// add(newShaft, 1, 16);
+		CheckBox isPassive = new CheckBox();
 		isPassive.setSelected(conf.isPassive());
-		isPassive.setOnAction(action->{
+		isPassive.setOnAction(action -> {
 			conf.setPassive(isPassive.isSelected());
 		});
 		add(new Text("Link Is Passive"), 0, 16);
 		add(isPassive, 1, 16);
 
 	}
-	
+
 	public void trimPlus() {
-		if(conf.getScale()>0)
+		if (conf.getScale() > 0)
 			zero.jogPlusOne();
 		else
 			zero.jogMinusOne();
 	}
 	public void trimMinus() {
-		if(conf.getScale()<0)
+		if (conf.getScale() < 0)
 			zero.jogPlusOne();
 		else
 			zero.jogMinusOne();
 	}
 	private void updateZeroValue(double newAngleDegrees) {
-		double diff = zeroValue-newAngleDegrees;
-		zeroValue=newAngleDegrees;
-		setLowerBound(conf.getLowerLimit()-diff);
-		setUpperBound(conf.getUpperLimit()-diff);
-		//myLinkSliderWidget.getSetpoint().setValue(0);
-		upperBound.setLowerBound((int)newAngleDegrees);
-		lowerBound.setUpperBound((int)newAngleDegrees);
+		double diff = zeroValue - newAngleDegrees;
+		zeroValue = newAngleDegrees;
+		setLowerBound(conf.getLowerLimit() - diff);
+		setUpperBound(conf.getUpperLimit() - diff);
+		// myLinkSliderWidget.getSetpoint().setValue(0);
+		upperBound.setLowerBound((int) newAngleDegrees);
+		lowerBound.setUpperBound((int) newAngleDegrees);
 		try {
 			activLink.setTargetEngineeringUnits(0);
 			activLink.flush(0);
-		}catch(Exception ex) {}
+		} catch (Exception ex) {
+		}
 	}
 	public double setUpperBound(double newAngleDegrees) {
-		
-		double upperLimit = newAngleDegrees<=activLink.getDeviceMaximumValue()?newAngleDegrees:activLink.getDeviceMaximumValue();
+
+		double upperLimit = newAngleDegrees <= activLink.getDeviceMaximumValue()
+				? newAngleDegrees
+				: activLink.getDeviceMaximumValue();
 		conf.setUpperLimit(upperLimit);
 		upperBound.setValue(upperLimit);
 		double eng = 0;
 		if (conf.getScale() < 0) {
 			eng = (activLink.getMinEngineeringUnits());
-			//myLinkSliderWidget.getSetpoint().setLowerBound(eng);
+			// myLinkSliderWidget.getSetpoint().setLowerBound(eng);
 		} else {
 			eng = (activLink.getMaxEngineeringUnits());
-			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
+			// myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
-		zero.setUpperBound((int)newAngleDegrees);
+		zero.setUpperBound((int) newAngleDegrees);
 		return eng;
 	}
 
 	public double setLowerBound(double newAngleDegrees) {
-		double lowerLimit = newAngleDegrees>=activLink.getDeviceMinimumValue()?newAngleDegrees:activLink.getDeviceMinimumValue();
+		double lowerLimit = newAngleDegrees >= activLink.getDeviceMinimumValue()
+				? newAngleDegrees
+				: activLink.getDeviceMinimumValue();
 		conf.setLowerLimit(lowerLimit);
 		lowerBound.setValue(lowerLimit);
 
 		double eng = 0;
 		if (conf.getScale() > 0) {
 			eng = (activLink.getMinEngineeringUnits());
-			//myLinkSliderWidget.getSetpoint().setLowerBound(eng);
+			// myLinkSliderWidget.getSetpoint().setLowerBound(eng);
 		} else {
 			eng = (activLink.getMaxEngineeringUnits());
-			//myLinkSliderWidget.getSetpoint().setUpperBound(eng);
+			// myLinkSliderWidget.getSetpoint().setUpperBound(eng);
 		}
-		zero.setLowerBound((int)newAngleDegrees);
+		zero.setLowerBound((int) newAngleDegrees);
 		return eng;
 
 	}
 
-	private void setShaftSize( String selectedItem) {
+	private void setShaftSize(String selectedItem) {
 		if (selectedItem == null) {
 			return;
 		}
 	}
 
-	private void setShaftType(  final ComboBox<String> shaftSize,
-			String selectedItem) {
+	private void setShaftType(final ComboBox<String> shaftSize, String selectedItem) {
 		shaftSize.getItems().clear();
 		if (selectedItem == null)
 			return;
@@ -477,8 +476,5 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 			shaftSize.getItems().add(s);
 		}
 	}
-
-
-
 
 }

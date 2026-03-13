@@ -11,37 +11,36 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
 
-
-
 public class GithubLoginFX implements javafx.fxml.Initializable {
 
 	@FXML
 	private TextField username;
-	@FXML PasswordField password;
-	
-	private boolean done=false;
-	
-	private String [] creds = new String[]{"",""};
+	@FXML
+	PasswordField password;
+
+	private boolean done = false;
+
+	private String[] creds = new String[]{"", ""};
 	private Stage stage;
 	private Parent root;
 	private Scene scene;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		reset();
 	}
-	
-	public void reset(){
-		done=false;
-		setCreds(new String[]{"",""});
+
+	public void reset() {
+		done = false;
+		setCreds(new String[]{"", ""});
 		password.clear();
 		getUsername().clear();
-		
 
 	}
 
-	@FXML public void anonMode() {
+	@FXML
+	public void anonMode() {
 		setCreds(null);
 		try {
 			// this should make anon mode stick
@@ -52,25 +51,27 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 		}
 		finish();
 	}
-	private void finish(){
+	private void finish() {
 		stage.close();
 		stage.hide();
-		done=true;
+		done = true;
 	}
 
-	@FXML public void login() {
-		getCreds()[0]= getUsername().getText();
-		getCreds()[1]= password.getText();
-		if(getCreds()[0]==null||getCreds()[1]==null){
+	@FXML
+	public void login() {
+		getCreds()[0] = getUsername().getText();
+		getCreds()[1] = password.getText();
+		if (getCreds()[0] == null || getCreds()[1] == null) {
 			setCreds(null);
-		}else if(getCreds()[0].equals("")||getCreds()[1].equals("")){
+		} else if (getCreds()[0].equals("") || getCreds()[1].equals("")) {
 			setCreds(null);
 		}
-		
+
 		finish();
 	}
 
-	@FXML public void focusOnPw() {
+	@FXML
+	public void focusOnPw() {
 		password.requestFocus();
 	}
 
@@ -82,21 +83,21 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 		this.done = done;
 	}
 
-	public String [] getCreds() {
+	public String[] getCreds() {
 		return creds;
 	}
 
-	public void setCreds(String [] creds) {
+	public void setCreds(String[] creds) {
 		this.creds = creds;
 	}
 
 	public void setStage(Stage stage, Parent root) {
 		this.stage = stage;
-		if(this.root==null){
+		if (this.root == null) {
 			this.root = root;
-			scene=  new Scene(root);
+			scene = new Scene(root);
 		}
-		stage.setScene(scene);  
+		stage.setScene(scene);
 	}
 
 	public TextField getUsername() {
@@ -106,6 +107,5 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 	public void setUsername(TextField username) {
 		this.username = username;
 	}
-
 
 }

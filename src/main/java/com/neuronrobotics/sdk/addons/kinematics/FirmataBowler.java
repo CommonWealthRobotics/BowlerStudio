@@ -3,7 +3,6 @@ package com.neuronrobotics.sdk.addons.kinematics;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.firmata4j.IODevice;
 import org.firmata4j.firmata.FirmataDevice;
 
 import com.neuronrobotics.sdk.common.NonBowlerDevice;
@@ -11,14 +10,14 @@ import com.neuronrobotics.sdk.common.NonBowlerDevice;
 public class FirmataBowler extends NonBowlerDevice {
 
 	private FirmataDevice device;
-	public FirmataBowler(String port){
+	public FirmataBowler(String port) {
 		setFirmataDevice(new FirmataDevice(port));
-		
+
 	}
-		
+
 	@Override
 	public boolean connectDeviceImp() {
-		
+
 		try {
 			getFirmataDevice().start(); // initiate communication to the device
 			getFirmataDevice().ensureInitializationIsDone();

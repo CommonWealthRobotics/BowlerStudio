@@ -2,9 +2,7 @@ package com.neuronrobotics.bowlerstudio.scripting.external;
 
 import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -21,8 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -79,11 +75,11 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 		this.advanced = advanced;
 		EclipseExternalEditor ee = this;
 		new Thread(() -> {
-//			File exeFile = getExecutable("eclipse",null);
-//			String eclipseEXE = exeFile.getAbsolutePath();
+			// File exeFile = getExecutable("eclipse",null);
+			// String eclipseEXE = exeFile.getAbsolutePath();
 
 			try {
-				dir=file.getParentFile();
+				dir = file.getParentFile();
 				name = dir.getName();
 				File project = new File(dir.getAbsolutePath() + delim() + ".project");
 				try {
@@ -97,7 +93,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 					File ignore = new File(dir.getAbsolutePath() + delim() + ".gitignore");
 					project = new File(dir.getAbsolutePath() + delim() + ".project");
-					
+
 					if (dir.getAbsolutePath().contains("gist.github.com")) {
 						String name2 = file.getName();
 						String[] split = name2.split("\\.");
@@ -139,8 +135,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					//if(!project.exists() )
-						setUpEclipseProjectFiles(dir, project, name);
+					// if(!project.exists() )
+					setUpEclipseProjectFiles(dir, project, name);
 				}
 
 				String ws = getEclipseWorkspace();
@@ -148,8 +144,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				com.neuronrobotics.sdk.common.Log.error("Opening workspace " + ws);
 				File wsDir = new File(ws);
 				Map<String, String> env = getEnvironment("eclipse");
-				HashMap<String, String> environment = new HashMap<>();
-				;
+				HashMap<String, String> environment = new HashMap<>();;
 				environment.putAll(env);
 				File settings = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "appdata"
 						+ delim() + "bowler-settings.epf");
