@@ -268,7 +268,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
 		try {
-			return new URI("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller/blob/master/README.md").toURL();
+			return new URI("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller/blob/master/README.md")
+					.toURL();
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}

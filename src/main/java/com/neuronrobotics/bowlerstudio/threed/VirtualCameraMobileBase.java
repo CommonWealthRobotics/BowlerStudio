@@ -145,7 +145,7 @@ public class VirtualCameraMobileBase {
 
 		TransformNR global = getFiducialToGlobalTransform().copy();
 		// use the camera global fraame elevation
-		double rotationElevationDegrees = - newPose.getRotation().getRotationElevationDegrees() - 90;
+		double rotationElevationDegrees = -newPose.getRotation().getRotationElevationDegrees() - 90;
 		double azimuthDegrees = 90 - newPose.getRotation().getRotationAzimuthDegrees();
 		double globalElevationDegrees = global.getRotation().getRotationElevationDegrees();
 

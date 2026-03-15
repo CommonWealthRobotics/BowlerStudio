@@ -66,7 +66,9 @@ public class ArduinoExternalEditor implements IExternalEditor {
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
 		try {
-			return new URI("https://github.com/WPIRoboticsEngineering/RobotInterfaceBoard/blob/master/InstallEclipse.md").toURL();
+			return new URI(
+					"https://github.com/WPIRoboticsEngineering/RobotInterfaceBoard/blob/master/InstallEclipse.md")
+					.toURL();
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}

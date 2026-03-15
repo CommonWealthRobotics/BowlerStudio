@@ -60,7 +60,6 @@ public class DeviceSupportPluginMap implements PluginFactory {
 			return factory.generateNewPlugin();
 
 		// This is where the new tab allocation is called
-		return (AbstractBowlerStudioTab) Class.forName(plugin.getName()).cast(plugin.newInstance()
-		);
+		return (AbstractBowlerStudioTab) Class.forName(plugin.getName()).cast(plugin.newInstance());
 	}
 }

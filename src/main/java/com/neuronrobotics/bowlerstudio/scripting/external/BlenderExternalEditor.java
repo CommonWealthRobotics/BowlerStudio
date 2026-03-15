@@ -94,7 +94,8 @@ public class BlenderExternalEditor implements IExternalEditor {
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
 		try {
-			return new URI("https://www.blender.org/download/release/Blender4.1/blender-4.1.1-linux-x64.tar.xz/").toURL();
+			return new URI("https://www.blender.org/download/release/Blender4.1/blender-4.1.1-linux-x64.tar.xz/")
+					.toURL();
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}

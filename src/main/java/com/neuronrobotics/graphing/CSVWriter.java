@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import com.neuronrobotics.sdk.common.SDKInfo;
-
 public class CSVWriter {
 	private CSVWriter() {
 	}
