@@ -58,6 +58,7 @@ public class VirtualCameraMobileBase {
 			listeners.add(l);
 		return this;
 	}
+
 	public VirtualCameraMobileBase removeListener(ICameraChangeListener l) {
 		if (listeners.contains(l))
 			listeners.remove(l);
@@ -130,6 +131,7 @@ public class VirtualCameraMobileBase {
 			return;
 		setGlobalToFiducialTransform(newPose.copy().setRotation(getFiducialToGlobalTransform().getRotation()));
 	}
+
 	public void SetOrientation(TransformNR newPose) {
 		if (newPose == null)
 			return;
@@ -143,17 +145,19 @@ public class VirtualCameraMobileBase {
 
 		TransformNR global = getFiducialToGlobalTransform().copy();
 		// use the camera global fraame elevation
-		double rotationElevationDegrees = -newPose.getRotation().getRotationElevationDegrees() - 90;
-		double azimuth = 90 - Math.toDegrees(newPose.getRotation().getRotationAzimuthRadians());
+		double rotationElevationDegrees = - newPose.getRotation().getRotationElevationDegrees() - 90;
+		double azimuthDegrees = 90 - newPose.getRotation().getRotationAzimuthDegrees();
+		double globalElevationDegrees = global.getRotation().getRotationElevationDegrees();
+
 		// Apply globals to the internal camer frame
-		global.setRotation(new RotationNR(rotationElevationDegrees, azimuth,
-				Math.toDegrees(global.getRotation().getRotationElevationRadians())));
+		global.setRotation(new RotationNR(rotationElevationDegrees, azimuthDegrees, globalElevationDegrees));
 		setGlobalToFiducialTransform(global);
 	}
 
 	public double getPanAngle() {
 		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationAzimuthRadians());
 	}
+
 	public double getTiltAngle() {
 		return Math.toDegrees(getFiducialToGlobalTransform().getRotation().getRotationTiltRadians());
 	}
@@ -222,9 +226,9 @@ public class VirtualCameraMobileBase {
 	}
 
 	public void bind(VirtualCameraMobileBase f) {
-		if (flyingCamera.contains(f)) {
+		if (flyingCamera.contains(f))
 			return;
-		}
+
 		this.flyingCamera.add(f);
 	}
 
@@ -236,15 +240,16 @@ public class VirtualCameraMobileBase {
 				// com.neuronrobotics.sdk.common.Log.error(name+" Sync zoom to "+cam.name);
 				cam.setZoomDepth(zoomDepth);
 			}
+
 			if (rotation == cam.myGlobal.getRotation())
 				continue;
+
 			// com.neuronrobotics.sdk.common.Log.error(name+" pusing update to "+cam.name);
 			if (!cam.move || !move) {
 				TransformNR newGlob = cam.getFiducialToGlobalTransform().copy().setRotation(rotation);
 				cam.setGlobalToFiducialTransform(newGlob);
-			} else {
+			} else
 				cam.setGlobalToFiducialTransform(n.copy().setRotation(rotation));
-			}
 
 		}
 	}
@@ -254,12 +259,10 @@ public class VirtualCameraMobileBase {
 	}
 
 	public boolean isZoomLocked() {
-		// Auto-generated method stub
 		return zoomlock;
 	}
 
 	public void lockMove() {
-		// Auto-generated method stub
 		move = false;
 	}
 

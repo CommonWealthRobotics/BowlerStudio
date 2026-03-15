@@ -9,6 +9,8 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -122,7 +124,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 								OutputStream out = null;
 								try {
 									out = FileUtils.openOutputStream(desired, false);
-									IOUtils.write(content, out);
+									IOUtils.write(content, out, "UTF-8");
 									out.close(); // don't swallow close Exception if copy completes
 									// normally
 								} finally {
@@ -265,7 +267,11 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller/blob/master/README.md");
+		try {
+			return new URI("https://github.com/CommonWealthRobotics/ESP32ArduinoEclipseInstaller/blob/master/README.md").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 }

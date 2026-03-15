@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,7 +62,11 @@ public class OpenSCADExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://openscad.org/downloads.html");
+		try {
+			return new URI("https://openscad.org/downloads.html").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	@Override

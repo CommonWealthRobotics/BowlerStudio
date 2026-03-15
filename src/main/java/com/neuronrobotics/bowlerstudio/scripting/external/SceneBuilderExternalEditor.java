@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,7 +63,11 @@ public class SceneBuilderExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://gluonhq.com/products/scene-builder/");
+		try {
+			return new URI("https://gluonhq.com/products/scene-builder/").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	@Override

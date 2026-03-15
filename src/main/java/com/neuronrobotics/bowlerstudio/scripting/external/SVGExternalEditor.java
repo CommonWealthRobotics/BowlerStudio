@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,7 +67,11 @@ public class SVGExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://inkscape.org/release/");
+		try {
+			return new URI("https://inkscape.org/release/").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	@Override

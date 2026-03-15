@@ -2538,12 +2538,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		double az = (orient == null)
 				? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
-						+ Math.toDegrees(orient.getRotation().getRotationAzimuth()));
+						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
 		double el = (orient == null)
 				? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
-						+ Math.toDegrees(orient.getRotation().getRotationElevation()));
+						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
 		// + el);
 		double x = 0;

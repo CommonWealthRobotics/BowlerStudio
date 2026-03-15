@@ -16,12 +16,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -50,70 +54,64 @@ public class FindTextWidget extends Application {
 	private int find(double direction) {
 		// BowlerStudio.invokeLater(() -> {
 		try {
-			// com.neuronrobotics.sdk.common.Log.error("Got ctrl f "+
+			// com.neuronrobotics.sdk.common.Log.error("Got ctrl f " +
 			// textArea.getSelectedText());
 			// Get the text to find...convert it to
-			// lower
-			// case for eaiser comparision
+			// lower case for eaiser comparision
 
 			String find = findBox.getText();
-			if (!matchCase.isSelected()) {
+			if (!matchCase.isSelected())
 				find = find.toLowerCase();
-			}
+
 			// Focus the text area, otherwise the
 			// highlighting won't show up
 			textArea.requestFocusInWindow();
+
 			// Make sure we have a valid search term
-			if (find != null && find.length() > 0) {
+			if ((find != null) && (find.length() > 0)) {
 				Document document = textArea.getDocument();
 				int findLength = find.length();
 				try {
 					boolean found = false;
 					// Rest the search position if we're
-					// at
-					// the end of the document
-					if (pos + findLength > document.getLength()) {
+					// at the end of the document
+					if (pos + findLength > document.getLength())
 						pos = 0;
-					}
-					if (pos < 0) {
+
+					if (pos < 0)
 						pos = document.getLength() - findLength;
-					}
-					// While we haven't reached the
-					// end...
+
+					// While we haven't reached the end...
 					// "<=" Correction
-					while (pos + findLength <= document.getLength() && pos >= 0) {
-						// Extract the text from teh
-						// docuemnt
+					while ((pos + findLength <= document.getLength()) && (pos >= 0)) {
+						// Extract the text from the document
 						String match = document.getText(pos, findLength);
 						if (!matchCase.isSelected()) {
 							match = match.toLowerCase();
 						}
-						// Check to see if it matches or
-						// request
+						// Check to see if it matches or request
 						if (match.equals(find)) {
 							found = true;
 							break;
 						}
 						pos += 1 * direction;
 					}
+
 					int baseOfFind = pos;
 					// Did we find something...
 					if (found) {
 						BowlerStudio.invokeLater(() -> {
-							// Get the rectangle of the
-							// where
+							// Get the rectangle of the area where
 							// the text would be visible...
-							Rectangle viewRect;
+							Rectangle2D viewRect;
 							try {
-								viewRect = textArea.modelToView(pos);
-								// Scroll to make the rectangle
-								// visible
-								textArea.scrollRectToVisible(viewRect);
+								viewRect = textArea.modelToView2D(pos);
+								// Scroll to make the rectangle visible
+								textArea.scrollRectToVisible(viewRect.getBounds());
 								// Highlight the text
-								textArea.setCaretPosition((int) (pos));
+								textArea.setCaretPosition(pos);
 								textArea.moveCaretPosition(pos + findLength);
-								// Move the search position
-								// beyond
+								// Move the search position beyond
 								// the current match
 								pos += findLength * direction;
 							} catch (BadLocationException e) {
@@ -143,6 +141,7 @@ public class FindTextWidget extends Application {
 			String replace = replaceBox.getText();
 			if (replace == null)
 				replace = "";
+
 			String current = textArea.getText();
 			int intLengthOfRemove = find.length();
 
@@ -150,24 +149,20 @@ public class FindTextWidget extends Application {
 				String firstHalf = current.substring(0, pos - intLengthOfRemove);
 				String secondtHalf = current.substring(pos);
 				if (direction > 0) {
-					if (secondtHalf.length() <= intLengthOfRemove) {
-						// bail
-						return;
-					}
+					if (secondtHalf.length() <= intLengthOfRemove)
+						return; // bail
 				} else {
-					if (firstHalf.length() <= intLengthOfRemove) {
-						// bail
-						return;
-					}
+					if (firstHalf.length() <= intLengthOfRemove)
+						return; // bail
 				}
 				String newContent = firstHalf + replace + secondtHalf;
 				BowlerStudio.invokeLater(() -> {
 					textArea.setText(newContent);
 					find(direction);
 				});
-			} else {
+			} else
 				find(direction);
-			}
+
 		}).start();
 	}
 
@@ -198,9 +193,9 @@ public class FindTextWidget extends Application {
 		assert findBox != null : "fx:id=\"findBox\" was not injected: check your FXML file 'findWidget.fxml'.";
 		assert replaceBox != null : "fx:id=\"replaceBox\" was not injected: check your FXML file 'findWidget.fxml'.";
 
-		if (textArea.getSelectedText() != null) {
+		if (textArea.getSelectedText() != null)
 			BowlerStudio.runLater(() -> findBox.setText(textArea.getSelectedText()));
-		}
+
 	}
 
 	@SuppressWarnings("restriction")
@@ -217,8 +212,10 @@ public class FindTextWidget extends Application {
 			int tmp = fontNum - 10;
 			if (tmp < 12)
 				tmp = 12;
+
 			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
+
 		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Find/Replace");
 			Scene scene = new Scene(root);
@@ -232,7 +229,5 @@ public class FindTextWidget extends Application {
 	public void setTextArea(RSyntaxTextArea textArea) {
 		this.textArea = textArea;
 		pos = 0;
-		// Auto-generated method stub
-
 	}
 }

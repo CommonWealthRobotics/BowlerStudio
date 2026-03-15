@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +68,13 @@ public class CaDoodleExternalEditor implements IExternalEditor {
 
 	}
 
+	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://github.com/CommonWealthRobotics/CaDoodle/blob/main/README.md");
+		try {
+			return new URI("https://github.com/CommonWealthRobotics/CaDoodle/blob/main/README.md").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	public String nameOfEditor() {

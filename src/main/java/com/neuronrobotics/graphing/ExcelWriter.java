@@ -22,7 +22,7 @@ public class ExcelWriter implements DataWriter {
 	private WritableSheet excelSheet;
 	private int lineOffset = 0;
 	public ExcelWriter() {
-		wbSettings.setLocale(new Locale("en", "EN"));
+		wbSettings.setLocale(Locale.of("en", "EN"));
 	}
 
 	private void addNumber(int column, int row, double d) throws WriteException, RowsExceededException {

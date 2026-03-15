@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,7 +93,11 @@ public class BlenderExternalEditor implements IExternalEditor {
 
 	@Override
 	public URL getInstallURL() throws MalformedURLException {
-		return new URL("https://www.blender.org/download/release/Blender4.1/blender-4.1.1-linux-x64.tar.xz/");
+		try {
+			return new URI("https://www.blender.org/download/release/Blender4.1/blender-4.1.1-linux-x64.tar.xz/").toURL();
+		} catch (URISyntaxException e) {
+			throw new MalformedURLException(e.getMessage());
+		}
 	}
 
 	@Override

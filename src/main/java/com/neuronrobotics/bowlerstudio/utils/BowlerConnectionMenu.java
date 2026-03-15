@@ -10,6 +10,7 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.network.BowlerTCPClient;
 import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
+
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,6 +49,7 @@ public class BowlerConnectionMenu extends Application {
 
 	@FXML // fx:id="portOptions"
 	private ComboBox<String> portOptions; // Value injected by FXMLLoader
+
 	@FXML
 	private ComboBox<String> ipSelector;
 
@@ -82,8 +84,7 @@ public class BowlerConnectionMenu extends Application {
 
 	private int baud;
 
-	@FXML // This method is called by the FXMLLoader when initialization is
-			// complete
+	@FXML // This method is called by the FXMLLoader when initialization is complete
 	void initialize() {
 		com.neuronrobotics.sdk.common.Log.error("Initializing conection Dialog");
 		assert baudrate != null
@@ -110,12 +111,14 @@ public class BowlerConnectionMenu extends Application {
 				: "fx:id=\"udpSelect\" was not injected: check your FXML file 'BowlerConnectionMenue.fxml'.";
 		assert ipSelector != null
 				: "fx:id=\"ipSelector\" was not injected: check your FXML file 'BowlerConnectionMenu.fxml'.";
+
 		runsearchSerial();
 		runsearchNetwork();
 
 		searchNetwork.setOnAction(event -> {
 			runsearchNetwork();
 		});
+
 		searchSerial.setOnAction(event -> {
 			runsearchSerial();
 		});
@@ -124,6 +127,7 @@ public class BowlerConnectionMenu extends Application {
 			runconnectNetwork();
 			primaryStage.hide();
 		});
+
 		connectSerial.setOnAction(event -> {
 			runconnectSerial();
 			primaryStage.hide();
@@ -132,15 +136,16 @@ public class BowlerConnectionMenu extends Application {
 	}
 
 	private void runconnectSerial() {
+
 		new Thread(() -> {
 			for (int i = 0; i < 3; i++) {
 				SerialConnection ser = null;
 				try {
 					BowlerDatagram.setUseBowlerV4(true);
 					baud = Integer.parseInt(baudrate.getText());
-					if (baud < 0) {
+					if (baud < 0)
 						throw new NumberFormatException();
-					}
+
 					port = portOptions.getSelectionModel().getSelectedItem().toString();
 					int level = Log.getMinimumPrintLevel();
 					// Log.enableInfoPrint();
@@ -164,6 +169,7 @@ public class BowlerConnectionMenu extends Application {
 	}
 
 	private void runconnectNetwork() {
+
 		new Thread(() -> {
 			int port;
 			String ip = ipSelector.getSelectionModel().getSelectedItem().toString();
@@ -200,41 +206,41 @@ public class BowlerConnectionMenu extends Application {
 	}
 
 	private void runsearchSerial() {
+
 		BowlerStudio.runLater(() -> {
 			portOptions.getItems().clear();
 			new Thread(() -> {
 
-				for (String s : SerialConnection.getAvailableSerialPorts()) {
+				for (String s : SerialConnection.getAvailableSerialPorts())
 					BowlerStudio.runLater(() -> portOptions.getItems().add(s));
-				}
+
 			}).start();
 		});
 
 	}
 
 	private void runsearchNetwork() {
+
 		BowlerStudio.runLater(() -> {
 			ipSelector.getItems().clear();
 			BowlerStudio.runLater(() -> ipSelector.getItems().add("127.0.0.1"));
 			new Thread(() -> {
-				// com.neuronrobotics.sdk.common.Log.error("Searching for UDP devices, please
-				// wait...");
 				int prt;
 				try {
-					prt = new Integer(udpPort.getText());
+					prt = Integer.parseInt(udpPort.getText());
 				} catch (NumberFormatException e) {
 					prt = defaultPortNum;
-					BowlerStudio.runLater(() -> udpPort.setText(new Integer(defaultPortNum).toString()));
+					BowlerStudio.runLater(() -> udpPort.setText(String.valueOf(defaultPortNum)));
 				}
 				clnt = new UDPBowlerConnection(prt);
 				ArrayList<InetAddress> addrs = clnt.getAllAddresses();
 
-				for (InetAddress i : addrs) {
+				for (InetAddress i : addrs)
 					BowlerStudio.runLater(() -> ipSelector.getItems().add(i.getHostAddress()));
-				}
 
 			}).start();
 		});
+
 	}
 
 	@SuppressWarnings("restriction")
@@ -253,6 +259,7 @@ public class BowlerConnectionMenu extends Application {
 				tmp = 12;
 			root.setStyle("-fx-font-size: " + tmp + "pt");
 		});
+
 		BowlerStudio.runLater(() -> {
 			primaryStage.setTitle("Bowler Device Connection");
 
