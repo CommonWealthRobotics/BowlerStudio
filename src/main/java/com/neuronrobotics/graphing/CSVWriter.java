@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import com.neuronrobotics.sdk.common.SDKInfo;
-
 public class CSVWriter {
 	private CSVWriter() {
 	}
@@ -19,9 +17,9 @@ public class CSVWriter {
 		synchronized (dataTable) {
 			for (int j = 0; j < dataTable.size(); j++) {
 				out += dataTable.get(j).getTimestamp();
-				for (int i = 0; i < dataTable.get(j).getData().length; i++) {
+				for (int i = 0; i < dataTable.get(j).getData().length; i++)
 					out += "," + dataTable.get(j).getData()[i];
-				}
+
 				out += "\r\n";
 			}
 		}
@@ -40,10 +38,11 @@ public class CSVWriter {
 
 		try {
 			String dir;
-			if (SDKInfo.isWindows)
+			if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
 				dir = dir1.getCanonicalPath() + "\\";
 			else
 				dir = dir1.getCanonicalPath() + "/";
+
 			JOptionPane.showMessageDialog(null, "Saved data to file: " + dir + filename, "PID Save",
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (IOException e) {

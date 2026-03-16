@@ -85,13 +85,13 @@ public class TransformWidget extends GridPane
 		}
 		double e = 0;
 		try {
-			e = Math.toDegrees(storeRotation.getRotationElevation());
+			e = Math.toDegrees(storeRotation.getRotationElevationRadians());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		double a = 0;
 		try {
-			a = Math.toDegrees(storeRotation.getRotationAzimuth());
+			a = Math.toDegrees(storeRotation.getRotationAzimuthRadians());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -297,13 +297,13 @@ public class TransformWidget extends GridPane
 		}
 		double e = 0;
 		try {
-			e = Math.toDegrees(rot.getRotationElevation());
+			e = Math.toDegrees(rot.getRotationElevationRadians());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		double a = 0;
 		try {
-			a = Math.toDegrees(rot.getRotationAzimuth());
+			a = Math.toDegrees(rot.getRotationAzimuthRadians());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

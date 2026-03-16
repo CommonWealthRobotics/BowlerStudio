@@ -47,7 +47,7 @@ public class IntegerComboBox extends JComboBox {
 				// ingnore the None case
 			}
 		}
-		addItem(new Integer(in));
+		addItem(in);
 	}
 
 	public void setNoneItemSelected() {

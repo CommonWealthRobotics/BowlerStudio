@@ -178,7 +178,7 @@ class GraphingPanel extends JPanel implements ChangeListener {
 		if (value < 0) {
 			value = 0;
 		}
-		dataset1.setValue(new Double(value));
+		dataset1.setValue(value);
 		dataFrame.addPosition(value, sim.getTime());
 	}
 
@@ -192,7 +192,7 @@ class GraphingPanel extends JPanel implements ChangeListener {
 		}
 
 		ignoreUpdate = true;
-		dataset2.setValue(new Double(value));
+		dataset2.setValue(value);
 		setpointSlider.setValue(1800 - (int) value * 10);
 		dataFrame.setSetpoint(value);
 		ignoreUpdate = false;

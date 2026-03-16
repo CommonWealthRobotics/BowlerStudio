@@ -93,7 +93,7 @@ public class ImageTracer {
 						} else {
 							f = parsenext(args, j);
 							if (f > -1) {
-								options.put(parametername, new Float(f));
+								options.put(parametername, f);
 							}
 						}
 					}
@@ -1294,8 +1294,8 @@ public class ImageTracer {
 					zindex.put(label, new Integer[2]);
 				}
 				// Adding layer and path number to list
-				zindex.get(label)[0] = new Integer(k);
-				zindex.get(label)[1] = new Integer(pcnt);
+				zindex.get(label)[0] = k;
+				zindex.get(label)[1] = pcnt;
 			} // End of path loop
 
 		} // End of layer loop

@@ -24,6 +24,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -34,6 +35,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.scene.layout.*;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -59,10 +62,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javafx.scene.layout.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.*;
 
 public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 
@@ -277,7 +276,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 					ArrayList<String> repoFile = (ArrayList<String>) ConfigurationDatabase.getObject(key, s,
 							new ArrayList<>());
 					File f = ScriptingEngine.fileFromGit(repoFile.get(0), repoFile.get(1));
-					if (!f.exists() || BowlerStudio.createFileTab(f) == null) {
+					if (!f.exists() || (BowlerStudio.createFileTab(f) == null)) {
 						ConfigurationDatabase.removeObject(key, s);
 						System.err.println("Removing missing " + s);
 					}
@@ -295,7 +294,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 			String repoFile = (String) ConfigurationDatabase.getObject(webKey, s, null);
 			if (repoFile != null)
 				try {
-					bowlerStudioModularFrame.openUrlInNewTab(new URL(repoFile));
+					bowlerStudioModularFrame.openUrlInNewTab(new URI(repoFile).toURL());
 				} catch (Exception e) {
 					exp.uncaughtException(Thread.currentThread(), e);
 				}
@@ -1235,8 +1234,8 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 	public void onOpenGitter(ActionEvent event) {
 		String url = "https://gitter.im";
 		try {
-			BowlerStudio.openUrlInNewTab(new URL(url));
-		} catch (MalformedURLException e) {
+			BowlerStudio.openUrlInNewTab(new URI(url).toURL());
+		} catch (MalformedURLException | URISyntaxException e) {
 			exp.uncaughtException(Thread.currentThread(), e);
 		}
 	}

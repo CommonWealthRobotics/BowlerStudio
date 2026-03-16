@@ -17,7 +17,9 @@ import com.neuronrobotics.sdk.network.UDPBowlerConnection;
 import com.neuronrobotics.sdk.serial.SerialConnection;
 import com.neuronrobotics.sdk.ui.AbstractConnectionPanel;
 import com.neuronrobotics.sdk.wireless.bluetooth.BluetoothSerialConnection;
+
 import gnu.io.NRSerialPort;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -33,8 +35,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -283,6 +287,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener, Even
 	}
 
 	public static void onConnectURLSourceCamera() {
+
 		TextInputDialog alert = new TextInputDialog("http://neuronrobotics.com/img/AndrewHarrington/2014-09-15-86.jpg");
 		alert.setTitle("URL Image Source");
 		alert.setHeaderText("This url will be loaded each capture.");
@@ -290,25 +295,27 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener, Even
 		Node root = alert.getDialogPane();
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.setOnCloseRequest(ev -> alert.hide());
+
 		FontSizeManager.addListener(fontNum -> {
 			int tmp = fontNum - 10;
 			if (tmp < 12)
 				tmp = 12;
+
 			root.setStyle("-fx-font-size: " + tmp + "pt");
 			alert.getDialogPane().applyCss();
 			alert.getDialogPane().layout();
 			stage.sizeToScene();
 		});
+
 		// Traditional way to get the response value.
 		Optional<String> result = alert.showAndWait();
 		if (result.isPresent()) {
 			URLImageProvider p;
 			try {
-				p = new URLImageProvider(new URL(result.get()));
+				p = new URLImageProvider(new URI(result.get()).toURL());
 				String name = "url";
 				addConnection(p, name);
-			} catch (MalformedURLException e) {
-				// Auto-generated catch block
+			} catch (MalformedURLException | URISyntaxException e) {
 				e.printStackTrace();
 			}
 		}

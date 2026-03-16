@@ -21,7 +21,7 @@ public class NRBootLoaderApp {
 			if (args[i].contains("--core")) {
 				BootloaderParams param = new BootloaderParams();
 				try {
-					Integer coreNum = new Integer(args[i + 1]);
+					Integer coreNum = Integer.valueOf(args[i + 1]);
 					param.setCore(coreNum.intValue());
 				} catch (Exception e) {
 					fail();

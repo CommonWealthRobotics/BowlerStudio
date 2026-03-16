@@ -58,10 +58,8 @@ public class DeviceSupportPluginMap implements PluginFactory {
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (factory != null)
 			return factory.generateNewPlugin();
-		return (AbstractBowlerStudioTab) Class.forName(plugin.getName()).cast(plugin.newInstance()// This is where the
-																									// new tab
-																									// allocation is
-																									// called
-		);
+
+		// This is where the new tab allocation is called
+		return (AbstractBowlerStudioTab) Class.forName(plugin.getName()).cast(plugin.newInstance());
 	}
 }
