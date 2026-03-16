@@ -1,1 +1,3 @@
 src/main/java/com/neuronrobotics/bowlerstudio/NameGetter.java filter=unchanged
+* text=auto eol=lf
+*.java eol=lf
