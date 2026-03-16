@@ -216,6 +216,8 @@ repositories {
 		url 'https://commonwealthrobotics.com/maven/'
 		allowInsecureProtocol = true
 	}
+	maven { url "https://clojars.org/repo" }
+	
 }
 
 dependencies {
