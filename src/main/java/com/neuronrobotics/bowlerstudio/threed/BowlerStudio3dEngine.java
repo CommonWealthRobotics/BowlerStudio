@@ -442,7 +442,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public boolean isSlowMove(MouseEvent event) {
-			return  Manipulation.isControlOrCommandPressed(event);
+			return Manipulation.isControlOrCommandPressed(event);
 		}
 
 		public boolean isRotate(MouseEvent me) {
