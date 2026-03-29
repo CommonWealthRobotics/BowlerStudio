@@ -11,6 +11,7 @@ public class PrefsLoader {
 	public String getSlic3rLocation() {
 		return prefs.get(SLIC3R_LOCATION, path);
 	}
+
 	public void setSlic3rLocation(String _path) {
 		prefs.put(SLIC3R_LOCATION, _path);
 	}
@@ -18,6 +19,7 @@ public class PrefsLoader {
 	public int getSlic3rRDBTNLast() {
 		return prefs.getInt(SLIC3R_RDBTN_LAST, 0);
 	}
+
 	public void setSlic3rRDBTNLast(int _btn) {
 		prefs.putInt(SLIC3R_RDBTN_LAST, _btn);
 	}

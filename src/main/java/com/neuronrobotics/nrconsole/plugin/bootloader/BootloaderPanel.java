@@ -151,6 +151,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 		}
 		loadButton.setEnabled(true);
 	}
+
 	private void reloadFile() {
 		if (file != null) {
 			try {
@@ -170,6 +171,7 @@ public class BootloaderPanel extends AbstractBowlerStudioTab implements ActionLi
 	public String getRevision() {
 		return revision;
 	}
+
 	private void resetAll() {
 		getBlApp().getDevice().disconnect();
 		resetLoad();

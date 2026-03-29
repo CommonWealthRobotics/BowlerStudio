@@ -238,12 +238,14 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 		});
 
 	}
+
 	private void validateInput() {
 		new Thread(() -> {
 			validateInput(gitMoving, filesMoving, "gitMoving", "movingObjects");
 			validateInput(gitStatic, filesStatic, "gitStatic", "staticObjects");
 		}).start();
 	}
+
 	private void validateInput(TextField text, ComboBox<String> box, String key, String key2) {
 		BowlerStudio.runLater(() -> box.getItems().clear());
 		BowlerStudio.runLater(() -> box.setDisable(true));
@@ -278,6 +280,7 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 		}
 
 	}
+
 	private void updateObjects() {
 		new Thread(() -> {
 			blockingUpdateObjects();
@@ -285,6 +288,7 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 		}).start();
 
 	}
+
 	private void blockingUpdateObjects() {
 		if (movingObjects != null) {
 			for (CSG c : movingObjects) {
@@ -327,6 +331,7 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 			}
 		}
 	}
+
 	private ArrayList<CSG> loadObjects(String url, String selectedItem) throws Exception {
 		ArrayList<CSG> ret = new ArrayList<CSG>();
 		if (url == null || selectedItem == null)
@@ -337,6 +342,7 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 		load(o, ret);
 		return ret;
 	}
+
 	private void load(Object o, ArrayList<CSG> storage) {
 		if (CSG.class.isInstance(o))
 			storage.add((CSG) o);
@@ -371,24 +377,31 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 		}
 		base.getImu().removevirtualListeners(this);
 	}
+
 	public boolean isTakestep() {
 		return takestep;
 	}
+
 	public void setTakestep(boolean takestep) {
 		this.takestep = takestep;
 	}
+
 	public boolean isPause() {
 		return pause;
 	}
+
 	public void setPause(boolean pause) {
 		this.pause = pause;
 	}
+
 	public boolean isRun() {
 		return run;
 	}
+
 	public void setRun(boolean run) {
 		this.run = run;
 	}
+
 	@Override
 	public void onIMUUpdate(IMUUpdate arg0) {
 		// com.neuronrobotics.sdk.common.Log.error("X = "+arg0.getxAcceleration()+

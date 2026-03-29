@@ -140,6 +140,7 @@ public class VitatminWidget implements IOnTransformChange {
 
 		listOfItems.getItems().add(box);
 	}
+
 	void validateURL() {
 		size.setDisable(true);
 		String text2 = scriptSource.getText();
@@ -161,6 +162,7 @@ public class VitatminWidget implements IOnTransformChange {
 		}
 
 	}
+
 	void validateInput() {
 		add.setDisable(true);
 		String nameTmp = name.getText();

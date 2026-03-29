@@ -51,6 +51,7 @@ public class GithubLoginFX implements javafx.fxml.Initializable {
 		}
 		finish();
 	}
+
 	private void finish() {
 		stage.close();
 		stage.hide();

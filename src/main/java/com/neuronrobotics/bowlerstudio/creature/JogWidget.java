@@ -374,6 +374,7 @@ public class JogWidget extends GridPane
 			}
 		}
 	}
+
 	private BowlerJInputDevice RemoveGameController() {
 		BowlerJInputDevice stale = getGameController();
 		getGameController().removeListeners(this);
@@ -381,6 +382,7 @@ public class JogWidget extends GridPane
 		setGameController(null);
 		return stale;
 	}
+
 	private void runControllerMap() {
 		Stage s = new Stage();
 		new Thread() {

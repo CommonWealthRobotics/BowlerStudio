@@ -166,6 +166,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 	public void jogPlusOne() {
 		jog(getJogIncrement());
 	}
+
 	public void jog(double amount) {
 		double value = getValue() + amount;
 		double max2 = setpoint.getMax();

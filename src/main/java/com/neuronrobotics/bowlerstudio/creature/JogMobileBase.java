@@ -244,6 +244,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent, IJogPr
 			start();
 		game.setDisable(false);
 	}
+
 	private void pushThisMobileBaseAsKatapult() {
 		ConfigurationDatabase.setObject("katapult", "robotName", mobilebase.getScriptingName());
 		ConfigurationDatabase.setObject("katapult", "robotGit", mobilebase.getGitSelfSource()[0]);
@@ -260,6 +261,7 @@ public class JogMobileBase extends GridPane implements IGameControlEvent, IJogPr
 
 		ConfigurationDatabase.setObject("katapult", "gameControllerNames", Arrays.asList(uniques.toArray()));
 	}
+
 	private void reset() {
 		running = false;
 		BowlerStudio.runLater(() -> {

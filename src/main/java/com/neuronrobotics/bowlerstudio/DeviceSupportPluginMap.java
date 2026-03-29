@@ -15,6 +15,7 @@ public class DeviceSupportPluginMap implements PluginFactory {
 		this.setPlugin(plugin);
 
 	}
+
 	public DeviceSupportPluginMap(Class<?> device, Class<?> plugin, PluginFactory factory) {
 		this.factory = factory;
 		this.setDevice(device);

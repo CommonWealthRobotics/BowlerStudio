@@ -34,14 +34,14 @@ public class Tutorial {
 
 			i = ScriptingEngine.fileFromGit(remoteURI,
 					(String) ConfigurationDatabase.getObject("BowlerStudioConfigs", "tutorialBranch", "deploy"), // the
-																													// default
-																													// branch
-																													// is
-																													// source,
-																													// so
-																													// this
-																													// needs
-																													// to
+					// default
+					// branch
+					// is
+					// source,
+					// so
+					// this
+					// needs
+					// to
 					// be specified
 					"docs/index.html");
 		} while (!i.exists());

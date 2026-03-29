@@ -534,6 +534,7 @@ public class BowlerStudio extends Application {
 	public static void runLater(long delay, Runnable action) {
 		runLater(java.time.Duration.ofMillis(delay), action);
 	}
+
 	public static void runLater(java.time.Duration delay, Runnable action) {
 		Throwable t = new Exception("Delayed UI Thread Exception here!");
 		// t.printStackTrace();
@@ -622,6 +623,7 @@ public class BowlerStudio extends Application {
 		 * (Exception ex) { Log.error("Limb not loaded yet"); }
 		 */
 	}
+
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
@@ -635,6 +637,7 @@ public class BowlerStudio extends Application {
 			CreatureLab3dController.getEngine().setSelected(startingLocation, rootListener);
 		}
 	}
+
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
@@ -646,6 +649,7 @@ public class BowlerStudio extends Application {
 			CreatureLab3dController.getEngine().setSelected(new TransformNR(), rootListener);
 		}
 	}
+
 	public static void select(MobileBase base, LinkConfiguration limb) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
 			MobileBaseCadManager.get(CSGDatabase.getInstance(), base).selectCsgByLink(base, limb);
@@ -691,6 +695,7 @@ public class BowlerStudio extends Application {
 		latestVersionString = s.trim();
 		return latestVersionString;
 	}
+
 	private static void makeSymLinkOfCurrentVersion() throws Exception {
 		String version = getBowlerStudioBinaryVersion();
 		File installDir = new File(
@@ -840,8 +845,8 @@ public class BowlerStudio extends Application {
 
 			String stylesheet = Application.STYLESHEET_MODENA;// "MODENA" or
 																// "CASPIAN"
-			// System.setProperty("javax.userAgentStylesheetUrl",
-			// stylesheet);
+																// System.setProperty("javax.userAgentStylesheetUrl",
+																// stylesheet);
 			setUserAgentStylesheet(stylesheet);
 		} catch (Exception | Error e) {
 			reporter.uncaughtException(Thread.currentThread(), e);
@@ -1030,6 +1035,7 @@ public class BowlerStudio extends Application {
 		b.getStyleClass().add("button");
 		b.setMinWidth(80);
 	}
+
 	public static void setToStopButton(Button b) {
 		b.setText("Stop");
 		b.setGraphic(AssetFactory.loadIcon("Stop.png"));
@@ -1120,6 +1126,7 @@ public class BowlerStudio extends Application {
 			CreatureLab3dController.getEngine().moveCamera(tf);
 		});
 	}
+
 	public static void setCamera(TransformNR tf) {
 		TransformNR current = getCamerFrame();
 		TransformNR tfupde = current.inverse().times(tf);
@@ -1127,6 +1134,7 @@ public class BowlerStudio extends Application {
 			CreatureLab3dController.getEngine().moveCamera(tfupde);
 		});
 	}
+
 	public static TransformNR getCamerFrame() {
 		return CreatureLab3dController.getEngine().getFlyingCamera().getCamerFrame();
 	}
@@ -1134,17 +1142,21 @@ public class BowlerStudio extends Application {
 	public static double getCamerDepth() {
 		return CreatureLab3dController.getEngine().getFlyingCamera().getZoomDepth();
 	}
+
 	public static void zoomCamera(double increment) {
 		runLater(() -> {
 			CreatureLab3dController.getEngine().zoomIncrement(increment);
 		});
 	}
+
 	public static TransformNR getTargetFrame() {
 		return CreatureLab3dController.getEngine().getTargetNR();
 	}
+
 	public static void loadMobilBaseIntoUI(MobileBase base) {
 		BowlerStudioController.getBowlerStudio().onScriptFinished(base, base, null);
 	}
+
 	public static void showExceptionAlert(Exception ex, String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("Error");

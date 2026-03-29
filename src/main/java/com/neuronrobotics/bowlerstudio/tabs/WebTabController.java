@@ -154,6 +154,7 @@ public class WebTabController {
 		});
 
 	}
+
 	/**
 	 * @return the initialized
 	 */

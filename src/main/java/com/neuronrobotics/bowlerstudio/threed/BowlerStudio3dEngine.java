@@ -491,9 +491,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		ModuleLayer.boot().modules().stream().filter(m -> m.getName().startsWith("javafx"))
 				.forEach(m -> com.neuronrobotics.sdk.common.Log.info(m.getName() + ": " + m.getDescriptor().version()));
 	}
+
 	public void addObject(Object o, File source) {
 		addObject(o, source, null);
 	}
+
 	public void addObject(Object o, File source, ArrayList<CSG> cache) {
 		try {
 			if (List.class.isInstance(o)) {
@@ -598,14 +600,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			Log.error(t);
 		}
 	}
+
 	public void setSelectedCsg(Vector3d v) {
 		TransformNR poseToMove = new TransformNR(v.x, v.y, v.z, new RotationNR());
 		setSelectedCsg(poseToMove);
 	}
+
 	public void setSelectedCsg(TransformNR poseToMove) {
 		Affine manipulator2 = new Affine();
 		focusToAffine(poseToMove, manipulator2);
 	}
+
 	public void rebuild(boolean b) {
 		rebuildingUIOnerror = true;
 

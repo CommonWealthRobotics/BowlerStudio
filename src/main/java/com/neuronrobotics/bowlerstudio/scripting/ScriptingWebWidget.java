@@ -120,6 +120,7 @@ public class ScriptingWebWidget extends BorderPane implements ChangeListener<Obj
 		addIScriptEventListener(BowlerStudioController.getBowlerStudio());
 		reset();
 	}
+
 	private void doFork() {
 		if (isOwnedByLoggedInUser)
 			BowlerStudio.createFileTab(currentFile);

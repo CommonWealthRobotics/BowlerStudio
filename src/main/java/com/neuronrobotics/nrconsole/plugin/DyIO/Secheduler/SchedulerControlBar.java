@@ -155,6 +155,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 		for (ActionListener a : playListeners)
 			a.actionPerformed(null);
 	}
+
 	private void pause() {
 		if (cs != null)
 			cs.pause();
@@ -183,6 +184,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 		// com.neuronrobotics.sdk.common.Log.error("Setting current time="+val+"
 		// slider="+slider.getValue());
 	}
+
 	private void setBounds(double top) {
 		slider.setMaximum(0);
 		slider.setMaximum((int) (top));
@@ -192,6 +194,7 @@ public class SchedulerControlBar extends JPanel implements ISchedulerListener {
 		setAudioFile(FileSelectionFactory.GetFile(mp3File == null ? ScriptingEngine.getWorkspace() : mp3File,
 				new ExtensionFilter("WAV file", "*.wav", "*.WAV")));
 	}
+
 	public void setAudioFile(File f) {
 		cs.setAudioFile(f);
 		setTrackLegnth(cs.getTrackLength());

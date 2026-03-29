@@ -80,7 +80,7 @@ spotless {
 	java {
 		lineEndings = com.diffplug.spotless.LineEnding.UNIX
 		// Eclipse formatter with your config file
-        eclipse('4.26')  // Uses Eclipse's built-in default profile — no XML needed!		
+		eclipse('4.26').configFile('libraries/bowler-script-kernel/config/eclipse-formatter.xml')		// Optional but recommended additions:
 		// Optional but recommended additions:
 		removeUnusedImports()
 		trimTrailingWhitespace()
@@ -450,7 +450,7 @@ eclipse{
 }
 if (project == rootProject) {
 shadowJar {
-	dependsOn 'spotlessCheck'
+	dependsOn 'spotlessApply'
     zip64 true
     mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
 

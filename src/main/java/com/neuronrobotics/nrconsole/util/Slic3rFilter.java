@@ -9,6 +9,7 @@ public class Slic3rFilter extends FileFilter {
 	public String getDescription() {
 		return "Slic3r Executable";
 	}
+
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
 			return true;

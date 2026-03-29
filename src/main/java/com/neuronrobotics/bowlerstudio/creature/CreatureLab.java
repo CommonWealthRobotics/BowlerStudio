@@ -304,6 +304,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 		}.start();
 	}
+
 	private void disable() {
 		enabled = false;
 		BowlerStudio.runLater(() -> {
@@ -313,6 +314,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			regen.setDisable(true);
 		});
 	}
+
 	private void enable() {
 		enabled = true;
 		BowlerStudio.runLater(() -> {
@@ -322,6 +324,7 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 			regen.setDisable(false);
 		});
 	}
+
 	private boolean hasWalking(MobileBase device) {
 		return device.getLegs().size() > 0 || device.getSteerable().size() > 0 || device.getDrivable().size() > 0;
 	}

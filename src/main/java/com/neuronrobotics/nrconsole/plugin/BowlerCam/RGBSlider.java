@@ -60,18 +60,21 @@ public class RGBSlider extends JPanel {
 		add(c, "wrap");
 
 	}
+
 	public void setColor(int r, int g, int b) {
 		this.r.setValue(r);
 		this.g.setValue(g);
 		this.b.setValue(b);
 		getColor();
 	}
+
 	public void setColor(Color c) {
 		this.r.setValue(c.getRed());
 		this.g.setValue(c.getGreen());
 		this.b.setValue(c.getBlue());
 		getColor();
 	}
+
 	public Color getColor() {
 		rl.setText(Integer.toString(r.getValue()));
 		gl.setText(Integer.toString(g.getValue()));
@@ -90,9 +93,11 @@ public class RGBSlider extends JPanel {
 			setSize(400, 400);
 			setColor(backColor);
 		}
+
 		public void setColor(Color c) {
 			setBackground(c);
 		}
+
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 		}

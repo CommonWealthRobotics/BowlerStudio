@@ -64,6 +64,7 @@ public class VirtualCameraMobileBase {
 			listeners.remove(l);
 		return this;
 	}
+
 	public void fireUpdate() {
 		synchronizePositionWithOtherFlyingCamera(myGlobal);
 		for (ICameraChangeListener c : listeners) {

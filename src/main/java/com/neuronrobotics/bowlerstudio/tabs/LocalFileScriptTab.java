@@ -142,6 +142,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 			});
 		});
 	}
+
 	public static void setExtensionSyntaxType(String shellType, String syntax) {
 		langaugeMapping.put(shellType, syntax);
 	}

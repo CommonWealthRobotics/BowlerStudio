@@ -31,11 +31,11 @@ public class TestServer {
 
 				ns.addRpc(new RpcEncapsulation(ns.getNamespaceIndex(), ns.getNamespace(), "test", BowlerMethod.GET,
 						new BowlerDataType[]{BowlerDataType.I32, BowlerDataType.I32, BowlerDataType.I32}, // send 3
-																											// integers
+						// integers
 						BowlerMethod.POST,
 						new BowlerDataType[]{BowlerDataType.I32, BowlerDataType.I32, BowlerDataType.I32}, // get 3
-																											// integers
-																											// back
+						// integers
+						// back
 						new IBowlerCommandProcessor() {
 							public Object[] process(Object[] data) {
 								for (int i = 0; i < data.length; i++) {

@@ -7,15 +7,19 @@ public class GraphDataElement {
 		setTimestamp(currentTimeMillis);
 		this.setData(data);
 	}
+
 	public void setData(double[] data) {
 		this.data = data;
 	}
+
 	public double[] getData() {
 		return data;
 	}
+
 	public void setTimestamp(long ms) {
 		this.ms = ms;
 	}
+
 	public long getTimestamp() {
 		return ms;
 	}

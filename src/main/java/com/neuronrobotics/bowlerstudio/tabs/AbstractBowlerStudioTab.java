@@ -24,8 +24,11 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 	private EventHandler<Event> localCopyOfEventHandler;
 
 	public abstract void onTabClosing();
+
 	public abstract String[] getMyNameSpaces();
+
 	public abstract void initializeUI(BowlerAbstractDevice pm);
+
 	public abstract void onTabReOpening();
 
 	public void setDevice(BowlerAbstractDevice pm) {
@@ -89,12 +92,14 @@ public abstract class AbstractBowlerStudioTab extends Tab implements EventHandle
 
 		return isAcvive();
 	}
+
 	@Override
 	public void setOnCloseRequest(EventHandler<Event> value) {
 		this.localCopyOfEventHandler = value;
 		super.setOnCloseRequest(value);
 		com.neuronrobotics.sdk.common.Log.error(" A close requested for " + getText());
 	}
+
 	public void requestClose() {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(this);
 	}

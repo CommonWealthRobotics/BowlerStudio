@@ -309,6 +309,7 @@ public class LinkSliderWidget extends Group
 			t.printStackTrace();
 		}
 	}
+
 	@Override
 	public void event(LinkConfiguration newConf) {
 		conf = newConf;

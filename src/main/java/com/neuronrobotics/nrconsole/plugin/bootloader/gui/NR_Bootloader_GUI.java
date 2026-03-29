@@ -176,6 +176,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 			public String getDescription() {
 				return "NR Firmware Format (xml)";
 			}
+
 			@Override
 			public boolean accept(File f) {
 				if (f.isDirectory()) {
@@ -207,6 +208,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 			reloadFile();
 		}
 	}
+
 	private void reloadFile() {
 		if (file != null) {
 			try {
@@ -228,6 +230,7 @@ public class NR_Bootloader_GUI implements ActionListener {
 	public String getRevision() {
 		return revision;
 	}
+
 	private void resetAll() {
 		getBlApp().getDevice().disconnect();
 		resetPort();

@@ -149,6 +149,7 @@ public class GraphingWindow extends JPanel {
 		// invalidate();
 		repaint();
 	}
+
 	private void setMovedWindow(double percent) {
 
 		axis.setAutoRange(false);

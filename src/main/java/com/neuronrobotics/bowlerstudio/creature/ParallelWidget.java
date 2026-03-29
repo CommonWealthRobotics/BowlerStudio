@@ -133,12 +133,14 @@ public class ParallelWidget extends Group {
 		BowlerStudio.runLater(() -> relativeToControls.getChildren().add(row("Limb Relative index", relIndex)));
 		BowlerStudio.runLater(() -> relativeToControls.getChildren().add(e));
 	}
+
 	private void home() {
 		try {
 			getGroup().setDesiredTaskSpaceTransform(getGroup().getCurrentPoseTarget(), 0);
 		} catch (Exception e) {
 		}
 	}
+
 	private void setupAddReferenceSection() {
 		base.getParallelGroup(groupName.getText()).setupReferencedLimbStartup(dh, null, "", 0);
 		BowlerStudio.runLater(() -> relativeName.getItems().clear());

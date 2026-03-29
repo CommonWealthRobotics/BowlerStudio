@@ -172,6 +172,7 @@ public class ImageTracer {
 		BufferedImage image = ImageIO.read(new File(filename));
 		return loadImageData(image);
 	}
+
 	public static ImageData loadImageData(BufferedImage image) throws Exception {
 		int width = image.getWidth();
 		int height = image.getHeight();
@@ -214,6 +215,7 @@ public class ImageTracer {
 		ImageData imgd = loadImageData(filename);
 		return imagedataToSVG(imgd, options, palette);
 	}// End of imageToSVG()
+
 	public static String imageToSVG(BufferedImage image, HashMap<String, Float> options, byte[][] palette)
 			throws Exception {
 		options = checkoptions(options);
@@ -236,6 +238,7 @@ public class ImageTracer {
 		ImageData imgd = loadImageData(filename);
 		return imagedataToTracedata(imgd, options, palette);
 	}// End of imageToTracedata()
+
 	public IndexedImage imageToTracedata(BufferedImage image, HashMap<String, Float> options, byte[][] palette)
 			throws Exception {
 		options = checkoptions(options);

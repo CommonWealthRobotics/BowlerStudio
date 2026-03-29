@@ -9,6 +9,7 @@ public class GCodeFilter extends FileFilter {
 	public String getDescription() {
 		return "GCode File";
 	}
+
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
 			return true;

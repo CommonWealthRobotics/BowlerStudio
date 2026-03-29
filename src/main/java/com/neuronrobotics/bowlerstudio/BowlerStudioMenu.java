@@ -927,7 +927,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 							alert.setHeaderText("This repo is in an a dirty state");// line 3
 							alert.setContentText(
 									"Please commit your changes before switching.\nAlternatly you can revert your changes.\nRepository must not have uncommitted changes before changing branches.");// line
-																																																		// 4
+																																																							// 4
 							Node root = alert.getDialogPane();
 							Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 							stage.setOnCloseRequest(ev -> alert.hide());

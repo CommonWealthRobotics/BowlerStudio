@@ -35,12 +35,14 @@ public class GameControlThreadManager {
 
 		scriptRunner = null;
 	}
+
 	/**
 	 * @return the currentController
 	 */
 	public static IAmControlled getCurrentController() {
 		return currentController;
 	}
+
 	/**
 	 * @param currentController
 	 *            the currentController to set
@@ -58,6 +60,7 @@ public class GameControlThreadManager {
 			start();
 		}
 	}
+
 	public static void startStopAction() {
 		// new RuntimeException().printStackTrace();
 		currentController.getRunStopButton().setDisable(true);
@@ -72,6 +75,7 @@ public class GameControlThreadManager {
 			}
 		currentController.getRunStopButton().setDisable(false);
 	}
+
 	public static void start() {
 		File currentFile = currentController.getScriptFile();
 
@@ -120,12 +124,14 @@ public class GameControlThreadManager {
 		});
 
 	}
+
 	/**
 	 * @return the running
 	 */
 	public static boolean isRunning() {
 		return running;
 	}
+
 	/**
 	 * @param running
 	 *            the running to set

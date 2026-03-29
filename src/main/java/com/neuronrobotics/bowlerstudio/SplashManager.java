@@ -48,6 +48,7 @@ public class SplashManager {
 		PsudoSplash.get().setMessage(string);
 		waitForUpdate();
 	}
+
 	public static void onLogUpdate(String message) {
 		if (loadFirst) {
 
@@ -56,6 +57,7 @@ public class SplashManager {
 		PsudoSplash.get().onLogUpdate(message, null);
 		waitForUpdate();
 	}
+
 	private static void waitForUpdate() {
 		updateSplash();
 

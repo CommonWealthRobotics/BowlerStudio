@@ -69,6 +69,7 @@ public class ServoOutputScheduleChannelUI extends JPanel
 		channel.setCurrentTargetValue(position.getValue());
 
 	}
+
 	public ServoOutputScheduleChannelUI(ServoOutputScheduleChannel chan, CoreScheduler cb) {
 
 		this.setCb(cb);
@@ -167,6 +168,7 @@ public class ServoOutputScheduleChannelUI extends JPanel
 		scale.setText(Double.toString(getChannel().getInputScale()));
 		setScaleingInfo();
 	}
+
 	private void setScaleingInfo() {
 		currentZero = Integer.parseInt(zero.getText());
 		currentScale = Double.parseDouble(scale.getText());
@@ -174,9 +176,11 @@ public class ServoOutputScheduleChannelUI extends JPanel
 		getChannel().setInputCenter(getInputZero());
 		getChannel().setAnalogInputChannelNumber(inputChannelNumber.getSelectedInteger());
 	}
+
 	private int getInputZero() {
 		return currentZero;
 	}
+
 	private double getInputScale() {
 		return currentScale;
 	}
@@ -185,9 +189,11 @@ public class ServoOutputScheduleChannelUI extends JPanel
 		// Auto-generated method stub
 		return getChannel().getChannelNumber();
 	}
+
 	public void setChannel(ServoOutputScheduleChannel channel) {
 		this.channel = channel;
 	}
+
 	public ServoOutputScheduleChannel getChannel() {
 		return channel;
 	}
@@ -209,25 +215,30 @@ public class ServoOutputScheduleChannelUI extends JPanel
 	public void actionPerformed(ActionEvent e) {
 		setScaleingInfo();
 	}
+
 	@Override
 	public void onTimeUpdate(double ms) {
 		// Auto-generated method stub
 
 	}
+
 	@Override
 	public void setIntervalTime(int msInterval, int totalTime) {
 		// Auto-generated method stub
 
 	}
+
 	@Override
 	public void onReset() {
 
 	}
+
 	@Override
 	public void onPlay() {
 
 		// getChannel().setRecording(true);
 	}
+
 	@Override
 	public void onPause() {
 		useSlider.setSelected(false);
@@ -235,9 +246,11 @@ public class ServoOutputScheduleChannelUI extends JPanel
 		getChannel().setRecording(false);
 		// com.neuronrobotics.sdk.common.Log.error("Setting the pause in output UI");
 	}
+
 	public CoreScheduler getCb() {
 		return cb;
 	}
+
 	public void setCb(CoreScheduler cb) {
 		this.cb = cb;
 	}

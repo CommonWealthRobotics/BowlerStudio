@@ -43,6 +43,7 @@ public class SchedulerGui extends JPanel {
 	public SchedulerGui() {
 
 	}
+
 	private void rmAllChannels() {
 		int[] chans = new int[outputs.size()];
 		for (int i = 0; i < chans.length; i++) {
@@ -52,6 +53,7 @@ public class SchedulerGui extends JPanel {
 			rmChannel(chans[i]);
 		}
 	}
+
 	private void rmChannel(int num) {
 
 		ServoOutputScheduleChannelUI s = null;
@@ -69,6 +71,7 @@ public class SchedulerGui extends JPanel {
 		usedChans.removeInteger(num);
 		availableChans.addInteger(num);
 	}
+
 	private void addServoChannel(ServoOutputScheduleChannel chan) {
 		int selected = chan.getChannelNumber();
 		ServoOutputScheduleChannelUI sosc = new ServoOutputScheduleChannelUI(chan, cs);

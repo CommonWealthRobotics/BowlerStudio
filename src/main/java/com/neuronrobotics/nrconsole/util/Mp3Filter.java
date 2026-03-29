@@ -9,6 +9,7 @@ public class Mp3Filter extends FileFilter {
 	public String getDescription() {
 		return "wav Audio File (wav)";
 	}
+
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
 			return true;

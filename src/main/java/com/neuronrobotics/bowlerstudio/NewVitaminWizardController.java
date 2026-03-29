@@ -229,6 +229,7 @@ public class NewVitaminWizardController extends Application {
 		}).start();
 
 	}
+
 	private void saveAndFork() {
 
 		try {
@@ -241,6 +242,7 @@ public class NewVitaminWizardController extends Application {
 		}
 
 	}
+
 	@FXML
 	void onConfirmSize(ActionEvent event) {
 		if (!editExisting.isSelected()) {
@@ -540,6 +542,7 @@ public class NewVitaminWizardController extends Application {
 		// isShaft.setDisable(false);
 		// isMotor.setDisable(false);
 	}
+
 	@FXML
 	void onEditExisting(ActionEvent event) {
 		if (editExisting.isSelected()) {
@@ -565,6 +568,7 @@ public class NewVitaminWizardController extends Application {
 			isMotor.setSelected(false);
 
 	}
+
 	@FXML // This method is called by the FXMLLoader when initialization is complete
 	void initialize() {
 		assert x1 != null : "fx:id=\"x1\" was not injected: check your FXML file 'newVitaminWizard.fxml'.";

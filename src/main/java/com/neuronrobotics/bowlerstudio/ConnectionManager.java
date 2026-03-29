@@ -359,6 +359,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener, Even
 		});
 
 	}
+
 	public static void onConnectHokuyoURG() {
 		Set<String> ports = NRSerialPort.getAvailableSerialPorts();
 		List<String> choices = new ArrayList<>();
@@ -518,6 +519,7 @@ public class ConnectionManager extends Tab implements IDeviceAddedListener, Even
 		if (getBowlerStudioController() != null)
 			BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(this);
 	}
+
 	private BowlerStudioController getBowlerStudioController() {
 		// Auto-generated method stub
 		return BowlerStudioController.getBowlerStudio();

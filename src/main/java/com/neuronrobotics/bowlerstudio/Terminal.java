@@ -59,7 +59,7 @@ public class Terminal {
 
 	@SuppressWarnings("restriction")
 	@FXML // This method is called by the FXMLLoader when initialization is
-			// complete
+											// complete
 	void initialize() {
 		assert executionBox != null : "fx:id=\"executionBox\" was not injected: check your FXML file 'Terminal.fxml'.";
 		assert langaugeIcon != null : "fx:id=\"langaugeIcon\" was not injected: check your FXML file 'Terminal.fxml'.";

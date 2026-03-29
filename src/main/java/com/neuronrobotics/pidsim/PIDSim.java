@@ -31,6 +31,7 @@ public class PIDSim {
 		sp = value;
 		getGraphingPanel().setSetPoint(sp);
 	}
+
 	/**
 	 * setting a torque in kg/m
 	 *

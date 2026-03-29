@@ -140,6 +140,7 @@ public class BowlerCamPanel extends JPanel implements IWebcamImageListener {
 	protected RGBSlider getTargetColor() {
 		return target;
 	}
+
 	private void updateImage(BufferedImage imageUpdate, JPanel p) {
 		if (imageUpdate == null)
 			return;

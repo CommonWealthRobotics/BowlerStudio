@@ -403,12 +403,14 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		else
 			zero.jogMinusOne();
 	}
+
 	public void trimMinus() {
 		if (conf.getScale() < 0)
 			zero.jogPlusOne();
 		else
 			zero.jogMinusOne();
 	}
+
 	private void updateZeroValue(double newAngleDegrees) {
 		double diff = zeroValue - newAngleDegrees;
 		zeroValue = newAngleDegrees;
@@ -423,6 +425,7 @@ public class LinkConfigurationWidget extends GridPane implements ITrimControl {
 		} catch (Exception ex) {
 		}
 	}
+
 	public double setUpperBound(double newAngleDegrees) {
 
 		double upperLimit = newAngleDegrees <= activLink.getDeviceMaximumValue()
