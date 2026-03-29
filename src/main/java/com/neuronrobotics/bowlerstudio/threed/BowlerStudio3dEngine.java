@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
+import com.neuronrobotics.bowlerkernel.Bezier3d.Manipulation;
 import com.neuronrobotics.bowlerstudio.BowlerKernel;
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 
@@ -441,7 +442,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public boolean isSlowMove(MouseEvent event) {
-			return event.isControlDown();
+			return  Manipulation.isControlOrCommandPressed(event);
 		}
 
 		public boolean isRotate(MouseEvent me) {
