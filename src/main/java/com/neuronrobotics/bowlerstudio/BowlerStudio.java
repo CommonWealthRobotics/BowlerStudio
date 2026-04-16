@@ -40,6 +40,7 @@ import com.neuronrobotics.sdk.common.Log;
 import com.neuronrobotics.sdk.config.SDKBuildInfo;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
+import eu.mihosoft.vrl.v3d.CSG.OptType;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Application;
@@ -132,7 +133,7 @@ public class BowlerStudio extends Application {
 			// TODO Auto-generated catch block
 			Log.error(e);
 		}
-
+		//CSG.setDefaultOptType(OptType.Manifold3d);
 		DownloadManager.setSTUDIO_INSTALL("BowlerStudioInstall");
 
 		if (args.length != 0) {
