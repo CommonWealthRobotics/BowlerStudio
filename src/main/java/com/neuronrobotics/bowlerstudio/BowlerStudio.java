@@ -133,7 +133,7 @@ public class BowlerStudio extends Application {
 			// TODO Auto-generated catch block
 			Log.error(e);
 		}
-		//CSG.setDefaultOptType(OptType.Manifold3d);
+		CSG.setDefaultOptType(OptType.Manifold3d);
 		DownloadManager.setSTUDIO_INSTALL("BowlerStudioInstall");
 
 		if (args.length != 0) {

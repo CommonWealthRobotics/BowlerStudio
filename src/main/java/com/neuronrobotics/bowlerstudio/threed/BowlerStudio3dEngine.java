@@ -945,8 +945,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// com.neuronrobotics.sdk.common.Log.error(" Adding a CSG from file:
 		// "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
-			return currentCsg.getMesh();
-		getCsgMap().put(currentCsg, currentCsg.getMesh());
+			return getCsgMap().get(currentCsg);
+		
+		MeshView mesh = currentCsg.getMesh();
+		getCsgMap().put(currentCsg, mesh);
 		BowlerStudio.runLater(() -> controlsChecks.getChildren().clear());
 		Slider slider = AssemblySlider.getSlider(getCsgMap().keySet());
 		BowlerStudio.runLater(() -> {
@@ -970,11 +972,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(), opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
-		// current.setCullFace(CullFace.BACK);// backs are tranparent
-		current.setCullFace(CullFace.NONE);// backs are black
-		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
-		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
-		// mesh.vertexFormatProperty()
+		current.setCullFace(CullFace.BACK);// backs are tranparent
+		//current.setCullFace(CullFace.NONE);// backs are black
+		//((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
+		((PhongMaterial) current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
+
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
 		infomenu.getItems().add(new MenuItem("Name = " + currentCsg.getName()));
