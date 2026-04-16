@@ -946,7 +946,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
 			return getCsgMap().get(currentCsg);
-		
+
 		MeshView mesh = currentCsg.getMesh();
 		getCsgMap().put(currentCsg, mesh);
 		BowlerStudio.runLater(() -> controlsChecks.getChildren().clear());
