@@ -421,7 +421,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return this;
 	}
 
-	private IControlsMap map =null;
+	private IControlsMap map = null;
 
 	private double mouseScale = 2.0;
 	private MeshView handMesh;
@@ -2793,8 +2793,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public IControlsMap getControlsMap() {
-		if( map == null) {
-			map= new IControlsMap() {
+		if (map == null) {
+			map = new IControlsMap() {
 				long lastClickedTimeLocal = 0;
 				long offset = 500;
 
