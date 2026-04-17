@@ -421,49 +421,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return this;
 	}
 
-	private IControlsMap map = new IControlsMap() {
-		long lastClickedTimeLocal = 0;
-		long offset = 500;
-
-		public boolean timeToCancel(MouseEvent event) {
-			long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
-			long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
-			boolean ret = false;
-			if (differenceIntime > 2000) {
-				// reset only if an object is not being selected
-				if (lastClickedDifference < offset) {
-
-					com.neuronrobotics.sdk.common.Log.debug("Cancel event detected");
-					ret = true;
-				}
-			}
-			lastClickedTimeLocal = System.currentTimeMillis();
-			return ret;
-		}
-
-		public boolean isSlowMove(MouseEvent event) {
-			return Manipulation.isControlOrCommandPressed(event);
-		}
-
-		public boolean isRotate(MouseEvent me) {
-			boolean shiftDown = me.isShiftDown();
-			boolean primaryButtonDown = me.isPrimaryButtonDown();
-
-			return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown);
-		}
-
-		public boolean isMove(MouseEvent me) {
-			boolean shiftDown = me.isShiftDown();
-			boolean primaryButtonDown = me.isPrimaryButtonDown();
-			boolean secondaryButtonDown = me.isSecondaryButtonDown();
-			return (secondaryButtonDown || (primaryButtonDown && shiftDown));
-		}
-
-		public boolean isZoom(javafx.scene.input.ScrollEvent t) {
-			return ScrollEvent.SCROLL == t.getEventType();
-		}
-
-	};
+	private IControlsMap map =null;
 
 	private double mouseScale = 2.0;
 	private MeshView handMesh;
@@ -2835,6 +2793,51 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public IControlsMap getControlsMap() {
+		if( map == null) {
+			map= new IControlsMap() {
+				long lastClickedTimeLocal = 0;
+				long offset = 500;
+
+				public boolean timeToCancel(MouseEvent event) {
+					long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
+					long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
+					boolean ret = false;
+					if (differenceIntime > 2000) {
+						// reset only if an object is not being selected
+						if (lastClickedDifference < offset) {
+
+							com.neuronrobotics.sdk.common.Log.debug("Cancel event detected");
+							ret = true;
+						}
+					}
+					lastClickedTimeLocal = System.currentTimeMillis();
+					return ret;
+				}
+
+				public boolean isSlowMove(MouseEvent event) {
+					return Manipulation.isControlOrCommandPressed(event);
+				}
+
+				public boolean isRotate(MouseEvent me) {
+					boolean shiftDown = me.isShiftDown();
+					boolean primaryButtonDown = me.isPrimaryButtonDown();
+
+					return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown);
+				}
+
+				public boolean isMove(MouseEvent me) {
+					boolean shiftDown = me.isShiftDown();
+					boolean primaryButtonDown = me.isPrimaryButtonDown();
+					boolean secondaryButtonDown = me.isSecondaryButtonDown();
+					return (secondaryButtonDown || (primaryButtonDown && shiftDown));
+				}
+
+				public boolean isZoom(javafx.scene.input.ScrollEvent t) {
+					return ScrollEvent.SCROLL == t.getEventType();
+				}
+
+			};
+		}
 		return map;
 	}
 
