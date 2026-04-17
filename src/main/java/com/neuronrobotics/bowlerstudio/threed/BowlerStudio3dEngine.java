@@ -697,7 +697,53 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			else
 				hideAxis();
 		});
+		setControlsMap(new IControlsMap() {
 
+			@Override
+			public boolean timeToCancel(MouseEvent event) {
+				return false;
+			}
+
+			@Override
+			public boolean isZoom(ScrollEvent t) {
+				return (ScrollEvent.SCROLL == t.getEventType());
+			}
+
+			@Override
+			public boolean isSlowMove(MouseEvent event) {
+				return false;
+			}
+
+			@Override
+			public boolean isRotate(MouseEvent me) {
+				boolean shiftDown = me.isShiftDown();
+				boolean primaryButtonDown = me.isPrimaryButtonDown();
+				boolean secondaryButtonDown = me.isSecondaryButtonDown();
+				boolean ctrl = me.isControlDown();
+				if (ctrl && primaryButtonDown && (!shiftDown))
+					return true;
+				if ((!shiftDown) && secondaryButtonDown)
+					return true;
+				return false;
+			}
+
+			@Override
+			public boolean isMove(MouseEvent me) {
+				boolean shiftDown = me.isShiftDown();
+				boolean primaryButtonDown = me.isPrimaryButtonDown();
+				boolean secondaryButtonDown = me.isSecondaryButtonDown();
+				boolean middle = me.isMiddleButtonDown();
+				boolean ctrl = me.isControlDown();
+				if (middle)
+					return true;
+				if ((shiftDown) && secondaryButtonDown)
+					return true;
+				if (ctrl && shiftDown && primaryButtonDown)
+					return true;
+
+				return false;
+			}
+		});
 	}
 
 	public Group getControlsBox(ImageView homeIcon, ImageView generateIcon, ImageView clearIcon) {
