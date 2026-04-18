@@ -599,6 +599,19 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 	}
 
+	/**
+	 * Reattach mouse event handlers to the SubScene to restore camera controls.
+	 * Call this after UI stack changes to ensure mouse events are properly routed
+	 * to the controls map.
+	 */
+	public void reattachMouseHandlers() {
+		if (getSubScene() != null) {
+			handleMouse(getSubScene());
+		} else {
+			Log.error(new Exception("Failed to set up mouse"));
+		}
+	}
+
 	private void highlightDebugIndex(int index, java.awt.Color c) {
 		String trace = debuggerList.get(index);
 		BowlerStudioController.getBowlerStudio().setHighlight(locateFile(getFilenameFromTrace(trace), getSelectedCsg()),

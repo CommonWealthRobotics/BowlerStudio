@@ -1660,6 +1660,7 @@ public class BowlerStudioMenu implements MenuRefreshEvent, INewVitaminCallback {
 		new Thread(r).start();
 
 		CreatureLab3dController.getEngine().setControls(showRuler, idlespin, autohighlight);
+		CreatureLab3dController.getEngine().reattachMouseHandlers();
 		WindowMenu.getItems().addAll(showRuler, idlespin, autohighlight, showCSGProgress, useAdvancedSTL);
 
 		new Thread() {
