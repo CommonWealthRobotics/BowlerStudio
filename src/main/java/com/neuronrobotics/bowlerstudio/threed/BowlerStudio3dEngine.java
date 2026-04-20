@@ -605,7 +605,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * to the controls map.
 	 */
 	public void reattachMouseHandlers() {
-		disabeControl=false;
+		disabeControl = false;
 		if (getSubScene() != null) {
 			handleMouse(getSubScene());
 		} else {
@@ -1627,7 +1627,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 
 		// Enable point light illumination for selected groups
-		cameraLight.getScope().addAll(userGroup, controlHandleGroup,lookGroup);
+		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
@@ -1955,7 +1955,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		com.neuronrobotics.sdk.common.Log.debug("Setting up Mouse Handelers " + name);
-		scene.addEventFilter(MouseEvent.MOUSE_CLICKED,event -> {
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
