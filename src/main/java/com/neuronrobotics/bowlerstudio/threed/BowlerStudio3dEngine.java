@@ -605,6 +605,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * to the controls map.
 	 */
 	public void reattachMouseHandlers() {
+		disabeControl=false;
 		if (getSubScene() != null) {
 			handleMouse(getSubScene());
 		} else {
@@ -1953,7 +1954,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		com.neuronrobotics.sdk.common.Log.debug("Setting up Mouse Handelers " + name);
-		scene.setOnMouseClicked(event -> {
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED,event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
@@ -1975,7 +1976,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			}
 		});
 
-		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent me) {
