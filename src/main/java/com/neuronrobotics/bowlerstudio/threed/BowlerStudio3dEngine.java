@@ -990,10 +990,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(), opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
+		current.setViewOrder(0);
 		current.setCullFace(CullFace.BACK);// backs are tranparent
 		//current.setCullFace(CullFace.NONE);// backs are black
 		//((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
-		((PhongMaterial) current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
+		//((PhongMaterial) current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
 
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
@@ -1626,7 +1627,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 
 		// Enable point light illumination for selected groups
-		cameraLight.getScope().addAll(userGroup, controlHandleGroup);
+		cameraLight.getScope().addAll(userGroup, controlHandleGroup,lookGroup);
 
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
