@@ -78,6 +78,7 @@ import javafx.collections.ObservableList;
 //import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
@@ -86,6 +87,8 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -608,6 +611,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		disabeControl = false;
 		if (getSubScene() != null) {
 			handleMouse(getSubScene());
+			getSubScene().setMouseTransparent(false);
 		} else {
 			Log.error(new Exception("Failed to set up mouse"));
 		}
@@ -866,8 +870,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Removes the object.
 	 *
-	 * @param previousCsg
-	 *            the previous
+	 * @param previousCsg the previous
 	 */
 	public void removeObject(CSG previousCsg) {
 		// for (Polygon poly:previousCsg.getPolygons())
@@ -942,8 +945,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Adds the object.
 	 *
-	 * @param currentCsg
-	 *            the current
+	 * @param currentCsg the current
 	 * @return the mesh view
 	 */
 	@Deprecated
@@ -992,9 +994,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 		current.setViewOrder(0);
 		current.setCullFace(CullFace.BACK);// backs are tranparent
-		//current.setCullFace(CullFace.NONE);// backs are black
-		//((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
-		//((PhongMaterial) current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
+		// current.setCullFace(CullFace.NONE);// backs are black
+		// ((PhongMaterial)
+		// current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
+		// ((PhongMaterial)
+		// current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
 
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
@@ -1036,7 +1040,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1076,7 +1081,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1116,7 +1122,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1324,8 +1331,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Save to png.
 	 *
-	 * @param f
-	 *            the f
+	 * @param f the f
 	 */
 	public void saveToPng(File f) {
 		String fName = f.getAbsolutePath();
@@ -1943,11 +1949,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Handle mouse.
 	 *
-	 * @param scene
-	 *            the scene
+	 * @param scene the scene
 	 */
 
-	private void handleMouse(SubScene scene) {
+	public void handleMouse(Node scene) {
 		if (disabeControl) {
 			com.neuronrobotics.sdk.common.Log.error("No mouse control added " + name);
 			scene.setPickOnBounds(false);
@@ -1964,7 +1969,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start "+name);
+				com.neuronrobotics.sdk.common.Log.error("Bowler 3d start " + name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -2221,15 +2226,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 *
 	 * @return the sub scene
 	 */
-	public SubScene getSubScene() {
+	private SubScene getSubScene() {
 		return scene;
 	}
 
 	/**
 	 * Sets the sub scene.
 	 *
-	 * @param scene
-	 *            the new sub scene
+	 * @param scene the new sub scene
 	 */
 	public void setSubScene(SubScene scene) {
 		com.neuronrobotics.sdk.common.Log.debug("Setting UI scene");
@@ -2291,10 +2295,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param startingLocation
-	 *            the starting pose
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param startingLocation the starting pose
+	 * @param rootListener     what affine to attach to
 	 */
 	public void setSelected(TransformNR startingLocation, Affine rootListener) {
 		focusToAffine(startingLocation, rootListener);
@@ -2303,10 +2305,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param startingLocation
-	 *            the starting pose
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param startingLocation the starting pose
+	 * @param rootListener     what affine to attach to
 	 */
 	public void setSelected(Affine rootListener) {
 		focusToAffine(new TransformNR(), rootListener);
@@ -2521,7 +2521,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private void resetMouseTime() {
-		// com.neuronrobotics.sdk.common.Log.error("Resetting mouse");
+		com.neuronrobotics.sdk.common.Log.error("Resetting mouse");
 		this.lastMosueMovementTime = System.currentTimeMillis();
 	}
 
@@ -2562,13 +2562,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null)
-				? 0
+		double az = (orient == null) ? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null)
-				? 0
+		double el = (orient == null) ? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
@@ -2747,8 +2745,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	/**
-	 * @param defaultStlDir
-	 *            the defaultStlDir to set
+	 * @param defaultStlDir the defaultStlDir to set
 	 */
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
@@ -2769,8 +2766,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
 	 * main().
 	 *
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
 		JavaFXInitializer.go();
@@ -2779,17 +2775,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		AnchorPane view3d = new AnchorPane();
 		BowlerStudio3dEngine engine = new BowlerStudio3dEngine("Test");
 		engine.rebuild(true);
-		SubScene subScene = engine.getSubScene();
-		view3d.getChildren().add(subScene);
-
-		subScene.setFocusTraversable(false);
-		subScene.widthProperty().bind(view3d.widthProperty());
-		subScene.heightProperty().bind(view3d.heightProperty());
-
-		AnchorPane.setTopAnchor(subScene, 0.0);
-		AnchorPane.setRightAnchor(subScene, 0.0);
-		AnchorPane.setLeftAnchor(subScene, 0.0);
-		AnchorPane.setBottomAnchor(subScene, 0.0);
+		engine.setFocusTraversable(true);
+		
+		engine.addTo(view3d);
+		engine.bind(view3d);
+		engine.handleMouse(view3d);
+		
 
 		BowlerKernel.runLater(() -> {
 			Stage newStage = new Stage();
@@ -2946,4 +2937,69 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public Group getRulerGroup() {
 		return rulerGroup;
 	}
+
+	public void setFocusTraversable(boolean b) {
+		if (!b)
+			Log.error(new Exception("Make Scene Non Traversable " + b));
+		getSubScene().setFocusTraversable(b);
+	}
+
+	public void addTo(AnchorPane view3d) {
+		view3d.getChildren().add(getSubScene());
+		// anchor it
+		AnchorPane.setTopAnchor(getSubScene(), 0.0);
+		AnchorPane.setRightAnchor(getSubScene(), 0.0);
+		AnchorPane.setLeftAnchor(getSubScene(), 0.0);
+		AnchorPane.setBottomAnchor(getSubScene(), 0.0);
+	}
+
+	public Stage getWindow() {
+		return (Stage) getSubScene().getScene().getWindow();
+	}
+
+	public void setOnDragOver(EventHandler<? super DragEvent> object) {
+		getSubScene().setOnDragOver(object);
+	}
+
+	public void setOnDragDropped(EventHandler<? super DragEvent> object) {
+		getSubScene().setOnDragDropped(object);
+	}
+
+	public void setHeight(double doubleValue) {
+		getSubScene().setHeight(doubleValue);
+	}
+
+	public void setWidth(double doubleValue) {
+		getSubScene().setWidth(doubleValue);
+	}
+
+	public boolean isSubScene(Object gestureSource) {
+		return gestureSource == getSubScene();
+	}
+
+	public double getWidth() {
+		return getSubScene().getWidth();
+	}
+
+	public double getHeight() {
+		return getSubScene().getHeight();
+	}
+
+	public void bind(AnchorPane viewContainer) {
+		getSubScene().widthProperty().bind(viewContainer.widthProperty());
+		getSubScene().heightProperty().bind(viewContainer.heightProperty());
+	}
+
+	public void addMouseFilter(EventType<MouseEvent> mouseDragged, EventHandler<? super MouseEvent> eventFilter) {
+		getSubScene().addEventFilter(mouseDragged, eventFilter);
+	}
+
+	public void addKeyFilter(EventType<KeyEvent> mouseDragged, EventHandler<? super KeyEvent> eventFilter) {
+		getSubScene().addEventFilter(mouseDragged, eventFilter);
+	}
+
+	public void requestFocus() {
+		getSubScene().requestFocus();
+	}
+
 }
