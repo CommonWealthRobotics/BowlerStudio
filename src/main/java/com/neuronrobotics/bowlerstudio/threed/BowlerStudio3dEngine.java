@@ -2938,8 +2938,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public void setFocusTraversable(boolean b) {
-		if (!b)
-			Log.error(new Exception("Make Scene Non Traversable " + b));
+//		if (!b)
+//			Log.error(new Exception("Make Scene Non Traversable " + b));
 		getSubScene().setFocusTraversable(b);
 	}
 
