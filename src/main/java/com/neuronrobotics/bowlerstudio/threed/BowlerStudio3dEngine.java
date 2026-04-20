@@ -1966,7 +1966,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				com.neuronrobotics.sdk.common.Log.error("Bowler 3d start " + name);
+				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start " + name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -2518,7 +2518,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private void resetMouseTime() {
-		com.neuronrobotics.sdk.common.Log.error("Resetting mouse");
+		// com.neuronrobotics.sdk.common.Log.error("Resetting mouse");
 		this.lastMosueMovementTime = System.currentTimeMillis();
 	}
 
