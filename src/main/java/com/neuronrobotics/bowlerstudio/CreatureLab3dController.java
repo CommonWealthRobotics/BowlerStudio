@@ -165,19 +165,15 @@ public class CreatureLab3dController {
 
 	private void setupUi() {
 		BowlerStudio.runLater(() -> {
-			getEngine().getSubScene().setFocusTraversable(false);
-			getEngine().getSubScene().widthProperty().bind(viewContainer.widthProperty());
-			getEngine().getSubScene().heightProperty().bind(viewContainer.heightProperty());
+			getEngine().setFocusTraversable(false);
+			getEngine().bind(viewContainer);
 		});
 		BowlerStudio.runLater(() -> {
 			Group controlsBox = getEngine().getControlsBox(AssetFactory.loadIcon("Home-Camera.png"),
 					AssetFactory.loadIcon("Generate-Cad.png"), AssetFactory.loadIcon("Clear-Screen.png"));
 			jfx3dControls.getChildren().add(controlsBox);
-			viewContainer.getChildren().add(getEngine().getSubScene());
-			AnchorPane.setTopAnchor(getEngine().getSubScene(), 0.0);
-			AnchorPane.setRightAnchor(getEngine().getSubScene(), 0.0);
-			AnchorPane.setLeftAnchor(getEngine().getSubScene(), 0.0);
-			AnchorPane.setBottomAnchor(getEngine().getSubScene(), 0.0);
+			getEngine().addTo(viewContainer);
+			getEngine().handleMouse(viewContainer);
 		});
 	}
 
