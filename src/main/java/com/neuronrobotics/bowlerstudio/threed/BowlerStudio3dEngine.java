@@ -78,6 +78,7 @@ import javafx.collections.ObservableList;
 //import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
@@ -86,6 +87,8 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -421,49 +424,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return this;
 	}
 
-	private IControlsMap map = new IControlsMap() {
-		long lastClickedTimeLocal = 0;
-		long offset = 500;
-
-		public boolean timeToCancel(MouseEvent event) {
-			long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
-			long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
-			boolean ret = false;
-			if (differenceIntime > 2000) {
-				// reset only if an object is not being selected
-				if (lastClickedDifference < offset) {
-
-					com.neuronrobotics.sdk.common.Log.debug("Cancel event detected");
-					ret = true;
-				}
-			}
-			lastClickedTimeLocal = System.currentTimeMillis();
-			return ret;
-		}
-
-		public boolean isSlowMove(MouseEvent event) {
-			return Manipulation.isControlOrCommandPressed(event);
-		}
-
-		public boolean isRotate(MouseEvent me) {
-			boolean shiftDown = me.isShiftDown();
-			boolean primaryButtonDown = me.isPrimaryButtonDown();
-
-			return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown);
-		}
-
-		public boolean isMove(MouseEvent me) {
-			boolean shiftDown = me.isShiftDown();
-			boolean primaryButtonDown = me.isPrimaryButtonDown();
-			boolean secondaryButtonDown = me.isSecondaryButtonDown();
-			return (secondaryButtonDown || (primaryButtonDown && shiftDown));
-		}
-
-		public boolean isZoom(javafx.scene.input.ScrollEvent t) {
-			return ScrollEvent.SCROLL == t.getEventType();
-		}
-
-	};
+	private IControlsMap map = null;
 
 	private double mouseScale = 2.0;
 	private MeshView handMesh;
@@ -641,6 +602,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 	}
 
+	/**
+	 * Reattach mouse event handlers to the SubScene to restore camera controls.
+	 * Call this after UI stack changes to ensure mouse events are properly routed
+	 * to the controls map.
+	 */
+	public void reattachMouseHandlers() {
+		disabeControl = false;
+		if (getSubScene() != null) {
+			handleMouse(getSubScene());
+			getSubScene().setMouseTransparent(false);
+		} else {
+			Log.error(new Exception("Failed to set up mouse"));
+		}
+	}
+
 	private void highlightDebugIndex(int index, java.awt.Color c) {
 		String trace = debuggerList.get(index);
 		BowlerStudioController.getBowlerStudio().setHighlight(locateFile(getFilenameFromTrace(trace), getSelectedCsg()),
@@ -697,7 +673,53 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			else
 				hideAxis();
 		});
+		setControlsMap(new IControlsMap() {
 
+			@Override
+			public boolean timeToCancel(MouseEvent event) {
+				return false;
+			}
+
+			@Override
+			public boolean isZoom(ScrollEvent t) {
+				return (ScrollEvent.SCROLL == t.getEventType());
+			}
+
+			@Override
+			public boolean isSlowMove(MouseEvent event) {
+				return false;
+			}
+
+			@Override
+			public boolean isRotate(MouseEvent me) {
+				boolean shiftDown = me.isShiftDown();
+				boolean primaryButtonDown = me.isPrimaryButtonDown();
+				boolean secondaryButtonDown = me.isSecondaryButtonDown();
+				boolean ctrl = me.isControlDown();
+				if (ctrl && primaryButtonDown && (!shiftDown))
+					return true;
+				if ((!shiftDown) && secondaryButtonDown)
+					return true;
+				return false;
+			}
+
+			@Override
+			public boolean isMove(MouseEvent me) {
+				boolean shiftDown = me.isShiftDown();
+				boolean primaryButtonDown = me.isPrimaryButtonDown();
+				boolean secondaryButtonDown = me.isSecondaryButtonDown();
+				boolean middle = me.isMiddleButtonDown();
+				boolean ctrl = me.isControlDown();
+				if (middle)
+					return true;
+				if ((shiftDown) && secondaryButtonDown)
+					return true;
+				if (ctrl && shiftDown && primaryButtonDown)
+					return true;
+
+				return false;
+			}
+		});
 	}
 
 	public Group getControlsBox(ImageView homeIcon, ImageView generateIcon, ImageView clearIcon) {
@@ -848,8 +870,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Removes the object.
 	 *
-	 * @param previousCsg
-	 *            the previous
+	 * @param previousCsg the previous
 	 */
 	public void removeObject(CSG previousCsg) {
 		// for (Polygon poly:previousCsg.getPolygons())
@@ -924,8 +945,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Adds the object.
 	 *
-	 * @param currentCsg
-	 *            the current
+	 * @param currentCsg the current
 	 * @return the mesh view
 	 */
 	@Deprecated
@@ -945,8 +965,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// com.neuronrobotics.sdk.common.Log.error(" Adding a CSG from file:
 		// "+source.getName());
 		if (getCsgMap().get(currentCsg) != null)
-			return currentCsg.getMesh();
-		getCsgMap().put(currentCsg, currentCsg.getMesh());
+			return getCsgMap().get(currentCsg);
+
+		MeshView mesh = currentCsg.getMesh();
+		getCsgMap().put(currentCsg, mesh);
 		BowlerStudio.runLater(() -> controlsChecks.getChildren().clear());
 		Slider slider = AssemblySlider.getSlider(getCsgMap().keySet());
 		BowlerStudio.runLater(() -> {
@@ -970,11 +992,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			diffuseColor = Color.color(diffuseColor.getRed(), diffuseColor.getGreen(), diffuseColor.getBlue(), opacity);
 			phongMaterial.setDiffuseColor(diffuseColor);
 		}
-		// current.setCullFace(CullFace.BACK);// backs are tranparent
-		current.setCullFace(CullFace.NONE);// backs are black
-		((PhongMaterial) current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
-		// TriangleMesh mesh =(TriangleMesh) current.getMesh();
-		// mesh.vertexFormatProperty()
+		current.setViewOrder(0);
+		current.setCullFace(CullFace.BACK);// backs are tranparent
+		// current.setCullFace(CullFace.NONE);// backs are black
+		// ((PhongMaterial)
+		// current.getMaterial()).setSpecularColor(javafx.scene.paint.Color.WHITE);
+		// ((PhongMaterial)
+		// current.getMaterial()).setDiffuseColor(javafx.scene.paint.Color.GRAY);
+
 		ContextMenu cm = new ContextMenu();
 		Menu infomenu = new Menu("Info...");
 		infomenu.getItems().add(new MenuItem("Name = " + currentCsg.getName()));
@@ -1303,8 +1328,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Save to png.
 	 *
-	 * @param f
-	 *            the f
+	 * @param f the f
 	 */
 	public void saveToPng(File f) {
 		String fName = f.getAbsolutePath();
@@ -1606,7 +1630,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 
 		// Enable point light illumination for selected groups
-		cameraLight.getScope().addAll(userGroup, controlHandleGroup);
+		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
@@ -1922,11 +1946,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Handle mouse.
 	 *
-	 * @param scene
-	 *            the scene
+	 * @param scene the scene
 	 */
 
-	private void handleMouse(SubScene scene) {
+	public void handleMouse(Node scene) {
 		if (disabeControl) {
 			com.neuronrobotics.sdk.common.Log.error("No mouse control added " + name);
 			scene.setPickOnBounds(false);
@@ -1934,7 +1957,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		com.neuronrobotics.sdk.common.Log.debug("Setting up Mouse Handelers " + name);
-		scene.setOnMouseClicked(event -> {
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
@@ -1943,7 +1966,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start "+name);
+				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start " + name);
 				mousePosX = me.getSceneX();
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
@@ -1956,7 +1979,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			}
 		});
 
-		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent me) {
@@ -2200,15 +2223,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 *
 	 * @return the sub scene
 	 */
-	public SubScene getSubScene() {
+	private SubScene getSubScene() {
 		return scene;
 	}
 
 	/**
 	 * Sets the sub scene.
 	 *
-	 * @param scene
-	 *            the new sub scene
+	 * @param scene the new sub scene
 	 */
 	public void setSubScene(SubScene scene) {
 		com.neuronrobotics.sdk.common.Log.debug("Setting UI scene");
@@ -2270,10 +2292,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param startingLocation
-	 *            the starting pose
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param startingLocation the starting pose
+	 * @param rootListener     what affine to attach to
 	 */
 	public void setSelected(TransformNR startingLocation, Affine rootListener) {
 		focusToAffine(startingLocation, rootListener);
@@ -2282,10 +2302,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param startingLocation
-	 *            the starting pose
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param startingLocation the starting pose
+	 * @param rootListener     what affine to attach to
 	 */
 	public void setSelected(Affine rootListener) {
 		focusToAffine(new TransformNR(), rootListener);
@@ -2726,8 +2744,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	/**
-	 * @param defaultStlDir
-	 *            the defaultStlDir to set
+	 * @param defaultStlDir the defaultStlDir to set
 	 */
 	public void setDefaultStlDir(File defaultStlDir) {
 		this.defaultStlDir = defaultStlDir;
@@ -2748,8 +2765,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
 	 * main().
 	 *
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
 		JavaFXInitializer.go();
@@ -2758,17 +2774,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		AnchorPane view3d = new AnchorPane();
 		BowlerStudio3dEngine engine = new BowlerStudio3dEngine("Test");
 		engine.rebuild(true);
-		SubScene subScene = engine.getSubScene();
-		view3d.getChildren().add(subScene);
+		engine.setFocusTraversable(true);
 
-		subScene.setFocusTraversable(false);
-		subScene.widthProperty().bind(view3d.widthProperty());
-		subScene.heightProperty().bind(view3d.heightProperty());
+		engine.addTo(view3d);
+		engine.bind(view3d);
+		engine.handleMouse(view3d);
 
-		AnchorPane.setTopAnchor(subScene, 0.0);
-		AnchorPane.setRightAnchor(subScene, 0.0);
-		AnchorPane.setLeftAnchor(subScene, 0.0);
-		AnchorPane.setBottomAnchor(subScene, 0.0);
 
 		BowlerKernel.runLater(() -> {
 			Stage newStage = new Stage();
@@ -2787,6 +2798,51 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public IControlsMap getControlsMap() {
+		if (map == null) {
+			map = new IControlsMap() {
+				long lastClickedTimeLocal = 0;
+				long offset = 500;
+
+				public boolean timeToCancel(MouseEvent event) {
+					long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
+					long differenceIntime = System.currentTimeMillis() - lastSelectedTime;
+					boolean ret = false;
+					if (differenceIntime > 2000) {
+						// reset only if an object is not being selected
+						if (lastClickedDifference < offset) {
+
+							com.neuronrobotics.sdk.common.Log.debug("Cancel event detected");
+							ret = true;
+						}
+					}
+					lastClickedTimeLocal = System.currentTimeMillis();
+					return ret;
+				}
+
+				public boolean isSlowMove(MouseEvent event) {
+					return Manipulation.isControlOrCommandPressed(event);
+				}
+
+				public boolean isRotate(MouseEvent me) {
+					boolean shiftDown = me.isShiftDown();
+					boolean primaryButtonDown = me.isPrimaryButtonDown();
+
+					return (me.isPrimaryButtonDown() && primaryButtonDown && !shiftDown);
+				}
+
+				public boolean isMove(MouseEvent me) {
+					boolean shiftDown = me.isShiftDown();
+					boolean primaryButtonDown = me.isPrimaryButtonDown();
+					boolean secondaryButtonDown = me.isSecondaryButtonDown();
+					return (secondaryButtonDown || (primaryButtonDown && shiftDown));
+				}
+
+				public boolean isZoom(javafx.scene.input.ScrollEvent t) {
+					return ScrollEvent.SCROLL == t.getEventType();
+				}
+
+			};
+		}
 		return map;
 	}
 
@@ -2880,4 +2936,69 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public Group getRulerGroup() {
 		return rulerGroup;
 	}
+
+	public void setFocusTraversable(boolean b) {
+		//		if (!b)
+		//			Log.error(new Exception("Make Scene Non Traversable " + b));
+		getSubScene().setFocusTraversable(b);
+	}
+
+	public void addTo(AnchorPane view3d) {
+		view3d.getChildren().add(getSubScene());
+		// anchor it
+		AnchorPane.setTopAnchor(getSubScene(), 0.0);
+		AnchorPane.setRightAnchor(getSubScene(), 0.0);
+		AnchorPane.setLeftAnchor(getSubScene(), 0.0);
+		AnchorPane.setBottomAnchor(getSubScene(), 0.0);
+	}
+
+	public Stage getWindow() {
+		return (Stage) getSubScene().getScene().getWindow();
+	}
+
+	public void setOnDragOver(EventHandler<? super DragEvent> object) {
+		getSubScene().setOnDragOver(object);
+	}
+
+	public void setOnDragDropped(EventHandler<? super DragEvent> object) {
+		getSubScene().setOnDragDropped(object);
+	}
+
+	public void setHeight(double doubleValue) {
+		getSubScene().setHeight(doubleValue);
+	}
+
+	public void setWidth(double doubleValue) {
+		getSubScene().setWidth(doubleValue);
+	}
+
+	public boolean isSubScene(Object gestureSource) {
+		return gestureSource == getSubScene();
+	}
+
+	public double getWidth() {
+		return getSubScene().getWidth();
+	}
+
+	public double getHeight() {
+		return getSubScene().getHeight();
+	}
+
+	public void bind(AnchorPane viewContainer) {
+		getSubScene().widthProperty().bind(viewContainer.widthProperty());
+		getSubScene().heightProperty().bind(viewContainer.heightProperty());
+	}
+
+	public void addMouseFilter(EventType<MouseEvent> mouseDragged, EventHandler<? super MouseEvent> eventFilter) {
+		getSubScene().addEventFilter(mouseDragged, eventFilter);
+	}
+
+	public void addKeyFilter(EventType<KeyEvent> mouseDragged, EventHandler<? super KeyEvent> eventFilter) {
+		getSubScene().addEventFilter(mouseDragged, eventFilter);
+	}
+
+	public void requestFocus() {
+		getSubScene().requestFocus();
+	}
+
 }
