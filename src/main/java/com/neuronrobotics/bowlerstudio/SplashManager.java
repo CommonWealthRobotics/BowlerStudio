@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerstudio;
 import java.awt.Graphics2D;
 import java.util.function.BooleanSupplier;
 
+import org.jfree.util.Log;
+
 public class SplashManager {
 	private static Graphics2D splashGraphics;
 
@@ -20,8 +22,10 @@ public class SplashManager {
 			splashGraphics = null;
 			return;
 		}
-		if (closePreventer.getAsBoolean())
+		if (closePreventer.getAsBoolean()) {
+			Log.debug("Close prevented by "+closePreventer);
 			return;
+		}
 		PsudoSplash.close();
 	}
 
