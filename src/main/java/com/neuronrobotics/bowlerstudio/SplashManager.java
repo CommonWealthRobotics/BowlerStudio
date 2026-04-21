@@ -23,7 +23,7 @@ public class SplashManager {
 			return;
 		}
 		if (closePreventer.getAsBoolean()) {
-			Log.debug("Close prevented by "+closePreventer);
+			Log.debug("Close prevented by " + closePreventer);
 			return;
 		}
 		PsudoSplash.close();
