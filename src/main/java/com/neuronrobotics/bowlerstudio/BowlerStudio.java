@@ -838,6 +838,7 @@ public class BowlerStudio extends Application {
 			reporter.uncaughtException(Thread.currentThread(), e);
 
 		}
+		PsudoSplash.setParentWindow(primaryStage);
 		Log.error("Class loader: " + Thread.currentThread().getContextClassLoader());
 		// new Thread(() -> {
 		Thread.currentThread().setUncaughtExceptionHandler(new IssueReportingExceptionHandler());

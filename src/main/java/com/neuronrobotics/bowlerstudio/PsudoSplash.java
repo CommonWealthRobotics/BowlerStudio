@@ -67,6 +67,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private Label mesL = new Label();
 	private double setWidth;
 	private double scale;
+	private static Stage parentWindow = null;
 
 	public static boolean isInitialized() {
 		return singelton != null;
@@ -77,7 +78,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			singelton = new PsudoSplash();
 		if (!singelton.isVisibleSplash()) {
 			Platform.runLater(() -> {
-				singelton.popupStage.show();
+				singelton.showPopup();
 			});
 			// new Exception("Opening Splash").printStackTrace();
 		}
@@ -87,6 +88,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	public static void close() {
 		if (singelton != null)
 			singelton.closeSplashLocal();
+		singelton = null;
 	}
 
 	@Override
@@ -126,16 +128,15 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		Platform.runLater(() -> {
 
 			try {
-				popupStage = new Stage(StageStyle.TRANSPARENT);
+				setPopupStage(new Stage(StageStyle.TRANSPARENT));
 			} catch (IllegalStateException ex) {
 				JavaFXInitializer.go();
-				popupStage = new Stage(StageStyle.TRANSPARENT);
+				setPopupStage(new Stage(StageStyle.TRANSPARENT));
 			}
-			// Use NONE modality to prevent the window from becoming disabled
-			popupStage.initModality(Modality.NONE);
+
 
 			// Always show on top
-			popupStage.setAlwaysOnTop(true);
+			// popupStage.setAlwaysOnTop(true);
 
 			popupRoot = new AnchorPane();
 
@@ -171,7 +172,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupScene = new Scene(popupRoot);
 			popupScene.setFill(null); // Make scene background transparent
 
-			popupStage.setScene(popupScene);
+			getPopupStage().setScene(popupScene);
 
 			// Optional: Allow the popup to be dragged
 			final double[] xOffset = {0};
@@ -180,26 +181,33 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupRoot.setOnMousePressed(event -> {
 				xOffset[0] = event.getSceneX();
 				yOffset[0] = event.getSceneY();
-				popupStage.setAlwaysOnTop(false);
+				getPopupStage().setAlwaysOnTop(false);
 			});
 
 			popupRoot.setOnMouseDragged(event -> {
-				popupStage.setX(event.getScreenX() - xOffset[0]);
-				popupStage.setY(event.getScreenY() - yOffset[0]);
-				
+				getPopupStage().setX(event.getScreenX() - xOffset[0]);
+				getPopupStage().setY(event.getScreenY() - yOffset[0]);
+
 			});
 			try {
 				// CADoodle-Icon.png
 				if (dockIcon != null) {
 					Image loadAsset = new Image(dockIcon.toString());
-					popupStage.getIcons().add(loadAsset);
+					getPopupStage().getIcons().add(loadAsset);
 
 				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			popupStage.show();
+			if (parentWindow == null) {
+				// Use NONE modality to prevent the window from becoming disabled
+				getPopupStage().initModality(Modality.NONE);
+				getPopupStage().setAlwaysOnTop(true);
+			} else {
+				getPopupStage().initOwner(parentWindow);
+				getPopupStage().initModality(Modality.WINDOW_MODAL);
+			}
 			updateSplash();
 		});
 		try {
@@ -217,27 +225,22 @@ public class PsudoSplash implements GitLogProgressMonitor {
 		});
 	}
 
+	private void showPopup() {
+
+		getPopupStage().show();
+	}
+
 	public static boolean isVisibleSplash() {
-		if (singelton.popupStage == null)
+		if (singelton.getPopupStage() == null)
 			return false;
-		return singelton.popupStage.isShowing();
+		return singelton.getPopupStage().isShowing();
 	}
 
 	private void closeSplashLocal() {
 		BowlerStudio.runLater(() -> {
-			popupStage.hide();
+			getPopupStage().hide();
+			setPopupStage(null);
 		});
-		new Thread(() -> {
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			BowlerStudio.runLater(() -> {
-				popupStage.hide();
-			});
-		}).start();
 		if (!Platform.isFxApplicationThread())
 			try {
 				Thread.sleep(20);
@@ -256,7 +259,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			// com.neuronrobotics.sdk.common.Log.debug("Updating Splash
 			// "+imageView.getFitWidth());
 			Platform.runLater(() -> {
-				//popupStage.setAlwaysOnTop(false);
+				// popupStage.setAlwaysOnTop(false);
 				popupScene.setFill(null);
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
@@ -360,6 +363,22 @@ public class PsudoSplash implements GitLogProgressMonitor {
 
 	public static void setDockIconResource(URL resource2) {
 		PsudoSplash.dockIcon = resource2;
+	}
+
+	public static Stage getParentWindow() {
+		return parentWindow;
+	}
+
+	public static void setParentWindow(Stage pw) {
+		parentWindow = pw;
+	}
+
+	public Stage getPopupStage() {
+		return popupStage;
+	}
+
+	public void setPopupStage(Stage popupStage) {
+		this.popupStage = popupStage;
 	}
 
 }
