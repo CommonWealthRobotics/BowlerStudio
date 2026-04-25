@@ -180,11 +180,13 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			popupRoot.setOnMousePressed(event -> {
 				xOffset[0] = event.getSceneX();
 				yOffset[0] = event.getSceneY();
+				popupStage.setAlwaysOnTop(false);
 			});
 
 			popupRoot.setOnMouseDragged(event -> {
 				popupStage.setX(event.getScreenX() - xOffset[0]);
 				popupStage.setY(event.getScreenY() - yOffset[0]);
+				
 			});
 			try {
 				// CADoodle-Icon.png
@@ -254,7 +256,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			// com.neuronrobotics.sdk.common.Log.debug("Updating Splash
 			// "+imageView.getFitWidth());
 			Platform.runLater(() -> {
-
+				//popupStage.setAlwaysOnTop(false);
 				popupScene.setFill(null);
 				popupScene.getStylesheets().clear();
 				// Explicitly set an empty style
