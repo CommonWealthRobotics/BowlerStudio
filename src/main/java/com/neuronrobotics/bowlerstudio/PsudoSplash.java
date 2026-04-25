@@ -134,7 +134,6 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				setPopupStage(new Stage(StageStyle.TRANSPARENT));
 			}
 
-
 			// Always show on top
 			// popupStage.setAlwaysOnTop(true);
 
@@ -182,6 +181,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 				xOffset[0] = event.getSceneX();
 				yOffset[0] = event.getSceneY();
 				getPopupStage().setAlwaysOnTop(false);
+				if (event.getClickCount() == 2) {
+					close();
+				}
 			});
 
 			popupRoot.setOnMouseDragged(event -> {
