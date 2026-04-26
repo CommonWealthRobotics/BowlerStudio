@@ -78,7 +78,8 @@ public class PsudoSplash implements GitLogProgressMonitor {
 			singelton = new PsudoSplash();
 		if (!singelton.isVisibleSplash()) {
 			Platform.runLater(() -> {
-				singelton.showPopup();
+				if(singelton!=null)
+					singelton.showPopup();
 			});
 			// new Exception("Opening Splash").printStackTrace();
 		}

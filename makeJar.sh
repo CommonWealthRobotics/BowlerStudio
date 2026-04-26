@@ -1,7 +1,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 export ARCH=x86_64
-JVM=zulu21.46.19-ca-fx-jdk21.0.9-linux_x64
+JVM=zulu25.32.21-ca-fx-jdk25.0.2-linux_x64
 set -e
 ZIP=$JVM.tar.gz
 export JAVA_HOME=$HOME/bin/java21/
