@@ -1634,7 +1634,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Enable point light illumination for selected groups
 		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
-		
+
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
 
