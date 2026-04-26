@@ -21,7 +21,7 @@
 	"Linux-aarch64":{
 		"url":"https://cdn.azul.com/zulu/bin/",
 		"type":"tar.gz",
-		"name":"zulu25.32.21-ca-fx-jre25.0.10-linux_aarch64",
+		"name":"zulu25.32.21-ca-fx-jdk25.0.2-linux_aarch64",
 		"jvmargs":[
 					"--enable-preview",
 			"-Dprism.order=es2",
@@ -42,7 +42,7 @@
 	"Windows-x64":{
 		"url":"https://cdn.azul.com/zulu/bin/",
 		"type":"zip",
-		"name":"zulu25.32.21-ca-fx-jre25.0.10-win_x64",
+		"name":"zulu25.32.21-ca-fx-jdk25.0.2-win_x64",
 		"jvmargs":[
 					"--enable-preview",
 			"-XX:MaxRAMPercentage=95",
@@ -60,7 +60,7 @@
 	"Mac-x64":{
 		"url":"https://cdn.azul.com/zulu/bin/",
 		"type":"zip",
-		"name":"zulu25.32.21-ca-fx-jre25.0.10-macosx_x64",
+		"name":"zulu25.32.21-ca-fx-jdk25.0.2-macosx_x64",
 		"jvmargs":[
 					"--enable-preview",
 			"-Dprism.forceGPU=true",
@@ -79,7 +79,7 @@
 	"Mac-aarch64":{
 		"url":"https://cdn.azul.com/zulu/bin/",
 		"type":"zip",
-		"name":"zulu25.32.21-ca-fx-jre25.0.10-macosx_aarch64",
+		"name":"zulu25.32.21-ca-fx-jdk25.0.2-macosx_aarch64",
 		"jvmargs":[
 					"--enable-preview",
 			"-Dprism.forceGPU=true",
