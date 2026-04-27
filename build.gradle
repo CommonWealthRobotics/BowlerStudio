@@ -460,9 +460,12 @@ eclipse{
 }
 if (project == rootProject) {
 shadowJar {
-	dependsOn 'spotlessApply'
+    dependsOn 'spotlessApply'
     zip64 true
-    mainClassName = 'com.neuronrobotics.bowlerstudio.BowlerStudio'
+
+    manifest {
+        attributes 'Main-Class': 'com.neuronrobotics.bowlerstudio.BowlerStudio'
+    }
 
     if (project == rootProject) {
         archiveBaseName.set('BowlerStudio')
