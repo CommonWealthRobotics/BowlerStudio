@@ -351,7 +351,7 @@ public class ScriptingFileWidget extends BorderPane implements IFileChangeListen
 				}
 				// do the conversion now
 				if (fileType.toLowerCase().contains("stl")) {
-					FileUtil.write(Paths.get(newFile.getAbsolutePath()), c.toStlString());
+					c.toStl(Paths.get(newFile.getAbsolutePath()));
 				}
 				if (fileType.toLowerCase().contains("blend")) {
 					BlenderLoader.toBlenderFile(CSGDatabase.getInstance(), c, newFile);
