@@ -4,7 +4,7 @@
 		"type":"tar.gz",
 		"name":"zulu25.32.21-ca-fx-jre25.0.2-linux_x64",
 		"jvmargs":[
-			"--enable-preview",
+			"-Dprism.dirtyopts=false",
 			"-Dprism.forceGPU=true",
 			"-XX:MaxRAMPercentage=95",
 			"--add-exports javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
@@ -23,7 +23,7 @@
 		"type":"tar.gz",
 		"name":"zulu25.32.21-ca-fx-jre25.0.2-linux_aarch64",
 		"jvmargs":[
-					"--enable-preview",
+					"-Dprism.dirtyopts=false",
 			"-Dprism.order=es2",
 			"-Dprism.verbose=true", 
 			"-Dprism.forceGPU=true",
@@ -44,7 +44,7 @@
 		"type":"zip",
 		"name":"zulu25.32.21-ca-fx-jre25.0.2-win_x64",
 		"jvmargs":[
-					"--enable-preview",
+					"-Dprism.dirtyopts=false",
 			"-XX:MaxRAMPercentage=95",
 			"--add-exports javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
@@ -62,7 +62,7 @@
 		"type":"zip",
 		"name":"zulu25.32.21-ca-fx-jre25.0.2-macosx_x64",
 		"jvmargs":[
-					"--enable-preview",
+					"-Dprism.dirtyopts=false",
 			"-Dprism.forceGPU=true",
 			"-XX:MaxRAMPercentage=95",
 			"--add-exports javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
@@ -81,7 +81,7 @@
 		"type":"zip",
 		"name":"zulu25.32.21-ca-fx-jre25.0.2-macosx_aarch64",
 		"jvmargs":[
-					"--enable-preview",
+					"-Dprism.dirtyopts=false",
 			"-Dprism.forceGPU=true",
 			"-XX:MaxRAMPercentage=95",
 			"--add-exports javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
