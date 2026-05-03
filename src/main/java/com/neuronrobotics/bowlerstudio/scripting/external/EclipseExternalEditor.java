@@ -151,7 +151,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				File settings = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "appdata"
 						+ delim() + "bowler-settings.epf");
 				File java = DownloadManager.getConfigExecutable("java25", null);
-				
+
 				if (!wsDir.exists()) {
 					File prefssource = ScriptingEngine.fileFromGit(
 							"https://github.com/CommonWealthRobotics/ExternalEditorsBowlerStudio.git",
