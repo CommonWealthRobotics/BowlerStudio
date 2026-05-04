@@ -1614,7 +1614,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 */
 
 		// Point light behind camera, similar to default JavaFX light
-		PointLight cameraLight = new PointLight(Color.color(0.6, 0.6, 0.6));
+		PointLight cameraLight = new PointLight(Color.color(0.8, 0.8, 0.8));
 		cameraLight.setConstantAttenuation(1);
 		cameraLight.setLinearAttenuation(0);
 		cameraLight.setQuadraticAttenuation(0);
@@ -1629,7 +1629,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			cameraLight.setTranslateZ(-p.getZ());
 		});
 		// Ambient light - illuminates all faces equally regardless of normals
-		AmbientLight ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
+		AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
 		cameraGroup.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
