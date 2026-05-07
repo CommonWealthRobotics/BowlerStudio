@@ -229,8 +229,9 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	}
 
 	private void showPopup() {
-
-		getPopupStage().show();
+		Stage popupStage2 = getPopupStage();
+		if (popupStage2 != null)
+			popupStage2.show();
 	}
 
 	public static boolean isVisibleSplash() {
