@@ -110,8 +110,28 @@ public class BowlerStudio extends Application {
 	// private static String lastVersion;
 	private static UncaughtExceptionHandler hand;
 
-	@SuppressWarnings({"unchecked", "restriction"})
+	@SuppressWarnings({ "unchecked", "restriction" })
 	public static void main(String[] args) throws Exception {
+		initializeBowlerStudio(args);
+		launch();
+
+	}
+	public static void go() {
+		try {
+			embeddedLaunch(new String[0]);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void embeddedLaunch(String[] args) throws Exception{
+		initializeBowlerStudio(args);
+		BowlerStudio.runLater(()->{
+			Stage stage = new Stage();
+			new BowlerStudio().start(stage);
+		});
+	}
+	public static void initializeBowlerStudio(String[] args)throws Exception {
 		String relative = ScriptingEngine.getWorkingDirectory().getAbsolutePath();
 		File file = new File(relative + delim() + "bowler-workspace" + delim());
 		file.mkdirs();
@@ -467,7 +487,6 @@ public class BowlerStudio extends Application {
 			}
 		});
 		renderSplashFrame(92, "Launching UI");
-		launch();
 
 	}
 
@@ -532,6 +551,7 @@ public class BowlerStudio extends Application {
 			incoming.add(b);
 		}
 	}
+
 	public static void runLater(long delay, Runnable action) {
 		runLater(java.time.Duration.ofMillis(delay), action);
 	}
@@ -628,10 +648,8 @@ public class BowlerStudio extends Application {
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param startingLocation
-	 *            the starting pose
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param startingLocation the starting pose
+	 * @param rootListener     what affine to attach to
 	 */
 	public static void select(TransformNR startingLocation, Affine rootListener) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
@@ -642,8 +660,7 @@ public class BowlerStudio extends Application {
 	/**
 	 * Select a provided affine that is in a given global pose
 	 *
-	 * @param rootListener
-	 *            what affine to attach to
+	 * @param rootListener what affine to attach to
 	 */
 	public static void select(Affine rootListener) {
 		if (CreatureLab3dController.getEngine().isAutoHightlight()) {
@@ -676,8 +693,7 @@ public class BowlerStudio extends Application {
 	}
 
 	/**
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 * @throws Exception
 	 */
 	public static String getBowlerStudioBinaryVersion() throws FileNotFoundException {
@@ -757,8 +773,7 @@ public class BowlerStudio extends Application {
 	/**
 	 * @author Sainath
 	 * @version 1.0
-	 * @param url
-	 *            - The URL of the tab that needs to be opened
+	 * @param url - The URL of the tab that needs to be opened
 	 */
 	public static void openUrlInNewTab(URL url) {
 		BowlerStudioModularFrame.getBowlerStudioModularFrame().openUrlInNewTab(url);
@@ -767,8 +782,7 @@ public class BowlerStudio extends Application {
 	/**
 	 * @author Sainath
 	 * @version 1.0
-	 * @param msg
-	 *            - message that needs to be spoken
+	 * @param msg - message that needs to be spoken
 	 * @return an integer
 	 */
 	public static int speak(String msg) {
@@ -964,7 +978,8 @@ public class BowlerStudio extends Application {
 					reporter.uncaughtException(Thread.currentThread(), e);
 
 				}
-			});;
+			});
+			;
 
 			primaryStage.setResizable(true);
 
