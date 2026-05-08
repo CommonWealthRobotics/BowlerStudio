@@ -110,12 +110,13 @@ public class BowlerStudio extends Application {
 	// private static String lastVersion;
 	private static UncaughtExceptionHandler hand;
 
-	@SuppressWarnings({ "unchecked", "restriction" })
+	@SuppressWarnings({"unchecked", "restriction"})
 	public static void main(String[] args) throws Exception {
 		initializeBowlerStudio(args);
 		launch();
 
 	}
+
 	public static void go() {
 		try {
 			embeddedLaunch(new String[0]);
@@ -124,14 +125,16 @@ public class BowlerStudio extends Application {
 			e.printStackTrace();
 		}
 	}
-	public static void embeddedLaunch(String[] args) throws Exception{
+
+	public static void embeddedLaunch(String[] args) throws Exception {
 		initializeBowlerStudio(args);
-		BowlerStudio.runLater(()->{
+		BowlerStudio.runLater(() -> {
 			Stage stage = new Stage();
 			new BowlerStudio().start(stage);
 		});
 	}
-	public static void initializeBowlerStudio(String[] args)throws Exception {
+
+	public static void initializeBowlerStudio(String[] args) throws Exception {
 		String relative = ScriptingEngine.getWorkingDirectory().getAbsolutePath();
 		File file = new File(relative + delim() + "bowler-workspace" + delim());
 		file.mkdirs();
@@ -978,8 +981,7 @@ public class BowlerStudio extends Application {
 					reporter.uncaughtException(Thread.currentThread(), e);
 
 				}
-			});
-			;
+			});;
 
 			primaryStage.setResizable(true);
 
