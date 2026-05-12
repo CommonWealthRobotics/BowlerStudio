@@ -245,7 +245,7 @@ public class PsudoSplash implements GitLogProgressMonitor {
 	private void closeSplashLocal() {
 		BowlerStudio.runLater(() -> {
 			Stage popupStage2 = getPopupStage();
-			if(popupStage2!=null)
+			if (popupStage2 != null)
 				popupStage2.hide();
 			setPopupStage(null);
 		});
