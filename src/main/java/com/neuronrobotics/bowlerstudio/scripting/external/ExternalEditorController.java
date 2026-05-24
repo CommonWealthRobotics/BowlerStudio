@@ -35,6 +35,7 @@ public class ExternalEditorController {
 	private IExternalEditor myEditor = null;
 	public ExternalEditorController(File f, CheckBox autoRun, Runnable OnComplete) {
 		loadEditors();
+		advanced.getStyleClass().add("image-button-highlight");
 		this.currentFile = f;
 		for (IExternalEditor e : editors) {
 			if (e.isSupportedByExtension(f)) {
