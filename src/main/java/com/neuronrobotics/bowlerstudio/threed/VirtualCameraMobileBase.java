@@ -35,6 +35,7 @@ public class VirtualCameraMobileBase {
 	private boolean zoomlock;
 	private ArrayList<ICameraChangeListener> listeners = new ArrayList<>();
 	private String name;
+	private double zoomScale = 1;
 
 	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand, ICameraChangeListener lis, String name) {
 		this.hand = hand;
@@ -206,12 +207,12 @@ public class VirtualCameraMobileBase {
 			throw new RuntimeException("Zoom can not be set when locked");
 
 		// Clamp zoomDepth between -9000 and -2
-		zoomDepth = Math.max(-9000, Math.min(-2, zoomDepth));
+		zoomDepth = Math.max(-9000*getZoomScale(), Math.min(-2, zoomDepth));
 
 		this.zoomDepth = zoomDepth;
 
 		// Dynamically adjust setFarClip to reduce Z-fighting
-		camera.setFarClip(Math.max(6000, -zoomDepth * 2));
+		camera.setFarClip(Math.max(6000*getZoomScale(), -zoomDepth * 2));
 
 		zoomAffine.setTz(zoomDepth);
 
@@ -265,6 +266,14 @@ public class VirtualCameraMobileBase {
 
 	public void lockMove() {
 		move = false;
+	}
+
+	public double getZoomScale() {
+		return zoomScale;
+	}
+
+	public void setZoomScale(double zoomScale) {
+		this.zoomScale = zoomScale;
 	}
 
 }

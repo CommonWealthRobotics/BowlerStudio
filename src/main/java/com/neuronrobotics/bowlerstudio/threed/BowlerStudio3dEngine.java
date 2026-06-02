@@ -130,6 +130,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
+	
+	private boolean orthographicMode = false;
 
 	/**
 	 *
@@ -165,7 +167,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	final PerspectiveCamera camera = new PerspectiveCamera(true);
 
 	/** The camera distance. */
-	final double cameraDistance = 4000;
+	// final double cameraDistance = 4000;
 
 	/** The molecule group. */
 	final Xform moleculeGroup = new Xform();
@@ -434,6 +436,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private boolean move = true;
 	private boolean disabeControl = false;
 	private String name;
+	private double fieldOfViewDefualt;
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -451,6 +454,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Show JavaFX diagnostics info
 		ModuleLayer.boot().modules().stream().filter(m -> m.getName().startsWith("javafx"))
 				.forEach(m -> com.neuronrobotics.sdk.common.Log.info(m.getName() + ": " + m.getDescriptor().version()));
+		fieldOfViewDefualt = camera.getFieldOfView();
 	}
 
 	public void addObject(Object o, File source) {
@@ -3002,6 +3006,22 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public void requestFocus() {
 		getSubScene().requestFocus();
+	}
+
+	public boolean isOrthographicMode() {
+		return orthographicMode;
+	}
+
+	public void setOrthographicMode(boolean orthographicMode) {
+		this.orthographicMode = orthographicMode;
+		if(orthographicMode) {
+			camera.setFieldOfView(0.1);
+			
+		}else {
+			camera.setFieldOfView(fieldOfViewDefualt);
+		}
+		getFlyingCamera().setZoomScale(fieldOfViewDefualt/camera.getFieldOfView());
+		getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth());
 	}
 
 }
