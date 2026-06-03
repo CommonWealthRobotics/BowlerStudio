@@ -3015,7 +3015,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void setOrthographicMode(boolean orthographicMode) {
 		this.orthographicMode = orthographicMode;
 		if(orthographicMode) {
-			camera.setFieldOfView(0.1);
+			camera.setFieldOfView(2);
 			
 		}else {
 			camera.setFieldOfView(fieldOfViewDefualt);
