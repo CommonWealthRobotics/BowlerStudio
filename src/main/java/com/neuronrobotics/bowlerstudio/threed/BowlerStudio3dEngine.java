@@ -130,7 +130,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
-	
+
 	private boolean orthographicMode = false;
 
 	/**
@@ -3014,13 +3014,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public void setOrthographicMode(boolean orthographicMode) {
 		this.orthographicMode = orthographicMode;
-		if(orthographicMode) {
+		if (orthographicMode) {
 			camera.setFieldOfView(2);
-			
-		}else {
+
+		} else {
 			camera.setFieldOfView(fieldOfViewDefualt);
 		}
-		getFlyingCamera().setZoomScale(fieldOfViewDefualt/camera.getFieldOfView());
+		getFlyingCamera().setZoomScale(fieldOfViewDefualt / camera.getFieldOfView());
 		getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth());
 	}
 

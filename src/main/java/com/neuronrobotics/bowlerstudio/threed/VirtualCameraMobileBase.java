@@ -207,12 +207,12 @@ public class VirtualCameraMobileBase {
 			throw new RuntimeException("Zoom can not be set when locked");
 
 		// Clamp zoomDepth between -9000 and -2
-		zoomDepth = Math.max(-9000*getZoomScale(), Math.min(-2, zoomDepth));
+		zoomDepth = Math.max(-9000 * getZoomScale(), Math.min(-2, zoomDepth));
 
 		this.zoomDepth = zoomDepth;
 
 		// Dynamically adjust setFarClip to reduce Z-fighting
-		camera.setFarClip(Math.max(6000*getZoomScale(), -zoomDepth * 2));
+		camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
 
 		zoomAffine.setTz(zoomDepth);
 
