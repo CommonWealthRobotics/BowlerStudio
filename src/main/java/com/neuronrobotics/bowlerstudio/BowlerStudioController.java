@@ -143,25 +143,31 @@ public class BowlerStudioController implements IScriptEventListener {
 			}.start();
 
 			String gitRepoStr = t.getScripting().getGitRepo();
-			String[] split = gitRepoStr.split("\\.");
-			String string = split[split.length - 2];
-			String[] url = string.split("/");
-			String slug = url[url.length - 2] + "/" + url[url.length - 1];
-			String key = slug + ":" + t.getScripting().getGitFile();
-			com.neuronrobotics.sdk.common.Log.debug("Loading local file from: " + file.getAbsolutePath() + "\n" + key);
+			String key = null;
+			if (gitRepoStr != null) {
+				String[] split = gitRepoStr.split("\\.");
+				String string = split[split.length - 2];
+				String[] url = string.split("/");
+				String slug = url[url.length - 2] + "/" + url[url.length - 1];
+				key = slug + ":" + t.getScripting().getGitFile();
+				com.neuronrobotics.sdk.common.Log
+						.debug("Loading local file from: " + file.getAbsolutePath() + "\n" + key);
 
-			if (key.length() == 1)
-				throw new RuntimeException("Failed to create a file key");
-			ArrayList<String> files = new ArrayList<>();
-			files.add(gitRepoStr);
-			files.add(t.getScripting().getGitFile());
-			try {
-				if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0) {// catch degenerates
-					ConfigurationDatabase.setObject("studio-open-file", key, files);
-					ConfigurationDatabase.save();
+				if (key.length() == 1)
+					throw new RuntimeException("Failed to create a file key");
+				ArrayList<String> files = new ArrayList<>();
+				files.add(gitRepoStr);
+
+				files.add(t.getScripting().getGitFile());
+				try {
+					if (key.length() > 3 && files.get(0).length() > 0 && files.get(1).length() > 0) {// catch
+																										// degenerates
+						ConfigurationDatabase.setObject("studio-open-file", key, files);
+						ConfigurationDatabase.save();
+					}
+				} catch (java.lang.NullPointerException ex) {
+					// file can not be opened
 				}
-			} catch (java.lang.NullPointerException ex) {
-				// file can not be opened
 			}
 
 			fileTab.setContent(t);
@@ -179,11 +185,12 @@ public class BowlerStudioController implements IScriptEventListener {
 			addTab(fileTab, true);
 			widgets.put(file.getAbsolutePath(), t);
 			System.err.println("Open Tab " + file.getAbsolutePath());
-
+			String myKey = key;
 			fileTab.setOnCloseRequest(event -> {
 				widgets.remove(file.getAbsolutePath());
 				openFiles.remove(file.getAbsolutePath());
-				ConfigurationDatabase.removeObject("studio-open-file", key);
+				if (myKey != null)
+					ConfigurationDatabase.removeObject("studio-open-file", myKey);
 				ConfigurationDatabase.save();
 				t.getScripting().close();
 				Log.debug("Closing Tab Here " + file.getAbsolutePath());
