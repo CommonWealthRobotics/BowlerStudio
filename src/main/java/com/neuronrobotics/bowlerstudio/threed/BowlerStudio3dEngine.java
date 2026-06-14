@@ -1669,7 +1669,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
 		});
+		getFlyingCamera().addListener(new ICameraChangeListener() {
 
+			@Override
+			public void onChange(VirtualCameraMobileBase camera) {
+				VirtualCameraMobileBase flyingCamera2 = getFlyingCamera();
+				if (flyingCamera2 == null || workplaneGroup == null)
+					return;
+				double tiltAngle = flyingCamera2.getTiltAngle();
+				workplaneGroup.setVisible(!(tiltAngle < -90 || tiltAngle > 90));
+			}
+		});
 	}
 
 	/**
