@@ -1801,7 +1801,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 						// Use ambient illumination for workplanes and axes, ruler is black so no need
 						// to illuminate
-						ambientLight.getScope().addAll(customWorkplaneGroup, axisGroup);
+						ambientLight.getScope().addAll(customWorkplaneGroup, axisGroup, controlHandleGroup);
 					});
 
 				} catch (Exception e) {
@@ -1876,11 +1876,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		if (Platform.isFxApplicationThread())
 			controlHandleGroup.getChildren().add(n);
 		else
-			BowlerStudio.runLater(() -> controlHandleGroup.getChildren().add(n));
+			BowlerStudio.runLater(() -> {
+				controlHandleGroup.getChildren().add(n);
+
+			});
 	}
 
 	public void removeControlNode(Node n) {
-		BowlerStudio.runLater(() -> controlHandleGroup.getChildren().remove(n));
+		BowlerStudio.runLater(() -> {
+			controlHandleGroup.getChildren().remove(n);
+		});
 	}
 
 	// Check if the userGroup contains a node
@@ -2797,7 +2802,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		engine.bind(view3d);
 		engine.handleMouse(view3d);
 
-
 		BowlerKernel.runLater(() -> {
 			Stage newStage = new Stage();
 			Scene scene = new Scene(view3d, 1024, 960, true);
@@ -2955,8 +2959,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public void setFocusTraversable(boolean b) {
-		//		if (!b)
-		//			Log.error(new Exception("Make Scene Non Traversable " + b));
+		// if (!b)
+		// Log.error(new Exception("Make Scene Non Traversable " + b));
 		getSubScene().setFocusTraversable(b);
 	}
 
