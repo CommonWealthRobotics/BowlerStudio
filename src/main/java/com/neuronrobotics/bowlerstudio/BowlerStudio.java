@@ -44,7 +44,6 @@ import eu.mihosoft.vrl.v3d.CSG.OptType;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -577,33 +576,11 @@ public class BowlerStudio extends Application {
 	}
 
 	public static void runLater(Runnable r) {
-		if (Platform.isFxApplicationThread())
-			try {
-				r.run();
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		else
-			runLater(r, new Exception("UI Thread Exception here!"));
+		BowlerKernel.runLater(r);
 	}
 
 	public static void runLater(Runnable r, Throwable ex) {
-		if (Platform.isFxApplicationThread())
-			try {
-				r.run();
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		else
-			Platform.runLater(() -> {
-				try {
-					r.run();
-				} catch (Throwable t) {
-					t.printStackTrace();
-					ex.printStackTrace();
-				}
-
-			});
+		BowlerKernel.runLater(r, ex);
 	}
 
 	public static OutputStream getOut() {
