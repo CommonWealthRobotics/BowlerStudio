@@ -10,6 +10,7 @@ public class SplashManager {
 
 	private static boolean loadFirst = true;
 	private static BooleanSupplier closePreventer = () -> false;
+	private static BooleanSupplier openPreventer = () -> false;
 	public static void closeSplash() {
 		if (isVisibleSplash())
 			closeSplashLocal();
@@ -42,6 +43,8 @@ public class SplashManager {
 	}
 
 	public static void renderSplashFrame(int percent, String message) {
+		if(openPreventer.getAsBoolean())
+			return;
 		if (loadFirst) {
 
 			initialize();
@@ -54,6 +57,8 @@ public class SplashManager {
 	}
 
 	public static void onLogUpdate(String message) {
+		if(openPreventer.getAsBoolean())
+			return;
 		if (loadFirst) {
 
 			initialize();
@@ -94,6 +99,14 @@ public class SplashManager {
 
 	public static void setClosePreventer(BooleanSupplier cp) {
 		closePreventer = cp;
+	}
+
+	public static BooleanSupplier getOpenPreventer() {
+		return openPreventer;
+	}
+
+	public static void setOpenPreventer(BooleanSupplier openPreventer) {
+		SplashManager.openPreventer = openPreventer;
 	}
 
 }
