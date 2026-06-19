@@ -43,7 +43,7 @@ public class SplashManager {
 	}
 
 	public static void renderSplashFrame(int percent, String message) {
-		if(openPreventer.getAsBoolean())
+		if (openPreventer.getAsBoolean())
 			return;
 		if (loadFirst) {
 
@@ -57,7 +57,7 @@ public class SplashManager {
 	}
 
 	public static void onLogUpdate(String message) {
-		if(openPreventer.getAsBoolean())
+		if (openPreventer.getAsBoolean())
 			return;
 		if (loadFirst) {
 
