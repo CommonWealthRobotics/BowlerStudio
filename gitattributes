@@ -1,0 +1,16 @@
+# Force LF line endings for all text files, regardless of OS or local git config.
+* text=auto eol=lf
+
+# Be explicit for source files Spotless touches
+*.java text eol=lf
+*.gradle text eol=lf
+*.gradle.kts text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Don't touch binaries
+*.jar binary
+*.png binary
+*.jpg binary
