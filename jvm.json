@@ -14,7 +14,8 @@
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
-			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"
+			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED",
+			"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
 		]
 	},
 
@@ -35,7 +36,8 @@
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
-			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"
+			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
 		]
 	},
 
@@ -53,7 +55,8 @@
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
-			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"
+			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
 		]
 	},
 
@@ -72,7 +75,8 @@
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
-			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"
+			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
 		]
 	},
 
@@ -91,7 +95,8 @@
 			"--add-exports javafx.controls/com.sun.javafx.scene.control.skin.resources=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
-			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"
+			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
 		]
 	}
 }
