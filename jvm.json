@@ -15,7 +15,18 @@
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
 			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED",
-			"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
+			"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED",
+                        "--add-opens javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
 		]
 	},
 
@@ -37,7 +48,17 @@
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
 			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
-						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
+                        "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
 		]
 	},
 
@@ -56,7 +77,17 @@
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
 			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
-						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
+                        "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
 		]
 	},
 
@@ -76,7 +107,17 @@
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
 			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
-						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
+                        "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
 		]
 	},
 
@@ -96,7 +137,17 @@
 			"--add-exports javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
 			"--add-exports javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
 			"--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED"			,
-						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED"
+						"--add-exports javafx.graphics/com.sun.prism=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.camera=ALL-UNNAMED",            "--add-opens javafx.graphics/com.sun.javafx.geom.transform=ALL-UNNAMED",
+            "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
+                        "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
 		]
 	}
 }

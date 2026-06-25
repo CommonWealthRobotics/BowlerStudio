@@ -165,7 +165,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/** The camera. */
 	final PerspectiveCamera camera = new PerspectiveCamera(true);
-
 	/** The camera distance. */
 	// final double cameraDistance = 4000;
 
