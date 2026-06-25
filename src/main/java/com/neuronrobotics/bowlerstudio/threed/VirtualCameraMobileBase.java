@@ -72,7 +72,7 @@ public class VirtualCameraMobileBase {
 	 * Requires: --add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
 	 * --add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
 	 */
-	private final com.sun.javafx.tk.TKPulseListener postPulseListener = this::injectOrthoMatrix;
+	//private final Object postPulseListener =this::injectOrthoMatrix;
 
 	private boolean pulseListenerRegistered = false;
 
@@ -202,7 +202,7 @@ public class VirtualCameraMobileBase {
 		if (pulseListenerRegistered)
 			return;
 		try {
-			com.sun.javafx.tk.Toolkit.getToolkit().addSceneTkPulseListener(postPulseListener);
+			// com.sun.javafx.tk.Toolkit.getToolkit().addSceneTkPulseListener((com.sun.javafx.tk.TKPulseListener)this::injectOrthoMatrix);
 			pulseListenerRegistered = true;
 			log("post-pulse listener registered");
 		} catch (Exception e) {
@@ -214,7 +214,7 @@ public class VirtualCameraMobileBase {
 	private void stopPostPulseListener() {
 		if (pulseListenerRegistered) {
 			try {
-				com.sun.javafx.tk.Toolkit.getToolkit().removeSceneTkPulseListener(postPulseListener);
+				//	com.sun.javafx.tk.Toolkit.getToolkit().removeSceneTkPulseListener((com.sun.javafx.tk.TKPulseListener)this::injectOrthoMatrix);
 			} catch (Exception ignored) {
 			}
 			pulseListenerRegistered = false;
@@ -889,4 +889,6 @@ public class VirtualCameraMobileBase {
 	public void setZoomScale(double zoomScale) {
 		this.zoomScale = zoomScale;
 	}
+
+
 }
