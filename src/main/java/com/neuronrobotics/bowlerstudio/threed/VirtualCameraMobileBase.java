@@ -246,159 +246,180 @@ public class VirtualCameraMobileBase {
 	// Internal: matrix injection
 	// ---------------------------------------------------------------
 	private void injectOrthoMatrix() {
+
 		if (!reflectionReady || projMatrix == null || matField == null)
 			return;
 
-		// The BEFORE matrix proves JavaFX already computes the correct P×V for
-		// perspective. Its rows encode the view direction scaled by the perspective
-		// FOV. For ortho we want the same view directions but with ortho scaling
-		// instead of perspective scaling.
-		//
-		// Strategy: read the current Prism matrix (which has correct view baked in),
-		// extract the view row vectors (their directions), and re-scale them with
-		// ortho factors instead of perspective factors.
-
-		double aspect = viewportWidth / viewportHeight;
-		double hw = orthoScale * aspect;
-		double hh = orthoScale;
-		double near = camera.getNearClip();
-		double far = camera.getFarClip();
-		double fn = far - near;
-
 		try {
+			com.neuronrobotics.sdk.common.Log.debug("-------------Inject Start -------------------");
 			Object arr = matField.get(projMatrix);
-			double[] m;
+
+			double[] prism;
+
 			boolean isFloat = arr instanceof float[];
 
 			if (arr instanceof double[]) {
-				m = (double[]) arr;
+				prism = (double[]) arr;
 			} else if (isFloat) {
 				float[] f = (float[]) arr;
-				m = new double[16];
+				prism = new double[16];
 				for (int i = 0; i < 16; i++)
-					m[i] = f[i];
-			} else
-				return;
-
-			// The current Prism matrix rows 0,1,2 are:
-			// row0 = (P_perspective * view).row0 — encodes X axis scaled by perspective
-			// row1 = (P_perspective * view).row1 — encodes Y axis scaled by perspective
-			// row2 = (P_perspective * view).row2 — encodes Z axis (depth)
-			//
-			// For perspective: row scale ≈ cot(fov/2) / distance
-			// For ortho: row scale = 1/hw or 1/hh (fixed, not distance-dependent)
-			//
-			// Recover the pure view row directions by normalizing rows 0 and 1,
-			// then re-scale with ortho factors.
-
-			// Extract rows 0 and 1 (xyz components only — col 3 is translation)
-			double r0x = m[0], r0y = m[1], r0z = m[2];
-			double r1x = m[4], r1y = m[5], r1z = m[6];
-			double r2x = m[8], r2y = m[9], r2z = m[10];
-
-			double len0 = Math.sqrt(r0x * r0x + r0y * r0y + r0z * r0z);
-			double len1 = Math.sqrt(r1x * r1x + r1y * r1y + r1z * r1z);
-			double len2 = Math.sqrt(r2x * r2x + r2y * r2y + r2z * r2z);
-
-			log("row lengths: " + len0 + " " + len1 + " " + len2);
-
-			if (len0 < 1e-12 || len1 < 1e-12) {
-				log("degenerate view matrix — skipping inject");
+					prism[i] = f[i];
+			} else {
+				log("Unsupported matrix type: " + arr.getClass());
 				return;
 			}
 
-			// Normalized view axis directions
-			double ox = r0x / len0, oy = r0y / len0, oz = r0z / len0; // right axis
-			double ux = r1x / len1, uy = r1y / len1, uz = r1z / len1; // up axis
-			double fx = r2x / len2, fy = r2y / len2, fz = r2z / len2; // forward axis
+			// ---------------------------------------------------------
+			// Diagnostics: original Prism matrix
+			// ---------------------------------------------------------
 
-			// Ortho scale factors
-			double sx = 1.0 / hw;
-			double sy = 1.0 / hh;
-			double sz = -2.0 / fn;
+			dumpFlat16("PRISM projViewTx BEFORE", prism);
 
-			// Translation components: col3 of each row
-			// For ortho these should be 0 (symmetric frustum, no offset)
-			// but preserve the depth translation for row2
-			double tz = -(far + near) / fn;
+			// ---------------------------------------------------------
+			// Orthographic volume
+			// ---------------------------------------------------------
 
-			// Rebuild the matrix with ortho scaling applied to normalized axes
-			m[0] = ox * sx;
-			m[1] = oy * sx;
-			m[2] = oz * sx;
-			m[3] = 0.0;
-			m[4] = ux * sy;
-			m[5] = uy * sy;
-			m[6] = uz * sy;
-			m[7] = 0.0;
-			m[8] = fx * sz;
-			m[9] = fy * sz;
-			m[10] = fz * sz;
-			m[11] = tz;
-			m[12] = 0.0;
-			m[13] = 0.0;
-			m[14] = 0.0;
-			m[15] = 1.0;
+			double aspect = viewportWidth / viewportHeight;
 
-			// Translation for X and Y: dot(right, camPos) and dot(up, camPos)
-			// Read from the original perspective matrix's col3 rows 0,1 — these
-			// are already the correct view-space translations, just re-scaled
-			double origTx = m[3]; // was already overwritten above — need to save first
-			double origTy = m[7];
+			double top = orthoScale;
+			double bottom = -orthoScale;
 
-			// Redo: save translations before overwriting
-			// Reset and rebuild properly
-			double savedT0 = 0.0, savedT1 = 0.0;
-			// The original col3 values from the perspective matrix encode -dot(axis, eye)
-			// scaled by the perspective factor. Recover unscaled: divide by len
-			if (len0 > 1e-12)
-				savedT0 = m[3] / len0; // but m[3] was just set to 0 above
-			if (len1 > 1e-12)
-				savedT1 = m[7] / len1;
+			double right = orthoScale * aspect;
+			double left = -right;
 
-			// We need the raw translations — re-read from original before overwrite
-			// This approach is getting complicated. Read the original T from V instead:
-			javafx.scene.transform.Transform w2c = camera.getLocalToSceneTransform();
-			TransformNR vnr = TransformFactory.affineToNr(w2c).inverse();
-			Matrix Vmat = vnr.getMatrixTransform();
-			double[][] Vd = Vmat.getArray();
-			// V row3 col = translation in view space
-			double vTx = Vd[0][3];
-			double vTy = Vd[1][3];
-			double vTz = Vd[2][3];
+			double near = camera.getNearClip();
+			double far = camera.getFarClip();
 
-			m[0] = ox * sx;
-			m[1] = oy * sx;
-			m[2] = oz * sx;
-			m[3] = vTx * sx;
-			m[4] = ux * sy;
-			m[5] = uy * sy;
-			m[6] = uz * sy;
-			m[7] = vTy * sy;
-			m[8] = fx * sz;
-			m[9] = fy * sz;
-			m[10] = fz * sz;
-			m[11] = vTz * sz + tz;
-			m[12] = 0.0;
-			m[13] = 0.0;
-			m[14] = 0.0;
-			m[15] = 1.0;
+			// ---------------------------------------------------------
+			// Camera pose
+			// ---------------------------------------------------------
 
-			log("injecting ortho M:");
-			for (int r = 0; r < 4; r++)
-				log("  row" + r + ": " + m[r * 4] + " " + m[r * 4 + 1] + " " + m[r * 4 + 2] + " " + m[r * 4 + 3]);
+			TransformNR camWorld = getCamerFrame();
+
+			log("camera position = " + camWorld.getX() + ", " + camWorld.getY() + ", " + camWorld.getZ());
+
+			log("camera rotation = " + camWorld.getRotation().getRotationTiltDegrees() + ", "
+					+ camWorld.getRotation().getRotationAzimuthDegrees() + ", "
+					+ camWorld.getRotation().getRotationElevationDegrees());
+
+			// ---------------------------------------------------------
+			// World matrix
+			// ---------------------------------------------------------
+
+			Matrix worldMat = camWorld.getMatrixTransform();
+
+			double[][] W = worldMat.getArray();
+
+			dump4x4("CAMERA WORLD", W);
+
+			// ---------------------------------------------------------
+			// View matrix
+			// ---------------------------------------------------------
+
+			Matrix viewMat = camWorld.inverse().getMatrixTransform();
+
+			double[][] V = viewMat.getArray();
+
+			dump4x4("VIEW MATRIX", V);
+
+			// ---------------------------------------------------------
+			// Orthographic projection matrix
+			// ---------------------------------------------------------
+
+			double[][] O = new double[4][4];
+
+			O[0][0] = -2.0 / (right - left);
+			O[0][1] = 0;
+			O[0][2] = 0;
+			O[0][3] = -(right + left) / (right - left);
+
+			O[1][0] = 0;
+			O[1][1] = -2.0 / (top - bottom);
+			O[1][2] = 0;
+			O[1][3] = -(top + bottom) / (top - bottom);
+
+			O[2][0] = 0;
+			O[2][1] = 0;
+			O[2][2] = -2.0 / (far - near);
+			O[2][3] = -(far + near) / (far - near);
+
+			O[3][0] = 0;
+			O[3][1] = 0;
+			O[3][2] = 0;
+			O[3][3] = 1.0;
+
+			dump4x4("ORTHO MATRIX", O);
+
+			// ---------------------------------------------------------
+			// Projection * View
+			// ---------------------------------------------------------
+
+			double[][] PV = multiply4x4(O, V);
+
+			dump4x4("ORTHO * VIEW", PV);
+
+			// ---------------------------------------------------------
+			// Flatten back into Prism matrix
+			// ---------------------------------------------------------
+
+			int idx = 0;
+
+			for (int r = 0; r < 4; r++) {
+				for (int c = 0; c < 4; c++) {
+					prism[idx++] = PV[r][c];
+				}
+			}
+
+			dumpFlat16("PRISM projViewTx AFTER", prism);
+
+			// ---------------------------------------------------------
+			// Copy back if float[]
+			// ---------------------------------------------------------
 
 			if (isFloat) {
 				float[] f = (float[]) arr;
-				for (int i = 0; i < 16; i++)
-					f[i] = (float) m[i];
+				for (int i = 0; i < 16; i++) {
+					f[i] = (float) prism[i];
+				}
 			}
-			// if double[] we edited in-place above
 
 			forcePrismDirty();
-		} catch (Exception e) {
-			com.neuronrobotics.sdk.common.Log.error("OrthoCamera inject: " + e.getMessage());
+
+		} catch (Throwable t) {
+			com.neuronrobotics.sdk.common.Log.error("OrthoCamera inject failure: " + t.getMessage());
+			t.printStackTrace();
 		}
+	}
+
+	private static void dump4x4(String label, double[][] m) {
+		log(label);
+		for (int r = 0; r < 4; r++) {
+			log(String.format("[% .6f % .6f % .6f % .6f]", m[r][0], m[r][1], m[r][2], m[r][3]));
+		}
+	}
+
+	private static void dumpFlat16(String label, double[] m) {
+		log(label);
+		for (int r = 0; r < 4; r++) {
+			log(String.format("[% .6f % .6f % .6f % .6f]", m[r * 4 + 0], m[r * 4 + 1], m[r * 4 + 2], m[r * 4 + 3]));
+		}
+	}
+
+	private static double[][] multiply4x4(double[][] a, double[][] b) {
+		double[][] out = new double[4][4];
+
+		for (int r = 0; r < 4; r++) {
+			for (int c = 0; c < 4; c++) {
+				double sum = 0;
+				for (int k = 0; k < 4; k++) {
+					sum += a[r][k] * b[k][c];
+				}
+				out[r][c] = sum;
+			}
+		}
+
+		return out;
 	}
 	// ---------------------------------------------------------------------------
 
@@ -795,6 +816,21 @@ public class VirtualCameraMobileBase {
 	public void setZoomDepth(double zoomDepth) {
 		if (zoomlock)
 			throw new RuntimeException("Zoom can not be set when locked");
+
+		if (projectionMode == ProjectionMode.ORTHOGRAPHIC) {
+
+			double oldDistance = -this.zoomDepth;
+			double newDistance = -zoomDepth;
+
+			if (oldDistance > 0 && newDistance > 0) {
+				orthoScale *= newDistance / oldDistance;
+			}
+
+			this.zoomDepth = zoomDepth;
+
+			injectOrthoMatrix();
+			return;
+		}
 		zoomDepth = Math.max(-9000 * getZoomScale(), Math.min(-2, zoomDepth));
 		this.zoomDepth = zoomDepth;
 		camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
