@@ -101,7 +101,8 @@ public class VirtualCameraMobileBase {
 
 	/** Toggle between PERSPECTIVE and ORTHOGRAPHIC. */
 	public void toggleProjectionMode() {
-		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE ? ProjectionMode.ORTHOGRAPHIC
+		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE
+				? ProjectionMode.ORTHOGRAPHIC
 				: ProjectionMode.PERSPECTIVE);
 	}
 
