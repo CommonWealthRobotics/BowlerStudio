@@ -3037,4 +3037,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth());
 	}
 
+	public double getFov() {
+		return getFlyingCamera().getFov();
+	}
+
 }

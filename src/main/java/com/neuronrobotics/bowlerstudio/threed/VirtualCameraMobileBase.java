@@ -890,5 +890,9 @@ public class VirtualCameraMobileBase {
 		this.zoomScale = zoomScale;
 	}
 
+	public double getFov() {
+		return getCamera().getFieldOfView();
+	}
+
 
 }
