@@ -119,7 +119,6 @@ import javafx.geometry.Bounds;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -1329,46 +1328,53 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	/**
-	 * Save to png.
+	 * Saves a snapshot of the live 3D view exactly as it currently appears on
+	 * screen. Uses the SubScene's own camera and current pixel dimensions — no mesh
+	 * copying, no scene disruption.
 	 *
-	 * @param f the f
+	 * @param f the output file; a ".png" extension is appended if absent
 	 */
-	public void saveToPng(File f) {
+	public WritableImage saveViewToPng(File f, int w, int h) {
 		String fName = f.getAbsolutePath();
-
 		if (!fName.toLowerCase().endsWith(".png")) {
 			fName += ".png";
 		}
+		final String finalName = fName;
+		List<WritableImage> holder = new ArrayList<WritableImage>();
+		BowlerStudio.runLater(() -> {
+			SubScene sub = getSubScene();
+			// SnapshotParameters with no custom camera → JavaFX uses the SubScene's
+			// own live PerspectiveCamera, so the image matches what the user sees exactly.
+			SnapshotParameters params = new SnapshotParameters();
+			params.setDepthBuffer(true);
+			params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
-		int snWidth = 1024;
-		int snHeight = 1024;
+			double scale = Math.min((double) w / sub.getWidth(), (double) h / sub.getHeight());
+			params.setTransform(new Scale(scale, scale));
+			// Then size the WritableImage to match actual output:
+			int outW = (int) (sub.getWidth() * scale);
+			int outH = (int) (sub.getHeight() * scale);
+			WritableImage snapshot = new WritableImage(outW, outH);
+			try {
+				sub.snapshot(params, snapshot);
+				ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(finalName));
+			} catch (Throwable ex) {
+				com.neuronrobotics.sdk.common.Log.error(ex);
+			}
+			holder.add(snapshot);
 
-		double realWidth = getRoot().getBoundsInLocal().getWidth();
-		double realHeight = getRoot().getBoundsInLocal().getHeight();
-
-		double scaleX = snWidth / realWidth;
-		double scaleY = snHeight / realHeight;
-
-		double scale = Math.min(scaleX, scaleY);
-
-		PerspectiveCamera snCam = new PerspectiveCamera(false);
-		snCam.setTranslateZ(-200);
-
-		SnapshotParameters snapshotParameters = new SnapshotParameters();
-		snapshotParameters.setTransform(new Scale(scale, scale));
-		snapshotParameters.setCamera(snCam);
-		snapshotParameters.setDepthBuffer(true);
-		snapshotParameters.setFill(Color.TRANSPARENT);
-
-		WritableImage snapshot = new WritableImage(snWidth, (int) (realHeight * scale));
-
-		getRoot().snapshot(snapshotParameters, snapshot);
-
-		try {
-			ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(fName));
-		} catch (IOException ex) {
-			com.neuronrobotics.sdk.common.Log.error(ex);
+		});
+		long start = System.currentTimeMillis();
+		while (System.currentTimeMillis() - start < 1000 && holder.size() == 0) {
+			try {
+				Thread.sleep(16);
+			} catch (InterruptedException e) {
+				return null;
+			}
 		}
+		if (holder.size() > 0)
+			return holder.get(0);
+		return new WritableImage(10, 10);
 	}
 
 	private static int webColorToArgb(Color color) {
