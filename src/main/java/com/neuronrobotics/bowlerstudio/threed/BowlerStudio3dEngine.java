@@ -106,7 +106,6 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.geometry.Bounds;
@@ -1327,54 +1326,80 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 	}
 
-	/**
-	 * Saves a snapshot of the live 3D view exactly as it currently appears on
-	 * screen. Uses the SubScene's own camera and current pixel dimensions — no mesh
-	 * copying, no scene disruption.
-	 *
-	 * @param f the output file; a ".png" extension is appended if absent
-	 */
 	public WritableImage saveViewToPng(File f, int w, int h) {
 		String fName = f.getAbsolutePath();
 		if (!fName.toLowerCase().endsWith(".png")) {
 			fName += ".png";
 		}
 		final String finalName = fName;
-		List<WritableImage> holder = new ArrayList<WritableImage>();
+		final java.util.concurrent.atomic.AtomicReference<WritableImage> result = new java.util.concurrent.atomic.AtomicReference<>();
+		final java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+
 		BowlerStudio.runLater(() -> {
 			SubScene sub = getSubScene();
-			// SnapshotParameters with no custom camera → JavaFX uses the SubScene's
-			// own live PerspectiveCamera, so the image matches what the user sees exactly.
+			double subW = sub.getWidth();
+			double subH = sub.getHeight();
+
+			// Snapshot at native SubScene resolution first
 			SnapshotParameters params = new SnapshotParameters();
 			params.setDepthBuffer(true);
 			params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
-			double scale = Math.min((double) w / sub.getWidth(), (double) h / sub.getHeight());
-			params.setTransform(new Scale(scale, scale));
-			// Then size the WritableImage to match actual output:
-			int outW = (int) (sub.getWidth() * scale);
-			int outH = (int) (sub.getHeight() * scale);
-			WritableImage snapshot = new WritableImage(outW, outH);
+			PointLight snapshotLight = new PointLight(javafx.scene.paint.Color.color(0.8, 0.8, 0.8));
+			snapshotLight.setConstantAttenuation(1);
+			snapshotLight.setLinearAttenuation(0);
+			snapshotLight.setQuadraticAttenuation(0);
+			snapshotLight.setTranslateZ(-5000);
+			AmbientLight snapshotAmbient = new AmbientLight(javafx.scene.paint.Color.color(0.1, 0.1, 0.1));
+			getRoot().getChildren().addAll(snapshotLight, snapshotAmbient);
+
+			WritableImage native_ = new WritableImage((int) subW, (int) subH);
 			try {
-				sub.snapshot(params, snapshot);
+				sub.snapshot(params, native_);
+
+				// Now scale/crop in 2D using a Canvas — no 3D distortion
+				// Scale so shortest axis fills the target (cover/crop behavior)
+				double scale = Math.max((double) w / subW, (double) h / subH);
+				double scaledW = subW * scale;
+				double scaledH = subH * scale;
+
+				// Centre-crop offset in scaled space
+				double cropX = (scaledW - w) / 2.0;
+				double cropY = (scaledH - h) / 2.0;
+
+				javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(w, h);
+				javafx.scene.canvas.GraphicsContext gc = canvas.getGraphicsContext2D();
+				// drawImage with source crop + dest size does scale+crop in one call
+				gc.drawImage(native_, cropX / scale, cropY / scale, // source top-left in native image coords
+						w / scale, h / scale, // source region size in native image coords
+						0, 0, // dest top-left
+						w, h); // dest size
+
+				// Snapshot the 2D canvas to get the final WritableImage
+				SnapshotParameters canvasParams = new SnapshotParameters();
+				canvasParams.setFill(javafx.scene.paint.Color.TRANSPARENT);
+				WritableImage snapshot = new WritableImage(w, h);
+				canvas.snapshot(canvasParams, snapshot);
+
 				ImageIO.write(javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, null), "png", new File(finalName));
+				result.set(snapshot);
 			} catch (Throwable ex) {
 				com.neuronrobotics.sdk.common.Log.error(ex);
+			} finally {
+				getRoot().getChildren().removeAll(snapshotLight, snapshotAmbient);
+				latch.countDown();
 			}
-			holder.add(snapshot);
-
 		});
-		long start = System.currentTimeMillis();
-		while (System.currentTimeMillis() - start < 1000 && holder.size() == 0) {
-			try {
-				Thread.sleep(16);
-			} catch (InterruptedException e) {
-				return null;
-			}
+
+		try {
+			latch.await(1, java.util.concurrent.TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			com.neuronrobotics.sdk.common.Log.error(e);
 		}
-		if (holder.size() > 0)
-			return holder.get(0);
-		return new WritableImage(10, 10);
+
+		WritableImage img = result.get();
+		return img != null ? img : new WritableImage(10, 10);
 	}
 
 	private static int webColorToArgb(Color color) {
