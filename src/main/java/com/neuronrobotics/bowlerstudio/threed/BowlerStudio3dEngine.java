@@ -1336,6 +1336,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		final java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
 
 		BowlerStudio.runLater(() -> {
+			boolean wpVis = getWorkplaneGroup().isVisible();
+			getWorkplaneGroup().setVisible(false);
 			SubScene sub = getSubScene();
 			double subW = sub.getWidth();
 			double subH = sub.getHeight();
@@ -1389,6 +1391,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				getRoot().getChildren().removeAll(snapshotLight, snapshotAmbient);
 				latch.countDown();
 			}
+			getWorkplaneGroup().setVisible(wpVis);
 		});
 
 		try {
