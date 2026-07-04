@@ -434,6 +434,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private boolean disabeControl = false;
 	private String name;
 	private double fieldOfViewDefualt;
+	private static Color lightGrid = Color.web("#202060");
+	private static Color gridColor = Color.web("#3838A8");
+	private static Color gridKey = Color.web("#0000FF");
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -1415,6 +1418,25 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				((argb >> 24) & 0xFF) / 255.0);
 	}
 
+	public static void setThemeColors(Color key) {
+
+		// Primary color from CSS
+		setGridKey(key);
+
+		double h = key.getHue();
+		double s = key.getSaturation();
+		double b = key.getBrightness();
+
+		// Darker accent
+		Color dark = Color.hsb(h, Math.min(1.0, s * 1.10), Math.max(0.0, b * 0.65), key.getOpacity());
+
+		// Lighter accent
+		Color light = Color.hsb(h, Math.max(0.0, s * 0.60), Math.min(1.0, b * 1.05), key.getOpacity());
+
+		setGridColor(dark);
+		setLightGrid(light);
+	}
+
 	// Create textured work-plane based on tiles of custom size
 	public Group createTexturedWorkplane(double xSizeMM, double ySizeMM) {
 
@@ -1444,10 +1466,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Work plane noise in percentage [0-100%]
 		int wpNoise = 25;
 
-		// Work plane texture colors
-		int wpColor = webColorToArgb(Color.web("#3838A8")); // Higher is lighter color
-		int grid1Color = webColorToArgb(Color.web("#202060"));
-		int grid10Color = webColorToArgb(Color.web("#0000FF"));
+		//setLightGrid(Color.web("#3838A8"));
+		int wpColor = webColorToArgb(getLightGrid()); // Higher is lighter color
+		//setGridColor();
+		int grid1Color = webColorToArgb(getGridColor());
+		//setGridKey();
+		int grid10Color = webColorToArgb(getGridKey());
 
 		float workplaneX = (float) xSizeMM;
 		float workplaneY = (float) ySizeMM;
@@ -3073,6 +3097,30 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public double getFov() {
 		return getFlyingCamera().getFov();
+	}
+
+	public static Color getLightGrid() {
+		return lightGrid;
+	}
+
+	public static void setLightGrid(Color lightGrid) {
+		BowlerStudio3dEngine.lightGrid = lightGrid;
+	}
+
+	public static Color getGridColor() {
+		return gridColor;
+	}
+
+	public static void setGridColor(Color gridColor) {
+		BowlerStudio3dEngine.gridColor = gridColor;
+	}
+
+	public static Color getGridKey() {
+		return gridKey;
+	}
+
+	public static void setGridKey(Color gridKey) {
+		BowlerStudio3dEngine.gridKey = gridKey;
 	}
 
 }
