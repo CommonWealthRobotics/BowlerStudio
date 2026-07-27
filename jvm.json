@@ -26,7 +26,9 @@
             "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
-            "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+            "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+"--enable-native-access=ALL-UNNAMED"            ,
+                                    "--enable-native-access=javafx.graphics"
 		]
 	},
 
@@ -58,7 +60,9 @@
             "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
                         "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
-                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"                        ,
+                        "--enable-native-access=ALL-UNNAMED"                        ,
+                                                "--enable-native-access=javafx.graphics"
 		]
 	},
 
@@ -87,7 +91,9 @@
             "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
                         "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
-                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"                        ,
+                        "--enable-native-access=ALL-UNNAMED"                        ,
+                                                "--enable-native-access=javafx.graphics"
 		]
 	},
 
@@ -117,7 +123,9 @@
             "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
                         "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
-                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"                        ,
+                        "--enable-native-access=ALL-UNNAMED"                        ,
+                                                "--enable-native-access=javafx.graphics"
 		]
 	},
 
@@ -147,7 +155,9 @@
             "--add-opens javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
             "--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"            ,
                         "--add-exports javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
-                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"
+                        "--add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED"                        ,
+                        "--enable-native-access=ALL-UNNAMED",
+                        "--enable-native-access=javafx.graphics"
 		]
 	}
 }
