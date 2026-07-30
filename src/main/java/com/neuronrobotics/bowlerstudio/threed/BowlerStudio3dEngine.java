@@ -2613,14 +2613,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		focusOrientation(orient, null, getFlyingCamera().getDefaultZoomDepth());
 	}
 
-	public void focusOrientation(TransformNR orient, TransformNR trans, double zoom) {
+	public Optional<Thread> focusOrientation(TransformNR orient, TransformNR trans, double zoom) {
 
 		abortFocus = true;
 
 		if ((orient != null) || (trans != null)) {
 
 			// Wait until possible previous focus aborts
-			new Thread(() -> {
+			Thread thread = new Thread(() -> {
 				while (focusing) {
 					try {
 						Thread.sleep(8);
@@ -2632,8 +2632,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				focusing = true;
 				abortFocus = false;
 				runSyncFocus(orient, trans, zoom);
-			}).start();
+			});
+			thread.start();
+			return Optional.of(thread);
 		}
+		return Optional.empty();
 	}
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
