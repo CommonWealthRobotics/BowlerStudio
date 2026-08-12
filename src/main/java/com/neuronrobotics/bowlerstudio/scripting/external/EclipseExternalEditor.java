@@ -146,7 +146,8 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				com.neuronrobotics.sdk.common.Log.error("Opening workspace " + ws);
 				File wsDir = new File(ws);
 				Map<String, String> env = getEnvironment("eclipse");
-				HashMap<String, String> environment = new HashMap<>();;
+				HashMap<String, String> environment = new HashMap<>();
+				;
 				environment.putAll(env);
 				File settings = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "appdata"
 						+ delim() + "bowler-settings.epf");
@@ -166,10 +167,26 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 					}
 					environment.put("ECLIPSE_PREFERENCE_FILE", settings.getAbsolutePath());
 				}
-				environment.put("JAVA_HOME", java.getAbsolutePath());
+				environment.put("JAVA_HOME", java.getParentFile().getParentFile().getAbsolutePath());
 				if (!isEclipseOpen(ws)) {
 					File exeFile = getConfigExecutable("eclipse", null);
 					String eclipseEXE = exeFile.getAbsolutePath();
+					File ini = exeFile.getParentFile().toPath().resolve("eclipse.ini").toFile();
+					if (ini.exists()) {
+						String content = Files.readString(ini.toPath());
+						String[] vmSplit = content.split("-vm", 2);
+						String afterVm = vmSplit[1].trim();
+						String[] afterVmSplit = afterVm.split("\\r?\\n-", 2);
+
+						String reconstructed = "\n-vm\n" + java.getAbsolutePath();
+						if (afterVmSplit.length == 2) {
+							reconstructed += "\n-" + afterVmSplit[1];
+						}
+
+						String fullIni = vmSplit[0].stripTrailing() + reconstructed + "\n";
+
+						Files.writeString(ini.toPath(), fullIni);
+					}
 					run(environment, this, ScriptingEngine.getWorkspace(), System.out,
 							Arrays.asList(eclipseEXE, "-data", ws));
 					while (!isEclipseOpen(ws)) {
