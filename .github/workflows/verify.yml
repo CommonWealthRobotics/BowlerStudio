@@ -41,7 +41,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 25
-        jdkFile: zulu25.32.21-ca-fx-jdk25.0.2-linux_x64.tar.gz
+        jdkFile: zulu25.36.15-ca-fx-jdk25.0.4-linux_x64.tar.gz
 
     - name: Run Unit Tests
       run: xvfb-run -s '-screen 0 1024x768x24' ./gradlew test
