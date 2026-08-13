@@ -146,8 +146,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 				com.neuronrobotics.sdk.common.Log.error("Opening workspace " + ws);
 				File wsDir = new File(ws);
 				Map<String, String> env = getEnvironment("eclipse");
-				HashMap<String, String> environment = new HashMap<>();
-				;
+				HashMap<String, String> environment = new HashMap<>();;
 				environment.putAll(env);
 				File settings = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + delim() + "appdata"
 						+ delim() + "bowler-settings.epf");
