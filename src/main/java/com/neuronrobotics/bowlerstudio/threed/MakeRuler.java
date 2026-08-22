@@ -19,11 +19,11 @@ public class MakeRuler {
 	// SVG paths for numbers 0-9
 	private static HashMap<Integer, CSG> numbers = new HashMap<>();
 
-	public static Group createRuler(boolean flipNumber) {
-		return createRuler(flipNumber, 30); // 30 cm default length
+	public static Group createRuler(boolean flipNumber, PhongMaterial phongMaterial) {
+		return createRuler(flipNumber, 30, phongMaterial); // 30 cm default length
 	}
 
-	public static Group createRuler(boolean flipNumber, int rulerLengthCM) {
+	public static Group createRuler(boolean flipNumber, int rulerLengthCM, PhongMaterial phongMaterial) {
 		double baseWidth = 0.15; // The width of the ruler base in mm
 		double tickLength = 8; // The length of a tick in mm
 		double tickWidth = 0.25; // The width of a tick in mm
@@ -35,7 +35,6 @@ public class MakeRuler {
 			MeshView baseView = new MeshView(baseMesh);
 			baseView.setMouseTransparent(true);
 			baseView.setCullFace(CullFace.NONE);
-			PhongMaterial phongMaterial = new PhongMaterial(Color.BLACK);
 
 			baseView.setMaterial(phongMaterial);
 
@@ -72,6 +71,7 @@ public class MakeRuler {
 								BowlerKernel.runLater(() -> {
 									MeshView numberGroup = movey.newMesh();
 									numberGroup.setMouseTransparent(true);
+									numberGroup.setMaterial(phongMaterial);
 									// Scale and position the number
 									Affine numberTransform = new Affine();
 									numberTransform.appendTranslation(index, 0);
