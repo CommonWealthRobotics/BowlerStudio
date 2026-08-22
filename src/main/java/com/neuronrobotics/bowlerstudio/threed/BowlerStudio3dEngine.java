@@ -435,9 +435,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private boolean disabeControl = false;
 	private String name;
 	private double fieldOfViewDefualt;
-	private static Color lightGrid = Color.web("#202060");
-	private static Color gridColor = Color.web("#3838A8");
-	private static Color gridKey = Color.web("#0000FF");
+	private static Color lightGrid = Color.web("#20206000");
+	private static Color gridColor = Color.web("#0838A800");
+	private static Color gridKey = Color.web("#0000aa");
 
 	/**
 	 * Instantiates a new jfx3d manager.
@@ -1045,8 +1045,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);
-							;
+							com.neuronrobotics.sdk.common.Log.error(ex);;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1086,8 +1085,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1127,8 +1125,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 				}
 			}
@@ -1711,25 +1708,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 */
 
 		// Point light behind camera, similar to default JavaFX light
-		PointLight cameraLight = new PointLight(Color.color(0.8, 0.8, 0.8));
-		cameraLight.setConstantAttenuation(1);
-		cameraLight.setLinearAttenuation(0);
-		cameraLight.setQuadraticAttenuation(0);
-		cameraLight.setLightOn(true);
-		cameraGroup.getChildren().add(cameraLight);
-		// listener keeps the light at the camera
-		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
-			final float distanceBehindCamera = 10000;
-			Point3D p = camera.localToScene(1000, 1000, -distanceBehindCamera);
-			cameraLight.setTranslateX(-p.getX());
-			cameraLight.setTranslateY(p.getY());
-			cameraLight.setTranslateZ(-p.getZ());
-		});
+		addPointLight(1000, 1000, 1000);
+		addPointLight(-1000, 0, -1000);
+		addPointLight(1000, -1000, 1000);
+
 		// Ambient light - illuminates all faces equally regardless of normals
-		AmbientLight ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
-		cameraGroup.getChildren().add(ambientLight);
+		AmbientLight ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
+		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
-		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
@@ -1773,6 +1759,24 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				workplaneGroup.setVisible(!(tiltAngle < -90 || tiltAngle > 90));
 			}
 		});
+	}
+
+	private void addPointLight(int value, int value2, int value3) {
+		PointLight cameraLight = new PointLight(Color.color(0.3, 0.3, 0.3));
+		cameraLight.setConstantAttenuation(1);
+		cameraLight.setLinearAttenuation(0);
+		cameraLight.setQuadraticAttenuation(0);
+		cameraLight.setLightOn(true);
+		world.getChildren().add(cameraLight);
+		// listener keeps the light at the camera
+
+		cameraLight.setTranslateX(value);
+
+		cameraLight.setTranslateY(value2);
+
+		cameraLight.setTranslateZ(value3);
+		Log.debug("Light Location " + value + " " + value2 + " " + value3);
+		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
 	}
 
 	/**
@@ -1887,8 +1891,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							SKIP_USERGROUP_NODES = userGroup.getChildren().size();
 
 						// Create the world group
-						world.getChildren().addAll(lookGroup, cameraGroup,  axisGroup, customWorkplaneGroup,
-								controlHandleGroup,userGroup, ambientLight);
+						world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroup, userGroup,
+								controlHandleGroup, ambientLight);
 
 						// Use ambient illumination for workplanes and axes, ruler is black so no need
 						// to illuminate
@@ -2675,11 +2679,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null) ? 0
+		double az = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null) ? 0
+		double el = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
