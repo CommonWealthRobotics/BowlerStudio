@@ -1887,8 +1887,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							SKIP_USERGROUP_NODES = userGroup.getChildren().size();
 
 						// Create the world group
-						world.getChildren().addAll(lookGroup, cameraGroup, userGroup, axisGroup, customWorkplaneGroup,
-								controlHandleGroup, ambientLight);
+						world.getChildren().addAll(lookGroup, cameraGroup,  axisGroup, customWorkplaneGroup,
+								controlHandleGroup,userGroup, ambientLight);
 
 						// Use ambient illumination for workplanes and axes, ruler is black so no need
 						// to illuminate
