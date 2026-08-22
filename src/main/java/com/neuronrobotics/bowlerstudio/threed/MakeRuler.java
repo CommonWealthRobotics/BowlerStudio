@@ -108,15 +108,15 @@ public class MakeRuler {
 	}
 
 	private static TriangleMesh createRectangleMesh(double width, double tickLength) {
-		float[] points = { 0, 0, 0, // point 0
+		float[] points = {0, 0, 0, // point 0
 				(float) width, 0, 0, // point 1
 				(float) width, (float) tickLength, 0, // point 2
 				0, (float) tickLength, 0 // point 3
 		};
 
-		float[] texCoords = { 0, 0, 1, 0, 1, 1, 0, 1 };
+		float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
 
-		int[] faces = { 0, 0, 1, 1, 2, 2, // First triangle
+		int[] faces = {0, 0, 1, 1, 2, 2, // First triangle
 				0, 0, 2, 2, 3, 3 // Second triangle
 		};
 
