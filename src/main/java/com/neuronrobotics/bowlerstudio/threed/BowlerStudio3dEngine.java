@@ -1045,7 +1045,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1085,7 +1086,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1125,7 +1127,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1414,10 +1417,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				| (int) (color.getGreen() * 255) << 8 | (int) (color.getBlue() * 255);
 	}
 
-	//	private static Color argbToColor(int argb) {
-	//		return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) / 255.0, (argb & 0xFF) / 255.0,
-	//				((argb >> 24) & 0xFF) / 255.0);
-	//	}
+	// private static Color argbToColor(int argb) {
+	// return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) /
+	// 255.0, (argb & 0xFF) / 255.0,
+	// ((argb >> 24) & 0xFF) / 255.0);
+	// }
 
 	public static void setThemeColors(Color key) {
 
@@ -1440,8 +1444,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public static void updateRulerColor(Color c) {
-		phongMaterialRuler.setDiffuseColor(c);
-		phongMaterialRuler.setSpecularColor(c);
+		BowlerKernel.runLater(() -> {
+			phongMaterialRuler.setDiffuseColor(c);
+			phongMaterialRuler.setSpecularColor(c);
+		});
 	}
 
 	public static void updateGrids() {
@@ -2669,13 +2675,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null)
-				? 0
+		double az = (orient == null) ? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null)
-				? 0
+		double el = (orient == null) ? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
