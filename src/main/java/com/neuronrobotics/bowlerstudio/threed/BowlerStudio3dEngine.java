@@ -277,6 +277,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private volatile boolean waitingForCompletion;
 
 	private Pane overlayPane = null;
+	private static PhongMaterial phongMaterialRuler = new PhongMaterial(Color.BLACK);
 
 	public void setOverlayPane(Pane overlayP) {
 		this.overlayPane = overlayP;
@@ -1413,10 +1414,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				| (int) (color.getGreen() * 255) << 8 | (int) (color.getBlue() * 255);
 	}
 
-	private static Color argbToColor(int argb) {
-		return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) / 255.0, (argb & 0xFF) / 255.0,
-				((argb >> 24) & 0xFF) / 255.0);
-	}
+	//	private static Color argbToColor(int argb) {
+	//		return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) / 255.0, (argb & 0xFF) / 255.0,
+	//				((argb >> 24) & 0xFF) / 255.0);
+	//	}
 
 	public static void setThemeColors(Color key) {
 
@@ -1435,11 +1436,45 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		setGridColor(dark);
 		setLightGrid(light);
+		updateGrids();
 	}
+
+	public static void updateRulerColor(Color c) {
+		phongMaterialRuler.setDiffuseColor(c);
+		phongMaterialRuler.setSpecularColor(c);
+	}
+
+	public static void updateGrids() {
+		for (GridHolder gh : grids) {
+			makeGrid(gh);
+		}
+	}
+
+	class GridHolder {
+		double xSizeMM;
+		double ySizeMM;
+		Group wp;
+	}
+
+	private static ArrayList<GridHolder> grids = new ArrayList<BowlerStudio3dEngine.GridHolder>();
 
 	// Create textured work-plane based on tiles of custom size
 	public Group createTexturedWorkplane(double xSizeMM, double ySizeMM) {
+		Group wp = new Group();
+		GridHolder gh = new GridHolder();
+		gh.xSizeMM = xSizeMM;
+		gh.ySizeMM = ySizeMM;
+		gh.wp = wp;
+		makeGrid(gh);
+		grids.add(gh);
+		return wp;
+	}
 
+	private static void makeGrid(GridHolder gh) {
+		Log.debug("Grid colors \n" + gridKey + "\n" + gridColor + "\n" + lightGrid);
+
+		gh.wp.getChildren().clear();
+		gh.wp.setMouseTransparent(true);
 		// Build square textured tile in MM
 		final float TILE_SIZE_MM = 10.0f;
 		final int TILE_BIG_GRID_PX = 200;
@@ -1466,21 +1501,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Work plane noise in percentage [0-100%]
 		int wpNoise = 25;
 
-		//setLightGrid(Color.web("#3838A8"));
+		// setLightGrid(Color.web("#3838A8"));
 		int wpColor = webColorToArgb(getLightGrid()); // Higher is lighter color
-		//setGridColor();
+		// setGridColor();
 		int grid1Color = webColorToArgb(getGridColor());
-		//setGridKey();
+		// setGridKey();
 		int grid10Color = webColorToArgb(getGridKey());
 
-		float workplaneX = (float) xSizeMM;
-		float workplaneY = (float) ySizeMM;
+		float workplaneX = (float) gh.xSizeMM;
+		float workplaneY = (float) gh.ySizeMM;
 
 		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
 
 		// Calculate texture offsets. Note X and Y are swapped in the 3D view
-		float xTextureOffset = (float) ((int) (ySizeMM / (TILE_SIZE_MM * 2)) - ySizeMM / (TILE_SIZE_MM * 2));
-		float yTextureOffset = (float) ((int) (xSizeMM / (TILE_SIZE_MM * 2)) - xSizeMM / (TILE_SIZE_MM * 2));
+		float xTextureOffset = (float) ((int) (gh.ySizeMM / (TILE_SIZE_MM * 2)) - gh.ySizeMM / (TILE_SIZE_MM * 2));
+		float yTextureOffset = (float) ((int) (gh.xSizeMM / (TILE_SIZE_MM * 2)) - gh.xSizeMM / (TILE_SIZE_MM * 2));
 
 		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
 
@@ -1492,9 +1527,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int r = (wpColor >> 16) & 0xFF;
 		int g = (wpColor >> 8) & 0xFF;
 		int b = wpColor & 0xFF;
+		int a = (wpColor >> 24) & 0xFF;
 		for (int i = 0; i < src.length; i++) {
 			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
-			src[i] = 0xFF000000 | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
+			src[i] = (a << 24) | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
 					| (Math.min(255, (b * n) / 100));
 		}
 
@@ -1544,9 +1580,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Set work plane texture
 		material.setDiffuseMap(tile);
 
-		// Control work plane transparency
-		Color transWhite = new Color(1, 1, 1, 0.35);
-		material.setDiffuseColor(transWhite); // Work plane color
+		material.setDiffuseColor(Color.WHITE); // Work plane color
 		material.setSpecularColor(Color.BLACK); // No shiny spots
 
 		// WritableImage selfIlluminationImage = new WritableImage(1, 1);
@@ -1557,9 +1591,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Create the work plane outline material
 		PhongMaterial material2 = new PhongMaterial();
 		WritableImage outlineImage = new WritableImage(1, 1);
-		outlineImage.getPixelWriter().setColor(0, 0, argbToColor(grid10Color));
+		outlineImage.getPixelWriter().setColor(0, 0, getGridKey());
 		material2.setDiffuseMap(outlineImage);
-		material2.setDiffuseColor(transWhite); // Work plane color
+		material2.setDiffuseColor(Color.WHITE); // Work plane color
 		material2.setSpecularColor(Color.BLACK); // No shiny spots
 		// material2.setSelfIlluminationMap(selfIlluminationImage);
 
@@ -1616,11 +1650,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.setBlendMode(BlendMode.SRC_OVER);
 		outlineView.setCullFace(CullFace.NONE);
 
-		Group wp = new Group(topView, outlineView);
-
-		wp.setMouseTransparent(true);
-
-		return wp;
+		gh.wp.getChildren().addAll(topView, outlineView);
 	}
 
 	/**
@@ -1777,12 +1807,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		new Thread() {
 
+			;
+
 			public void run() {
 				try {
-					// Image ruler = AssetFactory.loadAsset("ruler.png");
-					// Image ruler = new Image(BowlerStudio.class.getResourceAsStream("ruler.png"));
-					// Image groundLocal = AssetFactory.loadAsset("ground.png");
-
 					// Create the rulers
 					double scale = 1;
 					Affine xRuler = new Affine();
@@ -1820,9 +1848,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 					BowlerStudio.runLater(() -> {
 
-						Node xrulerImage = MakeRuler.createRuler(true);
-						Node yrulerImage = MakeRuler.createRuler(false);
-						Node zrulerImage = MakeRuler.createRuler(true);
+						Node xrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
+						Node yrulerImage = MakeRuler.createRuler(false, phongMaterialRuler);
+						Node zrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
 
 						xrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xRuler,
 								xRulerZoffset);
