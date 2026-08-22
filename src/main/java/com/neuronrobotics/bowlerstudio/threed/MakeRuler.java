@@ -76,6 +76,7 @@ public class MakeRuler {
 									Affine numberTransform = new Affine();
 									numberTransform.appendTranslation(index, 0);
 									numberGroup.getTransforms().add(numberTransform);
+									numberGroup.setViewOrder(0);
 									ruler.getChildren().add(numberGroup);
 								});
 						}
@@ -92,7 +93,7 @@ public class MakeRuler {
 				MeshView tickView = new MeshView(tickMesh);
 				tickView.setMouseTransparent(true);
 				tickView.setMaterial(phongMaterial);
-
+				tickView.setViewOrder(0);
 				// Use Affine transform for tick positioning
 				// com.neuronrobotics.sdk.common.Log.error("Tick for " + i);
 				Affine tickTransform = new Affine();
@@ -102,19 +103,20 @@ public class MakeRuler {
 				BowlerKernel.runLater(() -> ruler.getChildren().add(tickView));
 			}
 		}).start();
+		ruler.setViewOrder(0);
 		return ruler;
 	}
 
 	private static TriangleMesh createRectangleMesh(double width, double tickLength) {
-		float[] points = {0, 0, 0, // point 0
+		float[] points = { 0, 0, 0, // point 0
 				(float) width, 0, 0, // point 1
 				(float) width, (float) tickLength, 0, // point 2
 				0, (float) tickLength, 0 // point 3
 		};
 
-		float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
+		float[] texCoords = { 0, 0, 1, 0, 1, 1, 0, 1 };
 
-		int[] faces = {0, 0, 1, 1, 2, 2, // First triangle
+		int[] faces = { 0, 0, 1, 1, 2, 2, // First triangle
 				0, 0, 2, 2, 3, 3 // Second triangle
 		};
 
