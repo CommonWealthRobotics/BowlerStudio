@@ -47,7 +47,6 @@ import com.neuronrobotics.bowlerstudio.scripting.IScriptEventListener;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingFileWidget;
 import com.neuronrobotics.bowlerstudio.utils.FindTextWidget;
-import com.neuronrobotics.sdk.common.Log;
 
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -663,7 +662,7 @@ public class LocalFileScriptTab extends VBox implements IScriptEventListener, Ev
 				try {
 					textArea.setFont(myFont);
 				} catch (Throwable ex) {
-					Log.error(ex);
+					// Log.error(ex);
 					setFontLoop();
 				}
 			});
