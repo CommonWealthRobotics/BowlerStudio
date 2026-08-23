@@ -1592,9 +1592,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.outlineView = outlineView;
 		gh.bigGridView = bigGridView;
 
-		backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
-			Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
-		});
+//		backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
+//			Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
+//		});
 	}
 
 	/**
