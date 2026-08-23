@@ -1,4 +1,5 @@
 package com.neuronrobotics.bowlerstudio;
+
 /**
  * Sample Skeleton for "BowlerStudioModularFrame.fxml" Controller Class
  * You can copy and paste this code into your favorite IDE
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+
 @SuppressWarnings("restriction")
 public class BowlerStudioModularFrame {
 
@@ -364,8 +366,9 @@ public class BowlerStudioModularFrame {
 	}
 
 	public void closeTab(Tab newTab) {
-
-		dockPane.getTabs().remove(newTab);
+		BowlerStudio.runLater(() -> {
+			dockPane.getTabs().remove(newTab);
+		});
 	}
 
 	public void addTab(Tab newTab, boolean b) {
