@@ -521,6 +521,7 @@ public class BowlerStudio extends Application {
 
 		@SuppressWarnings("restriction")
 		public void appendText(String v) {
+			Log.debug(v);
 			if (v.length() > LengthOfOutputLog) {
 				v = v.substring(v.length() - LengthOfOutputLog, v.length());
 			}
@@ -681,13 +682,14 @@ public class BowlerStudio extends Application {
 		File currentVerFile = new File(System.getProperty("user.home") + delim() + "bin" + delim() + getInstallDirStub()
 				+ delim() + "currentversion.txt");
 		String s = "";
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
-		String line;
+
 		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(currentVerFile)));
+			String line;
 			while (null != (line = br.readLine())) {
 				s += line;
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 		latestVersionString = s.trim();
 		return latestVersionString;
