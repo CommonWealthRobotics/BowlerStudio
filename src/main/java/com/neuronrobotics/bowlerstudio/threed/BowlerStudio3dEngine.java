@@ -288,14 +288,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static Color gridColor = Color.web("#4838A880");
 	private static Color gridKey = Color.web("#0000Fa");
 	private static ArrayList<GridHolder> grids = new ArrayList<BowlerStudio3dEngine.GridHolder>();
+	private AmbientLight ambientLight;
 
 	public static class GridHolder {
 		public double xSizeMM;
 		public double ySizeMM;
 		// public Group wp;
-		MeshView bigGridView;
-		MeshView outlineView;
-		public MeshView backgroundView;
+		Group bigGridView = new Group();
+		Group outlineView = new Group();
+		Group backgroundView = new Group();
+		public MeshView intersectionNode;
 
 		public void setVisible(boolean b) {
 			Log.debug("Setting workplane visable " + b);
@@ -1505,7 +1507,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public static void makeGrid(GridHolder gh) {
 		Log.debug("Grid colors \n" + gridKey + "\n" + gridColor + "\n" + lightGrid);
-
+		gh.backgroundView.getChildren().clear();
+		gh.outlineView.getChildren().clear();
+		gh.bigGridView.getChildren().clear();
 		// Physical spacing, in MM — mirrors the old texture tile
 		final float TILE_SIZE_MM = 10.0f;
 		final int TILE_BIG_GRID_PX = 200;
@@ -1588,13 +1592,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color lightGrid2 = getLightGrid();
 
 		MeshView backgroundView = background.buildMeshView(lightGrid2);
-		gh.backgroundView = backgroundView;
-		gh.outlineView = outlineView;
-		gh.bigGridView = bigGridView;
-
-//		backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
-//			Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
-//		});
+		gh.backgroundView.getChildren().add(backgroundView);
+		gh.outlineView.getChildren().add(outlineView);
+		gh.bigGridView.getChildren().add(bigGridView);
+		gh.intersectionNode = backgroundView;
+		// backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
+		// Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
+		// });
 	}
 
 	/**
@@ -1720,8 +1724,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		addPointLight(-1000, 0, -1000);
 		addPointLight(1000, -1000, 1000);
 
-		// Ambient light - illuminates all faces equally regardless of normals
-		AmbientLight ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
+		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
 		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
@@ -1757,17 +1760,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
 		});
-		//		getFlyingCamera().addListener(new ICameraChangeListener() {
+		// getFlyingCamera().addListener(new ICameraChangeListener() {
 		//
-		//			@Override
-		//			public void onChange(VirtualCameraMobileBase camera) {
-		//				VirtualCameraMobileBase flyingCamera2 = getFlyingCamera();
-		//				if (flyingCamera2 == null || workplaneGroup == null)
-		//					return;
-		//				double tiltAngle = flyingCamera2.getTiltAngle();
-		//				getWorkplaneGroup().setVisible(!(tiltAngle < -90 || tiltAngle > 90));
-		//			}
-		//		});
+		// @Override
+		// public void onChange(VirtualCameraMobileBase camera) {
+		// VirtualCameraMobileBase flyingCamera2 = getFlyingCamera();
+		// if (flyingCamera2 == null || workplaneGroup == null)
+		// return;
+		// double tiltAngle = flyingCamera2.getTiltAngle();
+		// getWorkplaneGroup().setVisible(!(tiltAngle < -90 || tiltAngle > 90));
+		// }
+		// });
 	}
 
 	private void addPointLight(int value, int value2, int value3) {
@@ -1855,7 +1858,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					// Create the workplane
 					// workplaneGroup = createGridMesh(1000, 1000, 20);
 					workplaneGroup = createTexturedWorkplane(1000, 1000);
-
 					boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
 
 					Axis axes = new Axis(showAxes ? selected : false);
@@ -1904,6 +1906,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						// Create the world group
 						world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroupSolid,
 								userGroup, customWorkplaneGroupTransparent, controlHandleGroup);
+						ambientLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView,
+								workplaneGroup.bigGridView, workplaneGroup.outlineView);
 
 						// Use ambient illumination for workplanes and axes, ruler is black so no need
 						// to illuminate
@@ -1985,6 +1989,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			customWorkplaneGroupSolid.getChildren().add(n.bigGridView);
 			customWorkplaneGroupSolid.getChildren().add(n.outlineView);
 			customWorkplaneGroupTransparent.getChildren().add(n.backgroundView);
+			ambientLight.getScope().addAll(n.backgroundView, n.bigGridView, n.outlineView);
 		});
 	}
 
@@ -2856,42 +2861,44 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return poseToMove;
 	}
 
-	//	/**
-	//	 * The main() method is ignored in correctly deployed JavaFX application. main()
-	//	 * serves only as fallback in case the application can not be launched through
-	//	 * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores
-	//	 * main().
-	//	 *
-	//	 * @param args the command line arguments
-	//	 */
-	//	public static void main(String[] args) {
-	//		JavaFXInitializer.go();
-	//		System.setProperty("prism.dirtyopts", "false");
+	// /**
+	// * The main() method is ignored in correctly deployed JavaFX application.
+	// main()
+	// * serves only as fallback in case the application can not be launched through
+	// * deployment artifacts, e.g., in IDEs with limited FX support. NetBeans
+	// ignores
+	// * main().
+	// *
+	// * @param args the command line arguments
+	// */
+	// public static void main(String[] args) {
+	// JavaFXInitializer.go();
+	// System.setProperty("prism.dirtyopts", "false");
 	//
-	//		AnchorPane view3d = new AnchorPane();
-	//		BowlerStudio3dEngine engine = new BowlerStudio3dEngine("Test");
-	//		engine.rebuild(true);
-	//		engine.setFocusTraversable(true);
+	// AnchorPane view3d = new AnchorPane();
+	// BowlerStudio3dEngine engine = new BowlerStudio3dEngine("Test");
+	// engine.rebuild(true);
+	// engine.setFocusTraversable(true);
 	//
-	//		engine.addTo(view3d);
-	//		engine.bind(view3d);
-	//		engine.handleMouse(view3d);
+	// engine.addTo(view3d);
+	// engine.bind(view3d);
+	// engine.handleMouse(view3d);
 	//
-	//		BowlerKernel.runLater(() -> {
-	//			Stage newStage = new Stage();
-	//			Scene scene = new Scene(view3d, 1024, 960, true);
-	//			newStage.setScene(scene);
-	//			scene.getRoot().setStyle("-fx-font-family: 'Arial';");
-	//			scene.getRoot().applyCss();
-	//			scene.getRoot().layout();
-	//			// Add a close request handler
-	//			newStage.setOnCloseRequest(event -> {
-	//				// Exit the JVM when the window is closed
-	//				System.exit(0);
-	//			});
-	//			newStage.show();
-	//		});
-	//	}
+	// BowlerKernel.runLater(() -> {
+	// Stage newStage = new Stage();
+	// Scene scene = new Scene(view3d, 1024, 960, true);
+	// newStage.setScene(scene);
+	// scene.getRoot().setStyle("-fx-font-family: 'Arial';");
+	// scene.getRoot().applyCss();
+	// scene.getRoot().layout();
+	// // Add a close request handler
+	// newStage.setOnCloseRequest(event -> {
+	// // Exit the JVM when the window is closed
+	// System.exit(0);
+	// });
+	// newStage.show();
+	// });
+	// }
 
 	public IControlsMap getControlsMap() {
 		if (map == null) {
