@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerstudio.BowlerStudioMenuWorkspace;
 import com.neuronrobotics.bowlerstudio.BowlerStudioModularFrame;
 import com.neuronrobotics.bowlerstudio.ConnectionManager;
 import com.neuronrobotics.bowlerstudio.IssueReportingExceptionHandler;
+import com.neuronrobotics.bowlerstudio.SplashManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.assets.FontSizeManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -777,6 +778,7 @@ public class MobleBaseMenueFactory {
 	private static Thread makeACopyOfACreature(MobileBase device, String oldname, String newName) {
 		return new Thread() {
 			public void run() {
+				SplashManager.renderSplashFrame(1, "Copy device to " + newName);
 				try {
 					// Create GitHub repository
 					GitHub github = PasswordManager.getGithub();
@@ -784,6 +786,7 @@ public class MobleBaseMenueFactory {
 					builder.description(newName + " copy of " + oldname);
 
 					GHRepository gist = null;
+					SplashManager.renderSplashFrame(5, "create repo " + newName);
 					try {
 						gist = builder.create();
 					} catch (org.kohsuke.github.HttpException ex) {
@@ -791,6 +794,7 @@ public class MobleBaseMenueFactory {
 							gist = github.getRepository(PasswordManager.getLoginID() + "/" + newName);
 						}
 					}
+					SplashManager.renderSplashFrame(10, "wait for cloning " + newName);
 
 					String gitURL = gist.getHtmlUrl().toExternalForm() + ".git";
 
@@ -805,26 +809,50 @@ public class MobleBaseMenueFactory {
 							com.neuronrobotics.sdk.common.Log.debug("Waiting for repo " + e.getMessage());
 						}
 					}
+					SplashManager.renderSplashFrame(50, "Run Copy process" + newName);
 
 					// Use builder to create copy
 					MobileBase newDevice = new MobileBaseBuilder(CSGDatabase.getInstance(), gitURL, newName)
 							.copyFrom(device, newName).build(CSGDatabase.getInstance());
+					SplashManager.renderSplashFrame(60, "Close Source Robot " + oldname);
 
 					// Shut down old robot and add new one
 					ConnectionManager.disconnectAll();
 					ThreadUtil.wait(3000);
+					SplashManager.renderSplashFrame(60, "Connect New Robot " + newName);
+
 					BowlerStudioMenuWorkspace.add(gitURL);
 					ThreadUtil.wait(1000);
 
 					MobileBase mb = MobileBaseLoader.fromGit(CSGDatabase.getInstance(), gitURL, newName + ".xml");
 					ThreadUtil.wait(1000);
-					BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+					SplashManager.renderSplashFrame(60, "Launch Control Tab " + newName);
+					BowlerStudio.runLater(() -> {
+						try {
+							BowlerStudio.createFileTab(ScriptingEngine.fileFromGit(gitURL, newName + ".xml"));
+						} catch (InvalidRemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (TransportException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (GitAPIException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
 					ThreadUtil.wait(1000);
+					SplashManager.renderSplashFrame(90, "Adding connection Manager " + newName);
+
 					ConnectionManager.addConnection(mb, mb.getScriptingName());
 
 				} catch (Exception e) {
-					com.neuronrobotics.sdk.common.Log.error(e);
+					System.out.println(e.getStackTrace());
 				}
+				SplashManager.closeSplash();
 			}
 		};
 	}
@@ -1730,8 +1758,7 @@ public class MobleBaseMenueFactory {
 	}
 
 	/**
-	 * @param baseDirForFiles
-	 *            the baseDirForFiles to set
+	 * @param baseDirForFiles the baseDirForFiles to set
 	 */
 	public static void setBaseDirForFiles(File baseDirForFiles) {
 		MobleBaseMenueFactory.baseDirForFiles = baseDirForFiles;
