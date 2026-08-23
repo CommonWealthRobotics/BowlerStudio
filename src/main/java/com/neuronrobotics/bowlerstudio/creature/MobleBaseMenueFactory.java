@@ -814,6 +814,20 @@ public class MobleBaseMenueFactory {
 					// Use builder to create copy
 					MobileBase newDevice = new MobileBaseBuilder(CSGDatabase.getInstance(), gitURL, newName)
 							.copyFrom(device, newName).build(CSGDatabase.getInstance());
+					saveToXML(newDevice);
+					SplashManager.renderSplashFrame(55, "Commit XML" + newName);
+					File source = ScriptingEngine.fileFromGit(gitURL, device.getGitSelfSource()[1]);
+					String message = "Adding Main XML" + "\n\n" + "Initial Commit";
+					try {
+						String relativePath = ScriptingEngine.findLocalPath(source);
+						ScriptingEngine.pull(gitURL);
+						ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), relativePath,
+								device.getXml(), message, true);
+					} catch (Exception e1) {
+						// Auto-generated catch block
+						e1.printStackTrace();
+					}
+
 					SplashManager.renderSplashFrame(60, "Close Source Robot " + oldname);
 
 					// Shut down old robot and add new one
