@@ -85,7 +85,6 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -278,6 +277,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private Pane overlayPane = null;
 	private static PhongMaterial phongMaterialRuler = new PhongMaterial(Color.BLACK);
+
+	class GridHolder {
+		double xSizeMM;
+		double ySizeMM;
+		Group wp;
+	}
+
+	private static ArrayList<GridHolder> grids = new ArrayList<BowlerStudio3dEngine.GridHolder>();
 
 	public void setOverlayPane(Pane overlayP) {
 		this.overlayPane = overlayP;
@@ -1453,14 +1460,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 	}
 
-	class GridHolder {
-		double xSizeMM;
-		double ySizeMM;
-		Group wp;
-	}
-
-	private static ArrayList<GridHolder> grids = new ArrayList<BowlerStudio3dEngine.GridHolder>();
-
 	// Create textured work-plane based on tiles of custom size
 	public Group createTexturedWorkplane(double xSizeMM, double ySizeMM) {
 		Group wp = new Group();
@@ -1478,182 +1477,151 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		gh.wp.getChildren().clear();
 		gh.wp.setMouseTransparent(true);
-		// Build square textured tile in MM
+
+		// Physical spacing, in MM — mirrors the old texture tile
 		final float TILE_SIZE_MM = 10.0f;
 		final int TILE_BIG_GRID_PX = 200;
 		final int TILE_SMALL_GRID_PX = 20;
 
-		// Build square textured tile in inches
-		// final float TILE_SIZE_MM = 25.4f;
-		// final int TILE_BIG_GRID_PX = 200;
-		// final int TILE_SMALL_GRID_PX = 20; // 1/10th inch
-
-		// Build square textured tile in inches
-		// final float TILE_SIZE_MM = 25.4f;
-		// final int TILE_BIG_GRID_PX = 256;
-		// final int TILE_SMALL_GRID_PX = 16; // 1/16th inch
-
-		// Build square textured tile in half inche
-		// final float TILE_SIZE_MM = 12.7f;
-		// final int TILE_BIG_GRID_PX = 254;
-		// final int TILE_SMALL_GRID_PX = 127;
-
-		// Upscale work plane texture
-		final int wpUpscale = 4;
-
-		// Work plane noise in percentage [0-100%]
-		int wpNoise = 25;
-
-		// setLightGrid(Color.web("#3838A8"));
-		int wpColor = webColorToArgb(getLightGrid()); // Higher is lighter color
-		// setGridColor();
-		int grid1Color = webColorToArgb(getGridColor());
-		// setGridKey();
-		int grid10Color = webColorToArgb(getGridKey());
+		// Derived from the old texture's pixel weights, so line thickness/spacing
+		// match exactly what was rendered before.
+		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
+		final int SMALL_DIVISIONS = TILE_BIG_GRID_PX / TILE_SMALL_GRID_PX; // 10 small lines/tile
+		final float SMALL_SPACING_MM = TILE_SIZE_MM / SMALL_DIVISIONS; // 1mm
+		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM; // 1px wide
+		final float BIG_LINE_WIDTH_MM = PIXEL_SIZE_MM * 3; // 3px wide (adjacent-tile overlap)
 
 		float workplaneX = (float) gh.xSizeMM;
 		float workplaneY = (float) gh.ySizeMM;
+		float halfX = workplaneX / 2;
+		float halfY = workplaneY / 2;
 
-		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
+		Color grid1Color = getGridColor();
+		Color grid10Color = getGridKey();
 
-		// Calculate texture offsets. Note X and Y are swapped in the 3D view
-		float xTextureOffset = (float) ((int) (gh.ySizeMM / (TILE_SIZE_MM * 2)) - gh.ySizeMM / (TILE_SIZE_MM * 2));
-		float yTextureOffset = (float) ((int) (gh.xSizeMM / (TILE_SIZE_MM * 2)) - gh.xSizeMM / (TILE_SIZE_MM * 2));
+		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
+		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
 
-		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
-
-		// Set work plane background (done when adding noise)
-		// Arrays.fill(src, wpColor);
-
-		// Add some noise to make the work plane look real
-		Random rnd = new Random();
-		int r = (wpColor >> 16) & 0xFF;
-		int g = (wpColor >> 8) & 0xFF;
-		int b = wpColor & 0xFF;
-		int a = (wpColor >> 24) & 0xFF;
-		for (int i = 0; i < src.length; i++) {
-			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
-			src[i] = (a << 24) | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
-					| (Math.min(255, (b * n) / 100));
+		// Vertical lines: step across X, each line spans the full Y extent
+		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
+		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
+		for (int i = xStartIdx; i <= xEndIdx; i++) {
+			float x = i * SMALL_SPACING_MM;
+			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+			(isBig ? bigLines : smallLines).addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
 		}
 
-		// Draw small grid, 1 line
-		for (int x1 = 0; x1 < TILE_BIG_GRID_PX; x1 += TILE_SMALL_GRID_PX) {
-			for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-				src[y * TILE_BIG_GRID_PX + x1] = grid1Color;
-				src[x1 * TILE_BIG_GRID_PX + y] = grid1Color;
-			}
+		// Horizontal lines: step across Y, each line spans the full X extent
+		int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
+		int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
+		for (int i = yStartIdx; i <= yEndIdx; i++) {
+			float y = i * SMALL_SPACING_MM;
+			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+			(isBig ? bigLines : smallLines).addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
 		}
 
-		// Draw big grid, 3 lines
-		int last = TILE_BIG_GRID_PX - 1;
-		for (int i = 0; i < TILE_BIG_GRID_PX; i++) {
-			src[i + TILE_BIG_GRID_PX] = grid10Color;
-			src[i * TILE_BIG_GRID_PX + 1] = grid10Color;
+		MeshView smallGridView = smallLines.buildMeshView(grid1Color);
+		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
 
-			src[i] = grid10Color;
-			src[i * TILE_BIG_GRID_PX] = grid10Color;
-
-			src[i * TILE_BIG_GRID_PX + last] = grid10Color;
-			src[last * TILE_BIG_GRID_PX + i] = grid10Color;
-		}
-
-		// Scale up with nearest neighbor algorithm
-		int upscaledX = TILE_BIG_GRID_PX * wpUpscale;
-		int upscaledY = TILE_BIG_GRID_PX * wpUpscale;
-		WritableImage tile = new WritableImage(upscaledX, upscaledY);
-		PixelWriter pw = tile.getPixelWriter();
-
-		for (int y = 0; y < upscaledY; y++) {
-			int sy = y / wpUpscale;
-			for (int x = 0; x < upscaledX; x++) {
-				int sx = x / wpUpscale;
-				pw.setArgb(x, y, src[sy * TILE_BIG_GRID_PX + sx]);
-			}
-		}
-
-		// Create the work plane material
-		PhongMaterial material = new PhongMaterial();
-		// Sharp edges, edges with aliasing
-		// material.setDiffuseMap(tile);
-		// material.setDiffuseColor(new Color(1, 1, 0, 0.33));
-		// material.setSpecularColor(Color.BLACK);
-		// material.setSelfIlluminationMap(tile);
-
-		// Set work plane texture
-		material.setDiffuseMap(tile);
-
-		material.setDiffuseColor(Color.WHITE); // Work plane color
-		material.setSpecularColor(Color.BLACK); // No shiny spots
-
-		// WritableImage selfIlluminationImage = new WritableImage(1, 1);
-		// selfIlluminationImage.getPixelWriter().setColor(0, 0, Color.color(0.1, 0.1,
-		// 0.1, 1.0)); // RGBA
-		// material.setSelfIlluminationMap(selfIlluminationImage);
-
-		// Create the work plane outline material
-		PhongMaterial material2 = new PhongMaterial();
-		WritableImage outlineImage = new WritableImage(1, 1);
-		outlineImage.getPixelWriter().setColor(0, 0, getGridKey());
-		material2.setDiffuseMap(outlineImage);
-		material2.setDiffuseColor(Color.WHITE); // Work plane color
-		material2.setSpecularColor(Color.BLACK); // No shiny spots
-		// material2.setSelfIlluminationMap(selfIlluminationImage);
-
-		// Create the work plane mesh, draw at slight offset to align pixel to line
-		// centre
-		TriangleMesh topMesh = new TriangleMesh();
-		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
-
-		// Map texture to mesh
-		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
-				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
-				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
-				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
-
-		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
-
-		MeshView topView = new MeshView(topMesh);
-		topView.setMaterial(material);
-		topView.setBlendMode(BlendMode.SRC_OVER);
-		topView.setCullFace(CullFace.NONE);
-		// topView.setCache(false); // keeps JavaFX from scaling the image
-
-		// Create the work plane outline mesh
+		// Outer border — same geometry as before, now a plain solid-color material
+		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
 		final float IN = 0.0f; // inwards mm
 
 		TriangleMesh outlineMesh = new TriangleMesh();
 		outlineMesh.getPoints().setAll(
 				// inside
-				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				IN - halfX, IN - halfY, 0f, -IN + halfX, IN - halfY, 0f, -IN + halfX, -IN + halfY, 0f, IN - halfX,
+				-IN + halfY, 0f,
 				// outside
-				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+				-OUT - halfX, -OUT - halfY, 0f, OUT + halfX, -OUT - halfY, 0f, OUT + halfX, OUT + halfY, 0f,
+				-OUT - halfX, OUT + halfY, 0f);
+		outlineMesh.getTexCoords().setAll(0f, 0f);
 
-		outlineMesh.getTexCoords().setAll(0, 0, 1, 0, 1, 1, 0, 1, // inside
-				0, 0, 1, 0, 1, 1, 0, 1); // outide
+		outlineMesh.getFaces().setAll(0, 0, 4, 0, 5, 0, 0, 0, 5, 0, 1, 0, // bottom
+				1, 0, 5, 0, 6, 0, 1, 0, 6, 0, 2, 0, // right
+				2, 0, 6, 0, 7, 0, 2, 0, 7, 0, 3, 0, // top
+				3, 0, 7, 0, 4, 0, 3, 0, 4, 0, 0, 0); // left
 
-		// 8 triangles (4 quads)
-		outlineMesh.getFaces().setAll(0, 0, 4, 4, 5, 5, 0, 0, 5, 5, 1, 1, // bottom
-				1, 1, 5, 5, 6, 6, 1, 1, 6, 6, 2, 2, // right
-				2, 2, 6, 6, 7, 7, 2, 2, 7, 7, 3, 3, // top
-				3, 3, 7, 7, 4, 4, 3, 3, 4, 4, 0, 0); // left
+		PhongMaterial outlineMaterial = new PhongMaterial();
+		outlineMaterial.setDiffuseColor(grid10Color);
+		outlineMaterial.setSpecularColor(Color.BLACK);
 
 		MeshView outlineView = new MeshView(outlineMesh);
-		outlineView.setMaterial(material2);
+		outlineView.setMaterial(outlineMaterial);
 		outlineView.setBlendMode(BlendMode.SRC_OVER);
 		outlineView.setCullFace(CullFace.NONE);
 
-		gh.wp.getChildren().addAll(topView, outlineView);
+		gh.wp.getChildren().addAll(smallGridView, bigGridView, outlineView);
+	}
+
+	/**
+	 * Batches a set of axis-aligned rectangular line segments (flat quads in the XY
+	 * plane, z = 0) into a single TriangleMesh, so each color/weight of grid line
+	 * renders as one MeshView instead of one MeshView per line.
+	 */
+	private static class GridLineMeshBuilder {
+		private final List<Float> points = new ArrayList<>();
+		private final List<Integer> faces = new ArrayList<>();
+
+		void addQuad(float x0, float y0, float x1, float y1) {
+			int base = points.size() / 3;
+			points.add(x0);
+			points.add(y0);
+			points.add(0f);
+			points.add(x1);
+			points.add(y0);
+			points.add(0f);
+			points.add(x1);
+			points.add(y1);
+			points.add(0f);
+			points.add(x0);
+			points.add(y1);
+			points.add(0f);
+
+			// dummy texcoord index (0) for every vertex — material has no diffuse map
+			faces.add(base);
+			faces.add(0);
+			faces.add(base + 1);
+			faces.add(0);
+			faces.add(base + 2);
+			faces.add(0);
+
+			faces.add(base);
+			faces.add(0);
+			faces.add(base + 2);
+			faces.add(0);
+			faces.add(base + 3);
+			faces.add(0);
+		}
+
+		MeshView buildMeshView(Color color) {
+			TriangleMesh mesh = new TriangleMesh();
+
+			float[] pts = new float[points.size()];
+			for (int i = 0; i < pts.length; i++)
+				pts[i] = points.get(i);
+			mesh.getPoints().setAll(pts);
+
+			mesh.getTexCoords().setAll(0f, 0f);
+
+			int[] faceArr = new int[faces.size()];
+			for (int i = 0; i < faceArr.length; i++)
+				faceArr[i] = faces.get(i);
+			mesh.getFaces().setAll(faceArr);
+
+			PhongMaterial material = new PhongMaterial();
+			material.setDiffuseColor(color);
+			material.setSpecularColor(Color.BLACK);
+
+			MeshView view = new MeshView(mesh);
+			view.setMaterial(material);
+			view.setBlendMode(BlendMode.SRC_OVER);
+			view.setCullFace(CullFace.NONE);
+			return view;
+		}
 	}
 
 	/**
