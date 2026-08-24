@@ -97,6 +97,7 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
 import javafx.scene.transform.Affine;
@@ -1086,7 +1087,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1126,7 +1128,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1166,7 +1169,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1958,26 +1962,25 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudioModularFrame bowlerStudioModularFrame = BowlerStudioModularFrame.getBowlerStudioModularFrame();
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
-
+		Color diffuseColor = null;
 		if (MeshView.class.isInstance(n)) {
 			MeshView mv = (MeshView) n;
 			Material material = mv.getMaterial();
 			if (PhongMaterial.class.isInstance(material)) {
 				PhongMaterial mat = (PhongMaterial) material;
-				if (mat.getDiffuseColor().getOpacity() < 1) {
-					if (Platform.isFxApplicationThread())
-						userGroup.getChildren().add(n);
-					else
-						BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
-					return;
-				}
+				diffuseColor = mat.getDiffuseColor();
 			}
 		}
-		if (Platform.isFxApplicationThread())
-			userGroup.getChildren().add(0, n);
-		else
-			BowlerStudio.runLater(() -> userGroup.getChildren().add(0, n));
-
+		if (Rectangle.class.isInstance(n)) {
+			Rectangle mv = (Rectangle) n;
+			diffuseColor = (Color) mv.getFill();
+		}
+		if (diffuseColor != null)
+			if (diffuseColor.getOpacity() < 1) {
+				BowlerStudio.runLater(() -> userGroup.getChildren().add(n));
+				return;
+			}
+		BowlerStudio.runLater(() -> userGroup.getChildren().add(0, n));
 	}
 
 	// Add nodes to the customWorkplaneGroup
@@ -1992,7 +1995,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			ambientLight.getScope().addAll(n.backgroundView, n.bigGridView, n.outlineView);
 		});
 	}
+	public void addTransparentorkplaneNode(Node n) {
 
+		BowlerStudio.runLater(() -> {
+			customWorkplaneGroupSolid.getChildren().add(n);
+		});
+	}
 	// Remove nodes from the userGroup
 	public void removeUserNode(Node n) {
 		BowlerStudio.runLater(() -> userGroup.getChildren().remove(n));
@@ -2661,13 +2669,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null)
-				? 0
+		double az = (orient == null) ? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null)
-				? 0
+		double el = (orient == null) ? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
