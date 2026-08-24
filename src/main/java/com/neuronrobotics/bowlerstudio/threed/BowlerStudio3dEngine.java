@@ -71,7 +71,6 @@ import eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance;
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged;
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 //import javafx.embed.swing.JFXPanel;
 //import javafx.embed.swing.SwingFXUtils;
@@ -1599,9 +1598,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.intersectionNode = backgroundView;
 		outlineView.setMouseTransparent(true);
 		bigGridView.setMouseTransparent(true);
-		//backgroundView.setDepthTest(DepthTest.DISABLE);
-		//outlineView.setDepthTest(DepthTest.DISABLE);
-		//bigGridView.setDepthTest(DepthTest.DISABLE);
+		// backgroundView.setDepthTest(DepthTest.DISABLE);
+		// outlineView.setDepthTest(DepthTest.DISABLE);
+		// bigGridView.setDepthTest(DepthTest.DISABLE);
 		// backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
 		// Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
 		// });
@@ -1929,27 +1928,28 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public void groundToNormal() {
-		//		BowlerStudio.runLater(() -> {
-		//			Group backgroundView = workplaneGroup.backgroundView;
-		//			if (customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
-		//				customWorkplaneGroupSolid.getChildren().remove(backgroundView);
-		//			}
-		//			if (!customWorkplaneGroupTransparent.getChildren().contains(backgroundView)) {
-		//				customWorkplaneGroupTransparent.getChildren().add(backgroundView);
-		//			}
-		//		});
+		// BowlerStudio.runLater(() -> {
+		// Group backgroundView = workplaneGroup.backgroundView;
+		// if (customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
+		// customWorkplaneGroupSolid.getChildren().remove(backgroundView);
+		// }
+		// if (!customWorkplaneGroupTransparent.getChildren().contains(backgroundView))
+		// {
+		// customWorkplaneGroupTransparent.getChildren().add(backgroundView);
+		// }
+		// });
 	}
 
 	public void groundToPicking() {
-		BowlerStudio.runLater(() -> {
-			Group backgroundView = workplaneGroup.backgroundView;
-			if (!customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
-				customWorkplaneGroupSolid.getChildren().add(backgroundView);
-			}
-			if (customWorkplaneGroupTransparent.getChildren().contains(backgroundView)) {
-				customWorkplaneGroupTransparent.getChildren().remove(backgroundView);
-			}
-		});
+		//		BowlerStudio.runLater(() -> {
+		//			Group backgroundView = workplaneGroup.backgroundView;
+		//			if (!customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
+		//				customWorkplaneGroupSolid.getChildren().add(backgroundView);
+		//			}
+		//			if (customWorkplaneGroupTransparent.getChildren().contains(backgroundView)) {
+		//				customWorkplaneGroupTransparent.getChildren().remove(backgroundView);
+		//			}
+		//		});
 	}
 
 	public GridHolder getWorkplaneGroup() {
@@ -1963,13 +1963,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		if (bowlerStudioModularFrame != null)
 			bowlerStudioModularFrame.showCreatureLab();
 
-		if (Platform.isFxApplicationThread())
+		BowlerStudio.runLater(() -> {
 			controlHandleGroup.getChildren().add(n);
-		else
-			BowlerStudio.runLater(() -> {
-				controlHandleGroup.getChildren().add(n);
 
-			});
+		});
 	}
 
 	public void removeControlNode(Node n) {
@@ -2017,7 +2014,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			customWorkplaneGroupSolid.getChildren().add(n.bigGridView);
 			customWorkplaneGroupSolid.getChildren().add(n.outlineView);
-			customWorkplaneGroupTransparent.getChildren().add(n.backgroundView);
+			customWorkplaneGroupTransparent.getChildren().add(0, n.backgroundView);
 			ambientLight.getScope().addAll(n.backgroundView, n.bigGridView, n.outlineView);
 		});
 	}
