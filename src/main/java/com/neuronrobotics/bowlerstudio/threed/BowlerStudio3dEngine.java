@@ -298,6 +298,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Group outlineView = new Group();
 		Group backgroundView = new Group();
 		public MeshView intersectionNode;
+		public Affine mmOffset = new Affine();
 
 		public void setVisible(boolean b) {
 			Log.debug("Setting workplane visable " + b);
@@ -1520,7 +1521,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
 		final int SMALL_DIVISIONS = TILE_BIG_GRID_PX / TILE_SMALL_GRID_PX; // 10 small lines/tile
 		final float SMALL_SPACING_MM = TILE_SIZE_MM / SMALL_DIVISIONS; // 1mm
-		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM; // 1px wide
+		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM * 1; // 1px wide
 		final float BIG_LINE_WIDTH_MM = PIXEL_SIZE_MM * 3; // 3px wide (adjacent-tile overlap)
 
 		float workplaneX = (float) gh.xSizeMM;
@@ -1532,9 +1533,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color grid10Color = getGridKey();
 
 		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
-
+		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
 		// Vertical lines: step across X, each line spans the full Y extent
 		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
+		int smallLineCount = 40;
 		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
 		for (int i = xStartIdx; i <= xEndIdx; i++) {
 			float x = i * SMALL_SPACING_MM;
@@ -1542,6 +1544,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
 			if (isBig)
 				bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
+			if (i > -smallLineCount && i < smallLineCount) {
+				smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth, smallLineCount);
+			}
 		}
 
 		// Horizontal lines: step across Y, each line spans the full X extent
@@ -1553,10 +1558,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
 			if (isBig)
 				bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
+			if (i > -smallLineCount && i < smallLineCount) {
+				smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y + halfWidth);
+			}
 		}
-
+		Affine gridOffset = new Affine();
+		gridOffset.setTz(-0.05);
 		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
-
+		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
+		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset);
 		// Outer border — same geometry as before, now a plain solid-color material
 		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
@@ -1594,10 +1604,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		MeshView backgroundView = background.buildMeshView(lightGrid2);
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
-		gh.bigGridView.getChildren().add(bigGridView);
+		gh.bigGridView.getChildren().addAll(bigGridView, smallGrid);
 		gh.intersectionNode = backgroundView;
 		outlineView.setMouseTransparent(true);
 		bigGridView.setMouseTransparent(true);
+		smallGrid.setMouseTransparent(true);
 		// backgroundView.setDepthTest(DepthTest.DISABLE);
 		// outlineView.setDepthTest(DepthTest.DISABLE);
 		// bigGridView.setDepthTest(DepthTest.DISABLE);
@@ -1725,9 +1736,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 */
 
 		// Point light behind camera, similar to default JavaFX light
-		addPointLight(1000, 1000, 1000);
+		addPointLight(1000, 0, 1000);
 		addPointLight(-1000, 0, -1000);
-		addPointLight(1000, -1000, 1000);
+		PointLight follow = addPointLight(1000, -1000, 1000);
 
 		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
 		world.getChildren().add(ambientLight);
@@ -1765,20 +1776,31 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
 		});
-		// getFlyingCamera().addListener(new ICameraChangeListener() {
-		//
-		// @Override
-		// public void onChange(VirtualCameraMobileBase camera) {
-		// VirtualCameraMobileBase flyingCamera2 = getFlyingCamera();
-		// if (flyingCamera2 == null || workplaneGroup == null)
-		// return;
-		// double tiltAngle = flyingCamera2.getTiltAngle();
-		// getWorkplaneGroup().setVisible(!(tiltAngle < -90 || tiltAngle > 90));
-		// }
-		// });
+		getFlyingCamera().addListener(new ICameraChangeListener() {
+
+			@Override
+			public void onChange(VirtualCameraMobileBase camera) {
+				TransformNR cf = camera.getCamerFrame();
+				int x = (int) (cf.getX() / 10) * 10;
+				int y = (int) (cf.getY() / 10) * 10;
+				if (workplaneGroup != null) {
+					getWorkplaneGroup().mmOffset.setTx(x);
+					getWorkplaneGroup().mmOffset.setTy(y);
+				}
+				//Log.debug("Placing grid "+x +" , "+y);
+			}
+		});
+		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
+			final float distanceBehindCamera = 10000;
+			Point3D p = camera.localToScene(1000, 1000, -distanceBehindCamera);
+			follow.setTranslateX(-p.getX());
+			follow.setTranslateY(p.getY());
+			follow.setTranslateZ(-p.getZ());
+
+		});
 	}
 
-	private void addPointLight(int value, int value2, int value3) {
+	private PointLight addPointLight(int value, int value2, int value3) {
 		PointLight cameraLight = new PointLight(Color.color(0.3, 0.3, 0.3));
 		cameraLight.setConstantAttenuation(1);
 		cameraLight.setLinearAttenuation(0);
@@ -1794,6 +1816,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		cameraLight.setTranslateZ(value3);
 		Log.debug("Light Location " + value + " " + value2 + " " + value3);
 		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
+		return cameraLight;
 	}
 
 	/**
