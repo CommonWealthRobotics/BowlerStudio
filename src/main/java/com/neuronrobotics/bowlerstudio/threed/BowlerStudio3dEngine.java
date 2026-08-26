@@ -1523,8 +1523,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
 		final int SMALL_DIVISIONS = TILE_BIG_GRID_PX / TILE_SMALL_GRID_PX; // 10 small lines/tile
 		final float SMALL_SPACING_MM = TILE_SIZE_MM / SMALL_DIVISIONS; // 1mm
-		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM * 1; // 1px wide
-		final float BIG_LINE_WIDTH_MM = PIXEL_SIZE_MM * 3; // 3px wide (adjacent-tile overlap)
+		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM * 2; // 1px wide
+		final float BIG_LINE_WIDTH_MM = PIXEL_SIZE_MM * 4; // 3px wide (adjacent-tile overlap)
 
 		float workplaneX = (float) gh.xSizeMM;
 		float workplaneY = (float) gh.ySizeMM;
@@ -1742,7 +1742,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		addPointLight(-1000, 0, -1000);
 		PointLight follow = addPointLight(1000, -1000, 1000);
 
-		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
+		ambientLight = new AmbientLight(Color.color(0.5, 0.5, 0.5));
 		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
@@ -1804,7 +1804,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private PointLight addPointLight(int value, int value2, int value3) {
-		PointLight cameraLight = new PointLight(Color.color(0.3, 0.3, 0.3));
+		PointLight cameraLight = new PointLight(Color.color(0.4, 0.4, 0.4));
 		cameraLight.setConstantAttenuation(1);
 		cameraLight.setLinearAttenuation(0);
 		cameraLight.setQuadraticAttenuation(0);
