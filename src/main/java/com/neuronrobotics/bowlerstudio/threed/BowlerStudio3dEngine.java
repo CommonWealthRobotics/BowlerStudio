@@ -1742,7 +1742,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		addPointLight(-1000, 0, -1000);
 		PointLight follow = addPointLight(1000, -1000, 1000);
 
-		ambientLight = new AmbientLight(Color.color(0.5, 0.5, 0.5));
+		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
 		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
