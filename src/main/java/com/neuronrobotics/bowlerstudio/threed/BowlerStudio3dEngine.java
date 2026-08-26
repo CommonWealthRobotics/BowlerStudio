@@ -1742,7 +1742,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		addPointLight(-1000, 0, -1000);
 		PointLight follow = addPointLight(1000, -1000, 1000);
 
-		ambientLight = new AmbientLight(Color.color(0.5, 0.5, 0.5));
+		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
 		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
@@ -2171,11 +2171,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
 									i * mouseDeltaX * modifierFactor * modifier * mouseScale, 0));
+					System.out.println("Rot camera " + me);
+
 					moveCamera(trans);
 				}
 
 				if (getControlsMap().isMove(me) && move) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
+					System.out.println("Move camera " + me);
 
 					// Limit smallest movement amount
 					depth = Math.min(100, depth);
@@ -2190,6 +2193,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.addEventHandler(ScrollEvent.ANY, t -> {
 			if (getControlsMap().isZoom(t)) {
 				double deltaY = t.getDeltaY();
+				System.out.println("Zoom camera " + t);
+
 				zoomIncrement(deltaY);
 			}
 			t.consume();
@@ -2293,34 +2298,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void zoomIncrement(double deltaY) {
 		double zoomFactor = -deltaY * getVirtualcam().getZoomDepth() / 500;
 
-		/*
-		 * EXPERIMENTAL FEATURE, SLOW DOWN ZOOM WHEN CLOSE TO OBJECT
-		 *
-		 * double distance = getCamDistanceToClosestObject();
-		 *
-		 * // Parameters to control zoom in behavior final double ZOOM_IN_START_DISTANCE
-		 * = 5; final double ZOOM_IN_STEP_REDUCTION = 2; if (ZOOM_IN_START_DISTANCE *
-		 * zoomFactor > distance) zoomFactor = distance / (ZOOM_IN_START_DISTANCE *
-		 * ZOOM_IN_STEP_REDUCTION);
-		 *
-		 * // Parameters to control zoom out behavior final double
-		 * ZOOM_OUT_START_DISTANCE = 3; final double ZOOM_OUT_STEP_REDUCTION = 2; if
-		 * (-ZOOM_OUT_START_DISTANCE * zoomFactor > distance) zoomFactor = -distance /
-		 * (ZOOM_OUT_START_DISTANCE * ZOOM_OUT_STEP_REDUCTION);
-		 */
-		// double z = camera.getTranslateY();
-		// double newZ = z + zoomFactor;
-		// camera.setTranslateY(newZ);
-		// com.neuronrobotics.sdk.common.Log.error("Z = "+zoomFactor);
-
 		getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
 
-		// In addition to the zoom also move a bit closer, gives unlimited zoom
-		double moveCloser = (deltaY > 0) ? 0.1 : -0.1;
-		TransformNR zoomMove = new TransformNR();
-		zoomMove.translateZ(moveCloser);
-
-		moveCamera(zoomMove);
 	}
 
 	public void moveCamera(TransformNR newPose) {
