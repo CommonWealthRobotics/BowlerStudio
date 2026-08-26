@@ -300,8 +300,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Group backgroundView = new Group();
 		public MeshView intersectionNode;
 		public Affine mmOffset = new Affine();
-		public Scale scale = new Scale(1, 1, 1);
-
+		public Scale SNAP = new Scale(1, 1, 1);
+		double snapSize = 1;
 		public void setVisible(boolean b) {
 			Log.debug("Setting workplane visable " + b);
 			BowlerStudio.runLater(() -> {
@@ -1568,7 +1568,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gridOffset.setTz(-0.05);
 		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
 		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
-		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.scale);
+		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP);
 		// Outer border — same geometry as before, now a plain solid-color material
 		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
@@ -1783,8 +1783,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			@Override
 			public void onChange(VirtualCameraMobileBase camera) {
 				TransformNR cf = camera.getCamerFrame();
-				int x = (int) (cf.getX() / 1) * 1;
-				int y = (int) (cf.getY() / 1) * 1;
+				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
+				int x = (int) (cf.getX() / snap) * snap;
+				int y = (int) (cf.getY() / snap) * snap;
 				if (workplaneGroup != null) {
 					getWorkplaneGroup().mmOffset.setTx(x);
 					getWorkplaneGroup().mmOffset.setTy(y);
@@ -3208,9 +3209,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public void setIncrement(double snapGridValue) {
 		if (workplaneGroup != null) {
-			workplaneGroup.scale.setX(snapGridValue);
-			workplaneGroup.scale.setY(snapGridValue);
-			workplaneGroup.scale.setZ(snapGridValue);
+			workplaneGroup.SNAP.setX(snapGridValue);
+			workplaneGroup.SNAP.setY(snapGridValue);
+			workplaneGroup.SNAP.setZ(snapGridValue);
+			workplaneGroup.snapSize = snapGridValue;
 		}
 	}
 
