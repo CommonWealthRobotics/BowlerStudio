@@ -1783,7 +1783,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			@Override
 			public void onChange(VirtualCameraMobileBase camera) {
 				TransformNR cf = camera.getCamerFrame();
-				if(workplaneGroup==null)
+				if (workplaneGroup == null)
 					return;
 				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
 				int x = (int) (cf.getX() / snap) * snap;
