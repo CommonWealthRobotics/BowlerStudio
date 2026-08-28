@@ -1783,6 +1783,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			@Override
 			public void onChange(VirtualCameraMobileBase camera) {
 				TransformNR cf = camera.getCamerFrame();
+				if(workplaneGroup==null)
+					return;
 				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
 				int x = (int) (cf.getX() / snap) * snap;
 				int y = (int) (cf.getY() / snap) * snap;
@@ -2171,14 +2173,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					TransformNR trans = new TransformNR(0, 0, 0,
 							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
 									i * mouseDeltaX * modifierFactor * modifier * mouseScale, 0));
-					System.out.println("Rot camera " + me);
 
 					moveCamera(trans);
 				}
 
 				if (getControlsMap().isMove(me) && move) {
 					double depth = -100 / getVirtualcam().getZoomDepth();
-					System.out.println("Move camera " + me);
 
 					// Limit smallest movement amount
 					depth = Math.min(100, depth);
@@ -2193,8 +2193,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		scene.addEventHandler(ScrollEvent.ANY, t -> {
 			if (getControlsMap().isZoom(t)) {
 				double deltaY = t.getDeltaY();
-				System.out.println("Zoom camera " + t);
-
 				zoomIncrement(deltaY);
 			}
 			t.consume();
