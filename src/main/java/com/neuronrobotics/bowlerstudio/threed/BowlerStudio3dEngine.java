@@ -302,7 +302,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		public Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
-		
+
 		double snapSize = 1;
 		public void setSnap(double snapGridValue) {
 			SNAP1x.setX(snapGridValue);
@@ -313,6 +313,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			SNAP10x.setZ(snapGridValue);
 			snapSize = snapGridValue;
 		}
+
 		public void setVisible(boolean b) {
 			Log.debug("Setting workplane visable " + b);
 			BowlerStudio.runLater(() -> {
@@ -1580,7 +1581,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
 		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
 		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
-		bigGridView.getTransforms().addAll( gh.SNAP10x);
+		bigGridView.getTransforms().addAll(gh.SNAP10x);
 		// Outer border — same geometry as before, now a plain solid-color material
 		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
@@ -1609,7 +1610,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.setMaterial(outlineMaterial);
 		outlineView.setBlendMode(BlendMode.SRC_OVER);
 		outlineView.setCullFace(CullFace.NONE);
-		outlineView.getTransforms().addAll( gh.SNAP10x);
+		outlineView.getTransforms().addAll(gh.SNAP10x);
 
 		// Solid background rectangle, spanning the full workplane
 		GridLineMeshBuilder background = new GridLineMeshBuilder();
