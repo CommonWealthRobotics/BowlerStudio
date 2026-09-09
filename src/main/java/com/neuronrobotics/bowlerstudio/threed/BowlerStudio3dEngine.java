@@ -50,6 +50,7 @@ import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.bowlerstudio.scripting.CaDoodleLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.scripting.cadoodle.CaDoodleFile;
+import com.neuronrobotics.bowlerstudio.threed.VirtualCameraMobileBase.ProjectionMode;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
 import com.neuronrobotics.imageprovider.IVirtualCameraFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -3161,13 +3162,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void setOrthographicMode(boolean orthographicMode) {
 		this.orthographicMode = orthographicMode;
 		if (orthographicMode) {
-			camera.setFieldOfView(2);
+			camera.setFieldOfView(1);
 
 		} else {
 			camera.setFieldOfView(fieldOfViewDefualt);
 		}
 		getFlyingCamera().setZoomScale(fieldOfViewDefualt / camera.getFieldOfView());
-		getFlyingCamera().setZoomDepth(getFlyingCamera().getZoomDepth());
+		getFlyingCamera().setProjectionMode(orthographicMode?ProjectionMode.ORTHOGRAPHIC:ProjectionMode.PERSPECTIVE);
 	}
 
 	public double getFov() {

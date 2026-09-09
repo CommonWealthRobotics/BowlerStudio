@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import org.jfree.util.Log;
+
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
@@ -101,8 +103,7 @@ public class VirtualCameraMobileBase {
 
 	/** Toggle between PERSPECTIVE and ORTHOGRAPHIC. */
 	public void toggleProjectionMode() {
-		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE
-				? ProjectionMode.ORTHOGRAPHIC
+		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE ? ProjectionMode.ORTHOGRAPHIC
 				: ProjectionMode.PERSPECTIVE);
 	}
 
@@ -111,6 +112,7 @@ public class VirtualCameraMobileBase {
 	 */
 	public void setProjectionMode(ProjectionMode mode) {
 		this.projectionMode = mode;
+		setZoomDepth(zoomDepth);
 		BowlerStudio.runLater(() -> {
 			if (mode == ProjectionMode.ORTHOGRAPHIC)
 				activateOrtho();
@@ -817,24 +819,25 @@ public class VirtualCameraMobileBase {
 	public void setZoomDepth(double zoomDepth) {
 		if (zoomlock)
 			throw new RuntimeException("Zoom can not be set when locked");
+		//System.out.println("Zoom: " + zoomDepth);
+		zoomDepth = Math.max(-30000 * getZoomScale(), Math.min(0, zoomDepth));
 
 		if (projectionMode == ProjectionMode.ORTHOGRAPHIC) {
 
-			double oldDistance = -this.zoomDepth;
-			double newDistance = -zoomDepth;
-
-			if (oldDistance > 0 && newDistance > 0) {
-				orthoScale *= newDistance / oldDistance;
-			}
-
 			this.zoomDepth = zoomDepth;
 
-			injectOrthoMatrix();
-			return;
+			double distance = -zoomDepth;
+			double sceneRadius = 1000;
+
+			double nearClip = Math.max(0.1, distance - sceneRadius);
+			double farClip = distance + sceneRadius;
+
+			camera.setNearClip(nearClip);
+			camera.setFarClip(farClip);
+		} else {
+			camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
 		}
-		zoomDepth = Math.max(-9000 * getZoomScale(), Math.min(-2, zoomDepth));
 		this.zoomDepth = zoomDepth;
-		camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
 		zoomAffine.setTz(zoomDepth);
 		fireUpdate();
 	}
