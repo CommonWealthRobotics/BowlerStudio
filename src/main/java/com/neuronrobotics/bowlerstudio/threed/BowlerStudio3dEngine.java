@@ -3168,7 +3168,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			camera.setFieldOfView(fieldOfViewDefualt);
 		}
 		getFlyingCamera().setZoomScale(fieldOfViewDefualt / camera.getFieldOfView());
-		getFlyingCamera().setProjectionMode(orthographicMode?ProjectionMode.ORTHOGRAPHIC:ProjectionMode.PERSPECTIVE);
+		getFlyingCamera()
+				.setProjectionMode(orthographicMode ? ProjectionMode.ORTHOGRAPHIC : ProjectionMode.PERSPECTIVE);
 	}
 
 	public double getFov() {

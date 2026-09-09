@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.jfree.util.Log;
 
 import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -103,7 +102,8 @@ public class VirtualCameraMobileBase {
 
 	/** Toggle between PERSPECTIVE and ORTHOGRAPHIC. */
 	public void toggleProjectionMode() {
-		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE ? ProjectionMode.ORTHOGRAPHIC
+		setProjectionMode(projectionMode == ProjectionMode.PERSPECTIVE
+				? ProjectionMode.ORTHOGRAPHIC
 				: ProjectionMode.PERSPECTIVE);
 	}
 
@@ -859,7 +859,7 @@ public class VirtualCameraMobileBase {
 	private void synchronizePositionWithOtherFlyingCamera(TransformNR n) {
 		for (VirtualCameraMobileBase cam : flyingCamera) {
 			RotationNR rotation = getFiducialToGlobalTransform().getRotation();
-			if (!zoomlock && !cam.zoomlock && ((int) cam.getZoomDepth()) != ((int) getZoomDepth())) {
+			if (!zoomlock && !cam.zoomlock && ((int) cam.zoomDepth) != ((int) zoomDepth)) {
 				cam.setZoomDepth(zoomDepth);
 			}
 			if (rotation == cam.myGlobal.getRotation())
