@@ -9,7 +9,6 @@ import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.Log;
 
 import Jama.Matrix;
 import javafx.animation.AnimationTimer;
@@ -833,8 +832,8 @@ public class VirtualCameraMobileBase {
 			camera.setNearClip(1);
 			camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
 		}
-//		Log.debug("Seting camera Ortho Mode " + projectionMode + " new zoom level " + zoomDepth + " previoud "
-//				+ this.zoomDepth);
+		//		Log.debug("Seting camera Ortho Mode " + projectionMode + " new zoom level " + zoomDepth + " previoud "
+		//				+ this.zoomDepth);
 
 		this.zoomDepth = zoomDepth;
 		zoomAffine.setTz(zoomDepth);
