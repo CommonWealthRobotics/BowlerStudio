@@ -92,7 +92,7 @@ public class MakeRuler {
 				// Create and position tick mark
 				MeshView tickView = new MeshView(tickMesh);
 				tickView.setMouseTransparent(true);
-				tickView.setMaterial(phongMaterial);
+				BowlerKernel.runLater(() -> tickView.setMaterial(phongMaterial));
 				tickView.setViewOrder(0);
 				// Use Affine transform for tick positioning
 				// com.neuronrobotics.sdk.common.Log.error("Tick for " + i);
