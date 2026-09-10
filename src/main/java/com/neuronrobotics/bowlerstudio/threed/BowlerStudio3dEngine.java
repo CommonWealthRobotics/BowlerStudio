@@ -122,6 +122,7 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 
+	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
@@ -3162,13 +3163,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void setOrthographicMode(boolean orthographicMode) {
 		this.orthographicMode = orthographicMode;
 		if (orthographicMode) {
-			camera.setFieldOfView(1);
+			camera.setFieldOfView(OrthFOV);
 		} else {
 			camera.setFieldOfView(fieldOfViewDefualt);
 		}
-		getFlyingCamera().setZoomScale(fieldOfViewDefualt / camera.getFieldOfView());
+		getFlyingCamera().setZoomScale(getOrthographicScale());
 		getFlyingCamera()
 				.setProjectionMode(orthographicMode ? ProjectionMode.ORTHOGRAPHIC : ProjectionMode.PERSPECTIVE);
+	}
+
+	private double getOrthographicScale() {
+		return fieldOfViewDefualt / OrthFOV;
 	}
 
 	public double getFov() {
