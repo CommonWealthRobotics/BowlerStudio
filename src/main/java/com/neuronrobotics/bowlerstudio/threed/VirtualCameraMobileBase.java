@@ -833,8 +833,8 @@ public class VirtualCameraMobileBase {
 			camera.setNearClip(1);
 			camera.setFarClip(Math.max(6000 * getZoomScale(), -zoomDepth * 2));
 		}
-		Log.debug("Seting camera Ortho Mode " + projectionMode + " new zoom level " + zoomDepth + " previoud "
-				+ this.zoomDepth);
+//		Log.debug("Seting camera Ortho Mode " + projectionMode + " new zoom level " + zoomDepth + " previoud "
+//				+ this.zoomDepth);
 
 		this.zoomDepth = zoomDepth;
 		zoomAffine.setTz(zoomDepth);
