@@ -122,6 +122,8 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 
+	private static final double pointLightIntensity = 0.45;
+	private static final double ambientLightIntensity = 0.3;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
@@ -304,8 +306,25 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		public Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
+		boolean showLines = true;
 
 		double snapSize = 1;
+		public void hideLines() {
+			showLines = false;
+			BowlerStudio.runLater(() -> {
+				bigGridView.setVisible(showLines);
+				outlineView.setVisible(showLines);
+			});
+		}
+
+		public void showLines() {
+			showLines = true;
+			BowlerStudio.runLater(() -> {
+				bigGridView.setVisible(showLines);
+				outlineView.setVisible(showLines);
+			});
+		}
+
 		public void setSnap(double snapGridValue) {
 			SNAP1x.setX(snapGridValue);
 			SNAP1x.setY(snapGridValue);
@@ -317,10 +336,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public void setVisible(boolean b) {
+			showLines = b;
 			Log.debug("Setting workplane visable " + b);
 			BowlerStudio.runLater(() -> {
-				bigGridView.setVisible(b);
-				outlineView.setVisible(b);
+				bigGridView.setVisible(showLines);
+				outlineView.setVisible(showLines);
 				backgroundView.setVisible(b);
 			});
 		}
@@ -1758,7 +1778,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		addPointLight(-1000, 0, -1000);
 		PointLight follow = addPointLight(1000, -1000, 1000);
 
-		ambientLight = new AmbientLight(Color.color(0.4, 0.4, 0.4));
+		ambientLight = new AmbientLight(
+				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
 		world.getChildren().add(ambientLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
@@ -1822,7 +1843,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private PointLight addPointLight(int value, int value2, int value3) {
-		PointLight cameraLight = new PointLight(Color.color(0.4, 0.4, 0.4));
+		PointLight cameraLight = new PointLight(
+				Color.color(pointLightIntensity, pointLightIntensity, pointLightIntensity));
 		cameraLight.setConstantAttenuation(1);
 		cameraLight.setLinearAttenuation(0);
 		cameraLight.setQuadraticAttenuation(0);
@@ -3207,6 +3229,18 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public void setIncrement(double snapGridValue) {
 		if (workplaneGroup != null) {
 			workplaneGroup.setSnap(snapGridValue);
+		}
+	}
+
+	public void hideGridLines() {
+		if (workplaneGroup != null) {
+			workplaneGroup.hideLines();
+		}
+	}
+
+	public void showGridLines() {
+		if (workplaneGroup != null) {
+			workplaneGroup.showLines();
 		}
 	}
 
