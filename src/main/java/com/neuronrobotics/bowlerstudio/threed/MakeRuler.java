@@ -36,7 +36,7 @@ public class MakeRuler {
 			baseView.setMouseTransparent(true);
 			baseView.setCullFace(CullFace.NONE);
 
-			baseView.setMaterial(phongMaterial);
+			BowlerKernel.runLater(() -> baseView.setMaterial(phongMaterial));
 
 			// Position the base line in the middle
 			Affine baseTransform = new Affine();
