@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerstudio.threed;
 import java.util.HashMap;
 
 import com.neuronrobotics.bowlerstudio.BowlerKernel;
+import com.neuronrobotics.sdk.common.Log;
 
 import eu.mihosoft.vrl.v3d.CSG;
 import javafx.scene.Group;
@@ -60,25 +61,28 @@ public class MakeRuler {
 						// Prevent double "0" at origin "(flipNumber || (i != 0))"
 
 						if ((numbers.get(number) == null) || (flipNumber || (i != 0))) {
-							numbers.put(number, CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5)
-									.moveToCenterX().setColor(Color.BLACK));
-						}
-						CSG csg = numbers.get(number);
-						if (csg != null) {
-							CSG movey = flipNumber ? csg.roty(180) : csg;
-							int index = i;
-							if (movey != null)
-								BowlerKernel.runLater(() -> {
-									MeshView numberGroup = movey.newMesh();
-									numberGroup.setMouseTransparent(true);
-									numberGroup.setMaterial(phongMaterial);
-									// Scale and position the number
-									Affine numberTransform = new Affine();
-									numberTransform.appendTranslation(index, 0);
-									numberGroup.getTransforms().add(numberTransform);
-									numberGroup.setViewOrder(0);
-									ruler.getChildren().add(numberGroup);
-								});
+							try {
+								CSG setColor = CSG.textToSize("" + i, 4, 6, 0.1).movey(tickLength + 0.5).moveToCenterX()
+										.setColor(Color.BLACK);
+								numbers.put(number, setColor);
+								CSG movey = flipNumber ? setColor.roty(180) : setColor;
+								int index = i;
+								if (movey != null)
+									BowlerKernel.runLater(() -> {
+										MeshView numberGroup = movey.newMesh();
+										numberGroup.setMouseTransparent(true);
+										numberGroup.setMaterial(phongMaterial);
+										// Scale and position the number
+										Affine numberTransform = new Affine();
+										numberTransform.appendTranslation(index, 0);
+										numberGroup.getTransforms().add(numberTransform);
+										numberGroup.setViewOrder(0);
+										ruler.getChildren().add(numberGroup);
+									});
+							} catch (Exception ex) {
+								Log.error("Ruler tick failed "+i);
+								ex.printStackTrace();
+							}
 						}
 					}
 				} else if (i % 5 == 0) {
@@ -103,20 +107,19 @@ public class MakeRuler {
 				BowlerKernel.runLater(() -> ruler.getChildren().add(tickView));
 			}
 		}).start();
-		ruler.setViewOrder(0);
 		return ruler;
 	}
 
 	private static TriangleMesh createRectangleMesh(double width, double tickLength) {
-		float[] points = {0, 0, 0, // point 0
+		float[] points = { 0, 0, 0, // point 0
 				(float) width, 0, 0, // point 1
 				(float) width, (float) tickLength, 0, // point 2
 				0, (float) tickLength, 0 // point 3
 		};
 
-		float[] texCoords = {0, 0, 1, 0, 1, 1, 0, 1};
+		float[] texCoords = { 0, 0, 1, 0, 1, 1, 0, 1 };
 
-		int[] faces = {0, 0, 1, 1, 2, 2, // First triangle
+		int[] faces = { 0, 0, 1, 1, 2, 2, // First triangle
 				0, 0, 2, 2, 3, 3 // Second triangle
 		};
 

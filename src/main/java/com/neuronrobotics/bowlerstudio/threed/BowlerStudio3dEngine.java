@@ -84,6 +84,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -122,7 +123,7 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 
-	private static final double pointLightIntensity = 0.45;
+	private static final double pointLightIntensity = 0.8;
 	private static final double ambientLightIntensity = 0.3;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
@@ -302,13 +303,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Group bigGridView = new Group();
 		Group outlineView = new Group();
 		Group backgroundView = new Group();
-		public MeshView intersectionNode;
+		public Group intersectionNode;
 		public Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
 		boolean showLines = true;
 
 		double snapSize = 1;
+
 		public void hideLines() {
 			showLines = false;
 			BowlerStudio.runLater(() -> {
@@ -1123,7 +1125,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1163,7 +1166,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1203,7 +1207,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1542,6 +1547,197 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return gh;
 	}
 
+	private static Color argbToColor(int argb) {
+		return Color.color(((argb >> 16) & 0xFF) / 255.0, ((argb >> 8) & 0xFF) / 255.0, (argb & 0xFF) / 255.0,
+				((argb >> 24) & 0xFF) / 255.0);
+	}
+
+	// Create textured work-plane based on tiles of custom size
+	public static Group createTexturedWorkplaneTexture(double xSizeMM, double ySizeMM) {
+
+		// Build square textured tile in MM
+		final float TILE_SIZE_MM = 10.0f;
+		final int TILE_BIG_GRID_PX = 200;
+		final int TILE_SMALL_GRID_PX = 20;
+
+		// Build square textured tile in inches
+		// final float TILE_SIZE_MM = 25.4f;
+		// final int TILE_BIG_GRID_PX = 200;
+		// final int TILE_SMALL_GRID_PX = 20; // 1/10th inch
+
+		// Build square textured tile in inches
+		// final float TILE_SIZE_MM = 25.4f;
+		// final int TILE_BIG_GRID_PX = 256;
+		// final int TILE_SMALL_GRID_PX = 16; // 1/16th inch
+
+		// Build square textured tile in half inche
+		// final float TILE_SIZE_MM = 12.7f;
+		// final int TILE_BIG_GRID_PX = 254;
+		// final int TILE_SMALL_GRID_PX = 127;
+
+		// Upscale work plane texture
+		final int wpUpscale = 4;
+
+		// Work plane noise in percentage [0-100%]
+		int wpNoise = 25;
+
+		//setLightGrid(Color.web("#3838A8"));
+		int wpColor = webColorToArgb(getLightGrid()); // Higher is lighter color
+		//setGridColor();
+		int grid1Color = webColorToArgb(getGridColor());
+		//setGridKey();
+		int grid10Color = webColorToArgb(getGridKey());
+
+		float workplaneX = (float) xSizeMM;
+		float workplaneY = (float) ySizeMM;
+
+		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
+
+		// Calculate texture offsets. Note X and Y are swapped in the 3D view
+		float xTextureOffset = (float) ((int) (ySizeMM / (TILE_SIZE_MM * 2)) - ySizeMM / (TILE_SIZE_MM * 2));
+		float yTextureOffset = (float) ((int) (xSizeMM / (TILE_SIZE_MM * 2)) - xSizeMM / (TILE_SIZE_MM * 2));
+
+		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
+
+		// Set work plane background (done when adding noise)
+		// Arrays.fill(src, wpColor);
+
+		// Add some noise to make the work plane look real
+		Random rnd = new Random();
+		int r = (wpColor >> 16) & 0xFF;
+		int g = (wpColor >> 8) & 0xFF;
+		int b = wpColor & 0xFF;
+		for (int i = 0; i < src.length; i++) {
+			int n = 100 + rnd.nextInt(wpNoise + 1) - (wpNoise / 2);
+			src[i] = 0xFF000000 | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
+					| (Math.min(255, (b * n) / 100));
+		}
+
+		//		// Draw small grid, 1 line
+		//		for (int x1 = 0; x1 < TILE_BIG_GRID_PX; x1 += TILE_SMALL_GRID_PX) {
+		//			for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
+		//				src[y * TILE_BIG_GRID_PX + x1] = grid1Color;
+		//				src[x1 * TILE_BIG_GRID_PX + y] = grid1Color;
+		//			}
+		//		}
+		//
+		//		// Draw big grid, 3 lines
+		//		int last = TILE_BIG_GRID_PX - 1;
+		//		for (int i = 0; i < TILE_BIG_GRID_PX; i++) {
+		//			src[i + TILE_BIG_GRID_PX] = grid10Color;
+		//			src[i * TILE_BIG_GRID_PX + 1] = grid10Color;
+		//
+		//			src[i] = grid10Color;
+		//			src[i * TILE_BIG_GRID_PX] = grid10Color;
+		//
+		//			src[i * TILE_BIG_GRID_PX + last] = grid10Color;
+		//			src[last * TILE_BIG_GRID_PX + i] = grid10Color;
+		//		}
+
+		// Scale up with nearest neighbor algorithm
+		int upscaledX = TILE_BIG_GRID_PX * wpUpscale;
+		int upscaledY = TILE_BIG_GRID_PX * wpUpscale;
+		WritableImage tile = new WritableImage(upscaledX, upscaledY);
+		PixelWriter pw = tile.getPixelWriter();
+
+		for (int y = 0; y < upscaledY; y++) {
+			int sy = y / wpUpscale;
+			for (int x = 0; x < upscaledX; x++) {
+				int sx = x / wpUpscale;
+				pw.setArgb(x, y, src[sy * TILE_BIG_GRID_PX + sx]);
+			}
+		}
+
+		// Create the work plane material
+		PhongMaterial material = new PhongMaterial();
+		// Sharp edges, edges with aliasing
+		// material.setDiffuseMap(tile);
+		// material.setDiffuseColor(new Color(1, 1, 0, 0.33));
+		// material.setSpecularColor(Color.BLACK);
+		// material.setSelfIlluminationMap(tile);
+
+		// Set work plane texture
+		material.setDiffuseMap(tile);
+
+		// Control work plane transparency
+		Color transWhite = new Color(1, 1, 1, 0.35);
+		material.setDiffuseColor(transWhite); // Work plane color
+		material.setSpecularColor(Color.BLACK); // No shiny spots
+
+		// WritableImage selfIlluminationImage = new WritableImage(1, 1);
+		// selfIlluminationImage.getPixelWriter().setColor(0, 0, Color.color(0.1, 0.1,
+		// 0.1, 1.0)); // RGBA
+		// material.setSelfIlluminationMap(selfIlluminationImage);
+
+		// Create the work plane outline material
+		PhongMaterial material2 = new PhongMaterial();
+		WritableImage outlineImage = new WritableImage(1, 1);
+		outlineImage.getPixelWriter().setColor(0, 0, argbToColor(grid10Color));
+		material2.setDiffuseMap(outlineImage);
+		material2.setDiffuseColor(transWhite); // Work plane color
+		material2.setSpecularColor(Color.BLACK); // No shiny spots
+		// material2.setSelfIlluminationMap(selfIlluminationImage);
+
+		// Create the work plane mesh, draw at slight offset to align pixel to line
+		// centre
+		TriangleMesh topMesh = new TriangleMesh();
+		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+
+		// Map texture to mesh
+		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
+				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
+
+		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
+
+		MeshView topView = new MeshView(topMesh);
+		topView.setMaterial(material);
+		topView.setBlendMode(BlendMode.SRC_OVER);
+		topView.setCullFace(CullFace.NONE);
+		// topView.setCache(false); // keeps JavaFX from scaling the image
+
+		// Create the work plane outline mesh
+		final float OUT = 2.0f; // outwards mm
+		final float IN = 0.0f; // inwards mm
+
+		TriangleMesh outlineMesh = new TriangleMesh();
+		outlineMesh.getPoints().setAll(
+				// inside
+				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				// outside
+				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+
+		outlineMesh.getTexCoords().setAll(0, 0, 1, 0, 1, 1, 0, 1, // inside
+				0, 0, 1, 0, 1, 1, 0, 1); // outide
+
+		// 8 triangles (4 quads)
+		outlineMesh.getFaces().setAll(0, 0, 4, 4, 5, 5, 0, 0, 5, 5, 1, 1, // bottom
+				1, 1, 5, 5, 6, 6, 1, 1, 6, 6, 2, 2, // right
+				2, 2, 6, 6, 7, 7, 2, 2, 7, 7, 3, 3, // top
+				3, 3, 7, 7, 4, 4, 3, 3, 4, 4, 0, 0); // left
+
+		MeshView outlineView = new MeshView(outlineMesh);
+		outlineView.setMaterial(material2);
+		outlineView.setBlendMode(BlendMode.SRC_OVER);
+		outlineView.setCullFace(CullFace.NONE);
+
+		Group wp = new Group(topView);
+
+		//wp.setMouseTransparent(true);
+
+		return wp;
+	}
+
 	public static void makeGrid(GridHolder gh) {
 		Log.debug("Grid colors \n" + gridKey + "\n" + gridColor + "\n" + lightGrid);
 		gh.backgroundView.getChildren().clear();
@@ -1634,12 +1830,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.setCullFace(CullFace.NONE);
 		outlineView.getTransforms().addAll(gh.SNAP10x);
 
+		Group backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
 		// Solid background rectangle, spanning the full workplane
-		GridLineMeshBuilder background = new GridLineMeshBuilder();
-		background.addQuad(-halfX, -halfY, halfX, halfY);
-		Color lightGrid2 = getLightGrid();
-
-		MeshView backgroundView = background.buildMeshView(lightGrid2);
+		//		GridLineMeshBuilder background = new GridLineMeshBuilder();
+		//		background.addQuad(-halfX, -halfY, halfX, halfY);
+		//		Color lightGrid2 = getLightGrid();
+		//
+		//		MeshView backgroundView = background.buildMeshView(lightGrid2);
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
 		gh.bigGridView.getChildren().addAll(bigGridView, smallGrid);
@@ -1878,118 +2075,92 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 */
 	private void buildAxes(boolean showAxes) {
 
-		// int gridSize=1000;
-		// int gridDensity=gridSize/10;
-		//
-		// PhongMaterial phongMaterial = new PhongMaterial();
-		// phongMaterial.setDiffuseColor(Color.BLACK);
-		// for (int i=-gridSize;i<gridSize;i++){
-		// for (int j=-gridSize;j<gridSize;j++){
-		// if (i%gridDensity==0 &&j%gridDensity==0){
-		// Sphere s = new Sphere(1);
-		// s.setMaterial(phongMaterial);
-		// Affine sp=new Affine();
-		// sp.setTy(i);
-		// sp.setTx(j);
-		// //com.neuronrobotics.sdk.common.Log.error("Placing sphere at "+i+" , "+j);
-		// s.getTransforms().add(sp);
-		// ground.getChildren().add(s);
-		// }
-		// }
-		// }
 
-		new Thread() {
+		try {
+			// Create the rulers
+			double scale = 1;
+			Affine xRuler = new Affine();
+			xRuler.appendScale(scale, scale, scale);
+			xRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+			Affine xRulerZoffset = new Affine();
+			xRulerZoffset.setTz(-0.01); // Raise xRuler up a bit
 
-			;
+			Affine yRuler = new Affine();
+			yRuler.appendScale(scale, scale, scale);
+			yRuler.appendRotation(90, 0, 0, 0, 0, 0, 1);
+			Affine yRulerZoffset = new Affine();
+			yRulerZoffset.setTz(0.01); // Raise yRuler up a bit
 
-			public void run() {
-				try {
-					// Create the rulers
-					double scale = 1;
-					Affine xRuler = new Affine();
-					xRuler.appendScale(scale, scale, scale);
-					xRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
-					Affine xRulerZoffset = new Affine();
-					xRulerZoffset.setTz(-0.01); // Raise xRuler up a bit
+			Affine zRuler = new Affine();
+			zRuler.appendScale(scale, scale, scale);
+			// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+			// zRuler.appendRotation( -90, 0, 0, 0, 0, 0, 1);
+			// zRuler.appendRotation( 90, 0, 0, 0, 0, 1, 0);
+			// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+			zRuler.appendRotation(120, 0, 0, 0, 1, -1, 1);
 
-					Affine yRuler = new Affine();
-					yRuler.appendScale(scale, scale, scale);
-					yRuler.appendRotation(90, 0, 0, 0, 0, 0, 1);
-					Affine yRulerZoffset = new Affine();
-					yRulerZoffset.setTz(0.01); // Raise yRuler up a bit
+			// Create the workplane
+			// workplaneGroup = createGridMesh(1000, 1000, 20);
+			workplaneGroup = createTexturedWorkplane(1000, 1000);
+			boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
 
-					Affine zRuler = new Affine();
-					zRuler.appendScale(scale, scale, scale);
-					// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
-					// zRuler.appendRotation( -90, 0, 0, 0, 0, 0, 1);
-					// zRuler.appendRotation( 90, 0, 0, 0, 0, 1, 0);
-					// zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
-					zRuler.appendRotation(120, 0, 0, 0, 1, -1, 1);
+			Axis axes = new Axis(showAxes ? selected : false);
 
-					// Create the workplane
-					// workplaneGroup = createGridMesh(1000, 1000, 20);
-					workplaneGroup = createTexturedWorkplane(1000, 1000);
-					boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
+			// Lower XY-axes a bit
+			Affine axisOffset = new Affine();
+			axisOffset.setTz(-0.01);
+			axes.getTransforms().add(axisOffset);
 
-					Axis axes = new Axis(showAxes ? selected : false);
+			BowlerStudio.runLater(() -> {
 
-					// Lower XY-axes a bit
-					Affine axisOffset = new Affine();
-					axisOffset.setTz(-0.01);
-					axes.getTransforms().add(axisOffset);
+				Node xrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
+				Node yrulerImage = MakeRuler.createRuler(false, phongMaterialRuler);
+				Node zrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
 
-					BowlerStudio.runLater(() -> {
+				xrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xRuler,
+						xRulerZoffset);
+				yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), yRuler,
+						yRulerZoffset);
+				zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), zRuler);
 
-						Node xrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
-						Node yrulerImage = MakeRuler.createRuler(false, phongMaterialRuler);
-						Node zrulerImage = MakeRuler.createRuler(true, phongMaterialRuler);
+				rulerGroup.getChildren().addAll(xrulerImage, yrulerImage, zrulerImage);
+				gridGroup.getChildren().addAll(rulerGroup);
 
-						xrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), xRuler,
-								xRulerZoffset);
-						yrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), yRuler,
-								yRulerZoffset);
-						zrulerImage.getTransforms().addAll(getRulerInWorkplaneOffset(), getRulerOffset(), zRuler);
+				Affine groundPlacement = new Affine();
+				groundPlacement.setTz(-1);
+				// groundGroup.setOpacity(.5);
+				groundGroup = new Group();
+				groundGroup.getTransforms().add(groundPlacement);
 
-						rulerGroup.getChildren().addAll(xrulerImage, yrulerImage, zrulerImage);
-						gridGroup.getChildren().addAll(rulerGroup);
+				cameraGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
-						Affine groundPlacement = new Affine();
-						groundPlacement.setTz(-1);
-						// groundGroup.setOpacity(.5);
-						groundGroup = new Group();
-						groundGroup.getTransforms().add(groundPlacement);
-
-						cameraGroup.getChildren().add(getVirtualcam().getCameraFrame());
-
-						if (showAxes) {
-							gridGroup.getChildren().addAll(axes, groundGroup);
-							showAxis();
-							customWorkplaneGroupSolid.getChildren().add(workplaneGroup.bigGridView);
-							customWorkplaneGroupSolid.getChildren().add(workplaneGroup.outlineView);
-							customWorkplaneGroupTransparent.getChildren().add(workplaneGroup.backgroundView);
-						}
-
-						// Count how many nodes are already present in the userGroup, they are not user
-						// objects
-						if (showAxes)
-							SKIP_USERGROUP_NODES = userGroup.getChildren().size();
-						// customWorkplaneGroup.setViewOrder(-1);
-						// Create the world group
-						world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroupSolid,
-								userGroup, customWorkplaneGroupTransparent, controlHandleGroup);
-						ambientLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView,
-								workplaneGroup.bigGridView, workplaneGroup.outlineView);
-
-						// Use ambient illumination for workplanes and axes, ruler is black so no need
-						// to illuminate
-					});
-
-				} catch (Exception e) {
-					com.neuronrobotics.sdk.common.Log.error(e);
+				if (showAxes) {
+					gridGroup.getChildren().addAll(axes, groundGroup);
+					showAxis();
+					customWorkplaneGroupSolid.getChildren().add(workplaneGroup.bigGridView);
+					customWorkplaneGroupSolid.getChildren().add(workplaneGroup.outlineView);
+					customWorkplaneGroupTransparent.getChildren().add(workplaneGroup.backgroundView);
 				}
-			}
 
-		}.start();
+				// Count how many nodes are already present in the userGroup, they are not user
+				// objects
+				if (showAxes)
+					SKIP_USERGROUP_NODES = userGroup.getChildren().size();
+				// customWorkplaneGroup.setViewOrder(-1);
+				// Create the world group
+				world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroupSolid, userGroup,
+						customWorkplaneGroupTransparent, controlHandleGroup);
+				ambientLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView, workplaneGroup.bigGridView,
+						workplaneGroup.outlineView);
+
+				// Use ambient illumination for workplanes and axes, ruler is black so no need
+				// to illuminate
+			});
+
+		} catch (Exception e) {
+			com.neuronrobotics.sdk.common.Log.error(e);
+		}
+
 
 	}
 
@@ -2735,13 +2906,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null)
-				? 0
+		double az = (orient == null) ? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null)
-				? 0
+		double el = (orient == null) ? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
