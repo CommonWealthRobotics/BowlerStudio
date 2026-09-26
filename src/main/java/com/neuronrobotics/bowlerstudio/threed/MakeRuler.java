@@ -79,7 +79,7 @@ public class MakeRuler {
 										numberGroup.setViewOrder(0);
 										ruler.getChildren().add(numberGroup);
 									});
-							} catch (Exception ex) {
+							} catch (Throwable ex) {
 								Log.error("Ruler tick failed "+i);
 								ex.printStackTrace();
 							}
