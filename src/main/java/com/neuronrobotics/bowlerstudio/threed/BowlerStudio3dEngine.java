@@ -125,7 +125,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private static final double pointLightIntensity = 0.5;
 	private static final double ambientLightIntensity = 0.1;
-	private static final double controlsLightIntensity = 0.6;
+	private static final double controlsLightIntensity = 0.4;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
@@ -1969,8 +1969,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 */
 
 		// Point light behind camera, similar to default JavaFX light
-		addPointLight(1000, 0, 1000);
-		addPointLight(-1000, 0, -1000);
+		addPointLight(1000, 0, 500);
+		addPointLight(-1000, 0, -500);
 		PointLight follow = addPointLight(1000, -1000, 1000);
 
 		ambientLight = new AmbientLight(
@@ -2032,7 +2032,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
 			final float distanceBehindCamera = 10000;
-			Point3D p = camera.localToScene(1000, 1000, -distanceBehindCamera);
+			Point3D p = camera.localToScene(1000, 500, -distanceBehindCamera);
 			follow.setTranslateX(-p.getX());
 			follow.setTranslateY(p.getY());
 			follow.setTranslateZ(-p.getZ());
