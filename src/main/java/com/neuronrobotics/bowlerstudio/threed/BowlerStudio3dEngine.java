@@ -123,8 +123,9 @@ import java.util.*;
  */
 public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseUI {
 
-	private static final double pointLightIntensity = 0.9;
+	private static final double pointLightIntensity = 0.5;
 	private static final double ambientLightIntensity = 0.1;
+	private static final double controlsLightIntensity = 0.6;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
@@ -1974,7 +1975,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		ambientLight = new AmbientLight(
 				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
-		AmbientLight controlLight = new AmbientLight(Color.WHITE);
+		AmbientLight controlLight = new AmbientLight(
+				Color.color(controlsLightIntensity, controlsLightIntensity, controlsLightIntensity));
 
 		world.getChildren().addAll(ambientLight, controlLight);
 		// Enable point light illumination for selected groups
