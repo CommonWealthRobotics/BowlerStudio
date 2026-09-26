@@ -1125,8 +1125,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);
-							;
+							com.neuronrobotics.sdk.common.Log.error(ex);;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1166,8 +1165,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1207,8 +1205,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 				}
 			}
@@ -1978,12 +1975,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		ambientLight = new AmbientLight(
 				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
 		AmbientLight controlLight = new AmbientLight(Color.WHITE);
-		
-		world.getChildren().addAll(ambientLight,controlLight);
+
+		world.getChildren().addAll(ambientLight, controlLight);
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup);
-		controlLight.getScope().addAll( controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
-				customWorkplaneGroupTransparent,rulerGroup);
+		controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
+				customWorkplaneGroupTransparent, rulerGroup);
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
 
@@ -2908,11 +2905,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null) ? 0
+		double az = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null) ? 0
+		double el = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
