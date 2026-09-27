@@ -125,7 +125,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private static final double pointLightIntensity = 0.5;
 	private static final double ambientLightIntensity = 0.1;
-	private static final double controlsLightIntensity = 0.4;
+	private static final double controlsLightIntensity = 0.3;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
@@ -298,19 +298,19 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private AmbientLight ambientLight;
 
 	public static class GridHolder {
-		public double xSizeMM;
-		public double ySizeMM;
+		private double xSizeMM;
+		private double ySizeMM;
 		// public Group wp;
-		Group bigGridView = new Group();
-		Group outlineView = new Group();
-		Group backgroundView = new Group();
-		public Group intersectionNode;
-		public Affine mmOffset = new Affine();
+		private Group bigGridView = new Group();
+		private Group outlineView = new Group();
+		private Group backgroundView = new Group();
+		private MeshView intersectionNode;
+		private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
-		boolean showLines = true;
+		private boolean showLines = true;
 
-		double snapSize = 1;
+		private double snapSize = 1;
 
 		public void hideLines() {
 			showLines = false;
@@ -356,11 +356,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			bigGridView.setMouseTransparent(true);
 			outlineView.setMouseTransparent(true);
 			backgroundView.setMouseTransparent(b);
-			intersectionNode.setMouseTransparent(b);
+			getIntersectionNode().setMouseTransparent(b);
 		}
 
 		public void addEventFilter(EventType<MouseEvent> mousePressed, final EventHandler<MouseEvent> object) {
-			intersectionNode.addEventFilter(mousePressed, object);
+			getIntersectionNode().addEventFilter(mousePressed, object);
 		}
 
 		public void transformsAdd(Affine wpPickPlacement) {
@@ -371,7 +371,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public void removeEventFilter(EventType<MouseEvent> any, EventHandler<MouseEvent> workplaneManager) {
-			intersectionNode.removeEventFilter(any, workplaneManager);
+			getIntersectionNode().removeEventFilter(any, workplaneManager);
+		}
+
+		public MeshView getIntersectionNode() {
+			return intersectionNode;
+		}
+
+		public void setIntersectionNode(MeshView intersectionNode) {
+			this.intersectionNode = intersectionNode;
 		}
 	}
 
@@ -1551,27 +1559,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	// Create textured work-plane based on tiles of custom size
-	public static Group createTexturedWorkplaneTexture(double xSizeMM, double ySizeMM) {
+	public static MeshView createTexturedWorkplaneTexture(double xSizeMM, double ySizeMM) {
 
 		// Build square textured tile in MM
 		final float TILE_SIZE_MM = 10.0f;
 		final int TILE_BIG_GRID_PX = 200;
-		final int TILE_SMALL_GRID_PX = 20;
-
-		// Build square textured tile in inches
-		// final float TILE_SIZE_MM = 25.4f;
-		// final int TILE_BIG_GRID_PX = 200;
-		// final int TILE_SMALL_GRID_PX = 20; // 1/10th inch
-
-		// Build square textured tile in inches
-		// final float TILE_SIZE_MM = 25.4f;
-		// final int TILE_BIG_GRID_PX = 256;
-		// final int TILE_SMALL_GRID_PX = 16; // 1/16th inch
-
-		// Build square textured tile in half inche
-		// final float TILE_SIZE_MM = 12.7f;
-		// final int TILE_BIG_GRID_PX = 254;
-		// final int TILE_SMALL_GRID_PX = 127;
 
 		// Upscale work plane texture
 		final int wpUpscale = 4;
@@ -1611,27 +1603,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					| (Math.min(255, (b * n) / 100));
 		}
 
-		//		// Draw small grid, 1 line
-		//		for (int x1 = 0; x1 < TILE_BIG_GRID_PX; x1 += TILE_SMALL_GRID_PX) {
-		//			for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-		//				src[y * TILE_BIG_GRID_PX + x1] = grid1Color;
-		//				src[x1 * TILE_BIG_GRID_PX + y] = grid1Color;
-		//			}
-		//		}
-		//
-		//		// Draw big grid, 3 lines
-		//		int last = TILE_BIG_GRID_PX - 1;
-		//		for (int i = 0; i < TILE_BIG_GRID_PX; i++) {
-		//			src[i + TILE_BIG_GRID_PX] = grid10Color;
-		//			src[i * TILE_BIG_GRID_PX + 1] = grid10Color;
-		//
-		//			src[i] = grid10Color;
-		//			src[i * TILE_BIG_GRID_PX] = grid10Color;
-		//
-		//			src[i * TILE_BIG_GRID_PX + last] = grid10Color;
-		//			src[last * TILE_BIG_GRID_PX + i] = grid10Color;
-		//		}
-
 		// Scale up with nearest neighbor algorithm
 		int upscaledX = TILE_BIG_GRID_PX * wpUpscale;
 		int upscaledY = TILE_BIG_GRID_PX * wpUpscale;
@@ -1648,11 +1619,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Create the work plane material
 		PhongMaterial material = new PhongMaterial();
-		// Sharp edges, edges with aliasing
-		// material.setDiffuseMap(tile);
-		// material.setDiffuseColor(new Color(1, 1, 0, 0.33));
-		// material.setSpecularColor(Color.BLACK);
-		// material.setSelfIlluminationMap(tile);
 
 		// Set work plane texture
 		material.setDiffuseMap(tile);
@@ -1661,11 +1627,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color transWhite = new Color(1, 1, 1, 0.35);
 		material.setDiffuseColor(transWhite); // Work plane color
 		material.setSpecularColor(Color.BLACK); // No shiny spots
-
-		// WritableImage selfIlluminationImage = new WritableImage(1, 1);
-		// selfIlluminationImage.getPixelWriter().setColor(0, 0, Color.color(0.1, 0.1,
-		// 0.1, 1.0)); // RGBA
-		// material.setSelfIlluminationMap(selfIlluminationImage);
 
 		// Create the work plane outline material
 		PhongMaterial material2 = new PhongMaterial();
@@ -1696,44 +1657,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		topView.setMaterial(material);
 		topView.setBlendMode(BlendMode.SRC_OVER);
 		topView.setCullFace(CullFace.NONE);
-		// topView.setCache(false); // keeps JavaFX from scaling the image
 
-		// Create the work plane outline mesh
-		final float OUT = 2.0f; // outwards mm
-		final float IN = 0.0f; // inwards mm
-
-		TriangleMesh outlineMesh = new TriangleMesh();
-		outlineMesh.getPoints().setAll(
-				// inside
-				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, IN - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-IN + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				IN - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -IN + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				// outside
-				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -OUT - workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				OUT + workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-OUT - workplaneX / 2 - TILE_HALF_PIXEL_SIZE, OUT + workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
-
-		outlineMesh.getTexCoords().setAll(0, 0, 1, 0, 1, 1, 0, 1, // inside
-				0, 0, 1, 0, 1, 1, 0, 1); // outide
-
-		// 8 triangles (4 quads)
-		outlineMesh.getFaces().setAll(0, 0, 4, 4, 5, 5, 0, 0, 5, 5, 1, 1, // bottom
-				1, 1, 5, 5, 6, 6, 1, 1, 6, 6, 2, 2, // right
-				2, 2, 6, 6, 7, 7, 2, 2, 7, 7, 3, 3, // top
-				3, 3, 7, 7, 4, 4, 3, 3, 4, 4, 0, 0); // left
-
-		MeshView outlineView = new MeshView(outlineMesh);
-		outlineView.setMaterial(material2);
-		outlineView.setBlendMode(BlendMode.SRC_OVER);
-		outlineView.setCullFace(CullFace.NONE);
-
-		Group wp = new Group(topView);
-
-		//wp.setMouseTransparent(true);
-
-		return wp;
+		return topView;
 	}
 
 	public static void makeGrid(GridHolder gh) {
@@ -1766,7 +1691,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
 		// Vertical lines: step across X, each line spans the full Y extent
 		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
-		int smallLineCount = 40;
+		int smallLineCount = 100;
 		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
 		for (int i = xStartIdx; i <= xEndIdx; i++) {
 			float x = i * SMALL_SPACING_MM;
@@ -1828,7 +1753,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.setCullFace(CullFace.NONE);
 		outlineView.getTransforms().addAll(gh.SNAP10x);
 
-		Group backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
+		MeshView backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
 		// Solid background rectangle, spanning the full workplane
 		//		GridLineMeshBuilder background = new GridLineMeshBuilder();
 		//		background.addQuad(-halfX, -halfY, halfX, halfY);
@@ -1838,7 +1763,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
 		gh.bigGridView.getChildren().addAll(bigGridView, smallGrid);
-		gh.intersectionNode = backgroundView;
+		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
 		bigGridView.setMouseTransparent(true);
 		smallGrid.setMouseTransparent(true);
