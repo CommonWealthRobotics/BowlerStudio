@@ -125,7 +125,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private static final double pointLightIntensity = 0.5;
 	private static final double ambientLightIntensity = 0.1;
-	private static final double controlsLightIntensity = 0.3;
+	private static final double controlsLightIntensity = 0.5;
 	private static final double OrthFOV = 1;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
@@ -1907,7 +1907,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Enable point light illumination for selected groups
 		ambientLight.getScope().addAll(userGroup);
 		controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
-				customWorkplaneGroupTransparent, rulerGroup);
+				customWorkplaneGroupTransparent, rulerGroup, axisGroup);
 		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
 				.toCSG().roty(90).setColor(Color.BLACK);
 
