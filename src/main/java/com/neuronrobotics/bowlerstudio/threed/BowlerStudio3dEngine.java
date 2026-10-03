@@ -313,6 +313,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private Group outlineView = new Group();
 		private Group backgroundView = new Group();
 		private MeshView intersectionNode;
+		// Two representations of each grid, kept in memory and swapped by camera
+		// motion: crisp 3D line geometry (used when the camera is still) and a
+		// single textured quad (used while the camera is moving).
+		private MeshView bigLinesView;
+		private MeshView bigTextureView;
+		private MeshView smallLinesView;
+		private MeshView smallTextureView;
 		private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
@@ -357,15 +364,30 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			}
 		}
 
-		// Draw (or suppress) the grid lines based on the stored intent: the grids
-		// are shown only when enabled and the camera is not moving, and the small
-		// grid additionally only when it is not zoom-gated out. The outline border
-		// follows showLines only (it is not a grid).
+		// Store both representations of the grids, then pick which one renders.
+		public void setGridViews(MeshView bigLines, MeshView bigTexture, MeshView smallLines, MeshView smallTexture) {
+			bigLinesView = bigLines;
+			bigTextureView = bigTexture;
+			smallLinesView = smallLines;
+			smallTextureView = smallTexture;
+			applyLinesVisibility();
+		}
+
+		// Pick the line geometry when the camera is still, the textured quad while
+		// the camera is moving. The small grid additionally only when not zoom-gated
+		// out; the outline border follows showLines only (it is not a grid).
 		private void applyLinesVisibility() {
 			boolean lines = showLines && !cameraMoving;
+			boolean smallVisible = showSmallGrid && !cameraMoving;
 			BowlerStudio.runLater(() -> {
-				bigGridView.setVisible(lines);
-				smallGridView.setVisible(lines && showSmallGrid);
+				if (bigLinesView != null)
+					bigLinesView.setVisible(lines);
+				if (bigTextureView != null)
+					bigTextureView.setVisible(!lines);
+				if (smallLinesView != null)
+					smallLinesView.setVisible(smallVisible);
+				if (smallTextureView != null)
+					smallTextureView.setVisible(showSmallGrid && cameraMoving);
 				outlineView.setVisible(showLines);
 			});
 		}
@@ -1693,14 +1715,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return topView;
 	}
 
-	// Create a crisp-edged grid on a work-plane sized quad, built from solid
-	// quads (no texture filtering, so no partial-alpha fringes at the edges).
-	// gridSpacingMM: physical spacing between drawn grid lines.
-	// skipSpacingMM: if > 0, lines that line up with a multiple of this spacing
-	// are left out, so a coarser grid drawn underneath shows through. If 0, no
-	// lines are skipped.
-	// lineWidthPx: line thickness, expressed in old texture-pixel units (0.05mm/px).
-	public static MeshView createGridWorkplaneTexture(double xSizeMM, double ySizeMM, double gridSpacingMM,
+	// Create a crisp-edged grid mesh built from solid quads (no texture
+	// filtering, so no partial-alpha fringes at the edges). gridSpacingMM is
+	// the physical spacing between drawn lines; skipSpacingMM, if > 0, leaves
+	// out lines that line up with a multiple of that spacing (0 = skip none)
+	// so a coarser grid drawn underneath shows through. lineWidthPx is the
+	// thickness in old texture-pixel units (0.05mm/px).
+	public static MeshView createGridLinesMesh(double xSizeMM, double ySizeMM, double gridSpacingMM,
 			double skipSpacingMM, int lineWidthPx, Color color) {
 
 		final float PIXEL_SIZE_MM = 0.05f; // 0.05mm/px, matches the old textures
@@ -1738,6 +1759,87 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		return lines.buildMeshView(color);
+	}
+
+	// Create a single textured quad carrying the same grid pattern (from a
+	// tiling 10mm texture). A lone quad is much cheaper to render and is
+	// swapped in while the camera is moving; the crisp line geometry is
+	// swapped back in once the camera stops.
+	public static MeshView createGridTextureMesh(double xSizeMM, double ySizeMM, double gridSpacingMM,
+			double skipSpacingMM, int lineWidthPx, Color color) {
+
+		// Square textured tile in MM
+		final float TILE_SIZE_MM = 10.0f;
+		final int TILE_BIG_GRID_PX = 200;
+		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
+
+		final int gridSpacingPx = (int) Math.round(gridSpacingMM / PIXEL_SIZE_MM);
+		final int skipSpacingPx = (int) Math.round(skipSpacingMM / PIXEL_SIZE_MM);
+
+		int argb = webColorToArgb(color);
+
+		float workplaneX = (float) xSizeMM;
+		float workplaneY = (float) ySizeMM;
+
+		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
+
+		// Calculate texture offsets. Note X and Y are swapped in the 3D view
+		float xTextureOffset = (float) ((int) (ySizeMM / TILE_SIZE_MM) - ySizeMM / TILE_SIZE_MM);
+		float yTextureOffset = (float) ((int) (xSizeMM / TILE_SIZE_MM) - xSizeMM / TILE_SIZE_MM);
+
+		// Fully transparent tile, grid lines drawn on top
+		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
+
+		for (int i = 0; i < TILE_BIG_GRID_PX; i += gridSpacingPx) {
+			// Leave the transparent gap where a coarser grid line passes
+			if (skipSpacingPx > 0 && (i % skipSpacingPx) == 0)
+				continue;
+			int start = i - lineWidthPx / 2;
+			for (int w = 0; w < lineWidthPx; w++) {
+				// Wrap lines that straddle the tile seam so they tile seamlessly
+				int x = Math.floorMod(start + w, TILE_BIG_GRID_PX);
+				for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
+					src[y * TILE_BIG_GRID_PX + x] = argb; // vertical line
+					src[x * TILE_BIG_GRID_PX + y] = argb; // horizontal line
+				}
+			}
+		}
+
+		WritableImage tile = new WritableImage(TILE_BIG_GRID_PX, TILE_BIG_GRID_PX);
+		PixelWriter pw = tile.getPixelWriter();
+		for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
+			for (int x = 0; x < TILE_BIG_GRID_PX; x++) {
+				pw.setArgb(x, y, src[y * TILE_BIG_GRID_PX + x]);
+			}
+		}
+
+		PhongMaterial material = new PhongMaterial();
+		material.setDiffuseMap(tile);
+		material.setDiffuseColor(Color.WHITE); // Alpha comes from the texture
+		material.setSpecularColor(Color.BLACK); // No shiny spots
+
+		// Create the work plane mesh, draw at slight offset to align pixel to line
+		// centre
+		TriangleMesh topMesh = new TriangleMesh();
+		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+
+		// Map texture to mesh
+		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
+				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
+
+		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
+
+		MeshView topView = new MeshView(topMesh);
+		topView.setMaterial(material);
+		topView.setBlendMode(BlendMode.SRC_OVER);
+		topView.setCullFace(CullFace.NONE);
+
+		return topView;
 	}
 
 	public static void makeGrid(GridHolder gh) {
@@ -1834,14 +1936,20 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.getTransforms().addAll(gh.SNAP10x);
 
 		MeshView backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
-		// Large grid first, small grid after. The small grid leaves the 10mm
-		// crossings transparent so the large grid shows through.
-		MeshView grid10View = createGridWorkplaneTexture(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
-		MeshView grid1View = createGridWorkplaneTexture(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
+		// Large grid first, small grid after. Each grid is built twice: crisp 3D
+		// line geometry and a single textured quad. Both stay in memory; the
+		// textured quads are swapped in while the camera moves, the line geometry
+		// when it stops.
+		MeshView grid10Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
+		MeshView grid10Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
+		MeshView grid1Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
+		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
 		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
 		// additionally follows the mm offset of the workplane.
-		grid10View.getTransforms().addAll(gh.SNAP10x);
-		grid1View.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
+		grid10Lines.getTransforms().addAll(gh.SNAP10x);
+		grid10Texture.getTransforms().addAll(gh.SNAP10x);
+		grid1Lines.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
+		grid1Texture.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
 		// Solid background rectangle, spanning the full workplane
 		// GridLineMeshBuilder background = new GridLineMeshBuilder();
 		// background.addQuad(-halfX, -halfY, halfX, halfY);
@@ -1850,8 +1958,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// MeshView backgroundView = background.buildMeshView(lightGrid2);
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
-		gh.bigGridView.getChildren().add(grid10View);
-		gh.smallGridView.getChildren().add(grid1View);
+		gh.bigGridView.getChildren().addAll(grid10Lines, grid10Texture);
+		gh.smallGridView.getChildren().addAll(grid1Lines, grid1Texture);
+		gh.setGridViews(grid10Lines, grid10Texture, grid1Lines, grid1Texture);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
 //		bigGridView.setMouseTransparent(true);
