@@ -75,6 +75,7 @@ import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import javafx.collections.ObservableList;
 //import javafx.embed.swing.JFXPanel;
 //import javafx.embed.swing.SwingFXUtils;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -107,6 +108,7 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.geometry.Bounds;
+import javafx.util.Duration;
 
 // Development, for objectDistance methode
 //import com.sun.javafx.geom.PickRay;
@@ -261,6 +263,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private long timeForAutospin = 5000;
 
+	// Hides both grids while the camera moves, restoring them once it settles.
+	private static final double GRID_HIDE_SETTLE_MS = 150;
+	private PauseTransition gridHideTimer;
+
 	// private CheckBox spin;
 	// private CheckBox autoHighlight;
 
@@ -312,25 +318,18 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private Scale SNAP10x = new Scale(1, 1, 1);
 		private boolean showLines = true;
 		private boolean showSmallGrid = true;
+		private boolean cameraMoving = false;
 
 		private double snapSize = 1;
 
 		public void hideLines() {
 			showLines = false;
-			BowlerStudio.runLater(() -> {
-				bigGridView.setVisible(showLines);
-				smallGridView.setVisible(showLines && showSmallGrid);
-				outlineView.setVisible(showLines);
-			});
+			applyLinesVisibility();
 		}
 
 		public void showLines() {
 			showLines = true;
-			BowlerStudio.runLater(() -> {
-				bigGridView.setVisible(showLines);
-				smallGridView.setVisible(showLines && showSmallGrid);
-				outlineView.setVisible(showLines);
-			});
+			applyLinesVisibility();
 		}
 
 		public void setSnap(double snapGridValue) {
@@ -346,25 +345,38 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		public void setVisible(boolean b) {
 			showLines = b;
 			Log.debug("Setting workplane visable " + b);
-			BowlerStudio.runLater(() -> {
-				bigGridView.setVisible(showLines);
-				smallGridView.setVisible(showLines && showSmallGrid);
-				outlineView.setVisible(showLines);
-				backgroundView.setVisible(b);
-			});
+			BowlerStudio.runLater(() -> backgroundView.setVisible(b));
+			applyLinesVisibility();
 		}
 
 		public void setSmallGridVis(Boolean b) {
 			if (b != showSmallGrid) {
 				Log.debug("Toggle small grid to " + b);
 				showSmallGrid = b;
-				setVisible(showLines);
+				applyLinesVisibility();
 			}
+		}
 
+		// Draw (or suppress) the grid lines based on the stored intent: the grids
+		// are shown only when enabled and the camera is not moving, and the small
+		// grid additionally only when it is not zoom-gated out. The outline border
+		// follows showLines only (it is not a grid).
+		private void applyLinesVisibility() {
+			boolean lines = showLines && !cameraMoving;
+			BowlerStudio.runLater(() -> {
+				bigGridView.setVisible(lines);
+				smallGridView.setVisible(lines && showSmallGrid);
+				outlineView.setVisible(showLines);
+			});
+		}
+
+		public void setCameraMoving(boolean moving) {
+			cameraMoving = moving;
+			applyLinesVisibility();
 		}
 
 		public boolean isVisible() {
-			return bigGridView.isVisible();
+			return showLines;
 		}
 
 		public void setMouseTransparent(boolean b) {
@@ -1681,86 +1693,51 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return topView;
 	}
 
-	// Create a tiling grid texture on a work-plane sized quad.
+	// Create a crisp-edged grid on a work-plane sized quad, built from solid
+	// quads (no texture filtering, so no partial-alpha fringes at the edges).
 	// gridSpacingMM: physical spacing between drawn grid lines.
 	// skipSpacingMM: if > 0, lines that line up with a multiple of this spacing
-	// are left transparent, so a coarser grid drawn underneath shows through.
-	// If skipSpacingMM is 0, no lines are skipped.
+	// are left out, so a coarser grid drawn underneath shows through. If 0, no
+	// lines are skipped.
+	// lineWidthPx: line thickness, expressed in old texture-pixel units (0.05mm/px).
 	public static MeshView createGridWorkplaneTexture(double xSizeMM, double ySizeMM, double gridSpacingMM,
 			double skipSpacingMM, int lineWidthPx, Color color) {
 
-		// Square textured tile in MM
-		final float TILE_SIZE_MM = 10.0f;
-		final int TILE_BIG_GRID_PX = 200;
-		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
-
-		final int gridSpacingPx = (int) Math.round(gridSpacingMM / PIXEL_SIZE_MM);
-		final int skipSpacingPx = (int) Math.round(skipSpacingMM / PIXEL_SIZE_MM);
-
-		int argb = webColorToArgb(color);
+		final float PIXEL_SIZE_MM = 0.05f; // 0.05mm/px, matches the old textures
+		final float lineWidthMM = lineWidthPx * PIXEL_SIZE_MM;
 
 		float workplaneX = (float) xSizeMM;
 		float workplaneY = (float) ySizeMM;
+		float halfX = workplaneX / 2;
+		float halfY = workplaneY / 2;
 
-		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
+		GridLineMeshBuilder lines = new GridLineMeshBuilder();
+		float halfWidth = lineWidthMM / 2f;
 
-		// Calculate texture offsets. Note X and Y are swapped in the 3D view
-		float xTextureOffset = (float) ((int) (ySizeMM / TILE_SIZE_MM) - ySizeMM / TILE_SIZE_MM);
-		float yTextureOffset = (float) ((int) (xSizeMM / TILE_SIZE_MM) - xSizeMM / TILE_SIZE_MM);
+		// Number of grid steps per skip period (0 = never skip)
+		int skipEvery = (skipSpacingMM > 0) ? (int) Math.round(skipSpacingMM / gridSpacingMM) : 0;
 
-		// Fully transparent tile, grid lines drawn on top
-		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
-
-		for (int i = 0; i < TILE_BIG_GRID_PX; i += gridSpacingPx) {
-			// Leave the transparent gap where a coarser grid line passes
-			if (skipSpacingPx > 0 && (i % skipSpacingPx) == 0)
+		// Vertical lines: step across X, each line spans the full Y extent
+		int xStartIdx = (int) Math.ceil(-halfX / gridSpacingMM);
+		int xEndIdx = (int) Math.floor(halfX / gridSpacingMM);
+		for (int i = xStartIdx; i <= xEndIdx; i++) {
+			if (skipEvery > 0 && Math.floorMod(i, skipEvery) == 0)
 				continue;
-			int start = i - lineWidthPx / 2;
-			for (int w = 0; w < lineWidthPx; w++) {
-				// Wrap lines that straddle the tile seam so they tile seamlessly
-				int x = Math.floorMod(start + w, TILE_BIG_GRID_PX);
-				for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-					src[y * TILE_BIG_GRID_PX + x] = argb; // vertical line
-					src[x * TILE_BIG_GRID_PX + y] = argb; // horizontal line
-				}
-			}
+			float x = (float) (i * gridSpacingMM);
+			lines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
 		}
 
-		WritableImage tile = new WritableImage(TILE_BIG_GRID_PX, TILE_BIG_GRID_PX);
-		PixelWriter pw = tile.getPixelWriter();
-		for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-			for (int x = 0; x < TILE_BIG_GRID_PX; x++) {
-				pw.setArgb(x, y, src[y * TILE_BIG_GRID_PX + x]);
-			}
+		// Horizontal lines: step across Y, each line spans the full X extent
+		int yStartIdx = (int) Math.ceil(-halfY / gridSpacingMM);
+		int yEndIdx = (int) Math.floor(halfY / gridSpacingMM);
+		for (int i = yStartIdx; i <= yEndIdx; i++) {
+			if (skipEvery > 0 && Math.floorMod(i, skipEvery) == 0)
+				continue;
+			float y = (float) (i * gridSpacingMM);
+			lines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
 		}
 
-		PhongMaterial material = new PhongMaterial();
-		material.setDiffuseMap(tile);
-		material.setDiffuseColor(Color.WHITE); // Alpha comes from the texture
-		material.setSpecularColor(Color.BLACK); // No shiny spots
-
-		// Create the work plane mesh, draw at slight offset to align pixel to line
-		// centre
-		TriangleMesh topMesh = new TriangleMesh();
-		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
-				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
-
-		// Map texture to mesh
-		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
-				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
-				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
-				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
-
-		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
-
-		MeshView topView = new MeshView(topMesh);
-		topView.setMaterial(material);
-		topView.setBlendMode(BlendMode.SRC_OVER);
-		topView.setCullFace(CullFace.NONE);
-
-		return topView;
+		return lines.buildMeshView(color);
 	}
 
 	public static void makeGrid(GridHolder gh) {
@@ -2068,6 +2045,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean showSmallGrid = Math.abs(camera.getZoomDepth()) <= 200;
 				for (GridHolder gh : grids)
 					gh.setSmallGridVis(showSmallGrid);
+				// While the camera is moving, hide both grids; restore them once it
+				// settles. onChange fires on every move, so restart the timer each time.
+				hideGridsWhileMoving();
 				// Log.debug("Placing grid "+x +" , "+y);
 			}
 		});
@@ -2079,6 +2059,22 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			follow.setTranslateZ(-p.getZ());
 
 		});
+	}
+
+	// Hides both grid sets while the camera is moving and pops them back once
+	// motion stops for GRID_HIDE_SETTLE_MS. Must be called on the FX thread
+	// (camera change events already are).
+	private void hideGridsWhileMoving() {
+		for (GridHolder gh : grids)
+			gh.setCameraMoving(true);
+		if (gridHideTimer == null) {
+			gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
+			gridHideTimer.setOnFinished(e -> {
+				for (GridHolder gh : grids)
+					gh.setCameraMoving(false);
+			});
+		}
+		gridHideTimer.playFromStart();
 	}
 
 	private PointLight addPointLight(int value, int value2, int value3) {
