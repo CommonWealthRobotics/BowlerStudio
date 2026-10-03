@@ -296,12 +296,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static Color gridKey = Color.web("#0000Fa");
 	private static ArrayList<GridHolder> grids = new ArrayList<BowlerStudio3dEngine.GridHolder>();
 	private AmbientLight ambientLight;
+	private AmbientLight controlLight;
 
 	public static class GridHolder {
 		private double xSizeMM;
 		private double ySizeMM;
 		// public Group wp;
 		private Group bigGridView = new Group();
+		private Group smallGridView = new Group();
 		private Group outlineView = new Group();
 		private Group backgroundView = new Group();
 		private MeshView intersectionNode;
@@ -309,6 +311,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
 		private boolean showLines = true;
+		private boolean showSmallGrid = true;
 
 		private double snapSize = 1;
 
@@ -316,6 +319,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			showLines = false;
 			BowlerStudio.runLater(() -> {
 				bigGridView.setVisible(showLines);
+				smallGridView.setVisible(showLines && showSmallGrid);
 				outlineView.setVisible(showLines);
 			});
 		}
@@ -324,6 +328,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			showLines = true;
 			BowlerStudio.runLater(() -> {
 				bigGridView.setVisible(showLines);
+				smallGridView.setVisible(showLines && showSmallGrid);
 				outlineView.setVisible(showLines);
 			});
 		}
@@ -343,9 +348,19 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			Log.debug("Setting workplane visable " + b);
 			BowlerStudio.runLater(() -> {
 				bigGridView.setVisible(showLines);
+				smallGridView.setVisible(showLines && showSmallGrid);
 				outlineView.setVisible(showLines);
 				backgroundView.setVisible(b);
 			});
+		}
+
+		public void setSmallGridVis(Boolean b) {
+			if (b != showSmallGrid) {
+				Log.debug("Toggle small grid to " + b);
+				showSmallGrid = b;
+				setVisible(showLines);
+			}
+
 		}
 
 		public boolean isVisible() {
@@ -354,6 +369,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		public void setMouseTransparent(boolean b) {
 			bigGridView.setMouseTransparent(true);
+			smallGridView.setMouseTransparent(true);
 			outlineView.setMouseTransparent(true);
 			backgroundView.setMouseTransparent(b);
 			getIntersectionNode().setMouseTransparent(b);
@@ -366,6 +382,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		public void transformsAdd(Affine wpPickPlacement) {
 			// TODO Auto-generated method stub
 			bigGridView.getTransforms().addAll(wpPickPlacement);
+			smallGridView.getTransforms().addAll(wpPickPlacement);
 			outlineView.getTransforms().addAll(wpPickPlacement);
 			backgroundView.getTransforms().addAll(wpPickPlacement);
 		}
@@ -1134,7 +1151,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);;
+							com.neuronrobotics.sdk.common.Log.error(ex);
+							;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1174,7 +1192,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1214,7 +1233,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);;
+						com.neuronrobotics.sdk.common.Log.error(ex);
+						;
 					}
 				}
 			}
@@ -1571,11 +1591,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Work plane noise in percentage [0-100%]
 		int wpNoise = 25;
 
-		//setLightGrid(Color.web("#3838A8"));
+		// setLightGrid(Color.web("#3838A8"));
 		int wpColor = webColorToArgb(getLightGrid()); // Higher is lighter color
-		//setGridColor();
+		// setGridColor();
 		int grid1Color = webColorToArgb(getGridColor());
-		//setGridKey();
+		// setGridKey();
 		int grid10Color = webColorToArgb(getGridKey());
 
 		float workplaneX = (float) xSizeMM;
@@ -1661,11 +1681,94 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return topView;
 	}
 
+	// Create a tiling grid texture on a work-plane sized quad.
+	// gridSpacingMM: physical spacing between drawn grid lines.
+	// skipSpacingMM: if > 0, lines that line up with a multiple of this spacing
+	// are left transparent, so a coarser grid drawn underneath shows through.
+	// If skipSpacingMM is 0, no lines are skipped.
+	public static MeshView createGridWorkplaneTexture(double xSizeMM, double ySizeMM, double gridSpacingMM,
+			double skipSpacingMM, int lineWidthPx, Color color) {
+
+		// Square textured tile in MM
+		final float TILE_SIZE_MM = 10.0f;
+		final int TILE_BIG_GRID_PX = 200;
+		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
+
+		final int gridSpacingPx = (int) Math.round(gridSpacingMM / PIXEL_SIZE_MM);
+		final int skipSpacingPx = (int) Math.round(skipSpacingMM / PIXEL_SIZE_MM);
+
+		int argb = webColorToArgb(color);
+
+		float workplaneX = (float) xSizeMM;
+		float workplaneY = (float) ySizeMM;
+
+		final float TILE_HALF_PIXEL_SIZE = TILE_SIZE_MM / (TILE_BIG_GRID_PX * 2);
+
+		// Calculate texture offsets. Note X and Y are swapped in the 3D view
+		float xTextureOffset = (float) ((int) (ySizeMM / TILE_SIZE_MM) - ySizeMM / TILE_SIZE_MM);
+		float yTextureOffset = (float) ((int) (xSizeMM / TILE_SIZE_MM) - xSizeMM / TILE_SIZE_MM);
+
+		// Fully transparent tile, grid lines drawn on top
+		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
+
+		for (int i = 0; i < TILE_BIG_GRID_PX; i += gridSpacingPx) {
+			// Leave the transparent gap where a coarser grid line passes
+			if (skipSpacingPx > 0 && (i % skipSpacingPx) == 0)
+				continue;
+			int start = i - lineWidthPx / 2;
+			for (int w = 0; w < lineWidthPx; w++) {
+				// Wrap lines that straddle the tile seam so they tile seamlessly
+				int x = Math.floorMod(start + w, TILE_BIG_GRID_PX);
+				for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
+					src[y * TILE_BIG_GRID_PX + x] = argb; // vertical line
+					src[x * TILE_BIG_GRID_PX + y] = argb; // horizontal line
+				}
+			}
+		}
+
+		WritableImage tile = new WritableImage(TILE_BIG_GRID_PX, TILE_BIG_GRID_PX);
+		PixelWriter pw = tile.getPixelWriter();
+		for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
+			for (int x = 0; x < TILE_BIG_GRID_PX; x++) {
+				pw.setArgb(x, y, src[y * TILE_BIG_GRID_PX + x]);
+			}
+		}
+
+		PhongMaterial material = new PhongMaterial();
+		material.setDiffuseMap(tile);
+		material.setDiffuseColor(Color.WHITE); // Alpha comes from the texture
+		material.setSpecularColor(Color.BLACK); // No shiny spots
+
+		// Create the work plane mesh, draw at slight offset to align pixel to line
+		// centre
+		TriangleMesh topMesh = new TriangleMesh();
+		topMesh.getPoints().setAll(-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, -workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f,
+				-workplaneX / 2 - TILE_HALF_PIXEL_SIZE, workplaneY / 2 - TILE_HALF_PIXEL_SIZE, 0f);
+
+		// Map texture to mesh
+		topMesh.getTexCoords().setAll(xTextureOffset, yTextureOffset, // bottom-left
+				xTextureOffset, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-left
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset + workplaneX / TILE_SIZE_MM, // top-right
+				xTextureOffset + workplaneY / TILE_SIZE_MM, yTextureOffset); // bottom-right
+
+		topMesh.getFaces().setAll(0, 0, 1, 1, 2, 2, 0, 0, 2, 2, 3, 3);
+
+		MeshView topView = new MeshView(topMesh);
+		topView.setMaterial(material);
+		topView.setBlendMode(BlendMode.SRC_OVER);
+		topView.setCullFace(CullFace.NONE);
+
+		return topView;
+	}
+
 	public static void makeGrid(GridHolder gh) {
 		Log.debug("Grid colors \n" + gridKey + "\n" + gridColor + "\n" + lightGrid);
 		gh.backgroundView.getChildren().clear();
 		gh.outlineView.getChildren().clear();
 		gh.bigGridView.getChildren().clear();
+		gh.smallGridView.getChildren().clear();
 		// Physical spacing, in MM — mirrors the old texture tile
 		final float TILE_SIZE_MM = 10.0f;
 		final int TILE_BIG_GRID_PX = 200;
@@ -1687,42 +1790,42 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color grid1Color = getGridColor();
 		Color grid10Color = getGridKey();
 
-		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
-		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
+//		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
+//		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
 		// Vertical lines: step across X, each line spans the full Y extent
-		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
-		int smallLineCount = 100;
-		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
-		for (int i = xStartIdx; i <= xEndIdx; i++) {
-			float x = i * SMALL_SPACING_MM;
-			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-			if (isBig)
-				bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
-			if (i > -smallLineCount && i < smallLineCount) {
-				smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth, smallLineCount);
-			}
-		}
-
-		// Horizontal lines: step across Y, each line spans the full X extent
-		int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
-		int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
-		for (int i = yStartIdx; i <= yEndIdx; i++) {
-			float y = i * SMALL_SPACING_MM;
-			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-			if (isBig)
-				bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
-			if (i > -smallLineCount && i < smallLineCount) {
-				smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y + halfWidth);
-			}
-		}
+//		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
+//		int smallLineCount = 100;
+//		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
+//		for (int i = xStartIdx; i <= xEndIdx; i++) {
+//			float x = i * SMALL_SPACING_MM;
+//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+//			if (isBig)
+//				bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
+//			if (i > -smallLineCount && i < smallLineCount) {
+//				smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth, smallLineCount);
+//			}
+//		}
+//
+//		// Horizontal lines: step across Y, each line spans the full X extent
+//		int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
+//		int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
+//		for (int i = yStartIdx; i <= yEndIdx; i++) {
+//			float y = i * SMALL_SPACING_MM;
+//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+//			if (isBig)
+//				bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
+//			if (i > -smallLineCount && i < smallLineCount) {
+//				smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y + halfWidth);
+//			}
+//		}
 		Affine gridOffset = new Affine();
 		gridOffset.setTz(-0.05);
-		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
-		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
-		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
-		bigGridView.getTransforms().addAll(gh.SNAP10x);
+//		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
+//		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
+//		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
+//		bigGridView.getTransforms().addAll(gh.SNAP10x);
 		// Outer border — same geometry as before, now a plain solid-color material
 		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
@@ -1754,19 +1857,28 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.getTransforms().addAll(gh.SNAP10x);
 
 		MeshView backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
+		// Large grid first, small grid after. The small grid leaves the 10mm
+		// crossings transparent so the large grid shows through.
+		MeshView grid10View = createGridWorkplaneTexture(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
+		MeshView grid1View = createGridWorkplaneTexture(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
+		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
+		// additionally follows the mm offset of the workplane.
+		grid10View.getTransforms().addAll(gh.SNAP10x);
+		grid1View.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
 		// Solid background rectangle, spanning the full workplane
-		//		GridLineMeshBuilder background = new GridLineMeshBuilder();
-		//		background.addQuad(-halfX, -halfY, halfX, halfY);
-		//		Color lightGrid2 = getLightGrid();
+		// GridLineMeshBuilder background = new GridLineMeshBuilder();
+		// background.addQuad(-halfX, -halfY, halfX, halfY);
+		// Color lightGrid2 = getLightGrid();
 		//
-		//		MeshView backgroundView = background.buildMeshView(lightGrid2);
+		// MeshView backgroundView = background.buildMeshView(lightGrid2);
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
-		gh.bigGridView.getChildren().addAll(bigGridView, smallGrid);
+		gh.bigGridView.getChildren().add(grid10View);
+		gh.smallGridView.getChildren().add(grid1View);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
-		bigGridView.setMouseTransparent(true);
-		smallGrid.setMouseTransparent(true);
+//		bigGridView.setMouseTransparent(true);
+//		smallGrid.setMouseTransparent(true);
 		// backgroundView.setDepthTest(DepthTest.DISABLE);
 		// outlineView.setDepthTest(DepthTest.DISABLE);
 		// bigGridView.setDepthTest(DepthTest.DISABLE);
@@ -1900,7 +2012,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		ambientLight = new AmbientLight(
 				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
-		AmbientLight controlLight = new AmbientLight(
+		controlLight = new AmbientLight(
 				Color.color(controlsLightIntensity, controlsLightIntensity, controlsLightIntensity));
 
 		world.getChildren().addAll(ambientLight, controlLight);
@@ -1952,7 +2064,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					getWorkplaneGroup().mmOffset.setTx(x);
 					getWorkplaneGroup().mmOffset.setTy(y);
 				}
-				//Log.debug("Placing grid "+x +" , "+y);
+				// Only show the 1mm grid when zoomed in close enough
+				boolean showSmallGrid = Math.abs(camera.getZoomDepth()) <= 200;
+				for (GridHolder gh : grids)
+					gh.setSmallGridVis(showSmallGrid);
+				// Log.debug("Placing grid "+x +" , "+y);
 			}
 		});
 		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
@@ -2000,7 +2116,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * @param showAxes
 	 */
 	private void buildAxes(boolean showAxes) {
-
 
 		try {
 			// Create the rulers
@@ -2064,6 +2179,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					gridGroup.getChildren().addAll(axes, groundGroup);
 					showAxis();
 					customWorkplaneGroupSolid.getChildren().add(workplaneGroup.bigGridView);
+					customWorkplaneGroupSolid.getChildren().add(workplaneGroup.smallGridView);
 					customWorkplaneGroupSolid.getChildren().add(workplaneGroup.outlineView);
 					customWorkplaneGroupTransparent.getChildren().add(workplaneGroup.backgroundView);
 				}
@@ -2076,8 +2192,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// Create the world group
 				world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroupSolid, userGroup,
 						customWorkplaneGroupTransparent, controlHandleGroup);
-				ambientLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView, workplaneGroup.bigGridView,
-						workplaneGroup.outlineView);
+				controlLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView, workplaneGroup.bigGridView,
+						workplaneGroup.smallGridView, workplaneGroup.outlineView);
 
 				// Use ambient illumination for workplanes and axes, ruler is black so no need
 				// to illuminate
@@ -2086,7 +2202,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		} catch (Exception e) {
 			com.neuronrobotics.sdk.common.Log.error(e);
 		}
-
 
 	}
 
@@ -2104,15 +2219,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public void groundToPicking() {
-		//		BowlerStudio.runLater(() -> {
-		//			Group backgroundView = workplaneGroup.backgroundView;
-		//			if (!customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
-		//				customWorkplaneGroupSolid.getChildren().add(backgroundView);
-		//			}
-		//			if (customWorkplaneGroupTransparent.getChildren().contains(backgroundView)) {
-		//				customWorkplaneGroupTransparent.getChildren().remove(backgroundView);
-		//			}
-		//		});
+		// BowlerStudio.runLater(() -> {
+		// Group backgroundView = workplaneGroup.backgroundView;
+		// if (!customWorkplaneGroupSolid.getChildren().contains(backgroundView)) {
+		// customWorkplaneGroupSolid.getChildren().add(backgroundView);
+		// }
+		// if (customWorkplaneGroupTransparent.getChildren().contains(backgroundView)) {
+		// customWorkplaneGroupTransparent.getChildren().remove(backgroundView);
+		// }
+		// });
 	}
 
 	public GridHolder getWorkplaneGroup() {
@@ -2176,9 +2291,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			bowlerStudioModularFrame.showCreatureLab();
 		BowlerStudio.runLater(() -> {
 			customWorkplaneGroupSolid.getChildren().add(n.bigGridView);
+			customWorkplaneGroupSolid.getChildren().add(n.smallGridView);
 			customWorkplaneGroupSolid.getChildren().add(n.outlineView);
 			customWorkplaneGroupTransparent.getChildren().add(0, n.backgroundView);
-			ambientLight.getScope().addAll(n.backgroundView, n.bigGridView, n.outlineView);
+			ambientLight.getScope().addAll(n.backgroundView, n.bigGridView, n.smallGridView, n.outlineView);
 		});
 	}
 
@@ -2832,13 +2948,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null)
-				? 0
+		double az = (orient == null) ? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null)
-				? 0
+		double el = (orient == null) ? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
