@@ -1185,8 +1185,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							string2 = lp.getOptions().get(0).toString();
 						} catch (Exception ex) {
 							// some parameters from cadoodle do not work here...
-							com.neuronrobotics.sdk.common.Log.error(ex);
-							;
+							com.neuronrobotics.sdk.common.Log.error(ex);;
 						}
 					else {
 						string = lp.getMM() + "";
@@ -1226,8 +1225,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						customMenuItem.setHideOnClick(false);
 						parameters.getItems().add(customMenuItem);
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 					// com.neuronrobotics.sdk.common.Log.error("Adding Length Paramater " +
 					// lp.getName());
@@ -1267,8 +1265,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 							// lp.getName());
 						}
 					} catch (Exception ex) {
-						com.neuronrobotics.sdk.common.Log.error(ex);
-						;
+						com.neuronrobotics.sdk.common.Log.error(ex);;
 					}
 				}
 			}
@@ -1869,42 +1866,42 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color grid1Color = getGridColor();
 		Color grid10Color = getGridKey();
 
-//		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
-//		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
+		//		GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
+		//		GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
 		// Vertical lines: step across X, each line spans the full Y extent
-//		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
-//		int smallLineCount = 100;
-//		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
-//		for (int i = xStartIdx; i <= xEndIdx; i++) {
-//			float x = i * SMALL_SPACING_MM;
-//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-//			if (isBig)
-//				bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
-//			if (i > -smallLineCount && i < smallLineCount) {
-//				smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth, smallLineCount);
-//			}
-//		}
-//
-//		// Horizontal lines: step across Y, each line spans the full X extent
-//		int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
-//		int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
-//		for (int i = yStartIdx; i <= yEndIdx; i++) {
-//			float y = i * SMALL_SPACING_MM;
-//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-//			if (isBig)
-//				bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
-//			if (i > -smallLineCount && i < smallLineCount) {
-//				smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y + halfWidth);
-//			}
-//		}
+		//		int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
+		//		int smallLineCount = 100;
+		//		int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
+		//		for (int i = xStartIdx; i <= xEndIdx; i++) {
+		//			float x = i * SMALL_SPACING_MM;
+		//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+		//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+		//			if (isBig)
+		//				bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
+		//			if (i > -smallLineCount && i < smallLineCount) {
+		//				smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth, smallLineCount);
+		//			}
+		//		}
+		//
+		//		// Horizontal lines: step across Y, each line spans the full X extent
+		//		int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
+		//		int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
+		//		for (int i = yStartIdx; i <= yEndIdx; i++) {
+		//			float y = i * SMALL_SPACING_MM;
+		//			boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
+		//			float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
+		//			if (isBig)
+		//				bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
+		//			if (i > -smallLineCount && i < smallLineCount) {
+		//				smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y + halfWidth);
+		//			}
+		//		}
 		Affine gridOffset = new Affine();
 		gridOffset.setTz(-0.05);
-//		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
-//		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
-//		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
-//		bigGridView.getTransforms().addAll(gh.SNAP10x);
+		//		MeshView bigGridView = bigLines.buildMeshView(grid10Color);
+		//		MeshView smallGrid = smallLines.buildMeshView(grid1Color);
+		//		smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
+		//		bigGridView.getTransforms().addAll(gh.SNAP10x);
 		// Outer border — same geometry as before, now a plain solid-color material
 		// instead of a 1x1-pixel "fake texture" trick.
 		final float OUT = 2.0f; // outwards mm
@@ -1963,8 +1960,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.setGridViews(grid10Lines, grid10Texture, grid1Lines, grid1Texture);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
-//		bigGridView.setMouseTransparent(true);
-//		smallGrid.setMouseTransparent(true);
+		//		bigGridView.setMouseTransparent(true);
+		//		smallGrid.setMouseTransparent(true);
 		// backgroundView.setDepthTest(DepthTest.DISABLE);
 		// outlineView.setDepthTest(DepthTest.DISABLE);
 		// bigGridView.setDepthTest(DepthTest.DISABLE);
@@ -3053,11 +3050,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private void runSyncFocus(TransformNR orient, TransformNR trans, double zoom) {
 
-		double az = (orient == null) ? 0
+		double az = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getPanAngle() - 90
 						+ Math.toDegrees(orient.getRotation().getRotationAzimuthRadians()));
 
-		double el = (orient == null) ? 0
+		double el = (orient == null)
+				? 0
 				: bound180(getFlyingCamera().getTiltAngle() + 90
 						+ Math.toDegrees(orient.getRotation().getRotationElevationRadians()));
 		// com.neuronrobotics.sdk.common.Log.error("Focus from\n\taz:" + az + " \n\tel:"
