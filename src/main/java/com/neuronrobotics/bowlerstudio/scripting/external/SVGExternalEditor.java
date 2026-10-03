@@ -16,6 +16,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
@@ -62,7 +63,7 @@ public class SVGExternalEditor implements IExternalEditor {
 	}
 
 	public void onProcessExit(int ev) {
-		advanced.setDisable(false);
+		BowlerStudio.runLater(() -> advanced.setDisable(false));
 	}
 
 	@Override

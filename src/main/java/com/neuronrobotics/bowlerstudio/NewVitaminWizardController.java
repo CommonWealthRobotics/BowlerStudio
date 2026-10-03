@@ -166,7 +166,8 @@ public class NewVitaminWizardController extends Application {
 							+ "}\n" + "return generate() ";
 					ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL), filename, loader,
 							"new CAD loader script");
-					new Thread(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(typeOfVitaminString))).start();
+					BowlerStudio
+							.runLater(() -> BowlerStudio.createFileTab(Vitamins.getScriptFile(typeOfVitaminString)));
 				}
 				if (isShaft.isSelected())
 					Vitamins.setIsShaft(typeOfVitaminString);

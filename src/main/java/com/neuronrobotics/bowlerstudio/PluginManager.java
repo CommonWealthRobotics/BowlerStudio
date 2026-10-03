@@ -222,7 +222,7 @@ public class PluginManager {
 					}
 					getBowlerStudioController().addTab(t, true);
 
-					t.setOnCloseRequest(new EventHandler<Event>() {
+					BowlerStudio.runLater(() -> t.setOnCloseRequest(new EventHandler<Event>() {
 						@Override
 						public void handle(Event arg0) {
 							com.neuronrobotics.sdk.common.Log.error("PM is Closing " + t.getText());
@@ -230,7 +230,7 @@ public class PluginManager {
 							BowlerStudio.runLater(() -> launcher.setDisable(false));
 
 						}
-					});
+					}));
 					BowlerStudio.runLater(() -> {
 						launcher.setDisable(true);
 					});

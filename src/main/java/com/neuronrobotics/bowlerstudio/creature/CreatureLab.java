@@ -142,8 +142,6 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 
 	private void finishLoading(MobileBase device) {
 
-		TreeItem<String> rootItem = null;
-		TreeItem<String> mainBase = null;
 		int count = 1;
 		for (DHParameterKinematics kin : device.getAllDHChains()) {
 			for (int i = 0; i < kin.getNumberOfLinks(); i++) {
@@ -153,22 +151,25 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 				}
 			}
 		}
-		try {
-			rootItem = new TreeItem<String>("Mobile Bases", AssetFactory.loadIcon("creature.png"));
-			mainBase = new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
-		} catch (Exception e) {
-			rootItem = new TreeItem<String>(device.getScriptingName());
-		}
-		if (count == 1) {
-			rootItem = mainBase;
-		} else {
-			rootItem.getChildren().add(mainBase);
-		}
-		TreeItem<String> rootItemFinal = rootItem;
-		TreeItem<String> mainBaseFinal = mainBase;
+		final int countFinal = count;
 		AnchorPane treebox1 = tab.getTreeBox();
 		// @JansenSmith - placed contents in llambda runnable - 20220915
 		BowlerStudio.runLater(() -> {
+			TreeItem<String> rootItem = null;
+			TreeItem<String> mainBase = null;
+			try {
+				rootItem = new TreeItem<String>("Mobile Bases", AssetFactory.loadIcon("creature.png"));
+				mainBase = new TreeItem<String>(device.getScriptingName(), AssetFactory.loadIcon("creature.png"));
+			} catch (Exception e) {
+				rootItem = new TreeItem<String>(device.getScriptingName());
+			}
+			if (countFinal == 1) {
+				rootItem = mainBase;
+			} else {
+				rootItem.getChildren().add(mainBase);
+			}
+			TreeItem<String> rootItemFinal = rootItem;
+			TreeItem<String> mainBaseFinal = mainBase;
 			TreeView<String> tree = new TreeView<>(rootItemFinal);
 
 			treebox1.getChildren().clear();
@@ -216,58 +217,60 @@ public class CreatureLab extends AbstractBowlerStudioTab implements IOnEngineeri
 		});
 		// VBox progress = new VBox(10);
 
-		final ToggleGroup group = new ToggleGroup();
+		BowlerStudio.runLater(() -> {
+			final ToggleGroup group = new ToggleGroup();
 
-		RadioButton rb1 = new RadioButton();
-		rb1.setToggleGroup(group);
-		rb1.setSelected(true);
-		rb1.setOnAction(event -> {
-			// disable();
-			// autoRegen.setText("Auto-Generate CAD");
-			regen.setText("Generate CAD Now");
+			RadioButton rb1 = new RadioButton();
+			rb1.setToggleGroup(group);
+			rb1.setSelected(true);
+			rb1.setOnAction(event -> {
+				// disable();
+				// autoRegen.setText("Auto-Generate CAD");
+				regen.setText("Generate CAD Now");
 
-			BowlerStudio.runLater(() -> setCadMode(false));
+				BowlerStudio.runLater(() -> setCadMode(false));
+			});
+			regen.setMinWidth(120);
+
+			RadioButton rb2 = new RadioButton();
+			rb2.setToggleGroup(group);
+			rb2.fire();
+			rb2.setOnAction(event -> {
+				// disable();
+
+				// autoRegen.setText("Auto-Generate Vitamins");
+				regen.setText("Generate Vitamins Now");
+				BowlerStudio.runLater(() -> setCadMode(true));
+			});
+
+			radioOptions = new GridPane();
+			radioOptions.setPadding(new Insets(10, 10, 10, 10));
+			radioOptions.setVgap(5);
+			radioOptions.setHgap(5);
+
+			// Setting the Grid alignment
+			radioOptions.setAlignment(Pos.CENTER);
+			radioOptions.add(new Label("Select Display Mode:"), 0, 0);
+			radioOptions.add(new Label("Cad Generation"), 0, 1);
+			radioOptions.add(rb1, 1, 1);
+
+			radioOptions.add(new Label("Vitamins View"), 0, 2);
+			radioOptions.add(rb2, 1, 2);
+
+			pi = new ProgressIndicator(0);
+			baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(), device,
+					BowlerStudioController.getMobileBaseUI());
+			pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
+
+			radioOptions.add(pi, 1, 0);
+			radioOptions.add(autoRegen, 1, 3);
+			radioOptions.add(regen, 0, 3);
+
+			tab.setOverlayTop(radioOptions);
+
+			BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
+			setCadMode(true);// start the UI in config mode
 		});
-		regen.setMinWidth(120);
-
-		RadioButton rb2 = new RadioButton();
-		rb2.setToggleGroup(group);
-		rb2.fire();
-		rb2.setOnAction(event -> {
-			// disable();
-
-			// autoRegen.setText("Auto-Generate Vitamins");
-			regen.setText("Generate Vitamins Now");
-			BowlerStudio.runLater(() -> setCadMode(true));
-		});
-
-		radioOptions = new GridPane();
-		radioOptions.setPadding(new Insets(10, 10, 10, 10));
-		radioOptions.setVgap(5);
-		radioOptions.setHgap(5);
-
-		// Setting the Grid alignment
-		radioOptions.setAlignment(Pos.CENTER);
-		radioOptions.add(new Label("Select Display Mode:"), 0, 0);
-		radioOptions.add(new Label("Cad Generation"), 0, 1);
-		radioOptions.add(rb1, 1, 1);
-
-		radioOptions.add(new Label("Vitamins View"), 0, 2);
-		radioOptions.add(rb2, 1, 2);
-
-		pi = new ProgressIndicator(0);
-		baseManager = MobileBaseCadManager.get(CSGDatabase.getInstance(), device,
-				BowlerStudioController.getMobileBaseUI());
-		pi.progressProperty().bindBidirectional(baseManager.getProcesIndictor());
-
-		radioOptions.add(pi, 1, 0);
-		radioOptions.add(autoRegen, 1, 3);
-		radioOptions.add(regen, 0, 3);
-
-		tab.setOverlayTop(radioOptions);
-
-		BowlerStudioModularFrame.getBowlerStudioModularFrame().showCreatureLab();
-		setCadMode(true);// start the UI in config mode
 
 	}
 

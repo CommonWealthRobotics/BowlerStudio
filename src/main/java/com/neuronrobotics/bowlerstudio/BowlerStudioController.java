@@ -117,8 +117,9 @@ public class BowlerStudioController implements IScriptEventListener {
 	// Custom function for creation of New Tabs.
 	public ScriptingFileWidget createFileTab(File file) {
 		if (openFiles.get(file.getAbsolutePath()) != null && widgets.get(file.getAbsolutePath()) != null) {
-			BowlerStudioModularFrame.getBowlerStudioModularFrame()
-					.setSelectedTab(openFiles.get(file.getAbsolutePath()));
+			final Tab existing = openFiles.get(file.getAbsolutePath());
+			BowlerKernel
+					.runLater(() -> BowlerStudioModularFrame.getBowlerStudioModularFrame().setSelectedTab(existing));
 			return widgets.get(file.getAbsolutePath()).getScripting();
 		}
 
@@ -170,37 +171,40 @@ public class BowlerStudioController implements IScriptEventListener {
 				}
 			}
 
-			fileTab.setContent(t);
-			ImageView icon = AssetFactory
-					.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png");
-			icon.setFitHeight(30);
-			icon.setFitWidth(30);
+			String myKey = key;
+			widgets.put(file.getAbsolutePath(), t);
+			BowlerKernel.runLater(() -> {
+				fileTab.setContent(t);
+				ImageView icon = AssetFactory
+						.loadIcon("Script-Tab-" + ScriptingEngine.getShellType(file.getName()) + ".png");
+				icon.setFitHeight(30);
+				icon.setFitWidth(30);
 
-			fileTab.setGraphic(icon);
-			fileTab.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-				if (isSelected) {
-					t.requestTextAreaFocus();
-				}
+				fileTab.setGraphic(icon);
+				fileTab.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+					if (isSelected) {
+						t.requestTextAreaFocus();
+					}
+				});
+				fileTab.setOnCloseRequest(event -> {
+					widgets.remove(file.getAbsolutePath());
+					openFiles.remove(file.getAbsolutePath());
+					if (myKey != null)
+						ConfigurationDatabase.removeObject("studio-open-file", myKey);
+					ConfigurationDatabase.save();
+					t.getScripting().close();
+					Log.debug("Closing Tab Here " + file.getAbsolutePath());
+				});
 			});
 			addTab(fileTab, true);
-			widgets.put(file.getAbsolutePath(), t);
 			System.err.println("Open Tab " + file.getAbsolutePath());
-			String myKey = key;
-			fileTab.setOnCloseRequest(event -> {
-				widgets.remove(file.getAbsolutePath());
-				openFiles.remove(file.getAbsolutePath());
-				if (myKey != null)
-					ConfigurationDatabase.removeObject("studio-open-file", myKey);
-				ConfigurationDatabase.save();
-				t.getScripting().close();
-				Log.debug("Closing Tab Here " + file.getAbsolutePath());
-			});
 			FileChangeWatcher watcher = FileChangeWatcher.watch(file);
 			watcher.addIFileChangeListener(new IFileChangeListener() {
 
 				@Override
 				public void onFileDelete(File fileThatIsDeleted) {
-					BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(fileTab);
+					BowlerKernel
+							.runLater(() -> BowlerStudioModularFrame.getBowlerStudioModularFrame().closeTab(fileTab));
 				}
 
 				@Override

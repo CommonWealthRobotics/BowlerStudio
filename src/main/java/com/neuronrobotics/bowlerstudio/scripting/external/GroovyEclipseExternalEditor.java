@@ -25,7 +25,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.DownloadManager.*;
 public class GroovyEclipseExternalEditor extends EclipseExternalEditor {
 
 	public void onProcessExit(int ev) {
-		advanced.setDisable(false);
+		BowlerStudio.runLater(() -> advanced.setDisable(false));
 	}
 
 	protected void setUpEclipseProjectFiles(File dir, File project, String name)

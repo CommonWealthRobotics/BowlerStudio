@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ArduinoLoader;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
@@ -76,7 +77,7 @@ public class ArduinoExternalEditor implements IExternalEditor {
 
 	@Override
 	public void onProcessExit(int ev) {
-		advanced.setDisable(false);
+		BowlerStudio.runLater(() -> advanced.setDisable(false));
 	}
 
 	@Override

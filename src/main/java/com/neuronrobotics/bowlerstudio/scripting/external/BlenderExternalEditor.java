@@ -53,7 +53,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 				BlenderLoader.toBlenderFile(CSGDatabase.getInstance(), file, blenderfile);
 				filename = blenderfile.getAbsolutePath();
 				try {
-					BowlerStudio.createFileTab(blenderfile);
+					BowlerStudio.runLater(() -> BowlerStudio.createFileTab(blenderfile));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -88,7 +88,7 @@ public class BlenderExternalEditor implements IExternalEditor {
 	}
 
 	public void onProcessExit(int ev) {
-		advanced.setDisable(false);
+		BowlerStudio.runLater(() -> advanced.setDisable(false));
 	}
 
 	@Override

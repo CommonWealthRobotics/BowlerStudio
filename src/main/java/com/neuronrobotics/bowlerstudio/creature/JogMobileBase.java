@@ -237,12 +237,12 @@ public class JogMobileBase extends GridPane implements IGameControlEvent, IJogPr
 	}
 
 	private void startStopAction() {
-		game.setDisable(true);
+		BowlerStudio.runLater(() -> game.setDisable(true));
 		if (running)
 			stop();
 		else
 			start();
-		game.setDisable(false);
+		BowlerStudio.runLater(() -> game.setDisable(false));
 	}
 
 	private void pushThisMobileBaseAsKatapult() {

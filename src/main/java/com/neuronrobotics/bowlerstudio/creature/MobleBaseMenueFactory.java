@@ -1118,7 +1118,7 @@ public class MobleBaseMenueFactory {
 			}
 			// BowlerStudio.select(myBase, MyConf);
 		});
-		rootItem1.getChildren().add(hwConf);
+		BowlerStudio.runLater(() -> rootItem1.getChildren().add(hwConf));
 		return theWidget;
 	}
 
@@ -1145,7 +1145,7 @@ public class MobleBaseMenueFactory {
 		TreeItem<String> hwConf = new TreeItem<>("Hardware Config " + conf.getName(),
 				AssetFactory.loadIcon("Hardware-Config.png"));
 
-		link.getChildren().add(hwConf);
+		BowlerStudio.runLater(() -> link.getChildren().add(hwConf));
 
 		callbackMapForTreeitems.put(hwConf, () -> {
 			if (widgetMapForTreeitems.get(hwConf) == null) {
@@ -1251,9 +1251,11 @@ public class MobleBaseMenueFactory {
 							String scriptingName = result.get();
 							embedableXml.setScriptingName(scriptingName);
 							dhLink.setMobileBaseXml(embedableXml);
-							removeMobileBase.setValue("Remove " + scriptingName);
-							slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems,
-									widgetMapForTreeitems, creatureLab, isOwner, dhLink));
+							BowlerStudio.runLater(() -> {
+								removeMobileBase.setValue("Remove " + scriptingName);
+								slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems,
+										widgetMapForTreeitems, creatureLab, isOwner, dhLink));
+							});
 						}
 					}.start();
 					slaves.getChildren().remove(addMobileBase);
@@ -1315,14 +1317,16 @@ public class MobleBaseMenueFactory {
 		});
 
 		if (dhLink.getSlaveMobileBase() != null) {
-			removeMobileBase.setValue("Remove " + dhLink.getSlaveMobileBase().getScriptingName());
-			slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems, widgetMapForTreeitems,
-					creatureLab, isOwner, dhLink));
-			slaves.getChildren().add(removeMobileBase);
+			BowlerStudio.runLater(() -> {
+				removeMobileBase.setValue("Remove " + dhLink.getSlaveMobileBase().getScriptingName());
+				slaves.getChildren().add(0, setUpNewMobileBaseEditor(view, callbackMapForTreeitems,
+						widgetMapForTreeitems, creatureLab, isOwner, dhLink));
+				slaves.getChildren().add(removeMobileBase);
+			});
 		} else {
-			slaves.getChildren().add(addMobileBase);
+			BowlerStudio.runLater(() -> slaves.getChildren().add(addMobileBase));
 		}
-		slaves.getChildren().add(addSlaves);
+		BowlerStudio.runLater(() -> slaves.getChildren().add(addSlaves));
 		TreeItem<String> remove = new TreeItem<>("Remove " + conf.getName(), AssetFactory.loadIcon("Remove-Link.png"));
 		callbackMapForTreeitems.put(remove, () -> {
 			BowlerStudio.runLater(() -> {
@@ -1410,7 +1414,7 @@ public class MobleBaseMenueFactory {
 						(javafx.scene.transform.Affine) dh.getAbstractLink(linkIndex - 1).getGlobalPositionListener());
 		});
 
-		link.getChildren().addAll(design);
+		BowlerStudio.runLater(() -> link.getChildren().addAll(design));
 		Affine manipulator = (Affine) dh.getListener(linkIndex);
 		TransformNR offset = dh.getDHStep(linkIndex).inverse();
 		Affine lastLinkAffine = linkIndex == 0 ? (Affine) dh.getRootListener() : (Affine) dh.getListener(linkIndex - 1);
@@ -1434,9 +1438,9 @@ public class MobleBaseMenueFactory {
 					return pose;
 				}, manipulator, lastLinkAffine, offset);
 
-		link.getChildren().addAll(slaves, remove);
+		BowlerStudio.runLater(() -> link.getChildren().addAll(slaves, remove));
 
-		rootItem.getChildren().add(0, link);
+		BowlerStudio.runLater(() -> rootItem.getChildren().add(0, link));
 
 	}
 

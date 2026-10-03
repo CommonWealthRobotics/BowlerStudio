@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.lib.Repository;
 
+import com.neuronrobotics.bowlerstudio.BowlerStudio;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.DownloadManager;
 import com.neuronrobotics.bowlerstudio.scripting.IExternalEditor;
@@ -212,7 +213,7 @@ public abstract class EclipseExternalEditor implements IExternalEditor {
 						if (pathname.endsWith(name) || pathname.endsWith(dir.getName())) {
 							com.neuronrobotics.sdk.common.Log
 									.error("Project " + name + " is already in the workspace!");
-							advanced.setDisable(false);
+							BowlerStudio.runLater(() -> advanced.setDisable(false));
 							return;
 						}
 					}

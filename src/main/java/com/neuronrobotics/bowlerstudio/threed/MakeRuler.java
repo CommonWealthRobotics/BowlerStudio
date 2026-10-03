@@ -34,17 +34,19 @@ public class MakeRuler {
 			// Create base mesh for the ruler line
 			TriangleMesh baseMesh = createRectangleMesh(rulerLengthCM * 10 + tickWidth, baseWidth);
 			MeshView baseView = new MeshView(baseMesh);
-			baseView.setMouseTransparent(true);
-			baseView.setCullFace(CullFace.NONE);
-
-			BowlerKernel.runLater(() -> baseView.setMaterial(phongMaterial));
 
 			// Position the base line in the middle
 			Affine baseTransform = new Affine();
 			baseTransform.setTx(-tickWidth / 2.0);
 			baseTransform.setTy(-baseWidth / 2.0);
-			baseView.getTransforms().add(baseTransform);
-			BowlerKernel.runLater(() -> ruler.getChildren().add(baseView));
+
+			BowlerKernel.runLater(() -> {
+				baseView.setMouseTransparent(true);
+				baseView.setCullFace(CullFace.NONE);
+				baseView.setMaterial(phongMaterial);
+				baseView.getTransforms().add(baseTransform);
+				ruler.getChildren().add(baseView);
+			});
 
 			// Draw tick marks and labels
 			for (int i = 0; i <= rulerLengthCM * 10; i++) {
@@ -95,16 +97,16 @@ public class MakeRuler {
 
 				// Create and position tick mark
 				MeshView tickView = new MeshView(tickMesh);
-				tickView.setMouseTransparent(true);
-				BowlerKernel.runLater(() -> tickView.setMaterial(phongMaterial));
-				tickView.setViewOrder(0);
-				// Use Affine transform for tick positioning
-				// com.neuronrobotics.sdk.common.Log.error("Tick for " + i);
 				Affine tickTransform = new Affine();
 				tickTransform.setTx(i - tickWidth / 2);
-				tickView.getTransforms().add(tickTransform);
-				tickView.setCullFace(CullFace.NONE);
-				BowlerKernel.runLater(() -> ruler.getChildren().add(tickView));
+				BowlerKernel.runLater(() -> {
+					tickView.setMouseTransparent(true);
+					tickView.setMaterial(phongMaterial);
+					tickView.setViewOrder(0);
+					tickView.getTransforms().add(tickTransform);
+					tickView.setCullFace(CullFace.NONE);
+					ruler.getChildren().add(tickView);
+				});
 			}
 		}).start();
 		return ruler;
