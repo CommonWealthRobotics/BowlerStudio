@@ -2166,7 +2166,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				}
 				// Only show the 1mm grid when zoomed in close enough
 				int zoomDepth = (int) camera.getZoomDepth();
+				if (getFlyingCamera().isOrthographic())
+					zoomDepth = (int) (zoomDepth / getFlyingCamera().getZoomScale());
 				boolean showSmallGrid = Math.abs(zoomDepth) < 200;
+
 				//Log.debug("Camera zoom = " + zoomDepth +" visable: "+showSmallGrid);
 				for (GridHolder gh : grids) {
 					if (gh.getLastZoomDepth() != zoomDepth) {
