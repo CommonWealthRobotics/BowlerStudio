@@ -2057,20 +2057,57 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		 * cameraGroup.getChildren().add(directionalCameraLight);
 		 */
 
-		// Point light behind camera, similar to default JavaFX light
-		addPointLight(1000, 0, 500);
-		addPointLight(-1000, 0, -500);
-		PointLight follow = addPointLight(1000, -1000, 1000);
+		// Stable world-space lighting for user objects.
+		// Values come from scene-style.properties so lighting can be tuned without
+		// changing this class.
+		double ambientIntensity = SceneStyleConfig.clamp01(
+				SceneStyleConfig.getDouble("lighting.ambient", 0.52));
+
+		double keyIntensity = SceneStyleConfig.clamp01(
+				SceneStyleConfig.getDouble("lighting.key.intensity", 0.45));
+		DirectionalLight keyLight = new DirectionalLight(
+				Color.color(keyIntensity, keyIntensity, keyIntensity));
+		keyLight.setDirection(new Point3D(
+				SceneStyleConfig.getDouble("lighting.key.x", -0.75),
+				SceneStyleConfig.getDouble("lighting.key.y", -0.433),
+				SceneStyleConfig.getDouble("lighting.key.z", -0.5)));
+
+		double fillIntensity = SceneStyleConfig.clamp01(
+				SceneStyleConfig.getDouble("lighting.fill.intensity", 0.22));
+		DirectionalLight fillLight = new DirectionalLight(
+				Color.color(fillIntensity, fillIntensity, fillIntensity));
+		fillLight.setDirection(new Point3D(
+				SceneStyleConfig.getDouble("lighting.fill.x", 1.0),
+				SceneStyleConfig.getDouble("lighting.fill.y", 0.5),
+				SceneStyleConfig.getDouble("lighting.fill.z", -0.5)));
+
+		double rimIntensity = SceneStyleConfig.clamp01(
+				SceneStyleConfig.getDouble("lighting.rim.intensity", 0.15));
+		DirectionalLight rimLight = new DirectionalLight(
+				Color.color(rimIntensity, rimIntensity, rimIntensity));
+		rimLight.setDirection(new Point3D(
+				SceneStyleConfig.getDouble("lighting.rim.x", 0.25),
+				SceneStyleConfig.getDouble("lighting.rim.y", 1.0),
+				SceneStyleConfig.getDouble("lighting.rim.z", -0.25)));
+		rimLight.setLightOn(SceneStyleConfig.getBoolean("lighting.rim.enabled", true));
 
 		ambientLight = new AmbientLight(
-				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
+				Color.color(ambientIntensity, ambientIntensity, ambientIntensity));
+
+		// Keep Kevin's control/workplane lighting separate from object lighting.
 		controlLight = new AmbientLight(
 				Color.color(controlsLightIntensity, controlsLightIntensity, controlsLightIntensity));
 
-		world.getChildren().addAll(ambientLight, controlLight);
-		// Enable point light illumination for selected groups
-		ambientLight.getScope().addAll(userGroup, handGroup);
-		controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
+world.getChildren().addAll(keyLight, fillLight, rimLight, ambientLight, controlLight);
+
+                // Object lighting only.
+                keyLight.getScope().addAll(userGroup, lookGroup, handGroup);
+                fillLight.getScope().addAll(userGroup, lookGroup, handGroup);
+                rimLight.getScope().addAll(userGroup, lookGroup, handGroup);
+                ambientLight.getScope().addAll(userGroup, lookGroup, handGroup);
+
+                // Grid, axes and controls keep their existing independent illumination.
+                controlLight.getScope().addAll(controlHandleGroup, customWorkplaneGroupSolid,
 				customWorkplaneGroupTransparent, rulerGroup, axisGroup);
 
 
@@ -2140,14 +2177,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				hideGridsWhileMoving();
 				// Log.debug("Placing grid "+x +" , "+y);
 			}
-		});
-		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
-			final float distanceBehindCamera = 10000;
-			Point3D p = camera.localToScene(1000, 500, -distanceBehindCamera);
-			follow.setTranslateX(-p.getX());
-			follow.setTranslateY(p.getY());
-			follow.setTranslateZ(-p.getZ());
-
 		});
 	}
 
