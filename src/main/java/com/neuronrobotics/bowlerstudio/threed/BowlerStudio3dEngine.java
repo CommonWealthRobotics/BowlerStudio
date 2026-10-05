@@ -129,6 +129,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static final double ambientLightIntensity = 0.1;
 	private static final double controlsLightIntensity = 0.5;
 	private static final double OrthFOV = 1;
+	/** Camera distance (mm) at which the hand renders at scale 1.0. */
+	private static final double HAND_REFERENCE_DISTANCE = 300;
 	private volatile boolean focusing = false;
 	private volatile boolean abortFocus = false;
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
@@ -234,7 +236,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private Button export;
 
 	private VirtualCameraMobileBase flyingCamera;
-	private Group handGroup;
+	private Group handGroup = new Group();
 	private double upDown = 0;
 	private double leftRight = 0;
 	private HashMap<CSG, MeshView> csgMap = new HashMap<>();
@@ -2131,8 +2133,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 
 		handMesh = handMeshIn.getMesh();
+		handMesh.setViewOrder(-100);
 
-		handGroup = new Group();
 		if (addHand)
 			showHand();
 
@@ -2145,7 +2147,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		camera.setRotate(180);
 
 		camera.setDepthTest(DepthTest.ENABLE);
-		setVirtualcam(new VirtualCameraMobileBase(camera, handGroup, this, name));
+		Scale handScaleTF = new Scale();
+		setVirtualcam(new VirtualCameraMobileBase(camera, handGroup, handScaleTF, this, name));
 		VirtualCameraFactory.setFactory(new IVirtualCameraFactory() {
 			@Override
 			public AbstractImageProvider getVirtualCamera() {
@@ -2164,18 +2167,24 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				TransformNR cf = camera.getCamerFrame();
 				if (workplaneGroup == null)
 					return;
-				//				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
-				//				int x = (int) (cf.getX() / snap) * snap;
-				//				int y = (int) (cf.getY() / snap) * snap;
-				//				if (workplaneGroup != null) {
-				//					getWorkplaneGroup().mmOffset.setTx(x);
-				//					getWorkplaneGroup().mmOffset.setTy(y);
-				//				}
+
 				// Only show the 1mm grid when zoomed in close enough
 				int zoomDepth = (int) camera.getZoomDepth();
 				if (getFlyingCamera().isOrthographic())
 					zoomDepth = (int) (zoomDepth / getFlyingCamera().getZoomScale());
 				boolean showSmallGrid = Math.abs(zoomDepth) < 200;
+
+				// Keep the hand the same size on screen. In perspective the hand sits at
+				// the zoom distance from the camera, so its apparent size falls off as
+				// 1/distance; scaling it by the distance cancels that (1.0 at
+				// HAND_REFERENCE_DISTANCE mm). Orthographic projection ignores depth, so
+				// the hand keeps its size there already.
+				final double handScale = Math.abs(zoomDepth) / HAND_REFERENCE_DISTANCE;
+				BowlerStudio.runLater(() -> {
+					handScaleTF.setX(handScale);
+					handScaleTF.setY(handScale);
+					handScaleTF.setZ(handScale);
+				});
 
 				//Log.debug("Camera zoom = " + zoomDepth +" visable: "+showSmallGrid);
 				for (GridHolder gh : grids) {
@@ -2210,11 +2219,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		BowlerStudio.runLater(() -> {
 			for (GridHolder gh : grids)
 				gh.setCameraMoving(true);
+			handGroup.setVisible(true);
 			if (gridHideTimer == null) {
 				gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
 				gridHideTimer.setOnFinished(e -> {
 					for (GridHolder gh : grids)
 						gh.setCameraMoving(false);
+					handGroup.setVisible(false);
 				});
 			}
 			gridHideTimer.playFromStart();
@@ -2330,8 +2341,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					SKIP_USERGROUP_NODES = userGroup.getChildren().size();
 				// customWorkplaneGroup.setViewOrder(-1);
 				// Create the world group
-				world.getChildren().addAll(lookGroup, cameraGroup, axisGroup, customWorkplaneGroupSolid, userGroup,
-						customWorkplaneGroupTransparent, controlHandleGroup);
+				cameraGroup.setDepthTest(DepthTest.ENABLE);
+				handGroup.setVisible(false);
+				world.getChildren().addAll(lookGroup, axisGroup, customWorkplaneGroupSolid, userGroup,
+						customWorkplaneGroupTransparent, controlHandleGroup, cameraGroup);
 				controlLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView, workplaneGroup.bigGridView,
 						workplaneGroup.smallGridView, workplaneGroup.outlineView);
 

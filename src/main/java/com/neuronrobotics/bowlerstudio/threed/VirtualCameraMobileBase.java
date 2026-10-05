@@ -15,6 +15,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Scale;
 
 public class VirtualCameraMobileBase {
 	public static final TransformNR CameraGlobalOffset = new TransformNR(0, 0, 0, new RotationNR(180, 0, 0));
@@ -80,7 +81,8 @@ public class VirtualCameraMobileBase {
 	// ---------------------------------------------------------------
 	// Constructor — unchanged
 	// ---------------------------------------------------------------
-	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand, ICameraChangeListener lis, String name) {
+	public VirtualCameraMobileBase(PerspectiveCamera camera, Group hand, Scale handScaleTF, ICameraChangeListener lis,
+			String name) {
 		this.hand = hand;
 		this.name = name;
 		this.setCamera(camera);
@@ -90,8 +92,9 @@ public class VirtualCameraMobileBase {
 		camera.getTransforms().add(zoomAffine);
 		BowlerStudio.runLater(() -> TransformFactory.nrToAffine(CameraGlobalOffset, offset));
 		cameraFrame.getTransforms().add(getOffset());
+		hand.getTransforms().add(handScaleTF);
 		manipulationFrame.getChildren().addAll(camera, hand);
-		manipulationFrame.getTransforms().add(camerUserPerspective);
+		manipulationFrame.getTransforms().addAll(camerUserPerspective);
 		cameraFrame.getChildren().add(manipulationFrame);
 		setZoomDepth(DEFAULT_ZOOM_DEPTH);
 	}
