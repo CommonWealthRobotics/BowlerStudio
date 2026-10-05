@@ -320,7 +320,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private MeshView bigTextureView;
 		private MeshView smallLinesView;
 		private MeshView smallTextureView;
-		private Affine mmOffset = new Affine();
+		//private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
 		// Written from camera-callback threads, read on the FX thread; volatile so
@@ -733,13 +733,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	public void rebuild(boolean b) {
+
+		rebuild(b, null);
+	}
+
+	public void rebuild(boolean b, CSG hand) {
+		if (hand == null)
+			hand = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
+					.toCSG().roty(90).setColor(Color.BLACK);
 		rebuildingUIOnerror = true;
 
 		com.neuronrobotics.sdk.common.Log.info("Rebuilding scene " + name);
 		buildScene();
 
 		com.neuronrobotics.sdk.common.Log.info("Rebuilding camera " + name);
-		buildCamera(b);
+		buildCamera(b, hand);
 
 		com.neuronrobotics.sdk.common.Log.info("Rebuilding axis " + name);
 		buildAxes(b);
@@ -1962,8 +1970,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// additionally follows the mm offset of the workplane.
 		grid10Lines.getTransforms().addAll(gh.SNAP10x);
 		grid10Texture.getTransforms().addAll(gh.SNAP10x);
-		grid1Lines.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
-		grid1Texture.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
+		grid1Lines.getTransforms().addAll(gridOffset, gh.SNAP1x);
+		grid1Texture.getTransforms().addAll(gridOffset, gh.SNAP1x);
 		// Solid background rectangle, spanning the full workplane
 		// GridLineMeshBuilder background = new GridLineMeshBuilder();
 		// background.addQuad(-halfX, -halfY, halfX, halfY);
@@ -2074,7 +2082,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/**
 	 * Builds the camera.
 	 */
-	private void buildCamera(boolean addHand) {
+	private void buildCamera(boolean addHand, CSG handMeshIn) {
 
 		// Setup scene illumination
 		cameraGroup.getChildren().setAll(camera);
@@ -2117,13 +2125,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		world.getChildren().addAll(ambientLight, controlLight);
 		// Enable point light illumination for selected groups
-		ambientLight.getScope().addAll(userGroup);
+		ambientLight.getScope().addAll(userGroup, handGroup);
 		controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
 				customWorkplaneGroupTransparent, rulerGroup, axisGroup);
-		CSG cylinder = new Cylinder(0, 2.5, 10, 20) // Top radius, bottom radius, height, nr. segments
-				.toCSG().roty(90).setColor(Color.BLACK);
 
-		handMesh = cylinder.getMesh();
+
+		handMesh = handMeshIn.getMesh();
 
 		handGroup = new Group();
 		if (addHand)
@@ -2157,13 +2164,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				TransformNR cf = camera.getCamerFrame();
 				if (workplaneGroup == null)
 					return;
-				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
-				int x = (int) (cf.getX() / snap) * snap;
-				int y = (int) (cf.getY() / snap) * snap;
-				if (workplaneGroup != null) {
-					getWorkplaneGroup().mmOffset.setTx(x);
-					getWorkplaneGroup().mmOffset.setTy(y);
-				}
+				//				int snap = getWorkplaneGroup().snapSize > 0.2 ? 10 : 1;
+				//				int x = (int) (cf.getX() / snap) * snap;
+				//				int y = (int) (cf.getY() / snap) * snap;
+				//				if (workplaneGroup != null) {
+				//					getWorkplaneGroup().mmOffset.setTx(x);
+				//					getWorkplaneGroup().mmOffset.setTy(y);
+				//				}
 				// Only show the 1mm grid when zoomed in close enough
 				int zoomDepth = (int) camera.getZoomDepth();
 				if (getFlyingCamera().isOrthographic())
@@ -2230,7 +2237,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		cameraLight.setTranslateZ(value3);
 		Log.debug("Light Location " + value + " " + value2 + " " + value3);
-		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup);
+		cameraLight.getScope().addAll(userGroup, controlHandleGroup, lookGroup, handGroup);
 		return cameraLight;
 	}
 
