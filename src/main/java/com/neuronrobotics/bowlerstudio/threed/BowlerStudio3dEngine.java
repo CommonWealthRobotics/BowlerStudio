@@ -388,14 +388,26 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			BowlerStudio.runLater(() -> {
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
+
+				String motionMode = SceneStyleConfig.getString("grid.motionMode", "major").toLowerCase(Locale.ROOT);
+
+				boolean movingTexture = cameraMoving && motionMode.equals("texture");
+				boolean movingAllLines = cameraMoving && motionMode.equals("all");
+				boolean movingMajorLines = cameraMoving && motionMode.equals("major");
+				boolean still = !cameraMoving;
+
 				if (bigLinesView != null)
-					bigLinesView.setVisible(grids && !cameraMoving);
+					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines));
+
 				if (bigTextureView != null)
-					bigTextureView.setVisible(grids && cameraMoving);
+					bigTextureView.setVisible(grids && movingTexture);
+
 				if (smallLinesView != null)
-					smallLinesView.setVisible(showSmall && !cameraMoving);
+					smallLinesView.setVisible(showSmall && (still || movingAllLines));
+
 				if (smallTextureView != null)
-					smallTextureView.setVisible(showSmall && cameraMoving);
+					smallTextureView.setVisible(showSmall && movingTexture);
+
 				backgroundView.setVisible(visible);
 				outlineView.setVisible(grids);
 			});
