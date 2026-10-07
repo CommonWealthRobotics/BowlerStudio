@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import com.neuronrobotics.sdk.common.Log;
+
 public final class SceneStyleConfig {
 
 	private static final Properties PROPERTIES = load();
@@ -28,9 +30,9 @@ public final class SceneStyleConfig {
 		if (Files.isRegularFile(path)) {
 			try (InputStream in = Files.newInputStream(path)) {
 				properties.load(in);
-				System.out.println("Loaded scene style: " + path.toAbsolutePath());
+				Log.debug("Loaded scene style " + path.toAbsolutePath());
 			} catch (Exception ex) {
-				System.err.println("Failed to load scene style " + path + ": " + ex.getMessage());
+				Log.error("Failed to load scene style " + path + ": " + ex.getMessage());
 			}
 		}
 
@@ -50,7 +52,8 @@ public final class SceneStyleConfig {
 			return fallback;
 
 		try {
-			return Double.parseDouble(value.trim());
+			double parsed = Double.parseDouble(value.trim());
+			return Double.isFinite(parsed) ? parsed : fallback;
 		} catch (NumberFormatException ex) {
 			return fallback;
 		}
@@ -60,7 +63,15 @@ public final class SceneStyleConfig {
 		String value = PROPERTIES.getProperty(key);
 		if (value == null)
 			return fallback;
-		return Boolean.parseBoolean(value.trim());
+
+		value = value.trim();
+
+		if ("true".equalsIgnoreCase(value))
+			return true;
+		if ("false".equalsIgnoreCase(value))
+			return false;
+
+		return fallback;
 	}
 
 	public static double clamp01(double value) {
