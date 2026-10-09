@@ -265,9 +265,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private long timeForAutospin = 5000;
 
-	// Hides both grids while the camera moves, restoring them once it settles.
-	private static final double GRID_HIDE_SETTLE_MS = 150;
-	private PauseTransition gridHideTimer;
+	// Tracks camera motion so the configured grid rendering mode can be applied.
+	private static final double GRID_MOTION_SETTLE_MS = 150;
+	private PauseTransition gridMotionTimer;
 
 	// private CheckBox spin;
 	// private CheckBox autoHighlight;
@@ -389,7 +389,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
 
-				String motionMode = SceneStyleConfig.getString("grid.motionMode", "major").toLowerCase(Locale.ROOT);
+				String motionMode = SceneStyleConfig.getString("grid.motionMode", "all").toLowerCase(Locale.ROOT);
+
+				if (!motionMode.equals("major") && !motionMode.equals("all") && !motionMode.equals("texture")
+						&& !motionMode.equals("hidden"))
+					motionMode = "all";
 
 				boolean movingTexture = cameraMoving && motionMode.equals("texture");
 				boolean movingAllLines = cameraMoving && motionMode.equals("all");
@@ -1875,8 +1879,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return topView;
 	}
 
-	private static Color styleGridColor(Color base, String prefix) {
-		double brightness = Math.max(0.0, SceneStyleConfig.getDouble(prefix + ".brightnessMultiplier", 1.0));
+	private static Color styleGridColor(Color base, String prefix, double defaultBrightness) {
+		double brightness = Math.max(0.0,
+				SceneStyleConfig.getDouble(prefix + ".brightnessMultiplier", defaultBrightness));
 		double opacity = Math.max(0.0, SceneStyleConfig.getDouble(prefix + ".opacityMultiplier", 1.0));
 
 		return Color.color(SceneStyleConfig.clamp01(base.getRed() * brightness),
@@ -1900,8 +1905,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		float halfX = workplaneX / 2;
 		float halfY = workplaneY / 2;
 
-Color grid1Color = styleGridColor(getGridColor(), "grid.small");
-                Color grid10Color = styleGridColor(getGridKey(), "grid.major");
+		Color grid1Color = styleGridColor(getGridColor(), "grid.small", 0.85);
+		Color grid10Color = styleGridColor(getGridKey(), "grid.major", 1.0);
 
                 int grid1LineWidthPx = gridLineWidthPx("grid.small.lineWidthPx", 2);
                 int grid10LineWidthPx = gridLineWidthPx("grid.major.lineWidthPx", 4);
@@ -2167,9 +2172,9 @@ world.getChildren().addAll(ambientLight, controlLight);
 						gh.setSmallGridVis(showSmallGrid);
 					}
 				}
-				// While the camera is moving, hide both grids; restore them once it
-				// settles. onChange fires on every move, so restart the timer each time.
-				hideGridsWhileMoving();
+				// Apply the configured moving-camera grid mode and restore the still
+				// representation after camera motion settles.
+				updateGridMotion();
 				// Log.debug("Placing grid "+x +" , "+y);
 			}
 		});
@@ -2185,26 +2190,23 @@ world.getChildren().addAll(ambientLight, controlLight);
 
 	}
 
-	// Hides both grid sets while the camera is moving and pops them back once
-	// motion stops for GRID_HIDE_SETTLE_MS. The PauseTransition is a JavaFX
-	// animation and can only be driven from the FX thread, but onChange may fire
-	// from any thread, so marshal the whole update onto the FX thread. Otherwise
-	// playFromStart() throws off-thread, the settle callback never runs, and the
-	// grids are stuck showing the texture representation.
-	private void hideGridsWhileMoving() {
+	// Camera changes may arrive off the FX thread. Keep the motion state and
+	// settle timer on the FX thread, then let GridHolder apply the configured
+	// major/all/texture/hidden rendering mode.
+	private void updateGridMotion() {
 		BowlerStudio.runLater(() -> {
 			for (GridHolder gh : grids)
 				gh.setCameraMoving(true);
 			handGroup.setVisible(true);
-			if (gridHideTimer == null) {
-				gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
-				gridHideTimer.setOnFinished(e -> {
+			if (gridMotionTimer == null) {
+				gridMotionTimer = new PauseTransition(Duration.millis(GRID_MOTION_SETTLE_MS));
+				gridMotionTimer.setOnFinished(e -> {
 					for (GridHolder gh : grids)
 						gh.setCameraMoving(false);
 					handGroup.setVisible(false);
 				});
 			}
-			gridHideTimer.playFromStart();
+			gridMotionTimer.playFromStart();
 		});
 	}
 
