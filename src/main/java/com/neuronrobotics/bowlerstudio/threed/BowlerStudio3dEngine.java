@@ -1860,7 +1860,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		topView.setMaterial(material);
 		topView.setBlendMode(BlendMode.SRC_OVER);
 		topView.setCullFace(CullFace.NONE);
-
 		return topView;
 	}
 
@@ -1870,19 +1869,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.outlineView.getChildren().clear();
 		gh.bigGridView.getChildren().clear();
 		gh.smallGridView.getChildren().clear();
-		// Physical spacing, in MM — mirrors the old texture tile
-		final float TILE_SIZE_MM = 10.0f;
-		final int TILE_BIG_GRID_PX = 200;
-		final int TILE_SMALL_GRID_PX = 20;
-
-		// Derived from the old texture's pixel weights, so line thickness/spacing
-		// match exactly what was rendered before.
-		final float PIXEL_SIZE_MM = TILE_SIZE_MM / TILE_BIG_GRID_PX; // 0.05mm/px
-		final int SMALL_DIVISIONS = TILE_BIG_GRID_PX / TILE_SMALL_GRID_PX; // 10 small lines/tile
-		final float SMALL_SPACING_MM = TILE_SIZE_MM / SMALL_DIVISIONS; // 1mm
-		final float SMALL_LINE_WIDTH_MM = PIXEL_SIZE_MM * 2; // 1px wide
-		final float BIG_LINE_WIDTH_MM = PIXEL_SIZE_MM * 4; // 3px wide (adjacent-tile overlap)
-
 		float workplaneX = (float) gh.xSizeMM;
 		float workplaneY = (float) gh.ySizeMM;
 		float halfX = workplaneX / 2;
@@ -1890,39 +1876,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		Color grid1Color = getGridColor();
 		Color grid10Color = getGridKey();
-
-		// GridLineMeshBuilder bigLines = new GridLineMeshBuilder();
-		// GridLineMeshBuilder smallLines = new GridLineMeshBuilder();
-		// Vertical lines: step across X, each line spans the full Y extent
-		// int xStartIdx = (int) Math.ceil(-halfX / SMALL_SPACING_MM);
-		// int smallLineCount = 100;
-		// int xEndIdx = (int) Math.floor(halfX / SMALL_SPACING_MM);
-		// for (int i = xStartIdx; i <= xEndIdx; i++) {
-		// float x = i * SMALL_SPACING_MM;
-		// boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-		// float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-		// if (isBig)
-		// bigLines.addQuad(x - halfWidth, -halfY, x + halfWidth, halfY);
-		// if (i > -smallLineCount && i < smallLineCount) {
-		// smallLines.addQuad(x - halfWidth, -smallLineCount, x + halfWidth,
-		// smallLineCount);
-		// }
-		// }
-		//
-		// // Horizontal lines: step across Y, each line spans the full X extent
-		// int yStartIdx = (int) Math.ceil(-halfY / SMALL_SPACING_MM);
-		// int yEndIdx = (int) Math.floor(halfY / SMALL_SPACING_MM);
-		// for (int i = yStartIdx; i <= yEndIdx; i++) {
-		// float y = i * SMALL_SPACING_MM;
-		// boolean isBig = Math.floorMod(i, SMALL_DIVISIONS) == 0;
-		// float halfWidth = (isBig ? BIG_LINE_WIDTH_MM : SMALL_LINE_WIDTH_MM) / 2f;
-		// if (isBig)
-		// bigLines.addQuad(-halfX, y - halfWidth, halfX, y + halfWidth);
-		// if (i > -smallLineCount && i < smallLineCount) {
-		// smallLines.addQuad(-smallLineCount, y - halfWidth, smallLineCount, y +
-		// halfWidth);
-		// }
-		// }
 		Affine gridOffset = new Affine();
 		gridOffset.setTz(-0.05);
 		// MeshView bigGridView = bigLines.buildMeshView(grid10Color);
@@ -1970,16 +1923,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
 		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
 		// additionally follows the mm offset of the workplane.
+		double gridAlignment = 0.025;
+		Affine nrToAffine = TransformFactory.nrToAffine(new TransformNR(gridAlignment, gridAlignment, 0));
 		grid10Lines.getTransforms().addAll(gh.SNAP10x);
-		grid10Texture.getTransforms().addAll(gh.SNAP10x);
+		grid10Texture.getTransforms().addAll(gh.SNAP10x, nrToAffine);
 		grid1Lines.getTransforms().addAll(gridOffset, gh.SNAP1x);
-		grid1Texture.getTransforms().addAll(gridOffset, gh.SNAP1x);
+		grid1Texture.getTransforms().addAll(gridOffset, gh.SNAP1x, nrToAffine);
 		// Solid background rectangle, spanning the full workplane
-		// GridLineMeshBuilder background = new GridLineMeshBuilder();
-		// background.addQuad(-halfX, -halfY, halfX, halfY);
-		// Color lightGrid2 = getLightGrid();
-		//
-		// MeshView backgroundView = background.buildMeshView(lightGrid2);
 		gh.backgroundView.getChildren().add(backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
 		gh.bigGridView.getChildren().addAll(grid10Lines, grid10Texture);
@@ -1987,14 +1937,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.setGridViews(grid10Lines, grid10Texture, grid1Lines, grid1Texture);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
-		// bigGridView.setMouseTransparent(true);
-		// smallGrid.setMouseTransparent(true);
-		// backgroundView.setDepthTest(DepthTest.DISABLE);
-		// outlineView.setDepthTest(DepthTest.DISABLE);
-		// bigGridView.setDepthTest(DepthTest.DISABLE);
-		// backgroundView.visibleProperty().addListener((obs, oldVal, newVal) -> {
-		// Log.error(new Exception("visible changed: " + oldVal + " -> " + newVal));
-		// });
 	}
 
 	/**
