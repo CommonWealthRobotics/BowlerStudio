@@ -1908,8 +1908,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		Color grid1Color = styleGridColor(getGridColor(), "grid.small", 0.85);
 		Color grid10Color = styleGridColor(getGridKey(), "grid.major", 1.0);
 
-                int grid1LineWidthPx = gridLineWidthPx("grid.small.lineWidthPx", 2);
-                int grid10LineWidthPx = gridLineWidthPx("grid.major.lineWidthPx", 4);
+		int grid1LineWidthPx = gridLineWidthPx("grid.small.lineWidthPx", 2);
+		int grid10LineWidthPx = gridLineWidthPx("grid.major.lineWidthPx", 4);
 		Affine gridOffset = new Affine();
 		gridOffset.setTz(-0.05);
 		// MeshView bigGridView = bigLines.buildMeshView(grid10Color);
@@ -2096,17 +2096,17 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		controlLight = new AmbientLight(
 				Color.color(controlsLightIntensity, controlsLightIntensity, controlsLightIntensity));
 
-world.getChildren().addAll(ambientLight, controlLight);
+		world.getChildren().addAll(ambientLight, controlLight);
 
-                if (kevinLighting) {
-                        // Match the original BowlerStudio light scopes.
-                        controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
-                                        customWorkplaneGroupTransparent, rulerGroup, axisGroup);
-                } else {
-                        // Object lighting is independent from controls and workplane lighting.
-                        controlLight.getScope().addAll(controlHandleGroup, customWorkplaneGroupSolid,
-                                        customWorkplaneGroupTransparent, rulerGroup, axisGroup);
-                }
+		if (kevinLighting) {
+			// Match the original BowlerStudio light scopes.
+			controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
+					customWorkplaneGroupTransparent, rulerGroup, axisGroup);
+		} else {
+			// Object lighting is independent from controls and workplane lighting.
+			controlLight.getScope().addAll(controlHandleGroup, customWorkplaneGroupSolid,
+					customWorkplaneGroupTransparent, rulerGroup, axisGroup);
+		}
 
 
 		handMesh = handMeshIn.getMesh();
