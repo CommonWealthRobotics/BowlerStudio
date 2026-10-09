@@ -265,9 +265,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private long timeForAutospin = 5000;
 
-	// Hides both grids while the camera moves, restoring them once it settles.
-	private static final double GRID_HIDE_SETTLE_MS = 150;
-	private PauseTransition gridHideTimer;
+	// Tracks camera motion so the configured grid rendering mode can be applied.
+	private static final double GRID_MOTION_SETTLE_MS = 150;
+	private PauseTransition gridMotionTimer;
 
 	// private CheckBox spin;
 	// private CheckBox autoHighlight;
@@ -388,14 +388,30 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			BowlerStudio.runLater(() -> {
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
+
+				String motionMode = SceneStyleConfig.getString("grid.motionMode", "all").toLowerCase(Locale.ROOT);
+
+				if (!motionMode.equals("major") && !motionMode.equals("all") && !motionMode.equals("texture")
+						&& !motionMode.equals("hidden"))
+					motionMode = "all";
+
+				boolean movingTexture = cameraMoving && motionMode.equals("texture");
+				boolean movingAllLines = cameraMoving && motionMode.equals("all");
+				boolean movingMajorLines = cameraMoving && motionMode.equals("major");
+				boolean still = !cameraMoving;
+
 				if (bigLinesView != null)
-					bigLinesView.setVisible(grids && !cameraMoving);
+					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines));
+
 				if (bigTextureView != null)
-					bigTextureView.setVisible(grids && cameraMoving);
+					bigTextureView.setVisible(grids && movingTexture);
+
 				if (smallLinesView != null)
-					smallLinesView.setVisible(showSmall && !cameraMoving);
+					smallLinesView.setVisible(showSmall && (still || movingAllLines));
+
 				if (smallTextureView != null)
-					smallTextureView.setVisible(showSmall && cameraMoving);
+					smallTextureView.setVisible(showSmall && movingTexture);
+
 				backgroundView.setVisible(visible);
 				outlineView.setVisible(grids);
 			});
@@ -1863,6 +1879,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return topView;
 	}
 
+	private static Color styleGridColor(Color base, String prefix, double defaultBrightness) {
+		double brightness = Math.max(0.0,
+				SceneStyleConfig.getDouble(prefix + ".brightnessMultiplier", defaultBrightness));
+		double opacity = Math.max(0.0, SceneStyleConfig.getDouble(prefix + ".opacityMultiplier", 1.0));
+
+		return Color.color(SceneStyleConfig.clamp01(base.getRed() * brightness),
+				SceneStyleConfig.clamp01(base.getGreen() * brightness),
+				SceneStyleConfig.clamp01(base.getBlue() * brightness),
+				SceneStyleConfig.clamp01(base.getOpacity() * opacity));
+	}
+
+	private static int gridLineWidthPx(String key, int fallback) {
+		return Math.max(1, (int) Math.round(SceneStyleConfig.getDouble(key, fallback)));
+	}
+
 	public static void makeGrid(GridHolder gh) {
 		Log.debug("Grid colors \n" + gridKey + "\n" + gridColor + "\n" + lightGrid);
 		gh.backgroundView.getChildren().clear();
@@ -1874,8 +1905,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		float halfX = workplaneX / 2;
 		float halfY = workplaneY / 2;
 
-		Color grid1Color = getGridColor();
-		Color grid10Color = getGridKey();
+		Color grid1Color = styleGridColor(getGridColor(), "grid.small", 0.85);
+		Color grid10Color = styleGridColor(getGridKey(), "grid.major", 1.0);
+
+		int grid1LineWidthPx = gridLineWidthPx("grid.small.lineWidthPx", 2);
+		int grid10LineWidthPx = gridLineWidthPx("grid.major.lineWidthPx", 4);
 		Affine gridOffset = new Affine();
 		gridOffset.setTz(-0.05);
 		// MeshView bigGridView = bigLines.buildMeshView(grid10Color);
@@ -1917,10 +1951,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// line geometry and a single textured quad. Both stay in memory; the
 		// textured quads are swapped in while the camera moves, the line geometry
 		// when it stops.
-		MeshView grid10Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
-		MeshView grid10Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, 4, grid10Color);
-		MeshView grid1Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
-		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, 2, grid1Color);
+		MeshView grid10Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, grid10LineWidthPx, grid10Color);
+		MeshView grid10Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, grid10LineWidthPx, grid10Color);
+		MeshView grid1Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
+		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
 		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
 		// additionally follows the mm offset of the workplane.
 		double gridAlignment = 0.025;
@@ -2031,47 +2065,48 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Setup scene illumination
 		cameraGroup.getChildren().setAll(camera);
 
-		/*
-		 * // Fixed directional light from the top DirectionalLight sunLight1 = new
-		 * DirectionalLight(); sunLight1.setColor(Color.color(0.3, 0.3, 0.3));
-		 * sunLight1.setDirection(new Point3D(0, 0, -1)); sunLight1.setLightOn(false);
-		 * cameraGroup.getChildren().add(sunLight1);
-		 *
-		 * // Point light sun high above the work plane PointLight sunLight2 = new
-		 * PointLight(Color.color(0.2, 0.2, 0.2)); sunLight2.setConstantAttenuation(1);
-		 * sunLight2.setLinearAttenuation(0); sunLight2.setQuadraticAttenuation(0);
-		 * sunLight2.getTransforms().add(new Translate(0, 0, 10000));
-		 * sunLight2.setLightOn(false); cameraGroup.getChildren().add(sunLight2);
-		 *
-		 * // Ambient lighting AmbientLight ambientLight = new
-		 * AmbientLight(Color.color(0.1, 0.1, 0.1)); ambientLight.setLightOn(false);
-		 * cameraGroup.getChildren().add(ambientLight);
-		 *
-		 * // Directional light follows the camera view angle DirectionalLight
-		 * directionalCameraLight = new DirectionalLight(Color.color(1.0, 1.0, 1.0));
-		 * camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
-		 * Point3D d = camera.localToScene(0, 0, -1).subtract(camera.localToScene(0, 0,
-		 * 0)).normalize(); directionalCameraLight.setDirection(new Point3D(d.getX(),
-		 * -d.getY(), d.getZ())); // Y inverted });
-		 * directionalCameraLight.setLightOn(false);
-		 * cameraGroup.getChildren().add(directionalCameraLight);
-		 */
+		String lightingMode = SceneStyleConfig.getString("lighting.mode", "stable").toLowerCase(Locale.ROOT);
+		boolean kevinLighting = lightingMode.equals("kevin");
 
-		// Point light behind camera, similar to default JavaFX light
-		addPointLight(1000, 0, 500);
-		addPointLight(-1000, 0, -500);
-		PointLight follow = addPointLight(1000, -1000, 1000);
+		final PointLight follow;
 
-		ambientLight = new AmbientLight(
-				Color.color(ambientLightIntensity, ambientLightIntensity, ambientLightIntensity));
+		if (kevinLighting) {
+			// Original BowlerStudio lighting:
+			// three point lights, with the third following the camera.
+			addPointLight(1000, 0, 500);
+			addPointLight(-1000, 0, -500);
+			follow = addPointLight(1000, -1000, 1000);
+
+			ambientLight = new AmbientLight(Color.color(0.1, 0.1, 0.1));
+			ambientLight.getScope().addAll(userGroup);
+		} else {
+			// Stable lighting:
+			// fixed world-space lights keep shading independent of camera rotation.
+			follow = null;
+
+			double ambient = SceneStyleConfig.clamp01(SceneStyleConfig.getDouble("lighting.ambient", 0.47));
+			ambientLight = new AmbientLight(Color.color(ambient, ambient, ambient));
+			ambientLight.getScope().addAll(userGroup, lookGroup);
+
+			addSceneDirectionalLight("key", true, 0.52, -0.80, -1.00, -0.45);
+			addSceneDirectionalLight("fill", true, 0.16, 0.65, -0.10, -0.25);
+			addSceneDirectionalLight("rim", true, 0.08, 0.20, 0.90, -0.15);
+		}
+
 		controlLight = new AmbientLight(
 				Color.color(controlsLightIntensity, controlsLightIntensity, controlsLightIntensity));
 
 		world.getChildren().addAll(ambientLight, controlLight);
-		// Enable point light illumination for selected groups
-		ambientLight.getScope().addAll(userGroup, handGroup);
-		controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
-				customWorkplaneGroupTransparent, rulerGroup, axisGroup);
+
+		if (kevinLighting) {
+			// Match the original BowlerStudio light scopes.
+			controlLight.getScope().addAll(controlHandleGroup, lookGroup, customWorkplaneGroupSolid,
+					customWorkplaneGroupTransparent, rulerGroup, axisGroup);
+		} else {
+			// Object lighting is independent from controls and workplane lighting.
+			controlLight.getScope().addAll(controlHandleGroup, customWorkplaneGroupSolid,
+					customWorkplaneGroupTransparent, rulerGroup, axisGroup);
+		}
 
 
 		handMesh = handMeshIn.getMesh();
@@ -2114,7 +2149,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				int zoomDepth = (int) camera.getZoomDepth();
 				if (getFlyingCamera().isOrthographic())
 					zoomDepth = (int) (zoomDepth / getFlyingCamera().getZoomScale());
-				boolean showSmallGrid = Math.abs(zoomDepth) < 200;
+				double smallGridVisibleZoomDepth = Math.max(0.0,
+						SceneStyleConfig.getDouble("grid.small.visibleZoomDepth", 350.0));
+				boolean showSmallGrid = Math.abs(zoomDepth) < smallGridVisibleZoomDepth;
 
 				// Keep the hand the same size on screen. In perspective the hand sits at
 				// the zoom distance from the camera, so its apparent size falls off as
@@ -2135,43 +2172,69 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 						gh.setSmallGridVis(showSmallGrid);
 					}
 				}
-				// While the camera is moving, hide both grids; restore them once it
-				// settles. onChange fires on every move, so restart the timer each time.
-				hideGridsWhileMoving();
+				// Apply the configured moving-camera grid mode and restore the still
+				// representation after camera motion settles.
+				updateGridMotion();
 				// Log.debug("Placing grid "+x +" , "+y);
 			}
 		});
-		camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
-			final float distanceBehindCamera = 10000;
-			Point3D p = camera.localToScene(1000, 500, -distanceBehindCamera);
-			follow.setTranslateX(-p.getX());
-			follow.setTranslateY(p.getY());
-			follow.setTranslateZ(-p.getZ());
+		if (follow != null) {
+			camera.localToSceneTransformProperty().addListener((obs, oldT, newT) -> {
+				final float distanceBehindCamera = 10000;
+				Point3D p = camera.localToScene(1000, 500, -distanceBehindCamera);
+				follow.setTranslateX(-p.getX());
+				follow.setTranslateY(p.getY());
+				follow.setTranslateZ(-p.getZ());
+			});
+		}
 
-		});
 	}
 
-	// Hides both grid sets while the camera is moving and pops them back once
-	// motion stops for GRID_HIDE_SETTLE_MS. The PauseTransition is a JavaFX
-	// animation and can only be driven from the FX thread, but onChange may fire
-	// from any thread, so marshal the whole update onto the FX thread. Otherwise
-	// playFromStart() throws off-thread, the settle callback never runs, and the
-	// grids are stuck showing the texture representation.
-	private void hideGridsWhileMoving() {
+	// Camera changes may arrive off the FX thread. Keep the motion state and
+	// settle timer on the FX thread, then let GridHolder apply the configured
+	// major/all/texture/hidden rendering mode.
+	private void updateGridMotion() {
 		BowlerStudio.runLater(() -> {
 			for (GridHolder gh : grids)
 				gh.setCameraMoving(true);
 			handGroup.setVisible(true);
-			if (gridHideTimer == null) {
-				gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
-				gridHideTimer.setOnFinished(e -> {
+			if (gridMotionTimer == null) {
+				gridMotionTimer = new PauseTransition(Duration.millis(GRID_MOTION_SETTLE_MS));
+				gridMotionTimer.setOnFinished(e -> {
 					for (GridHolder gh : grids)
 						gh.setCameraMoving(false);
 					handGroup.setVisible(false);
 				});
 			}
-			gridHideTimer.playFromStart();
+			gridMotionTimer.playFromStart();
 		});
+	}
+
+	private void addSceneDirectionalLight(String name, boolean defaultEnabled, double defaultIntensity, double defaultX,
+			double defaultY, double defaultZ) {
+
+		String prefix = "lighting." + name + ".";
+
+		if (!SceneStyleConfig.getBoolean(prefix + "enabled", defaultEnabled))
+			return;
+
+		double intensity = SceneStyleConfig.clamp01(SceneStyleConfig.getDouble(prefix + "intensity", defaultIntensity));
+
+		double x = SceneStyleConfig.getDouble(prefix + "x", defaultX);
+		double y = SceneStyleConfig.getDouble(prefix + "y", defaultY);
+		double z = SceneStyleConfig.getDouble(prefix + "z", defaultZ);
+
+		Point3D direction = new Point3D(x, y, z);
+
+		if (direction.magnitude() < 1e-8) {
+			Log.warning("Ignoring " + name + " light: direction vector is zero");
+			return;
+		}
+
+		DirectionalLight light = new DirectionalLight(Color.color(intensity, intensity, intensity));
+		light.setDirection(direction.normalize());
+		light.getScope().addAll(userGroup, lookGroup);
+		world.getChildren().add(light);
 	}
 
 	private PointLight addPointLight(int value, int value2, int value3) {
