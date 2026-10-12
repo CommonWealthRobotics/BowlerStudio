@@ -322,7 +322,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private MeshView bigTextureView;
 		private MeshView smallLinesView;
 		private MeshView smallTextureView;
-		//private Affine mmOffset = new Affine();
+		// private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
 		// Written from camera-callback threads, read on the FX thread; volatile so
@@ -363,7 +363,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		public void setSmallGridVis(boolean b) {
 			if (b != showSmallGrid) {
-				//Log.error(new Exception("Toggle small grid to " + b));
+				// Log.error(new Exception("Toggle small grid to " + b));
 				showSmallGrid = b;
 				applyVisibility();
 			}
@@ -2108,7 +2108,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					customWorkplaneGroupTransparent, rulerGroup, axisGroup);
 		}
 
-
 		handMesh = handMeshIn.getMesh();
 		handMesh.setViewOrder(-100);
 
@@ -2165,7 +2164,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					handScaleTF.setZ(handScale);
 				});
 
-				//Log.debug("Camera zoom = " + zoomDepth +" visable: "+showSmallGrid);
+				// Log.debug("Camera zoom = " + zoomDepth +" visable: "+showSmallGrid);
 				for (GridHolder gh : grids) {
 					if (gh.getLastZoomDepth() != zoomDepth) {
 						gh.setLastZoomDepth(zoomDepth);
@@ -2195,19 +2194,23 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	// major/all/texture/hidden rendering mode.
 	private void updateGridMotion() {
 		BowlerStudio.runLater(() -> {
-			for (GridHolder gh : grids)
-				gh.setCameraMoving(true);
+			setToMovingMode(true);
 			handGroup.setVisible(true);
 			if (gridHideTimer == null) {
 				gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
 				gridHideTimer.setOnFinished(e -> {
-					for (GridHolder gh : grids)
-						gh.setCameraMoving(false);
+					setToMovingMode(false);
 					handGroup.setVisible(false);
 				});
 			}
 			gridHideTimer.playFromStart();
 		});
+	}
+
+	public void setToMovingMode(boolean val) {
+		for (GridHolder gh : grids)
+			if (gh.cameraMoving != val)
+				gh.setCameraMoving(val);
 	}
 
 	private void addSceneDirectionalLight(String name, boolean defaultEnabled, double defaultIntensity, double defaultX,
