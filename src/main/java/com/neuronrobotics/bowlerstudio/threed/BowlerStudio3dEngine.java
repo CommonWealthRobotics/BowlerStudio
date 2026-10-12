@@ -2086,7 +2086,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 			double ambient = SceneStyleConfig.clamp01(SceneStyleConfig.getDouble("lighting.ambient", 0.47));
 			ambientLight = new AmbientLight(Color.color(ambient, ambient, ambient));
-			ambientLight.getScope().addAll(userGroup, lookGroup);
+			ambientLight.getScope().addAll(userGroup, lookGroup, handGroup);
 
 			addSceneDirectionalLight("key", true, 0.52, -0.80, -1.00, -0.45);
 			addSceneDirectionalLight("fill", true, 0.16, 0.65, -0.10, -0.25);
@@ -2233,7 +2233,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		DirectionalLight light = new DirectionalLight(Color.color(intensity, intensity, intensity));
 		light.setDirection(direction.normalize());
-		light.getScope().addAll(userGroup, lookGroup);
+		light.getScope().addAll(userGroup, lookGroup, handGroup);
 		world.getChildren().add(light);
 	}
 
