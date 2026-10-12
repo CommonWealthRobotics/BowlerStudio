@@ -265,9 +265,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private long timeForAutospin = 5000;
 
-	// Tracks camera motion so the configured grid rendering mode can be applied.
-	private static final double GRID_MOTION_SETTLE_MS = 150;
-	private PauseTransition gridMotionTimer;
+	// Hides both grids while the camera moves, restoring them once it settles.
+	private static final double GRID_HIDE_SETTLE_MS = 150;
+	private PauseTransition gridHideTimer;
 
 	// private CheckBox spin;
 	// private CheckBox autoHighlight;
@@ -389,7 +389,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
 
-				String motionMode = SceneStyleConfig.getString("grid.motionMode", "all").toLowerCase(Locale.ROOT);
+				String motionMode ="texture";// SceneStyleConfig.getString("grid.motionMode", "all").toLowerCase(Locale.ROOT);
 
 				if (!motionMode.equals("major") && !motionMode.equals("all") && !motionMode.equals("texture")
 						&& !motionMode.equals("hidden"))
@@ -2198,15 +2198,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			for (GridHolder gh : grids)
 				gh.setCameraMoving(true);
 			handGroup.setVisible(true);
-			if (gridMotionTimer == null) {
-				gridMotionTimer = new PauseTransition(Duration.millis(GRID_MOTION_SETTLE_MS));
-				gridMotionTimer.setOnFinished(e -> {
+			if (gridHideTimer == null) {
+				gridHideTimer = new PauseTransition(Duration.millis(GRID_HIDE_SETTLE_MS));
+				gridHideTimer.setOnFinished(e -> {
 					for (GridHolder gh : grids)
 						gh.setCameraMoving(false);
 					handGroup.setVisible(false);
 				});
 			}
-			gridMotionTimer.playFromStart();
+			gridHideTimer.playFromStart();
 		});
 	}
 
