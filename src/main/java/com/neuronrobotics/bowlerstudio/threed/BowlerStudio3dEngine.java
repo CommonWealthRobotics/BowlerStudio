@@ -2351,8 +2351,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				// Create the world group
 				cameraGroup.setDepthTest(DepthTest.ENABLE);
 				handGroup.setVisible(false);
-				world.getChildren().addAll(lookGroup, axisGroup, customWorkplaneGroupSolid, userGroup,
-						customWorkplaneGroupTransparent, controlHandleGroup, cameraGroup);
+				world.getChildren().addAll(lookGroup, axisGroup, customWorkplaneGroupSolid, cameraGroup, userGroup,
+						customWorkplaneGroupTransparent, controlHandleGroup);
 				controlLight.getScope().addAll(axisGroup, workplaneGroup.backgroundView, workplaneGroup.bigGridView,
 						workplaneGroup.smallGridView, workplaneGroup.outlineView);
 
