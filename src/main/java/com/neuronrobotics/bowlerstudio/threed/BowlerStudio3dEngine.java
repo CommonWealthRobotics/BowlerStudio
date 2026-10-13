@@ -127,7 +127,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	private static final double pointLightIntensity = 0.5;
 	private static final double ambientLightIntensity = 0.1;
-	private static final double controlsLightIntensity = 0.5;
+	private static final double controlsLightIntensity = 1;
 	private static final double OrthFOV = 1;
 	/** Camera distance (mm) at which the hand renders at scale 1.0. */
 	private static final double HAND_REFERENCE_DISTANCE = 300;
