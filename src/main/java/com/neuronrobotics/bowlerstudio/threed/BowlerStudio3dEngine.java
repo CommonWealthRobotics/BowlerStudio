@@ -389,7 +389,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
 
-				String motionMode = SceneStyleConfig.getString("grid.motionMode", "texture").toLowerCase(Locale.ROOT);
+				String motionMode = SceneStyleConfig.getString("grid.motionMode", "major").toLowerCase(Locale.ROOT);
 
 				if (!motionMode.equals("major") && !motionMode.equals("all") && !motionMode.equals("texture")
 						&& !motionMode.equals("hidden"))
