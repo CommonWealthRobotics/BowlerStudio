@@ -136,6 +136,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private int NUMBER_OF_INTERPOLATION_STEPS = 30;
 
 	private boolean orthographicMode = false;
+	private static boolean movingActive = false;
 
 	/**
 	 *
@@ -2536,6 +2537,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		});
 
 		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
 			@Override
 			public void handle(MouseEvent me) {
 				// com.neuronrobotics.sdk.common.Log.error("Bowler 3d start " + name);
@@ -2548,9 +2550,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				else
 					captureMouse = false;
 				resetMouseTime();
+				movingActive = true;
 			}
 		});
-
+		scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent me) {
+				movingActive = false;
+			}
+		});
 		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 
 			@Override
@@ -3616,6 +3624,19 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		if (workplaneGroup != null) {
 			workplaneGroup.showLines();
 		}
+	}
+
+	public boolean isMoving(long since) {
+		long l = System.currentTimeMillis() - lastMosueMovementTime;
+		if (l < since) {
+			Log.debug("Camera moving " + l);
+			return true;
+		}
+		if (movingActive) {
+			Log.debug("Camera active");
+			return true;
+		}
+		return false;
 	}
 
 }
