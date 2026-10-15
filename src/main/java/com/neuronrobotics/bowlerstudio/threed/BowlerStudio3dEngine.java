@@ -3629,11 +3629,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	public boolean isMoving(long since) {
 		long l = System.currentTimeMillis() - lastMosueMovementTime;
 		if (l < since) {
-			Log.debug("Camera moving " + l);
+			// Log.debug("Camera moving " + l);
 			return true;
 		}
 		if (movingActive) {
-			Log.debug("Camera active");
+			// Log.debug("Camera active");
 			return true;
 		}
 		return false;
