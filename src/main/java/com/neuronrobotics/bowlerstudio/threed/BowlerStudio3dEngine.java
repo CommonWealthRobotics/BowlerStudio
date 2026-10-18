@@ -1815,7 +1815,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		final int gridSpacingPx = (int) Math.round(gridSpacingMM / PIXEL_SIZE_MM);
 		final int skipSpacingPx = (int) Math.round(skipSpacingMM / PIXEL_SIZE_MM);
 
-		int argb = webColorToArgb(color);
+		// Keep texture pixels opaque and apply grid opacity in the material.
+		Color textureColor = Color.color(color.getRed(), color.getGreen(), color.getBlue());
+		int argb = webColorToArgb(textureColor);
 
 		float workplaneX = (float) xSizeMM;
 		float workplaneY = (float) ySizeMM;
@@ -1854,7 +1856,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		PhongMaterial material = new PhongMaterial();
 		material.setDiffuseMap(tile);
-		material.setDiffuseColor(Color.WHITE); // Alpha comes from the texture
+		material.setDiffuseColor(Color.color(1, 1, 1, color.getOpacity()));
 		material.setSpecularColor(Color.BLACK); // No shiny spots
 
 		// Create the work plane mesh, draw at slight offset to align pixel to line
@@ -1912,7 +1914,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int grid1LineWidthPx = gridLineWidthPx("grid.small.lineWidthPx", 2);
 		int grid10LineWidthPx = gridLineWidthPx("grid.major.lineWidthPx", 4);
 		Affine gridOffset = new Affine();
-		gridOffset.setTz(-0.05);
+		gridOffset.setTz(SceneStyleConfig.getDouble("grid.small.zOffsetMm", -0.05));
 		// MeshView bigGridView = bigLines.buildMeshView(grid10Color);
 		// MeshView smallGrid = smallLines.buildMeshView(grid1Color);
 		// smallGrid.getTransforms().addAll(gridOffset, gh.mmOffset, gh.SNAP1x);
@@ -1947,7 +1949,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		outlineView.setCullFace(CullFace.NONE);
 		outlineView.getTransforms().addAll(gh.SNAP10x);
 
-		MeshView backgroundView = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
+		// Reuse the pick surface so workplane mouse filters survive grid updates.
+		MeshView backgroundView = gh.getIntersectionNode();
+		MeshView updatedBackground = createTexturedWorkplaneTexture(gh.xSizeMM, gh.ySizeMM);
+		if (backgroundView == null) {
+			backgroundView = updatedBackground;
+		} else {
+			backgroundView.setMesh(updatedBackground.getMesh());
+			backgroundView.setMaterial(updatedBackground.getMaterial());
+		}
 		// Large grid first, small grid after. Each grid is built twice: crisp 3D
 		// line geometry and a single textured quad. Both stay in memory; the
 		// textured quads are swapped in while the camera moves, the line geometry
@@ -2303,6 +2313,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			// Create the workplane
 			// workplaneGroup = createGridMesh(1000, 1000, 20);
 			workplaneGroup = createTexturedWorkplane(1000, 1000);
+			// Change only the main ground fill, leaving the pick surface in place.
+			double groundOpacity = SceneStyleConfig.getDouble("grid.ground.renderOpacity", 1.0);
+			workplaneGroup.getIntersectionNode().setOpacity(SceneStyleConfig.clamp01(groundOpacity));
 			boolean selected = (showRuler != null) ? showRuler.isSelected() : true;
 
 			Axis axes = new Axis(showAxes ? selected : false);
