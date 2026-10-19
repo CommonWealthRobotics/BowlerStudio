@@ -210,6 +210,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	/** The mouse delta y. */
 	double mouseDeltaY;
+	// Mouse velocity controls orbit sensitivity; the camera itself has no inertia.
+	private boolean adaptiveOrbitEnabled;
+	private long orbitLastDragNs;
+	private double orbitVelocityX;
+	private double orbitVelocityY;
+	private final double orbitMin = SceneStyleConfig.getDouble("camera.orbit.min", 0.012);
+	private final double orbitMax = SceneStyleConfig.getDouble("camera.orbit.max", 0.080);
+	private final double orbitHalf = SceneStyleConfig.getDouble("camera.orbit.half", 500);
+	private final double orbitRiseMs = SceneStyleConfig.getDouble("camera.orbit.riseMs", 250);
+	private final double orbitFallMs = SceneStyleConfig.getDouble("camera.orbit.fallMs", 120);
 
 	/** The manipulator group. */
 	private final Group manipulatorGroup = new Group();
@@ -2529,6 +2539,30 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	}
 
+	private double calculateAdaptiveOrbitFactor() {
+		long now = System.nanoTime();
+		double elapsed = (now - orbitLastDragNs) / 1.0e9;
+		if (orbitLastDragNs == 0L || elapsed > 0.25) {
+			orbitVelocityX = 0.0;
+			orbitVelocityY = 0.0;
+		}
+		double dt = Math.max(0.001, Math.min(0.25, elapsed));
+		orbitLastDragNs = now;
+		double vx = mouseDeltaX / dt;
+		double vy = mouseDeltaY / dt;
+		double speed = Math.hypot(vx, vy);
+		double previousSpeed = Math.hypot(orbitVelocityX, orbitVelocityY);
+		double tauMs = Math.max(1.0, speed > previousSpeed ? orbitRiseMs : orbitFallMs);
+		double blend = 1.0 - Math.exp(-dt * 1000.0 / tauMs);
+		orbitVelocityX += blend * (vx - orbitVelocityX);
+		orbitVelocityY += blend * (vy - orbitVelocityY);
+		double filteredSpeed = Math.hypot(orbitVelocityX, orbitVelocityY);
+		double halfSpeed = Math.max(1.0, orbitHalf);
+		double min = Math.max(0.001, orbitMin);
+		double max = Math.max(min, orbitMax);
+		return min + (max - min) * filteredSpeed / (filteredSpeed + halfSpeed);
+	}
+
 	/**
 	 * Handle mouse.
 	 *
@@ -2558,6 +2592,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				mousePosY = me.getSceneY();
 				mouseOldX = me.getSceneX();
 				mouseOldY = me.getSceneY();
+				orbitLastDragNs = System.nanoTime();
+				orbitVelocityX = 0.0;
+				orbitVelocityY = 0.0;
 				if (me.isPrimaryButtonDown())
 					captureMouse = true;
 				else
@@ -2570,6 +2607,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			@Override
 			public void handle(MouseEvent me) {
 				movingActive = false;
+				orbitLastDragNs = 0L;
+				orbitVelocityX = 0.0;
+				orbitVelocityY = 0.0;
 			}
 		});
 		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
@@ -2596,6 +2636,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					modifier = 0.1;
 
 				if (getControlsMap().isRotate(me)) {
+					double orbitFactor = modifierFactor * mouseScale;
+					if (adaptiveOrbitEnabled)
+						orbitFactor = calculateAdaptiveOrbitFactor();
 					double el = getVirtualcam().getTiltAngle();
 					boolean above = (el > 0);
 					// if (aboveSplit) {
@@ -2603,9 +2646,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					// }
 					// System.out.println("Above = "+el);
 					double i = above ? -1 : 1;
-					TransformNR trans = new TransformNR(0, 0, 0,
-							new RotationNR(mouseDeltaY * modifierFactor * modifier * mouseScale,
-									i * mouseDeltaX * modifierFactor * modifier * mouseScale, 0));
+					TransformNR trans = new TransformNR(0, 0, 0, new RotationNR(mouseDeltaY * modifier * orbitFactor,
+							i * mouseDeltaX * modifier * orbitFactor, 0));
 
 					moveCamera(trans);
 				}
@@ -3428,6 +3470,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 	public void setMouseScale(double mouseScale) {
 		this.mouseScale = mouseScale;
+	}
+
+	/** Enable speed-dependent orbit sensitivity for this viewport only. */
+	public void setAdaptiveOrbitEnabled(boolean enabled) {
+		adaptiveOrbitEnabled = enabled;
 	}
 
 	public void lockZoom() {
