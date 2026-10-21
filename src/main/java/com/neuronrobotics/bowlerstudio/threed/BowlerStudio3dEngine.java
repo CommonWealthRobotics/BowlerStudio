@@ -330,9 +330,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// motion: crisp 3D line geometry (used when the camera is still) and a
 		// single textured quad (used while the camera is moving).
 		private MeshView bigLinesView;
-		private MeshView bigTextureView;
+		//private MeshView bigTextureView;
 		private MeshView smallLinesView;
-		private MeshView smallTextureView;
+		private MeshView backgroundNoLines;
+		private MeshView backgroundWithGrid;
+		//private MeshView smallTextureView;
 		// private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
@@ -381,11 +383,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		// Store both representations of the grids, then pick which one renders.
-		public void setGridViews(MeshView bigLines, MeshView bigTexture, MeshView smallLines, MeshView smallTexture) {
+		public void setGridViews(MeshView bigLines,  MeshView smallLines, MeshView noLines, MeshView gridTexture) {
+			backgroundNoLines=noLines;
+			backgroundWithGrid=gridTexture;
 			bigLinesView = bigLines;
-			bigTextureView = bigTexture;
 			smallLinesView = smallLines;
-			smallTextureView = smallTexture;
 			applyVisibility();
 		}
 
@@ -414,14 +416,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				if (bigLinesView != null)
 					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines));
 
-				if (bigTextureView != null)
-					bigTextureView.setVisible(grids && movingTexture);
-
 				if (smallLinesView != null)
 					smallLinesView.setVisible(showSmall && (still || movingAllLines));
 
-				if (smallTextureView != null)
-					smallTextureView.setVisible(showSmall && movingTexture);
+				if (backgroundWithGrid != null) {
+					boolean textureShow = showSmall && movingTexture;
+					backgroundWithGrid.setVisible(textureShow);
+					backgroundNoLines.setVisible(showSmall && !movingTexture);
+				}
 
 				backgroundView.setVisible(visible);
 				outlineView.setVisible(grids);
@@ -1973,7 +1975,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// textured quads are swapped in while the camera moves, the line geometry
 		// when it stops.
 		MeshView grid10Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, grid10LineWidthPx, grid10Color);
-		MeshView grid10Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, grid10LineWidthPx, grid10Color);
 		MeshView grid1Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
 		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
 		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
@@ -1981,16 +1982,15 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		double gridAlignment = 0.025;
 		Affine nrToAffine = TransformFactory.nrToAffine(new TransformNR(gridAlignment, gridAlignment, 0));
 		grid10Lines.getTransforms().addAll(gh.SNAP10x);
-		grid10Texture.getTransforms().addAll(gh.SNAP10x, nrToAffine);
 		grid1Lines.getTransforms().addAll(gridOffset, gh.SNAP1x);
 		grid1Texture.getTransforms().addAll(gridOffset, gh.SNAP1x, nrToAffine);
 		// Solid background rectangle, spanning the full workplane
-		gh.backgroundView.getChildren().addAll(backgroundView, grid1Texture, grid10Texture);
+		gh.backgroundView.getChildren().addAll(grid1Texture, backgroundView);
 		gh.outlineView.getChildren().add(outlineView);
 		gh.bigGridView.getChildren().addAll(grid10Lines);
 		gh.smallGridView.getChildren().addAll(grid1Lines);
 
-		gh.setGridViews(grid10Lines, grid10Texture, grid1Lines, grid1Texture);
+		gh.setGridViews(grid10Lines, grid1Lines,backgroundView,grid1Texture);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
 	}
