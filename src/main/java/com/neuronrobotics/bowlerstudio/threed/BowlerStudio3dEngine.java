@@ -400,7 +400,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
 
-				String motionMode = SceneStyleConfig.getString("grid.motionMode", "major").toLowerCase(Locale.ROOT);
+				String motionMode = SceneStyleConfig.getString("grid.motionMode", "texture").toLowerCase(Locale.ROOT);
 
 				if (!motionMode.equals("major") && !motionMode.equals("all") && !motionMode.equals("texture")
 						&& !motionMode.equals("hidden"))
@@ -1985,10 +1985,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		grid1Lines.getTransforms().addAll(gridOffset, gh.SNAP1x);
 		grid1Texture.getTransforms().addAll(gridOffset, gh.SNAP1x, nrToAffine);
 		// Solid background rectangle, spanning the full workplane
-		gh.backgroundView.getChildren().add(backgroundView);
+		gh.backgroundView.getChildren().addAll(backgroundView, grid1Texture, grid10Texture);
 		gh.outlineView.getChildren().add(outlineView);
-		gh.bigGridView.getChildren().addAll(grid10Lines, grid10Texture);
-		gh.smallGridView.getChildren().addAll(grid1Lines, grid1Texture);
+		gh.bigGridView.getChildren().addAll(grid10Lines);
+		gh.smallGridView.getChildren().addAll(grid1Lines);
+
 		gh.setGridViews(grid10Lines, grid10Texture, grid1Lines, grid1Texture);
 		gh.setIntersectionNode(backgroundView);
 		outlineView.setMouseTransparent(true);
