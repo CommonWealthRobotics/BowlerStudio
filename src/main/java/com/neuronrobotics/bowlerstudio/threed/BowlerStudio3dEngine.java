@@ -133,6 +133,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static final int WORKPLANE_NOISE_PERCENT = 25;
 	/** Grid lines replacing a skipped (coarser) line are this many px wider. */
 	private static final int SKIPPED_LINE_WIDTH_BONUS_PX = 2;
+	/** Shared work-plane fill opacity for the plain background and the grid-texture quad, so the open surface looks identical in either mode. */
+	private static final double WORKPLANE_OPACITY = 0.45;
 	/** Camera distance (mm) at which the hand renders at scale 1.0. */
 	private static final double HAND_REFERENCE_DISTANCE = 300;
 	private volatile boolean focusing = false;
@@ -387,9 +389,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		// Store both representations of the grids, then pick which one renders.
-		public void setGridViews(MeshView bigLines,  MeshView smallLines, MeshView noLines, MeshView gridTexture) {
-			backgroundNoLines=noLines;
-			backgroundWithGrid=gridTexture;
+		public void setGridViews(MeshView bigLines, MeshView smallLines, MeshView noLines, MeshView gridTexture) {
+			backgroundNoLines = noLines;
+			backgroundWithGrid = gridTexture;
 			bigLinesView = bigLines;
 			smallLinesView = smallLines;
 			applyVisibility();
@@ -429,12 +431,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					// where the textured grid quad (background + grid) stands in for it.
 					// The zoom gate applies to the small grid, never to the ground, so a
 					// zoomed-out moving camera still shows the ground.
-					backgroundNoLines.setVisible((isTextureMode && visible && showLines && !cameraMoving) || (isTextureMode && !showLines));
+					backgroundNoLines.setVisible(
+							(isTextureMode && visible && showLines && !cameraMoving) || (isTextureMode && !showLines));
 					boolean value = isTextureMode && visible && showLines && cameraMoving;
 					backgroundWithGrid.setVisible(value);
-					if(value) {
+					if (value) {
 						intersectionNode = backgroundWithGrid;
-					}else
+					} else
 						intersectionNode = backgroundNoLines;
 				}
 
@@ -480,9 +483,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			return intersectionNode;
 		}
 
-//		public void setIntersectionNode(MeshView intersectionNode) {
-//			this.intersectionNode = intersectionNode;
-//		}
+		//		public void setIntersectionNode(MeshView intersectionNode) {
+		//			this.intersectionNode = intersectionNode;
+		//		}
 
 		public int getLastZoomDepth() {
 			return lastZoomDepth;
@@ -1679,14 +1682,16 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	// Fill every pixel with the background colour plus a random brightness jitter
 	// in [0-100%], so the work plane looks like a real surface instead of flat
 	// colour. Shared by the work plane texture and the grid texture overlay.
-	private static void applyWorkplaneNoise(int[] pixels, int baseArgb, int noisePercent) {
+	// `alpha` is baked into each pixel (0-255) so the texture itself carries its
+	// opacity; the material diffuse colour is then fully opaque.
+	private static void applyWorkplaneNoise(int[] pixels, int baseArgb, int noisePercent, int alpha) {
 		Random rnd = new Random();
 		int r = (baseArgb >> 16) & 0xFF;
 		int g = (baseArgb >> 8) & 0xFF;
 		int b = baseArgb & 0xFF;
 		for (int i = 0; i < pixels.length; i++) {
 			int n = 100 + rnd.nextInt(noisePercent + 1) - (noisePercent / 2);
-			pixels[i] = 0xFF000000 | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
+			pixels[i] = (alpha << 24) | (Math.min(255, (r * n) / 100) << 16) | (Math.min(255, (g * n) / 100) << 8)
 					| (Math.min(255, (b * n) / 100));
 		}
 	}
@@ -1720,7 +1725,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
 
 		// Add some noise to make the work plane look real
-		applyWorkplaneNoise(src, wpColor, WORKPLANE_NOISE_PERCENT);
+		applyWorkplaneNoise(src, wpColor, WORKPLANE_NOISE_PERCENT, (int) (WORKPLANE_OPACITY * 255));
 
 		// Scale up with nearest neighbor algorithm
 		int upscaledX = TILE_BIG_GRID_PX * wpUpscale;
@@ -1742,8 +1747,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// Set work plane texture
 		material.setDiffuseMap(tile);
 
-		// Control work plane transparency
-		Color transWhite = new Color(1, 1, 1, 0.35);
+		// Opacity is now baked into the texture pixels (see applyWorkplaneNoise), so
+		// the material is fully opaque: the transparent surface and solid grid render
+		// at their baked opacity, not multiplied again.
+		Color transWhite = new Color(1, 1, 1, 1.0);
 		material.setDiffuseColor(transWhite); // Work plane color
 		material.setSpecularColor(Color.BLACK); // No shiny spots
 
@@ -1831,7 +1838,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	// to render and is swapped in while the camera is moving; the crisp line
 	// geometry is swapped back in once the camera stops.
 	public static MeshView createGridTextureMesh(double xSizeMM, double ySizeMM, double gridSpacingMM,
-			double skipSpacingMM, int lineWidthPx, Color color) {
+			double skipSpacingMM, int lineWidthPx, Color color, Color majorColor) {
 
 		// Square textured tile in MM
 		final float TILE_SIZE_MM = 10.0f;
@@ -1841,9 +1848,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		final int gridSpacingPx = (int) Math.round(gridSpacingMM / PIXEL_SIZE_MM);
 		final int skipSpacingPx = (int) Math.round(skipSpacingMM / PIXEL_SIZE_MM);
 
-		// Keep texture pixels opaque and apply grid opacity in the material.
-		Color textureColor = Color.color(color.getRed(), color.getGreen(), color.getBlue());
-		int argb = webColorToArgb(textureColor);
+		// Bake each colour (including its style opacity) into the texture: minor lines
+		// keep their partial opacity, major lines are baked fully opaque.
+		int argb = webColorToArgb(color);
+		int majorArgb = webColorToArgb(majorColor);
 
 		float workplaneX = (float) xSizeMM;
 		float workplaneY = (float) ySizeMM;
@@ -1856,21 +1864,24 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		int[] src = new int[TILE_BIG_GRID_PX * TILE_BIG_GRID_PX];
 
-		// Work plane background, same noise as the work plane texture
-		applyWorkplaneNoise(src, webColorToArgb(getLightGrid()), WORKPLANE_NOISE_PERCENT);
+		// Work plane background, same noise as the work plane texture. Baked at the
+		// work-plane opacity so the surface stays transparent; grid lines below are
+		// baked at their own opacity.
+		applyWorkplaneNoise(src, webColorToArgb(getLightGrid()), WORKPLANE_NOISE_PERCENT,
+				(int) (WORKPLANE_OPACITY * 255));
 
 		for (int i = 0; i < TILE_BIG_GRID_PX; i += gridSpacingPx) {
-			// Lines that belong to the coarser grid are drawn wider instead of skipped
-			int width = (skipSpacingPx > 0 && (i % skipSpacingPx) == 0)
-					? lineWidthPx + SKIPPED_LINE_WIDTH_BONUS_PX
-					: lineWidthPx;
+			// Major (coarser) lines are drawn wider and use the fully-opaque major colour.
+			boolean major = skipSpacingPx > 0 && (i % skipSpacingPx) == 0;
+			int width = major ? lineWidthPx + SKIPPED_LINE_WIDTH_BONUS_PX : lineWidthPx;
+			int lineArgb = major ? majorArgb : argb;
 			int start = i - width / 2;
 			for (int w = 0; w < width; w++) {
 				// Wrap lines that straddle the tile seam so they tile seamlessly
 				int x = Math.floorMod(start + w, TILE_BIG_GRID_PX);
 				for (int y = 0; y < TILE_BIG_GRID_PX; y++) {
-					src[y * TILE_BIG_GRID_PX + x] = argb; // vertical line
-					src[x * TILE_BIG_GRID_PX + y] = argb; // horizontal line
+					src[y * TILE_BIG_GRID_PX + x] = lineArgb; // vertical line
+					src[x * TILE_BIG_GRID_PX + y] = lineArgb; // horizontal line
 				}
 			}
 		}
@@ -1885,7 +1896,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		PhongMaterial material = new PhongMaterial();
 		material.setDiffuseMap(tile);
-		material.setDiffuseColor(Color.color(1, 1, 1, color.getOpacity()));
+		// Opacity is baked into the texture pixels now, so the material is fully opaque:
+		// grid lines render solid and the background stays transparent.
+		material.setDiffuseColor(Color.WHITE);
 		material.setSpecularColor(Color.BLACK); // No shiny spots
 
 		// Create the work plane mesh, draw at slight offset to align pixel to line
@@ -1993,7 +2006,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// when it stops.
 		MeshView grid10Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 10.0, 0, grid10LineWidthPx, grid10Color);
 		MeshView grid1Lines = createGridLinesMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
-		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color);
+		MeshView grid1Texture = createGridTextureMesh(gh.xSizeMM, gh.ySizeMM, 1.0, 10.0, grid1LineWidthPx, grid1Color,
+				grid10Color);
 		// Scale each grid by its own snap Scale (driven by setSnap); the small grid
 		// additionally follows the mm offset of the workplane.
 		double gridAlignment = 0.025;
@@ -2007,7 +2021,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		gh.bigGridView.getChildren().addAll(grid10Lines);
 		gh.smallGridView.getChildren().addAll(grid1Lines);
 
-		gh.setGridViews(grid10Lines, grid1Lines,backgroundView,grid1Texture);
+		gh.setGridViews(grid10Lines, grid1Lines, backgroundView, grid1Texture);
 		outlineView.setMouseTransparent(true);
 	}
 
@@ -2478,7 +2492,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			customWorkplaneGroupSolid.getChildren().add(n.smallGridView);
 			customWorkplaneGroupSolid.getChildren().add(n.outlineView);
 			customWorkplaneGroupTransparent.getChildren().add(0, n.backgroundView);
-			controlLight.getScope().addAll(n.backgroundView, n.bigGridView, n.smallGridView, n.outlineView,n.backgroundWithGrid);
+			controlLight.getScope().addAll(n.backgroundView, n.bigGridView, n.smallGridView, n.outlineView,
+					n.backgroundWithGrid);
 		});
 	}
 
