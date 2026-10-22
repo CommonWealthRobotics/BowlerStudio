@@ -419,9 +419,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				boolean movingAllLines = cameraMoving && motionMode.equals("all");
 				boolean movingMajorLines = cameraMoving && motionMode.equals("major");
 				boolean still = !cameraMoving;
+				boolean backgroundVis = isTextureMode && visible && showLines && cameraMoving;
 
 				if (bigLinesView != null)
-					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines));
+					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines || backgroundVis));
 
 				if (smallLinesView != null)
 					smallLinesView.setVisible(showSmall && (still || movingAllLines));
@@ -433,9 +434,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					// zoomed-out moving camera still shows the ground.
 					backgroundNoLines.setVisible(
 							(isTextureMode && visible && showLines && !cameraMoving) || (isTextureMode && !showLines));
-					boolean value = isTextureMode && visible && showLines && cameraMoving;
-					backgroundWithGrid.setVisible(value);
-					if (value) {
+					backgroundWithGrid.setVisible(backgroundVis);
+					if (backgroundVis) {
 						intersectionNode = backgroundWithGrid;
 					} else
 						intersectionNode = backgroundNoLines;
