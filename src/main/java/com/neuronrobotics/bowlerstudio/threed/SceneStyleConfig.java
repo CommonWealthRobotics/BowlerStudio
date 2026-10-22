@@ -1,13 +1,7 @@
 package com.neuronrobotics.bowlerstudio.threed;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
-import com.neuronrobotics.sdk.common.Log;
 
 public final class SceneStyleConfig {
 
