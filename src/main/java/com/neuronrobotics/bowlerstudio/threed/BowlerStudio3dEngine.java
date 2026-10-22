@@ -133,7 +133,10 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private static final int WORKPLANE_NOISE_PERCENT = 25;
 	/** Grid lines replacing a skipped (coarser) line are this many px wider. */
 	private static final int SKIPPED_LINE_WIDTH_BONUS_PX = 2;
-	/** Shared work-plane fill opacity for the plain background and the grid-texture quad, so the open surface looks identical in either mode. */
+	/**
+	 * Shared work-plane fill opacity for the plain background and the grid-texture
+	 * quad, so the open surface looks identical in either mode.
+	 */
 	private static final double WORKPLANE_OPACITY = 0.45;
 	/** Camera distance (mm) at which the hand renders at scale 1.0. */
 	private static final double HAND_REFERENCE_DISTANCE = 300;
@@ -336,11 +339,11 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// motion: crisp 3D line geometry (used when the camera is still) and a
 		// single textured quad (used while the camera is moving).
 		private MeshView bigLinesView;
-		//private MeshView bigTextureView;
+		// private MeshView bigTextureView;
 		private MeshView smallLinesView;
 		private MeshView backgroundNoLines;
 		private MeshView backgroundWithGrid;
-		//private MeshView smallTextureView;
+		// private MeshView smallTextureView;
 		// private Affine mmOffset = new Affine();
 		private Scale SNAP1x = new Scale(1, 1, 1);
 		private Scale SNAP10x = new Scale(1, 1, 1);
@@ -404,22 +407,24 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		// showLines, and each grid renders as line geometry when still or as a single
 		// textured quad while the camera moves.
 		private void applyVisibility() {
+			String mm = SceneStyleConfig.getString("grid.motionMode", "texture").toLowerCase(Locale.ROOT);
+			boolean isTextureMode = mm.equals("texture");
+			boolean backgroundVis = isTextureMode && visible && showLines && cameraMoving;
+			boolean unknownVar = !mm.equals("major") && !mm.equals("all") && !isTextureMode && !mm.equals("hidden");
+			String motionMode = unknownVar ? "all" : mm;
+			if (backgroundVis) {
+				intersectionNode = backgroundWithGrid;
+			} else
+				intersectionNode = backgroundNoLines;
 			BowlerStudio.runLater(() -> {
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
 
-				String motionMode = SceneStyleConfig.getString("grid.motionMode", "texture").toLowerCase(Locale.ROOT);
-
-				boolean isTextureMode = motionMode.equals("texture");
-				if (!motionMode.equals("major") && !motionMode.equals("all") && !isTextureMode
-						&& !motionMode.equals("hidden"))
-					motionMode = "all";
 
 				boolean movingTexture = cameraMoving && isTextureMode;
 				boolean movingAllLines = cameraMoving && motionMode.equals("all");
 				boolean movingMajorLines = cameraMoving && motionMode.equals("major");
 				boolean still = !cameraMoving;
-				boolean backgroundVis = isTextureMode && visible && showLines && cameraMoving;
 
 				if (bigLinesView != null)
 					bigLinesView.setVisible(grids && (still || movingAllLines || movingMajorLines || backgroundVis));
@@ -428,17 +433,18 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					smallLinesView.setVisible(showSmall && (still || movingAllLines));
 
 				if (backgroundWithGrid != null) {
-					// Ground fill is hidden only while the camera moves in texture mode,
-					// where the textured grid quad (background + grid) stands in for it.
-					// The zoom gate applies to the small grid, never to the ground, so a
-					// zoomed-out moving camera still shows the ground.
-					backgroundNoLines.setVisible(
-							(isTextureMode && visible && showLines && !cameraMoving) || (isTextureMode && !showLines));
-					backgroundWithGrid.setVisible(backgroundVis);
-					if (backgroundVis) {
-						intersectionNode = backgroundWithGrid;
-					} else
-						intersectionNode = backgroundNoLines;
+					if (isTextureMode) {
+						// Ground fill is hidden only while the camera moves in texture mode,
+						// where the textured grid quad (background + grid) stands in for it.
+						// The zoom gate applies to the small grid, never to the ground, so a
+						// zoomed-out moving camera still shows the ground.
+						backgroundNoLines.setVisible((visible && showLines && !cameraMoving) || (!showLines));
+						backgroundWithGrid.setVisible(backgroundVis);
+
+					} else {
+						backgroundNoLines.setVisible(true);
+						backgroundWithGrid.setVisible(false);
+					}
 				}
 
 				backgroundView.setVisible(visible);
@@ -483,9 +489,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			return intersectionNode;
 		}
 
-		//		public void setIntersectionNode(MeshView intersectionNode) {
-		//			this.intersectionNode = intersectionNode;
-		//		}
+		// public void setIntersectionNode(MeshView intersectionNode) {
+		// this.intersectionNode = intersectionNode;
+		// }
 
 		public int getLastZoomDepth() {
 			return lastZoomDepth;
@@ -1896,7 +1902,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		PhongMaterial material = new PhongMaterial();
 		material.setDiffuseMap(tile);
-		// Opacity is baked into the texture pixels now, so the material is fully opaque:
+		// Opacity is baked into the texture pixels now, so the material is fully
+		// opaque:
 		// grid lines render solid and the background stays transparent.
 		material.setDiffuseColor(Color.WHITE);
 		material.setSpecularColor(Color.BLACK); // No shiny spots
