@@ -334,7 +334,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		private Group smallGridView = new Group();
 		private Group outlineView = new Group();
 		private Group backgroundView = new Group();
-		private MeshView intersectionNode;
 		// Two representations of each grid, kept in memory and swapped by camera
 		// motion: crisp 3D line geometry (used when the camera is still) and a
 		// single textured quad (used while the camera is moving).
@@ -393,6 +392,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 
 		// Store both representations of the grids, then pick which one renders.
 		public void setGridViews(MeshView bigLines, MeshView smallLines, MeshView noLines, MeshView gridTexture) {
+			if (bigLines == null || smallLines == null || noLines == null || gridTexture == null)
+				throw new RuntimeException("Elements must not be null");
 			backgroundNoLines = noLines;
 			backgroundWithGrid = gridTexture;
 			bigLinesView = bigLines;
@@ -412,10 +413,6 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			boolean backgroundVis = isTextureMode && visible && showLines && cameraMoving;
 			boolean unknownVar = !mm.equals("major") && !mm.equals("all") && !isTextureMode && !mm.equals("hidden");
 			String motionMode = unknownVar ? "all" : mm;
-			if (backgroundVis) {
-				intersectionNode = backgroundWithGrid;
-			} else
-				intersectionNode = backgroundNoLines;
 			BowlerStudio.runLater(() -> {
 				boolean grids = visible && showLines;
 				boolean showSmall = grids && showSmallGrid;
@@ -485,7 +482,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public MeshView getIntersectionNode() {
-			return intersectionNode;
+			if (backgroundNoLines == null || backgroundWithGrid == null)
+				return null;
+			applyVisibility();
+			if (backgroundNoLines.isVisible())
+				return backgroundNoLines;
+			return backgroundWithGrid;
 		}
 
 		// public void setIntersectionNode(MeshView intersectionNode) {
