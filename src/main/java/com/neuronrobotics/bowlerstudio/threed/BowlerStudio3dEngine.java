@@ -433,14 +433,13 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 					smallLinesView.setVisible(showSmall && (still || movingAllLines));
 
 				if (backgroundWithGrid != null) {
-					if (isTextureMode) {
+					if (isTextureMode && showSmallGrid) {
 						// Ground fill is hidden only while the camera moves in texture mode,
 						// where the textured grid quad (background + grid) stands in for it.
 						// The zoom gate applies to the small grid, never to the ground, so a
 						// zoomed-out moving camera still shows the ground.
 						backgroundNoLines.setVisible((visible && showLines && !cameraMoving) || (!showLines));
 						backgroundWithGrid.setVisible(backgroundVis);
-
 					} else {
 						backgroundNoLines.setVisible(true);
 						backgroundWithGrid.setVisible(false);
