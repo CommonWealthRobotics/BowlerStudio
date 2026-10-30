@@ -1,9 +1,9 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-export ARCH=x86_64
-JVM=zulu25.36.15-ca-fx-jdk25.0.4-linux_x64
 set -e
-ZIP=$JVM.tar.gz
+JVM_SCRIPTS=$SCRIPT_DIR/libraries/bowler-script-kernel/JCSG/jvm
+JVM=$(bash $JVM_SCRIPTS/getJdkArchiveName.sh)
+ZIP=$(bash $JVM_SCRIPTS/getJdkArchiveFile.sh)
 export JAVA_HOME=$HOME/bin/java21/
 if test -d $JAVA_HOME/$JVM/; then
   echo "$JAVA_HOME exists."
