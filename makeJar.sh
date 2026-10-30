@@ -10,8 +10,11 @@ if test -d $JAVA_HOME/$JVM/; then
 else
 	rm -rf $JAVA_HOME
 	mkdir -p $JAVA_HOME
-	wget https://cdn.azul.com/zulu/bin/$ZIP 
-	tar -xvzf $ZIP -C $JAVA_HOME
+	wget $(bash $JVM_SCRIPTS/getJdkUrl.sh) 
+	case $ZIP in
+	*.zip) unzip -o -q $ZIP -d $JAVA_HOME ;;
+	*) tar -xvzf $ZIP -C $JAVA_HOME ;;
+	esac
 	mv $JAVA_HOME/$JVM/* $JAVA_HOME/
 fi
 echo "Java home set to $JAVA_HOME"

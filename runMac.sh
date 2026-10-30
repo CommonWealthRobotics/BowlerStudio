@@ -11,8 +11,14 @@ else
 	rm -rf $JAVA_HOME
 	mkdir -p $JAVA_HOME
 	curl -L $(bash $JVM_SCRIPTS/getJdkUrl.sh) -o $ZIP
-	tar -xvzf $ZIP -C $JAVA_HOME
+	case $ZIP in
+	*.zip) unzip -o -q $ZIP -d $JAVA_HOME ;;
+	*) tar -xvzf $ZIP -C $JAVA_HOME ;;
+	esac
 	mv $JAVA_HOME/$JVM/* $JAVA_HOME/
+fi
+if test -d $JAVA_HOME/Contents/Home; then
+	export JAVA_HOME=$JAVA_HOME/Contents/Home
 fi
 echo "Java home set to $JAVA_HOME"
  ./gradlew --stop
