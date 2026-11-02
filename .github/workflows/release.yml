@@ -14,6 +14,13 @@ jobs:
       uses: actions/checkout@v2
       with:
          submodules: recursive 
+    - name: Install and verify pinned JDK from jvm.json
+      run: |
+        JVM_SCRIPTS=libraries/bowler-script-kernel/JCSG/jvm
+        bash $JVM_SCRIPTS/installJdk.sh
+        JAVA_HOME=$HOME/bin/CaDoodle-ApplicationInstall/$(bash $JVM_SCRIPTS/getJdkArchiveName.sh)
+        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+        echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}   
@@ -44,13 +51,6 @@ jobs:
 
     - name: Build with Gradle 
       run: bash makeJar.sh
-    - name: Resolve JDK archive from jvm.json
-      run: echo "JVM_ARCHIVE=$(bash libraries/bowler-script-kernel/JCSG/jvm/getJdkArchiveFile.sh)" >> $GITHUB_ENV
-    - name: Set Java
-      uses: actions/setup-java@v1
-      with:
-        java-version: 25
-        jdkFile: ${{ env.JVM_ARCHIVE }}
     - name: release
       uses: actions/create-release@v1
       id: create_release
