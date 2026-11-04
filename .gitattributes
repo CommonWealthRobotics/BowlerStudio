@@ -1,3 +1,7 @@
 src/main/java/com/neuronrobotics/bowlerstudio/NameGetter.java filter=unchanged
 * text=auto eol=lf
 *.java eol=lf
+
+# Gradle dependency lockfiles are generated with LF and are hash-sensitive:
+# a CRLF checkout would change every line and invalidate the lock.
+gradle.lockfile text eol=lf
