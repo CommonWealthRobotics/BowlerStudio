@@ -47,3 +47,31 @@ jobs:
 
     - name: Run Unit Tests
       run: xvfb-run -s '-screen 0 1024x768x24' ./gradlew test
+
+  # Catch dependency changes that would make the lockfile inconsistent.
+  # Regenerate after a dependency change and commit the result:
+  #   ./gradlew --write-locks lockClasspaths
+  lockfile-drift:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: '25'
+
+    - name: Regenerate lockfiles
+      run: ./gradlew --no-daemon --write-locks lockClasspaths
+
+    - name: Fail if lockfiles changed
+      run: |
+        if ! git diff --exit-code -- '**/gradle.lockfile' 'gradle.lockfile'; then
+          echo "::error::gradle.lockfile is out of date. Regenerate it and commit the result:"
+          echo "  ./gradlew --write-locks lockClasspaths"
+          exit 1
+        fi

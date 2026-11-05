@@ -507,3 +507,29 @@ if (project == rootProject) {
 	    mergeServiceFiles()
 	}
 }
+
+// Regenerate after any dependency change:
+//   ./gradlew --write-locks lockClasspaths
+dependencyLocking {
+	lockAllConfigurations()
+}
+
+// The submodule projects register their own task of this name; a root-only
+// registration avoids the duplicate task failure in those projects.
+tasks.register('lockClasspaths') {
+	group = 'build'
+	description = 'Resolve the locked configurations so --write-locks records them'
+	doLast {
+		['compileClasspath', 'annotationProcessor'].each { n ->
+			def c = configurations.findByName(n)
+			if (c != null && c.canBeResolved) {
+				try {
+					c.resolve()
+				} catch (Throwable ignored) {
+					// A configuration that cannot resolve is still recorded by
+					// --write-locks; failure here must not abort the task.
+				}
+			}
+		}
+	}
+}
