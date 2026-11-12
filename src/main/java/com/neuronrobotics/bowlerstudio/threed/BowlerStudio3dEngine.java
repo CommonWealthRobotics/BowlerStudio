@@ -367,6 +367,8 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		}
 
 		public void setSnap(double snapGridValue) {
+			if (snapGridValue < 0.1)
+				snapGridValue = 1; // disable grid scaling below .1mm
 			SNAP1x.setX(snapGridValue);
 			SNAP1x.setY(snapGridValue);
 			SNAP1x.setZ(snapGridValue);
