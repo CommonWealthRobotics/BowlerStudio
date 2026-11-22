@@ -2625,6 +2625,12 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				.add(() -> node.removeEventHandler(type, filter));
 	}
 
+	/** How many handlers are currently installed on {@code node}; 0 when none. */
+	int installedHandlerCount(Node node) {
+		List<Runnable> installed = installedMouseHandlers.get(node);
+		return installed == null ? 0 : installed.size();
+	}
+
 	/** Removes the handler set previously installed on {@code node}, if any. */
 	private void removeMouseHandlers(Node node) {
 		List<Runnable> installed = installedMouseHandlers.remove(node);
