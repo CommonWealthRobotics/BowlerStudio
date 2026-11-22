@@ -170,7 +170,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	 * remove the previous set instead of stacking a second copy that would apply
 	 * every drag delta twice.
 	 */
-	private final Map<Node, List<Runnable>> installedMouseHandlers = new HashMap<>();
+	private final MouseHandlerSet mouseHandlers = new MouseHandlerSet();
 
 	/** The workplane group. */
 	private GridHolder workplaneGroup;
@@ -2614,30 +2614,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	private void addMouseFilter(Node node, EventType<MouseEvent> type, EventHandler<? super MouseEvent> filter) {
-		node.addEventFilter(type, filter);
-		installedMouseHandlers.computeIfAbsent(node, k -> new ArrayList<>())
-				.add(() -> node.removeEventFilter(type, filter));
+		mouseHandlers.addFilter(node, type, filter);
 	}
 
 	private void addScrollFilter(Node node, EventType<ScrollEvent> type, EventHandler<? super ScrollEvent> filter) {
-		node.addEventHandler(type, filter);
-		installedMouseHandlers.computeIfAbsent(node, k -> new ArrayList<>())
-				.add(() -> node.removeEventHandler(type, filter));
+		mouseHandlers.addHandler(node, type, filter);
 	}
 
 	/** How many handlers are currently installed on {@code node}; 0 when none. */
 	int installedHandlerCount(Node node) {
-		List<Runnable> installed = installedMouseHandlers.get(node);
-		return installed == null ? 0 : installed.size();
+		return mouseHandlers.count(node);
 	}
 
 	/** Removes the handler set previously installed on {@code node}, if any. */
 	private void removeMouseHandlers(Node node) {
-		List<Runnable> installed = installedMouseHandlers.remove(node);
-		if (installed == null)
-			return;
-		for (Runnable remove : installed)
-			remove.run();
+		mouseHandlers.remove(node);
 	}
 
 	/**
