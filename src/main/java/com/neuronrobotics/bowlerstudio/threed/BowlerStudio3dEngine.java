@@ -157,6 +157,21 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	/** The root group. */
 	private final Group rootGroup = new Group();
 
+	/**
+	 * Container the SubScene was added to, if any. Mouse handlers are installed on
+	 * both it and the SubScene: an AnchorPane is picked over its whole bounds, so
+	 * container handling survives cases where child picking does not reach the
+	 * SubScene.
+	 */
+	private Node mouseHost;
+
+	/**
+	 * The filters installed by {@link #handleMouse(Node)}, so a re-install can
+	 * remove the previous set instead of stacking a second copy that would apply
+	 * every drag delta twice.
+	 */
+	private final Map<Node, List<Runnable>> installedMouseHandlers = new HashMap<>();
+
 	/** The workplane group. */
 	private GridHolder workplaneGroup;
 
@@ -816,7 +831,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		group = new Group(getSubScene());
 		Scene s = new Scene(group);
 		// handleKeyboard(s);
-		handleMouse(getSubScene());
+		reattachMouseHandlers();
 
 		BowlerStudio.runLater(() -> {
 			getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
@@ -827,17 +842,28 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	}
 
 	/**
-	 * Reattach mouse event handlers to the SubScene to restore camera controls.
-	 * Call this after UI stack changes to ensure mouse events are properly routed
-	 * to the controls map.
+	 * Installs the camera controls on the SubScene and, when the SubScene has been
+	 * placed in a container, on that container too. Call this after UI stack
+	 * changes to ensure mouse events are properly routed to the controls map.
+	 *
+	 * <p>
+	 * The controls also live on the container because events do not reliably reach
+	 * the SubScene when the pointer is over empty space; the container is picked
+	 * over its whole bounds, so the press that starts an orbit or carries a scroll
+	 * is still seen. Installing is destructive: any previous filter set is removed
+	 * first, so repeated calls (every {@code rebuild}) cannot stack duplicates.
 	 */
 	public void reattachMouseHandlers() {
 		disabeControl = false;
-		if (getSubScene() != null) {
-			handleMouse(getSubScene());
-			getSubScene().setMouseTransparent(false);
-		} else {
+		if (getSubScene() == null) {
 			Log.error(new Exception("Failed to set up mouse"));
+			return;
+		}
+		handleMouse(getSubScene());
+		getSubScene().setMouseTransparent(false);
+		if (mouseHost != null) {
+			handleMouse(mouseHost);
+			mouseHost.setMouseTransparent(false);
 		}
 	}
 
@@ -2587,6 +2613,27 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		return min + (max - min) * filteredSpeed / (filteredSpeed + halfSpeed);
 	}
 
+	private void addMouseFilter(Node node, EventType<MouseEvent> type, EventHandler<? super MouseEvent> filter) {
+		node.addEventFilter(type, filter);
+		installedMouseHandlers.computeIfAbsent(node, k -> new ArrayList<>())
+				.add(() -> node.removeEventFilter(type, filter));
+	}
+
+	private void addScrollFilter(Node node, EventType<ScrollEvent> type, EventHandler<? super ScrollEvent> filter) {
+		node.addEventHandler(type, filter);
+		installedMouseHandlers.computeIfAbsent(node, k -> new ArrayList<>())
+				.add(() -> node.removeEventHandler(type, filter));
+	}
+
+	/** Removes the handler set previously installed on {@code node}, if any. */
+	private void removeMouseHandlers(Node node) {
+		List<Runnable> installed = installedMouseHandlers.remove(node);
+		if (installed == null)
+			return;
+		for (Runnable remove : installed)
+			remove.run();
+	}
+
 	/**
 	 * Handle mouse.
 	 *
@@ -2600,14 +2647,18 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			return;
 		}
 
+		// Drop any set installed earlier so a re-install cannot stack duplicates,
+		// which would apply each drag delta twice.
+		removeMouseHandlers(scene);
+
 		com.neuronrobotics.sdk.common.Log.debug("Setting up Mouse Handelers " + name);
-		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+		addMouseFilter(scene, MouseEvent.MOUSE_CLICKED, event -> {
 			resetMouseTime();
 			if (getControlsMap().timeToCancel(event))
 				cancelSelection();
 		});
 
-		scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+		addMouseFilter(scene, MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent me) {
@@ -2627,7 +2678,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				movingActive = true;
 			}
 		});
-		scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+		addMouseFilter(scene, MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
 				movingActive = false;
@@ -2636,7 +2687,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 				orbitVelocityY = 0.0;
 			}
 		});
-		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+		addMouseFilter(scene, MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent me) {
@@ -2689,7 +2740,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			}
 		});
 
-		scene.addEventHandler(ScrollEvent.ANY, t -> {
+		addScrollFilter(scene, ScrollEvent.ANY, t -> {
 			if (getControlsMap().isZoom(t)) {
 				double deltaY = t.getDeltaY();
 				zoomIncrement(deltaY);
@@ -3593,6 +3644,9 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 		AnchorPane.setRightAnchor(getSubScene(), 0.0);
 		AnchorPane.setLeftAnchor(getSubScene(), 0.0);
 		AnchorPane.setBottomAnchor(getSubScene(), 0.0);
+		// keep the container so reattachMouseHandlers() can put the camera controls
+		// on it as well; see that method for why both nodes are needed
+		mouseHost = view3d;
 	}
 
 	public Stage getWindow() {
