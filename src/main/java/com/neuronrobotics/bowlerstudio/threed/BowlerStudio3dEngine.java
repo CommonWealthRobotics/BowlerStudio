@@ -479,7 +479,14 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 			smallGridView.setMouseTransparent(true);
 			outlineView.setMouseTransparent(true);
 			backgroundView.setMouseTransparent(b);
-			getIntersectionNode().setMouseTransparent(b);
+			// Both background surfaces are pick surfaces in turn (the still grid and
+			// the moving grid); whichever one is not visible right now is swapped in
+			// later. Covering only getIntersectionNode() leaves the other pickable,
+			// and it then swallows presses meant for the selection plane.
+			if (backgroundNoLines != null)
+				backgroundNoLines.setMouseTransparent(b);
+			if (backgroundWithGrid != null)
+				backgroundWithGrid.setMouseTransparent(b);
 		}
 
 		public void addEventFilter(EventType<MouseEvent> mousePressed, final EventHandler<MouseEvent> object) {
