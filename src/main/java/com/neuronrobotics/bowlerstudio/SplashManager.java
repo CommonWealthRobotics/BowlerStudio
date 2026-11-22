@@ -18,6 +18,8 @@ public class SplashManager {
 	}
 
 	private static void closeSplashLocal() {
+		Log.debug("Closing Splash Here");
+		Log.error(new Exception());
 		if (BowlerStudio.splash != null) {
 			BowlerStudio.splash.close();
 			splashGraphics = null;
