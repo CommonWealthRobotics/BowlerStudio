@@ -42,6 +42,12 @@ jobs:
     - name: After checkout, list directory contnts
       run: pwd; ls -la        
 
+    - name: Install Inkscape for SVG integration tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes inkscape
+        inkscape --version
+
     - name: Build with Gradle 
       run: bash makeJar.sh
 
