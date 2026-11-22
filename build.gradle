@@ -174,8 +174,11 @@ sourceSets {
 
 	test {
 		java {
+			// "test/java/src" never existed, so this source set silently compiled
+			// nothing. Keep it and add the usual location next to it.
 			srcDirs = [
-				"test/java/src" ]  // Note @Peter's comment below
+				"test/java/src",
+				"src/test/java" ]
 		}
 	}
 }
