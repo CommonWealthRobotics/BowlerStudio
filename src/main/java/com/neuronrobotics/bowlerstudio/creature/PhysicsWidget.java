@@ -33,7 +33,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.mujoco.xml.attributetypes.IntegratorType;
+import org.mujoco.xml.KwIntegrator;
 
 @SuppressWarnings("restriction")
 public class PhysicsWidget extends GridPane implements IMUUpdateListener {
@@ -180,7 +180,7 @@ public class PhysicsWidget extends GridPane implements IMUUpdateListener {
 						oldParts = CreatureLab3dController.getEngine().getCsgMap().keySet();
 						double loopTiming = (int) Double.parseDouble(msLoopTime.getText());
 						mujoco.setTimestep(loopTiming / 1000.0);
-						mujoco.setIntegratorType(IntegratorType.IMPLICIT);
+						mujoco.setIntegratorType(KwIntegrator.IMPLICIT);
 						mujoco.setCondim(4);
 						try {
 							mujoco.generateNewModel(CSGDatabase.getInstance());
