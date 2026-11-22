@@ -16,6 +16,19 @@ allprojects { candidate ->
 				def probe = configurations.detachedConfiguration(*dependenciesToCheck)
 				probe.transitive = false
 				assert probe.resolve().size() == 7
+
+				def jcsg = project(':libraries:bowler-script-kernel:JCSG')
+				def bcpkix = jcsg.configurations.implementation.dependencies.find {
+					it.group == 'org.bouncycastle' && it.name == 'bcpkix-jdk18on'
+				}
+				assert bcpkix != null
+				[rootProject, kernel].each { consumer ->
+					def cryptoProbe = consumer.configurations.detachedConfiguration(bcpkix.copy())
+					def cryptoModules = cryptoProbe.resolvedConfiguration.resolvedArtifacts.collect {
+						it.moduleVersion.id.name
+					}
+					assert cryptoModules.containsAll(['bcpkix-jdk18on', 'bcutil-jdk18on', 'bcprov-jdk18on'])
+				}
 			}
 		}
 	}

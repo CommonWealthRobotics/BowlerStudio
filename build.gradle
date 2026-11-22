@@ -233,7 +233,12 @@ repositories {
 //	maven { url 'https://repo.spring.io/plugins-release/'  }
 
 	maven { url "https://jitpack.io" }
-	maven { url "https://repo.eclipse.org/content/groups/releases/" }
+	maven {
+		url "https://repo.eclipse.org/content/groups/releases/"
+		content {
+			includeGroupByRegex('org\\.eclipse(\\..*)?')
+		}
+	}
 	maven { url "https://dl.bintray.com/dfki-lt/maven/" }
 	maven { url "https://raw.github.com/marytts/marytts/master/repository/" }
 	maven { url "https://repo.jenkins-ci.org/public/" }
