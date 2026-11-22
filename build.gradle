@@ -244,6 +244,15 @@ repositories {
 		allowInsecureProtocol = true
 	}
 	maven { url "https://clojars.org/repo" }
+	exclusiveContent {
+		forRepository {
+			maven { url "https://repo.clojars.org" }
+		}
+		filter {
+			includeModule("com.github.madhephaestus", "mujoco-java")
+			includeModule("com.github.madhephaestus", "manifold3d")
+		}
+	}
 	
 }
 
