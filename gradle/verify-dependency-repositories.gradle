@@ -1,0 +1,22 @@
+// Run with ./gradlew -I gradle/verify-dependency-repositories.gradle verifyDependencyRepositories --refresh-dependencies
+allprojects { candidate ->
+	if (candidate == rootProject) {
+		tasks.register('verifyDependencyRepositories') {
+			doLast {
+				def kernel = project(':libraries:bowler-script-kernel')
+				def guava = configurations.implementation.dependencies.find {
+					it.group == 'com.google.guava' && it.name == 'guava'
+				}
+				def voices = kernel.configurations.implementation.dependencies.findAll {
+					it.group == 'de.dfki.mary' && it.name.startsWith('voice-')
+				}
+				assert guava != null
+				assert voices.size() == 6
+				def dependenciesToCheck = ([guava] + voices).collect { it.copy() }
+				def probe = configurations.detachedConfiguration(*dependenciesToCheck)
+				probe.transitive = false
+				assert probe.resolve().size() == 7
+			}
+		}
+	}
+}

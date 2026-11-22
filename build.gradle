@@ -239,9 +239,15 @@ repositories {
 	maven { url "https://repo.jenkins-ci.org/public/" }
 	maven { url "https://raw.githubusercontent.com/DFKI-MLT/DFKI-LT-MAVEN/master/repository" }
 	
-	maven {
+	def commonwealthRepository = maven {
 		url 'https://commonwealthrobotics.com/maven/'
 		allowInsecureProtocol = true
+	}
+	exclusiveContent {
+		forRepositories(commonwealthRepository)
+		filter {
+			includeModuleByRegex('de\\.dfki\\.mary', 'voice-.*')
+		}
 	}
 	maven { url "https://clojars.org/repo" }
 	exclusiveContent {
@@ -416,7 +422,7 @@ dependencies {
 	//compile 'com.neuronrobotics:kinematics-chef-core:0.0.15'
 
 	//compile fileTree (dir: 'libraries/java-bowler/libs/', includes: ['*.jar'])
-	implementation 'com.google.guava:guava:19+'
+	implementation 'com.google.guava:guava:19.0'
 
 	implementation group: 'org.kohsuke', name: 'wordnet-random-name', version: '1.2'
 
