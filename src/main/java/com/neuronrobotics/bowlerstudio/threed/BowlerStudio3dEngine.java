@@ -241,7 +241,7 @@ public class BowlerStudio3dEngine implements ICameraChangeListener, IMobileBaseU
 	private double orbitVelocityY;
 	private final double orbitMin = SceneStyleConfig.getDouble("camera.orbit.min", 0.012);
 	private final double orbitMax = SceneStyleConfig.getDouble("camera.orbit.max", 0.080);
-	private final double orbitHalf = SceneStyleConfig.getDouble("camera.orbit.half", 500);
+	private final double orbitHalf = SceneStyleConfig.getDouble("camera.orbit.half", 700.0);
 	private final double orbitRiseMs = SceneStyleConfig.getDouble("camera.orbit.riseMs", 250);
 	private final double orbitFallMs = SceneStyleConfig.getDouble("camera.orbit.fallMs", 120);
 

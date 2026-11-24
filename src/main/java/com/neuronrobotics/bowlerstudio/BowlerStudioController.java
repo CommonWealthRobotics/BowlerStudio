@@ -58,7 +58,7 @@ public class BowlerStudioController implements IScriptEventListener {
 		if (getBowlerStudio() != null)
 			throw new RuntimeException("There can be only one Bowler Studio controller");
 		bowlerStudioControllerStaticReference = this;
-		size = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize", 12)).intValue();
+		size = ((Number) ConfigurationDatabase.getObject("BowlerStudioConfigs", "fontsize", 14)).intValue();
 
 	}
 
